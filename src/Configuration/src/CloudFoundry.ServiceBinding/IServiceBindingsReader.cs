@@ -15,5 +15,5 @@ public interface IServiceBindingsReader
     /// <returns>
     /// The JSON, or <c>null</c> when unavailable.
     /// </returns>
-    string GetServiceBindingsJson();
+    string? GetServiceBindingsJson();
 }

@@ -13,7 +13,7 @@ using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.Transport;
 using static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions;
@@ -97,18 +97,17 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                             "Steeltoe.Management.HttpMiddlewareOptions"
                         });
 
-                        Type contextNameType = ReflectionHelpers.FindType(new[]
-                        {
-                            endpointAssembly
-                        }, new[]
-                        {
-                            "Steeltoe.Management.Endpoint.Options.IContextName"
-                        });
+                        //Type endpointContext = ReflectionHelpers.FindType(new[]
+                        //{
+                        //    endpointAssembly
+                        //}, new[]
+                        //{
+                        //    "Steeltoe.Management.Endpoint.Options.EndpointContext"
+                        //});
 
-                        IEnumerable<object> contexts = serviceProvider.GetServices(contextNameType);
 
-                        if (contexts.Any())
-                        {
+                        //if (endpointContext is Enum context)
+                        //{
                             object actuatorOptions = GetOptionsMonitor(serviceProvider, mgmtOptionsType, "Actuator");
                             string basePath = $"{(string)actuatorOptions.GetType().GetProperty("Path")?.GetValue(actuatorOptions)}/";
 
@@ -130,7 +129,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                                     options.HealthCheckUrlPath =
                                         basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(healthOptions))?.TrimStart('/');
                                 }
-                            }
+                          //  }
 
                             if (string.IsNullOrEmpty(
                                 configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:StatusPageUrlPath")))

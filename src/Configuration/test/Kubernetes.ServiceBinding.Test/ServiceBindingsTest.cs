@@ -13,7 +13,7 @@ public sealed class ServiceBindingsTest
     [Fact]
     public void NullPath()
     {
-        var b = new ServiceBindingConfigurationProvider.ServiceBindings(null);
+        var b = new KubernetesServiceBindingConfigurationProvider.ServiceBindings(null);
         b.Bindings.Should().BeEmpty();
     }
 
@@ -21,7 +21,7 @@ public sealed class ServiceBindingsTest
     public void PopulatesContent()
     {
         var path = new PhysicalFileProvider(GetK8SResourcesDirectory());
-        var b = new ServiceBindingConfigurationProvider.ServiceBindings(path);
+        var b = new KubernetesServiceBindingConfigurationProvider.ServiceBindings(path);
         b.Bindings.Count.Should().Be(3);
     }
 

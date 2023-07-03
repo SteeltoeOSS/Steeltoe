@@ -7,8 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;

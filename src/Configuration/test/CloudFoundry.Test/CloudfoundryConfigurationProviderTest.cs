@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Configuration.CloudFoundry.Test;
@@ -40,7 +41,7 @@ public sealed class CloudFoundryConfigurationProviderTest
                     ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", environment);
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", environment);
         var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
         provider.Load();
@@ -80,7 +81,7 @@ public sealed class CloudFoundryConfigurationProviderTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
+        using var scope = new EnvironmentVariableScope("VCAP_SERVICES", environment);
         var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
         provider.Load();
@@ -155,7 +156,7 @@ public sealed class CloudFoundryConfigurationProviderTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
+        using var scope = new EnvironmentVariableScope("VCAP_SERVICES", environment);
         var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
         provider.Load();
@@ -184,7 +185,7 @@ public sealed class CloudFoundryConfigurationProviderTest
                     ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", environment);
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", environment);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCloudFoundry();

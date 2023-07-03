@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.Services;
-using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.SqlServer;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.SqlServer;
+namespace Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
 
 public static class SqlServerDbContextOptionsExtensions
 {
@@ -91,7 +91,7 @@ public static class SqlServerDbContextOptionsExtensions
         return factory.CreateConnectionString();
     }
 
-    internal static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object sqlServerOptionsAction = null)
+    private static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object sqlServerOptionsAction = null)
     {
         Type extensionType = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
@@ -103,7 +103,7 @@ public static class SqlServerDbContextOptionsExtensions
 
         if (extensionType == null)
         {
-            throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer EntityFramework Core assembly");
+            throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer Entity Framework Core assembly");
         }
 
         object result = ReflectionHelpers.Invoke(useMethod, null, new[]

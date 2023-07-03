@@ -9,19 +9,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.EntityFrameworkCore.SqlServer;
+using Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
 public class SqlServerDbContextOptionsExtensionsTest
 {
-    public SqlServerDbContextOptionsExtensionsTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void UseSqlServer_ThrowsIfDbContextOptionsBuilderNull()
     {
@@ -107,10 +101,10 @@ public class SqlServerDbContextOptionsExtensionsTest
     [Fact]
     public void AddDbContext_MultipleSqlServerServices_ThrowsConnectorException()
     {
-        IServiceCollection services = new ServiceCollection();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVcap);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVcap);
+        IServiceCollection services = new ServiceCollection();
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -125,10 +119,10 @@ public class SqlServerDbContextOptionsExtensionsTest
     [Fact]
     public void AddDbContexts_WithVCAPs_AddsDbContexts()
     {
-        IServiceCollection services = new ServiceCollection();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcap);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcap);
+        IServiceCollection services = new ServiceCollection();
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -155,10 +149,10 @@ public class SqlServerDbContextOptionsExtensionsTest
     [Fact]
     public void AddDbContexts_WithAzureVCAPs_AddsDbContexts()
     {
-        IServiceCollection services = new ServiceCollection();
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", SqlServerTestHelpers.SingleServerAzureVcap);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerAzureVcap);
+        IServiceCollection services = new ServiceCollection();
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();

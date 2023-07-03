@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Steeltoe.Connector.EntityFrameworkCore.Test;
+namespace Steeltoe.Connectors.EntityFrameworkCore.Test;
 
 public class EntityFrameworkCoreTypeLocatorTest
 {
@@ -56,39 +56,5 @@ public class EntityFrameworkCoreTypeLocatorTest
         Type type = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
         Assert.NotNull(type);
-    }
-
-    [Fact]
-    public void Options_Found_In_OracleEF_Assembly()
-    {
-        // arrange ~ narrow the assembly list to one specific nuget package
-        string[] oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
-
-        EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new[]
-        {
-            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[0]
-        };
-
-        Type type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
-
-        Assert.NotNull(type);
-        EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
-    }
-
-    [Fact(Skip = "Change NuGet reference to see this test pass")]
-    public void Options_Found_In_Devart_Assembly()
-    {
-        // arrange ~ narrow the assembly list to one specific nuget package
-        string[] oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
-
-        EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new[]
-        {
-            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[1]
-        };
-
-        Type type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
-
-        Assert.NotNull(type);
-        EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
     }
 }

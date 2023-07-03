@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 
 namespace Steeltoe.Discovery.Client;
 

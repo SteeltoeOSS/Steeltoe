@@ -27,8 +27,8 @@
       "Configuration\\test\\Placeholder.Test\\Steeltoe.Configuration.Placeholder.Test.csproj",
       "Configuration\\test\\RandomValue.Test\\Steeltoe.Configuration.RandomValue.Test.csproj",
       "Configuration\\test\\SpringBoot.Test\\Steeltoe.Configuration.SpringBoot.Test.csproj",
-      "Connectors\\src\\Abstractions\\Steeltoe.Connector.Abstractions.csproj",
-      "Connectors\\src\\Connector\\Steeltoe.Connector.csproj",
+      "Connectors\\src\\Abstractions\\Steeltoe.Connectors.Abstractions.csproj",
+      "Connectors\\src\\Connectors\\Steeltoe.Connectors.csproj",
       "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj",
       "Discovery\\src\\Client\\Steeltoe.Discovery.Client.csproj",
       "Discovery\\src\\Eureka\\Steeltoe.Discovery.Eureka.csproj"

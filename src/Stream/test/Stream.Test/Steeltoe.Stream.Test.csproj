@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connectors.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\Stream\Steeltoe.Stream.csproj" />
     <ProjectReference Include="..\TestBinder\Steeltoe.Stream.TestBinder.csproj" />
   </ItemGroup>

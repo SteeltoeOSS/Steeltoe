@@ -4,11 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
 /// <summary>
-/// Extension methods for registering CloudFoundry <see cref="ServiceBindingConfigurationProvider" /> with <see cref="IConfigurationBuilder" />.
+/// Extension methods for registering CloudFoundry <see cref="CloudFoundryServiceBindingConfigurationProvider" /> with
+/// <see cref="IConfigurationBuilder" />.
 /// </summary>
 public static class ConfigurationBuilderExtensions
 {
@@ -86,24 +88,32 @@ public static class ConfigurationBuilderExtensions
         ArgumentGuard.NotNull(ignoreKeyPredicate);
         ArgumentGuard.NotNull(serviceBindingsReader);
 
-        var source = new ServiceBindingConfigurationSource(serviceBindingsReader)
+        if (!builder.Sources.OfType<CloudFoundryServiceBindingConfigurationSource>().Any())
         {
-            IgnoreKeyPredicate = ignoreKeyPredicate
-        };
+            var source = new CloudFoundryServiceBindingConfigurationSource(serviceBindingsReader)
+            {
+                IgnoreKeyPredicate = ignoreKeyPredicate
+            };
 
-        return RegisterPostProcessors(builder, source);
+            // All post-processors must be registered *before* the configuration source is added to the builder. When adding the source,
+            // WebApplicationBuilder immediately builds the configuration provider and loads it, which executes the post-processors.
+            // Therefore adding post-processors afterwards is a no-op.
+
+            RegisterPostProcessors(source);
+            builder.Add(source);
+        }
+
+        return builder;
     }
 
-    private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, ServiceBindingConfigurationSource source)
+    private static void RegisterPostProcessors(CloudFoundryServiceBindingConfigurationSource source)
     {
-        source.RegisterPostProcessor(new PostgreSqlPostProcessor());
-        source.RegisterPostProcessor(new MySqlPostProcessor());
-        source.RegisterPostProcessor(new SqlServerPostProcessor());
-        source.RegisterPostProcessor(new MongoDbPostProcessor());
-        source.RegisterPostProcessor(new CosmosDbPostProcessor());
-        source.RegisterPostProcessor(new RabbitMQPostProcessor());
-
-        builder.Add(source);
-        return builder;
+        source.RegisterPostProcessor(new CosmosDbCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new MySqlCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new PostgreSqlCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new RabbitMQCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
     }
 }
