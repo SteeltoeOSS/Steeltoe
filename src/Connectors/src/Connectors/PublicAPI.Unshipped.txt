@@ -1,0 +1,116 @@
+#nullable enable
+static Steeltoe.Connectors.CosmosDb.CosmosDbConfigurationBuilderExtensions.ConfigureCosmosDb(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.CosmosDb.CosmosDbConfigurationBuilderExtensions.ConfigureCosmosDb(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.CosmosDb.CosmosDbServiceCollectionExtensions.AddCosmosDb(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.CosmosDb.CosmosDbServiceCollectionExtensions.AddCosmosDb(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.CosmosDb.CosmosDbWebApplicationBuilderExtensions.AddCosmosDb(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.CosmosDb.CosmosDbWebApplicationBuilderExtensions.AddCosmosDb(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.MongoDb.MongoDbConfigurationBuilderExtensions.ConfigureMongoDb(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.MongoDb.MongoDbConfigurationBuilderExtensions.ConfigureMongoDb(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.MongoDb.MongoDbServiceCollectionExtensions.AddMongoDb(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.MongoDb.MongoDbServiceCollectionExtensions.AddMongoDb(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.MongoDb.MongoDbWebApplicationBuilderExtensions.AddMongoDb(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.MongoDb.MongoDbWebApplicationBuilderExtensions.AddMongoDb(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.MySql.MySqlConfigurationBuilderExtensions.ConfigureMySql(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.MySql.MySqlConfigurationBuilderExtensions.ConfigureMySql(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.MySql.MySqlServiceCollectionExtensions.AddMySql(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.MySql.MySqlServiceCollectionExtensions.AddMySql(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.MySql.MySqlWebApplicationBuilderExtensions.AddMySql(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.MySql.MySqlWebApplicationBuilderExtensions.AddMySql(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.PostgreSql.PostgreSqlConfigurationBuilderExtensions.ConfigurePostgreSql(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.PostgreSql.PostgreSqlConfigurationBuilderExtensions.ConfigurePostgreSql(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.PostgreSql.PostgreSqlServiceCollectionExtensions.AddPostgreSql(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.PostgreSql.PostgreSqlServiceCollectionExtensions.AddPostgreSql(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.PostgreSql.PostgreSqlWebApplicationBuilderExtensions.AddPostgreSql(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.PostgreSql.PostgreSqlWebApplicationBuilderExtensions.AddPostgreSql(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.RabbitMQ.RabbitMQConfigurationBuilderExtensions.ConfigureRabbitMQ(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.RabbitMQ.RabbitMQConfigurationBuilderExtensions.ConfigureRabbitMQ(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.RabbitMQ.RabbitMQServiceCollectionExtensions.AddRabbitMQ(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.RabbitMQ.RabbitMQServiceCollectionExtensions.AddRabbitMQ(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.RabbitMQ.RabbitMQWebApplicationBuilderExtensions.AddRabbitMQ(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.RabbitMQ.RabbitMQWebApplicationBuilderExtensions.AddRabbitMQ(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.Redis.RedisConfigurationBuilderExtensions.ConfigureRedis(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.Redis.RedisConfigurationBuilderExtensions.ConfigureRedis(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.Redis.RedisServiceCollectionExtensions.AddRedis(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.Redis.RedisServiceCollectionExtensions.AddRedis(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.Redis.RedisWebApplicationBuilderExtensions.AddRedis(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.Redis.RedisWebApplicationBuilderExtensions.AddRedis(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.SqlServer.SqlServerConfigurationBuilderExtensions.ConfigureSqlServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.SqlServer.SqlServerConfigurationBuilderExtensions.ConfigureSqlServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Connectors.SqlServer.SqlServerServiceCollectionExtensions.AddSqlServer(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.SqlServer.SqlServerServiceCollectionExtensions.AddSqlServer(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Connectors.SqlServer.SqlServerWebApplicationBuilderExtensions.AddSqlServer(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Connectors.SqlServer.SqlServerWebApplicationBuilderExtensions.AddSqlServer(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder, System.Action<Steeltoe.Connectors.ConnectorConfigureOptionsBuilder!>? configureAction, System.Action<Steeltoe.Connectors.ConnectorAddOptionsBuilder!>? addAction) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+Steeltoe.Connectors.ConnectionStringOptions
+Steeltoe.Connectors.ConnectionStringOptions.ConnectionString.get -> string?
+Steeltoe.Connectors.ConnectionStringOptions.ConnectionString.set -> void
+Steeltoe.Connectors.ConnectionStringOptions.ConnectionStringOptions() -> void
+Steeltoe.Connectors.Connector<TOptions, TConnection>
+Steeltoe.Connectors.Connector<TOptions, TConnection>.Connector(System.IServiceProvider! serviceProvider, string! serviceBindingName, Steeltoe.Connectors.ConnectorCreateConnection! createConnection, bool useSingletonConnection) -> void
+Steeltoe.Connectors.Connector<TOptions, TConnection>.Dispose() -> void
+Steeltoe.Connectors.Connector<TOptions, TConnection>.GetConnection() -> TConnection!
+Steeltoe.Connectors.Connector<TOptions, TConnection>.Options.get -> TOptions!
+Steeltoe.Connectors.ConnectorAddOptionsBuilder
+Steeltoe.Connectors.ConnectorAddOptionsBuilder.CacheConnection.get -> bool
+Steeltoe.Connectors.ConnectorAddOptionsBuilder.CacheConnection.set -> void
+Steeltoe.Connectors.ConnectorAddOptionsBuilder.CreateConnection.get -> Steeltoe.Connectors.ConnectorCreateConnection!
+Steeltoe.Connectors.ConnectorAddOptionsBuilder.CreateConnection.set -> void
+Steeltoe.Connectors.ConnectorAddOptionsBuilder.CreateHealthContributor.get -> Steeltoe.Connectors.ConnectorCreateHealthContributor!
+Steeltoe.Connectors.ConnectorAddOptionsBuilder.CreateHealthContributor.set -> void
+Steeltoe.Connectors.ConnectorAddOptionsBuilder.EnableHealthChecks.get -> bool
+Steeltoe.Connectors.ConnectorAddOptionsBuilder.EnableHealthChecks.set -> void
+Steeltoe.Connectors.ConnectorConfigureOptionsBuilder
+Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.ConnectorConfigureOptionsBuilder() -> void
+Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.DetectConfigurationChanges.get -> bool
+Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.DetectConfigurationChanges.set -> void
+Steeltoe.Connectors.ConnectorCreateConnection
+Steeltoe.Connectors.ConnectorCreateHealthContributor
+Steeltoe.Connectors.ConnectorException
+Steeltoe.Connectors.ConnectorException.ConnectorException() -> void
+Steeltoe.Connectors.ConnectorException.ConnectorException(string! message) -> void
+Steeltoe.Connectors.ConnectorException.ConnectorException(string! message, System.Exception! innerException) -> void
+Steeltoe.Connectors.ConnectorFactory<TOptions, TConnection>
+Steeltoe.Connectors.ConnectorFactory<TOptions, TConnection>.ConnectorFactory(System.IServiceProvider! serviceProvider, System.Collections.Generic.IReadOnlySet<string!>! serviceBindingNames, Steeltoe.Connectors.ConnectorCreateConnection! createConnection, bool useSingletonConnection) -> void
+Steeltoe.Connectors.ConnectorFactory<TOptions, TConnection>.Dispose() -> void
+Steeltoe.Connectors.ConnectorFactory<TOptions, TConnection>.Get() -> Steeltoe.Connectors.Connector<TOptions!, TConnection!>!
+Steeltoe.Connectors.ConnectorFactory<TOptions, TConnection>.Get(string! serviceBindingName) -> Steeltoe.Connectors.Connector<TOptions!, TConnection!>!
+Steeltoe.Connectors.ConnectorFactory<TOptions, TConnection>.ServiceBindingNames.get -> System.Collections.Generic.IReadOnlySet<string!>!
+Steeltoe.Connectors.CosmosDb.CosmosDbConfigurationBuilderExtensions
+Steeltoe.Connectors.CosmosDb.CosmosDbOptions
+Steeltoe.Connectors.CosmosDb.CosmosDbOptions.CosmosDbOptions() -> void
+Steeltoe.Connectors.CosmosDb.CosmosDbOptions.Database.get -> string?
+Steeltoe.Connectors.CosmosDb.CosmosDbOptions.Database.set -> void
+Steeltoe.Connectors.CosmosDb.CosmosDbServiceCollectionExtensions
+Steeltoe.Connectors.CosmosDb.CosmosDbWebApplicationBuilderExtensions
+Steeltoe.Connectors.MongoDb.MongoDbConfigurationBuilderExtensions
+Steeltoe.Connectors.MongoDb.MongoDbOptions
+Steeltoe.Connectors.MongoDb.MongoDbOptions.Database.get -> string?
+Steeltoe.Connectors.MongoDb.MongoDbOptions.Database.set -> void
+Steeltoe.Connectors.MongoDb.MongoDbOptions.MongoDbOptions() -> void
+Steeltoe.Connectors.MongoDb.MongoDbServiceCollectionExtensions
+Steeltoe.Connectors.MongoDb.MongoDbWebApplicationBuilderExtensions
+Steeltoe.Connectors.MySql.MySqlConfigurationBuilderExtensions
+Steeltoe.Connectors.MySql.MySqlOptions
+Steeltoe.Connectors.MySql.MySqlOptions.MySqlOptions() -> void
+Steeltoe.Connectors.MySql.MySqlServiceCollectionExtensions
+Steeltoe.Connectors.MySql.MySqlWebApplicationBuilderExtensions
+Steeltoe.Connectors.PostgreSql.PostgreSqlConfigurationBuilderExtensions
+Steeltoe.Connectors.PostgreSql.PostgreSqlOptions
+Steeltoe.Connectors.PostgreSql.PostgreSqlOptions.PostgreSqlOptions() -> void
+Steeltoe.Connectors.PostgreSql.PostgreSqlServiceCollectionExtensions
+Steeltoe.Connectors.PostgreSql.PostgreSqlWebApplicationBuilderExtensions
+Steeltoe.Connectors.RabbitMQ.RabbitMQConfigurationBuilderExtensions
+Steeltoe.Connectors.RabbitMQ.RabbitMQOptions
+Steeltoe.Connectors.RabbitMQ.RabbitMQOptions.RabbitMQOptions() -> void
+Steeltoe.Connectors.RabbitMQ.RabbitMQServiceCollectionExtensions
+Steeltoe.Connectors.RabbitMQ.RabbitMQWebApplicationBuilderExtensions
+Steeltoe.Connectors.Redis.RedisConfigurationBuilderExtensions
+Steeltoe.Connectors.Redis.RedisOptions
+Steeltoe.Connectors.Redis.RedisOptions.RedisOptions() -> void
+Steeltoe.Connectors.Redis.RedisServiceCollectionExtensions
+Steeltoe.Connectors.Redis.RedisWebApplicationBuilderExtensions
+Steeltoe.Connectors.SqlServer.SqlServerConfigurationBuilderExtensions
+Steeltoe.Connectors.SqlServer.SqlServerOptions
+Steeltoe.Connectors.SqlServer.SqlServerOptions.SqlServerOptions() -> void
+Steeltoe.Connectors.SqlServer.SqlServerServiceCollectionExtensions
+Steeltoe.Connectors.SqlServer.SqlServerWebApplicationBuilderExtensions

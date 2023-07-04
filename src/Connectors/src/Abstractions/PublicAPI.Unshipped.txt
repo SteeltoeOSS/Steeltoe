@@ -1,0 +1,7 @@
+﻿Steeltoe.Connectors.ServiceInfoCreatorAssemblyAttribute
+Steeltoe.Connectors.ServiceInfoCreatorAssemblyAttribute.ServiceInfoCreatorAssemblyAttribute(System.Type creatorType) -> void
+Steeltoe.Connectors.ServiceInfoFactoryAssemblyAttribute
+Steeltoe.Connectors.ServiceInfoFactoryAssemblyAttribute.ServiceInfoFactoryAssemblyAttribute() -> void
+Steeltoe.Connectors.Services.IServiceInfo
+Steeltoe.Connectors.Services.IServiceInfo.ApplicationInfo.get -> Steeltoe.Common.IApplicationInstanceInfo
+Steeltoe.Connectors.Services.IServiceInfo.Id.get -> string

@@ -49,7 +49,7 @@ public sealed class RabbitMQConnectionStringBuilderTests
     {
         var builder = new RabbitMQConnectionStringBuilder();
 
-        object port = builder["port"];
+        object? port = builder["port"];
 
         port.Should().BeNull();
     }
