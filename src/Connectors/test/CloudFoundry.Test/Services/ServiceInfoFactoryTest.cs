@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Configuration;
-using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.CloudFoundry.Services;
 using Xunit;
 
-namespace Steeltoe.Connectors.Test.Services;
+namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
 public class ServiceInfoFactoryTest
 {

@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Connectors.Services;
+namespace Steeltoe.Connectors.CloudFoundry.Services;
 
-public class Tags
+internal sealed class Tags
 {
-    public IEnumerable<string> Values { get; protected internal set; }
+    public IEnumerable<string> Values { get; }
 
     public Tags(string tag)
         : this(new[]

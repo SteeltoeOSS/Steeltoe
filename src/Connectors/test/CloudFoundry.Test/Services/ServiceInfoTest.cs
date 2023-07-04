@@ -6,7 +6,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.TestResources;
 using Xunit;
 
-namespace Steeltoe.Connectors.Test.Services;
+namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
 public class ServiceInfoTest
 {

@@ -7,11 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Configuration;
+using Steeltoe.Connectors.CloudFoundry.Services;
 using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connectors;
+namespace Steeltoe.Connectors.CloudFoundry;
 
-public class ServiceInfoCreator
+internal class ServiceInfoCreator
 {
     private static readonly object Lock = new();
     private static ServiceInfoCreator _me;
@@ -100,17 +101,15 @@ public class ServiceInfoCreator
     /// Service info or null.
     /// </returns>
     public TServiceInfo GetServiceInfo<TServiceInfo>(string name)
-        where TServiceInfo : class
+        where TServiceInfo : class, IServiceInfo
     {
         IEnumerable<TServiceInfo> typed = GetServiceInfosOfType<TServiceInfo>();
 
         foreach (TServiceInfo si in typed)
         {
-            var info = si as IServiceInfo;
-
-            if (info.Id == name)
+            if (si.Id == name)
             {
-                return (TServiceInfo)info;
+                return si;
             }
         }
 

@@ -5,10 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connectors.CloudFoundry;
 using Xunit;
 
-namespace Steeltoe.Connectors.Test;
+namespace Steeltoe.Connectors.CloudFoundry.Test;
 
 public class ServiceInfoCreatorFactoryTest
 {

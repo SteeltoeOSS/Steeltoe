@@ -5,9 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connectors;
+namespace Steeltoe.Connectors.CloudFoundry;
 
-public static class ConfigurationExtensions
+internal static class ConfigurationExtensions
 {
     /// <summary>
     /// Get configuration info for all services of a given service type.
@@ -77,7 +77,7 @@ public static class ConfigurationExtensions
     /// Requested implementation of <see cref="IServiceInfo" />.
     /// </returns>
     public static TServiceInfo GetServiceInfo<TServiceInfo>(this IConfiguration configuration, string id)
-        where TServiceInfo : class
+        where TServiceInfo : class, IServiceInfo
     {
         return ServiceInfoCreatorFactory.GetServiceInfoCreator(configuration).GetServiceInfo<TServiceInfo>(id);
     }
@@ -113,64 +113,5 @@ public static class ConfigurationExtensions
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// Get info for a named service.
-    /// </summary>
-    /// <typeparam name="TServiceInfo">
-    /// Type of Service Info to return.
-    /// </typeparam>
-    /// <param name="configuration">
-    /// Configuration to retrieve service info from.
-    /// </param>
-    /// <param name="serviceName">
-    /// Name of the service.
-    /// </param>
-    /// <exception cref="ConnectorException">
-    /// Thrown when service info isn't found.
-    /// </exception>
-    /// <returns>
-    /// Information required to connect to provisioned service.
-    /// </returns>
-    public static TServiceInfo GetRequiredServiceInfo<TServiceInfo>(this IConfiguration configuration, string serviceName)
-        where TServiceInfo : class
-    {
-        var serviceInfo = GetServiceInfo<TServiceInfo>(configuration, serviceName);
-
-        if (serviceInfo == null)
-        {
-            throw new ConnectorException($"No service with name: {serviceName} found.");
-        }
-
-        return serviceInfo;
-    }
-
-    /// <summary>
-    /// Evaluate whether an IConfiguration contains services bound by Cloud Foundry.
-    /// </summary>
-    /// <param name="configuration">
-    /// Application Configuration.
-    /// </param>
-    /// <returns>
-    /// true if vcap:services found in configuration, otherwise false.
-    /// </returns>
-    public static bool HasCloudFoundryServiceConfigurations(this IConfiguration configuration)
-    {
-        return configuration.GetSection("vcap:services").GetChildren().Any();
-    }
-
-    /// <summary>
-    /// Evaluate whether an IConfiguration contains Kubernetes service bindings.
-    /// </summary>
-    /// <param name="configuration">
-    /// Application Configuration.
-    /// </param>
-    /// <returns>
-    /// true if k8s:bindings found in configuration, otherwise false.
-    /// </returns>
-    public static bool HasKubernetesServiceBindings(this IConfiguration configuration)
-    {
-        return configuration.GetSection("k8s:bindings").GetChildren().Any();
     }
 }

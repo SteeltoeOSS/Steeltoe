@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Configuration;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connectors.Services;
+namespace Steeltoe.Connectors.CloudFoundry.Services;
 
-public class EurekaServiceInfoFactory : ServiceInfoFactory
+internal sealed class EurekaServiceInfoFactory : ServiceInfoFactory
 {
     public EurekaServiceInfoFactory()
         : base(new Tags("eureka"), Array.Empty<string>())

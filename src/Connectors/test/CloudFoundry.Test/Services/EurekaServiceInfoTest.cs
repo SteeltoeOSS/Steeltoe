@@ -5,7 +5,7 @@
 using Steeltoe.Connectors.Services;
 using Xunit;
 
-namespace Steeltoe.Connectors.Test.Services;
+namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
 public class EurekaServiceInfoTest
 {

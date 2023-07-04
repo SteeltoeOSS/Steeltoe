@@ -10,7 +10,7 @@ using Steeltoe.Connectors.Services;
 
 namespace Steeltoe.Connectors.CloudFoundry;
 
-public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
+internal sealed class CloudFoundryServiceInfoCreator : ServiceInfoCreator
 {
     private static readonly object Lock = new();
     private static CloudFoundryServiceInfoCreator _me;

@@ -4,7 +4,7 @@
 
 using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connectors.Test.Services;
+namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
 internal sealed class TestUriServiceInfo : UriServiceInfo
 {

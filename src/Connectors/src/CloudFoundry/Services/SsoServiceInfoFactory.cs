@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Configuration;
+using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Connectors.Services;
+namespace Steeltoe.Connectors.CloudFoundry.Services;
 
-public class SsoServiceInfoFactory : ServiceInfoFactory
+internal sealed class SsoServiceInfoFactory : ServiceInfoFactory
 {
     public SsoServiceInfoFactory()
         : base(new Tags("p-identity"), "uaa")
