@@ -8,8 +8,6 @@ namespace Steeltoe.Management.Endpoint.Options;
 
 internal static class OptionsMonitorExtensions
 {
-    internal static ManagementEndpointOptions Get(this IOptionsMonitor<ManagementEndpointOptions> optionsMonitor, EndpointContext platforms)
-    {
-        return optionsMonitor.Get(platforms.ToString());
-    }
+    internal static ManagementEndpointOptions Get(this IOptionsMonitor<ManagementEndpointOptions> optionsMonitor, EndpointContexts platforms) => optionsMonitor.Get(platforms.ToString());
+        
 }

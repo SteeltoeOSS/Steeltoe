@@ -67,7 +67,7 @@ public class ActuatorRouteBuilderExtensionsTest
     private static ManagementEndpointOptions GetManagementContext(IServiceProvider services)
     {
         var mgmtOptions = services.GetService<IOptionsMonitor<ManagementEndpointOptions>>();
-        return mgmtOptions.Get(EndpointContext.Actuator);
+        return mgmtOptions.Get(EndpointContexts.Actuator);
     }
 
     private async Task ActAndAssertAsync(IHostBuilder hostBuilder, bool expectedSuccess)

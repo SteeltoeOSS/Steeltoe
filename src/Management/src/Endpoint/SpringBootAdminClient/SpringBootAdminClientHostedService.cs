@@ -29,7 +29,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         ArgumentGuard.NotNull(logger);
 
         _options = options;
-        _managementOptions = managementOptions.Get(EndpointContext.Actuator);
+        _managementOptions = managementOptions.Get(EndpointContexts.Actuator);
         _healthOptions = healthOptions.CurrentValue;
         _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMs);
         _logger = logger;

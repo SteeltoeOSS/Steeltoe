@@ -33,7 +33,7 @@ internal sealed class ActuatorEndpointMapper
         var collection = new HashSet<string>();
         conventionBuilder ??= new ActuatorConventionBuilder();
 
-        foreach (EndpointContext context in Enum.GetValues<EndpointContext>())
+        foreach (EndpointContexts context in Enum.GetValues<EndpointContexts>())
         {
             if (_managementOptions.CurrentValue.EndpointContexts.HasFlag(context))
             {
@@ -41,8 +41,8 @@ internal sealed class ActuatorEndpointMapper
 
                 foreach (IEndpointMiddleware middleware in _middlewares)
                 {
-                    if ((context == EndpointContext.Actuator && middleware is CloudFoundryEndpointMiddleware) ||
-                        (context == EndpointContext.CloudFoundry && middleware is ActuatorHypermediaEndpointMiddleware))
+                    if ((context == EndpointContexts.Actuator && middleware is CloudFoundryEndpointMiddleware) ||
+                        (context == EndpointContexts.CloudFoundry && middleware is ActuatorHypermediaEndpointMiddleware))
                     {
                         continue;
                     }

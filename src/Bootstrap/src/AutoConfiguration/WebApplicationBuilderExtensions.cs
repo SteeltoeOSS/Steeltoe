@@ -30,6 +30,7 @@ using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Kubernetes;
@@ -270,6 +271,7 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireKubernetesActuators(this WebApplicationBuilder webApplicationBuilder)
     {
+        webApplicationBuilder.AddDynamicLogging();
         webApplicationBuilder.Services.AddKubernetesActuators();
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
         Log(LogMessages.WireKubernetesActuators);
@@ -278,6 +280,7 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireAllActuators(this WebApplicationBuilder webApplicationBuilder)
     {
+        webApplicationBuilder.AddDynamicLogging();
         webApplicationBuilder.Services.AddAllActuators();
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
         Log(LogMessages.WireAllActuators);

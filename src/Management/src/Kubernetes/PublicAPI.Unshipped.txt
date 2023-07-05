@@ -10,6 +10,6 @@ static Steeltoe.Management.Kubernetes.ServiceCollectionExtensions.AddKubernetesI
 static Steeltoe.Management.Kubernetes.ServiceCollectionExtensions.AddKubernetesInfoContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Steeltoe.Common.Kubernetes.IPodUtilities podUtilities) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 Steeltoe.Management.Kubernetes.HostBuilderExtensions
 Steeltoe.Management.Kubernetes.KubernetesInfoContributor
-Steeltoe.Management.Kubernetes.KubernetesInfoContributor.Contribute(Steeltoe.Management.Info.IInfoBuilder builder) -> void
+Steeltoe.Management.Kubernetes.KubernetesInfoContributor.ContributeAsync(Steeltoe.Management.Info.IInfoBuilder builder) -> System.Threading.Tasks.Task
 Steeltoe.Management.Kubernetes.KubernetesInfoContributor.KubernetesInfoContributor(Steeltoe.Common.Kubernetes.IPodUtilities podUtilities) -> void
 Steeltoe.Management.Kubernetes.ServiceCollectionExtensions

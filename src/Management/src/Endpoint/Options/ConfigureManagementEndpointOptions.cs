@@ -30,11 +30,11 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
     {
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 
-        //Regardless of the name, configure the available platforms
+        // Regardless of the name, configure the available platforms
 
         if (Platform.IsCloudFoundry)
         {
-            options.EndpointContexts |= EndpointContext.CloudFoundry;
+            options.EndpointContexts |= EndpointContexts.CloudFoundry;
         }
 
         foreach (string converterTypeName in options.CustomJsonConverters ?? Array.Empty<string>())
@@ -48,7 +48,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
             }
         }
 
-        if (name == EndpointContext.Actuator.ToString())
+        if (name == EndpointContexts.Actuator.ToString())
         {
             options.Path ??= DefaultPath;
 
@@ -56,7 +56,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
 
             options.EndpointOptions = new List<HttpMiddlewareOptions>(_endpoints.Where(e => e is not CloudFoundryEndpointOptions));
         }
-        else if (name == EndpointContext.CloudFoundry.ToString())
+        else if (name == EndpointContexts.CloudFoundry.ToString())
         {
             options.Path = DefaultCFPath;
             string cfEnabledConfig = _configuration.GetSection(CloudFoundryEnabledPrefix).Value;

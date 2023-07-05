@@ -1,40 +1,37 @@
-#nullable enable
-override Steeltoe.Management.MetricCollectors.MetricSample.ToString() -> string!
-static Steeltoe.Management.MetricCollectors.SteeltoeMetrics.InstrumentationName.get -> string!
-static Steeltoe.Management.MetricCollectors.SteeltoeMetrics.InstrumentationName.set -> void
-static Steeltoe.Management.MetricCollectors.SteeltoeMetrics.Meter.get -> System.Diagnostics.Metrics.Meter!
-Steeltoe.Management.MetricCollectors.Exporters.ICollectionResponse
-Steeltoe.Management.MetricCollectors.Exporters.ICollectionResponse.GeneratedAtUtc.get -> System.DateTime
+override Steeltoe.Management.MetricCollectors.Metrics.MetricSample.ToString() -> string!
+static Steeltoe.Management.MetricCollectors.Metrics.SteeltoeMetrics.InstrumentationName.get -> string!
+static Steeltoe.Management.MetricCollectors.Metrics.SteeltoeMetrics.InstrumentationName.set -> void
+static Steeltoe.Management.MetricCollectors.Metrics.SteeltoeMetrics.Meter.get -> System.Diagnostics.Metrics.Meter!
+Steeltoe.Management.MetricCollectors.Aggregations.IAggregationStatistics
+Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics
+Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics.AggregationStatistics.get -> Steeltoe.Management.MetricCollectors.Aggregations.IAggregationStatistics!
+Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics.LabeledAggregationStatistics(Steeltoe.Management.MetricCollectors.Aggregations.IAggregationStatistics! stats, params System.Collections.Generic.KeyValuePair<string!, string!>[]! labels) -> void
+Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics.Labels.get -> System.Collections.Generic.KeyValuePair<string!, string!>[]!
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.AddMetrics(System.Diagnostics.Metrics.Instrument! instrument, System.Diagnostics.Metrics.LabeledAggregationStatistics! stats) -> void
-Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.Export() -> (Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricSample!>!>! MetricSamples, Steeltoe.Management.MetricCollectors.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.MetricTag!>!>! AvailableTags)
+Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.AddMetrics(System.Diagnostics.Metrics.Instrument! instrument, Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics! stats) -> void
+Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.Export() -> (Steeltoe.Management.MetricCollectors.Metrics.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.Metrics.MetricSample!>!>! MetricSamples, Steeltoe.Management.MetricCollectors.Metrics.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.Metrics.MetricTag!>!>! AvailableTags)
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.SetCollect(System.Action! collect) -> void
 Steeltoe.Management.MetricCollectors.Metrics.MetricLabelExtensions
-Steeltoe.Management.MetricCollectors.MetricSample
-Steeltoe.Management.MetricCollectors.MetricSample.MetricSample(Steeltoe.Management.MetricCollectors.MetricStatistic statistic, double value, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, string!>>? tags) -> void
-Steeltoe.Management.MetricCollectors.MetricSample.Statistic.get -> Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricSample.Tags.get -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, string!>>?
-Steeltoe.Management.MetricCollectors.MetricSample.Tags.set -> void
-Steeltoe.Management.MetricCollectors.MetricSample.Value.get -> double
-Steeltoe.Management.MetricCollectors.MetricsCollection<T>
-Steeltoe.Management.MetricCollectors.MetricsCollection<T>.this[string! key].get -> T
-Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricStatistic.Activetasks = 6 -> Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricStatistic.Count = 2 -> Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricStatistic.Duration = 7 -> Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricStatistic.Max = 3 -> Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricStatistic.Rate = 8 -> Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricStatistic.Total = 0 -> Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricStatistic.TotalTime = 1 -> Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricStatistic.Unknown = 5 -> Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricStatistic.Value = 4 -> Steeltoe.Management.MetricCollectors.MetricStatistic
-Steeltoe.Management.MetricCollectors.MetricTag
-Steeltoe.Management.MetricCollectors.MetricTag.MetricTag(string! tag, System.Collections.Generic.ISet<string!>! values) -> void
-Steeltoe.Management.MetricCollectors.MetricTag.Tag.get -> string!
-Steeltoe.Management.MetricCollectors.MetricTag.Values.get -> System.Collections.Generic.ISet<string!>!
-Steeltoe.Management.MetricCollectors.SteeltoeMetrics
-System.Diagnostics.Metrics.IAggregationStatistics
-System.Diagnostics.Metrics.LabeledAggregationStatistics
-System.Diagnostics.Metrics.LabeledAggregationStatistics.AggregationStatistics.get -> System.Diagnostics.Metrics.IAggregationStatistics!
-System.Diagnostics.Metrics.LabeledAggregationStatistics.LabeledAggregationStatistics(System.Diagnostics.Metrics.IAggregationStatistics! stats, params System.Collections.Generic.KeyValuePair<string!, string!>[]! labels) -> void
-System.Diagnostics.Metrics.LabeledAggregationStatistics.Labels.get -> System.Collections.Generic.KeyValuePair<string!, string!>[]!
+Steeltoe.Management.MetricCollectors.Metrics.MetricSample
+Steeltoe.Management.MetricCollectors.Metrics.MetricSample.MetricSample(Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic statistic, double value, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, string!>>? tags) -> void
+Steeltoe.Management.MetricCollectors.Metrics.MetricSample.Statistic.get -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricSample.Tags.get -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, string!>>?
+Steeltoe.Management.MetricCollectors.Metrics.MetricSample.Tags.set -> void
+Steeltoe.Management.MetricCollectors.Metrics.MetricSample.Value.get -> double
+Steeltoe.Management.MetricCollectors.Metrics.MetricsCollection<T>
+Steeltoe.Management.MetricCollectors.Metrics.MetricsCollection<T>.this[string! key].get -> T
+Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic.Activetasks = 6 -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic.Count = 2 -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic.Duration = 7 -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic.Max = 3 -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic.Rate = 8 -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic.Total = 0 -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic.TotalTime = 1 -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic.Unknown = 5 -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic.Value = 4 -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
+Steeltoe.Management.MetricCollectors.Metrics.MetricTag
+Steeltoe.Management.MetricCollectors.Metrics.MetricTag.MetricTag(string! tag, System.Collections.Generic.ISet<string!>! values) -> void
+Steeltoe.Management.MetricCollectors.Metrics.MetricTag.Tag.get -> string!
+Steeltoe.Management.MetricCollectors.Metrics.MetricTag.Values.get -> System.Collections.Generic.ISet<string!>!
+Steeltoe.Management.MetricCollectors.Metrics.SteeltoeMetrics

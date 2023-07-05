@@ -1,29 +1,14 @@
 abstract Steeltoe.Management.Diagnostics.DiagnosticObserver.ProcessEvent(string eventName, object value) -> void
 static Steeltoe.Management.Diagnostics.DiagnosticHelpers.GetProperty<T>(object o, string name) -> T
-static Steeltoe.Management.Diagnostics.DiagnosticsManager.Instance.get -> Steeltoe.Management.Diagnostics.DiagnosticsManager
 Steeltoe.Management.Diagnostics.DiagnosticHelpers
 Steeltoe.Management.Diagnostics.DiagnosticObserver
-Steeltoe.Management.Diagnostics.DiagnosticObserver.DiagnosticObserver(string name, string listenerName, Microsoft.Extensions.Logging.ILogger logger) -> void
+Steeltoe.Management.Diagnostics.DiagnosticObserver.DiagnosticObserver(string name, string listenerName, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
 Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose() -> void
 Steeltoe.Management.Diagnostics.DiagnosticObserver.ListenerName.get -> string
-Steeltoe.Management.Diagnostics.DiagnosticObserver.Logger.get -> Microsoft.Extensions.Logging.ILogger
 Steeltoe.Management.Diagnostics.DiagnosticObserver.ObserverName.get -> string
 Steeltoe.Management.Diagnostics.DiagnosticObserver.Subscribe(System.Diagnostics.DiagnosticListener listener) -> void
-Steeltoe.Management.Diagnostics.DiagnosticObserver.Subscription.get -> System.IDisposable
-Steeltoe.Management.Diagnostics.DiagnosticObserver.Subscription.set -> void
-Steeltoe.Management.Diagnostics.DiagnosticsManager
-Steeltoe.Management.Diagnostics.DiagnosticsManager.DiagnosticsManager(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Diagnostics.MetricsObserverOptions> observerOptions, System.Collections.Generic.IEnumerable<Steeltoe.Management.Diagnostics.IRuntimeDiagnosticSource> runtimeSources, System.Collections.Generic.IEnumerable<Steeltoe.Management.Diagnostics.IDiagnosticObserver> observers, System.Collections.Generic.IEnumerable<System.Diagnostics.Tracing.EventListener> eventListeners, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Diagnostics.DiagnosticsManager> logger) -> void
-Steeltoe.Management.Diagnostics.DiagnosticsManager.Dispose() -> void
-Steeltoe.Management.Diagnostics.DiagnosticsManager.Observers.get -> System.Collections.Generic.IList<Steeltoe.Management.Diagnostics.IDiagnosticObserver>
-Steeltoe.Management.Diagnostics.DiagnosticsManager.OnCompleted() -> void
-Steeltoe.Management.Diagnostics.DiagnosticsManager.OnError(System.Exception error) -> void
-Steeltoe.Management.Diagnostics.DiagnosticsManager.OnNext(System.Diagnostics.DiagnosticListener value) -> void
-Steeltoe.Management.Diagnostics.DiagnosticsManager.Start() -> void
-Steeltoe.Management.Diagnostics.DiagnosticsManager.Stop() -> void
 Steeltoe.Management.Diagnostics.IDiagnosticObserver
-Steeltoe.Management.Diagnostics.IDiagnosticObserver.ListenerName.get -> string
 Steeltoe.Management.Diagnostics.IDiagnosticObserver.ObserverName.get -> string
-Steeltoe.Management.Diagnostics.IDiagnosticObserver.ProcessEvent(string eventName, object value) -> void
 Steeltoe.Management.Diagnostics.IDiagnosticObserver.Subscribe(System.Diagnostics.DiagnosticListener listener) -> void
 Steeltoe.Management.Diagnostics.IDiagnosticsManager
 Steeltoe.Management.Diagnostics.IDiagnosticsManager.Start() -> void
@@ -70,7 +55,7 @@ Steeltoe.Management.Info.IInfoBuilder.Build() -> System.Collections.Generic.Dict
 Steeltoe.Management.Info.IInfoBuilder.WithInfo(string key, object value) -> Steeltoe.Management.Info.IInfoBuilder
 Steeltoe.Management.Info.IInfoBuilder.WithInfo(System.Collections.Generic.Dictionary<string, object> details) -> Steeltoe.Management.Info.IInfoBuilder
 Steeltoe.Management.Info.IInfoContributor
-Steeltoe.Management.Info.IInfoContributor.Contribute(Steeltoe.Management.Info.IInfoBuilder builder) -> void
+Steeltoe.Management.Info.IInfoContributor.ContributeAsync(Steeltoe.Management.Info.IInfoBuilder builder) -> System.Threading.Tasks.Task
 Steeltoe.Management.Info.InfoBuilder
 Steeltoe.Management.Info.InfoBuilder.Build() -> System.Collections.Generic.Dictionary<string, object>
 Steeltoe.Management.Info.InfoBuilder.InfoBuilder() -> void

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Options;
 [Flags]
-public enum EndpointContext
+public enum EndpointContexts
 {
     Actuator = 1,
     CloudFoundry = 1 << 1,

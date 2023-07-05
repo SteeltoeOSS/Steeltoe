@@ -96,7 +96,7 @@ public class EndpointMiddlewareTest : BaseTest
         HypermediaEndpointOptions options = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator", options.GetContextPath(mgmtOptions.Get(EndpointContext.Actuator)));
+        Assert.Equal("/actuator", options.GetContextPath(mgmtOptions.Get(EndpointContexts.Actuator)));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 }

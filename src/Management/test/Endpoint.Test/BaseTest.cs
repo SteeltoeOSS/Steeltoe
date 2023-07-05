@@ -25,9 +25,6 @@ public abstract class BaseTest : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-        }
     }
 
     public string Serialize<T>(T value)

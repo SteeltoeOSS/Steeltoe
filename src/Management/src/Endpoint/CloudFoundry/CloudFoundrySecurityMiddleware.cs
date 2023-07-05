@@ -32,9 +32,9 @@ public sealed class CloudFoundrySecurityMiddleware
         _next = next;
         _logger = logger;
         _options = options;
-        _managementOptions = managementOptions.Get(EndpointContext.CloudFoundry);
+        _managementOptions = managementOptions.Get(EndpointContexts.CloudFoundry);
 
-        _base = new SecurityUtils(_options.CurrentValue, managementOptions.Get(EndpointContext.CloudFoundry), logger);
+        _base = new SecurityUtils(_options.CurrentValue, managementOptions.Get(EndpointContexts.CloudFoundry), logger);
     }
 
     public async Task InvokeAsync(HttpContext context)

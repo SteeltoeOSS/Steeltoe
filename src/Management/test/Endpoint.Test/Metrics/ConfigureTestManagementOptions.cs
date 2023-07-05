@@ -17,6 +17,6 @@ internal sealed class ConfigureTestManagementOptions : ConfigureManagementEndpoi
     public override void Configure(string name, ManagementEndpointOptions options)
     {
         base.Configure(name, options);
-        options.EndpointContexts |= EndpointContext.CloudFoundry;
+        options.EndpointContexts |= EndpointContexts.CloudFoundry;
     }
 }

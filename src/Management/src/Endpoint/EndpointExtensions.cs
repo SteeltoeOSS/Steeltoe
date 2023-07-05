@@ -57,9 +57,9 @@ internal static class EndPointExtensions
     }
 
     public static ManagementEndpointOptions GetFromContextPath(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path,
-        out EndpointContext endpointContext)
+        out EndpointContexts endpointContext)
     {
-        foreach (EndpointContext context in Enum.GetValues<EndpointContext>())
+        foreach (EndpointContexts context in Enum.GetValues<EndpointContexts>())
         {
             ManagementEndpointOptions options = managementOptions.Get(context);
 
@@ -70,7 +70,7 @@ internal static class EndPointExtensions
             }
         }
 
-        endpointContext = EndpointContext.Actuator;
+        endpointContext = EndpointContexts.Actuator;
         return managementOptions.Get(endpointContext);
     }
 

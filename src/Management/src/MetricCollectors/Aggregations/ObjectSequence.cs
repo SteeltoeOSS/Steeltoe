@@ -26,7 +26,9 @@ internal partial struct ObjectSequence2 : IEquatable<ObjectSequence2>, IObjectSe
         return MemoryMarshal.CreateSpan(ref Value1, 2);
     }
 
+#pragma warning disable S2328
     public override int GetHashCode()
+#pragma warning restore S2328
     {
         return HashCode.Combine(Value1, Value2);
     }

@@ -28,11 +28,11 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
 
     public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public LoggersEndpointHandler(IOptionsMonitor<LoggersEndpointOptions> options, ILoggerFactory loggerFactory, IDynamicLoggerProvider dynamicLoggerProvider = null)
+    public LoggersEndpointHandler(IOptionsMonitor<LoggersEndpointOptions> options, ILoggerFactory loggerFactory, IDynamicLoggerProvider dynamicLoggerProvider)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(loggerFactory);
-      //  ArgumentGuard.NotNull(dynamicLoggerProvider);
+        ArgumentGuard.NotNull(dynamicLoggerProvider);
 
         _options = options;
         _dynamicLoggerProvider = dynamicLoggerProvider;
