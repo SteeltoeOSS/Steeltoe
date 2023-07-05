@@ -22,7 +22,6 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
     // disabled because an object reference is needed to not dispose when method scope is completed.
     private IDisposable _listenersSubscription;
 #pragma warning restore S1450
-    private readonly ILogger<DiagnosticsManager> _logger;
 
     private int _started;
 
