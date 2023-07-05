@@ -88,7 +88,7 @@ public class MetricsEndpointTest : BaseTest
                 Assert.NotNull(result);
 
                 Assert.IsType<MetricsResponse>(result);
-                var resp = result;
+                MetricsResponse resp = result;
                 Assert.Empty(resp.Names);
             }
             finally
@@ -134,7 +134,7 @@ public class MetricsEndpointTest : BaseTest
 
             List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
             var req = new MetricsRequest("test.test5", tags);
-            var resp = await ep.InvokeAsync(req, CancellationToken.None);
+            MetricsResponse resp = await ep.InvokeAsync(req, CancellationToken.None);
             Assert.NotNull(resp);
 
             Assert.Equal("test.test5", resp.Name);
@@ -207,7 +207,7 @@ public class MetricsEndpointTest : BaseTest
 
             List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
             var req = new MetricsRequest("test.test5", tags);
-            var resp = await ep.InvokeAsync(req, CancellationToken.None);
+            MetricsResponse resp = await ep.InvokeAsync(req, CancellationToken.None);
             Assert.NotNull(resp);
 
             Assert.Equal("test.test5", resp.Name);
@@ -562,7 +562,7 @@ public class MetricsEndpointTest : BaseTest
 
             var req = new MetricsRequest("test.total", labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList());
 
-            var resp = await ep.InvokeAsync(req, CancellationToken.None);
+            MetricsResponse resp = await ep.InvokeAsync(req, CancellationToken.None);
 
             Assert.NotNull(resp);
 

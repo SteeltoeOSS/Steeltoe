@@ -24,7 +24,9 @@ public class ManagementEndpointOptionsTest : BaseTest
     [Fact]
     public void InitializedWithDefaultsCF()
     {
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().Get(EndpointContexts.CloudFoundry);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>()
+            .Get(EndpointContexts.CloudFoundry);
+
         Assert.True(opts.Enabled);
         Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.NotNull(opts.Exposure);

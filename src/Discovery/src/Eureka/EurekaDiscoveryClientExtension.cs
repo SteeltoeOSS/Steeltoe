@@ -80,7 +80,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                     options.ApplyNetUtils();
 
                     if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Management.Endpoint") && string.IsNullOrEmpty(
-                            configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
+                        configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
                     {
                         GetPathsFromEndpointOptions(options, serviceProvider, configuration);
                     }
@@ -102,55 +102,76 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
     private static void GetPathsFromEndpointOptions(EurekaInstanceOptions options, IServiceProvider serviceProvider, IConfiguration configuration)
     {
-        var endpointAssembly = "Steeltoe.Management.Endpoint";
+        string endpointAssembly = "Steeltoe.Management.Endpoint";
 
-        Type mgmtOptionsType = ReflectionHelpers.FindType(new[] { endpointAssembly }, new[] { "Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions" });
-        Type endpointOptionsBaseType = ReflectionHelpers.FindType(new[] { "Steeltoe.Management.Abstractions" }, new[] { "Steeltoe.Management.HttpMiddlewareOptions" });
+        Type mgmtOptionsType = ReflectionHelpers.FindType(new[]
+        {
+            endpointAssembly
+        }, new[]
+        {
+            "Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions"
+        });
 
+        Type endpointOptionsBaseType = ReflectionHelpers.FindType(new[]
+        {
+            "Steeltoe.Management.Abstractions"
+        }, new[]
+        {
+            "Steeltoe.Management.HttpMiddlewareOptions"
+        });
 
         object actuatorOptions = GetOptionsMonitor(serviceProvider, mgmtOptionsType, "Actuator");
         string basePath = $"{(string)actuatorOptions.GetType().GetProperty("Path")?.GetValue(actuatorOptions)}/";
 
-        object healthOptions = ConfigureTOptions(
-            serviceProvider,
-            configuration,
-            endpointAssembly,
-            "Steeltoe.Management.Endpoint.Health.ConfigureHealthEndpointOptions",
-            "Steeltoe.Management.Endpoint.Health.HealthEndpointOptions");
+        object healthOptions = ConfigureTOptions(serviceProvider, configuration, endpointAssembly,
+            "Steeltoe.Management.Endpoint.Health.ConfigureHealthEndpointOptions", "Steeltoe.Management.Endpoint.Health.HealthEndpointOptions");
 
         if (healthOptions != null)
         {
-            options.HealthCheckUrlPath =
-                basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(healthOptions))?.TrimStart('/');
+            options.HealthCheckUrlPath = basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(healthOptions))?.TrimStart('/');
         }
-        if (string.IsNullOrEmpty(
-                               configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:StatusPageUrlPath")))
+
+        if (string.IsNullOrEmpty(configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:StatusPageUrlPath")))
         {
-            object infoOptions = ConfigureTOptions(
-               serviceProvider,
-               configuration,
-               endpointAssembly,
-               "Steeltoe.Management.Endpoint.Info.ConfigureInfoEndpointOptions",
-               "Steeltoe.Management.Endpoint.Info.InfoEndpointOptions");
+            object infoOptions = ConfigureTOptions(serviceProvider, configuration, endpointAssembly,
+                "Steeltoe.Management.Endpoint.Info.ConfigureInfoEndpointOptions", "Steeltoe.Management.Endpoint.Info.InfoEndpointOptions");
 
             if (infoOptions != null)
             {
-                options.StatusPageUrlPath =
-                    basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(infoOptions))?.TrimStart('/');
+                options.StatusPageUrlPath = basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(infoOptions))?.TrimStart('/');
             }
         }
     }
 
-    private static object ConfigureTOptions(IServiceProvider serviceProvider, IConfiguration configuration, string endpointAssembly, string configureOptionsTypeName, string optionsTypeName)
+    private static object ConfigureTOptions(IServiceProvider serviceProvider, IConfiguration configuration, string endpointAssembly,
+        string configureOptionsTypeName, string optionsTypeName)
     {
-        Type configureOptionsType = ReflectionHelpers.FindType(new[] { endpointAssembly }, new[] { configureOptionsTypeName });
-        Type optionsType = ReflectionHelpers.FindType(new[] { endpointAssembly }, new[] { optionsTypeName });
+        Type configureOptionsType = ReflectionHelpers.FindType(new[]
+        {
+            endpointAssembly
+        }, new[]
+        {
+            configureOptionsTypeName
+        });
+
+        Type optionsType = ReflectionHelpers.FindType(new[]
+        {
+            endpointAssembly
+        }, new[]
+        {
+            optionsTypeName
+        });
 
         object configureOptions = Activator.CreateInstance(configureOptionsType, configuration);
 
         object options = GetOptionsMonitor(serviceProvider, optionsType);
         MethodInfo methodInfo = configureOptionsType.GetMethod("Configure");
-        methodInfo.Invoke(configureOptions, new[] { options });
+
+        methodInfo.Invoke(configureOptions, new[]
+        {
+            options
+        });
+
         return options;
     }
 
