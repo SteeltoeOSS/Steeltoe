@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;

@@ -9,10 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Trace;
 
@@ -72,7 +70,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     protected virtual async Task WriteResponseAsync(TResult result, HttpContext context, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(context);
-        
+
         context.HandleContentNegotiation(_logger);
 
         if (Equals(result, null))
@@ -112,6 +110,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         {
             serializerOptions.Converters.Add(new HttpTraceResultConverter());
         }
+
         return serializerOptions;
     }
 }

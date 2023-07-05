@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
@@ -29,6 +28,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
     private readonly ILogger _logger;
+
     public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> options, ILoggerFactory loggerFactory)
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
@@ -73,7 +73,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
         else if (eventName == ExceptionEvent)
         {
             _logger.LogTrace("HandleExceptionEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
-                
+
             HandleExceptionEvent(current, request);
 
             _logger.LogTrace("HandleExceptionEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);

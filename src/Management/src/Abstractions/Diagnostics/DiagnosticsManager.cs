@@ -15,13 +15,12 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
     private readonly IList<IRuntimeDiagnosticSource> _runtimeSources;
     private readonly IList<EventListener> _eventListeners;
     private readonly IList<IDiagnosticObserver> _observers;
+    private readonly ILogger<DiagnosticsManager> _logger;
 
     private bool _isDisposed;
     private IDisposable _listenersSubscription;
-    private readonly ILogger<DiagnosticsManager> _logger;
 
     private int _started;
-
 
     public DiagnosticsManager(IOptionsMonitor<MetricsObserverOptions> observerOptions, IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
         IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger)
@@ -44,7 +43,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         }
 
         _observers = filteredObservers;
-        _runtimeSources = runtimeSources.ToList() ;
+        _runtimeSources = runtimeSources.ToList();
         _eventListeners = eventListeners.ToList();
     }
 
@@ -68,7 +67,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
 
     public void Start()
     {
-        if(_isDisposed)
+        if (_isDisposed)
         {
             throw new ObjectDisposedException(GetType().Name);
         }
@@ -76,7 +75,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
         {
             _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
-        
+
             if (_listenersSubscription != null)
             {
                 _logger.LogTrace("Subscribed to Diagnostic Listener");

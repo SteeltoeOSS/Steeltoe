@@ -12,10 +12,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;
@@ -46,7 +44,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
 
-        var obs = new HeapDumper(opts, logger: logger1);
+        var obs = new HeapDumper(opts, logger1);
 
         var ep = new HeapDumpEndpointHandler(opts, obs, loggerFactory);
         var middle = new HeapDumpEndpointMiddleware(ep, managementOptions, loggerFactory);

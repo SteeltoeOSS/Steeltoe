@@ -30,6 +30,7 @@ public sealed class BuildInfoContributor : IInfoContributor
         {
             { "version", _application.GetName().Version.ToString() }
         });
+
         return Task.CompletedTask;
     }
 

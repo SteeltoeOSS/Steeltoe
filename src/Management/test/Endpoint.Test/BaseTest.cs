@@ -2,17 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Aggregations;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;

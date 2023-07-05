@@ -14,10 +14,9 @@ internal sealed class HttpTraceEndpointHandler : IHttpTraceEndpointHandler
     private readonly IHttpTraceRepository _traceRepo;
     private readonly ILogger<HttpTraceEndpointHandler> _logger;
     internal MediaTypeVersion Version { get; set; } = MediaTypeVersion.V2;
+
     public HttpMiddlewareOptions Options =>
-        Version == MediaTypeVersion.V2 ?
-            _options.CurrentValue :
-            _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
+        Version == MediaTypeVersion.V2 ? _options.CurrentValue : _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
 
     public HttpTraceEndpointHandler(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILoggerFactory loggerFactory)
     {

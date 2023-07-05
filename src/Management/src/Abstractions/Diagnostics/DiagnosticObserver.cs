@@ -10,14 +10,14 @@ namespace Steeltoe.Management.Diagnostics;
 
 public abstract class DiagnosticObserver : IDiagnosticObserver
 {
-    private ILogger _logger;
+    private readonly ILogger _logger;
 
     private IDisposable _subscription;
 
     public string ListenerName { get; }
 
     public string ObserverName { get; }
-    
+
     protected DiagnosticObserver(string name, string listenerName, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNullOrEmpty(name);

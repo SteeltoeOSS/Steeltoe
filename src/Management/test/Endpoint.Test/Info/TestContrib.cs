@@ -22,7 +22,7 @@ internal sealed class TestContrib : IInfoContributor
     }
 
     public Task ContributeAsync(IInfoBuilder builder)
-    { 
+    {
         if (Throws)
         {
             throw new Exception();

@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public sealed class HttpTracesV2: HttpTraceResult
+public sealed class HttpTracesV2 : HttpTraceResult
 {
     [JsonPropertyName("traces")]
     public IList<HttpTrace> Traces { get; }
@@ -15,7 +15,5 @@ public sealed class HttpTracesV2: HttpTraceResult
     {
         Traces = traces;
         CurrentVersion = MediaTypeVersion.V2;
-           
     }
-
 }

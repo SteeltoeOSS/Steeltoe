@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Management.Endpoint.Loggers;
+
 public class LoggersResponse
 {
     public Dictionary<string, object> Data { get; }

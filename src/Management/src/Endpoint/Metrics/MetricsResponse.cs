@@ -3,11 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
-using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
-
 
 public sealed class MetricsResponse
 {

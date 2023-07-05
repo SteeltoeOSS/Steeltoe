@@ -11,10 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;

@@ -24,7 +24,6 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
     {
         _configuration = configuration;
         _endpoints = endpointsCollection;
-        
     }
 
     public virtual void Configure(string name, ManagementEndpointOptions options)
@@ -33,7 +32,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
 
         //Regardless of the name, configure the available platforms
 
-        if(Platform.IsCloudFoundry)
+        if (Platform.IsCloudFoundry)
         {
             options.EndpointContexts |= EndpointContext.CloudFoundry;
         }

@@ -20,8 +20,8 @@ internal sealed class ActuatorEndpointMapper
     private readonly IEnumerable<IEndpointMiddleware> _middlewares;
     private readonly ILogger<ActuatorEndpointMapper> _logger;
 
-    public ActuatorEndpointMapper(IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<IEndpointMiddleware> middlewares, ILogger<ActuatorEndpointMapper> logger)
+    public ActuatorEndpointMapper(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IEnumerable<IEndpointMiddleware> middlewares,
+        ILogger<ActuatorEndpointMapper> logger)
     {
         _managementOptions = managementOptions;
         _middlewares = middlewares;
@@ -37,7 +37,6 @@ internal sealed class ActuatorEndpointMapper
         {
             if (_managementOptions.CurrentValue.EndpointContexts.HasFlag(context))
             {
-
                 ManagementEndpointOptions mgmtOption = _managementOptions.Get(context);
 
                 foreach (IEndpointMiddleware middleware in _middlewares)

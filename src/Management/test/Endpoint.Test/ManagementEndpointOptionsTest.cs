@@ -2,10 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -26,7 +24,9 @@ public class ManagementEndpointOptionsTest : BaseTest
     [Fact]
     public void InitializedWithDefaultsCF()
     {
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().Get(EndpointContext.CloudFoundry);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>()
+            .Get(EndpointContext.CloudFoundry);
+
         Assert.True(opts.Enabled);
         Assert.Equal("/cloudfoundryapplication", opts.Path);
         Assert.NotNull(opts.Exposure);

@@ -26,7 +26,6 @@ internal sealed class ThreadDumpV2Converter : JsonConverter<IList<ThreadInfo>>
             foreach (ThreadInfo threadInfo in threadInfos)
             {
                 JsonSerializer.Serialize(writer, threadInfo, options);
-
             }
 
             writer.WriteEndObject();

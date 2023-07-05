@@ -26,6 +26,7 @@ internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, st
     {
         return await EndpointHandler.InvokeAsync(null, context.RequestAborted);
     }
+
     protected override async Task WriteResponseAsync(string fileName, HttpContext context, CancellationToken cancellationToken)
     {
         _logger.LogDebug("Returning: {fileName}", fileName);

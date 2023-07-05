@@ -137,7 +137,7 @@ public class LoggersEndpointTest : BaseTest
 
         LoggersResponse loggersResponse = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(loggersResponse);
-        var result = loggersResponse.Data;
+        Dictionary<string, object> result = loggersResponse.Data;
         Assert.NotNull(result);
         Assert.True(result.ContainsKey("levels"));
         var levels = result["levels"] as List<string>;

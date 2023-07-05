@@ -47,11 +47,14 @@ public static class EndpointServiceCollectionExtensions
             case MediaTypeVersion.V1:
 
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
+
                 services.TryAddSingleton<IHttpTraceRepository>(provider =>
                     provider.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().FirstOrDefault());
+
                 break;
             default:
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
+
                 services.TryAddSingleton<IHttpTraceRepository>(provider =>
                     provider.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().FirstOrDefault());
 

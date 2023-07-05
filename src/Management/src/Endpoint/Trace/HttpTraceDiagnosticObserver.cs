@@ -4,14 +4,11 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Globalization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -20,7 +17,6 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
     private readonly ILogger<HttpTraceDiagnosticObserver> _logger;
     private readonly ConcurrentQueue<HttpTrace> _queue = new();
-
 
     public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILoggerFactory loggerFactory)
         : base(options, loggerFactory)
@@ -35,7 +31,6 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
     {
         return new HttpTracesV2(_queue.ToList());
     }
-    
 
     protected override void RecordHttpTrace(Activity current, HttpContext context)
     {
@@ -60,8 +55,6 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
         return new HttpTrace(request, response, GetJavaTime(DateTime.Now.Ticks), principal, session, duration.Milliseconds);
     }
 
-
-
     internal new Dictionary<string, string[]> GetHeaders(IHeaderDictionary headers)
     {
         var result = new Dictionary<string, string[]>();
@@ -76,5 +69,4 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
 
         return result;
     }
-
 }

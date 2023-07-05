@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
@@ -20,7 +19,6 @@ public class TraceEndpointTest : BaseTest
         _output = output;
     }
 
-    
     [Fact]
     public async Task TraceEndpointHandler_CallsTraceRepo()
     {
@@ -38,5 +36,4 @@ public class TraceEndpointTest : BaseTest
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);
     }
-    
 }

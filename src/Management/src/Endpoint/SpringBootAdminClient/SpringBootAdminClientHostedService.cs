@@ -10,7 +10,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 

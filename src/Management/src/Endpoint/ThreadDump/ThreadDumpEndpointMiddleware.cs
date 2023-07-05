@@ -2,12 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -17,7 +14,8 @@ internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object, 
 {
     private readonly ILogger<ThreadDumpEndpointMiddleware> _logger;
 
-    public ThreadDumpEndpointMiddleware(IThreadDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILoggerFactory loggerFactory)
+    public ThreadDumpEndpointMiddleware(IThreadDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptions, loggerFactory)
     {
         _logger = loggerFactory.CreateLogger<ThreadDumpEndpointMiddleware>();

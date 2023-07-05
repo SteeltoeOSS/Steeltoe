@@ -31,6 +31,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         services.ConfigureEndpointOptions<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
         services.AddSingleton<HttpTraceEndpointHandler>();
+
         services.TryAddSingleton<IHttpTraceEndpointHandler>(provider =>
         {
             var handler = provider.GetRequiredService<HttpTraceEndpointHandler>();

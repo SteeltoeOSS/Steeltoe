@@ -381,7 +381,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         }
 
         Assert.Equal(option.CurrentValue.Capacity, obs.Queue.Count);
-        HttpTracesV1 result = (HttpTracesV1) obs.GetTraces();
+        var result = (HttpTracesV1)obs.GetTraces();
         Assert.Equal(option.CurrentValue.Capacity, result.Traces.Count);
         Assert.Equal(option.CurrentValue.Capacity, obs.Queue.Count);
 

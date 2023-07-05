@@ -105,31 +105,30 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                         //    "Steeltoe.Management.Endpoint.Options.EndpointContext"
                         //});
 
-
                         //if (endpointContext is Enum context)
                         //{
-                            object actuatorOptions = GetOptionsMonitor(serviceProvider, mgmtOptionsType, "Actuator");
-                            string basePath = $"{(string)actuatorOptions.GetType().GetProperty("Path")?.GetValue(actuatorOptions)}/";
+                        object actuatorOptions = GetOptionsMonitor(serviceProvider, mgmtOptionsType, "Actuator");
+                        string basePath = $"{(string)actuatorOptions.GetType().GetProperty("Path")?.GetValue(actuatorOptions)}/";
 
-                            if (string.IsNullOrEmpty(
-                                configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
+                        if (string.IsNullOrEmpty(
+                            configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
+                        {
+                            Type healthOptionsType = ReflectionHelpers.FindType(new[]
                             {
-                                Type healthOptionsType = ReflectionHelpers.FindType(new[]
-                                {
-                                    endpointAssembly
-                                }, new[]
-                                {
-                                    "Steeltoe.Management.Endpoint.Health.HealthEndpointOptions"
-                                });
+                                endpointAssembly
+                            }, new[]
+                            {
+                                "Steeltoe.Management.Endpoint.Health.HealthEndpointOptions"
+                            });
 
-                                object healthOptions = GetOptionsMonitor(serviceProvider, healthOptionsType);
+                            object healthOptions = GetOptionsMonitor(serviceProvider, healthOptionsType);
 
-                                if (healthOptions != null)
-                                {
-                                    options.HealthCheckUrlPath =
-                                        basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(healthOptions))?.TrimStart('/');
-                                }
-                          //  }
+                            if (healthOptions != null)
+                            {
+                                options.HealthCheckUrlPath =
+                                    basePath + ((string)endpointOptionsBaseType.GetProperty("Path")?.GetValue(healthOptions))?.TrimStart('/');
+                            }
+                            //  }
 
                             if (string.IsNullOrEmpty(
                                 configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:StatusPageUrlPath")))

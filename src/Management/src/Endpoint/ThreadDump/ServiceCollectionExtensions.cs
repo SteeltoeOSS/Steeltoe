@@ -6,7 +6,6 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -47,6 +46,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ThreadDumpEndpointMiddleware>();
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddleware>());
+
         if (version == MediaTypeVersion.V2)
         {
             services.PostConfigure((ManagementEndpointOptions mgmtOptions) =>

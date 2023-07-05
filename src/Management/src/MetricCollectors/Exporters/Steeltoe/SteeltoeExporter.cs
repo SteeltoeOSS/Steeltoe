@@ -22,10 +22,6 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
     private MetricsCollection<List<MetricTag>> _lastAvailableTags = new();
     private DateTime _lastCollection = DateTime.MinValue;
     private Action? _collect;
-    public void SetCollect(Action collect)
-    {
-        _collect = collect;
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.
@@ -36,6 +32,11 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
     internal SteeltoeExporter(IExporterOptions options)
     {
         _cacheDurationMilliseconds = options?.CacheDurationMilliseconds ?? 5000;
+    }
+
+    public void SetCollect(Action collect)
+    {
+        _collect = collect;
     }
 
     public (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export()

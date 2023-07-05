@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -62,7 +61,7 @@ internal static class EndPointExtensions
     {
         foreach (EndpointContext context in Enum.GetValues<EndpointContext>())
         {
-            var options = managementOptions.Get(context);
+            ManagementEndpointOptions options = managementOptions.Get(context);
 
             if (path.StartsWithSegments(new PathString(options.Path)))
             {

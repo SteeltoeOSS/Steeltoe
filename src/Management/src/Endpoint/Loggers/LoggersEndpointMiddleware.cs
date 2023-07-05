@@ -18,7 +18,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
     private readonly ILogger<LoggersEndpointMiddleware> _logger;
 
     public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor,
-         ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
         _logger = loggerFactory.CreateLogger<LoggersEndpointMiddleware>();
@@ -27,9 +27,10 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
     protected override async Task<LoggersResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         ILoggersRequest loggersRequest = await GetLoggersChangeRequestAsync(context);
+
         return loggersRequest is ErrorLoggersRequest
-                    ? new LoggersResponse(new Dictionary<string, object>(), true)
-                    : await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
+            ? new LoggersResponse(new Dictionary<string, object>(), true)
+            : await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
     }
 
     private async Task<ILoggersRequest> GetLoggersChangeRequestAsync(HttpContext context)
@@ -41,7 +42,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
             // POST - change a logger level
             _logger.LogDebug("Incoming path: {path}", request.Path.Value);
 
-            ManagementEndpointOptions mgmtOption = ManagementEndpointOptionsMonitor.GetFromContextPath(request.Path, out var _);
+            ManagementEndpointOptions mgmtOption = ManagementEndpointOptionsMonitor.GetFromContextPath(request.Path, out EndpointContext _);
 
             string path = EndpointOptions.Path;
 
@@ -92,6 +93,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
 
         return new Dictionary<string, string>();
     }
+
     protected override async Task WriteResponseAsync(LoggersResponse result, HttpContext context, CancellationToken cancellationToken)
     {
         if (result.HasError)

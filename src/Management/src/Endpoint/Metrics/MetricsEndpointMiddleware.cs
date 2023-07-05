@@ -3,13 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -122,7 +119,6 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
     protected override async Task WriteResponseAsync(MetricsResponse result, HttpContext context, CancellationToken cancellationToken)
     {
-      
         MetricsRequest metricsRequest = GetMetricsRequest(context);
 
         if (metricsRequest != null && result is null)
