@@ -156,10 +156,12 @@ public class HostBuilderExtensionsTest
     [Fact]
     public void UseCloudHosting_UsesCommandLine_ServerUrls()
     {
-        var config = new ConfigurationBuilder().AddCommandLine(new[]
+        var config = new ConfigurationBuilder().AddCommandLine(new string[]
         {
             "--server.urls",
-            "http://*:8081"
+            "http://*:8088",
+            "--urls",
+            "http://*:8088"
         }).Build();
 
         var hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>().UseKestrel();
@@ -169,30 +171,55 @@ public class HostBuilderExtensionsTest
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
 
-        Assert.Single(addresses.Addresses);
-        Assert.Contains("http://*:8081", addresses.Addresses);
+        Assert.Collection(addresses.Addresses,  (address) => Assert.Equal("http://*:8088", address));
     }
 
     [Fact]
-    public void UseCloudHosting_UsesCommandLine_ServerUrls_And_Params()
+    public void UseCloudHosting_AnyWildCard_Overrides_SpecificIps()
     {
-        var config = new ConfigurationBuilder().AddCommandLine(new[]
+        try
         {
-            "--server.urls",
-            "http://fob+:8081;http://:::8081"
-        }).Build();
+            Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "http://192.168.1.2:8085;http://*:8085");
 
-        var hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>().UseKestrel();
+            var hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
 
-        hostBuilder.UseCloudHosting(8081, null);
-        var server = hostBuilder.Build();
+            hostBuilder.UseCloudHosting();
+            var server = hostBuilder.Build();
 
-        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+            var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
 
-        Assert.Single(addresses.Addresses);
-        Assert.Contains("http://*:8081", addresses.Addresses);
+            Assert.Collection(addresses.Addresses, (address) => Assert.Equal("http://*:8085", address));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("ASPNETCORE_URLS", string.Empty);
+        }
     }
 
+    [Fact]
+    public void UseCloudHosting_MultipleIps_With_Same_Port()
+    {
+        try
+        {
+            Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "http://192.168.1.2:8085;http://192.168.1.3:8085");
+
+            var hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();
+
+            hostBuilder.UseCloudHosting();
+            var server = hostBuilder.Build();
+
+            var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+
+            Assert.Collection(
+                addresses.Addresses,
+                address => Assert.Equal("http://192.168.1.2:8085", address),
+                address => Assert.Equal("http://192.168.1.3:8085", address));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("ASPNETCORE_URLS", string.Empty);
+        }
+    }
 
     [Fact]
     public void UseCloudHosting_UsesCommandLine_Urls()
@@ -210,7 +237,7 @@ public class HostBuilderExtensionsTest
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
 
-        Assert.Single(addresses.Addresses);
+        Assert.Single(addresses.Addresses, "http://*:8081");
         Assert.Contains("http://*:8081", addresses.Addresses);
     }
 

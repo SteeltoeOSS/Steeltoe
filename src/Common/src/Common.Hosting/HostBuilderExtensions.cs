@@ -90,15 +90,10 @@ public static class HostBuilderExtensions
         var portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
         var aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
         var serverUrlSetting = webHostBuilder.GetSetting(DeprecatedServerUrlsKey); // check for deprecated setting
-                                                                                  
+        var urlSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
-        if (!string.IsNullOrEmpty(serverUrlSetting))
-        {
-            foreach (var url in serverUrlSetting.Split(';'))
-            {
-                urls.Add(GetCanonical(url));
-            }
-        }
+        AddServerUrls(urlSetting, urls);
+        AddServerUrls(serverUrlSetting, urls);
 
         if (!string.IsNullOrWhiteSpace(portStr))
         {
@@ -126,45 +121,70 @@ public static class HostBuilderExtensions
             Environment.SetEnvironmentVariable("ASPNETCORE_URLS", DEFAULT_URL);
             urls.Add(DEFAULT_URL);
         }
-        
-        return webHostBuilder.BindToPorts(urls);
+
+        urls = RemoveDuplicates(urls);
+
+        return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", urls));
     }
 
     private static HashSet<string> RemoveDuplicates(HashSet<string> urls)
     {
-        HashSet<string> unique = new HashSet<string>();
+        HashSet<UrlEntry> entries = new ();
+        HashSet<string> uniqueUrls = new HashSet<string>();
+
         foreach (var url in urls)
         {
             var bindingAddress = BindingAddress.Parse(url);
+            var host = bindingAddress.Host;
 
             if (!IPAddress.TryParse(bindingAddress.Host, out var address) || address.ToString() == "::")
             {
-                unique.Add($"{bindingAddress.Scheme}://*:{bindingAddress.Port}");
+                host = "*";
+            }
+
+            entries.Add(new UrlEntry() { Host = host, Scheme = bindingAddress.Scheme, Port = bindingAddress.Port });
+        }
+
+        foreach (IGrouping<int, UrlEntry> group in entries.GroupBy(entry => entry.Port))
+        {
+            var wildCardEntry = group.Where(entry => entry.Host == "*").FirstOrDefault();
+            if (!wildCardEntry.Equals(default(UrlEntry)))
+            {
+                uniqueUrls.Add(wildCardEntry.ToString());
             }
             else
             {
-                unique.Add(url);
+                foreach (var entry in group)
+                {
+                    uniqueUrls.Add(entry.ToString());
+                }
             }
         }
 
-        return unique;
+        return uniqueUrls;
     }
 
-    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, HashSet<string> urls)
+    private struct UrlEntry
     {
-        string currentSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+        public string Scheme;
+        public string Host;
+        public int Port;
 
-        if (!string.IsNullOrEmpty(currentSetting))
+        public override string ToString()
         {
-            foreach (var url in currentSetting.Split(';'))
+            return $"{Scheme}://{Host}:{Port}";
+        }
+    }
+
+    private static void AddServerUrls(string serverUrlSetting, HashSet<string> urls)
+    {
+        if (!string.IsNullOrEmpty(serverUrlSetting))
+        {
+            foreach (var url in serverUrlSetting.Split(';'))
             {
                 urls.Add(GetCanonical(url));
             }
         }
-
-        urls = RemoveDuplicates(urls);
-        
-        return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", urls));
     }
 
     private static string GetCanonical(string serverUrlSetting)
