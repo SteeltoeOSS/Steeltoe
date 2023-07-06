@@ -4,10 +4,14 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Steeltoe.Common.Hosting;
 
@@ -86,16 +90,14 @@ public static class HostBuilderExtensions
         var portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
         var aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
         var serverUrlSetting = webHostBuilder.GetSetting(DeprecatedServerUrlsKey); // check for deprecated setting
-        var urlSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+                                                                                  
 
         if (!string.IsNullOrEmpty(serverUrlSetting))
         {
-            urls.Add(GetCanonical(serverUrlSetting));
-        }
-
-        if (!string.IsNullOrEmpty(urlSetting))
-        {
-            urls.Add(GetCanonical(urlSetting));
+            foreach (var url in serverUrlSetting.Split(';'))
+            {
+                urls.Add(GetCanonical(url));
+            }
         }
 
         if (!string.IsNullOrWhiteSpace(portStr))
@@ -124,8 +126,28 @@ public static class HostBuilderExtensions
             Environment.SetEnvironmentVariable("ASPNETCORE_URLS", DEFAULT_URL);
             urls.Add(DEFAULT_URL);
         }
-
+        
         return webHostBuilder.BindToPorts(urls);
+    }
+
+    private static HashSet<string> RemoveDuplicates(HashSet<string> urls)
+    {
+        HashSet<string> unique = new HashSet<string>();
+        foreach (var url in urls)
+        {
+            var bindingAddress = BindingAddress.Parse(url);
+
+            if (!IPAddress.TryParse(bindingAddress.Host, out var address) || address.ToString() == "::")
+            {
+                unique.Add($"{bindingAddress.Scheme}://*:{bindingAddress.Port}");
+            }
+            else
+            {
+                unique.Add(url);
+            }
+        }
+
+        return unique;
     }
 
     private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, HashSet<string> urls)
@@ -140,6 +162,8 @@ public static class HostBuilderExtensions
             }
         }
 
+        urls = RemoveDuplicates(urls);
+        
         return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", urls));
     }
 

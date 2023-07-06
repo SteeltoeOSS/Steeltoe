@@ -174,6 +174,27 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
+    public void UseCloudHosting_UsesCommandLine_ServerUrls_And_Params()
+    {
+        var config = new ConfigurationBuilder().AddCommandLine(new[]
+        {
+            "--server.urls",
+            "http://fob+:8081;http://:::8081"
+        }).Build();
+
+        var hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>().UseKestrel();
+
+        hostBuilder.UseCloudHosting(8081, null);
+        var server = hostBuilder.Build();
+
+        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+
+        Assert.Single(addresses.Addresses);
+        Assert.Contains("http://*:8081", addresses.Addresses);
+    }
+
+
+    [Fact]
     public void UseCloudHosting_UsesCommandLine_Urls()
     {
         var config = new ConfigurationBuilder().AddCommandLine(new[]
