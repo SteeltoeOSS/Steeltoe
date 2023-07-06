@@ -147,7 +147,7 @@ public static class HostBuilderExtensions
 
         foreach (IGrouping<int, UrlEntry> group in entries.GroupBy(entry => entry.Port))
         {
-            var wildCardEntry = group.Where(entry => entry.Host == "*").FirstOrDefault();
+            var wildCardEntry = group.FirstOrDefault(entry => entry.Host == "*");
             if (!wildCardEntry.Equals(default(UrlEntry)))
             {
                 uniqueUrls.Add(wildCardEntry.ToString());
