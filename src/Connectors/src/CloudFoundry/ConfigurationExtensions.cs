@@ -100,11 +100,11 @@ internal static class ConfigurationExtensions
     public static TServiceInfo GetSingletonServiceInfo<TServiceInfo>(this IConfiguration configuration)
         where TServiceInfo : class
     {
-        IEnumerable<TServiceInfo> results = GetServiceInfos<TServiceInfo>(configuration);
+        TServiceInfo[] results = GetServiceInfos<TServiceInfo>(configuration).ToArray();
 
-        if (results.Any())
+        if (results.Length > 0)
         {
-            if (results.Count() != 1)
+            if (results.Length != 1)
             {
                 throw new ConnectorException($"Multiple services of type: {typeof(TServiceInfo)}, bound to application.");
             }

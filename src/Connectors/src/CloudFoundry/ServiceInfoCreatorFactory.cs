@@ -29,7 +29,7 @@ internal static class ServiceInfoCreatorFactory
         lock (Lock)
         {
             if (_serviceInfoCreator != null && configuration == _serviceInfoCreator.Configuration &&
-                (bool)_serviceInfoCreator.GetType().GetProperty(nameof(ServiceInfoCreator.IsRelevant)).GetValue(null))
+                (bool)_serviceInfoCreator.GetType().GetProperty(nameof(ServiceInfoCreator.IsRelevant))!.GetValue(null)!)
             {
                 return _serviceInfoCreator;
             }
@@ -38,9 +38,9 @@ internal static class ServiceInfoCreatorFactory
 
             foreach (Type alternateInfoCreator in alternateInfoCreators)
             {
-                if ((bool)alternateInfoCreator.GetProperty(nameof(ServiceInfoCreator.IsRelevant)).GetValue(null))
+                if ((bool)alternateInfoCreator.GetProperty(nameof(ServiceInfoCreator.IsRelevant))!.GetValue(null)!)
                 {
-                    _serviceInfoCreator = (ServiceInfoCreator)alternateInfoCreator.GetMethod(nameof(ServiceInfoCreator.Instance)).Invoke(null, new[]
+                    _serviceInfoCreator = (ServiceInfoCreator)alternateInfoCreator.GetMethod(nameof(ServiceInfoCreator.Instance))!.Invoke(null, new object[]
                     {
                         configuration
                     });
