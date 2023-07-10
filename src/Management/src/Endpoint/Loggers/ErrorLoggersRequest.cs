@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-internal sealed class DefaultLoggersRequest : ILoggersRequest
+internal sealed class ErrorLoggersRequest : ILoggersRequest
 {
-    LoggersRequestType ILoggersRequest.RequestType => LoggersRequestType.Default;
+    LoggersRequestType ILoggersRequest.RequestType => LoggersRequestType.Error;
 }
