@@ -65,10 +65,6 @@ Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.DetectConfigurationChanges.
 Steeltoe.Connectors.ConnectorConfigureOptionsBuilder.DetectConfigurationChanges.set -> void
 Steeltoe.Connectors.ConnectorCreateConnection
 Steeltoe.Connectors.ConnectorCreateHealthContributor
-Steeltoe.Connectors.ConnectorException
-Steeltoe.Connectors.ConnectorException.ConnectorException() -> void
-Steeltoe.Connectors.ConnectorException.ConnectorException(string! message) -> void
-Steeltoe.Connectors.ConnectorException.ConnectorException(string! message, System.Exception! innerException) -> void
 Steeltoe.Connectors.ConnectorFactory<TOptions, TConnection>
 Steeltoe.Connectors.ConnectorFactory<TOptions, TConnection>.ConnectorFactory(System.IServiceProvider! serviceProvider, System.Collections.Generic.IReadOnlySet<string!>! serviceBindingNames, Steeltoe.Connectors.ConnectorCreateConnection! createConnection, bool useSingletonConnection) -> void
 Steeltoe.Connectors.ConnectorFactory<TOptions, TConnection>.Dispose() -> void

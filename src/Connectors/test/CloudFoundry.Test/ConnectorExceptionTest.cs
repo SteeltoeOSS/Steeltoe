@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Steeltoe.Connectors.Test;
+namespace Steeltoe.Connectors.CloudFoundry.Test;
 
 public sealed class ConnectorExceptionTest
 {

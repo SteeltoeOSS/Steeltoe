@@ -99,7 +99,7 @@ public sealed class RabbitMQHealthContributorTest
         status.Description.Should().Be("RabbitMQ health check failed");
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
-        status.Details.Should().Contain("error", "ConnectorException: RabbitMQ connection is closed!");
+        status.Details.Should().Contain("error", "IOException: RabbitMQ connection is closed!");
         status.Details.Should().Contain("status", "DOWN");
     }
 

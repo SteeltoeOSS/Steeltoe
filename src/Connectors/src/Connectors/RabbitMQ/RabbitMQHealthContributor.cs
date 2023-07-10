@@ -56,7 +56,7 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
 
             if (!_connectionInterfaceShim.IsOpen)
             {
-                throw new ConnectorException("RabbitMQ connection is closed!");
+                throw new IOException("RabbitMQ connection is closed!");
             }
 
             if (_connectionInterfaceShim.ServerProperties.TryGetValue("version", out object? version) && version is byte[] versionBytes)

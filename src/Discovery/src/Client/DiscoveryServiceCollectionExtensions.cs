@@ -12,7 +12,6 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Common.Http.LoadBalancer;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connectors;
 using Steeltoe.Connectors.CloudFoundry;
 using Steeltoe.Connectors.Services;
 using Steeltoe.Discovery.Client.SimpleClients;
