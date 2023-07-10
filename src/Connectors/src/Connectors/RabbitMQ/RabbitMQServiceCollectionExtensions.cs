@@ -16,18 +16,45 @@ namespace Steeltoe.Connectors.RabbitMQ;
 
 public static class RabbitMQServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a RabbitMQ server.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddRabbitMQ(services, configuration, null);
+        return AddRabbitMQ(services, configuration, RabbitMQPackageResolver.Default);
     }
 
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a RabbitMQ server.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <param name="addAction">
+    /// An optional delegate to configure this connector.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddRabbitMQ(services, configuration, RabbitMQPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, RabbitMQPackageResolver packageResolver,
-        Action<ConnectorAddOptionsBuilder>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);

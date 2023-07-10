@@ -27,7 +27,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
             ["Steeltoe:Client:MySql:Default:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;connect timeout=15"
         });
 
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
         builder.Services.Configure<MySqlOptions>(options => options.ConnectionString += ";Use Compression=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
@@ -52,7 +52,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
             ["Steeltoe:Client:MySql:myMySqlService:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;connect timeout=15"
         });
 
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
         builder.Services.Configure<MySqlOptions>("myMySqlService", options => options.ConnectionString += ";Use Compression=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
@@ -71,7 +71,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
     public async Task Throws_for_missing_connection_string_with_version_detection()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
             MySqlEntityFrameworkCorePackageResolver.PomeloOnly));

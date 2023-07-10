@@ -111,7 +111,7 @@ public sealed class MySqlConnectorTests
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddMySql(MySqlPackageResolver.OracleOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.OracleOnly);
         builder.Services.Configure<MySqlOptions>("myMySqlServiceOne", options => options.ConnectionString += ";Use Compression=false");
 
         await using WebApplication app = builder.Build();
@@ -150,7 +150,7 @@ public sealed class MySqlConnectorTests
             ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "Connection Timeout=15;host=localhost"
         });
 
-        builder.AddMySql(MySqlPackageResolver.OracleOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.OracleOnly);
 
         await using WebApplication app = builder.Build();
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<MySqlOptions>>();
@@ -190,7 +190,7 @@ public sealed class MySqlConnectorTests
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddMySql(MySqlPackageResolver.OracleOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.OracleOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -218,7 +218,7 @@ public sealed class MySqlConnectorTests
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddMySql(MySqlPackageResolver.OracleOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.OracleOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -241,7 +241,7 @@ public sealed class MySqlConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.AddMySql(MySqlPackageResolver.OracleOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.OracleOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -270,7 +270,7 @@ public sealed class MySqlConnectorTests
             ["Steeltoe:Client:MySql:Default:ConnectionString"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
         });
 
-        builder.AddMySql(MySqlPackageResolver.OracleOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.OracleOnly);
 
         await using WebApplication app = builder.Build();
 

@@ -144,7 +144,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "Server=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
         builder.Services.Configure<SqlServerOptions>("mySqlServerServiceOne", options => options.ConnectionString += ";Encrypt=false");
 
         await using WebApplication app = builder.Build();
@@ -183,7 +183,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "Data Source=localhost;Max Pool Size=50"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
 
         await using WebApplication app = builder.Build();
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<SqlServerOptions>>();
@@ -221,7 +221,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -249,7 +249,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -272,7 +272,7 @@ public sealed class SqlServerConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -301,7 +301,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:Default:ConnectionString"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
 
         await using WebApplication app = builder.Build();
 

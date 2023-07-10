@@ -16,11 +16,38 @@ namespace Steeltoe.Connectors.Redis;
 
 public static class RedisServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a Redis database.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddRedis(services, configuration, null);
+        return AddRedis(services, configuration, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default);
     }
 
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a Redis database.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <param name="addAction">
+    /// An optional delegate to configure this connector.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddRedis(services, configuration, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default, addAction);
@@ -28,7 +55,7 @@ public static class RedisServiceCollectionExtensions
 
     private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration,
         StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver, MicrosoftRedisPackageResolver microsoftRedisPackageResolver,
-        Action<ConnectorAddOptionsBuilder>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -39,7 +66,7 @@ public static class RedisServiceCollectionExtensions
         {
             var optionsBuilder = new ConnectorAddOptionsBuilder(
                 (serviceProvider, serviceBindingName) => CreateConnectionMultiplexer(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver),
-                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName))
+                CreateHealthContributor)
             {
                 // From https://github.com/StackExchange/StackExchange.Redis/blob/main/docs/Basics.md:
                 //   "Because the ConnectionMultiplexer does a lot, it is designed to be shared and reused between callers.
