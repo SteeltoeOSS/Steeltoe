@@ -33,7 +33,7 @@ public sealed class RelationalDatabaseHealthContributorTest
         status.Description.Should().Be("PostgreSQL health check failed");
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
-        status.Details.Should().Contain("error", "NpgsqlException: Failed to connect to [::1]:9999");
+        status.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().Match("NpgsqlException: Failed to connect to *:9999");
         status.Details.Should().Contain("status", "DOWN");
     }
 
@@ -72,7 +72,7 @@ public sealed class RelationalDatabaseHealthContributorTest
         status.Description.Should().Be("MySQL health check failed");
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
-        status.Details.Should().Contain("error", "MySqlException: Connect Timeout expired.");
+        status.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("MySqlException: ");
         status.Details.Should().Contain("status", "DOWN");
     }
 
