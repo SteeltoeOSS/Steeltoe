@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Connectors.CloudFoundry.Test;
 
-public class ServiceInfoCreatorFactoryTest
+public sealed class ServiceInfoCreatorFactoryTest
 {
     [Fact]
     public void FactoryThrowsOnNullConfig()

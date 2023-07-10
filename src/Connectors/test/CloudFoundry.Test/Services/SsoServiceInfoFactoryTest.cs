@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
-public class SsoServiceInfoFactoryTest
+public sealed class SsoServiceInfoFactoryTest
 {
     [Fact]
     public void Accept_AcceptsValidServiceBinding()

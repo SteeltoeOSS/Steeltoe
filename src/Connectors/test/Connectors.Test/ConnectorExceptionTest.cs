@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Connectors.Test;
 
-public class ConnectorExceptionTest
+public sealed class ConnectorExceptionTest
 {
     [Fact]
     public void Constructor_CapturesMessage()

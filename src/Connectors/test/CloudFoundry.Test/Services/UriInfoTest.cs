@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
-public class UriInfoTest
+public sealed class UriInfoTest
 {
     [Fact]
     public void Constructor_Uri()

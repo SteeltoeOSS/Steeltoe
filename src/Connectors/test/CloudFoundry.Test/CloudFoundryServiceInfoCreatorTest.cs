@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Connectors.CloudFoundry.Test;
 
-public class CloudFoundryServiceInfoCreatorTest
+public sealed class CloudFoundryServiceInfoCreatorTest
 {
     [Fact]
     public void Constructor_ThrowsIfConfigNull()

@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Connectors;
 
-public class ConnectorException : Exception
+public sealed class ConnectorException : Exception
 {
     public ConnectorException()
     {

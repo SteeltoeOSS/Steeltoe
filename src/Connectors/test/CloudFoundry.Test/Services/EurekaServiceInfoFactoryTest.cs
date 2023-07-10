@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
-public class EurekaServiceInfoFactoryTest
+public sealed class EurekaServiceInfoFactoryTest
 {
     [Fact]
     public void Accept_AcceptsValidServiceBinding()

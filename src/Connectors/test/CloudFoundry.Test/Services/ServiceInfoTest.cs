@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
-public class ServiceInfoTest
+public sealed class ServiceInfoTest
 {
     [Fact]
     public void Constructor_ThrowsIfIdNull()

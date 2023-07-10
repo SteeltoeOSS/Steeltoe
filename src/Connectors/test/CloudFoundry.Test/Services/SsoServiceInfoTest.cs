@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
-public class SsoServiceInfoTest
+public sealed class SsoServiceInfoTest
 {
     [Fact]
     public void Constructor_CreatesExpected()

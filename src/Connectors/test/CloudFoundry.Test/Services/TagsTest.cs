@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
-public class TagsTest
+public sealed class TagsTest
 {
     private static readonly Tags EmptyTags = new();
 

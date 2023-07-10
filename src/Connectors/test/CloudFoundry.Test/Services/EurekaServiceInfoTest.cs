@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
 
-public class EurekaServiceInfoTest
+public sealed class EurekaServiceInfoTest
 {
     [Fact]
     public void Constructor_CreatesExpected()
