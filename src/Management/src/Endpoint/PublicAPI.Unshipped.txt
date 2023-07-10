@@ -252,17 +252,6 @@ Steeltoe.Management.Endpoint.HeapDump.IHeapDumpEndpointHandler
 Steeltoe.Management.Endpoint.HeapDump.IHeapDumper
 Steeltoe.Management.Endpoint.HeapDump.IHeapDumper.DumpHeapToFile() -> string
 Steeltoe.Management.Endpoint.HeapDump.ServiceCollectionExtensions
-Steeltoe.Management.Endpoint.Info.Contributor.AppSettingsInfoContributor
-Steeltoe.Management.Endpoint.Info.Contributor.AppSettingsInfoContributor.AppSettingsInfoContributor(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
-Steeltoe.Management.Endpoint.Info.Contributor.AppSettingsInfoContributor.ContributeAsync(Steeltoe.Management.Info.IInfoBuilder builder) -> System.Threading.Tasks.Task
-Steeltoe.Management.Endpoint.Info.Contributor.BuildInfoContributor
-Steeltoe.Management.Endpoint.Info.Contributor.BuildInfoContributor.BuildInfoContributor() -> void
-Steeltoe.Management.Endpoint.Info.Contributor.BuildInfoContributor.ContributeAsync(Steeltoe.Management.Info.IInfoBuilder builder) -> System.Threading.Tasks.Task
-Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor
-Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor.ContributeAsync(Steeltoe.Management.Info.IInfoBuilder builder) -> System.Threading.Tasks.Task
-Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor.GitInfoContributor(Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor> logger) -> void
-Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor.GitInfoContributor(string propFile, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor> logger) -> void
-Steeltoe.Management.Endpoint.Info.Contributor.GitInfoContributor.ReadGitProperties(string propFile) -> Microsoft.Extensions.Configuration.IConfiguration
 Steeltoe.Management.Endpoint.Info.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter
 Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter.EpochSecondsDateTimeConverter() -> void

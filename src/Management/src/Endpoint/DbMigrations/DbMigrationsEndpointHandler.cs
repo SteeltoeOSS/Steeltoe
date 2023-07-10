@@ -102,7 +102,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
     public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
-        return Task.Run(() => DoInvoke(), cancellationToken);
+        return Task.FromResult(DoInvoke());
     }
 
     /// <summary>

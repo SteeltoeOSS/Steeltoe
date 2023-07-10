@@ -47,9 +47,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
     private readonly int _mantissaMax;
     private readonly int _mantissaMask;
     private readonly int _mantissaShift;
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private int[]?[] _counters;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private int _count;
     private double _sum;
     private double _max;
@@ -77,9 +75,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
 
     public override IAggregationStatistics Collect()
     {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         int[]?[] counters;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         int count;
         double max;
         double sum;
@@ -138,16 +134,10 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
         return new HistogramStatistics(Array.Empty<QuantileValue>(), sum, max);
     }
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private static int GetInvalidCount(int[]?[] counters)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         int[]? positiveInfAndNan = counters[ExponentArraySize / 2 - 1];
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         int[]? negativeInfAndNan = counters[ExponentArraySize - 1];
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         int count = 0;
 
         if (positiveInfAndNan != null)
@@ -169,9 +159,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
         return count;
     }
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private IEnumerable<Bucket> IterateBuckets(int[]?[] counters)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         // iterate over the negative exponent buckets
         const int LowestNegativeOffset = ExponentArraySize / 2;
@@ -179,9 +167,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
         // exponent = ExponentArraySize-1 encodes infinity and NaN, which we want to ignore
         for (int exponent = ExponentArraySize - 2; exponent >= LowestNegativeOffset; exponent--)
         {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             int[]? mantissaCounts = counters[exponent];
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             if (mantissaCounts == null)
             {
                 continue;
@@ -202,9 +188,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
         // exponent = lowestNegativeOffset-1 encodes infinity and NaN, which we want to ignore
         for (int exponent = 0; exponent < LowestNegativeOffset - 1; exponent++)
         {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             int[]? mantissaCounts = counters[exponent];
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             if (mantissaCounts == null)
             {
                 continue;
@@ -238,9 +222,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
             ulong bits = (ulong)BitConverter.DoubleToInt64Bits(measurement);
             int exponent = (int)(bits >> ExponentShift);
             int mantissa = (int)(bits >> _mantissaShift) & _mantissaMask;
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             ref int[]? mantissaCounts = ref _counters[exponent];
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             mantissaCounts ??= new int[_mantissaMax];
             mantissaCounts[mantissa]++;
             _count++;

@@ -42,7 +42,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
     public Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
     {
-        return Task.Run(() => BuildHealth(healthRequest), cancellationToken);
+        return Task.FromResult(BuildHealth(healthRequest));
     }
 
     public int GetStatusCode(HealthCheckResult health)

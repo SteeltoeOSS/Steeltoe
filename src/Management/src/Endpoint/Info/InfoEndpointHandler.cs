@@ -50,6 +50,6 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
 
     public Task<Dictionary<string, object>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
-        return Task.Run(() => BuildInfo(_contributors), cancellationToken);
+        return Task.FromResult(BuildInfo(_contributors));
     }
 }

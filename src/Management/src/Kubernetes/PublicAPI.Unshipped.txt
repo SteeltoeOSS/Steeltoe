@@ -1,4 +1,4 @@
-﻿static Steeltoe.Management.Kubernetes.HostBuilderExtensions.AddKubernetesActuators(this Microsoft.AspNetCore.Builder.WebApplicationBuilder webApplicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
+static Steeltoe.Management.Kubernetes.HostBuilderExtensions.AddKubernetesActuators(this Microsoft.AspNetCore.Builder.WebApplicationBuilder webApplicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Management.Kubernetes.HostBuilderExtensions.AddKubernetesActuators(this Microsoft.AspNetCore.Builder.WebApplicationBuilder webApplicationBuilder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder> configureEndpoints) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Management.Kubernetes.HostBuilderExtensions.AddKubernetesActuators(this Microsoft.AspNetCore.Hosting.IWebHostBuilder webHostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
 static Steeltoe.Management.Kubernetes.HostBuilderExtensions.AddKubernetesActuators(this Microsoft.AspNetCore.Hosting.IWebHostBuilder webHostBuilder, System.Action<Microsoft.AspNetCore.Builder.IEndpointConventionBuilder> configureEndpoints) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
@@ -9,7 +9,4 @@ static Steeltoe.Management.Kubernetes.ServiceCollectionExtensions.AddKubernetesA
 static Steeltoe.Management.Kubernetes.ServiceCollectionExtensions.AddKubernetesInfoContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Steeltoe.Management.Kubernetes.ServiceCollectionExtensions.AddKubernetesInfoContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Steeltoe.Common.Kubernetes.IPodUtilities podUtilities) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 Steeltoe.Management.Kubernetes.HostBuilderExtensions
-Steeltoe.Management.Kubernetes.KubernetesInfoContributor
-Steeltoe.Management.Kubernetes.KubernetesInfoContributor.ContributeAsync(Steeltoe.Management.Info.IInfoBuilder builder) -> System.Threading.Tasks.Task
-Steeltoe.Management.Kubernetes.KubernetesInfoContributor.KubernetesInfoContributor(Steeltoe.Common.Kubernetes.IPodUtilities podUtilities) -> void
 Steeltoe.Management.Kubernetes.ServiceCollectionExtensions

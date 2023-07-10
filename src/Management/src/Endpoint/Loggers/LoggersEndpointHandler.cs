@@ -43,7 +43,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
     {
         _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
-        return Task.Run(() => DoInvoke(_dynamicLoggerProvider, request), cancellationToken);
+        return Task.FromResult(DoInvoke(_dynamicLoggerProvider, request));
     }
 
     private LoggersResponse DoInvoke(IDynamicLoggerProvider provider, ILoggersRequest request)

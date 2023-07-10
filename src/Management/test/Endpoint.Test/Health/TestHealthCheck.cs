@@ -10,6 +10,6 @@ public class TestHealthCheck : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        return Task.Run(() => new HealthCheckResult(HealthStatus.Healthy));
+        return Task.FromResult(new HealthCheckResult(HealthStatus.Healthy));
     }
 }

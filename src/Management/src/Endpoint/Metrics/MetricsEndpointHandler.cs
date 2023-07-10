@@ -31,7 +31,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 
     public Task<MetricsResponse> InvokeAsync(MetricsRequest request, CancellationToken cancellationToken)
     {
-        return Task.Run(() => DoInvoke(request), cancellationToken);
+        return Task.FromResult(DoInvoke(request));
     }
 
     private MetricsResponse DoInvoke(MetricsRequest request)

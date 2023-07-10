@@ -9,7 +9,7 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Kubernetes;
 
-public sealed class KubernetesInfoContributor : IInfoContributor
+internal sealed class KubernetesInfoContributor : IInfoContributor
 {
     private readonly IPodUtilities _podUtilities;
 

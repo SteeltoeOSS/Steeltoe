@@ -45,7 +45,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
     public Task<RouteMappingsResponse> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching application mappings");
-        return Task.Run(() => GetApplicationMappings(), cancellationToken);
+        return Task.FromResult(GetApplicationMappings());
     }
 
     internal RouteMappingsResponse GetApplicationMappings()

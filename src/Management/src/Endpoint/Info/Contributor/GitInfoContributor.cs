@@ -10,7 +10,7 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
-public sealed class GitInfoContributor : AbstractConfigurationContributor, IInfoContributor
+internal sealed class GitInfoContributor : AbstractConfigurationContributor, IInfoContributor
 {
     private const string GitSettingsPrefix = "git";
     private const string GitPropertiesFile = "git.properties";
@@ -36,18 +36,17 @@ public sealed class GitInfoContributor : AbstractConfigurationContributor, IInfo
         _logger = logger;
     }
 
-    public Task ContributeAsync(IInfoBuilder builder)
+    public async Task ContributeAsync(IInfoBuilder builder)
     {
-        Configuration = ReadGitProperties(_propFile);
+        Configuration = await ReadGitPropertiesAsync(_propFile);
         Contribute(builder, GitSettingsPrefix, true);
-        return Task.CompletedTask;
     }
 
-    public IConfiguration ReadGitProperties(string propFile)
+    public async Task<IConfiguration> ReadGitPropertiesAsync(string propFile)
     {
         if (File.Exists(propFile))
         {
-            string[] lines = File.ReadAllLines(propFile);
+            string[] lines = await File.ReadAllLinesAsync(propFile);
 
             if (lines != null && lines.Length > 0)
             {

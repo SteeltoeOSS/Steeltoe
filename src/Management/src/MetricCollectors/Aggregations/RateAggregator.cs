@@ -23,9 +23,7 @@ internal sealed class RateSumAggregator : Aggregator
 #pragma warning disable S2551 // Shared resources should not be used for locking
         lock (this)
         {
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             var stats = new RateStatistics(_sum);
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
             _sum = 0;
             return stats;
         }
