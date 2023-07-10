@@ -147,10 +147,10 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
         var existingHandler = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IHttpClientHandlerProvider));
 
-        if (existingHandler is IHttpClientHandlerProvider handlerProvider)
+        if (existingHandler != null && typeof(IHttpClientHandlerProvider).IsAssignableFrom(existingHandler.ImplementationType))
         {
             AddEurekaHttpClient(services)
-                .ConfigurePrimaryHttpMessageHandler(() => handlerProvider.GetHttpClientHandler());
+                .ConfigurePrimaryHttpMessageHandler(serviceProvider => serviceProvider.GetService<IHttpClientHandlerProvider>().GetHttpClientHandler());
         }
         else
         {

@@ -796,15 +796,4 @@ public class DiscoveryServiceCollectionExtensionsTest : IDisposable
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
     }
-
-    internal class TestClientHandlerProvider : IHttpClientHandlerProvider
-    {
-        public bool Called { get; set; } = false;
-
-        public HttpClientHandler GetHttpClientHandler()
-        {
-            Called = true;
-            return new HttpClientHandler();
-        }
-    }
 }

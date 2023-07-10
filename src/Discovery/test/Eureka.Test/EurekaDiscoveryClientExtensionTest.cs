@@ -2,12 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using TraceReloggerLib;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -66,5 +70,38 @@ public class EurekaDiscoveryClientExtensionTest
         var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
+    }
+
+    [Fact]
+    public void HttpClientHandlerProviderIsUsed()
+    {
+        var services = new ServiceCollection();
+        var ext = new EurekaDiscoveryClientExtension();
+        var appSettings = new Dictionary<string, string>
+        {
+            { "spring:cloud:discovery:enabled", "false" },
+            { "eureka:client:enabled", "true" },
+            { "eureka:client:serviceurl", "http://testhost/eureka" }
+        };
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IHttpClientHandlerProvider, TestClientHandlerProvider>();
+        ext.ApplyServices(services);
+        var provider = services.BuildServiceProvider();
+        _ = provider.GetRequiredService<IHttpClientFactory>().CreateClient("Eureka");
+        var handlerProvider = provider.GetRequiredService<IHttpClientHandlerProvider>();
+
+        handlerProvider.Should().BeOfType(typeof(TestClientHandlerProvider));
+        ((TestClientHandlerProvider)handlerProvider).Called.Should().BeTrue();
+    }
+
+    internal class TestClientHandlerProvider : IHttpClientHandlerProvider
+    {
+        public bool Called { get; set; }
+
+        public HttpClientHandler GetHttpClientHandler()
+        {
+            Called = true;
+            return new HttpClientHandler();
+        }
     }
 }
