@@ -30,11 +30,11 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
     {
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 
-        // Regardless of the name, configure the available platforms
-
+        // Regardless of the name, configure the available contexts
+        options.EndpointContexts.Add(EndpointContexts.Actuator);
         if (Platform.IsCloudFoundry)
         {
-            options.EndpointContexts |= EndpointContexts.CloudFoundry;
+            options.EndpointContexts.Add(EndpointContexts.CloudFoundry);
         }
 
         foreach (string converterTypeName in options.CustomJsonConverters ?? Array.Empty<string>())

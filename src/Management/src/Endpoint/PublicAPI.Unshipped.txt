@@ -335,7 +335,7 @@ Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.CustomJsonConvert
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.CustomJsonConverters.set -> void
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Enabled.get -> bool?
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Enabled.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.EndpointContexts.get -> Steeltoe.Management.Endpoint.Options.EndpointContexts
+Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.EndpointContexts.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Options.EndpointContexts>
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.EndpointContexts.set -> void
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.EndpointOptions.get -> System.Collections.Generic.IList<Steeltoe.Management.HttpMiddlewareOptions>
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.EndpointOptions.set -> void

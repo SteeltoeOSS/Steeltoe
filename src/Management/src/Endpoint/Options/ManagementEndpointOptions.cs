@@ -20,8 +20,7 @@ public sealed class ManagementEndpointOptions
 
     public IList<HttpMiddlewareOptions> EndpointOptions { get; set; }
 
-    public EndpointContexts EndpointContexts { get; set; } = EndpointContexts.Actuator;
-
+    public IList<EndpointContexts> EndpointContexts { get; set; } = new List<EndpointContexts>();
     public bool UseStatusCodeFromResponse { get; set; } = true;
 
     public JsonSerializerOptions SerializerOptions { get; set; } = new()

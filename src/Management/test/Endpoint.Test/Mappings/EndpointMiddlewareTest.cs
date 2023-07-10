@@ -51,7 +51,7 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<RouteMappingsEndpointOptions> opts = GetOptionsMonitorFromSettings<RouteMappingsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
-        managementOptions.CurrentValue.EndpointContexts |= EndpointContexts.CloudFoundry;
+        managementOptions.CurrentValue.EndpointContexts.Add(EndpointContexts.CloudFoundry);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
         var mockRouteMappings = new Mock<IRouteMappings>();

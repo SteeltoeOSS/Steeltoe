@@ -35,7 +35,7 @@ internal sealed class ActuatorEndpointMapper
 
         foreach (EndpointContexts context in Enum.GetValues<EndpointContexts>())
         {
-            if (_managementOptions.CurrentValue.EndpointContexts.HasFlag(context))
+            if (_managementOptions.CurrentValue.EndpointContexts.Contains(context))
             {
                 ManagementEndpointOptions mgmtOption = _managementOptions.Get(context);
 
