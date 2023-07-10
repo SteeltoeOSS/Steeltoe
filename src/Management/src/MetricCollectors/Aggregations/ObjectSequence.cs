@@ -70,6 +70,7 @@ internal partial struct ObjectSequenceMany : IEquatable<ObjectSequenceMany>, IOb
         return h.ToHashCode();
     }
 }
+
 internal partial struct ObjectSequence1 : IEquatable<ObjectSequence1>, IObjectSequence
 {
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.

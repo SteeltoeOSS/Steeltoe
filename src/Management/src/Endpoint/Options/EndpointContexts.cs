@@ -3,9 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Management.Endpoint.Options;
+
 [Flags]
 public enum EndpointContexts
 {
     Actuator = 1,
-    CloudFoundry = 1 << 1,
+    CloudFoundry = 1 << 1
 }

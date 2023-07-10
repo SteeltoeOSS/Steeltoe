@@ -64,6 +64,7 @@ internal partial struct StringSequenceMany : IEquatable<StringSequenceMany>, ISt
         return h.ToHashCode();
     }
 }
+
 internal partial struct StringSequence1 : IEquatable<StringSequence1>, IStringSequence
 {
     public string Value1;

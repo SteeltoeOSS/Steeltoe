@@ -56,7 +56,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
         if (configuration is IConfigurationRoot root)
         {
-            var providers = root.Providers.ToList();
+            List<IConfigurationProvider> providers = root.Providers.ToList();
 
             if (providers.Any(p => p is IPlaceholderResolverProvider))
             {
