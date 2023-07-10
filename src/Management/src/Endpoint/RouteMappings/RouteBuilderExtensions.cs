@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Routing;
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.Endpoint.Mappings;
+namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 internal static class RouteBuilderExtensions
 {

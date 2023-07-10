@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
@@ -12,17 +12,17 @@ public class ContextMappingsTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        var mappingList = new List<MappingDescription>();
+        var mappingList = new List<RouteMappingDescription>();
 
-        var mappingDict = new Dictionary<string, IList<MappingDescription>>
+        var mappingDict = new Dictionary<string, IList<RouteMappingDescription>>
         {
             { "dispatcherServlet", mappingList }
         };
 
         var contextMappings = new ContextMappings(mappingDict);
-        IDictionary<string, IDictionary<string, IList<MappingDescription>>> contextMappingsMappings = contextMappings.Mappings;
+        IDictionary<string, IDictionary<string, IList<RouteMappingDescription>>> contextMappingsMappings = contextMappings.Mappings;
         Assert.Contains("dispatcherServlets", contextMappingsMappings.Keys);
-        IDictionary<string, IList<MappingDescription>> mappings = contextMappingsMappings["dispatcherServlets"];
+        IDictionary<string, IList<RouteMappingDescription>> mappings = contextMappingsMappings["dispatcherServlets"];
         Assert.Contains("dispatcherServlet", mappings.Keys);
         Assert.Same(mappingList, mappings["dispatcherServlet"]);
     }
@@ -47,12 +47,12 @@ public class ContextMappingsTest : BaseTest
             }
         };
 
-        var mappingDescriptions = new List<MappingDescription>
+        var mappingDescriptions = new List<RouteMappingDescription>
         {
             new("foobar", routeDetail)
         };
 
-        var mappingDict = new Dictionary<string, IList<MappingDescription>>
+        var mappingDict = new Dictionary<string, IList<RouteMappingDescription>>
         {
             { "controllerTypeName", mappingDescriptions }
         };

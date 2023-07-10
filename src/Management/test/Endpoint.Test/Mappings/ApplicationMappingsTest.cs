@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
@@ -12,14 +12,14 @@ public class ApplicationMappingsTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        var mappingDict = new Dictionary<string, IList<MappingDescription>>
+        var mappingDict = new Dictionary<string, IList<RouteMappingDescription>>
         {
-            { "dispatcherServlet", new List<MappingDescription>() }
+            { "dispatcherServlet", new List<RouteMappingDescription>() }
         };
 
         var contextMappings = new ContextMappings(mappingDict);
 
-        var appMappings = new MappingsResponse(contextMappings);
+        var appMappings = new RouteMappingsResponse(contextMappings);
         IDictionary<string, ContextMappings> ctxMappings = appMappings.ContextMappings;
         Assert.Contains("application", ctxMappings.Keys);
         Assert.Single(ctxMappings.Keys);
@@ -46,18 +46,18 @@ public class ApplicationMappingsTest : BaseTest
             }
         };
 
-        var mappingDescriptions = new List<MappingDescription>
+        var mappingDescriptions = new List<RouteMappingDescription>
         {
             new("foobar", routeDetail)
         };
 
-        var mappingDict = new Dictionary<string, IList<MappingDescription>>
+        var mappingDict = new Dictionary<string, IList<RouteMappingDescription>>
         {
             { "controllerTypeName", mappingDescriptions }
         };
 
         var contextMappings = new ContextMappings(mappingDict);
-        var appMappings = new MappingsResponse(contextMappings);
+        var appMappings = new RouteMappingsResponse(contextMappings);
 
         string result = Serialize(appMappings);
 

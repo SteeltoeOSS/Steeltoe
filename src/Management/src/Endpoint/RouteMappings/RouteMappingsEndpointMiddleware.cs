@@ -8,20 +8,20 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
-namespace Steeltoe.Management.Endpoint.Mappings;
+namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 /// <summary>
 /// Middleware for displaying <see cref="IRouteMappings" /> information.
 /// </summary>
-internal sealed class MappingsEndpointMiddleware : EndpointMiddleware<object, MappingsResponse>
+internal sealed class RouteMappingsEndpointMiddleware : EndpointMiddleware<object, RouteMappingsResponse>
 {
-    public MappingsEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
-        IMappingsEndpointHandler endpointHandler, ILoggerFactory loggerFactory)
+    public RouteMappingsEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<HttpMiddlewareOptions> endpointOptions,
+        IRouteMappingsEndpointHandler endpointHandler, ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptions, loggerFactory)
     {
     }
 
-    protected override async Task<MappingsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<RouteMappingsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, context.RequestAborted);
     }

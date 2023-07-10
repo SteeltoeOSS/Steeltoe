@@ -7,9 +7,9 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.Endpoint.Mappings;
+namespace Steeltoe.Management.Endpoint.RouteMappings;
 
-public sealed class MappingDescription
+public sealed class RouteMappingDescription
 {
     internal const string AllHttpMethods = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
 
@@ -22,7 +22,7 @@ public sealed class MappingDescription
     [JsonPropertyName("details")]
     public object Details { get; } // Always null for .NET
 
-    public MappingDescription(string routeHandler, IRouteDetails routeDetails)
+    public RouteMappingDescription(string routeHandler, IRouteDetails routeDetails)
     {
         ArgumentGuard.NotNull(routeDetails);
         ArgumentGuard.NotNull(routeHandler);
@@ -31,7 +31,7 @@ public sealed class MappingDescription
         Handler = routeHandler;
     }
 
-    public MappingDescription(MethodInfo routeHandler, IRouteDetails routeDetails)
+    public RouteMappingDescription(MethodInfo routeHandler, IRouteDetails routeDetails)
     {
         ArgumentGuard.NotNull(routeHandler);
         ArgumentGuard.NotNull(routeDetails);

@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
 
-namespace Steeltoe.Management.Endpoint.Mappings;
+namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 /// <summary>
 /// Add services used by the Mappings actuator.
@@ -27,10 +27,10 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.ConfigureOptions<ConfigureMappingsEndpointOptions>();
-        services.TryAddSingleton<IMappingsEndpointHandler, MappingsEndpointHandler>();
-        services.AddSingleton<MappingsEndpointMiddleware>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MappingsEndpointMiddleware>());
+        services.ConfigureOptions<ConfigureRouteMappingsEndpointOptions>();
+        services.TryAddSingleton<IRouteMappingsEndpointHandler, RouteMappingsEndpointHandler>();
+        services.AddSingleton<RouteMappingsEndpointMiddleware>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, RouteMappingsEndpointMiddleware>());
 
         return services;
     }

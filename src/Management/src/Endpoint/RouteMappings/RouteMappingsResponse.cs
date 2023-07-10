@@ -4,14 +4,14 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Mappings;
+namespace Steeltoe.Management.Endpoint.RouteMappings;
 
-public sealed class MappingsResponse
+public sealed class RouteMappingsResponse
 {
     [JsonPropertyName("contexts")]
     public IDictionary<string, ContextMappings> ContextMappings { get; }
 
-    public MappingsResponse(ContextMappings contextMappings)
+    public RouteMappingsResponse(ContextMappings contextMappings)
     {
         // At this point, .NET will only ever has one application => "application"
         ContextMappings = new Dictionary<string, ContextMappings>

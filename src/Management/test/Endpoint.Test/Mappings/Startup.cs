@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Endpoint.RouteMappings;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
 

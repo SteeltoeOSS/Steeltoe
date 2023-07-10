@@ -16,8 +16,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
@@ -36,7 +36,7 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<MappingsEndpointOptions>();
+        var options = GetOptionsFromSettings<RouteMappingsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
         Assert.Equal("/actuator/mappings", options.GetContextPath(mgmtOptions.Get(EndpointContexts.Actuator)));
@@ -48,7 +48,7 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
     {
-        IOptionsMonitor<MappingsEndpointOptions> opts = GetOptionsMonitorFromSettings<MappingsEndpointOptions>();
+        IOptionsMonitor<RouteMappingsEndpointOptions> opts = GetOptionsMonitorFromSettings<RouteMappingsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         managementOptions.CurrentValue.EndpointContexts |= EndpointContexts.CloudFoundry;
@@ -59,10 +59,10 @@ public class EndpointMiddlewareTest : BaseTest
         var mockActionDescriptorCollectionProvider = new Mock<IActionDescriptorCollectionProvider>();
         var mockApiDescriptionProvider = new Mock<IEnumerable<IApiDescriptionProvider>>();
 
-        var ep = new MappingsEndpointHandler(opts, NullLoggerFactory.Instance, mockRouteMappings.Object, mockActionDescriptorCollectionProvider.Object,
+        var ep = new RouteMappingsEndpointHandler(opts, NullLoggerFactory.Instance, mockRouteMappings.Object, mockActionDescriptorCollectionProvider.Object,
             mockApiDescriptionProvider.Object);
 
-        var middle = new MappingsEndpointMiddleware(managementOptions, opts, ep, NullLoggerFactory.Instance);
+        var middle = new RouteMappingsEndpointMiddleware(managementOptions, opts, ep, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
         await middle.InvokeAsync(context, null);

@@ -5,13 +5,13 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Options;
 
-namespace Steeltoe.Management.Endpoint.Mappings;
+namespace Steeltoe.Management.Endpoint.RouteMappings;
 
-internal sealed class ConfigureMappingsEndpointOptions : ConfigureEndpointOptions<MappingsEndpointOptions>
+internal sealed class ConfigureRouteMappingsEndpointOptions : ConfigureEndpointOptions<RouteMappingsEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:mappings";
 
-    public ConfigureMappingsEndpointOptions(IConfiguration configuration)
+    public ConfigureRouteMappingsEndpointOptions(IConfiguration configuration)
         : base(configuration, ManagementInfoPrefix, "mappings")
     {
     }

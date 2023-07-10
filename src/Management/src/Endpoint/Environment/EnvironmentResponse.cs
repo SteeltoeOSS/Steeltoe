@@ -3,9 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
-using Steeltoe.Management.Endpoint.Environment;
 
-namespace Steeltoe.Management.Endpoint.Env;
+namespace Steeltoe.Management.Endpoint.Environment;
 
 public sealed class EnvironmentResponse
 {

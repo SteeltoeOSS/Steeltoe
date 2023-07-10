@@ -4,7 +4,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Mappings;
+namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 public sealed class ContextMappings
 {
@@ -12,16 +12,16 @@ public sealed class ContextMappings
     public string ParentId { get; }
 
     [JsonPropertyName("mappings")]
-    public IDictionary<string, IDictionary<string, IList<MappingDescription>>> Mappings { get; } // "dispatcherServlets", "dispatcherServlet"
+    public IDictionary<string, IDictionary<string, IList<RouteMappingDescription>>> Mappings { get; } // "dispatcherServlets", "dispatcherServlet"
 
     public ContextMappings()
     {
-        var mappingList = new Dictionary<string, IList<MappingDescription>>
+        var mappingList = new Dictionary<string, IList<RouteMappingDescription>>
         {
-            { "dispatcherServlet", new List<MappingDescription>() }
+            { "dispatcherServlet", new List<RouteMappingDescription>() }
         };
 
-        Mappings = new Dictionary<string, IDictionary<string, IList<MappingDescription>>>
+        Mappings = new Dictionary<string, IDictionary<string, IList<RouteMappingDescription>>>
         {
             { "dispatcherServlets", mappingList }
         };
@@ -29,24 +29,24 @@ public sealed class ContextMappings
         ParentId = null;
     }
 
-    public ContextMappings(IDictionary<string, IList<MappingDescription>> mappingDict)
+    public ContextMappings(IDictionary<string, IList<RouteMappingDescription>> mappingDict)
         : this(mappingDict, null)
     {
     }
 
-    public ContextMappings(IDictionary<string, IList<MappingDescription>> mappingDict, string parentId)
+    public ContextMappings(IDictionary<string, IList<RouteMappingDescription>> mappingDict, string parentId)
     {
         // At this point, .NET will only ever has one context and it must be named "dispatcherServlets"
         // For .NET, the mappingDict contains keys that represent the type name of the controller and then a
         // list of MappingDescriptions for that controller.
-        mappingDict ??= new Dictionary<string, IList<MappingDescription>>();
+        mappingDict ??= new Dictionary<string, IList<RouteMappingDescription>>();
 
         if (mappingDict.Count == 0)
         {
-            mappingDict.Add("dispatcherServlet", new List<MappingDescription>());
+            mappingDict.Add("dispatcherServlet", new List<RouteMappingDescription>());
         }
 
-        Mappings = new Dictionary<string, IDictionary<string, IList<MappingDescription>>>
+        Mappings = new Dictionary<string, IDictionary<string, IList<RouteMappingDescription>>>
         {
             { "dispatcherServlets", mappingDict }
         };

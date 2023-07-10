@@ -14,19 +14,19 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.Endpoint.Mappings;
+namespace Steeltoe.Management.Endpoint.RouteMappings;
 
-internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
+internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandler
 {
-    private readonly IOptionsMonitor<MappingsEndpointOptions> _options;
+    private readonly IOptionsMonitor<RouteMappingsEndpointOptions> _options;
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
     private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
     private readonly IRouteMappings _routeMappings;
-    private readonly ILogger<MappingsEndpointHandler> _logger;
+    private readonly ILogger<RouteMappingsEndpointHandler> _logger;
 
     public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public MappingsEndpointHandler(IOptionsMonitor<MappingsEndpointOptions> options, ILoggerFactory loggerFactory, IRouteMappings routeMappings,
+    public RouteMappingsEndpointHandler(IOptionsMonitor<RouteMappingsEndpointOptions> options, ILoggerFactory loggerFactory, IRouteMappings routeMappings,
         IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders)
     {
         ArgumentGuard.NotNull(options);
@@ -39,18 +39,18 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
         _apiDescriptionProviders = apiDescriptionProviders;
         _routeMappings = routeMappings;
-        _logger = loggerFactory.CreateLogger<MappingsEndpointHandler>();
+        _logger = loggerFactory.CreateLogger<RouteMappingsEndpointHandler>();
     }
 
-    public Task<MappingsResponse> InvokeAsync(object argument, CancellationToken cancellationToken)
+    public Task<RouteMappingsResponse> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching application mappings");
         return Task.Run(() => GetApplicationMappings(), cancellationToken);
     }
 
-    internal MappingsResponse GetApplicationMappings()
+    internal RouteMappingsResponse GetApplicationMappings()
     {
-        IDictionary<string, IList<MappingDescription>> desc = new Dictionary<string, IList<MappingDescription>>();
+        IDictionary<string, IList<RouteMappingDescription>> desc = new Dictionary<string, IList<RouteMappingDescription>>();
 
         if (_actionDescriptorCollectionProvider != null)
         {
@@ -64,26 +64,26 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
         }
 
         var contextMappings = new ContextMappings(desc);
-        return new MappingsResponse(contextMappings);
+        return new RouteMappingsResponse(contextMappings);
     }
 
-    internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
+    internal IDictionary<string, IList<RouteMappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
     {
-        IDictionary<string, IList<MappingDescription>> mappingDescriptions = new Dictionary<string, IList<MappingDescription>>();
+        IDictionary<string, IList<RouteMappingDescription>> mappingDescriptions = new Dictionary<string, IList<RouteMappingDescription>>();
 
         foreach (ApiDescription desc in apiContext.Results)
         {
             var descriptor = desc.ActionDescriptor as ControllerActionDescriptor;
             IRouteDetails details = GetRouteDetails(desc);
-            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<MappingDescription> mapList);
+            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<RouteMappingDescription> mapList);
 
             if (mapList == null)
             {
-                mapList = new List<MappingDescription>();
+                mapList = new List<RouteMappingDescription>();
                 mappingDescriptions.Add(descriptor.ControllerTypeInfo.FullName, mapList);
             }
 
-            var mapDesc = new MappingDescription(descriptor.MethodInfo, details);
+            var mapDesc = new RouteMappingDescription(descriptor.MethodInfo, details);
             mapList.Add(mapDesc);
         }
 
@@ -98,15 +98,15 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
                 }
 
                 IRouteDetails details = GetRouteDetails(desc);
-                mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<MappingDescription> mapList);
+                mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<RouteMappingDescription> mapList);
 
                 if (mapList == null)
                 {
-                    mapList = new List<MappingDescription>();
+                    mapList = new List<RouteMappingDescription>();
                     mappingDescriptions.Add(descriptor.ControllerTypeInfo.FullName, mapList);
                 }
 
-                var mapDesc = new MappingDescription(descriptor.MethodInfo, details);
+                var mapDesc = new RouteMappingDescription(descriptor.MethodInfo, details);
                 mapList.Add(mapDesc);
             }
         }
@@ -161,7 +161,7 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
         {
             HttpMethods = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string>
             {
-                MappingDescription.AllHttpMethods
+                RouteMappingDescription.AllHttpMethods
             },
             Consumes = new List<string>(),
             Produces = new List<string>()
@@ -207,7 +207,7 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
         return routeDetails;
     }
 
-    internal void AddRouteMappingsDescriptions(IRouteMappings routeMappings, IDictionary<string, IList<MappingDescription>> desc)
+    internal void AddRouteMappingsDescriptions(IRouteMappings routeMappings, IDictionary<string, IList<RouteMappingDescription>> desc)
     {
         if (routeMappings == null)
         {
@@ -219,15 +219,15 @@ internal sealed class MappingsEndpointHandler : IMappingsEndpointHandler
             if (router is Route route)
             {
                 IRouteDetails details = GetRouteDetails(route);
-                desc.TryGetValue("CoreRouteHandler", out IList<MappingDescription> mapList);
+                desc.TryGetValue("CoreRouteHandler", out IList<RouteMappingDescription> mapList);
 
                 if (mapList == null)
                 {
-                    mapList = new List<MappingDescription>();
+                    mapList = new List<RouteMappingDescription>();
                     desc.Add("CoreRouteHandler", mapList);
                 }
 
-                var mapDesc = new MappingDescription("CoreRouteHandler", details);
+                var mapDesc = new RouteMappingDescription("CoreRouteHandler", details);
                 mapList.Add(mapDesc);
             }
         }

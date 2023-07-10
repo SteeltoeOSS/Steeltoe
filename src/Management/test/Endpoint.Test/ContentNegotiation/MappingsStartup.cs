@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;

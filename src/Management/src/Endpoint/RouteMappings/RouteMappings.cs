@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Routing;
 
-namespace Steeltoe.Management.Endpoint.Mappings;
+namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 public sealed class RouteMappings : IRouteMappings
 {
