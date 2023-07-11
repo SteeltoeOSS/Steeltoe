@@ -27,7 +27,7 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
         _logger = loggerFactory.CreateLogger<InfoEndpointHandler>();
     }
 
-    private Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)
+    private async Task<Dictionary<string, object>> BuildInfoAsync(IList<IInfoContributor> infoContributors)
     {
         ArgumentGuard.NotNull(infoContributors);
 
@@ -37,7 +37,7 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
         {
             try
             {
-                contributor.ContributeAsync(builder);
+                await contributor.ContributeAsync(builder);
             }
             catch (Exception e)
             {
@@ -48,8 +48,8 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
         return builder.Build();
     }
 
-    public Task<Dictionary<string, object>> InvokeAsync(object argument, CancellationToken cancellationToken)
+    public async Task<Dictionary<string, object>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
-        return Task.FromResult(BuildInfo(_contributors));
+        return await BuildInfoAsync(_contributors);
     }
 }
