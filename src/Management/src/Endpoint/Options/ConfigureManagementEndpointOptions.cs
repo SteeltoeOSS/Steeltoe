@@ -32,6 +32,7 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
 
         // Regardless of the name, configure the available contexts
         options.EndpointContexts.Add(EndpointContexts.Actuator);
+
         if (Platform.IsCloudFoundry)
         {
             options.EndpointContexts.Add(EndpointContexts.CloudFoundry);
