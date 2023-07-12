@@ -7,15 +7,15 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Info;
 
-public abstract class AbstractConfigurationContributor
+public abstract class ConfigurationContributor
 {
     protected IConfiguration Configuration { get; set; }
 
-    protected AbstractConfigurationContributor()
+    protected ConfigurationContributor()
     {
     }
 
-    protected AbstractConfigurationContributor(IConfiguration configuration)
+    protected ConfigurationContributor(IConfiguration configuration)
     {
         Configuration = configuration;
     }

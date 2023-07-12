@@ -10,7 +10,7 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
-internal sealed class GitInfoContributor : AbstractConfigurationContributor, IInfoContributor
+internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContributor
 {
     private const string GitSettingsPrefix = "git";
     private const string GitPropertiesFile = "git.properties";

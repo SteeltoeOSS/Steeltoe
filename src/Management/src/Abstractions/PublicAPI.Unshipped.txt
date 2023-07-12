@@ -45,11 +45,11 @@ Steeltoe.Management.HttpMiddlewareOptions.RequiredPermissions.set -> void
 Steeltoe.Management.IEndpointHandler<TArgument, TResult>
 Steeltoe.Management.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>
 Steeltoe.Management.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.HttpMiddlewareOptions
-Steeltoe.Management.Info.AbstractConfigurationContributor
-Steeltoe.Management.Info.AbstractConfigurationContributor.AbstractConfigurationContributor() -> void
-Steeltoe.Management.Info.AbstractConfigurationContributor.AbstractConfigurationContributor(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
-Steeltoe.Management.Info.AbstractConfigurationContributor.Configuration.get -> Microsoft.Extensions.Configuration.IConfiguration
-Steeltoe.Management.Info.AbstractConfigurationContributor.Configuration.set -> void
+Steeltoe.Management.Info.ConfigurationContributor
+Steeltoe.Management.Info.ConfigurationContributor.Configuration.get -> Microsoft.Extensions.Configuration.IConfiguration
+Steeltoe.Management.Info.ConfigurationContributor.Configuration.set -> void
+Steeltoe.Management.Info.ConfigurationContributor.ConfigurationContributor() -> void
+Steeltoe.Management.Info.ConfigurationContributor.ConfigurationContributor(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
 Steeltoe.Management.Info.IInfoBuilder
 Steeltoe.Management.Info.IInfoBuilder.Build() -> System.Collections.Generic.Dictionary<string, object>
 Steeltoe.Management.Info.IInfoBuilder.WithInfo(string key, object value) -> Steeltoe.Management.Info.IInfoBuilder
@@ -79,7 +79,7 @@ virtual Steeltoe.Management.HttpMiddlewareOptions.Id.get -> string
 virtual Steeltoe.Management.HttpMiddlewareOptions.Id.set -> void
 virtual Steeltoe.Management.HttpMiddlewareOptions.Path.get -> string
 virtual Steeltoe.Management.HttpMiddlewareOptions.Path.set -> void
-virtual Steeltoe.Management.Info.AbstractConfigurationContributor.AddChildren(System.Collections.Generic.Dictionary<string, object> dict, System.Collections.Generic.IEnumerable<Microsoft.Extensions.Configuration.IConfigurationSection> sections) -> void
-virtual Steeltoe.Management.Info.AbstractConfigurationContributor.AddKeyValue(System.Collections.Generic.Dictionary<string, object> dict, string key, string value) -> void
-virtual Steeltoe.Management.Info.AbstractConfigurationContributor.Contribute(Steeltoe.Management.Info.IInfoBuilder builder, string prefix, bool keepPrefix) -> void
-virtual Steeltoe.Management.Info.AbstractConfigurationContributor.CreateDictionary(string prefix, bool keepPrefix) -> System.Collections.Generic.Dictionary<string, object>
+virtual Steeltoe.Management.Info.ConfigurationContributor.AddChildren(System.Collections.Generic.Dictionary<string, object> dict, System.Collections.Generic.IEnumerable<Microsoft.Extensions.Configuration.IConfigurationSection> sections) -> void
+virtual Steeltoe.Management.Info.ConfigurationContributor.AddKeyValue(System.Collections.Generic.Dictionary<string, object> dict, string key, string value) -> void
+virtual Steeltoe.Management.Info.ConfigurationContributor.Contribute(Steeltoe.Management.Info.IInfoBuilder builder, string prefix, bool keepPrefix) -> void
+virtual Steeltoe.Management.Info.ConfigurationContributor.CreateDictionary(string prefix, bool keepPrefix) -> System.Collections.Generic.Dictionary<string, object>
