@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
@@ -31,40 +32,39 @@ internal sealed class ActuatorEndpointMapper
     public IEndpointConventionBuilder Map(IEndpointRouteBuilder endpointRouteBuilder, ref ActuatorConventionBuilder conventionBuilder)
     {
         var collection = new HashSet<string>();
+
         conventionBuilder ??= new ActuatorConventionBuilder();
+        // Map Default configured context
+        var middlewares = _middlewares.Where(m => m is not CloudFoundryEndpointMiddleware);
+        MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, _managementOptions.CurrentValue.Path, middlewares);
 
-        foreach (EndpointContexts context in Enum.GetValues<EndpointContexts>())
+        // Map Cloudfoundry context
+        if(Platform.IsCloudFoundry)
         {
-            if (_managementOptions.CurrentValue.EndpointContexts.Contains(context))
+            var cfMiddlewares = _middlewares.Where(m => m is not ActuatorHypermediaEndpointMiddleware);
+            MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, ConfigureManagementEndpointOptions.DefaultCFPath, cfMiddlewares);
+        }
+        return conventionBuilder;
+    }
+
+    private void MapEndpoints(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder, HashSet<string> collection, string contextBasePath, IEnumerable<IEndpointMiddleware> middlewares)
+    {
+
+        foreach (IEndpointMiddleware middleware in middlewares)
+        {
+            Type middlewareType = middleware.GetType();
+            RequestDelegate pipeline = endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middlewareType).Build();
+            HttpMiddlewareOptions endpointOptions = middleware.EndpointOptions;
+            var contextPath = endpointOptions.GetPathMatchPattern(contextBasePath, _managementOptions.CurrentValue);
+            if (collection.Add(contextPath))
             {
-                ManagementEndpointOptions mgmtOption = _managementOptions.Get(context);
-
-                foreach (IEndpointMiddleware middleware in _middlewares)
-                {
-                    if ((context == EndpointContexts.Actuator && middleware is CloudFoundryEndpointMiddleware) ||
-                        (context == EndpointContexts.CloudFoundry && middleware is ActuatorHypermediaEndpointMiddleware))
-                    {
-                        continue;
-                    }
-
-                    Type middlewareType = middleware.GetType();
-                    RequestDelegate pipeline = endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middlewareType).Build();
-                    HttpMiddlewareOptions endpointOptions = middleware.EndpointOptions;
-                    string epPath = endpointOptions.GetContextPath(mgmtOption);
-
-                    if (collection.Add(epPath))
-                    {
-                        IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(epPath, endpointOptions.AllowedVerbs, pipeline);
-                        conventionBuilder.Add(builder);
-                    }
-                    else
-                    {
-                        _logger.LogError("Skipping over duplicate path at {path}", epPath);
-                    }
-                }
+                IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(contextPath, endpointOptions.AllowedVerbs, pipeline);
+                conventionBuilder.Add(builder);
+            }
+            else
+            {
+                _logger.LogError("Skipping over duplicate path at {path}", contextPath);
             }
         }
-
-        return conventionBuilder;
     }
 }

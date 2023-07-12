@@ -51,10 +51,10 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<TraceEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/httptrace", options.GetContextPath(managementOptions.Get(EndpointContexts.Actuator)));
-        Assert.Equal("/cloudfoundryapplication/httptrace", options.GetContextPath(managementOptions.Get(EndpointContexts.CloudFoundry)));
+        Assert.Equal("/actuator/httptrace", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        Assert.Equal("/cloudfoundryapplication/httptrace", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 
@@ -64,10 +64,10 @@ public class EndpointMiddlewareTest : BaseTest
         TraceEndpointOptions options = GetOptionsMonitorFromSettings<TraceEndpointOptions>()
             .Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
 
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/trace", options.GetContextPath(managementOptions.Get(EndpointContexts.Actuator)));
-        Assert.Equal("/cloudfoundryapplication/trace", options.GetContextPath(managementOptions.Get(EndpointContexts.CloudFoundry)));
+        Assert.Equal("/actuator/trace", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        Assert.Equal("/cloudfoundryapplication/trace", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 }

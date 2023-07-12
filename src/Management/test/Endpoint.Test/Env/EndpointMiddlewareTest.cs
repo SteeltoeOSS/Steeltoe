@@ -97,10 +97,10 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<EnvironmentEndpointOptions>();
 
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/env", options.GetContextPath(mgmtOptions.Get(EndpointContexts.Actuator)));
-        Assert.Equal("/cloudfoundryapplication/env", options.GetContextPath(mgmtOptions.Get(EndpointContexts.CloudFoundry)));
+        Assert.Equal("/actuator/env", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
+        Assert.Equal("/cloudfoundryapplication/env", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }

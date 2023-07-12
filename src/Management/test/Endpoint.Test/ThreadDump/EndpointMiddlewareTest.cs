@@ -103,10 +103,10 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb_V1()
     {
         ThreadDumpEndpointOptions options = GetOptionsFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/dump", options.GetContextPath(managementOptions.Get(EndpointContexts.Actuator)));
-        Assert.Equal("/cloudfoundryapplication/dump", options.GetContextPath(managementOptions.Get(EndpointContexts.CloudFoundry)));
+        Assert.Equal("/actuator/dump", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        Assert.Equal("/cloudfoundryapplication/dump", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 
@@ -114,10 +114,10 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<ThreadDumpEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/threaddump", options.GetContextPath(managementOptions.Get(EndpointContexts.Actuator)));
-        Assert.Equal("/cloudfoundryapplication/threaddump", options.GetContextPath(managementOptions.Get(EndpointContexts.CloudFoundry)));
+        Assert.Equal("/actuator/threaddump", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        Assert.Equal("/cloudfoundryapplication/threaddump", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 

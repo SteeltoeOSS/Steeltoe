@@ -27,7 +27,6 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
         services.AddCommonActuatorServices();
-
         services.ConfigureEndpointOptions<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, CloudFoundryEndpointMiddleware>());
         services.AddSingleton<CloudFoundryEndpointMiddleware>();

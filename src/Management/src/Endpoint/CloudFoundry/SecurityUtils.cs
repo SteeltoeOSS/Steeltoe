@@ -25,25 +25,21 @@ internal sealed class SecurityUtils
     public const string Bearer = "bearer";
     public const string ReadSensitiveData = "read_sensitive_data";
     private readonly CloudFoundryEndpointOptions _options;
-    private readonly ManagementEndpointOptions _managementOptions;
 
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    internal SecurityUtils(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
+    internal SecurityUtils(CloudFoundryEndpointOptions options, ILogger logger, HttpClient httpClient = null)
     {
         ArgumentGuard.NotNull(logger);
         _options = options;
-        _managementOptions = managementOptions;
         _logger = logger;
         _httpClient = httpClient;
     }
 
     internal bool IsCloudFoundryRequest(string requestPath)
     {
-        string optionsPath = _options.Path;
-
-        string contextPath = _managementOptions == null ? optionsPath : _managementOptions.Path;
+        string contextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
         return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
     }
 

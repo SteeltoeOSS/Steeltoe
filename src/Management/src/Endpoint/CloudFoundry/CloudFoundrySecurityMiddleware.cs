@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -18,33 +19,35 @@ public sealed class CloudFoundrySecurityMiddleware
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
 
-    private readonly ManagementEndpointOptions _managementOptions;
-
+    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptionsMonitor;
+    private readonly IEnumerable<HttpMiddlewareOptions> _endpointsCollection;
     private readonly SecurityUtils _base;
 
     public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger)
+        IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor, IEnumerable<HttpMiddlewareOptions> endpointsCollection, ILogger<CloudFoundrySecurityMiddleware> logger)
     {
         ArgumentGuard.NotNull(logger);
         ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(managementOptions);
+        ArgumentGuard.NotNull(managementOptionsMonitor);
+        ArgumentGuard.NotNull(endpointsCollection);
 
         _next = next;
         _logger = logger;
         _options = options;
-        _managementOptions = managementOptions.Get(EndpointContexts.CloudFoundry);
+        _managementOptionsMonitor = managementOptionsMonitor;
+        _endpointsCollection = endpointsCollection.Where(ep=> ep is not HypermediaEndpointOptions && ep is not CloudFoundryEndpointOptions);
 
-        _base = new SecurityUtils(_options.CurrentValue, managementOptions.Get(EndpointContexts.CloudFoundry), logger);
+        _base = new SecurityUtils(_options.CurrentValue, logger);
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-
+        var contextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
         CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
-        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
+        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, contextPath);
 
-        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptions) && _base.IsCloudFoundryRequest(context.Request.Path))
+        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) && _base.IsCloudFoundryRequest(context.Request.Path)) 
         {
             if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {
@@ -113,11 +116,9 @@ public sealed class CloudFoundrySecurityMiddleware
 
     private HttpMiddlewareOptions FindTargetEndpoint(PathString path)
     {
-        IList<HttpMiddlewareOptions> configEndpoints = _managementOptions.EndpointOptions;
-
-        foreach (HttpMiddlewareOptions ep in configEndpoints)
+        foreach (HttpMiddlewareOptions ep in _endpointsCollection)
         {
-            string contextPath = _managementOptions.Path;
+            string contextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
 
             if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(ep.Path))
             {
@@ -148,7 +149,7 @@ public sealed class CloudFoundrySecurityMiddleware
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
 
         // allowing override of 400-level errors is more likely to cause confusion than to be useful
-        if (_managementOptions.UseStatusCodeFromResponse || (int)error.Code < 500)
+        if (_managementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse || (int)error.Code < 500)
         {
             context.Response.StatusCode = (int)error.Code;
         }

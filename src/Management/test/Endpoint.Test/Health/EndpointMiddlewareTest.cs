@@ -314,11 +314,11 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<HealthEndpointOptions>();
 
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
 
         Assert.False(options.ExactMatch);
-        Assert.Equal("/actuator/health/{**_}", options.GetContextPath(mgmtOptions.Get(EndpointContexts.Actuator)));
-        Assert.Equal("/cloudfoundryapplication/health/{**_}", options.GetContextPath(mgmtOptions.Get(EndpointContexts.CloudFoundry)));
+        Assert.Equal("/actuator/health/{**_}", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
+        Assert.Equal("/cloudfoundryapplication/health/{**_}", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }

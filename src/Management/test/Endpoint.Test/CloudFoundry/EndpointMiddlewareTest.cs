@@ -42,7 +42,7 @@ public class EndpointMiddlewareTest : BaseTest
         var options = new HypermediaEndpointOptions();
         IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/cloudfoundryapplication", options.GetContextPath(mgmtOptions.Get(EndpointContexts.CloudFoundry)));
+        Assert.Equal("/cloudfoundryapplication", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath,mgmtOptions.CurrentValue));
 
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);

@@ -13,23 +13,23 @@ namespace Steeltoe.Management.Endpoint.ManagementPort;
 internal sealed class ManagementPortMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
+    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptionsMonitor;
     private readonly ILogger<ManagementPortMiddleware> _logger;
 
-    public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor,
         ILogger<ManagementPortMiddleware> logger)
     {
         ArgumentGuard.NotNull(logger);
 
         _next = next;
-        _managementOptions = managementOptions;
+        _managementOptionsMonitor = managementOptionsMonitor;
         _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-        ManagementEndpointOptions mgmtOptions = _managementOptions.Get(EndpointContexts.Actuator);
+        ManagementEndpointOptions mgmtOptions = _managementOptionsMonitor.CurrentValue;
         _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
 
         string contextPath = mgmtOptions.Path;

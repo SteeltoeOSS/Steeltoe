@@ -141,10 +141,10 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<LoggersEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.False(options.ExactMatch);
-        Assert.Equal("/actuator/loggers/{**_}", options.GetContextPath(managementOptions.Get(EndpointContexts.Actuator)));
-        Assert.Equal("/cloudfoundryapplication/loggers/{**_}", options.GetContextPath(managementOptions.Get(EndpointContexts.CloudFoundry)));
+        Assert.Equal("/actuator/loggers/{**_}", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        Assert.Equal("/cloudfoundryapplication/loggers/{**_}", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
 
         Assert.Collection(options.AllowedVerbs, verb => Assert.Contains("Get", verb, StringComparison.Ordinal),
             verb => Assert.Contains("Post", verb, StringComparison.Ordinal));

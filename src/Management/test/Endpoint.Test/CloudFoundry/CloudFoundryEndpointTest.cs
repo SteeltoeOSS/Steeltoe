@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Moq;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
@@ -95,7 +96,7 @@ public class CloudFoundryEndpointTest : BaseTest
     }
 
     [Fact]
-    public async Task Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
+    public void Invoke_CloudFoundryDisable_DoesNotInvoke()
     {
         using var tc = new TestContext(_output);
 
@@ -114,11 +115,8 @@ public class CloudFoundryEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
-
-        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        Assert.NotNull(info);
-        Assert.NotNull(info.LinkCollection);
-        Assert.Empty(info.LinkCollection);
+        var middle = tc.GetService<CloudFoundryEndpointMiddleware>();
+        bool shouldInvoke = middle.ShouldInvoke(new Microsoft.AspNetCore.Http.PathString("/cloudfoundryapplication/info"));
+        Assert.False(shouldInvoke);
     }
 }

@@ -92,10 +92,10 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<HeapDumpEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/heapdump", options.GetContextPath(managementOptions.Get(EndpointContexts.Actuator)));
-        Assert.Equal("/cloudfoundryapplication/heapdump", options.GetContextPath(managementOptions.Get(EndpointContexts.CloudFoundry)));
+        Assert.Equal("/actuator/heapdump", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        Assert.Equal("/cloudfoundryapplication/heapdump", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 

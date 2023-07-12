@@ -36,24 +36,27 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         _logger = loggerFactory.CreateLogger(GetType());
     }
 
-    public virtual bool ShouldInvoke(HttpContext context)
+    public virtual bool ShouldInvoke(PathString requestPath)
     {
-        ArgumentGuard.NotNull(context);
-        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptionsMonitor.GetFromContextPath(context.Request.Path, out EndpointContexts endpointContext);
+        ArgumentGuard.NotNull(requestPath);
+        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptionsMonitor.CurrentValue;
         HttpMiddlewareOptions endpointOptions = EndpointHandler.Options;
         bool enabled = endpointOptions.IsEnabled(mgmtOptions);
         bool exposed = endpointOptions.IsExposed(mgmtOptions);
 
-        bool isCFContext = endpointContext == EndpointContexts.CloudFoundry;
-        _logger.LogDebug($"endpointHandler: {endpointOptions.Id}, contextPath: {context.Request.Path}, enabled: {enabled}, exposed: {exposed}");
-        return enabled && (exposed || isCFContext);
+        bool isCFContext = requestPath.StartsWithSegments(ConfigureManagementEndpointOptions.DefaultCFPath);
+         bool returnValue = isCFContext ?
+            mgmtOptions.CloudFoundryEnabled && enabled
+            : enabled && exposed ;
+        _logger.LogDebug($"Returned {returnValue} for endpointHandler: {endpointOptions.Id}, contextPath: {requestPath}, enabled: {enabled}, exposed: {exposed}, isCfContext: {isCFContext}, cfEnabled: {mgmtOptions.CloudFoundryEnabled}");
+        return returnValue;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         ArgumentGuard.NotNull(context);
 
-        if (ShouldInvoke(context))
+        if (ShouldInvoke(context.Request.Path))
         {
             TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
             await WriteResponseAsync(result, context, context.RequestAborted);

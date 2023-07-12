@@ -12,15 +12,15 @@ public sealed class ManagementEndpointOptions
 {
     public bool? Enabled { get; set; }
 
+    public bool CloudFoundryEnabled { get; set; } = true;
+
     public bool? Sensitive { get; set; }
 
     public string Path { get; set; }
 
     public string Port { get; set; }
 
-    public IList<HttpMiddlewareOptions> EndpointOptions { get; set; }
 
-    public IList<EndpointContexts> EndpointContexts { get; set; } = new List<EndpointContexts>();
     public bool UseStatusCodeFromResponse { get; set; } = true;
 
     public JsonSerializerOptions SerializerOptions { get; set; } = new()

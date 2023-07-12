@@ -11,32 +11,24 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
-internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<ManagementEndpointOptions>
+internal class ConfigureManagementEndpointOptions : IConfigureOptions<ManagementEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints";
     private const string CloudFoundryEnabledPrefix = "management:cloudfoundry:enabled";
     private const string DefaultPath = "/actuator";
-    private const string DefaultCFPath = "/cloudfoundryapplication";
+    internal const string DefaultCFPath = "/cloudfoundryapplication";
     private readonly IConfiguration _configuration;
-    private readonly IEnumerable<HttpMiddlewareOptions> _endpoints;
 
-    public ConfigureManagementEndpointOptions(IConfiguration configuration, IEnumerable<HttpMiddlewareOptions> endpointsCollection)
+    public ConfigureManagementEndpointOptions(IConfiguration configuration)
     {
         _configuration = configuration;
-        _endpoints = endpointsCollection;
     }
 
-    public virtual void Configure(string name, ManagementEndpointOptions options)
+    public virtual void Configure(ManagementEndpointOptions options)
     {
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 
-        // Regardless of the name, configure the available contexts
-        options.EndpointContexts.Add(EndpointContexts.Actuator);
-
-        if (Platform.IsCloudFoundry)
-        {
-            options.EndpointContexts.Add(EndpointContexts.CloudFoundry);
-        }
+        options.CloudFoundryEnabled = !bool.TryParse(_configuration[CloudFoundryEnabledPrefix], out bool cfEnabled) || cfEnabled; // Default true
 
         foreach (string converterTypeName in options.CustomJsonConverters ?? Array.Empty<string>())
         {
@@ -49,35 +41,9 @@ internal class ConfigureManagementEndpointOptions : IConfigureNamedOptions<Manag
             }
         }
 
-        if (name == EndpointContexts.Actuator.ToString())
-        {
-            options.Path ??= DefaultPath;
+        options.Path ??= DefaultPath;
 
-            options.Exposure = new Exposure(_configuration);
-
-            options.EndpointOptions = new List<HttpMiddlewareOptions>(_endpoints.Where(e => e is not CloudFoundryEndpointOptions));
-        }
-        else if (name == EndpointContexts.CloudFoundry.ToString())
-        {
-            options.Path = DefaultCFPath;
-            string cfEnabledConfig = _configuration.GetSection(CloudFoundryEnabledPrefix).Value;
-
-            if (cfEnabledConfig != null)
-            {
-                options.Enabled = !string.Equals(_configuration.GetSection(CloudFoundryEnabledPrefix).Value, "false", StringComparison.OrdinalIgnoreCase);
-            }
-            else
-            {
-                options.Enabled ??= true;
-            }
-
-            options.Exposure = new Exposure(true);
-            options.EndpointOptions = new List<HttpMiddlewareOptions>(_endpoints.Where(e => e is not HypermediaEndpointOptions));
-        }
+        options.Exposure = new Exposure(_configuration);
     }
-
-    public void Configure(ManagementEndpointOptions options)
-    {
-        throw new NotImplementedException();
-    }
+      
 }

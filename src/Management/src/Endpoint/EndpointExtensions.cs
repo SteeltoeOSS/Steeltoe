@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -55,31 +57,19 @@ internal static class EndPointExtensions
 
         return true;
     }
-
-    public static ManagementEndpointOptions GetFromContextPath(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path,
-        out EndpointContexts endpointContext)
+    public static string GetContextBasePath(this ManagementEndpointOptions managementOptions, HttpRequest httpRequest)
     {
-        foreach (EndpointContexts context in Enum.GetValues<EndpointContexts>())
-        {
-            ManagementEndpointOptions options = managementOptions.Get(context);
+        var defaultCFContextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
 
-            if (path.StartsWithSegments(new PathString(options.Path)))
-            {
-                endpointContext = context;
-                return options;
-            }
-        }
+        return httpRequest.Path.StartsWithSegments(defaultCFContextPath) ? defaultCFContextPath : $"{managementOptions.Path}";
 
-        endpointContext = EndpointContexts.Actuator;
-        return managementOptions.Get(endpointContext);
     }
-
-    public static string GetContextPath(this HttpMiddlewareOptions options, ManagementEndpointOptions managementOptions)
+    public static string GetPathMatchPattern(this HttpMiddlewareOptions options, string contextBasePath, ManagementEndpointOptions managementOptions)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptions);
 
-        string contextPath = managementOptions.Path;
+        string contextPath = contextBasePath;
 
         if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(options.Path))
         {
