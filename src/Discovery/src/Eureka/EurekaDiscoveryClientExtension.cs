@@ -120,7 +120,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
             "Steeltoe.Management.HttpMiddlewareOptions"
         });
 
-        object actuatorOptions = GetOptionsMonitor(serviceProvider, mgmtOptionsType, "Actuator");
+        object actuatorOptions = GetOptionsMonitor(serviceProvider, mgmtOptionsType);
         string basePath = $"{(string)actuatorOptions.GetType().GetProperty("Path")?.GetValue(actuatorOptions)}/";
 
         object healthOptions = ConfigureTOptions(serviceProvider, configuration, endpointAssembly,
@@ -175,19 +175,11 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
         return options;
     }
 
-    private static object GetOptionsMonitor(IServiceProvider serviceProvider, Type tOptions, string name = "")
+    private static object GetOptionsMonitor(IServiceProvider serviceProvider, Type tOptions)
     {
         Type optionsMonitor = typeof(IOptionsMonitor<>);
         Type genericOptions = optionsMonitor.MakeGenericType(tOptions);
         object optionsMonitorT = serviceProvider.GetService(genericOptions);
-
-        if (!string.IsNullOrEmpty(name))
-        {
-            return genericOptions.GetMethod("Get").Invoke(optionsMonitorT, new[]
-            {
-                name
-            });
-        }
 
         return genericOptions.GetProperty("CurrentValue")?.GetValue(optionsMonitorT);
     }
