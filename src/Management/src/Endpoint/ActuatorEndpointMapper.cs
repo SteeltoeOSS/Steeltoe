@@ -35,27 +35,29 @@ internal sealed class ActuatorEndpointMapper
 
         conventionBuilder ??= new ActuatorConventionBuilder();
         // Map Default configured context
-        var middlewares = _middlewares.Where(m => m is not CloudFoundryEndpointMiddleware);
+        IEnumerable<IEndpointMiddleware> middlewares = _middlewares.Where(m => m is not CloudFoundryEndpointMiddleware);
         MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, _managementOptions.CurrentValue.Path, middlewares);
 
         // Map Cloudfoundry context
-        if(Platform.IsCloudFoundry)
+        if (Platform.IsCloudFoundry)
         {
-            var cfMiddlewares = _middlewares.Where(m => m is not ActuatorHypermediaEndpointMiddleware);
+            IEnumerable<IEndpointMiddleware> cfMiddlewares = _middlewares.Where(m => m is not ActuatorHypermediaEndpointMiddleware);
             MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, ConfigureManagementEndpointOptions.DefaultCFPath, cfMiddlewares);
         }
+
         return conventionBuilder;
     }
 
-    private void MapEndpoints(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder, HashSet<string> collection, string contextBasePath, IEnumerable<IEndpointMiddleware> middlewares)
+    private void MapEndpoints(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder, HashSet<string> collection,
+        string contextBasePath, IEnumerable<IEndpointMiddleware> middlewares)
     {
-
         foreach (IEndpointMiddleware middleware in middlewares)
         {
             Type middlewareType = middleware.GetType();
             RequestDelegate pipeline = endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middlewareType).Build();
             HttpMiddlewareOptions endpointOptions = middleware.EndpointOptions;
-            var contextPath = endpointOptions.GetPathMatchPattern(contextBasePath, _managementOptions.CurrentValue);
+            string contextPath = endpointOptions.GetPathMatchPattern(contextBasePath, _managementOptions.CurrentValue);
+
             if (collection.Add(contextPath))
             {
                 IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(contextPath, endpointOptions.AllowedVerbs, pipeline);

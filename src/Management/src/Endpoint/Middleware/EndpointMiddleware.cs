@@ -45,10 +45,11 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         bool exposed = endpointOptions.IsExposed(mgmtOptions);
 
         bool isCFContext = requestPath.StartsWithSegments(ConfigureManagementEndpointOptions.DefaultCFPath);
-         bool returnValue = isCFContext ?
-            mgmtOptions.CloudFoundryEnabled && enabled
-            : enabled && exposed ;
-        _logger.LogDebug($"Returned {returnValue} for endpointHandler: {endpointOptions.Id}, contextPath: {requestPath}, enabled: {enabled}, exposed: {exposed}, isCfContext: {isCFContext}, cfEnabled: {mgmtOptions.CloudFoundryEnabled}");
+        bool returnValue = isCFContext ? mgmtOptions.CloudFoundryEnabled && enabled : enabled && exposed;
+
+        _logger.LogDebug(
+            $"Returned {returnValue} for endpointHandler: {endpointOptions.Id}, contextPath: {requestPath}, enabled: {enabled}, exposed: {exposed}, isCfContext: {isCFContext}, cfEnabled: {mgmtOptions.CloudFoundryEnabled}");
+
         return returnValue;
     }
 

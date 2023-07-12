@@ -24,7 +24,8 @@ public sealed class CloudFoundrySecurityMiddleware
     private readonly SecurityUtils _base;
 
     public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor, IEnumerable<HttpMiddlewareOptions> endpointsCollection, ILogger<CloudFoundrySecurityMiddleware> logger)
+        IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor, IEnumerable<HttpMiddlewareOptions> endpointsCollection,
+        ILogger<CloudFoundrySecurityMiddleware> logger)
     {
         ArgumentGuard.NotNull(logger);
         ArgumentGuard.NotNull(options);
@@ -35,7 +36,7 @@ public sealed class CloudFoundrySecurityMiddleware
         _logger = logger;
         _options = options;
         _managementOptionsMonitor = managementOptionsMonitor;
-        _endpointsCollection = endpointsCollection.Where(ep=> ep is not HypermediaEndpointOptions && ep is not CloudFoundryEndpointOptions);
+        _endpointsCollection = endpointsCollection.Where(ep => ep is not HypermediaEndpointOptions && ep is not CloudFoundryEndpointOptions);
 
         _base = new SecurityUtils(_options.CurrentValue, logger);
     }
@@ -43,11 +44,11 @@ public sealed class CloudFoundrySecurityMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-        var contextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
+        string contextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
         CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
         _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, contextPath);
 
-        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) && _base.IsCloudFoundryRequest(context.Request.Path)) 
+        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) && _base.IsCloudFoundryRequest(context.Request.Path))
         {
             if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {

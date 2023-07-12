@@ -20,7 +20,6 @@ public sealed class ManagementEndpointOptions
 
     public string Port { get; set; }
 
-
     public bool UseStatusCodeFromResponse { get; set; } = true;
 
     public JsonSerializerOptions SerializerOptions { get; set; } = new()

@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Options;
@@ -144,7 +143,9 @@ public class EndpointMiddlewareTest : BaseTest
         ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.False(options.ExactMatch);
         Assert.Equal("/actuator/loggers/{**_}", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
-        Assert.Equal("/cloudfoundryapplication/loggers/{**_}", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
+
+        Assert.Equal("/cloudfoundryapplication/loggers/{**_}",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
 
         Assert.Collection(options.AllowedVerbs, verb => Assert.Contains("Get", verb, StringComparison.Ordinal),
             verb => Assert.Contains("Post", verb, StringComparison.Ordinal));

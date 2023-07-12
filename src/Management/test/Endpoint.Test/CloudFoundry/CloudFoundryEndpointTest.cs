@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Moq;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
@@ -116,7 +116,7 @@ public class CloudFoundryEndpointTest : BaseTest
         };
 
         var middle = tc.GetService<CloudFoundryEndpointMiddleware>();
-        bool shouldInvoke = middle.ShouldInvoke(new Microsoft.AspNetCore.Http.PathString("/cloudfoundryapplication/info"));
+        bool shouldInvoke = middle.ShouldInvoke(new PathString("/cloudfoundryapplication/info"));
         Assert.False(shouldInvoke);
     }
 }

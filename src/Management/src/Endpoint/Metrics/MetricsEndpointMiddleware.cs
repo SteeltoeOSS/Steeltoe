@@ -43,8 +43,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
     internal string GetMetricName(HttpRequest request)
     {
-
-        var contextBasePath = ManagementEndpointOptionsMonitor.CurrentValue.GetContextBasePath(request);
+        string contextBasePath = ManagementEndpointOptionsMonitor.CurrentValue.GetContextBasePath(request);
 
         string path = $"{contextBasePath}/{EndpointHandler.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
         string metricName = GetMetricName(request, path);

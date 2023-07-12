@@ -78,8 +78,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     {
         IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
 
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions =
-            GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var ep = new MetricsEndpointHandler(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
@@ -149,8 +148,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     {
         IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
 
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions =
-            GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
 
@@ -170,8 +168,7 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     {
         IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
 
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions =
-            GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
         AggregationManager aggManager = GetTestMetrics(exporter);
@@ -203,7 +200,10 @@ public class MetricsEndpointMiddlewareTest : BaseTest
         ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.False(options.ExactMatch);
         Assert.Equal("/actuator/metrics/{**_}", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
-        Assert.Equal("/cloudfoundryapplication/metrics/{**_}", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
+
+        Assert.Equal("/cloudfoundryapplication/metrics/{**_}",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
+
         Assert.Contains("Get", options.AllowedVerbs);
     }
 

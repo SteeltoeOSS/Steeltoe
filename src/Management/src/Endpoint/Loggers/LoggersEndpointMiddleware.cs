@@ -41,7 +41,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
         {
             // POST - change a logger level
             _logger.LogDebug("Incoming path: {path}", request.Path.Value);
-            var contextBasePath = ManagementEndpointOptionsMonitor.CurrentValue.GetContextBasePath(context.Request);
+            string contextBasePath = ManagementEndpointOptionsMonitor.CurrentValue.GetContextBasePath(context.Request);
 
             string path = EndpointOptions.Path;
 

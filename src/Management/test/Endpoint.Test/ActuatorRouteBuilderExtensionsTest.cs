@@ -64,7 +64,6 @@ public class ActuatorRouteBuilderExtensionsTest
         }).ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
     }
 
-   
     private async Task ActAndAssertAsync(IHostBuilder hostBuilder, bool expectedSuccess)
     {
         using IHost host = await hostBuilder.StartAsync();
@@ -74,7 +73,7 @@ public class ActuatorRouteBuilderExtensionsTest
 
         foreach (HttpMiddlewareOptions options in optionsCollection)
         {
-            var mgmtOptions = host.Services.GetService<IOptionsMonitor<ManagementEndpointOptions>>().CurrentValue;
+            ManagementEndpointOptions mgmtOptions = host.Services.GetService<IOptionsMonitor<ManagementEndpointOptions>>().CurrentValue;
             string path = options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions);
             path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
             Assert.NotNull(path);

@@ -2,12 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -57,13 +54,14 @@ internal static class EndPointExtensions
 
         return true;
     }
+
     public static string GetContextBasePath(this ManagementEndpointOptions managementOptions, HttpRequest httpRequest)
     {
-        var defaultCFContextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
+        string defaultCFContextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
 
         return httpRequest.Path.StartsWithSegments(defaultCFContextPath) ? defaultCFContextPath : $"{managementOptions.Path}";
-
     }
+
     public static string GetPathMatchPattern(this HttpMiddlewareOptions options, string contextBasePath, ManagementEndpointOptions managementOptions)
     {
         ArgumentGuard.NotNull(options);
