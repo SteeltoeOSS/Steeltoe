@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
-public sealed class AspNetCoreRouteDetails : IRouteDetails
+public class AspNetCoreRouteDetails
 {
     public IList<string> HttpMethods { get; set; }
 

@@ -29,7 +29,7 @@ public class ApplicationMappingsTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var routeDetail = new TestRouteDetails
+        var routeDetail = new AspNetCoreRouteDetails
         {
             HttpMethods = new List<string>
             {

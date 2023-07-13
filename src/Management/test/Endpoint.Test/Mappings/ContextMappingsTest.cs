@@ -30,7 +30,7 @@ public class ContextMappingsTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var routeDetail = new TestRouteDetails
+        var routeDetail = new AspNetCoreRouteDetails
         {
             HttpMethods = new List<string>
             {

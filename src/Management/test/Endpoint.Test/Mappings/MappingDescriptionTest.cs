@@ -12,7 +12,7 @@ public class MappingDescriptionTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        var routeDetail = new TestRouteDetails
+        var routeDetail = new AspNetCoreRouteDetails
         {
             HttpMethods = new List<string>
             {
@@ -39,7 +39,7 @@ public class MappingDescriptionTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var routeDetail = new TestRouteDetails
+        var routeDetail = new AspNetCoreRouteDetails
         {
             HttpMethods = new List<string>
             {

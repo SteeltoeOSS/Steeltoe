@@ -74,8 +74,8 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         foreach (ApiDescription desc in apiContext.Results)
         {
             var descriptor = desc.ActionDescriptor as ControllerActionDescriptor;
-            IRouteDetails details = GetRouteDetails(desc);
-            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<RouteMappingDescription> mapList);
+            AspNetCoreRouteDetails details = GetRouteDetails(desc);
+            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<MappingDescription> mapList);
 
             if (mapList == null)
             {
@@ -97,8 +97,8 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
                     continue;
                 }
 
-                IRouteDetails details = GetRouteDetails(desc);
-                mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<RouteMappingDescription> mapList);
+                AspNetCoreRouteDetails details = GetRouteDetails(desc);
+                mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<MappingDescription> mapList);
 
                 if (mapList == null)
                 {
@@ -114,7 +114,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         return mappingDescriptions;
     }
 
-    internal IRouteDetails GetRouteDetails(ApiDescription desc)
+    protected internal AspNetCoreRouteDetails GetRouteDetails(ApiDescription desc)
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
@@ -155,7 +155,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         return routeDetails;
     }
 
-    internal IRouteDetails GetRouteDetails(ActionDescriptor desc)
+    protected internal AspNetCoreRouteDetails GetRouteDetails(ActionDescriptor desc)
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
@@ -196,7 +196,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         return routeDetails;
     }
 
-    internal IRouteDetails GetRouteDetails(Route route)
+    protected internal AspNetCoreRouteDetails GetRouteDetails(Route route)
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
@@ -218,8 +218,8 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         {
             if (router is Route route)
             {
-                IRouteDetails details = GetRouteDetails(route);
-                desc.TryGetValue("CoreRouteHandler", out IList<RouteMappingDescription> mapList);
+                AspNetCoreRouteDetails details = GetRouteDetails(route);
+                desc.TryGetValue("CoreRouteHandler", out IList<MappingDescription> mapList);
 
                 if (mapList == null)
                 {
