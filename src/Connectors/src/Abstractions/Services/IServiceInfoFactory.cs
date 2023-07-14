@@ -6,7 +6,7 @@ using Steeltoe.Configuration;
 
 namespace Steeltoe.Connectors.Services;
 
-public interface IServiceInfoFactory
+internal interface IServiceInfoFactory
 {
     /// <summary>
     /// Check if this factory can create <see cref="IServiceInfo" /> from the given binding.

@@ -11,21 +11,20 @@ using Steeltoe.Discovery.Client;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public static class EurekaPostConfigurer
+internal static class EurekaPostConfigurer
 {
-    internal const string EurekaUriSuffix = "/eureka/";
+    private const string EurekaUriSuffix = "/eureka/";
 
-    internal const string RouteRegistrationMethod = "route";
-    internal const string DirectRegistrationMethod = "direct";
-    internal const string HostRegistrationMethod = "hostname";
+    private const string RouteRegistrationMethod = "route";
+    private const string DirectRegistrationMethod = "direct";
+    private const string HostRegistrationMethod = "hostname";
+    private const string SpringCloudDiscoveryRegistrationMethodKey = "spring:cloud:discovery:registrationMethod";
 
     internal const string CFAppGuid = "cfAppGuid";
     internal const string CFInstanceIndex = "cfInstanceIndex";
-    internal const string SurgicalRoutingHeader = "X-CF-APP-INSTANCE";
     internal const string InstanceId = "instanceId";
     internal const string Zone = "zone";
     internal const string UnknownZone = "unknown";
-    public const string SpringCloudDiscoveryRegistrationMethodKey = "spring:cloud:discovery:registrationMethod";
 
     /// <summary>
     /// Update <see cref="EurekaClientOptions" /> with information from the runtime environment.

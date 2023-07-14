@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Reflection;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
@@ -249,11 +247,16 @@ public sealed class RedisConnectorTests
         await using WebApplication app = builder.Build();
 
         IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        healthContributors.Should().AllBeOfType<RedisHealthContributor>();
+        RedisHealthContributor[] redisHealthContributors = healthContributors.Should().AllBeOfType<RedisHealthContributor>().Subject.ToArray();
+        redisHealthContributors.Should().HaveCount(2);
 
-        healthContributors.Should().HaveCount(2);
-        healthContributors[0].Id.Should().Be("Redis-myRedisServiceOne");
-        healthContributors[1].Id.Should().Be("Redis-myRedisServiceTwo");
+        redisHealthContributors[0].Id.Should().Be("Redis");
+        redisHealthContributors[0].ServiceName.Should().Be("myRedisServiceOne");
+        redisHealthContributors[0].Host.Should().Be("server1");
+
+        redisHealthContributors[1].Id.Should().Be("Redis");
+        redisHealthContributors[1].ServiceName.Should().Be("myRedisServiceTwo");
+        redisHealthContributors[1].Host.Should().Be("server2");
     }
 
     [Fact]

@@ -43,7 +43,7 @@ public sealed class RedisConnectionStringBuilderTests
     {
         var builder = new RedisConnectionStringBuilder();
 
-        object port = builder["port"];
+        object? port = builder["port"];
 
         port.Should().BeNull();
     }
@@ -66,7 +66,7 @@ public sealed class RedisConnectionStringBuilderTests
             ["some"] = "other"
         };
 
-        object value = builder["some"];
+        object? value = builder["some"];
         value.Should().Be("other");
     }
 }

@@ -2,8 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -18,11 +17,44 @@ namespace Steeltoe.Connectors.Redis;
 
 public static class RedisServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RedisOptions" /> and
+    /// StackExchange.Redis.IConnectionMultiplexer) to connect to a Redis database. If Microsoft.Extensions.Caching.StackExchangeRedis is referenced, this
+    /// method additionally registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> with type parameters <see cref="RedisOptions" /> and
+    /// <see cref="IDistributedCache" />.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddRedis(services, configuration, null);
+        return AddRedis(services, configuration, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default);
     }
 
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RedisOptions" /> and
+    /// StackExchange.Redis.IConnectionMultiplexer) to connect to a Redis database. If Microsoft.Extensions.Caching.StackExchangeRedis is referenced, this
+    /// method additionally registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> with type parameters <see cref="RedisOptions" /> and
+    /// <see cref="IDistributedCache" />.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <param name="addAction">
+    /// An optional delegate to configure this connector.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddRedis(services, configuration, StackExchangeRedisPackageResolver.Default, MicrosoftRedisPackageResolver.Default, addAction);
@@ -30,7 +62,7 @@ public static class RedisServiceCollectionExtensions
 
     private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration,
         StackExchangeRedisPackageResolver stackExchangeRedisPackageResolver, MicrosoftRedisPackageResolver microsoftRedisPackageResolver,
-        Action<ConnectorAddOptionsBuilder>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -41,7 +73,7 @@ public static class RedisServiceCollectionExtensions
         {
             var optionsBuilder = new ConnectorAddOptionsBuilder(
                 (serviceProvider, serviceBindingName) => CreateConnectionMultiplexer(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver),
-                (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, stackExchangeRedisPackageResolver))
+                CreateHealthContributor)
             {
                 // From https://github.com/StackExchange/StackExchange.Redis/blob/main/docs/Basics.md:
                 //   "Because the ConnectionMultiplexer does a lot, it is designed to be shared and reused between callers.
@@ -71,34 +103,19 @@ public static class RedisServiceCollectionExtensions
         return services;
     }
 
-    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
-        StackExchangeRedisPackageResolver packageResolver)
+    private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName)
     {
-        ConnectorFactoryShim<RedisOptions> connectorFactoryShim =
-            ConnectorFactoryShim<RedisOptions>.FromServiceProvider(serviceProvider, packageResolver.ConnectionMultiplexerInterface.Type);
+        // Not using the Steeltoe ConnectorFactory here, because obtaining a connection throws when Redis is down at application startup.
 
-        ConnectorShim<RedisOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+        string? connectionString = optionsMonitor.Get(serviceBindingName).ConnectionString;
 
-        object redisClient = connectorShim.GetConnection();
-        string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<RedisHealthContributor>>();
 
-        return new RedisHealthContributor(redisClient, $"Redis-{serviceBindingName}", hostName, logger);
-    }
-
-    private static string GetHostNameFromConnectionString(string? connectionString)
-    {
-        if (connectionString == null)
+        return new RedisHealthContributor(connectionString!, logger)
         {
-            return string.Empty;
-        }
-
-        var builder = new RedisConnectionStringBuilder
-        {
-            ConnectionString = connectionString
+            ServiceName = serviceBindingName
         };
-
-        return (string)builder["host"]!;
     }
 
     private static IDisposable CreateConnectionMultiplexer(IServiceProvider serviceProvider, string serviceBindingName,
@@ -107,8 +124,8 @@ public static class RedisServiceCollectionExtensions
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
         RedisOptions options = optionsMonitor.Get(serviceBindingName);
 
-        ConnectionMultiplexerShim connectionMultiplexerShim = ConnectionMultiplexerShim.Connect(packageResolver, options.ConnectionString!);
-        return connectionMultiplexerShim.Instance;
+        ConnectionMultiplexerInterfaceShim connectionMultiplexerInterfaceShim = ConnectionMultiplexerShim.Connect(packageResolver, options.ConnectionString!);
+        return connectionMultiplexerInterfaceShim.Instance;
     }
 
     private static object CreateDistributedCache(ConnectorCreateConnection stackExchangeCreateConnection, IServiceProvider serviceProvider,

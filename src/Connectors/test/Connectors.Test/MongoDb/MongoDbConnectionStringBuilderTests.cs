@@ -79,7 +79,7 @@ public sealed class MongoDbConnectionStringBuilderTests
     {
         var builder = new MongoDbConnectionStringBuilder();
 
-        object port = builder["port"];
+        object? port = builder["port"];
 
         port.Should().BeNull();
     }
@@ -102,7 +102,7 @@ public sealed class MongoDbConnectionStringBuilderTests
             ["some"] = "other"
         };
 
-        object value = builder["some"];
+        object? value = builder["some"];
         value.Should().Be("other");
     }
 }

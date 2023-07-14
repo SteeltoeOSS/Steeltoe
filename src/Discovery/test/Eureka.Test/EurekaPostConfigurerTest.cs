@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connectors;
+using Steeltoe.Connectors.CloudFoundry;
 using Steeltoe.Connectors.Services;
 using Xunit;
 

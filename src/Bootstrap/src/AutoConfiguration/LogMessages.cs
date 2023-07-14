@@ -11,7 +11,6 @@ internal static class LogMessages
 
     public const string WireCloudFoundryConfiguration = "Configured Cloud Foundry configuration provider";
     public const string WireKubernetesConfiguration = "Configured Kubernetes configuration provider";
-    public const string WireConnectorsConfiguration = "Configured connector configuration provider";
     public const string WireConfigServerConfiguration = "Configured Config Server configuration provider";
     public const string WirePlaceholderConfiguration = "Configured placeholder configuration provider";
     public const string WireRandomValueConfiguration = "Configured random value configuration provider";

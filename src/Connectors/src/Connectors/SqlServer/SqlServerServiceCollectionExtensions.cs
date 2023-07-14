@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,18 +17,47 @@ namespace Steeltoe.Connectors.SqlServer;
 
 public static class SqlServerServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="SqlServerOptions" /> and
+    /// Microsoft.Data.SqlClient.SqlConnection or System.Data.SqlClient.SqlConnection) to connect to a SQL Server database.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddSqlServer(services, configuration, null);
+        return AddSqlServer(services, configuration, SqlServerPackageResolver.Default);
     }
 
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="SqlServerOptions" /> and
+    /// Microsoft.Data.SqlClient.SqlConnection or System.Data.SqlClient.SqlConnection) to connect to a SQL Server database.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <param name="addAction">
+    /// An optional delegate to configure this connector.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddSqlServer(services, configuration, SqlServerPackageResolver.Default, addAction);
     }
 
     internal static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration, SqlServerPackageResolver packageResolver,
-        Action<ConnectorAddOptionsBuilder>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -68,9 +95,12 @@ public static class SqlServerServiceCollectionExtensions
 
         var connection = (DbConnection)connectorShim.GetConnection();
         string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
-        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();
+        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDatabaseHealthContributor>>();
 
-        return new RelationalDbHealthContributor(connection, $"SqlServer-{serviceBindingName}", hostName, logger);
+        return new RelationalDatabaseHealthContributor(connection, hostName, logger)
+        {
+            ServiceName = serviceBindingName
+        };
     }
 
     private static string GetHostNameFromConnectionString(SqlServerPackageResolver packageResolver, string? connectionString)
