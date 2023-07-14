@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using System;
 
 namespace Steeltoe.Common.Security;
 
@@ -23,11 +22,6 @@ public class PemCertificateProvider : ConfigurationProvider
     public override void Load()
     {
         // for future use
-    }
-
-    public override void Set(string key, string value)
-    {
-        throw new InvalidOperationException();
     }
 
     public override bool TryGet(string key, out string value)
