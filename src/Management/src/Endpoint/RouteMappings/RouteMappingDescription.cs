@@ -22,7 +22,7 @@ public sealed class RouteMappingDescription
     [JsonPropertyName("details")]
     public object Details { get; } // Always null for .NET
 
-    public MappingDescription(string routeHandler, AspNetCoreRouteDetails routeDetails)
+    public RouteMappingDescription(string routeHandler, AspNetCoreRouteDetails routeDetails)
     {
         ArgumentGuard.NotNull(routeDetails);
         ArgumentGuard.NotNull(routeHandler);
@@ -31,7 +31,7 @@ public sealed class RouteMappingDescription
         Handler = routeHandler;
     }
 
-    public MappingDescription(MethodInfo routeHandler, AspNetCoreRouteDetails routeDetails)
+    public RouteMappingDescription(MethodInfo routeHandler, AspNetCoreRouteDetails routeDetails)
     {
         ArgumentGuard.NotNull(routeHandler);
         ArgumentGuard.NotNull(routeDetails);
