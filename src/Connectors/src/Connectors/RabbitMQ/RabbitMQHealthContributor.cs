@@ -4,110 +4,93 @@
 
 using System.Reflection;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
-using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
-public class RabbitMQHealthContributor : IHealthContributor
+internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposable
 {
     private readonly ILogger<RabbitMQHealthContributor> _logger;
-    private readonly object _connFactory;
-    private readonly string _hostName;
-    private object _connection;
+    private readonly ConnectionFactoryInterfaceShim _connectionFactoryInterfaceShim;
+    private ConnectionInterfaceShim? _connectionInterfaceShim;
 
     public string Id { get; } = "RabbitMQ";
+    public string Host { get; }
+    public string? ServiceName { get; set; }
 
-    public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
+    public RabbitMQHealthContributor(object connectionFactory, string host, ILogger<RabbitMQHealthContributor> logger)
     {
-        _logger = logger;
-        _connFactory = factory.Create(null);
-    }
-
-    internal RabbitMQHealthContributor(object connection, string serviceName, string hostName, ILogger<RabbitMQHealthContributor> logger)
-    {
-        ArgumentGuard.NotNull(connection);
-        ArgumentGuard.NotNull(serviceName);
         ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNullOrEmpty(host);
+        ArgumentGuard.NotNull(connectionFactory);
 
-        _connection = connection;
-        Id = serviceName;
-        _hostName = hostName;
+        _connectionFactoryInterfaceShim = new ConnectionFactoryInterfaceShim(RabbitMQPackageResolver.Default, connectionFactory);
+        Host = host;
         _logger = logger;
-    }
-
-    public static IHealthContributor GetRabbitMQContributor(IConfiguration configuration, ILogger<RabbitMQHealthContributor> logger = null)
-    {
-        ArgumentGuard.NotNull(configuration);
-
-        Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
-
-        var info = configuration.GetSingletonServiceInfo<RabbitMQServiceInfo>();
-
-        var options = new RabbitMQProviderConnectorOptions(configuration);
-        var factory = new RabbitMQProviderConnectorFactory(info, options, rabbitMQImplementationType);
-        return new RabbitMQHealthContributor(factory, logger);
     }
 
     public HealthCheckResult Health()
     {
-        _logger?.LogTrace("Checking RabbitMQ connection health");
-        var result = new HealthCheckResult();
+        _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
-        if (!string.IsNullOrEmpty(_hostName))
+        var result = new HealthCheckResult
         {
-            result.Details.Add("host", _hostName);
+            Details =
+            {
+                ["host"] = Host
+            }
+        };
+
+        if (!string.IsNullOrEmpty(ServiceName))
+        {
+            result.Details["service"] = ServiceName;
         }
 
         try
         {
-            _connection ??= ReflectionHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
+            _connectionInterfaceShim ??= _connectionFactoryInterfaceShim.CreateConnection();
 
-            if (_connection == null)
+            if (!_connectionInterfaceShim.IsOpen)
             {
-                throw new ConnectorException("Failed to open RabbitMQ connection!");
+                throw new IOException("RabbitMQ connection is closed!");
             }
 
-            if (RabbitMQTypeLocator.ConnectionInterface.GetProperty("IsOpen").GetValue(_connection).Equals(false))
+            if (_connectionInterfaceShim.ServerProperties.TryGetValue("version", out object? version) && version is byte[] versionBytes)
             {
-                throw new ConnectorException("RabbitMQ connection is closed!");
+                string versionText = Encoding.UTF8.GetString(versionBytes);
+                result.Details.Add("version", versionText);
             }
 
-            try
-            {
-                var serverProperties =
-                    RabbitMQTypeLocator.ConnectionInterface.GetProperty("ServerProperties").GetValue(_connection) as Dictionary<string, object>;
-
-                result.Details.Add("version", Encoding.UTF8.GetString(serverProperties["version"] as byte[]));
-            }
-            catch (Exception e)
-            {
-                _logger?.LogTrace(e, "Failed to find server version while checking RabbitMQ connection health");
-            }
-
-            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Up;
-            _logger?.LogTrace("RabbitMQ connection up!");
+            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+
+            _logger.LogTrace("{DbConnection} at {Host} is up!", Id, Host);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            if (e is TargetInvocationException)
+            if (exception is TargetInvocationException)
             {
-                e = e.InnerException;
+                exception = exception.InnerException ?? exception;
             }
 
-            _logger?.LogError(e, "RabbitMQ connection down! {HealthCheckException}", e.Message);
-            result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
-            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
+
             result.Status = HealthStatus.Down;
-            result.Description = e.Message;
+            result.Description = $"{Id} health check failed";
+            result.Details.Add("error", $"{exception.GetType().Name}: {exception.Message}");
+            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         }
 
         return result;
+    }
+
+    public void Dispose()
+    {
+        _connectionInterfaceShim?.Dispose();
+        _connectionInterfaceShim = null;
     }
 }

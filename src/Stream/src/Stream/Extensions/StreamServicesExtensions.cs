@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
@@ -103,7 +102,7 @@ public static class StreamServicesExtensions
     public static void AddStreamServices<T>(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptions();
-        services.SafeAddRabbitMQConnection(configuration);
+        services.AddRabbitMQ(configuration);
         services.AddRabbitConnectionFactory();
         services.ConfigureRabbitOptions(configuration);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
@@ -116,21 +115,5 @@ public static class StreamServicesExtensions
         services.AddSingleton<IEvaluationContext, StandardEvaluationContext>();
 
         services.AddEnableBinding<T>();
-    }
-
-    // Deal with intermittent TypeLoadExceptions in Connectors (mac, linux)s
-    public static void SafeAddRabbitMQConnection(this IServiceCollection services, IConfiguration configuration)
-    {
-        var loggerFactory = services.BuildServiceProvider().GetService<ILoggerFactory>();
-        ILogger logger = loggerFactory?.CreateLogger("Steeltoe.Stream.Extensions.SafeAddRabbitMQConnection");
-
-        try
-        {
-            services.AddRabbitMQConnection(configuration);
-        }
-        catch (Exception ex)
-        {
-            logger?.LogWarning(ex, ex.Message);
-        }
     }
 }

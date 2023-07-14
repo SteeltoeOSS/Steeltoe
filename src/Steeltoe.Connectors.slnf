@@ -16,8 +16,7 @@
       "Connectors\\src\\EntityFrameworkCore\\Steeltoe.Connectors.EntityFrameworkCore.csproj",
       "Connectors\\test\\CloudFoundry.Test\\Steeltoe.Connectors.CloudFoundry.Test.csproj",
       "Connectors\\test\\Connectors.Test\\Steeltoe.Connectors.Test.csproj",
-      "Connectors\\test\\EntityFrameworkCore.Test\\Steeltoe.Connectors.EntityFrameworkCore.Test.csproj",
-      "Connectors\\test\\External.Test\\External.Connectors.Test.csproj"
+      "Connectors\\test\\EntityFrameworkCore.Test\\Steeltoe.Connectors.EntityFrameworkCore.Test.csproj"
     ]
   }
 }

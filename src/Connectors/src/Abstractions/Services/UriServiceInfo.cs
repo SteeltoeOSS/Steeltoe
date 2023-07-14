@@ -6,9 +6,9 @@ using System.Net;
 
 namespace Steeltoe.Connectors.Services;
 
-public abstract class UriServiceInfo : ServiceInfo
+internal abstract class UriServiceInfo : ServiceInfo
 {
-    public UriInfo Info { get; protected internal set; }
+    public UriInfo Info { get; }
 
     public string Uri => Info.UriString;
 
@@ -32,12 +32,6 @@ public abstract class UriServiceInfo : ServiceInfo
         : base(id)
     {
         Info = new UriInfo(scheme, host, port, username, password, path);
-    }
-
-    protected UriServiceInfo(string id, string uriString, string username, string password)
-        : base(id)
-    {
-        Info = new UriInfo(uriString, username, password);
     }
 
     protected UriServiceInfo(string id, string uriString)

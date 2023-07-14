@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -18,18 +16,47 @@ namespace Steeltoe.Connectors.RabbitMQ;
 
 public static class RabbitMQServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RabbitMQOptions" /> and
+    /// RabbitMQ.Client.IConnection) to connect to a RabbitMQ server.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddRabbitMQ(services, configuration, null);
+        return AddRabbitMQ(services, configuration, RabbitMQPackageResolver.Default);
     }
 
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RabbitMQOptions" /> and
+    /// RabbitMQ.Client.IConnection) to connect to a RabbitMQ server.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <param name="addAction">
+    /// An optional delegate to configure this connector.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddRabbitMQ(services, configuration, RabbitMQPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration configuration, RabbitMQPackageResolver packageResolver,
-        Action<ConnectorAddOptionsBuilder>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -64,16 +91,25 @@ public static class RabbitMQServiceCollectionExtensions
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
         RabbitMQPackageResolver packageResolver)
     {
-        ConnectorFactoryShim<RabbitMQOptions> connectorFactoryShim =
-            ConnectorFactoryShim<RabbitMQOptions>.FromServiceProvider(serviceProvider, packageResolver.ConnectionInterface.Type);
+        // Not using the Steeltoe ConnectorFactory here, because obtaining a connection throws when RabbitMQ is down at application startup.
 
-        ConnectorShim<RabbitMQOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+        string? connectionString = optionsMonitor.Get(serviceBindingName).ConnectionString;
 
-        object connection = connectorShim.GetConnection();
-        string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
+        string hostName = GetHostNameFromConnectionString(connectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<RabbitMQHealthContributor>>();
 
-        return new RabbitMQHealthContributor(connection, $"RabbitMQ-{serviceBindingName}", hostName, logger);
+        var connectionFactoryShim = ConnectionFactoryShim.CreateInstance(packageResolver);
+
+        if (connectionString != null)
+        {
+            connectionFactoryShim.Uri = new Uri(connectionString);
+        }
+
+        return new RabbitMQHealthContributor(connectionFactoryShim.Instance, hostName, logger)
+        {
+            ServiceName = serviceBindingName
+        };
     }
 
     private static string GetHostNameFromConnectionString(string? connectionString)
@@ -98,7 +134,8 @@ public static class RabbitMQServiceCollectionExtensions
             connectionFactoryShim.Uri = new Uri(options.ConnectionString);
         }
 
-        ConnectionInterfaceShim connectionInterfaceShim = connectionFactoryShim.CreateConnection();
+        ConnectionFactoryInterfaceShim connectionFactoryInterfaceShim = connectionFactoryShim.AsInterface();
+        ConnectionInterfaceShim connectionInterfaceShim = connectionFactoryInterfaceShim.CreateConnection();
         return connectionInterfaceShim.Instance;
     }
 }

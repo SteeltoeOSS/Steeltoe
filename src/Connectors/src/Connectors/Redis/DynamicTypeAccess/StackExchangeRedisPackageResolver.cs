@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis.DynamicTypeAccess;
@@ -17,6 +15,7 @@ internal sealed class StackExchangeRedisPackageResolver : PackageResolver
 
     public TypeAccessor ConnectionMultiplexerInterface => ResolveType("StackExchange.Redis.IConnectionMultiplexer");
     public TypeAccessor ConnectionMultiplexerClass => ResolveType("StackExchange.Redis.ConnectionMultiplexer");
+    public TypeAccessor DatabaseInterface => ResolveType("StackExchange.Redis.IDatabase");
 
     private StackExchangeRedisPackageResolver(string assemblyName, string packageName)
         : base(assemblyName, packageName)

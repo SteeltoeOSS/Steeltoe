@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
@@ -18,7 +16,7 @@ internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
     {
     }
 
-    public static ConnectionMultiplexerShim Connect(StackExchangeRedisPackageResolver packageResolver, string configuration)
+    public static ConnectionMultiplexerInterfaceShim Connect(StackExchangeRedisPackageResolver packageResolver, string configuration)
     {
         ArgumentGuard.NotNull(packageResolver);
 
@@ -28,7 +26,7 @@ internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
             typeof(TextWriter)
         }, configuration, null)!;
 
-        return new ConnectionMultiplexerShim(packageResolver, instance);
+        return new ConnectionMultiplexerInterfaceShim(packageResolver, instance);
     }
 
     public void Dispose()

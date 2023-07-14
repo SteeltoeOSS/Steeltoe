@@ -4,6 +4,7 @@
     <Description>Package for using Steeltoe Connectors with Entity Framework Core</Description>
     <PackageTags>connectors;EFCore;EntityFrameworkCore;EF;Entity Framework Core;entity-framework-core;services</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

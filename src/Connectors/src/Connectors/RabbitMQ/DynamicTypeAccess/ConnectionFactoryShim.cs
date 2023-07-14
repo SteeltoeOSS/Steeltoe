@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
@@ -33,9 +31,8 @@ internal sealed class ConnectionFactoryShim : Shim
         return new ConnectionFactoryShim(packageResolver, instanceAccessor);
     }
 
-    public ConnectionInterfaceShim CreateConnection()
+    public ConnectionFactoryInterfaceShim AsInterface()
     {
-        object instance = InstanceAccessor.InvokeMethodOverload("CreateConnection", true, Type.EmptyTypes)!;
-        return new ConnectionInterfaceShim(_packageResolver, instance);
+        return new ConnectionFactoryInterfaceShim(_packageResolver, Instance);
     }
 }

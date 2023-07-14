@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,18 +17,47 @@ namespace Steeltoe.Connectors.CosmosDb;
 
 public static class CosmosDbServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="CosmosDbOptions" /> and
+    /// Microsoft.Azure.Cosmos.CosmosClient) to connect to a CosmosDB database.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddCosmosDb(services, configuration, null);
+        return AddCosmosDb(services, configuration, CosmosDbPackageResolver.Default);
     }
 
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="CosmosDbOptions" /> and
+    /// Microsoft.Azure.Cosmos.CosmosClient) to connect to a CosmosDB database.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <param name="addAction">
+    /// An optional delegate to configure this connector.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddCosmosDb(services, configuration, CosmosDbPackageResolver.Default, addAction);
     }
 
     private static IServiceCollection AddCosmosDb(this IServiceCollection services, IConfiguration configuration, CosmosDbPackageResolver packageResolver,
-        Action<ConnectorAddOptionsBuilder>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -73,7 +100,11 @@ public static class CosmosDbServiceCollectionExtensions
         string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbHealthContributor>>();
 
-        return new CosmosDbHealthContributor(cosmosClient, $"CosmosDB-{serviceBindingName}", hostName, logger);
+        return new CosmosDbHealthContributor(cosmosClient, hostName, logger)
+        {
+            ServiceName = serviceBindingName,
+            Timeout = TimeSpan.FromSeconds(5)
+        };
     }
 
     private static string GetHostNameFromConnectionString(string? connectionString)

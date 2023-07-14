@@ -6,11 +6,11 @@ namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 public class AspNetCoreRouteDetails
 {
-    public IList<string> HttpMethods { get; set; }
+    public IList<string> HttpMethods { get; internal set; }
 
-    public string RouteTemplate { get; set; }
+    public string RouteTemplate { get; internal set; }
 
-    public IList<string> Produces { get; set; }
+    public IList<string> Produces { get; internal set; }
 
-    public IList<string> Consumes { get; set; }
+    public IList<string> Consumes { get; internal set; }
 }

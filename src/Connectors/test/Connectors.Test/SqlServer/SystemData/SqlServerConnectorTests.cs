@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Data.SqlClient;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
@@ -146,7 +144,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "Server=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
         builder.Services.Configure<SqlServerOptions>("mySqlServerServiceOne", options => options.ConnectionString += ";Encrypt=false");
 
         await using WebApplication app = builder.Build();
@@ -185,7 +183,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "Data Source=localhost;Max Pool Size=50"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
 
         await using WebApplication app = builder.Build();
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<SqlServerOptions>>();
@@ -223,7 +221,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -251,16 +249,21 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
 
         await using WebApplication app = builder.Build();
 
         IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        healthContributors.Should().AllBeOfType<RelationalDbHealthContributor>();
+        RelationalDatabaseHealthContributor[] contributors = healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject.ToArray();
+        contributors.Should().HaveCount(2);
 
-        healthContributors.Should().HaveCount(2);
-        healthContributors[0].Id.Should().Be("SqlServer-mySqlServerServiceOne");
-        healthContributors[1].Id.Should().Be("SqlServer-mySqlServerServiceTwo");
+        contributors[0].Id.Should().Be("SQL Server");
+        contributors[0].ServiceName.Should().Be("mySqlServerServiceOne");
+        contributors[0].Host.Should().Be("localhost");
+
+        contributors[1].Id.Should().Be("SQL Server");
+        contributors[1].ServiceName.Should().Be("mySqlServerServiceTwo");
+        contributors[1].Host.Should().Be("localhost");
     }
 
     [Fact]
@@ -269,7 +272,7 @@ public sealed class SqlServerConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -298,7 +301,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:Default:ConnectionString"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
 
         await using WebApplication app = builder.Build();
 

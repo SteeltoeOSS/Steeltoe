@@ -12,6 +12,13 @@ namespace Steeltoe.Common.Kubernetes.Test;
 
 public class ServiceCollectionExtensionsTest
 {
+    public ServiceCollectionExtensionsTest()
+    {
+        // Workaround for CryptographicException: PKCS12 (PFX) without a supplied password has exceeded maximum allowed iterations.
+        // https://support.microsoft.com/en-us/topic/kb5025823-change-in-how-net-applications-import-x-509-certificates-bf81c936-af2b-446e-9f7a-016f4713b46b
+        Environment.SetEnvironmentVariable("COMPlus_Pkcs12UnspecifiedPasswordIterationLimit", "-1");
+    }
+
     [Fact]
     public void AddKubernetesApplicationInstanceInfo_ThrowsOnNull()
     {

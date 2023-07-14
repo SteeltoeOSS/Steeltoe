@@ -4,13 +4,13 @@
 
 namespace Steeltoe.Connectors.Services;
 
-public class SsoServiceInfo : ServiceInfo
+internal sealed class SsoServiceInfo : ServiceInfo
 {
-    public string ClientId { get; internal set; }
+    public string ClientId { get; }
 
-    public string ClientSecret { get; internal set; }
+    public string ClientSecret { get; }
 
-    public string AuthDomain { get; internal set; }
+    public string AuthDomain { get; }
 
     public SsoServiceInfo(string id, string clientId, string clientSecret, string domain)
         : base(id)

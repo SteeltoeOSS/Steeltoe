@@ -27,6 +27,9 @@ public class MigrateDbContextTask<T> : IApplicationTask
 
     public MigrateDbContextTask(T db, ILogger<MigrateDbContextTask<T>> logger)
     {
+        ArgumentGuard.NotNull(db);
+        ArgumentGuard.NotNull(logger);
+
         _db = db;
         _logger = logger;
     }

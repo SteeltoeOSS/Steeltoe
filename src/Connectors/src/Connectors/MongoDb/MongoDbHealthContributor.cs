@@ -3,101 +3,73 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
-using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MongoDb;
 
-public class MongoDbHealthContributor : IHealthContributor
+internal sealed class MongoDbHealthContributor : IHealthContributor
 {
+    private readonly MongoClientInterfaceShim _mongoClientShim;
     private readonly ILogger<MongoDbHealthContributor> _logger;
-    private readonly object _mongoClient;
 
-    private int Timeout { get; }
+    public string Id { get; } = "MongoDB";
+    public string Host { get; }
+    public string? ServiceName { get; set; }
 
-    public string Id { get; }
-    public string HostName { get; }
-
-    public MongoDbHealthContributor(MongoDbConnectorFactory factory, ILogger<MongoDbHealthContributor> logger = null, int timeout = 5000)
+    public MongoDbHealthContributor(object mongoClient, string host, ILogger<MongoDbHealthContributor> logger)
     {
+        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNullOrEmpty(host);
+        ArgumentGuard.NotNull(mongoClient);
+
+        _mongoClientShim = new MongoClientInterfaceShim(MongoDbPackageResolver.Default, mongoClient);
+        Host = host;
         _logger = logger;
-        _mongoClient = factory.Create(null);
-        Timeout = timeout;
-        Id = "MongoDb";
-        HostName = Id;
-    }
-
-    internal MongoDbHealthContributor(object mongoClient, string serviceName, string hostName, ILogger<MongoDbHealthContributor> logger)
-    {
-        _mongoClient = mongoClient;
-        Id = serviceName;
-        HostName = hostName;
-        _logger = logger;
-        Timeout = 5000;
-    }
-
-    public static IHealthContributor GetMongoDbHealthContributor(IConfiguration configuration, ILogger<MongoDbHealthContributor> logger = null)
-    {
-        ArgumentGuard.NotNull(configuration);
-
-        var info = configuration.GetSingletonServiceInfo<MongoDbServiceInfo>();
-        var options = new MongoDbConnectorOptions(configuration);
-        var factory = new MongoDbConnectorFactory(info, options, MongoDbTypeLocator.MongoClient);
-        int timeout = 5000;
-
-        if (options.Options.TryGetValue("connectTimeoutMS", out string value))
-        {
-            int.TryParse(value, out timeout);
-        }
-
-        var contributor = new MongoDbHealthContributor(factory, logger, timeout);
-
-        return contributor;
     }
 
     public HealthCheckResult Health()
     {
-        _logger?.LogTrace("Checking MongoDb connection health");
-        var result = new HealthCheckResult();
+        _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
-        if (!string.IsNullOrEmpty(HostName))
+        var result = new HealthCheckResult
         {
-            result.Details.Add("host", HostName);
+            Details =
+            {
+                ["host"] = Host
+            }
+        };
+
+        if (!string.IsNullOrEmpty(ServiceName))
+        {
+            result.Details["service"] = ServiceName;
         }
 
         try
         {
-            object databases = ReflectionHelpers.Invoke(MongoDbTypeLocator.ListDatabasesMethod, _mongoClient, new object[]
-            {
-                new CancellationTokenSource(Timeout).Token
-            });
+            _ = _mongoClientShim.ListDatabaseNames(CancellationToken.None);
 
-            if (databases == null)
-            {
-                throw new ConnectorException("Failed to open MongoDb connection!");
-            }
-
-            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Up;
-            _logger?.LogTrace("MongoDb connection is up!");
+            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+
+            _logger.LogTrace("{DbConnection} at {Host} is up!", Id, Host);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            if (e is TargetInvocationException)
+            if (exception is TargetInvocationException)
             {
-                e = e.InnerException;
+                exception = exception.InnerException ?? exception;
             }
 
-            _logger?.LogError(e, "MongoDb connection is down! {HealthCheckException}", e.Message);
-            result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
-            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
+
             result.Status = HealthStatus.Down;
-            result.Description = e.Message;
+            result.Description = $"{Id} health check failed";
+            result.Details.Add("error", $"{exception.GetType().Name}: {exception.Message}");
+            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         }
 
         return result;

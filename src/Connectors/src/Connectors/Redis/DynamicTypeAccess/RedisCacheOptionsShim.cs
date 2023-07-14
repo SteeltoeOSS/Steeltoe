@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Reflection;
 using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
@@ -51,7 +49,7 @@ internal sealed class RedisCacheOptionsShim : Shim
         MethodInfo assignMethod = GetType().GetMethod(nameof(AssignConnectionMultiplexerFactory), BindingFlags.Static | BindingFlags.NonPublic)!;
         MethodInfo assignGenericMethod = assignMethod.MakeGenericMethod(connectionMultiplexer.DeclaredType);
 
-        return assignGenericMethod.Invoke(null, new[]
+        return assignGenericMethod.Invoke(null, new object[]
         {
             connectionMultiplexer.Instance
         })!;
