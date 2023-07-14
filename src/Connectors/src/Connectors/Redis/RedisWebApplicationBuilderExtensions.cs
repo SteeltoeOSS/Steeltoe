@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Caching.Distributed;
 using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.Redis;
@@ -10,7 +11,10 @@ namespace Steeltoe.Connectors.Redis;
 public static class RedisWebApplicationBuilderExtensions
 {
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a Redis database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RedisOptions" /> and
+    /// StackExchange.Redis.IConnectionMultiplexer) to connect to a Redis database. If Microsoft.Extensions.Caching.StackExchangeRedis is referenced, this
+    /// method additionally registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> with type parameters <see cref="RedisOptions" /> and
+    /// <see cref="IDistributedCache" />.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder" /> to add services to.
@@ -24,7 +28,10 @@ public static class RedisWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a Redis database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RedisOptions" /> and
+    /// StackExchange.Redis.IConnectionMultiplexer) to connect to a Redis database. If Microsoft.Extensions.Caching.StackExchangeRedis is referenced, this
+    /// method additionally registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> with type parameters <see cref="RedisOptions" /> and
+    /// <see cref="IDistributedCache" />.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder" /> to add services to.

@@ -18,7 +18,8 @@ namespace Steeltoe.Connectors.MySql;
 public static class MySqlServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a MySQL compatible database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="MySqlOptions" /> and
+    /// MySqlConnector.MySqlConnection or MySql.Data.MySqlClient.MySqlConnection) to connect to a MySQL compatible database.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -35,7 +36,8 @@ public static class MySqlServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a MySQL compatible database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="MySqlOptions" /> and
+    /// MySqlConnector.MySqlConnection or MySql.Data.MySqlClient.MySqlConnection) to connect to a MySQL compatible database.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.

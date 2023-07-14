@@ -17,7 +17,8 @@ namespace Steeltoe.Connectors.MongoDb;
 public static class MongoDbServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a MongoDB database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="MongoDbOptions" /> and
+    /// MongoDB.Driver.IMongoClient) to connect to a MongoDB database.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -34,7 +35,8 @@ public static class MongoDbServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a MongoDB database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="MongoDbOptions" /> and
+    /// MongoDB.Driver.IMongoClient) to connect to a MongoDB database.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.

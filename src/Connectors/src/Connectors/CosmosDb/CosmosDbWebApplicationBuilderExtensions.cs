@@ -10,7 +10,8 @@ namespace Steeltoe.Connectors.CosmosDb;
 public static class CosmosDbWebApplicationBuilderExtensions
 {
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a CosmosDB database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="CosmosDbOptions" /> and
+    /// Microsoft.Azure.Cosmos.CosmosClient) to connect to a CosmosDB database.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder" /> to add services to.
@@ -24,7 +25,8 @@ public static class CosmosDbWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a CosmosDB database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="CosmosDbOptions" /> and
+    /// Microsoft.Azure.Cosmos.CosmosClient) to connect to a CosmosDB database.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder" /> to add services to.

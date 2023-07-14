@@ -11,7 +11,8 @@ namespace Steeltoe.Connectors.SqlServer;
 public static class SqlServerWebApplicationBuilderExtensions
 {
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a SQL Server database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="SqlServerOptions" /> and
+    /// Microsoft.Data.SqlClient.SqlConnection or System.Data.SqlClient.SqlConnection) to connect to a SQL Server database.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder" /> to add services to.
@@ -25,7 +26,8 @@ public static class SqlServerWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a SQL Server database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="SqlServerOptions" /> and
+    /// Microsoft.Data.SqlClient.SqlConnection or System.Data.SqlClient.SqlConnection) to connect to a SQL Server database.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder" /> to add services to.

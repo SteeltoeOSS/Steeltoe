@@ -10,7 +10,8 @@ namespace Steeltoe.Connectors.PostgreSql;
 public static class PostgreSqlWebApplicationBuilderExtensions
 {
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a PostgreSQL database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="PostgreSqlOptions" /> and Npgsql.NpgsqlConnection)
+    /// to connect to a PostgreSQL database.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder" /> to add services to.
@@ -24,7 +25,8 @@ public static class PostgreSqlWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a PostgreSQL database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="PostgreSqlOptions" /> and Npgsql.NpgsqlConnection)
+    /// to connect to a PostgreSQL database.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder" /> to add services to.

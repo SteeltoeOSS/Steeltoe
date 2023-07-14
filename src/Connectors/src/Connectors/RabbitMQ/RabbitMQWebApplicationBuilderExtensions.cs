@@ -10,7 +10,8 @@ namespace Steeltoe.Connectors.RabbitMQ;
 public static class RabbitMQWebApplicationBuilderExtensions
 {
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a RabbitMQ server.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RabbitMQOptions" /> and
+    /// RabbitMQ.Client.IConnection) to connect to a RabbitMQ server.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder" /> to add services to.
@@ -24,7 +25,8 @@ public static class RabbitMQWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a RabbitMQ server.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RabbitMQOptions" /> and
+    /// RabbitMQ.Client.IConnection) to connect to a RabbitMQ server.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder" /> to add services to.

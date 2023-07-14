@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -17,7 +18,10 @@ namespace Steeltoe.Connectors.Redis;
 public static class RedisServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a Redis database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RedisOptions" /> and
+    /// StackExchange.Redis.IConnectionMultiplexer) to connect to a Redis database. If Microsoft.Extensions.Caching.StackExchangeRedis is referenced, this
+    /// method additionally registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> with type parameters <see cref="RedisOptions" /> and
+    /// <see cref="IDistributedCache" />.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -34,7 +38,10 @@ public static class RedisServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a Redis database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RedisOptions" /> and
+    /// StackExchange.Redis.IConnectionMultiplexer) to connect to a Redis database. If Microsoft.Extensions.Caching.StackExchangeRedis is referenced, this
+    /// method additionally registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> with type parameters <see cref="RedisOptions" /> and
+    /// <see cref="IDistributedCache" />.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.

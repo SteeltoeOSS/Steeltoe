@@ -18,7 +18,8 @@ namespace Steeltoe.Connectors.PostgreSql;
 public static class PostgreSqlServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a PostgreSQL database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="PostgreSqlOptions" /> and Npgsql.NpgsqlConnection)
+    /// to connect to a PostgreSQL database.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -35,7 +36,8 @@ public static class PostgreSqlServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> to connect to a PostgreSQL database.
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="PostgreSqlOptions" /> and Npgsql.NpgsqlConnection)
+    /// to connect to a PostgreSQL database.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
