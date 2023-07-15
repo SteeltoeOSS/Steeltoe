@@ -35,7 +35,7 @@ public sealed class ConfigServerEncryptionResolverExtensionsTest
         var webHostBuilder = new WebHostBuilder();
         var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => nullWebHostBuilder.AddConfigServerEncryptionResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => nullWebHostBuilder.AddEncryptionResolver(loggerFactory));
         Assert.Throws<ArgumentNullException>(() => webHostBuilder.AddEncryptionResolver(null));
     }
 
@@ -46,8 +46,8 @@ public sealed class ConfigServerEncryptionResolverExtensionsTest
         var hostBuilder = new HostBuilder();
         var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => nullHostBuilder.AddConfigServerEncryptionResolver(loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => hostBuilder.AddConfigServerEncryptionResolver(null));
+        Assert.Throws<ArgumentNullException>(() => nullHostBuilder.AddEncryptionResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => Encryption.Decryption.ConfigServerEncryptionResolverExtensions.AddEncryptionResolver(hostBuilder, null));
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public sealed class ConfigServerEncryptionResolverExtensionsTest
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
         var loggerFactory = NullLoggerFactory.Instance;
 
-        Assert.Throws<ArgumentNullException>(() => nullWebApplicationBuilder.AddConfigServerEncryptionResolver(loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => webApplicationBuilder.AddConfigServerEncryptionResolver(null));
+        Assert.Throws<ArgumentNullException>(() => nullWebApplicationBuilder.AddEncryptionResolver(loggerFactory));
+        Assert.Throws<ArgumentNullException>(() => Encryption.Decryption.ConfigServerEncryptionResolverExtensions.AddEncryptionResolver(webApplicationBuilder, null));
     }
 
     [Fact]

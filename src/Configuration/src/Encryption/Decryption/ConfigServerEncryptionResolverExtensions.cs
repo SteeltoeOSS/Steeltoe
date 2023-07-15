@@ -79,9 +79,9 @@ internal static class ConfigServerEncryptionResolverExtensions
     /// <returns>
     /// The provided host builder.
     /// </returns>
-    public static IWebHostBuilder AddConfigServerEncryptionResolver(this IWebHostBuilder hostBuilder)
+    public static IWebHostBuilder AddEncryptionResolver(this IWebHostBuilder hostBuilder)
     {
-        return AddConfigServerEncryptionResolver(hostBuilder, NullLoggerFactory.Instance);
+        return AddEncryptionResolver(hostBuilder, NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ internal static class ConfigServerEncryptionResolverExtensions
     /// <returns>
     /// The provided host builder.
     /// </returns>
-    public static IWebHostBuilder AddConfigServerEncryptionResolver(this IWebHostBuilder hostBuilder, ILoggerFactory loggerFactory)
+    public static IWebHostBuilder AddEncryptionResolver(this IWebHostBuilder hostBuilder, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(hostBuilder);
         ArgumentGuard.NotNull(loggerFactory);
@@ -123,9 +123,9 @@ internal static class ConfigServerEncryptionResolverExtensions
     /// <returns>
     /// The provided host builder.
     /// </returns>
-    public static IHostBuilder AddConfigServerEncryptionResolver(this IHostBuilder hostBuilder)
+    public static IHostBuilder AddEncryptionResolver(this IHostBuilder hostBuilder)
     {
-        return AddConfigServerEncryptionResolver(hostBuilder, NullLoggerFactory.Instance);
+        return AddEncryptionResolver(hostBuilder, NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -143,7 +143,7 @@ internal static class ConfigServerEncryptionResolverExtensions
     /// <returns>
     /// The provided host builder.
     /// </returns>
-    public static IHostBuilder AddConfigServerEncryptionResolver(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory)
+    public static IHostBuilder AddEncryptionResolver(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(hostBuilder);
         ArgumentGuard.NotNull(loggerFactory);
@@ -167,9 +167,9 @@ internal static class ConfigServerEncryptionResolverExtensions
     /// <returns>
     /// The provided application builder.
     /// </returns>
-    public static WebApplicationBuilder AddConfigServerEncryptionResolver(this WebApplicationBuilder applicationBuilder)
+    public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder applicationBuilder)
     {
-        return AddConfigServerEncryptionResolver(applicationBuilder, NullLoggerFactory.Instance);
+        return AddEncryptionResolver(applicationBuilder, NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ internal static class ConfigServerEncryptionResolverExtensions
     /// <returns>
     /// The provided application builder.
     /// </returns>
-    public static WebApplicationBuilder AddConfigServerEncryptionResolver(this WebApplicationBuilder applicationBuilder, ILoggerFactory loggerFactory)
+    public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder applicationBuilder, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(applicationBuilder);
         ArgumentGuard.NotNull(loggerFactory);
