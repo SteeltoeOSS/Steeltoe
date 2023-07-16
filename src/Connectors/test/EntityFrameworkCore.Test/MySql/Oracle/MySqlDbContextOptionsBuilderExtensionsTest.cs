@@ -27,7 +27,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
             ["Steeltoe:Client:MySql:Default:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;connect timeout=15"
         });
 
-        builder.AddMySql(MySqlPackageResolver.OracleOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.OracleOnly);
         builder.Services.Configure<MySqlOptions>(options => options.ConnectionString += ";Use Compression=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
@@ -36,7 +36,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
-        string connectionString = dbContext.Database.GetConnectionString();
+        string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }
@@ -51,7 +51,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
             ["Steeltoe:Client:MySql:myMySqlService:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;connect timeout=15"
         });
 
-        builder.AddMySql(MySqlPackageResolver.OracleOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.OracleOnly);
         builder.Services.Configure<MySqlOptions>("myMySqlService", options => options.ConnectionString += ";Use Compression=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
@@ -60,7 +60,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
-        string connectionString = dbContext.Database.GetConnectionString();
+        string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("server=localhost;database=myDb;user id=steeltoe;password=steeltoe;connectiontimeout=15;Use Compression=false");
     }

@@ -6,5 +6,5 @@ namespace Steeltoe.Connectors.CosmosDb;
 
 public sealed class CosmosDbOptions : ConnectionStringOptions
 {
-    public string Database { get; set; }
+    public string? Database { get; set; }
 }

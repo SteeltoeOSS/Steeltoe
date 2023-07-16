@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -216,11 +214,16 @@ public sealed class MongoDbConnectorTests
         await using WebApplication app = builder.Build();
 
         IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        healthContributors.Should().AllBeOfType<MongoDbHealthContributor>();
+        MongoDbHealthContributor[] mongoDbHealthContributors = healthContributors.Should().AllBeOfType<MongoDbHealthContributor>().Subject.ToArray();
+        mongoDbHealthContributors.Should().HaveCount(2);
 
-        healthContributors.Should().HaveCount(2);
-        healthContributors[0].Id.Should().Be("MongoDB-myMongoDbServiceOne");
-        healthContributors[1].Id.Should().Be("MongoDB-myMongoDbServiceTwo");
+        mongoDbHealthContributors[0].Id.Should().Be("MongoDB");
+        mongoDbHealthContributors[0].ServiceName.Should().Be("myMongoDbServiceOne");
+        mongoDbHealthContributors[0].Host.Should().Be("localhost");
+
+        mongoDbHealthContributors[1].Id.Should().Be("MongoDB");
+        mongoDbHealthContributors[1].ServiceName.Should().Be("myMongoDbServiceTwo");
+        mongoDbHealthContributors[1].Host.Should().Be("localhost");
     }
 
     [Fact]

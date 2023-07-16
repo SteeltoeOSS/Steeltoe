@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connectors;
+using Steeltoe.Connectors.CloudFoundry;
 using Steeltoe.Connectors.Services;
 using Steeltoe.Security.Authentication.Mtls;
 

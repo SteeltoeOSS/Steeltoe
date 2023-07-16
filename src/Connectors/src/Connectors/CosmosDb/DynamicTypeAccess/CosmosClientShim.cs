@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
@@ -12,6 +10,11 @@ namespace Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 internal sealed class CosmosClientShim : Shim, IDisposable
 {
     public override IDisposable Instance => (IDisposable)base.Instance;
+
+    public CosmosClientShim(CosmosDbPackageResolver packageResolver, object instance)
+        : this(new InstanceAccessor(packageResolver.CosmosClientClass, instance))
+    {
+    }
 
     private CosmosClientShim(InstanceAccessor instanceAccessor)
         : base(instanceAccessor)
@@ -24,6 +27,11 @@ internal sealed class CosmosClientShim : Shim, IDisposable
 
         InstanceAccessor instanceAccessor = packageResolver.CosmosClientClass.CreateInstance(connectionString, null);
         return new CosmosClientShim(instanceAccessor);
+    }
+
+    public Task ReadAccountAsync()
+    {
+        return (Task)InstanceAccessor.InvokeMethod("ReadAccountAsync", true)!;
     }
 
     public void Dispose()

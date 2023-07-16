@@ -6,9 +6,9 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.Services;
 
-public abstract class ServiceInfo : IServiceInfo
+internal abstract class ServiceInfo : IServiceInfo
 {
-    public string Id { get; protected set; }
+    public string Id { get; }
 
     public IApplicationInstanceInfo ApplicationInfo { get; set; }
 

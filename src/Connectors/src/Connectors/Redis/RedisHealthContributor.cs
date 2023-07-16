@@ -3,158 +3,101 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Reflection;
 using Steeltoe.Common.Util;
-using Steeltoe.Connectors.Services;
+using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.Redis;
 
-public class RedisHealthContributor : IHealthContributor
+internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
 {
-    private readonly RedisServiceConnectorFactory _factory;
-    private readonly Type _implType;
     private readonly ILogger<RedisHealthContributor> _logger;
-    private readonly string _hostName;
-    private object _connector;
-    private object _database;
-    private object _flags;
-    private MethodInfo _pingMethod;
-    private MethodInfo _getMethod;
+    private readonly string _connectionString;
 
-    private bool IsMicrosoftImplementation => _implType.FullName.Contains("Microsoft", StringComparison.Ordinal);
+    private ConnectionMultiplexerInterfaceShim? _connectionMultiplexerInterfaceShim;
+    private DatabaseInterfaceShim? _databaseInterfaceShim;
 
-    public string Id { get; }
+    public string Id { get; } = "Redis";
+    public string Host { get; }
+    public string? ServiceName { get; set; }
 
-    public RedisHealthContributor(RedisServiceConnectorFactory factory, Type implType, ILogger<RedisHealthContributor> logger = null)
+    public RedisHealthContributor(string connectionString, ILogger<RedisHealthContributor> logger)
     {
-        _factory = factory;
-        _implType = implType;
-        _logger = logger;
-        Id = IsMicrosoftImplementation ? "Redis-Cache" : "Redis";
-    }
+        ArgumentGuard.NotNullOrEmpty(connectionString);
+        ArgumentGuard.NotNull(logger);
 
-    internal RedisHealthContributor(object redisClient, string serviceName, string hostName, ILogger<RedisHealthContributor> logger)
-    {
-        _connector = redisClient;
-        _implType = redisClient.GetType();
-        Id = serviceName;
-        _hostName = hostName;
+        _connectionString = connectionString;
+        Host = GetHostNameFromConnectionString(connectionString);
         _logger = logger;
     }
 
-    public static IHealthContributor GetRedisContributor(IConfiguration configuration, ILogger<RedisHealthContributor> logger = null)
+    private static string GetHostNameFromConnectionString(string connectionString)
     {
-        ArgumentGuard.NotNull(configuration);
+        var builder = new RedisConnectionStringBuilder
+        {
+            ConnectionString = connectionString
+        };
 
-        Type redisImplementation = RedisTypeLocator.StackExchangeImplementation;
-        Type redisOptions = RedisTypeLocator.StackExchangeOptions;
-        MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
+        return (string)builder["host"]!;
+    }
 
-        var info = configuration.GetSingletonServiceInfo<RedisServiceInfo>();
-        var options = new RedisCacheConnectorOptions(configuration);
-        var factory = new RedisServiceConnectorFactory(info, options, redisImplementation, redisOptions, initializer);
-        return new RedisHealthContributor(factory, redisImplementation, logger);
+    internal void SetConnectionMultiplexer(object connectionMultiplexer)
+    {
+        _connectionMultiplexerInterfaceShim = new ConnectionMultiplexerInterfaceShim(StackExchangeRedisPackageResolver.Default, connectionMultiplexer);
     }
 
     public HealthCheckResult Health()
     {
-        _logger?.LogTrace("Checking Redis connection health");
-        var result = new HealthCheckResult();
+        _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
-        if (!string.IsNullOrEmpty(_hostName))
+        var result = new HealthCheckResult
         {
-            result.Details.Add("host", _hostName);
+            Details =
+            {
+                ["host"] = Host
+            }
+        };
+
+        if (!string.IsNullOrEmpty(ServiceName))
+        {
+            result.Details["service"] = ServiceName;
         }
 
         try
         {
-            Connect();
+            _connectionMultiplexerInterfaceShim ??= ConnectionMultiplexerShim.Connect(StackExchangeRedisPackageResolver.Default, _connectionString);
+            _databaseInterfaceShim ??= _connectionMultiplexerInterfaceShim.GetDatabase();
+            TimeSpan roundTripTime = _databaseInterfaceShim.Ping();
 
-            if (IsMicrosoftImplementation)
-            {
-                DoMicrosoftHealth();
-            }
-            else
-            {
-                DoStackExchangeHealth(result);
-            }
-
-            // Spring Boot health checks also include cluster size and slot metrics
-            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Status = HealthStatus.Up;
-            _logger?.LogTrace("Redis connection up!");
+            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            result.Details.Add("ping", roundTripTime.TotalMilliseconds);
+
+            _logger.LogTrace("{DbConnection} at {Host} is up!", Id, Host);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            if (e is TargetInvocationException)
+            if (exception is TargetInvocationException)
             {
-                e = e.InnerException;
+                exception = exception.InnerException ?? exception;
             }
 
-            _logger?.LogError(e, "Redis connection down! {HealthCheckException}", e.Message);
-            result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
-            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
+
             result.Status = HealthStatus.Down;
-            result.Description = "Redis health check failed";
+            result.Description = $"{Id} health check failed";
+            result.Details.Add("error", $"{exception.GetType().Name}: {exception.Message}");
+            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         }
 
         return result;
     }
 
-    private void DoStackExchangeHealth(HealthCheckResult health)
+    public void Dispose()
     {
-        var latency = (TimeSpan)ReflectionHelpers.Invoke(_pingMethod, _database, new[]
-        {
-            _flags
-        });
-
-        health.Details.Add("ping", latency.TotalMilliseconds);
-    }
-
-    private void DoMicrosoftHealth()
-    {
-        _getMethod.Invoke(_connector, new object[]
-        {
-            "1"
-        });
-    }
-
-    private void Connect()
-    {
-        if (_connector == null)
-        {
-            _connector = _factory.Create(null);
-
-            if (_connector == null)
-            {
-                throw new ConnectorException("Unable to connect to Redis");
-            }
-        }
-
-        if (_database == null)
-        {
-            if (IsMicrosoftImplementation)
-            {
-                _getMethod = _connector.GetType().GetMethod("Get");
-            }
-            else
-            {
-                Type commandFlagsEnum = RedisTypeLocator.StackExchangeCommandFlagsNames;
-                _flags = Enum.Parse(commandFlagsEnum, "None");
-                MethodInfo getDatabaseMethod = ReflectionHelpers.FindMethod(_connector.GetType(), "GetDatabase");
-
-                _database = ReflectionHelpers.Invoke(getDatabaseMethod, _connector, new object[]
-                {
-                    -1,
-                    null
-                });
-
-                _pingMethod = ReflectionHelpers.FindMethod(_database.GetType(), "Ping");
-            }
-        }
+        _connectionMultiplexerInterfaceShim?.Dispose();
+        _connectionMultiplexerInterfaceShim = null;
     }
 }

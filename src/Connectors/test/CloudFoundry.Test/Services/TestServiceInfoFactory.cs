@@ -1,0 +1,27 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Steeltoe.Configuration;
+using Steeltoe.Connectors.CloudFoundry.Services;
+using Steeltoe.Connectors.Services;
+
+namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
+
+internal sealed class TestServiceInfoFactory : ServiceInfoFactory
+{
+    public TestServiceInfoFactory(Tags tags, string scheme)
+        : base(tags, scheme)
+    {
+    }
+
+    public TestServiceInfoFactory(Tags tags, string[] schemes)
+        : base(tags, schemes)
+    {
+    }
+
+    public override IServiceInfo Create(Service binding)
+    {
+        throw new NotImplementedException();
+    }
+}

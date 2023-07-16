@@ -2,64 +2,86 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
+using MongoDB.Driver;
+using Moq;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.MongoDb;
-using Steeltoe.Connectors.Services;
 using Xunit;
 
 namespace Steeltoe.Connectors.Test.MongoDb;
 
-public class MongoDbHealthContributorTest
+public sealed class MongoDbHealthContributorTest
 {
-    private readonly Type _mongoDbImplementationType = MongoDbTypeLocator.MongoClient;
-
-    [Fact]
-    public void GetMongoDbContributor_ReturnsContributor()
-    {
-        var appsettings = new Dictionary<string, string>
-        {
-            ["mongodb:client:server"] = "localhost",
-            ["mongodb:client:port"] = "27018",
-            ["mongodb:client:options:connecttimeoutms"] = "1"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        IHealthContributor contrib = MongoDbHealthContributor.GetMongoDbHealthContributor(configurationRoot);
-        Assert.NotNull(contrib);
-        HealthCheckResult status = contrib.Health();
-        Assert.Equal(HealthStatus.Down, status.Status);
-    }
-
     [Fact]
     public void Not_Connected_Returns_Down_Status()
     {
-        var options = new MongoDbConnectorOptions();
-        var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27018");
-        var loggerFactory = new LoggerFactory();
-        var connFactory = new MongoDbConnectorFactory(sInfo, options, _mongoDbImplementationType);
-        var h = new MongoDbHealthContributor(connFactory, loggerFactory.CreateLogger<MongoDbHealthContributor>(), 1);
+        var settings = new MongoClientSettings
+        {
+            Server = new MongoServerAddress("localhost"),
+            ServerSelectionTimeout = TimeSpan.FromMilliseconds(1)
+        };
 
-        HealthCheckResult status = h.Health();
+        var mongoClient = new MongoClient(settings);
 
-        Assert.Equal(HealthStatus.Down, status.Status);
-        Assert.Equal("Failed to open MongoDb connection!", status.Description);
+        var healthContributor = new MongoDbHealthContributor(mongoClient, "localhost", NullLogger<MongoDbHealthContributor>.Instance)
+        {
+            ServiceName = "Example"
+        };
+
+        HealthCheckResult status = healthContributor.Health();
+
+        status.Status.Should().Be(HealthStatus.Down);
+        status.Description.Should().Be("MongoDB health check failed");
+        status.Details.Should().Contain("host", "localhost");
+        status.Details.Should().Contain("service", "Example");
+        status.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("TimeoutException: A timeout occurred after 1ms selecting ");
+        status.Details.Should().Contain("status", "DOWN");
+    }
+
+    [Fact]
+    public void Is_Connected_Returns_Up_Status()
+    {
+        var mongoClientMock = new Mock<IMongoClient>();
+        mongoClientMock.Setup(client => client.ListDatabaseNames(It.IsAny<CancellationToken>())).Returns(() => null!);
+
+        var healthContributor = new MongoDbHealthContributor(mongoClientMock.Object, "localhost", NullLogger<MongoDbHealthContributor>.Instance)
+        {
+            ServiceName = "Example"
+        };
+
+        HealthCheckResult status = healthContributor.Health();
+
+        status.Status.Should().Be(HealthStatus.Up);
+        status.Details.Should().Contain("host", "localhost");
+        status.Details.Should().Contain("service", "Example");
+        status.Details.Should().NotContainKey("error");
+        status.Details.Should().Contain("status", "UP");
     }
 
     [Fact(Skip = "Integration test - Requires local MongoDb server")]
-    public void Is_Connected_Returns_Up_Status()
+    public void Integration_Is_Connected_Returns_Up_Status()
     {
-        var options = new MongoDbConnectorOptions();
-        var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
-        var loggerFactory = new LoggerFactory();
-        var connFactory = new MongoDbConnectorFactory(sInfo, options, _mongoDbImplementationType);
-        var h = new MongoDbHealthContributor(connFactory, loggerFactory.CreateLogger<MongoDbHealthContributor>());
+        var settings = new MongoClientSettings
+        {
+            Server = new MongoServerAddress("localhost"),
+            ServerSelectionTimeout = TimeSpan.FromSeconds(5)
+        };
 
-        HealthCheckResult status = h.Health();
+        var mongoClient = new MongoClient(settings);
 
-        Assert.Equal(HealthStatus.Up, status.Status);
+        var healthContributor = new MongoDbHealthContributor(mongoClient, "localhost", NullLogger<MongoDbHealthContributor>.Instance)
+        {
+            ServiceName = "Example"
+        };
+
+        HealthCheckResult status = healthContributor.Health();
+
+        status.Status.Should().Be(HealthStatus.Up);
+        status.Details.Should().Contain("host", "localhost");
+        status.Details.Should().Contain("service", "Example");
+        status.Details.Should().NotContainKey("error");
+        status.Details.Should().Contain("status", "UP");
     }
 }

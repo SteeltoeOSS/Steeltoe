@@ -13,7 +13,6 @@ using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
-using Steeltoe.Connectors;
 using Steeltoe.Connectors.CosmosDb;
 using Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb;
@@ -85,10 +84,7 @@ public static class HostBuilderExtensions
 
         builder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
 
-        if (builder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblyNames.Connectors))
-        {
-            WireConnectors(builder);
-        }
+        builder.WireIfLoaded(WireConnectors, SteeltoeAssemblyNames.Connectors);
 
         builder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
         builder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblyNames.DiscoveryClient);
@@ -168,12 +164,6 @@ public static class HostBuilderExtensions
     private static void WirePlaceholderResolver(this IHostBuilder hostBuilder)
     {
         hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddPlaceholderResolver(_loggerFactory)).Log(LogMessages.WirePlaceholderConfiguration);
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireConnectorConfiguration(this IHostBuilder hostBuilder)
-    {
-        hostBuilder.ConfigureAppConfiguration((_, svc) => svc.AddConnectionStrings()).Log(LogMessages.WireConnectorsConfiguration);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
