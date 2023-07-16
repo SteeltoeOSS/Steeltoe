@@ -38,7 +38,7 @@ public sealed class EncryptionResolverConfigurationExtensionsTest
         var loggerFactory = NullLoggerFactory.Instance;
 
         Assert.Throws<ArgumentNullException>(() => nullConfiguration.AddEncryptionResolver(loggerFactory, _decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => configuration.AddEncryptionResolver((ITextDecryptor)null));
+        Assert.Throws<ArgumentNullException>(() => configuration.AddEncryptionResolver(null));
     }
 
     [Fact]

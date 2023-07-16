@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
-using Steeltoe.Configuration.Encryption.Decryption;
 
 namespace Steeltoe.Configuration.Encryption;
 

@@ -23,7 +23,7 @@ public sealed class StartupEncryptionPlaceholderInteraction2
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var configuration = services.ConfigureEncryptionResolver(_configuration);
+        IConfiguration configuration = services.ConfigureEncryptionResolver(_configuration);
         services.ConfigurePlaceholderResolver(configuration);
     }
 
