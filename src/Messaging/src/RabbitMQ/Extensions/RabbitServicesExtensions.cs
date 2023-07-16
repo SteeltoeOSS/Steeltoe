@@ -5,10 +5,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
@@ -232,8 +234,7 @@ public static class RabbitServicesExtensions
     {
         services.AddOptions<RabbitOptions>().Bind(configuration.GetSection(RabbitOptions.Prefix)).Configure<IServiceProvider>((options, provider) =>
         {
-            using IServiceScope scope = provider.CreateScope();
-            var connectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
+            RC.ConnectionFactory connectionFactory = TryCreateRabbitConnectionFactory(provider, string.Empty);
 
             if (connectionFactory is not null)
             {
@@ -510,8 +511,7 @@ public static class RabbitServicesExtensions
     {
         services.AddSingleton(provider =>
         {
-            using IServiceScope scope = provider.CreateScope();
-            var rabbitConnectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
+            RC.ConnectionFactory rabbitConnectionFactory = TryCreateRabbitConnectionFactory(provider, serviceName);
 
             IConnectionFactory instance = rabbitConnectionFactory is not null && typeof(TFactory) == typeof(CachingConnectionFactory)
                 ? new CachingConnectionFactory(rabbitConnectionFactory)
@@ -531,6 +531,24 @@ public static class RabbitServicesExtensions
         });
 
         return services;
+    }
+
+    private static RC.ConnectionFactory TryCreateRabbitConnectionFactory(IServiceProvider serviceProvider, string serviceName)
+    {
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+        RabbitMQOptions options = optionsMonitor.Get(serviceName);
+
+        if (!string.IsNullOrEmpty(options.ConnectionString))
+        {
+            var rabbitConnectionFactory = new RC.ConnectionFactory
+            {
+                Uri = new Uri(options.ConnectionString)
+            };
+
+            return rabbitConnectionFactory;
+        }
+
+        return null;
     }
 
     public static IServiceCollection AddRabbitJsonMessageConverter(this IServiceCollection services,

@@ -26,7 +26,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
             ["Steeltoe:Client:SqlServer:Default:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;Max Pool Size=50"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
         builder.Services.Configure<SqlServerOptions>(options => options.ConnectionString += ";Encrypt=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider));
@@ -34,7 +34,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
-        string connectionString = dbContext.Database.GetConnectionString();
+        string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Data Source=localhost;Initial Catalog=myDb;User ID=steeltoe;Password=steeltoe;Max Pool Size=50;Encrypt=false");
     }
@@ -49,7 +49,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
             ["Steeltoe:Client:SqlServer:mySqlServerService:ConnectionString"] = "SERVER=localhost;database=myDb;UID=steeltoe;PWD=steeltoe;Max Pool Size=50"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly, null, null);
+        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
         builder.Services.Configure<SqlServerOptions>("mySqlServerService", options => options.ConnectionString += ";Encrypt=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => options.UseSqlServer(serviceProvider, "mySqlServerService"));
@@ -57,7 +57,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
         await using WebApplication app = builder.Build();
 
         await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
-        string connectionString = dbContext.Database.GetConnectionString();
+        string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Data Source=localhost;Initial Catalog=myDb;User ID=steeltoe;Password=steeltoe;Max Pool Size=50;Encrypt=false");
     }

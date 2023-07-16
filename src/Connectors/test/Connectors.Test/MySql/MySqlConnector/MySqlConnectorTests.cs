@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -113,7 +111,7 @@ public sealed class MySqlConnectorTests
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
         builder.Services.Configure<MySqlOptions>("myMySqlServiceOne", options => options.ConnectionString += ";Use Compression=false");
 
         await using WebApplication app = builder.Build();
@@ -152,7 +150,7 @@ public sealed class MySqlConnectorTests
             ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "Connection Timeout=15;host=localhost"
         });
 
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
 
         await using WebApplication app = builder.Build();
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<MySqlOptions>>();
@@ -192,7 +190,7 @@ public sealed class MySqlConnectorTests
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -220,16 +218,21 @@ public sealed class MySqlConnectorTests
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
 
         await using WebApplication app = builder.Build();
 
         IHealthContributor[] healthContributors = app.Services.GetServices<IHealthContributor>().ToArray();
-        healthContributors.Should().AllBeOfType<RelationalDbHealthContributor>();
+        RelationalDatabaseHealthContributor[] contributors = healthContributors.Should().AllBeOfType<RelationalDatabaseHealthContributor>().Subject.ToArray();
+        contributors.Should().HaveCount(2);
 
-        healthContributors.Should().HaveCount(2);
-        healthContributors[0].Id.Should().Be("MySQL-myMySqlServiceOne");
-        healthContributors[1].Id.Should().Be("MySQL-myMySqlServiceTwo");
+        contributors[0].Id.Should().Be("MySQL");
+        contributors[0].ServiceName.Should().Be("myMySqlServiceOne");
+        contributors[0].Host.Should().Be("localhost");
+
+        contributors[1].Id.Should().Be("MySQL");
+        contributors[1].ServiceName.Should().Be("myMySqlServiceTwo");
+        contributors[1].Host.Should().Be("localhost");
     }
 
     [Fact]
@@ -238,7 +241,7 @@ public sealed class MySqlConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -267,7 +270,7 @@ public sealed class MySqlConnectorTests
             ["Steeltoe:Client:MySql:Default:ConnectionString"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
         });
 
-        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null);
+        builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
 
         await using WebApplication app = builder.Build();
 

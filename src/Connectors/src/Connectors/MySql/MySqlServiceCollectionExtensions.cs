@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,18 +17,47 @@ namespace Steeltoe.Connectors.MySql;
 
 public static class MySqlServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="MySqlOptions" /> and
+    /// MySqlConnector.MySqlConnection or MySql.Data.MySqlClient.MySqlConnection) to connect to a MySQL compatible database.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddMySql(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddMySql(services, configuration, null);
+        return AddMySql(services, configuration, MySqlPackageResolver.Default);
     }
 
+    /// <summary>
+    /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="MySqlOptions" /> and
+    /// MySqlConnector.MySqlConnection or MySql.Data.MySqlClient.MySqlConnection) to connect to a MySQL compatible database.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The <see cref="IConfiguration" /> to read application settings from.
+    /// </param>
+    /// <param name="addAction">
+    /// An optional delegate to configure this connector.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddMySql(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddMySql(services, configuration, MySqlPackageResolver.Default, addAction);
     }
 
     internal static IServiceCollection AddMySql(this IServiceCollection services, IConfiguration configuration, MySqlPackageResolver packageResolver,
-        Action<ConnectorAddOptionsBuilder>? addAction)
+        Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -67,9 +94,12 @@ public static class MySqlServiceCollectionExtensions
 
         var connection = (DbConnection)connectorShim.GetConnection();
         string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
-        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDbHealthContributor>>();
+        var logger = serviceProvider.GetRequiredService<ILogger<RelationalDatabaseHealthContributor>>();
 
-        return new RelationalDbHealthContributor(connection, $"MySQL-{serviceBindingName}", hostName, logger);
+        return new RelationalDatabaseHealthContributor(connection, hostName, logger)
+        {
+            ServiceName = serviceBindingName
+        };
     }
 
     private static string GetHostNameFromConnectionString(MySqlPackageResolver packageResolver, string? connectionString)

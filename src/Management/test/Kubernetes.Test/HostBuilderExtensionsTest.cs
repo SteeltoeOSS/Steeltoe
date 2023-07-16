@@ -33,6 +33,13 @@ public class HostBuilderExtensionsTest
         s.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
     }).Configure(a => a.UseRouting().UseAuthentication().UseAuthorization());
 
+    public HostBuilderExtensionsTest()
+    {
+        // Workaround for CryptographicException: PKCS12 (PFX) without a supplied password has exceeded maximum allowed iterations.
+        // https://support.microsoft.com/en-us/topic/kb5025823-change-in-how-net-applications-import-x-509-certificates-bf81c936-af2b-446e-9f7a-016f4713b46b
+        Environment.SetEnvironmentVariable("COMPlus_Pkcs12UnspecifiedPasswordIterationLimit", "-1");
+    }
+
     [Fact]
     public async Task AddKubernetesActuators_IHostBuilder_AddsAndActivatesActuators()
     {
