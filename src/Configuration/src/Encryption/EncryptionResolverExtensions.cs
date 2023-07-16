@@ -28,9 +28,6 @@ public static class EncryptionResolverExtensions
     /// <param name="configuration">
     /// The configuration the encryption resolver will wrap.
     /// </param>
-    /// <param name="textDecryptor">
-    /// The the decryptor to use.
-    /// </param>
     /// <returns>
     /// The new configuration.
     /// </returns>

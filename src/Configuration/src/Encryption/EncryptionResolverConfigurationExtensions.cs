@@ -78,28 +78,6 @@ public static class EncryptionResolverConfigurationExtensions
     /// <param name="configuration">
     /// The configuration to wrap.
     /// </param>
-    /// <param name="encryptionConfiguration">
-    /// The encryption setting
-    /// </param>
-    /// <returns>
-    /// A new configuration.
-    /// </returns>
-    public static IConfiguration AddEncryptionResolver(this IConfiguration configuration, IConfiguration encryptionConfiguration)
-    {
-        var settings = new ConfigServerEncryptionSettings();
-        encryptionConfiguration.Bind(settings);
-        return AddEncryptionResolver(configuration, NullLoggerFactory.Instance, EncryptionFactory.CreateEncryptor(settings));
-    }
-
-
-    /// <summary>
-    /// Creates a new <see cref="ConfigurationRoot" /> from a <see cref="EncryptionResolverProvider" />. The encryption resolver will be created using the
-    /// existing configuration providers contained in the incoming configuration. This results in providing encryption resolution for those configuration
-    /// sources.
-    /// </summary>
-    /// <param name="configuration">
-    /// The configuration to wrap.
-    /// </param>
     /// <param name="textDecryptor">
     /// The the decryptor to use.
     /// </param>
