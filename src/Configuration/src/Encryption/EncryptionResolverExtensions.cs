@@ -11,11 +11,38 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
+using Steeltoe.Configuration.Encryption.Decryption;
 
 namespace Steeltoe.Configuration.Encryption;
 
 public static class EncryptionResolverExtensions
 {
+    /// <summary>
+    /// Creates a new <see cref="IConfiguration" /> using a <see cref="EncryptionResolverProvider" /> which wraps the provided <see cref="IConfiguration" />
+    /// . The new configuration will then be used to replace the current <see cref="IConfiguration" /> in the service container. All subsequent requests for
+    /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing encryption resolution.
+    /// </summary>
+    /// <param name="services">
+    /// The service container.
+    /// </param>
+    /// <param name="configuration">
+    /// The configuration the encryption resolver will wrap.
+    /// </param>
+    /// <param name="textDecryptor">
+    /// The the decryptor to use.
+    /// </param>
+    /// <returns>
+    /// The new configuration.
+    /// </returns>
+    public static IConfiguration ConfigureEncryptionResolver(this IServiceCollection services, IConfiguration configuration)
+    {
+        var settings = new ConfigServerEncryptionSettings();
+
+        ConfigurationSettingsHelper.Initialize(settings, configuration);
+        ITextDecryptor textDecryptor = EncryptionFactory.CreateEncryptor(settings);
+        return ConfigureEncryptionResolver(services, configuration, NullLoggerFactory.Instance, textDecryptor);
+    }
+
     /// <summary>
     /// Creates a new <see cref="IConfiguration" /> using a <see cref="EncryptionResolverProvider" /> which wraps the provided <see cref="IConfiguration" />
     /// . The new configuration will then be used to replace the current <see cref="IConfiguration" /> in the service container. All subsequent requests for
