@@ -11,7 +11,6 @@ namespace Steeltoe.Connectors;
 internal sealed class ConnectionStringPostProcessorConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
 {
     private readonly bool _detectConfigurationChanges;
-    private ConfigurationManager? _configurationManager;
 
     public ConnectionStringPostProcessorConfigurationSource(bool detectConfigurationChanges)
     {
@@ -23,11 +22,6 @@ internal sealed class ConnectionStringPostProcessorConfigurationSource : PostPro
         ArgumentGuard.NotNull(builder);
 
         CaptureConfigurationBuilder(builder);
-        return new ConnectionStringPostProcessorConfigurationProvider(this, _detectConfigurationChanges, _configurationManager);
-    }
-
-    public void CaptureConfigurationManager(ConfigurationManager configurationManager)
-    {
-        _configurationManager = configurationManager;
+        return new ConnectionStringPostProcessorConfigurationProvider(this, _detectConfigurationChanges);
     }
 }
