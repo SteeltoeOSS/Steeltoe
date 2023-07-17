@@ -42,7 +42,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use.
+    /// The decryptor to use.
     /// </param>
     public EncryptionResolverProvider(IConfigurationRoot root, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
@@ -66,7 +66,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="textDecryptor">
-    /// The the decryptor to use.
+    /// The decryptor to use.
     /// </param>
     public EncryptionResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
     {
