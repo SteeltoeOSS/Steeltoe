@@ -374,7 +374,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
         });
 
         IWebHost host = hostBuilder.AddMappingsActuator().Build();
-        IEnumerable<IRouteMappings> epHandler = host.Services.GetServices<IRouteMappings>();
+        IEnumerable<RouteMappings.RouteMappings> epHandler = host.Services.GetServices<RouteMappings.RouteMappings>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(epHandler);

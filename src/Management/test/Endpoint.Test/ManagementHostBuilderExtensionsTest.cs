@@ -349,10 +349,11 @@ public class ManagementHostBuilderExtensionsTest
         var hostBuilder = new HostBuilder();
 
         IHost host = hostBuilder.AddMappingsActuator().Build();
-        IEnumerable<IRouteMappings> mappings = host.Services.GetServices<IRouteMappings>();
+
+        RouteMappings.RouteMappings mappings = host.Services.GetRequiredService<RouteMappings.RouteMappings>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(mappings);
+        Assert.NotNull(mappings);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }

@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 /// <summary>
-/// Middleware for displaying <see cref="IRouteMappings" /> information.
+/// Middleware for displaying <see cref="RouteMappings" /> information.
 /// </summary>
 internal sealed class RouteMappingsEndpointMiddleware : EndpointMiddleware<object, RouteMappingsResponse>
 {

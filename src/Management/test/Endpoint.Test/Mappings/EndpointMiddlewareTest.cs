@@ -53,12 +53,11 @@ public class EndpointMiddlewareTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        var mockRouteMappings = new Mock<IRouteMappings>();
-        mockRouteMappings.Setup(m => m.Routers).Returns(new List<IRouter>());
+        var routeMappings = new RouteMappings.RouteMappings();
         var mockActionDescriptorCollectionProvider = new Mock<IActionDescriptorCollectionProvider>();
         var mockApiDescriptionProvider = new Mock<IEnumerable<IApiDescriptionProvider>>();
 
-        var ep = new RouteMappingsEndpointHandler(opts, NullLoggerFactory.Instance, mockRouteMappings.Object, mockActionDescriptorCollectionProvider.Object,
+        var ep = new RouteMappingsEndpointHandler(opts, NullLoggerFactory.Instance, routeMappings, mockActionDescriptorCollectionProvider.Object,
             mockApiDescriptionProvider.Object);
 
         var middle = new RouteMappingsEndpointMiddleware(managementOptions, opts, ep, NullLoggerFactory.Instance);

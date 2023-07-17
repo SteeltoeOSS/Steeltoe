@@ -23,6 +23,6 @@ public static class EndpointServiceCollectionExtensions
         services.AddCommonActuatorServices();
         services.AddMappingsActuatorServices();
 
-        services.TryAddSingleton<IRouteMappings, RouteMappings>();
+        services.TryAddSingleton<RouteMappings>();
     }
 }

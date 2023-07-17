@@ -361,8 +361,6 @@ Steeltoe.Management.Endpoint.RouteMappings.IRouteDetails.Consumes.get -> System.
 Steeltoe.Management.Endpoint.RouteMappings.IRouteDetails.HttpMethods.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Endpoint.RouteMappings.IRouteDetails.Produces.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Endpoint.RouteMappings.IRouteDetails.RouteTemplate.get -> string
-Steeltoe.Management.Endpoint.RouteMappings.IRouteMappings
-Steeltoe.Management.Endpoint.RouteMappings.IRouteMappings.Routers.get -> System.Collections.Generic.IList<Microsoft.AspNetCore.Routing.IRouter>
 Steeltoe.Management.Endpoint.RouteMappings.IRouteMappingsEndpointHandler
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.Details.get -> object

@@ -21,12 +21,12 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
     private readonly IOptionsMonitor<RouteMappingsEndpointOptions> _options;
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
     private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
-    private readonly IRouteMappings _routeMappings;
+    private readonly RouteMappings _routeMappings;
     private readonly ILogger<RouteMappingsEndpointHandler> _logger;
 
     public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public RouteMappingsEndpointHandler(IOptionsMonitor<RouteMappingsEndpointOptions> options, ILoggerFactory loggerFactory, IRouteMappings routeMappings,
+    public RouteMappingsEndpointHandler(IOptionsMonitor<RouteMappingsEndpointOptions> options, ILoggerFactory loggerFactory, RouteMappings routeMappings,
         IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders)
     {
         ArgumentGuard.NotNull(options);
@@ -207,7 +207,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         return routeDetails;
     }
 
-    internal void AddRouteMappingsDescriptions(IRouteMappings routeMappings, IDictionary<string, IList<RouteMappingDescription>> desc)
+    internal void AddRouteMappingsDescriptions(RouteMappings routeMappings, IDictionary<string, IList<RouteMappingDescription>> desc)
     {
         if (routeMappings == null)
         {

@@ -45,7 +45,7 @@ public class EndpointServiceCollectionTest : BaseTest
         var options = serviceProvider.GetService<IOptionsMonitor<RouteMappingsEndpointOptions>>();
         Assert.Equal("mappings", options.CurrentValue.Id);
 
-        var routeMappings = serviceProvider.GetService<IRouteMappings>();
+        var routeMappings = serviceProvider.GetService<RouteMappings.RouteMappings>();
         Assert.NotNull(routeMappings);
     }
 }

@@ -224,7 +224,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<IRouteMappings>());
+        Assert.Single(host.Services.GetServices<RouteMappings.RouteMappings>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/mappings", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

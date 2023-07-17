@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
-public sealed class RouteMappings : IRouteMappings
+public sealed class RouteMappings 
 {
     public IList<IRouter> Routers { get; }
 

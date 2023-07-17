@@ -19,7 +19,7 @@ internal static class RouteBuilderExtensions
     {
         ArgumentGuard.NotNull(builder);
 
-        var routeMappings = builder.ServiceProvider.GetService(typeof(IRouteMappings)) as IRouteMappings;
+        var routeMappings = builder.ServiceProvider.GetService(typeof(RouteMappings)) as RouteMappings;
 
         foreach (IRouter router in builder.Routes)
         {
