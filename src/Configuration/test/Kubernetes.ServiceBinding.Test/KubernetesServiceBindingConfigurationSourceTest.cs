@@ -17,7 +17,7 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
     {
         using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, null);
 
-        var source = new KubernetesServiceBindingConfigurationSource();
+        var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
 
         source.FileProvider.Should().BeNull();
     }
@@ -28,7 +28,7 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
         string rootDirectory = GetK8SResourcesDirectory(string.Empty);
         using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, rootDirectory);
 
-        var source = new KubernetesServiceBindingConfigurationSource();
+        var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
 
         source.FileProvider.Should().NotBeNull();
 

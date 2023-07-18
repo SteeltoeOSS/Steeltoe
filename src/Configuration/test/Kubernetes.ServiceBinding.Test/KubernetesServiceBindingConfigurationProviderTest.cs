@@ -17,13 +17,13 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
         using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, null);
 
         // Optional defaults true, no throw
-        var source = new KubernetesServiceBindingConfigurationSource();
+        var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
         var provider = new KubernetesServiceBindingConfigurationProvider(source);
 
         provider.Load();
 
         // Optional, no throw
-        source = new KubernetesServiceBindingConfigurationSource
+        source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader())
         {
             Optional = false
         };
@@ -41,12 +41,12 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
         using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, rootDirectory);
 
         // Not optional, should throw
-        var source = new KubernetesServiceBindingConfigurationSource();
+        var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
         var provider = new KubernetesServiceBindingConfigurationProvider(source);
         provider.Load();
 
         // Optional, no throw
-        source = new KubernetesServiceBindingConfigurationSource
+        source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader())
         {
             Optional = false
         };
@@ -62,7 +62,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
         string rootDirectory = GetK8SResourcesDirectory(string.Empty);
         using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, rootDirectory);
 
-        var source = new KubernetesServiceBindingConfigurationSource();
+        var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
         var provider = new KubernetesServiceBindingConfigurationProvider(source);
         provider.Load();
 

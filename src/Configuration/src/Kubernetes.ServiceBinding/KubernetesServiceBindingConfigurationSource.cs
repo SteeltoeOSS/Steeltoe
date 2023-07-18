@@ -18,11 +18,6 @@ internal sealed class KubernetesServiceBindingConfigurationSource : PostProcesso
 
     public bool Optional { get; set; } = true;
 
-    public KubernetesServiceBindingConfigurationSource()
-        : this(new EnvironmentServiceBindingsReader())
-    {
-    }
-
     public KubernetesServiceBindingConfigurationSource(IServiceBindingsReader reader)
     {
         ArgumentGuard.NotNull(reader);
