@@ -192,6 +192,7 @@ public class HostBuilderExtensionsTest
 
         Assert.Collection(addresses.Addresses, (address) => Assert.Equal("http://*:8088", address));
     }
+
     [Fact]
     public void UseCloudHosting_AnyWildCard_Overrides_SpecificIps()
     {
