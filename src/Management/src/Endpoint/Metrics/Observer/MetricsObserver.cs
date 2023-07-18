@@ -8,12 +8,12 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public abstract class MetricsObserver : DiagnosticObserver
+internal abstract class MetricsObserver : DiagnosticObserver
 {
     private Regex _pathMatcher;
 
-    protected MetricsObserver(string observerName, string diagnosticName, ILogger logger)
-        : base(observerName, diagnosticName, logger)
+    protected MetricsObserver(string observerName, string diagnosticName, ILoggerFactory loggerFactory)
+        : base(observerName, diagnosticName, loggerFactory)
     {
     }
 

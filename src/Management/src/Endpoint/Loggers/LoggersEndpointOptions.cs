@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class LoggersEndpointOptions : EndpointOptionsBase
+public sealed class LoggersEndpointOptions : HttpMiddlewareOptions
 {
     public override IEnumerable<string> AllowedVerbs { get; } = new List<string>
     {

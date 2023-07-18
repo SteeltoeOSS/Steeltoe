@@ -28,8 +28,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.ConfigureOptions<ConfigureLoggersEndpointOptions>();
-        services.TryAddSingleton<LoggersEndpoint>();
-        services.TryAddSingleton<ILoggersEndpoint>(provider => provider.GetRequiredService<LoggersEndpoint>());
+        services.TryAddSingleton<ILoggersEndpointHandler, LoggersEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, LoggersEndpointMiddleware>());
         services.AddSingleton<LoggersEndpointMiddleware>();
 

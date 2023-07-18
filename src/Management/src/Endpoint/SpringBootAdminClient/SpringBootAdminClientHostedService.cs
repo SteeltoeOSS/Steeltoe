@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
@@ -30,7 +29,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         ArgumentGuard.NotNull(logger);
 
         _options = options;
-        _managementOptions = managementOptions.Get(ActuatorContext.Name);
+        _managementOptions = managementOptions.CurrentValue;
         _healthOptions = healthOptions.CurrentValue;
         _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMs);
         _logger = logger;

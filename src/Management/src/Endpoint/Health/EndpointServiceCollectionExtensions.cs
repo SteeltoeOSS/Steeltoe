@@ -8,7 +8,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
@@ -72,14 +71,12 @@ public static class EndpointServiceCollectionExtensions
         AddHealthContributors(services, contributors);
 
         services.TryAddSingleton(aggregator);
-        services.TryAddScoped<IEndpoint<HealthEndpointResponse, ISecurityContext>, HealthEndpointCore>();
         services.TryAddSingleton<ApplicationAvailability>();
-
-        services.AddCommonActuatorServices();
     }
 
     public static void AddHealthContributors(this IServiceCollection services, params Type[] contributors)
     {
+        ArgumentGuard.NotNull(contributors);
         var descriptors = new List<ServiceDescriptor>();
 
         foreach (Type c in contributors)

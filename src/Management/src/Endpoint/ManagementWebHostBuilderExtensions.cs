@@ -10,25 +10,25 @@ using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
 
 public static class ManagementWebHostBuilderExtensions
 {
-    public const string ManagementPortKey = "management:endpoints:port";
-    public const string ManagementSSLKey = "management:endpoints:sslenabled";
+    private const string ManagementPortKey = "management:endpoints:port";
+    private const string ManagementSSLKey = "management:endpoints:sslenabled";
 
     /// <summary>
     /// Adds the Database Migrations actuator to the application.
@@ -55,7 +55,7 @@ public static class ManagementWebHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddEnvActuator();
+            collection.AddEnvironmentActuator();
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -246,13 +246,24 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddThreadDumpActuator(mediaTypeVersion);
             collection.ActivateActuatorEndpoints();
         });
+    }
+
+    /// <summary>
+    /// Adds the ThreadDump actuator to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder)
+    {
+        return AddThreadDumpActuator(hostBuilder, MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -264,13 +275,24 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddTraceActuator(mediaTypeVersion);
             collection.ActivateActuatorEndpoints();
         });
+    }
+
+    /// <summary>
+    /// Adds the Trace actuator to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder)
+    {
+        return hostBuilder.AddTraceActuator(MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -300,8 +322,8 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null,
-        MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
+        MediaTypeVersion mediaTypeVersion)
     {
         return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((context, collection) =>
         {
@@ -309,6 +331,31 @@ public static class ManagementWebHostBuilderExtensions
             IEndpointConventionBuilder conventionBuilder = collection.ActivateActuatorEndpoints();
             configureEndpoints?.Invoke(conventionBuilder);
         });
+    }
+
+    /// <summary>
+    /// Adds all Steeltoe Actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// <see cref="IEndpointConventionBuilder" />.
+    /// </param>
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
+    {
+        return AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
+    }
+
+    /// <summary>
+    /// Adds all Steeltoe Actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder)
+    {
+        return AddAllActuators(hostBuilder, null);
     }
 
     internal static void GetManagementUrl(this IWebHostBuilder webHostBuilder, out int? httpPort, out int? httpsPort)
@@ -361,7 +408,7 @@ public static class ManagementWebHostBuilderExtensions
 
         try
         {
-            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            string environment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             config = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile($"appsettings.{environment}.json", true).Build();
         }
         catch (Exception)

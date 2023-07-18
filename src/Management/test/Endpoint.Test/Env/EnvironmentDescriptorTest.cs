@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Env;
@@ -14,7 +14,7 @@ public class EnvironmentDescriptorTest : BaseTest
     {
         var profiles = new List<string>();
         var propertySourceDescriptors = new List<PropertySourceDescriptor>();
-        var environmentDescriptor = new EnvironmentDescriptor(profiles, propertySourceDescriptors);
+        var environmentDescriptor = new EnvironmentResponse(profiles, propertySourceDescriptors);
         Assert.Same(profiles, environmentDescriptor.ActiveProfiles);
         Assert.Same(propertySourceDescriptors, environmentDescriptor.PropertySources);
     }
@@ -38,7 +38,7 @@ public class EnvironmentDescriptorTest : BaseTest
             new("name", properties)
         };
 
-        var environmentDescriptor = new EnvironmentDescriptor(profiles, propertySourceDescriptors);
+        var environmentDescriptor = new EnvironmentResponse(profiles, propertySourceDescriptors);
         string result = Serialize(environmentDescriptor);
 
         Assert.Equal(

@@ -11,14 +11,14 @@ using Wavefront.SDK.CSharp.Entities.Metrics;
 
 namespace Steeltoe.Management.Wavefront.Exporters;
 
-public class WavefrontMetricsExporter : BaseExporter<Metric>
+public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
 {
     private readonly ILogger<WavefrontMetricsExporter> _logger;
     private readonly IWavefrontMetricSender _wavefrontSender;
 
     internal WavefrontExporterOptions Options { get; }
 
-    public WavefrontMetricsExporter(IWavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
+    public WavefrontMetricsExporter(WavefrontExporterOptions options, ILogger<WavefrontMetricsExporter> logger)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(logger);

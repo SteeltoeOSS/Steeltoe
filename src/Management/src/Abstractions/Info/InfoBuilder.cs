@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Info;
 
-public class InfoBuilder : IInfoBuilder
+public sealed class InfoBuilder : IInfoBuilder
 {
     private readonly Dictionary<string, object> _info = new();
 

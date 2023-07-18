@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
@@ -21,36 +20,20 @@ public class TraceEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsIfNullRepo()
-    {
-        IOptionsMonitor<TraceEndpointOptions> opts = GetOptionsMonitorFromSettings<TraceEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, null, null));
-        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(opts, new TestTraceRepository(), null));
-    }
-
-    [Fact]
-    public void DoInvoke_CallsTraceRepo()
+    public async Task TraceEndpointHandler_CallsTraceRepo()
     {
         using var tc = new TestContext(_output);
         var repo = new TestTraceRepo();
 
         tc.AdditionalServices = (services, configuration) =>
         {
-            services.AddSingleton<ITraceRepository>(repo);
+            services.AddSingleton<IHttpTraceRepository>(repo);
             services.AddTraceActuatorServices(MediaTypeVersion.V1);
         };
 
-        var ep = tc.GetService<ITraceEndpoint>();
-        List<TraceResult> result = ep.Invoke();
+        var ep = tc.GetService<IHttpTraceEndpointHandler>();
+        HttpTraceResult result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);
-    }
-
-    private class TestTraceRepository : ITraceRepository
-    {
-        public List<TraceResult> GetTraces()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

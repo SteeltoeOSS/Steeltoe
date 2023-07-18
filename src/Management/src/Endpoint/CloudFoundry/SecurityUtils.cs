@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class SecurityUtils
+internal sealed class SecurityUtils
 {
     public const int DefaultGetPermissionsTimeout = 5000; // Milliseconds
     public const string ApplicationIdMissingMessage = "Application id is not available";
@@ -24,32 +24,26 @@ public class SecurityUtils
     public const string AuthorizationHeader = "Authorization";
     public const string Bearer = "bearer";
     public const string ReadSensitiveData = "read_sensitive_data";
-
     private readonly CloudFoundryEndpointOptions _options;
-    private readonly ManagementEndpointOptions _managementOptions;
 
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    internal SecurityUtils(CloudFoundryEndpointOptions options, ManagementEndpointOptions managementOptions, ILogger logger, HttpClient httpClient = null)
+    internal SecurityUtils(CloudFoundryEndpointOptions options, ILogger logger, HttpClient httpClient = null)
     {
         ArgumentGuard.NotNull(logger);
-
         _options = options;
-        _managementOptions = managementOptions;
         _logger = logger;
         _httpClient = httpClient;
     }
 
-    public bool IsCloudFoundryRequest(string requestPath)
+    internal bool IsCloudFoundryRequest(string requestPath)
     {
-        string optionsPath = _options.Path;
-
-        string contextPath = _managementOptions == null ? optionsPath : _managementOptions.Path;
+        string contextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
         return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
     }
 
-    public string Serialize(SecurityResult error)
+    internal string Serialize(SecurityResult error)
     {
         try
         {
@@ -63,7 +57,7 @@ public class SecurityUtils
         return string.Empty;
     }
 
-    public async Task<SecurityResult> GetPermissionsAsync(string token)
+    internal async Task<SecurityResult> GetPermissionsAsync(string token)
     {
         if (string.IsNullOrEmpty(token))
         {
@@ -101,7 +95,7 @@ public class SecurityUtils
         }
     }
 
-    public async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response)
+    internal async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response)
     {
         string json = string.Empty;
         var permissions = Permissions.None;

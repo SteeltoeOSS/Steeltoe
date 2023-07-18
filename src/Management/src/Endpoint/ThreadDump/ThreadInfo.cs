@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadInfo
+public sealed class ThreadInfo
 {
     [JsonPropertyName("blockedCount")]
     public long BlockedCount { get; set; } // Not available
@@ -15,10 +16,10 @@ public class ThreadInfo
     public long BlockedTime { get; set; } = -1; // Not available
 
     [JsonPropertyName("lockedMonitors")]
-    public List<MonitorInfo> LockedMonitors { get; set; }
+    public IList<MonitorInfo> LockedMonitors { get; } = new List<MonitorInfo>(); // Not available
 
     [JsonPropertyName("lockedSynchronizers")]
-    public List<LockInfo> LockedSynchronizers { get; set; }
+    public IList<LockInfo> LockedSynchronizers { get; } = new List<LockInfo>(); // Not available
 
     [JsonPropertyName("lockInfo")]
     public LockInfo LockInfo { get; set; }
@@ -33,7 +34,8 @@ public class ThreadInfo
     public string LockOwnerName { get; set; }
 
     [JsonPropertyName("stackTrace")]
-    public List<StackTraceElement> StackTrace { get; set; }
+    [SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "For serialization")]
+    public IList<StackTraceElement> StackTrace { get; set; }
 
     [JsonPropertyName("threadId")]
     public long ThreadId { get; set; }

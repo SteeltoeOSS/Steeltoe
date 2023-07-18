@@ -9,7 +9,7 @@ using SteeltoeHealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public static class HealthCheckExtensions
+internal static class HealthCheckExtensions
 {
     public static SteeltoeHealthStatus ToHealthStatus(this HealthStatus status)
     {
@@ -22,7 +22,7 @@ public static class HealthCheckExtensions
         };
     }
 
-    public static async Task<SteeltoeHealthCheckResult> HealthCheckAsync(this HealthCheckRegistration registration, IServiceProvider provider)
+    internal static async Task<SteeltoeHealthCheckResult> HealthCheckAsync(this HealthCheckRegistration registration, IServiceProvider provider)
     {
         var context = new HealthCheckContext
         {

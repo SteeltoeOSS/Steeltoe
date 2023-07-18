@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
@@ -30,7 +30,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddHypermediaActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var ep = serviceProvider.GetService<IActuatorEndpoint>();
+        var ep = serviceProvider.GetService<IActuatorEndpointHandler>();
         Assert.NotNull(ep);
     }
 }

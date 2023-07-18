@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
@@ -33,20 +35,32 @@ public static class ServiceCollectionExtensions
         if (version == MediaTypeVersion.V1)
         {
             services.ConfigureEndpointOptions<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
-            services.TryAddSingleton<ThreadDumpEndpoint>();
-            services.TryAddSingleton<IThreadDumpEndpoint>(provider => provider.GetRequiredService<ThreadDumpEndpoint>());
-
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddleware>());
-            services.AddSingleton<ThreadDumpEndpointMiddleware>();
         }
         else
         {
             services.ConfigureEndpointOptions<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>();
+        }
 
-            services.TryAddSingleton<ThreadDumpEndpointV2>();
-            services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpointV2>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddlewareV2>());
-            services.AddSingleton<ThreadDumpEndpointMiddlewareV2>();
+        services.TryAddSingleton<IThreadDumpEndpointHandler, ThreadDumpEndpointHandler>();
+
+        services.AddSingleton<ThreadDumpEndpointMiddleware>();
+
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ThreadDumpEndpointMiddleware>());
+
+        if (version == MediaTypeVersion.V2)
+        {
+            services.PostConfigure((ManagementEndpointOptions mgmtOptions) =>
+            {
+                JsonSerializerOptions serializerOptions = mgmtOptions.SerializerOptions ?? new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+
+                if (serializerOptions.Converters?.Any(c => c is ThreadDumpV2Converter) != true)
+                {
+                    serializerOptions.Converters.Add(new ThreadDumpV2Converter());
+                }
+            });
         }
 
         services.TryAddSingleton<IThreadDumper, ThreadDumperEp>();

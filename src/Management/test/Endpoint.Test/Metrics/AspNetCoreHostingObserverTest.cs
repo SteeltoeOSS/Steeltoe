@@ -19,7 +19,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void ShouldIgnore_ReturnsExpected()
     {
         IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
+        var observer = new AspNetCoreHostingObserver(options, NullLoggerFactory.Instance);
 
         Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/info"));
         Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/health"));
@@ -40,7 +40,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void GetException_ReturnsExpected()
     {
         IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
+        var observer = new AspNetCoreHostingObserver(options, NullLoggerFactory.Instance);
 
         HttpContext context = GetHttpRequestMessage();
         string exception = observer.GetException(context);
@@ -62,7 +62,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void GetLabelSets_ReturnsExpected()
     {
         IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
+        var observer = new AspNetCoreHostingObserver(options, NullLoggerFactory.Instance);
 
         HttpContext context = GetHttpRequestMessage();
 

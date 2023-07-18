@@ -1,0 +1,56 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using System.Text.Json.Serialization;
+
+namespace Steeltoe.Management.Endpoint.RouteMappings;
+
+public sealed class ContextMappings
+{
+    [JsonPropertyName("parentId")]
+    public string ParentId { get; }
+
+    [JsonPropertyName("mappings")]
+    public IDictionary<string, IDictionary<string, IList<RouteMappingDescription>>> Mappings { get; } // "dispatcherServlets", "dispatcherServlet"
+
+    public ContextMappings()
+    {
+        var mappingList = new Dictionary<string, IList<RouteMappingDescription>>
+        {
+            { "dispatcherServlet", new List<RouteMappingDescription>() }
+        };
+
+        Mappings = new Dictionary<string, IDictionary<string, IList<RouteMappingDescription>>>
+        {
+            { "dispatcherServlets", mappingList }
+        };
+
+        ParentId = null;
+    }
+
+    public ContextMappings(IDictionary<string, IList<RouteMappingDescription>> mappingDict)
+        : this(mappingDict, null)
+    {
+    }
+
+    public ContextMappings(IDictionary<string, IList<RouteMappingDescription>> mappingDict, string parentId)
+    {
+        // At this point, .NET will only ever has one context and it must be named "dispatcherServlets"
+        // For .NET, the mappingDict contains keys that represent the type name of the controller and then a
+        // list of MappingDescriptions for that controller.
+        mappingDict ??= new Dictionary<string, IList<RouteMappingDescription>>();
+
+        if (mappingDict.Count == 0)
+        {
+            mappingDict.Add("dispatcherServlet", new List<RouteMappingDescription>());
+        }
+
+        Mappings = new Dictionary<string, IDictionary<string, IList<RouteMappingDescription>>>
+        {
+            { "dispatcherServlets", mappingDict }
+        };
+
+        ParentId = parentId;
+    }
+}

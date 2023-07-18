@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Logging;
+using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
@@ -27,10 +29,11 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = (LoggersEndpointHandler)tc.GetService<ILoggersEndpointHandler>();
 
         var dict = new Dictionary<string, object>();
         ep.AddLevels(dict);
@@ -57,10 +60,11 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = (LoggersEndpointHandler)tc.GetService<ILoggersEndpointHandler>();
 
         Assert.Throws<ArgumentNullException>(() => ep.SetLogLevel(new TestLogProvider(), null, null));
     }
@@ -72,10 +76,11 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = (LoggersEndpointHandler)tc.GetService<ILoggersEndpointHandler>();
         var provider = new TestLogProvider();
         ep.SetLogLevel(provider, "foobar", "WARN");
 
@@ -90,10 +95,11 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = (LoggersEndpointHandler)tc.GetService<ILoggersEndpointHandler>();
         ICollection<ILoggerConfiguration> result = ep.GetLoggerConfigurations(null);
         Assert.NotNull(result);
     }
@@ -105,10 +111,11 @@ public class LoggersEndpointTest : BaseTest
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = (LoggersEndpointHandler)tc.GetService<ILoggersEndpointHandler>();
         var provider = new TestLogProvider();
         ICollection<ILoggerConfiguration> result = ep.GetLoggerConfigurations(provider);
         Assert.NotNull(result);
@@ -116,18 +123,21 @@ public class LoggersEndpointTest : BaseTest
     }
 
     [Fact]
-    public void DoInvoke_NoChangeRequest_ReturnsExpected()
+    public async Task DoInvoke_NoChangeRequest_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
 
         tc.AdditionalServices = (services, configuration) =>
         {
+            services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpoint>();
+        var ep = tc.GetService<ILoggersEndpointHandler>();
 
-        Dictionary<string, object> result = ep.Invoke(null);
+        LoggersResponse loggersResponse = await ep.InvokeAsync(null, CancellationToken.None);
+        Assert.NotNull(loggersResponse);
+        Dictionary<string, object> result = loggersResponse.Data;
         Assert.NotNull(result);
         Assert.True(result.ContainsKey("levels"));
         var levels = result["levels"] as List<string>;
@@ -137,6 +147,5 @@ public class LoggersEndpointTest : BaseTest
         Assert.True(result.ContainsKey("loggers"));
         var loggers = result["loggers"] as Dictionary<string, LoggerLevels>;
         Assert.NotNull(loggers);
-        Assert.Empty(loggers);
     }
 }

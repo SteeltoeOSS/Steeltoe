@@ -5,13 +5,20 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorRouteBuilderExtensions
 {
-    public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, ActuatorConventionBuilder conventionBuilder = null)
+    public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder builder)
     {
+        return MapAllActuators(builder, null);
+    }
+
+    public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, ActuatorConventionBuilder conventionBuilder)
+    {
+        ArgumentGuard.NotNull(endpoints);
         IServiceProvider serviceProvider = endpoints.ServiceProvider;
 
         using (IServiceScope scope = serviceProvider.CreateScope())
@@ -20,23 +27,5 @@ public static class ActuatorRouteBuilderExtensions
             mapper.Map(endpoints, ref conventionBuilder);
             return conventionBuilder;
         }
-    }
-}
-
-public class ActuatorConventionBuilder : IEndpointConventionBuilder
-{
-    private readonly List<IEndpointConventionBuilder> _builders = new();
-
-    public void Add(Action<EndpointBuilder> convention)
-    {
-        foreach (IEndpointConventionBuilder builder in _builders)
-        {
-            builder.Add(convention);
-        }
-    }
-
-    public void Add(IEndpointConventionBuilder builder)
-    {
-        _builders.Add(builder);
     }
 }

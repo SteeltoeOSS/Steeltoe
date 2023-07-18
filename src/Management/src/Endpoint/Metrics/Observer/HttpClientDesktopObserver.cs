@@ -11,12 +11,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public class HttpClientDesktopObserver : MetricsObserver
+internal sealed class HttpClientDesktopObserver : MetricsObserver
 {
     private const string StatusTagKey = "status";
     private const string UriTagKey = "uri";
@@ -29,14 +28,17 @@ public class HttpClientDesktopObserver : MetricsObserver
     internal const string StopExEvent = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
+    private readonly ILogger _logger;
 
-    public HttpClientDesktopObserver(IOptionsMonitor<MetricsObserverOptions> options, ILogger<HttpClientDesktopObserver> logger)
-        : base(DefaultObserverName, DiagnosticName, logger)
+    public HttpClientDesktopObserver(IOptionsMonitor<MetricsObserverOptions> options, ILoggerFactory loggerFactory)
+        : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
+        ArgumentGuard.NotNull(options);
         SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
 
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.count");
+        _logger = loggerFactory.CreateLogger<HttpClientDesktopObserver>();
     }
 
     public override void ProcessEvent(string eventName, object value)
@@ -62,7 +64,7 @@ public class HttpClientDesktopObserver : MetricsObserver
 
         if (eventName == StopEvent)
         {
-            Logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             var response = DiagnosticHelpers.GetProperty<HttpWebResponse>(value, "Response");
 
@@ -71,25 +73,25 @@ public class HttpClientDesktopObserver : MetricsObserver
                 HandleStopEvent(current, request, response.StatusCode);
             }
 
-            Logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
         else if (eventName == StopExEvent)
         {
-            Logger.LogTrace("HandleStopEventEx start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEventEx start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             var statusCode = DiagnosticHelpers.GetProperty<HttpStatusCode>(value, "StatusCode");
 
             HandleStopEvent(current, request, statusCode);
 
-            Logger.LogTrace("HandleStopEventEx finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEventEx finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
     }
 
-    protected internal void HandleStopEvent(Activity current, HttpWebRequest request, HttpStatusCode statusCode)
+    private void HandleStopEvent(Activity current, HttpWebRequest request, HttpStatusCode statusCode)
     {
         if (ShouldIgnoreRequest(request.RequestUri.AbsolutePath))
         {
-            Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
+            _logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
             return;
         }
 
@@ -101,7 +103,7 @@ public class HttpClientDesktopObserver : MetricsObserver
         }
     }
 
-    protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
+    private IEnumerable<KeyValuePair<string, object>> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
     {
         string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string status = ((int)statusCode).ToString(CultureInfo.InvariantCulture);

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
@@ -42,10 +42,10 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddMappingsActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IOptionsMonitor<MappingsEndpointOptions>>();
+        var options = serviceProvider.GetService<IOptionsMonitor<RouteMappingsEndpointOptions>>();
         Assert.Equal("mappings", options.CurrentValue.Id);
 
-        var routeMappings = serviceProvider.GetService<IRouteMappings>();
+        var routeMappings = serviceProvider.GetService<RouteMappings.RouteMappings>();
         Assert.NotNull(routeMappings);
     }
 }

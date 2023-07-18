@@ -10,14 +10,14 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ContentNegotiation;
 
-public static class ContentNegotiationExtensions
+internal static class ContentNegotiationExtensions
 {
-    public static void HandleContentNegotiation(this HttpContext context, ILogger logger)
+    internal static void HandleContentNegotiation(this HttpContext context, ILogger logger)
     {
         context.Response.Headers.SetContentType(context.Request.Headers, logger);
     }
 
-    public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
+    internal static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
     {
         ArgumentGuard.NotNull(logger);
 
@@ -33,7 +33,7 @@ public static class ContentNegotiationExtensions
         }
     }
 
-    public static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger,
+    internal static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger,
         MediaTypeVersion version = MediaTypeVersion.V2)
     {
         var headers = new RequestHeaders(requestHeaders);

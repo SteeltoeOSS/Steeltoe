@@ -4,9 +4,9 @@
 
 using System.Collections.Concurrent;
 
-namespace Steeltoe.Management.MetricCollectors;
+namespace Steeltoe.Management.MetricCollectors.Metrics;
 
-public class MetricsCollection<T> : ConcurrentDictionary<string, T>
+public sealed class MetricsCollection<T> : ConcurrentDictionary<string, T>
     where T : new()
 {
     public new T this[string key]

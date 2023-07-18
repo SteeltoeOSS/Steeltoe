@@ -6,13 +6,13 @@ using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 
-internal sealed class TestTraceRepo : ITraceRepository
+internal sealed class TestTraceRepo : IHttpTraceRepository
 {
     public bool GetTracesCalled { get; set; }
 
-    public List<TraceResult> GetTraces()
+    public HttpTraceResult GetTraces()
     {
         GetTracesCalled = true;
-        return new List<TraceResult>();
+        return new HttpTracesV1(new List<TraceResult>());
     }
 }

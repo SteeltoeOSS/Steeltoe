@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Env;
@@ -19,7 +19,7 @@ public class EndpointServiceCollectionTest : BaseTest
     {
         const IServiceCollection services = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvActuator());
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvironmentActuator());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
     }
 
@@ -41,12 +41,12 @@ public class EndpointServiceCollectionTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddLogging();
-        services.AddEnvActuator();
+        services.AddEnvironmentActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IOptionsMonitor<EnvEndpointOptions>>();
+        var options = serviceProvider.GetService<IOptionsMonitor<EnvironmentEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<EnvEndpoint>();
+        var ep = serviceProvider.GetService<IEnvironmentEndpointHandler>();
         Assert.NotNull(ep);
     }
 }

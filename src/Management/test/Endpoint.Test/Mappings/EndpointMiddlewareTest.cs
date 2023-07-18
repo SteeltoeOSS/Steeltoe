@@ -6,16 +6,17 @@ using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Moq;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
@@ -34,11 +35,11 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<MappingsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        var options = GetOptionsFromSettings<RouteMappingsEndpointOptions>();
+        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/mappings", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/mappings", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Equal("/actuator/mappings", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
+        Assert.Equal("/cloudfoundryapplication/mappings", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }
@@ -46,16 +47,22 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
     {
-        IOptionsMonitor<MappingsEndpointOptions> opts = GetOptionsMonitorFromSettings<MappingsEndpointOptions>();
+        IOptionsMonitor<RouteMappingsEndpointOptions> opts = GetOptionsMonitorFromSettings<RouteMappingsEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        var ep = new MappingsEndpoint(opts, NullLogger<MappingsEndpoint>.Instance);
-        var middle = new MappingsEndpointMiddleware(opts, managementOptions, ep, NullLogger<MappingsEndpointMiddleware>.Instance);
+        var routeMappings = new RouteMappings.RouteMappings();
+        var mockActionDescriptorCollectionProvider = new Mock<IActionDescriptorCollectionProvider>();
+        var mockApiDescriptionProvider = new Mock<IEnumerable<IApiDescriptionProvider>>();
+
+        var ep = new RouteMappingsEndpointHandler(opts, NullLoggerFactory.Instance, routeMappings, mockActionDescriptorCollectionProvider.Object,
+            mockApiDescriptionProvider.Object);
+
+        var middle = new RouteMappingsEndpointMiddleware(managementOptions, opts, ep, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
-        await middle.HandleMappingsRequestAsync(context);
+        await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadLineAsync();

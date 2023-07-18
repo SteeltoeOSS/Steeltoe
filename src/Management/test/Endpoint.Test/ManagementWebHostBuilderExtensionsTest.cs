@@ -11,36 +11,41 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Info;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ManagementWebHostBuilderExtensionsTest
+public class ManagementWebHostBuilderExtensionsTest : BaseTest
 {
-    private readonly IWebHostBuilder _testServerWithRouting =
-        new WebHostBuilder().UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+    private readonly IWebHostBuilder _testServerWithRouting = new WebHostBuilder().UseTestServer()
+        .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting()).ConfigureAppConfiguration(c =>
+            c.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["management:endpoints:actuator:exposure:include:0"] = "*"
+            }));
 
     private readonly IWebHostBuilder _testServerWithSecureRouting = new WebHostBuilder().UseTestServer().ConfigureServices(s =>
     {
         s.AddRouting();
+        s.AddActionDescriptorCollectionProvider();
 
         s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme,
             _ =>
@@ -58,10 +63,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddDbMigrationsActuator().Build();
-        var managementEndpoint = host.Services.GetService<IDbMigrationsEndpoint>();
+        var epHandler = host.Services.GetService<IDbMigrationsEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.NotNull(managementEndpoint);
+        Assert.NotNull(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -86,10 +91,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddEnvActuator().Build();
-        IEnumerable<EnvEndpoint> managementEndpoint = host.Services.GetServices<EnvEndpoint>();
+        IEnumerable<IEnvironmentEndpointHandler> epHandler = host.Services.GetServices<IEnvironmentEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -114,10 +119,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddHealthActuator().Build();
-        IEnumerable<IHealthEndpoint> managementEndpoint = host.Services.GetServices<IHealthEndpoint>();
+        IEnumerable<IHealthEndpointHandler> epHandler = host.Services.GetServices<IHealthEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -134,10 +139,10 @@ public class ManagementWebHostBuilderExtensionsTest
             typeof(DownContributor)
         }).Build();
 
-        IEnumerable<IHealthEndpoint> managementEndpoint = host.Services.GetServices<IHealthEndpoint>();
+        IEnumerable<IHealthEndpointHandler> epHandler = host.Services.GetServices<IHealthEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -154,10 +159,10 @@ public class ManagementWebHostBuilderExtensionsTest
             typeof(DownContributor)
         }).Build();
 
-        IEnumerable<IHealthEndpoint> managementEndpoint = host.Services.GetServices<IHealthEndpoint>();
+        IEnumerable<IHealthEndpointHandler> epHandler = host.Services.GetServices<IHealthEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -208,10 +213,10 @@ public class ManagementWebHostBuilderExtensionsTest
             });
 
             IWebHost host = hostBuilder.AddHeapDumpActuator().Build();
-            IEnumerable<HeapDumpEndpoint> managementEndpoint = host.Services.GetServices<HeapDumpEndpoint>();
+            IEnumerable<IHeapDumpEndpointHandler> epHandler = host.Services.GetServices<IHeapDumpEndpointHandler>();
             IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-            Assert.Single(managementEndpoint);
+            Assert.Single(epHandler);
             Assert.NotNull(filter);
             Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
@@ -240,10 +245,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddHypermediaActuator().Build();
-        IEnumerable<IActuatorEndpoint> managementEndpoint = host.Services.GetServices<IActuatorEndpoint>();
+        IEnumerable<IActuatorEndpointHandler> epHandler = host.Services.GetServices<IActuatorEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -268,10 +273,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddInfoActuator().Build();
-        var managementEndpoint = host.Services.GetService<IInfoEndpoint>();
+        var epHandler = host.Services.GetService<IInfoEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.NotNull(managementEndpoint);
+        Assert.NotNull(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -288,10 +293,10 @@ public class ManagementWebHostBuilderExtensionsTest
             new AppSettingsInfoContributor(new ConfigurationBuilder().Build())
         }).Build();
 
-        var managementEndpoint = host.Services.GetService<IInfoEndpoint>();
+        var epHandler = host.Services.GetService<IInfoEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.NotNull(managementEndpoint);
+        Assert.NotNull(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -316,10 +321,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddLoggersActuator().Build();
-        IEnumerable<LoggersEndpoint> managementEndpoint = host.Services.GetServices<LoggersEndpoint>();
+        IEnumerable<ILoggersEndpointHandler> epHandler = host.Services.GetServices<ILoggersEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -368,10 +373,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddMappingsActuator().Build();
-        IEnumerable<IRouteMappings> managementEndpoint = host.Services.GetServices<IRouteMappings>();
+        IEnumerable<RouteMappings.RouteMappings> epHandler = host.Services.GetServices<RouteMappings.RouteMappings>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -396,10 +401,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddMetricsActuator().Build();
-        IEnumerable<IMetricsEndpoint> managementEndpoint = host.Services.GetServices<IMetricsEndpoint>();
+        IEnumerable<IMetricsEndpointHandler> epHandler = host.Services.GetServices<IMetricsEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.NotNull(managementEndpoint);
+        Assert.NotNull(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -424,10 +429,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddRefreshActuator().Build();
-        IEnumerable<IRefreshEndpoint> managementEndpoint = host.Services.GetServices<IRefreshEndpoint>();
+        IEnumerable<IRefreshEndpointHandler> epHandler = host.Services.GetServices<IRefreshEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -440,7 +445,7 @@ public class ManagementWebHostBuilderExtensionsTest
         using IWebHost host = hostBuilder.AddRefreshActuator().Start();
 
         var requestUri = new Uri("/actuator/refresh", UriKind.Relative);
-        HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
+        HttpResponseMessage response = await host.GetTestServer().CreateClient().PostAsync(requestUri, null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -454,10 +459,10 @@ public class ManagementWebHostBuilderExtensionsTest
             });
 
             IWebHost host = hostBuilder.AddThreadDumpActuator().Build();
-            IEnumerable<ThreadDumpEndpointV2> managementEndpoint = host.Services.GetServices<ThreadDumpEndpointV2>();
+            IEnumerable<IThreadDumpEndpointHandler> epHandler = host.Services.GetServices<IThreadDumpEndpointHandler>();
             IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-            Assert.Single(managementEndpoint);
+            Assert.Single(epHandler);
             Assert.NotNull(filter);
             Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
@@ -486,10 +491,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddTraceActuator().Build();
-        IEnumerable<IHttpTraceEndpoint> managementEndpoint = host.Services.GetServices<IHttpTraceEndpoint>();
+        IEnumerable<IHttpTraceEndpointHandler> epHandler = host.Services.GetServices<IHttpTraceEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -514,10 +519,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddCloudFoundryActuator().Build();
-        IEnumerable<ICloudFoundryEndpoint> managementEndpoint = host.Services.GetServices<ICloudFoundryEndpoint>();
+        IEnumerable<ICloudFoundryEndpointHandler> epHandler = host.Services.GetServices<ICloudFoundryEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.NotNull(managementEndpoint);
+        Assert.NotNull(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -562,10 +567,10 @@ public class ManagementWebHostBuilderExtensionsTest
         });
 
         IWebHost host = hostBuilder.AddAllActuators().Build();
-        IEnumerable<IActuatorEndpoint> managementEndpoint = host.Services.GetServices<IActuatorEndpoint>();
+        IEnumerable<IActuatorEndpointHandler> epHandler = host.Services.GetServices<IActuatorEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(managementEndpoint);
+        Assert.Single(epHandler);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }
@@ -575,27 +580,17 @@ public class ManagementWebHostBuilderExtensionsTest
     {
         try
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
 
-            var appSettings = new Dictionary<string, string>
-            {
-                ["management:endpoints:enabled"] = "false"
-            };
-
-            IWebHostBuilder hostBuilder = _testServerWithRouting.ConfigureAppConfiguration(configBuilder =>
-            {
-                configBuilder.AddInMemoryCollection(appSettings);
-            });
-
-            using IWebHost host = hostBuilder.AddCloudFoundryActuator().Start();
+            using IWebHost host = _testServerWithRouting.AddCloudFoundryActuator().Start();
 
             var requestUri = new Uri("/cloudfoundryapplication", UriKind.Relative);
             HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         }
         finally
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
         }
     }
 

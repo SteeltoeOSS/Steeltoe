@@ -5,14 +5,11 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
@@ -36,7 +33,7 @@ public class EndpointMiddlewareTest : BaseTest
 
     public EndpointMiddlewareTest()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
     }
 
     [Fact]
@@ -45,27 +42,10 @@ public class EndpointMiddlewareTest : BaseTest
         var options = new HypermediaEndpointOptions();
         IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         Assert.True(options.ExactMatch);
-        Assert.Equal("/cloudfoundryapplication", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Equal("/cloudfoundryapplication", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions.CurrentValue));
 
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
-    }
-
-    [Fact]
-    public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var ep = new TestCloudFoundryEndpoint(opts, managementOptions, NullLogger<CloudFoundryEndpoint>.Instance);
-
-        var middle = new CloudFoundryEndpointMiddleware(ep, managementOptions, NullLogger<CloudFoundryEndpointMiddleware>.Instance);
-
-        HttpContext context = CreateRequest("GET", "/");
-        await middle.HandleCloudFoundryRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
     }
 
     [Fact]
@@ -80,10 +60,10 @@ public class EndpointMiddlewareTest : BaseTest
         options.PropertyNameCaseInsensitive = true;
         var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", options);
         Assert.NotNull(links);
-        Assert.True(links._links.ContainsKey("self"));
-        Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].Href);
-        Assert.True(links._links.ContainsKey("info"));
-        Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].Href);
+        Assert.True(links.LinkCollection.ContainsKey("self"));
+        Assert.Equal("http://localhost/cloudfoundryapplication", links.LinkCollection["self"].Href);
+        Assert.True(links.LinkCollection.ContainsKey("info"));
+        Assert.Equal("http://localhost/cloudfoundryapplication/info", links.LinkCollection["info"].Href);
     }
 
     [Fact]
@@ -138,20 +118,5 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.DoesNotContain("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);
         Assert.Contains("1496926022000", response, StringComparison.Ordinal);
         Assert.DoesNotContain("2017-06-08T12:47:02Z", response, StringComparison.Ordinal);
-    }
-
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
     }
 }

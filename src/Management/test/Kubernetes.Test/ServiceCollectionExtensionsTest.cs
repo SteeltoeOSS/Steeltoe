@@ -58,7 +58,7 @@ public class ServiceCollectionExtensionsTest
         var utils = new FakePodUtilities(FakePodUtilities.SamplePod);
 
         services.AddLogging();
-        services.AddKubernetesActuators(null, utils);
+        services.AddKubernetesActuators(utils);
         ServiceProvider provider = services.BuildServiceProvider();
 
         IEnumerable<IInfoContributor> contributors = provider.GetServices<IInfoContributor>();

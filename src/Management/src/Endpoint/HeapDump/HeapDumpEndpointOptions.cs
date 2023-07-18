@@ -6,7 +6,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-public class HeapDumpEndpointOptions : EndpointOptionsBase
+public sealed class HeapDumpEndpointOptions : HttpMiddlewareOptions
 {
     public string HeapDumpType { get; set; }
 

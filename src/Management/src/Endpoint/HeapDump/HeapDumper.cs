@@ -12,13 +12,18 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-public class HeapDumper : IHeapDumper
+internal sealed class HeapDumper : IHeapDumper
 {
     private readonly string _basePathOverride;
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
     private readonly ILogger<HeapDumper> _logger;
 
-    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, ILogger<HeapDumper> logger, string basePathOverride = null)
+    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, ILogger<HeapDumper> logger)
+        : this(options, logger, null)
+    {
+    }
+
+    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, ILogger<HeapDumper> logger, string basePathOverride)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(logger);
@@ -28,7 +33,7 @@ public class HeapDumper : IHeapDumper
         _basePathOverride = basePathOverride;
     }
 
-    public string DumpHeap()
+    public string DumpHeapToFile()
     {
         string fileName = CreateFileName();
 
@@ -39,7 +44,7 @@ public class HeapDumper : IHeapDumper
 
         try
         {
-            if (Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+            if (System.Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogInformation("Attempting to create a gcdump");
 
@@ -70,7 +75,7 @@ public class HeapDumper : IHeapDumper
 
     internal string CreateFileName()
     {
-        if (Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+        if (System.Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
         {
             return $"gcdump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
         }

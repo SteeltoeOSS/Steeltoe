@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,7 +23,7 @@ public class CloudFoundryEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_ReturnsExpectedLinks()
+    public async Task Invoke_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
 
@@ -32,20 +33,20 @@ public class CloudFoundryEndpointTest : BaseTest
             services.AddCloudFoundryActuatorServices();
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
 
-        Links info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.True(info._links.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-        Assert.True(info._links.ContainsKey("info"));
-        Assert.Equal("http://localhost:5000/foobar/info", info._links["info"].Href);
-        Assert.Equal(2, info._links.Count);
+        Assert.NotNull(info.LinkCollection);
+        Assert.True(info.LinkCollection.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
+        Assert.True(info.LinkCollection.ContainsKey("info"));
+        Assert.Equal("http://localhost:5000/foobar/info", info.LinkCollection["info"].Href);
+        Assert.Equal(2, info.LinkCollection.Count);
     }
 
     [Fact]
-    public void Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
+    public async Task Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
 
@@ -54,18 +55,18 @@ public class CloudFoundryEndpointTest : BaseTest
             services.AddCloudFoundryActuatorServices();
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
 
-        Links info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.True(info._links.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-        Assert.Single(info._links);
+        Assert.NotNull(info.LinkCollection);
+        Assert.True(info.LinkCollection.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
+        Assert.Single(info.LinkCollection);
     }
 
     [Fact]
-    public void Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
+    public async Task Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
 
@@ -83,19 +84,19 @@ public class CloudFoundryEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
+        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
 
-        Links info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.True(info._links.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-        Assert.True(info._links.ContainsKey("info"));
-        Assert.Equal(2, info._links.Count);
+        Assert.NotNull(info.LinkCollection);
+        Assert.True(info.LinkCollection.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
+        Assert.True(info.LinkCollection.ContainsKey("info"));
+        Assert.Equal(2, info.LinkCollection.Count);
     }
 
     [Fact]
-    public void Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
+    public void Invoke_CloudFoundryDisable_DoesNotInvoke()
     {
         using var tc = new TestContext(_output);
 
@@ -114,11 +115,8 @@ public class CloudFoundryEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
-
-        Links info = ep.Invoke("http://localhost:5000/foobar");
-        Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.Empty(info._links);
+        var middle = tc.GetService<CloudFoundryEndpointMiddleware>();
+        bool shouldInvoke = middle.ShouldInvoke(new PathString("/cloudfoundryapplication/info"));
+        Assert.False(shouldInvoke);
     }
 }

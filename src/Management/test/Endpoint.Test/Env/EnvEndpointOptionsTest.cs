@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Env;
@@ -12,7 +12,7 @@ public class EnvEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        EnvEndpointOptions opts = GetOptionsFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
+        EnvironmentEndpointOptions opts = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
         Assert.Equal("env", opts.Id);
 
         Assert.Equal(new[]

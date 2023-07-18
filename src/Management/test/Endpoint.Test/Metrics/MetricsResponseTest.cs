@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
@@ -15,7 +15,7 @@ public class MetricsResponseTest : BaseTest
     {
         var samples = new List<MetricSample>
         {
-            new(MetricStatistic.TotalTime, 100.00)
+            new(MetricStatistic.TotalTime, 100.00, null)
         };
 
         var tags = new List<MetricTag>
@@ -37,7 +37,7 @@ public class MetricsResponseTest : BaseTest
     {
         var samples = new List<MetricSample>
         {
-            new(MetricStatistic.TotalTime, 100.1)
+            new(MetricStatistic.TotalTime, 100.1, null)
         };
 
         var tags = new List<MetricTag>

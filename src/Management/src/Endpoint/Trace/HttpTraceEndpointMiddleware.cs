@@ -5,37 +5,21 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class HttpTraceEndpointMiddleware : EndpointMiddleware<HttpTraceResult>
+internal sealed class HttpTraceEndpointMiddleware : EndpointMiddleware<object, HttpTraceResult>
 {
-    public HttpTraceEndpointMiddleware(IHttpTraceEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<HttpTraceEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public HttpTraceEndpointMiddleware(IHttpTraceEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<HttpTraceResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
-        {
-            return HandleTraceRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    protected internal Task HandleTraceRequestAsync(HttpContext context)
-    {
-        string serialInfo = HandleRequest();
-
-        logger.LogDebug("Returning: {info}", serialInfo);
-
-        context.HandleContentNegotiation(logger);
-        return context.Response.WriteAsync(serialInfo);
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 }

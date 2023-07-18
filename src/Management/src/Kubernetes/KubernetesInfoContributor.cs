@@ -3,12 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s.Models;
+using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Kubernetes;
 
-public class KubernetesInfoContributor : IInfoContributor
+internal sealed class KubernetesInfoContributor : IInfoContributor
 {
     private readonly IPodUtilities _podUtilities;
 
@@ -17,9 +18,11 @@ public class KubernetesInfoContributor : IInfoContributor
         _podUtilities = podUtilities;
     }
 
-    public void Contribute(IInfoBuilder builder)
+    public async Task ContributeAsync(IInfoBuilder builder)
     {
-        V1Pod current = _podUtilities.GetCurrentPodAsync().GetAwaiter().GetResult();
+        ArgumentGuard.NotNull(builder);
+
+        V1Pod current = await _podUtilities.GetCurrentPodAsync();
         var details = new Dictionary<string, object>();
 
         if (current != null)

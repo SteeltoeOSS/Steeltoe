@@ -10,13 +10,13 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public class AspNetCoreHostingObserver : MetricsObserver
+internal sealed class AspNetCoreHostingObserver : MetricsObserver
 {
     private const string DefaultObserverName = "AspNetCoreHostingObserver";
     private const string DiagnosticName = "Microsoft.AspNetCore";
@@ -28,15 +28,18 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
+    private readonly ILogger _logger;
 
-    public AspNetCoreHostingObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILogger<AspNetCoreHostingObserver> logger)
-        : base(DefaultObserverName, DiagnosticName, logger)
+    public AspNetCoreHostingObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILoggerFactory loggerFactory)
+        : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
+        ArgumentGuard.NotNull(optionsMonitor);
         SetPathMatcher(new Regex(optionsMonitor.CurrentValue.IngressIgnorePattern));
         Meter meter = SteeltoeMetrics.Meter;
 
         _responseTime = meter.CreateHistogram<double>("http.server.requests.seconds", "s", "measures the duration of the inbound request in seconds");
         _serverCount = meter.CreateHistogram<double>("http.server.requests.count", "total", "number of requests");
+        _logger = loggerFactory.CreateLogger<AspNetCoreHostingObserver>();
     }
 
     public override void ProcessEvent(string eventName, object value)
@@ -55,7 +58,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
         if (eventName == StopEvent)
         {
-            Logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             var context = DiagnosticHelpers.GetProperty<HttpContext>(value, "HttpContext");
 
@@ -64,43 +67,47 @@ public class AspNetCoreHostingObserver : MetricsObserver
                 HandleStopEvent(current, context);
             }
 
-            Logger.LogTrace("HandleStopEvent finish {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finish {thread}", Thread.CurrentThread.ManagedThreadId);
         }
     }
 
-    protected internal void HandleStopEvent(Activity current, HttpContext arg)
+    internal void HandleStopEvent(Activity current, HttpContext context)
     {
-        if (ShouldIgnoreRequest(arg.Request.Path))
+        ArgumentGuard.NotNull(current);
+        ArgumentGuard.NotNull(context);
+
+        if (ShouldIgnoreRequest(context.Request.Path))
         {
-            Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", arg.Request.Path);
+            _logger.LogDebug("HandleStopEvent: Ignoring path: {path}", context.Request.Path);
             return;
         }
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            IEnumerable<KeyValuePair<string, object>> labelSets = GetLabelSets(arg);
+            IEnumerable<KeyValuePair<string, object>> labelSets = GetLabelSets(context);
 
             _serverCount.Record(1, labelSets.AsReadonlySpan());
             _responseTime.Record(current.Duration.TotalSeconds, labelSets.AsReadonlySpan());
         }
     }
 
-    protected internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
+    internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext context)
     {
-        string uri = arg.Request.Path.ToString();
-        string statusCode = arg.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
-        string exception = GetException(arg);
+        ArgumentGuard.NotNull(context);
+        string uri = context.Request.Path.ToString();
+        string statusCode = context.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
+        string exception = GetException(context);
 
         return new Dictionary<string, object>
         {
             { UriTagKey, uri },
             { StatusTagKey, statusCode },
             { ExceptionTagKey, exception },
-            { MethodTagKey, arg.Request.Method }
+            { MethodTagKey, context.Request.Method }
         };
     }
 
-    protected internal string GetException(HttpContext arg)
+    internal string GetException(HttpContext arg)
     {
         var exception = arg.Features.Get<IExceptionHandlerFeature>();
 

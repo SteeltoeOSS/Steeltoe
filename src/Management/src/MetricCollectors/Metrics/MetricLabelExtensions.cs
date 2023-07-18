@@ -8,12 +8,12 @@ namespace Steeltoe.Management.MetricCollectors.Metrics;
 public static class MetricLabelExtensions
 #pragma warning restore S1135 // Track uses of "TODO" tags
 {
-    public static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IDictionary<string, object> keyValuePairs)
+    internal static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IDictionary<string, object> keyValuePairs)
     {
         return new ReadOnlySpan<KeyValuePair<string, object>>(keyValuePairs.ToArray());
     }
 
-    public static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IEnumerable<KeyValuePair<string, object>> keyValuePairs)
+    internal static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IEnumerable<KeyValuePair<string, object>> keyValuePairs)
     {
         return new ReadOnlySpan<KeyValuePair<string, object>>(keyValuePairs.ToArray());
     }

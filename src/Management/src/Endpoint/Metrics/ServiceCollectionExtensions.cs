@@ -2,16 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Aggregations;
 using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.ConfigureEndpointOptions<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>();
-        services.TryAddSingleton<IMetricsEndpoint, MetricsEndpoint>();
+        services.TryAddSingleton<IMetricsEndpointHandler, MetricsEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
         services.TryAddSingleton<MetricsEndpointMiddleware>();
 
@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
             };
         });
 
-        services.TryAddSingleton(provider =>
+        services.TryAddSingleton<ISteeltoeExporter>(provider =>
         {
             var exporterOptions = provider.GetService<IExporterOptions>();
             return new SteeltoeExporter(exporterOptions);
@@ -66,7 +66,8 @@ public static class ServiceCollectionExtensions
     {
         return services.AddSingleton(provider =>
         {
-            var steeltoeExporter = provider.GetService<SteeltoeExporter>();
+            var steeltoeExporter = provider.GetService<ISteeltoeExporter>();
+
             var exporterOptions = provider.GetService<IExporterOptions>();
             var logger = provider.GetService<ILogger<SteeltoeExporter>>();
 
@@ -79,7 +80,7 @@ public static class ServiceCollectionExtensions
                 () => logger.LogWarning($"Cannnot collect any more Histograms because the configured limit of {exporterOptions.MaxHistograms} was reached"),
                 ex => logger.LogError(ex, "An error occured while collecting Observable Instruments "));
 
-            steeltoeExporter.Collect = aggregationManager.Collect;
+            steeltoeExporter.SetCollect(aggregationManager.Collect);
             aggregationManager.Include(SteeltoeMetrics.InstrumentationName); // Default to Steeltoe Metrics
 
             if (exporterOptions.IncludedMetrics != null)

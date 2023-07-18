@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
@@ -18,12 +18,19 @@ namespace Steeltoe.Management.Kubernetes.Test;
 
 public class HostBuilderExtensionsTest
 {
-    private readonly Action<IWebHostBuilder> _testServerWithRouting = builder =>
-        builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+    private static readonly Dictionary<string, string> _appSettings = new()
+    {
+        { "management:endpoints:actuator:exposure:include:0", "*" }
+    };
+
+    private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer()
+        .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting())
+        .ConfigureAppConfiguration(b => b.AddInMemoryCollection(_appSettings));
 
     private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(s =>
     {
         s.AddRouting();
+        s.AddActionDescriptorCollectionProvider();
 
         s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme,
             _ =>
@@ -31,7 +38,7 @@ public class HostBuilderExtensionsTest
             });
 
         s.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
-    }).Configure(a => a.UseRouting().UseAuthentication().UseAuthorization());
+    }).Configure(a => a.UseRouting().UseAuthentication().UseAuthorization()).ConfigureAppConfiguration(b => b.AddInMemoryCollection(_appSettings));
 
     public HostBuilderExtensionsTest()
     {
@@ -49,17 +56,6 @@ public class HostBuilderExtensionsTest
         HttpClient testClient = host.GetTestServer().CreateClient();
 
         await AssertActuatorResponsesAsync(testClient);
-    }
-
-    [Fact]
-    public async Task AddKubernetesActuators_IHostBuilder_AddsAndActivatesActuators_MediaV1()
-    {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
-
-        using IHost host = await hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).StartAsync();
-        HttpClient testClient = host.GetTestServer().CreateClient();
-
-        await AssertActuatorResponsesAsync(testClient, MediaTypeVersion.V1);
     }
 
     [Fact]
@@ -86,18 +82,6 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddKubernetesActuators_IWebHostBuilder_AddsAndActivatesActuators_MediaV1()
-    {
-        var hostBuilder = new WebHostBuilder();
-        _testServerWithRouting.Invoke(hostBuilder);
-
-        using IWebHost host = hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).Start();
-        HttpClient testClient = host.GetTestServer().CreateClient();
-
-        await AssertActuatorResponsesAsync(testClient, MediaTypeVersion.V1);
-    }
-
-    [Fact]
     public async Task AddKubernetesActuatorsWithConventions_IWebHostBuilder_AddsAndActivatesActuatorsAddAllActuators()
     {
         var hostBuilder = new WebHostBuilder();
@@ -118,18 +102,6 @@ public class HostBuilderExtensionsTest
         await host.StartAsync();
         HttpClient testClient = host.GetTestServer().CreateClient();
         await AssertActuatorResponsesAsync(testClient);
-    }
-
-    [Fact]
-    public async Task AddKubernetesActuators_WebApplicationBuilder_AddsAndActivatesActuators_MediaV1()
-    {
-        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
-        await using WebApplication host = hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).Build();
-
-        host.UseRouting();
-        await host.StartAsync();
-        HttpClient testClient = host.GetTestServer().CreateClient();
-        await AssertActuatorResponsesAsync(testClient, MediaTypeVersion.V1);
     }
 
     [Fact]
@@ -161,7 +133,7 @@ public class HostBuilderExtensionsTest
         return app;
     }
 
-    private async Task AssertActuatorResponsesAsync(HttpClient testClient, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    private async Task AssertActuatorResponsesAsync(HttpClient testClient)
     {
         HttpResponseMessage response = await testClient.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -176,15 +148,7 @@ public class HostBuilderExtensionsTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
 
-        if (mediaTypeVersion == MediaTypeVersion.V1)
-        {
-            response = await testClient.GetAsync(new Uri("/actuator/trace", UriKind.Relative));
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-        else
-        {
-            response = await testClient.GetAsync(new Uri("/actuator/httptrace", UriKind.Relative));
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        response = await testClient.GetAsync(new Uri("/actuator/httptrace", UriKind.Relative));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 }

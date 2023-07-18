@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public static class ClrRuntimeSource
+internal static class ClrRuntimeSource
 {
     public const string DiagnosticName = "Steeltoe.ClrMetrics";
     public const string HeapEvent = "Steeltoe.ClrMetrics.Heap";

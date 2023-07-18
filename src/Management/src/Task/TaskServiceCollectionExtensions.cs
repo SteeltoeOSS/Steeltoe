@@ -21,10 +21,26 @@ public static class TaskServiceCollectionExtensions
     /// <typeparam name="T">
     /// Task implementation.
     /// </typeparam>
-    public static void AddTask<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+    public static void AddTask<T>(this IServiceCollection services, ServiceLifetime lifetime)
         where T : class, IApplicationTask
     {
+        ArgumentGuard.NotNull(services);
         services.Add(new ServiceDescriptor(typeof(IApplicationTask), typeof(T), lifetime));
+    }
+
+    /// <summary>
+    /// Register a one-off task that can be executed from command line.
+    /// </summary>
+    /// <param name="services">
+    /// Service container.
+    /// </param>
+    /// <typeparam name="T">
+    /// Task implementation.
+    /// </typeparam>
+    public static void AddTask<T>(this IServiceCollection services)
+        where T : class, IApplicationTask
+    {
+        services.AddTask<T>(ServiceLifetime.Singleton);
     }
 
     /// <summary>
@@ -38,6 +54,7 @@ public static class TaskServiceCollectionExtensions
     /// </param>
     public static void AddTask(this IServiceCollection services, IApplicationTask task)
     {
+        ArgumentGuard.NotNull(services);
         services.Add(new ServiceDescriptor(typeof(IApplicationTask), task));
     }
 
@@ -53,10 +70,24 @@ public static class TaskServiceCollectionExtensions
     /// <param name="lifetime">
     /// Task lifetime.
     /// </param>
-    public static void AddTask(this IServiceCollection services, Func<IServiceProvider, IApplicationTask> factory,
-        ServiceLifetime lifetime = ServiceLifetime.Singleton)
+    public static void AddTask(this IServiceCollection services, Func<IServiceProvider, IApplicationTask> factory, ServiceLifetime lifetime)
     {
+        ArgumentGuard.NotNull(services);
         services.Add(new ServiceDescriptor(typeof(IApplicationTask), factory, lifetime));
+    }
+
+    /// <summary>
+    /// Register a one-off task that can be executed from command line.
+    /// </summary>
+    /// <param name="services">
+    /// Service container.
+    /// </param>
+    /// <param name="factory">
+    /// A factory method to create an application task.
+    /// </param>
+    public static void AddTask(this IServiceCollection services, Func<IServiceProvider, IApplicationTask> factory)
+    {
+        services.AddTask(factory, ServiceLifetime.Singleton);
     }
 
     /// <summary>
@@ -74,9 +105,26 @@ public static class TaskServiceCollectionExtensions
     /// <param name="lifetime">
     /// Task lifetime.
     /// </param>
-    public static void AddTask(this IServiceCollection services, string name, Action<IServiceProvider> runAction,
-        ServiceLifetime lifetime = ServiceLifetime.Singleton)
+    public static void AddTask(this IServiceCollection services, string name, Action<IServiceProvider> runAction, ServiceLifetime lifetime)
     {
+        ArgumentGuard.NotNull(services);
         services.Add(new ServiceDescriptor(typeof(IApplicationTask), svc => new DelegatingTask(name, () => runAction(svc)), lifetime));
+    }
+
+    /// <summary>
+    /// Register a one-off task that can be executed from command line.
+    /// </summary>
+    /// <param name="services">
+    /// Service container.
+    /// </param>
+    /// <param name="name">
+    /// Well known name of the task. This is how it's identified when called.
+    /// </param>
+    /// <param name="runAction">
+    /// Task method body.
+    /// </param>
+    public static void AddTask(this IServiceCollection services, string name, Action<IServiceProvider> runAction)
+    {
+        services.AddTask(name, runAction, ServiceLifetime.Singleton);
     }
 }

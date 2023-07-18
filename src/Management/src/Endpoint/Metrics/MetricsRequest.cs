@@ -4,13 +4,13 @@
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsRequest
+public sealed class MetricsRequest
 {
     public string MetricName { get; }
 
-    public List<KeyValuePair<string, string>> Tags { get; }
+    public IList<KeyValuePair<string, string>> Tags { get; }
 
-    public MetricsRequest(string metricName, List<KeyValuePair<string, string>> tags)
+    public MetricsRequest(string metricName, IList<KeyValuePair<string, string>> tags)
     {
         MetricName = metricName;
         Tags = tags;

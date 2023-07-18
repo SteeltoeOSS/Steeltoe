@@ -2,19 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Aggregations;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -28,16 +25,6 @@ public abstract class BaseTest : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            DiagnosticsManager.Instance.Dispose();
-        }
-    }
-
-    public ILogger<T> GetLogger<T>()
-    {
-        var lf = new LoggerFactory();
-        return lf.CreateLogger<T>();
     }
 
     public string Serialize<T>(T value)
@@ -54,7 +41,6 @@ public abstract class BaseTest : IDisposable
         };
 
         options.Converters.Add(new HealthConverter());
-        options.Converters.Add(new MetricsResponseConverter());
         return options;
     }
 
@@ -79,7 +65,7 @@ public abstract class BaseTest : IDisposable
 
         aggregator.Include(SteeltoeMetrics.InstrumentationName);
 
-        steeltoeExporter.Collect = aggregator.Collect;
+        steeltoeExporter.SetCollect(aggregator.Collect);
 
         return aggregator;
     }

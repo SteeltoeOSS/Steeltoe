@@ -10,11 +10,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public class EventCounterListener : EventListener
+internal sealed class EventCounterListener : EventListener
 {
     private const string EventSourceName = "System.Runtime";
     private const string EventName = "EventCounters";
@@ -146,8 +146,8 @@ public class EventCounterListener : EventListener
             {
                 case var _ when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
                     counterName = payload.Value.ToString();
-                    List<string> includedMetrics = _options.CurrentValue.IncludedMetrics;
-                    List<string> excludedMetrics = _options.CurrentValue.ExcludedMetrics;
+                    IList<string> includedMetrics = _options.CurrentValue.IncludedMetrics;
+                    IList<string> excludedMetrics = _options.CurrentValue.ExcludedMetrics;
 
                     if ((includedMetrics.Any() && !includedMetrics.Contains(counterName)) || excludedMetrics.Contains(counterName))
                     {

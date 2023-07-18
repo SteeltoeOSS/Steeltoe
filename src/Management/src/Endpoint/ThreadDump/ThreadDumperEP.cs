@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 /// <summary>
 /// Thread dumper that uses the EventPipe to acquire the call stacks of all the running Threads.
 /// </summary>
-public class ThreadDumperEp : IThreadDumper
+internal sealed class ThreadDumperEp : IThreadDumper
 {
     private static readonly StackTraceElement UnknownStackTraceElement = new()
     {
@@ -53,7 +53,7 @@ public class ThreadDumperEp : IThreadDumper
     /// <returns>
     /// the list of threads with stack trace information.
     /// </returns>
-    public List<ThreadInfo> DumpThreads()
+    public IList<ThreadInfo> DumpThreads()
     {
         var results = new List<ThreadInfo>();
 
@@ -97,7 +97,7 @@ public class ThreadDumperEp : IThreadDumper
             {
                 using var symbolReader = new SymbolReader(TextWriter.Null)
                 {
-                    SymbolPath = Environment.CurrentDirectory
+                    SymbolPath = System.Environment.CurrentDirectory
                 };
 
                 using var eventLog = new TraceLog(traceFileName);
@@ -149,8 +149,6 @@ public class ThreadDumperEp : IThreadDumper
                         ThreadState = State.Runnable,
                         IsInNative = false,
                         IsSuspended = false,
-                        LockedMonitors = new List<MonitorInfo>(),
-                        LockedSynchronizers = new List<LockInfo>(),
                         StackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader)
                     };
 
@@ -176,7 +174,7 @@ public class ThreadDumperEp : IThreadDumper
         _logger.LogTrace("Finished thread walk");
     }
 
-    private bool IsThreadInNative(List<StackTraceElement> frames)
+    private bool IsThreadInNative(IList<StackTraceElement> frames)
     {
         if (frames.Count > 0)
         {
@@ -186,7 +184,7 @@ public class ThreadDumperEp : IThreadDumper
         return false;
     }
 
-    private State GetThreadState(List<StackTraceElement> frames)
+    private State GetThreadState(IList<StackTraceElement> frames)
     {
         if (IsThreadInNative(frames) && frames.Count > 1 && frames[1].MethodName.Contains("Wait", StringComparison.OrdinalIgnoreCase))
         {

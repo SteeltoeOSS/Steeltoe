@@ -10,12 +10,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public class HttpClientCoreObserver : MetricsObserver
+internal sealed class HttpClientCoreObserver : MetricsObserver
 {
     private const string StatusTagKey = "status";
     private const string UriTagKey = "uri";
@@ -28,13 +27,16 @@ public class HttpClientCoreObserver : MetricsObserver
     internal const string ExceptionEvent = "System.Net.Http.Exception";
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
+    private readonly ILogger _logger;
 
-    public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> options, ILogger<HttpClientCoreObserver> logger)
-        : base(DefaultObserverName, DiagnosticName, logger)
+    public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> options, ILoggerFactory loggerFactory)
+        : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
+        ArgumentGuard.NotNull(options);
         SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.count");
+        _logger = loggerFactory.CreateLogger<HttpClientCoreObserver>();
     }
 
     public override void ProcessEvent(string eventName, object value)
@@ -60,34 +62,34 @@ public class HttpClientCoreObserver : MetricsObserver
 
         if (eventName == StopEvent)
         {
-            Logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             var response = DiagnosticHelpers.GetProperty<HttpResponseMessage>(value, "Response");
             var requestStatus = DiagnosticHelpers.GetProperty<TaskStatus>(value, "RequestTaskStatus");
             HandleStopEvent(current, request, response, requestStatus);
 
-            Logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
         else if (eventName == ExceptionEvent)
         {
-            Logger.LogTrace("HandleExceptionEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleExceptionEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             HandleExceptionEvent(current, request);
 
-            Logger.LogTrace("HandleExceptionEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleExceptionEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
     }
 
-    protected internal void HandleExceptionEvent(Activity current, HttpRequestMessage request)
+    private void HandleExceptionEvent(Activity current, HttpRequestMessage request)
     {
         HandleStopEvent(current, request, null, TaskStatus.Faulted);
     }
 
-    protected internal void HandleStopEvent(Activity current, HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+    private void HandleStopEvent(Activity current, HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
     {
         if (ShouldIgnoreRequest(request.RequestUri.AbsolutePath))
         {
-            Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
+            _logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
             return;
         }
 
@@ -99,7 +101,7 @@ public class HttpClientCoreObserver : MetricsObserver
         }
     }
 
-    protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+    internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
     {
         string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string statusCode = GetStatusCode(response, taskStatus);
@@ -114,7 +116,7 @@ public class HttpClientCoreObserver : MetricsObserver
         };
     }
 
-    protected internal string GetStatusCode(HttpResponseMessage response, TaskStatus taskStatus)
+    internal string GetStatusCode(HttpResponseMessage response, TaskStatus taskStatus)
     {
         if (response != null)
         {

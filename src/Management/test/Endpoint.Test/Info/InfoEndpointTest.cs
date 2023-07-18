@@ -21,7 +21,7 @@ public class InfoEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_NoContributors_ReturnsExpectedInfo()
+    public async Task Invoke_NoContributors_ReturnsExpectedInfo()
     {
         using var tc = new TestContext(_output);
         var contributors = new List<IInfoContributor>();
@@ -32,15 +32,15 @@ public class InfoEndpointTest : BaseTest
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpoint>();
+        var ep = tc.GetService<IInfoEndpointHandler>();
 
-        Dictionary<string, object> info = ep.Invoke();
+        Dictionary<string, object> info = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(info);
         Assert.Empty(info);
     }
 
     [Fact]
-    public void Invoke_CallsAllContributors()
+    public async Task Invoke_CallsAllContributors()
     {
         using var tc = new TestContext(_output);
 
@@ -57,9 +57,9 @@ public class InfoEndpointTest : BaseTest
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpoint>();
+        var ep = tc.GetService<IInfoEndpointHandler>();
 
-        ep.Invoke();
+        await ep.InvokeAsync(null, CancellationToken.None);
 
         foreach (IInfoContributor contrib in contributors)
         {
@@ -69,7 +69,7 @@ public class InfoEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_HandlesExceptions()
+    public async Task Invoke_HandlesExceptions()
     {
         using var tc = new TestContext(_output);
 
@@ -86,9 +86,9 @@ public class InfoEndpointTest : BaseTest
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpoint>();
+        var ep = tc.GetService<IInfoEndpointHandler>();
 
-        ep.Invoke();
+        await ep.InvokeAsync(null, CancellationToken.None);
 
         foreach (IInfoContributor contrib in contributors)
         {

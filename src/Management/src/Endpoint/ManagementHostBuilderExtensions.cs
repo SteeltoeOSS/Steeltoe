@@ -12,17 +12,17 @@ using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
@@ -54,7 +54,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
-            collection.AddEnvActuator();
+            collection.AddEnvironmentActuator();
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -245,13 +245,24 @@ public static class ManagementHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddThreadDumpActuator(mediaTypeVersion);
             ActivateActuatorEndpoints(collection);
         });
+    }
+
+    /// <summary>
+    /// Adds the ThreadDump actuator to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder)
+    {
+        return hostBuilder.AddThreadDumpActuator(MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -263,13 +274,24 @@ public static class ManagementHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {
             collection.AddTraceActuator(mediaTypeVersion);
             ActivateActuatorEndpoints(collection);
         });
+    }
+
+    /// <summary>
+    /// Adds the Trace actuator to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder)
+    {
+        return AddTraceActuator(hostBuilder, MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -305,8 +327,8 @@ public static class ManagementHostBuilderExtensions
     /// <remarks>
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
-    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null,
-        MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
+        MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy)
     {
         return hostBuilder.AddDynamicLogging().AddManagementPort().ConfigureServices((context, collection) =>
         {
@@ -314,6 +336,58 @@ public static class ManagementHostBuilderExtensions
             IEndpointConventionBuilder endpointConventionBuilder = ActivateActuatorEndpoints(collection);
             configureEndpoints?.Invoke(endpointConventionBuilder);
         });
+    }
+
+    /// <summary>
+    /// Adds all standard actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <remarks>
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
+    /// </remarks>
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder)
+    {
+        return AddAllActuators(hostBuilder, null);
+    }
+
+    /// <summary>
+    /// Adds all standard actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
+    /// </param>
+    /// <param name="mediaTypeVersion">
+    /// Specify the media type version to use in the response.
+    /// </param>
+    /// <remarks>
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
+    /// </remarks>
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
+        MediaTypeVersion mediaTypeVersion)
+    {
+        return AddAllActuators(hostBuilder, configureEndpoints, mediaTypeVersion, null);
+    }
+
+    /// <summary>
+    /// Adds all standard actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
+    /// </param>
+    /// <remarks>
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
+    /// </remarks>
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
+    {
+        return AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
     }
 
     /// <summary>

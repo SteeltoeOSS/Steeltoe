@@ -3,11 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
-public class BuildInfoContributor : IInfoContributor
+internal sealed class BuildInfoContributor : IInfoContributor
 {
     private readonly Assembly _application;
     private readonly Assembly _steeltoe;
@@ -18,8 +19,9 @@ public class BuildInfoContributor : IInfoContributor
         _steeltoe = typeof(BuildInfoContributor).Assembly;
     }
 
-    public void Contribute(IInfoBuilder builder)
+    public Task ContributeAsync(IInfoBuilder builder)
     {
+        ArgumentGuard.NotNull(builder);
         builder.WithInfo("applicationVersionInfo", GetImportantDetails(_application));
         builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoe));
 
@@ -28,6 +30,8 @@ public class BuildInfoContributor : IInfoContributor
         {
             { "version", _application.GetName().Version.ToString() }
         });
+
+        return Task.CompletedTask;
     }
 
     private Dictionary<string, string> GetImportantDetails(Assembly assembly)

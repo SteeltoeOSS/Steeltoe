@@ -10,7 +10,7 @@ using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Prometheus;
 
@@ -43,8 +43,8 @@ public static class PrometheusExtensions
     {
         ManagementEndpointOptions? managementOptions = app.ApplicationServices.GetService<IOptionsMonitor<ManagementEndpointOptions>>()?.CurrentValue;
 
-        PrometheusEndpointOptions? prometheusOptions =
-            app.ApplicationServices.GetService<IEnumerable<IEndpointOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
+        PrometheusEndpointOptions? prometheusOptions = app.ApplicationServices.GetService<IEnumerable<HttpMiddlewareOptions>>()
+            ?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
 
         string root = managementOptions?.Path ?? "/actuator";
         string id = prometheusOptions?.Id ?? "prometheus";

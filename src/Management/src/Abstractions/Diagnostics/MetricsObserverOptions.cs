@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Steeltoe.Management.Diagnostics;
 
-public class MetricsObserverOptions
+[SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options")]
+public sealed class MetricsObserverOptions
 {
     /// <summary>
     /// Gets or sets a regex pattern for requests coming into this application where metrics should not be captured.
@@ -36,7 +39,7 @@ public class MetricsObserverOptions
     /// <para />
     /// See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
     /// </remarks>
-    public List<string> IncludedMetrics { get; set; } = new();
+    public IList<string> IncludedMetrics { get; set; } = new List<string>();
 
     /// <summary>
     /// Gets or sets a list of metrics that should not be captured. Entries in <see cref="IncludedMetrics" /> take precedence in case of conflict.
@@ -46,7 +49,7 @@ public class MetricsObserverOptions
     /// <para />
     /// See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
     /// </remarks>
-    public List<string> ExcludedMetrics { get; set; } = new();
+    public IList<string> ExcludedMetrics { get; set; } = new List<string>();
 
     public bool IncludeObserver(string name)
     {

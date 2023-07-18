@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class Principal
+public sealed class Principal
 {
     public string Name { get; }
 

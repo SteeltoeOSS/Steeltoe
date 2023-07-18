@@ -3,13 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
+using Steeltoe.Management.MetricCollectors.Aggregations;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 /// <summary>
 /// Exporter metrics to Steeltoe Format.
 /// </summary>
-public class SteeltoeExporter
+internal sealed class SteeltoeExporter : ISteeltoeExporter
 {
     private readonly MetricsCollection<List<MetricSample>> _metricSamples = new();
     private readonly MetricsCollection<List<MetricTag>> _availTags = new();
@@ -19,8 +21,7 @@ public class SteeltoeExporter
     private MetricsCollection<List<MetricSample>> _lastCollectionSamples = new();
     private MetricsCollection<List<MetricTag>> _lastAvailableTags = new();
     private DateTime _lastCollection = DateTime.MinValue;
-
-    public Action? Collect { get; set; }
+    private Action? _collect;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.
@@ -33,9 +34,14 @@ public class SteeltoeExporter
         _cacheDurationMilliseconds = options?.CacheDurationMilliseconds ?? 5000;
     }
 
-    internal (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export()
+    public void SetCollect(Action collect)
     {
-        if (Collect == null)
+        _collect = collect;
+    }
+
+    public (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export()
+    {
+        if (_collect == null)
         {
             throw new InvalidOperationException("Collect should not be null");
         }
@@ -46,7 +52,7 @@ public class SteeltoeExporter
             {
                 _metricSamples.Clear();
                 _availTags.Clear();
-                Collect(); // Calls aggregation Manager.Collect
+                _collect(); // Calls aggregation Manager.Collect
                 _lastCollectionSamples = new MetricsCollection<List<MetricSample>>(_metricSamples);
                 _lastAvailableTags = new MetricsCollection<List<MetricTag>>(_availTags);
                 _lastCollection = DateTime.Now;
@@ -56,7 +62,7 @@ public class SteeltoeExporter
         return (_lastCollectionSamples, _lastAvailableTags);
     }
 
-    internal void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
+    public void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
     {
         UpdateAvailableTags(_availTags, instrument.Name, stats.Labels);
 

@@ -179,7 +179,7 @@ public class ContentNegotiationTests
         {
             if (epName == EndpointNames.Cloudfoundry)
             {
-                Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+                System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
             }
 
             // arrange a server and client
@@ -200,14 +200,23 @@ public class ContentNegotiationTests
             }
 
             // send the request
-            HttpResponseMessage result = await client.GetAsync(new Uri(epPath));
+            HttpResponseMessage result;
+
+            if (epName == EndpointNames.Refresh)
+            {
+                result = await client.PostAsync(new Uri(epPath), null);
+            }
+            else
+            {
+                result = await client.GetAsync(new Uri(epPath));
+            }
 
             IEnumerable<string> contentHeaders = result.Content.Headers.GetValues("Content-Type");
             Assert.Contains(contentHeaders, header => header.StartsWith(contentType, StringComparison.Ordinal));
         }
         finally
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
         }
     }
 }

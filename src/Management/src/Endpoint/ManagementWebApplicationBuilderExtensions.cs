@@ -3,22 +3,23 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
@@ -33,6 +34,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddDbMigrationsActuator(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddDbMigrationsActuator();
         applicationBuilder.Services.ActivateActuatorEndpoints();
         return applicationBuilder;
@@ -46,7 +48,8 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddEnvActuator(this WebApplicationBuilder applicationBuilder)
     {
-        applicationBuilder.Services.AddEnvActuator();
+        ArgumentGuard.NotNull(applicationBuilder);
+        applicationBuilder.Services.AddEnvironmentActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -59,6 +62,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddHealthActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -75,6 +79,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, Type[] contributors)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddHealthActuator(contributors);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -94,6 +99,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, IHealthAggregator aggregator, Type[] contributors)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddHealthActuator(aggregator, contributors);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -107,6 +113,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHeapDumpActuator(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddHeapDumpActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -120,6 +127,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddHypermediaActuator(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddHypermediaActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -133,6 +141,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddInfoActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -149,6 +158,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder, IInfoContributor[] contributors)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddInfoActuator(contributors);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -162,6 +172,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddLoggersActuator(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Logging.AddDynamicConsole();
         applicationBuilder.Services.AddLoggersActuator();
         applicationBuilder.AddCommonServices();
@@ -176,6 +187,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddMappingsActuator(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddMappingsActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -189,6 +201,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddMetricsActuator(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddMetricsActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -202,6 +215,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddRefreshActuator(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddRefreshActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -216,12 +230,23 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder,
-        MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddThreadDumpActuator(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
+    }
+
+    /// <summary>
+    /// Adds the ThreadDump actuator to the application.
+    /// </summary>
+    /// <param name="applicationBuilder">
+    /// Your <see cref="WebApplicationBuilder" />.
+    /// </param>
+    public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder)
+    {
+        return AddThreadDumpActuator(applicationBuilder, MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -233,11 +258,23 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddTraceActuator(mediaTypeVersion);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
+    }
+
+    /// <summary>
+    /// Adds the Trace actuator to the application.
+    /// </summary>
+    /// <param name="applicationBuilder">
+    /// Your <see cref="WebApplicationBuilder" />.
+    /// </param>
+    public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder)
+    {
+        return AddTraceActuator(applicationBuilder, MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -248,6 +285,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddCloudFoundryActuator(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddCloudFoundryActuator();
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
@@ -265,16 +303,43 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder,
-        Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
+        MediaTypeVersion mediaTypeVersion)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
+
         applicationBuilder.Logging.AddDynamicConsole();
         applicationBuilder.Services.AddAllActuators(mediaTypeVersion);
-        applicationBuilder.AddCommonServices();
+        applicationBuilder.AddCommonServices(configureEndpoints);
         return applicationBuilder;
     }
 
-    private static void AddCommonServices(this WebApplicationBuilder applicationBuilder)
+    /// <summary>
+    /// Adds all Steeltoe Actuators to the application.
+    /// </summary>
+    /// <param name="applicationBuilder">
+    /// Your <see cref="WebApplicationBuilder" />.
+    /// </param>
+    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder)
+    {
+        return AddAllActuators(applicationBuilder, null);
+    }
+
+    /// <summary>
+    /// Adds all Steeltoe Actuators to the application.
+    /// </summary>
+    /// <param name="applicationBuilder">
+    /// Your <see cref="WebApplicationBuilder" />.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// <see cref="IEndpointConventionBuilder" />.
+    /// </param>
+    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
+    {
+        return AddAllActuators(applicationBuilder, configureEndpoints, MediaTypeVersion.V2);
+    }
+
+    private static void AddCommonServices(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null)
     {
         applicationBuilder.WebHost.GetManagementUrl(out int? httpPort, out int? httpsPort);
 
@@ -283,6 +348,7 @@ public static class ManagementWebApplicationBuilderExtensions
             applicationBuilder.UseCloudHosting(httpPort, httpsPort);
         }
 
-        applicationBuilder.Services.ActivateActuatorEndpoints();
+        IEndpointConventionBuilder endpointConventionBuilder = applicationBuilder.Services.ActivateActuatorEndpoints();
+        configureEndpoints?.Invoke(endpointConventionBuilder);
     }
 }

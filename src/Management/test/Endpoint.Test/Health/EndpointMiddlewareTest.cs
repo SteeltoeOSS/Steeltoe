@@ -5,23 +5,12 @@
 using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.TestResources;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Security;
 using Xunit;
-using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
@@ -33,33 +22,6 @@ public class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:path"] = "/cloudfoundryapplication",
         ["management:endpoints:health:enabled"] = "true"
     };
-
-    [Fact]
-    public async Task HandleHealthRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<HealthEndpointOptions> opts = GetOptionsMonitorFromSettings<HealthEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOpts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var hsOptions = new TestOptionsMonitor<HealthCheckServiceOptions>(new HealthCheckServiceOptions());
-
-        var contributors = new List<IHealthContributor>
-        {
-            new DiskSpaceContributor()
-        };
-
-        var sc = new ServiceCollection();
-        ServiceProvider sp = sc.BuildServiceProvider();
-
-        var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contributors, hsOptions, sp, NullLogger<HealthEndpointCore>.Instance);
-
-        var middle = new HealthEndpointMiddleware(mgmtOpts, ep, NullLogger<HealthEndpointMiddleware>.Instance);
-
-        HttpContext context = CreateRequest("GET", "/health");
-        await middle.HandleHealthRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
-    }
 
     [Fact]
     public async Task HealthActuator_ReturnsOnlyStatus()
@@ -218,8 +180,8 @@ public class EndpointMiddlewareTest : BaseTest
 
         builder.ConfigureServices(services =>
         {
-            services.BuildServiceProvider().GetServices<HealthEndpointCore>();
-            services.BuildServiceProvider().GetServices<IEndpoint<HealthCheckResult, ISecurityContext>>();
+            services.BuildServiceProvider().GetServices<HealthEndpointHandler>();
+            services.BuildServiceProvider().GetServices<IEndpointHandler<HealthEndpointRequest, HealthEndpointResponse>>();
         });
 
         using var server = new TestServer(builder);
@@ -351,27 +313,12 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<HealthEndpointOptions>();
 
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
 
         Assert.False(options.ExactMatch);
-        Assert.Equal("/actuator/health/{**_}", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/health/{**_}", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Equal("/actuator/health/{**_}", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
+        Assert.Equal("/cloudfoundryapplication/health/{**_}", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
-    }
-
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
     }
 }

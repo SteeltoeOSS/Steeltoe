@@ -4,10 +4,11 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
+internal sealed class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
 {
     public override HealthEndpointResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -16,6 +17,7 @@ public class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
 
     public override void Write(Utf8JsonWriter writer, HealthEndpointResponse value, JsonSerializerOptions options)
     {
+        ArgumentGuard.NotNull(writer);
         writer.WriteStartObject();
 
         if (value is { } health)

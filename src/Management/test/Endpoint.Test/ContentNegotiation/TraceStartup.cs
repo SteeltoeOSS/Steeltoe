@@ -5,8 +5,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
@@ -23,7 +23,7 @@ public class TraceStartup
     {
         services.AddRouting();
         services.AddHypermediaActuator();
-        services.AddTraceActuator(Configuration);
+        services.AddTraceActuator();
     }
 
     public void Configure(IApplicationBuilder app)

@@ -8,7 +8,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
-public static class Utils
+internal static class Utils
 {
     /// <summary>
     /// Applies GZip compression to a file on disk, returns it as a stream and deletes the original file.

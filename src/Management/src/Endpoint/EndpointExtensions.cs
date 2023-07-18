@@ -3,23 +3,21 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint;
 
-public static class EndPointExtensions
+internal static class EndPointExtensions
 {
-    public static bool IsEnabled(this IEndpointOptions options, ManagementEndpointOptions managementOptions)
+    public static bool IsEnabled(this HttpMiddlewareOptions options, ManagementEndpointOptions managementOptions)
     {
-        var endpointOptions = (EndpointOptionsBase)options;
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(managementOptions);
 
-        if (endpointOptions.Enabled.HasValue)
+        if (options.Enabled.HasValue)
         {
-            return endpointOptions.Enabled.Value;
+            return options.Enabled.Value;
         }
 
         if (managementOptions.Enabled.HasValue)
@@ -27,21 +25,24 @@ public static class EndPointExtensions
             return managementOptions.Enabled.Value;
         }
 
-        return endpointOptions.DefaultEnabled;
+        return options.DefaultEnabled;
     }
 
-    public static bool IsExposed(this IEndpointOptions options, ManagementEndpointOptions mgmtOptions)
+    public static bool IsExposed(this HttpMiddlewareOptions options, ManagementEndpointOptions mgmtOptions)
     {
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(mgmtOptions);
+
         if (!string.IsNullOrEmpty(options.Id) && mgmtOptions.Exposure != null)
         {
-            List<string> exclude = mgmtOptions.Exposure.Exclude;
+            IList<string> exclude = mgmtOptions.Exposure.Exclude;
 
             if (exclude != null && (exclude.Contains("*") || exclude.Contains(options.Id)))
             {
                 return false;
             }
 
-            List<string> include = mgmtOptions.Exposure.Include;
+            IList<string> include = mgmtOptions.Exposure.Include;
 
             if (include != null && (include.Contains("*") || include.Contains(options.Id)))
             {
@@ -54,49 +55,19 @@ public static class EndPointExtensions
         return true;
     }
 
-    public static bool ShouldInvoke(this IEndpointOptions endpoint, ManagementEndpointOptions options, ILogger logger)
+    public static string GetContextBasePath(this ManagementEndpointOptions managementOptions, HttpRequest httpRequest)
     {
-        ArgumentGuard.NotNull(logger);
+        string defaultCFContextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
 
-        bool enabled = endpoint.IsEnabled(options);
-        bool exposed = endpoint.IsExposed(options);
-        logger.LogDebug($"endpoint: {endpoint.Id}, contextPath: {options.Path}, enabled: {enabled}, exposed: {exposed}");
-        return enabled && exposed;
+        return httpRequest.Path.StartsWithSegments(defaultCFContextPath) ? defaultCFContextPath : $"{managementOptions.Path}";
     }
 
-    public static bool ShouldInvoke(this IEndpointOptions endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, HttpContext context,
-        ILogger logger)
+    public static string GetPathMatchPattern(this HttpMiddlewareOptions options, string contextBasePath, ManagementEndpointOptions managementOptions)
     {
-        ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(context.Request.Path);
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(managementOptions);
 
-        return ShouldInvoke(endpoint, mgmtOptions, logger);
-    }
-
-    public static ManagementEndpointOptions GetFromContextPath(this IOptionsMonitor<ManagementEndpointOptions> managementOptions, PathString path)
-    {
-        List<ManagementEndpointOptions> options = new();
-
-        foreach (string name in managementOptions.CurrentValue.ContextNames)
-        {
-            options.Add(managementOptions.Get(name));
-        }
-
-        options = options.OrderByDescending(option => option.Path.Length).ToList();
-
-        foreach (ManagementEndpointOptions opt in options)
-        {
-            if (path.StartsWithSegments(new PathString(opt.Path)))
-            {
-                return opt;
-            }
-        }
-
-        return managementOptions.Get(ActuatorContext.Name);
-    }
-
-    public static string GetContextPath(this IEndpointOptions options, ManagementEndpointOptions managementOptions)
-    {
-        string contextPath = managementOptions.Path;
+        string contextPath = contextBasePath;
 
         if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(options.Path))
         {
@@ -116,11 +87,5 @@ public static class EndPointExtensions
         }
 
         return contextPath;
-    }
-
-    // Only used by Cloudfoundry security
-    public static bool IsAccessAllowed(this IEndpointOptions options, Permissions permissions)
-    {
-        return permissions >= options.RequiredPermissions;
     }
 }

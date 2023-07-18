@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;
 using Xunit;
@@ -29,10 +28,10 @@ public class MetricsEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsIfNulls()
     {
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(null, null, null));
+        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointHandler(null, null, null));
         IOptionsMonitor<MetricsEndpointOptions> options = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(options, null, null));
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpoint(options, new SteeltoeExporter(null), null));
+        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointHandler(options, null, null));
+        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointHandler(options, new SteeltoeExporter(null), null));
     }
 
     [Fact]
@@ -51,21 +50,19 @@ public class MetricsEndpointTest : BaseTest
 
             try
             {
-                var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
+                var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
                 Counter<long> requests = SteeltoeMetrics.Meter.CreateCounter<long>("http.server.requests");
                 requests.Add(1);
                 Counter<double> memory = SteeltoeMetrics.Meter.CreateCounter<double>("gc.memory.used");
                 memory.Add(25);
 
-                IMetricsResponse result = ep.Invoke(null);
+                MetricsResponse result = await ep.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
-                Assert.IsType<MetricsListNamesResponse>(result);
-                var resp = result as MetricsListNamesResponse;
-                Assert.NotEmpty(resp.Names);
-                Assert.Contains("http.server.requests", resp.Names);
-                Assert.Contains("gc.memory.used", resp.Names);
+                Assert.NotEmpty(result.Names);
+                Assert.Contains("http.server.requests", result.Names);
+                Assert.Contains("gc.memory.used", result.Names);
 
-                Assert.Equal(2, resp.Names.Count);
+                Assert.Equal(2, result.Names.Count);
             }
             finally
             {
@@ -86,12 +83,12 @@ public class MetricsEndpointTest : BaseTest
 
             try
             {
-                var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
-                IMetricsResponse result = ep.Invoke(null);
+                var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+                MetricsResponse result = await ep.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
 
-                Assert.IsType<MetricsListNamesResponse>(result);
-                var resp = result as MetricsListNamesResponse;
+                Assert.IsType<MetricsResponse>(result);
+                MetricsResponse resp = result;
                 Assert.Empty(resp.Names);
             }
             finally
@@ -117,7 +114,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpoint>();
+            var ep = tc.GetService<IMetricsEndpointHandler>();
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             long allKeysSum = 0;
@@ -137,7 +134,7 @@ public class MetricsEndpointTest : BaseTest
 
             List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
             var req = new MetricsRequest("test.test5", tags);
-            var resp = ep.Invoke(req) as MetricsResponse;
+            MetricsResponse resp = await ep.InvokeAsync(req, CancellationToken.None);
             Assert.NotNull(resp);
 
             Assert.Equal("test.test5", resp.Name);
@@ -153,7 +150,7 @@ public class MetricsEndpointTest : BaseTest
             Assert.Equal(3, resp.AvailableTags.Count);
 
             req = new MetricsRequest("foo.bar", tags);
-            resp = ep.Invoke(req) as MetricsResponse;
+            resp = await ep.InvokeAsync(req, CancellationToken.None);
             Assert.Null(resp);
         }
         finally
@@ -186,7 +183,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
+            var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             var additionalMeter = new Meter("AdditionalTestMeter");
@@ -210,7 +207,7 @@ public class MetricsEndpointTest : BaseTest
 
             List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
             var req = new MetricsRequest("test.test5", tags);
-            var resp = ep.Invoke(req) as MetricsResponse;
+            MetricsResponse resp = await ep.InvokeAsync(req, CancellationToken.None);
             Assert.NotNull(resp);
 
             Assert.Equal("test.test5", resp.Name);
@@ -226,7 +223,7 @@ public class MetricsEndpointTest : BaseTest
             Assert.Equal(3, resp.AvailableTags.Count);
 
             req = new MetricsRequest("AdditionalInstrument", tags);
-            resp = ep.Invoke(req) as MetricsResponse;
+            resp = await ep.InvokeAsync(req, CancellationToken.None);
             Assert.NotNull(resp);
 
             Assert.Equal("AdditionalInstrument", resp.Name);
@@ -253,7 +250,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
+            var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
 
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test7");
             counter.Add(100);
@@ -287,7 +284,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
+            var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test2");
 
             var v1Tags = new Dictionary<string, object>
@@ -365,7 +362,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpoint>() as MetricsEndpoint;
+            var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
 
             Histogram<double> testMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("test.test1");
 
@@ -439,7 +436,7 @@ public class MetricsEndpointTest : BaseTest
                 new("a", "v1")
             };
 
-            List<MetricSample> result = ep.GetMetricSamplesByTags(measurements, "test.test1", aTags);
+            IList<MetricSample> result = ep.GetMetricSamplesByTags(measurements, "test.test1", aTags);
             Assert.NotNull(result);
             Assert.Single(result);
 
@@ -544,7 +541,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpoint>();
+            var ep = tc.GetService<IMetricsEndpointHandler>();
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.total");
 
@@ -565,7 +562,7 @@ public class MetricsEndpointTest : BaseTest
 
             var req = new MetricsRequest("test.total", labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList());
 
-            var resp = ep.Invoke(req) as MetricsResponse;
+            MetricsResponse resp = await ep.InvokeAsync(req, CancellationToken.None);
 
             Assert.NotNull(resp);
 

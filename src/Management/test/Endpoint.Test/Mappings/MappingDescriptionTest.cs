@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
@@ -12,7 +12,7 @@ public class MappingDescriptionTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        var routeDetail = new TestRouteDetails
+        var routeDetail = new AspNetCoreRouteDetails
         {
             HttpMethods = new List<string>
             {
@@ -29,7 +29,7 @@ public class MappingDescriptionTest : BaseTest
             }
         };
 
-        var mapDesc = new MappingDescription("foobar", routeDetail);
+        var mapDesc = new RouteMappingDescription("foobar", routeDetail);
 
         Assert.Null(mapDesc.Details);
         Assert.Equal("foobar", mapDesc.Handler);
@@ -39,7 +39,7 @@ public class MappingDescriptionTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var routeDetail = new TestRouteDetails
+        var routeDetail = new AspNetCoreRouteDetails
         {
             HttpMethods = new List<string>
             {
@@ -56,7 +56,7 @@ public class MappingDescriptionTest : BaseTest
             }
         };
 
-        var mapDesc = new MappingDescription("foobar", routeDetail);
+        var mapDesc = new RouteMappingDescription("foobar", routeDetail);
 
         string result = Serialize(mapDesc);
 

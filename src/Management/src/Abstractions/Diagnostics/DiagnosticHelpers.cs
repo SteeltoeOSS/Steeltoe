@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Diagnostics;
 
@@ -10,6 +11,7 @@ public static class DiagnosticHelpers
 {
     public static T GetProperty<T>(object o, string name)
     {
+        ArgumentGuard.NotNull(o);
         PropertyInfo property = o.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
 
         if (property == null)

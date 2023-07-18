@@ -8,7 +8,8 @@ namespace Steeltoe.Management.Endpoint.Test.Info;
 
 internal sealed class TestInfoContributor : IInfoContributor
 {
-    public void Contribute(IInfoBuilder builder)
+    public Task ContributeAsync(IInfoBuilder builder)
     {
+        return Task.CompletedTask;
     }
 }

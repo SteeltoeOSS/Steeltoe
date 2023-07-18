@@ -1,0 +1,18 @@
+static Steeltoe.Management.Tracing.TracingBaseHostBuilderExtensions.AddDistributedTracing(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder, System.Action<OpenTelemetry.Trace.TracerProviderBuilder> action) -> Microsoft.Extensions.Hosting.IHostBuilder
+static Steeltoe.Management.Tracing.TracingBaseServiceCollectionExtensions.AddDistributedTracing(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+static Steeltoe.Management.Tracing.TracingBaseServiceCollectionExtensions.AddDistributedTracing(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<OpenTelemetry.Trace.TracerProviderBuilder> action) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+static Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+static Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<OpenTelemetry.Trace.TracerProviderBuilder> action) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+static Steeltoe.Management.Tracing.TracingHostBuilderExtensions.AddDistributedTracingAspNetCore(this Microsoft.AspNetCore.Builder.WebApplicationBuilder hostBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
+static Steeltoe.Management.Tracing.TracingHostBuilderExtensions.AddDistributedTracingAspNetCore(this Microsoft.AspNetCore.Builder.WebApplicationBuilder hostBuilder, System.Action<OpenTelemetry.Trace.TracerProviderBuilder> action) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
+static Steeltoe.Management.Tracing.TracingHostBuilderExtensions.AddDistributedTracingAspNetCore(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
+static Steeltoe.Management.Tracing.TracingHostBuilderExtensions.AddDistributedTracingAspNetCore(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder, System.Action<OpenTelemetry.Trace.TracerProviderBuilder> action) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
+static Steeltoe.Management.Tracing.TracingHostBuilderExtensions.AddDistributedTracingAspNetCore(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
+static Steeltoe.Management.Tracing.TracingHostBuilderExtensions.AddDistributedTracingAspNetCore(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder, System.Action<OpenTelemetry.Trace.TracerProviderBuilder> action) -> Microsoft.Extensions.Hosting.IHostBuilder
+Steeltoe.Management.Tracing.TracingBaseHostBuilderExtensions
+Steeltoe.Management.Tracing.TracingBaseServiceCollectionExtensions
+Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions
+Steeltoe.Management.Tracing.TracingHostBuilderExtensions
+Steeltoe.Management.Tracing.TracingLogProcessor
+Steeltoe.Management.Tracing.TracingLogProcessor.Process(string inputLogMessage) -> string
+Steeltoe.Management.Tracing.TracingLogProcessor.TracingLogProcessor(Steeltoe.Common.ITracingOptions options) -> void

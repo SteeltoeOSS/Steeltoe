@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
-public class SpringBootAdminClientOptions
+public sealed class SpringBootAdminClientOptions
 {
     private const string Prefix = "spring:boot:admin:client";
     private const string Urls = "URLS";
@@ -37,6 +38,7 @@ public class SpringBootAdminClientOptions
     /// <summary>
     /// Gets or sets metadata to use when registering with SBA.
     /// </summary>
+    [SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options")]
     public Dictionary<string, object> Metadata { get; set; }
 
     public SpringBootAdminClientOptions(IConfiguration configuration, IApplicationInstanceInfo appInfo)

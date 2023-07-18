@@ -4,9 +4,14 @@
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class RefreshEndpointOptions : EndpointOptionsBase
+public sealed class RefreshEndpointOptions : HttpMiddlewareOptions
 {
     private const bool DefaultReturnConfiguration = true;
+
+    public override IEnumerable<string> AllowedVerbs { get; } = new List<string>
+    {
+        "Post"
+    };
 
     public bool ReturnConfiguration { get; set; } = DefaultReturnConfiguration;
 }

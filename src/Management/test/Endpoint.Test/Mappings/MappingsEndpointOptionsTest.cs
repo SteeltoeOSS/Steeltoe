@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.Mappings;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
@@ -12,7 +12,7 @@ public class MappingsEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<MappingsEndpointOptions>();
+        var opts = GetOptionsFromSettings<RouteMappingsEndpointOptions>();
         Assert.Null(opts.Enabled);
         Assert.Equal("mappings", opts.Id);
         Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);

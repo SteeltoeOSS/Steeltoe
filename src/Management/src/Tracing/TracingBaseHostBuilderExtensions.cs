@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Trace;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Tracing;
 
@@ -21,8 +22,9 @@ public static class TracingBaseHostBuilderExtensions
     /// <returns>
     /// The configured hostBuilder.
     /// </returns>
-    public static IHostBuilder AddDistributedTracing(this IHostBuilder hostBuilder, Action<TracerProviderBuilder> action = null)
+    public static IHostBuilder AddDistributedTracing(this IHostBuilder hostBuilder, Action<TracerProviderBuilder> action)
     {
+        ArgumentGuard.NotNull(hostBuilder);
         return hostBuilder.ConfigureServices((_, services) => services.AddDistributedTracing(action));
     }
 }

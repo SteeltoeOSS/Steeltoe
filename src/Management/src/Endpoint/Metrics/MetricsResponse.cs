@@ -3,22 +3,34 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
-using Steeltoe.Management.MetricCollectors;
+using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsResponse : IMetricsResponse
+public sealed class MetricsResponse
 {
     [JsonPropertyName("name")]
+    [JsonPropertyOrder(1)]
     public string Name { get; }
 
     [JsonPropertyName("measurements")]
-    public List<MetricSample> Measurements { get; }
+    [JsonPropertyOrder(2)]
+    public IList<MetricSample> Measurements { get; }
 
+    [JsonPropertyOrder(3)]
     [JsonPropertyName("availableTags")]
-    public List<MetricTag> AvailableTags { get; }
+    public IList<MetricTag> AvailableTags { get; }
 
-    public MetricsResponse(string name, List<MetricSample> measurements, List<MetricTag> availableTags)
+    [JsonPropertyName("names")]
+    [JsonPropertyOrder(0)]
+    public ISet<string> Names { get; }
+
+    public MetricsResponse(ISet<string> names)
+    {
+        Names = names;
+    }
+
+    public MetricsResponse(string name, IList<MetricSample> measurements, IList<MetricTag> availableTags)
     {
         Name = name;
         Measurements = measurements;

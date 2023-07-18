@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class Response
+public sealed class Response
 {
     public int Status { get; }
 

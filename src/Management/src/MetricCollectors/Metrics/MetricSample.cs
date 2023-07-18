@@ -4,9 +4,9 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.MetricCollectors;
+namespace Steeltoe.Management.MetricCollectors.Metrics;
 
-public class MetricSample
+public sealed class MetricSample
 {
     [JsonPropertyName("statistic")]
     public MetricStatistic Statistic { get; }
@@ -17,7 +17,7 @@ public class MetricSample
     [JsonIgnore]
     public IEnumerable<KeyValuePair<string, string>>? Tags { get; set; }
 
-    public MetricSample(MetricStatistic statistic, double value, IEnumerable<KeyValuePair<string, string>>? tags = null)
+    public MetricSample(MetricStatistic statistic, double value, IEnumerable<KeyValuePair<string, string>>? tags)
     {
         Statistic = statistic;
         Value = value;

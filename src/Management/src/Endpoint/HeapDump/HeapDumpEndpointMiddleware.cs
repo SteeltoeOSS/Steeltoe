@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.IO.Compression;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,30 +11,25 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
+internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, string>
 {
-    public HeapDumpEndpointMiddleware(IHeapDumpEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<HeapDumpEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    private readonly ILogger<HeapDumpEndpointMiddleware> _logger;
+
+    public HeapDumpEndpointMiddleware(IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
-        Endpoint = endpoint;
+        _logger = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<string> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
-        {
-            return HandleHeapDumpRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
+        return await EndpointHandler.InvokeAsync(null, context.RequestAborted);
     }
 
-    protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
+    protected override async Task WriteResponseAsync(string fileName, HttpContext context, CancellationToken cancellationToken)
     {
-        string fileName = Endpoint.Invoke();
-        logger.LogDebug("Returning: {fileName}", fileName);
-        context.Response.Headers.Add("Content-Type", "application/octet-stream");
+        _logger.LogDebug("Returning: {fileName}", fileName);
 
         if (!File.Exists(fileName))
         {
@@ -41,24 +37,19 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
             return;
         }
 
-        string gzFileName = $"{fileName}.gz";
-        Stream result = await Utils.CompressFileAsync(fileName, gzFileName, logger);
+        context.Response.ContentType = "application/octet-stream";
+        context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(fileName)}.gz\"");
+        context.Response.StatusCode = StatusCodes.Status200OK;
 
-        if (result != null)
+        try
         {
-            await using (result)
-            {
-                context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{Path.GetFileName(gzFileName)}\"");
-                context.Response.StatusCode = StatusCodes.Status200OK;
-                context.Response.ContentLength = result.Length;
-                await result.CopyToAsync(context.Response.Body);
-            }
-
-            File.Delete(gzFileName);
+            await using var inputStream = new FileStream(fileName, FileMode.Open);
+            var outputStream = new GZipStream(context.Response.Body, CompressionLevel.Fastest);
+            await inputStream.CopyToAsync(outputStream, cancellationToken);
         }
-        else
+        finally
         {
-            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            File.Delete(fileName);
         }
     }
 }

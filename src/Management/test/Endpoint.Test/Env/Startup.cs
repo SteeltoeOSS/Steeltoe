@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 
 namespace Steeltoe.Management.Endpoint.Test.Env;
 
@@ -20,7 +20,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddEnvActuator();
+        services.AddEnvironmentActuator();
         services.AddRouting();
     }
 

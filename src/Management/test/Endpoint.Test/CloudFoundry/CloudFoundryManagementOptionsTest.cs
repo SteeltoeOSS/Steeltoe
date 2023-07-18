@@ -2,21 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class CloudfoundryManagementOptionsTest : BaseTest
+public class CloudFoundryManagementOptionsTest : BaseTest
 {
-    [Fact]
-    public void Constructor_InitializesWithDefaults()
-    {
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(CFContext.Name);
-        Assert.Equal("/cloudfoundryapplication", opts.Path);
-    }
-
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
@@ -26,27 +18,18 @@ public class CloudfoundryManagementOptionsTest : BaseTest
             ["management:endpoints:path"] = "/management"
         };
 
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(CFContext.Name);
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).CurrentValue;
 
-        Assert.Equal("/cloudfoundryapplication", opts.Path);
-        Assert.False(opts.Enabled);
+        Assert.False(opts.CloudFoundryEnabled);
     }
 
     [Fact]
-    public void Constructor_BindsConfigurationCorrectly_OnCF()
+    public void Constructor_BindsConfigurationDefaultsCorrectly()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
+        var appsettings = new Dictionary<string, string>();
 
-        var appsettings = new Dictionary<string, string>
-        {
-            ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/management"
-        };
+        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).CurrentValue;
 
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).Get(CFContext.Name);
-
-        Assert.Equal("/cloudfoundryapplication", opts.Path);
-        Assert.False(opts.Enabled);
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Assert.True(opts.CloudFoundryEnabled);
     }
 }

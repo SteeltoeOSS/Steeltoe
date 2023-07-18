@@ -5,17 +5,10 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Info;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
@@ -38,27 +31,6 @@ public class EndpointMiddlewareTest : BaseTest
         ["info:NET:ASPNET:type"] = "Core",
         ["info:NET:ASPNET:version"] = "2.0.0"
     };
-
-    [Fact]
-    public async Task HandleInfoRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<InfoEndpointOptions> opts = GetOptionsMonitorFromSettings<InfoEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-
-        var contributors = new List<IInfoContributor>
-        {
-            new GitInfoContributor(NullLogger<GitInfoContributor>.Instance)
-        };
-
-        var ep = new TestInfoEndpoint(opts, contributors, NullLogger<InfoEndpoint>.Instance);
-        var middle = new InfoEndpointMiddleware(ep, managementOptions, NullLogger<InfoEndpointMiddleware>.Instance);
-        HttpContext context = CreateRequest("GET", "/loggers");
-        await middle.HandleInfoRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{}", json);
-    }
 
     [Fact]
     public async Task InfoActuator_ReturnsExpectedData()
@@ -131,27 +103,12 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<InfoEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
 
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/info", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/info", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Equal("/actuator/info", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
+        Assert.Equal("/cloudfoundryapplication/info", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
-    }
-
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
     }
 }

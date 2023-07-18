@@ -6,5 +6,5 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 public interface IHeapDumper
 {
-    string DumpHeap();
+    string DumpHeapToFile();
 }

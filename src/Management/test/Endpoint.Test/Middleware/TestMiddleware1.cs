@@ -10,14 +10,15 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Test.Middleware;
 
-internal sealed class TestMiddleware1 : EndpointMiddleware<string>
+internal sealed class TestMiddleware1 : EndpointMiddleware<object, string>
 {
-    public TestMiddleware1(IEndpoint<string> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
-        : base(endpoint, managementOptions, logger)
+    public TestMiddleware1(IEndpointHandler<object, string> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+        ILoggerFactory loggerFactory)
+        : base(endpoint, managementOptions, loggerFactory)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override Task<string> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

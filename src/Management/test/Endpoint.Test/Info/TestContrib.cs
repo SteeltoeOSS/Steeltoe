@@ -21,7 +21,7 @@ internal sealed class TestContrib : IInfoContributor
         Throws = throws;
     }
 
-    public void Contribute(IInfoBuilder builder)
+    public Task ContributeAsync(IInfoBuilder builder)
     {
         if (Throws)
         {
@@ -29,5 +29,6 @@ internal sealed class TestContrib : IInfoContributor
         }
 
         Called = true;
+        return Task.CompletedTask;
     }
 }

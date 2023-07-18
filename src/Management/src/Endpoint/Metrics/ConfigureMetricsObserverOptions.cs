@@ -8,7 +8,7 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal class ConfigureMetricsObserverOptions : IConfigureOptions<MetricsObserverOptions>
+internal sealed class ConfigureMetricsObserverOptions : IConfigureOptions<MetricsObserverOptions>
 {
     internal const string ManagementMetricsPrefix = "management:metrics:observer";
 

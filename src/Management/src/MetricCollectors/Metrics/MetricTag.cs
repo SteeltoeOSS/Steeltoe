@@ -4,9 +4,9 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.MetricCollectors;
+namespace Steeltoe.Management.MetricCollectors.Metrics;
 
-public class MetricTag
+public sealed class MetricTag
 {
     [JsonPropertyName("tag")]
     public string Tag { get; }

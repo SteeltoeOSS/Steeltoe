@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class MonitorInfo : LockInfo
+public sealed class MonitorInfo : LockInfo
 {
     [JsonPropertyName("lockedStackDepth")]
     public int LockedStackDepth { get; set; }

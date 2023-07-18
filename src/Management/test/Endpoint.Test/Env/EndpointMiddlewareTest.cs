@@ -14,9 +14,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Env;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
@@ -30,7 +28,8 @@ public class EndpointMiddlewareTest : BaseTest
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
-        ["management:endpoints:enabled"] = "true"
+        ["management:endpoints:enabled"] = "true",
+        ["management:endpoints:actuator:exposure:include:0"] = "*"
     };
 
     private readonly IHostEnvironment _host = HostingHelpers.GetHostingEnvironment();
@@ -42,20 +41,22 @@ public class EndpointMiddlewareTest : BaseTest
         configurationBuilder.AddInMemoryCollection(AppSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        IOptionsMonitor<EnvEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<EnvEndpointOptions, ConfigureEnvEndpointOptions>();
-        var managementOptions = new TestOptionsMonitor<ManagementEndpointOptions>(new ManagementEndpointOptions());
+        IOptionsMonitor<EnvironmentEndpointOptions> optionsMonitor =
+            GetOptionsMonitorFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
 
-        var ep = new EnvEndpoint(optionsMonitor, configurationRoot, _host, NullLogger<EnvEndpoint>.Instance);
-        var middle = new EnvEndpointMiddleware(ep, managementOptions, NullLogger<EnvEndpointMiddleware>.Instance);
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
+
+        var ep = new EnvironmentEndpointHandler(optionsMonitor, configurationRoot, _host, NullLoggerFactory.Instance);
+        var middle = new EnvironmentEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/env");
-        await middle.HandleEnvRequestAsync(context);
+        await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadLineAsync();
 
         const string expected =
-            "{\"activeProfiles\":[\"EnvironmentName\"],\"propertySources\":[{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
+            "{\"activeProfiles\":[\"EnvironmentName\"],\"propertySources\":[{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:actuator:exposure:include:0\":{\"value\":\"*\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
 
         Assert.Equal(expected, json);
     }
@@ -64,14 +65,11 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task EnvActuator_ReturnsExpectedData()
     {
         // Some developers set ASPNETCORE_ENVIRONMENT in their environment, which will break this test if we don't un-set it
-        string originalEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
-
-        var appSettings = new Dictionary<string, string>(AppSettings);
-        appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
+        string originalEnv = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webHostContext.Configuration);
@@ -91,18 +89,18 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(expected, json);
         }
 
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", originalEnv);
+        System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", originalEnv);
     }
 
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<EnvEndpointOptions>();
+        var options = GetOptionsFromSettings<EnvironmentEndpointOptions>();
 
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/env", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/env", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
+        Assert.Equal("/actuator/env", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
+        Assert.Equal("/cloudfoundryapplication/env", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }

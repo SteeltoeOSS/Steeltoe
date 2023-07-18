@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsEndpointOptions : EndpointOptionsBase
+public sealed class DbMigrationsEndpointOptions : HttpMiddlewareOptions
 {
     public string[] KeysToSanitize => Array.Empty<string>();
 }

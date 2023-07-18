@@ -10,12 +10,12 @@ namespace Steeltoe.Management.Kubernetes.Test;
 public class KubernetesInfoContributorTest
 {
     [Fact]
-    public void ReturnsPodInfoInsideCluster()
+    public async Task ReturnsPodInfoInsideCluster()
     {
         var builder = new InfoBuilder();
         var contributor = new KubernetesInfoContributor(new FakePodUtilities(FakePodUtilities.SamplePod));
 
-        contributor.Contribute(builder);
+        await contributor.ContributeAsync(builder);
         var info = builder.Build()["kubernetes"] as Dictionary<string, object>;
 
         Assert.True(bool.Parse(info["inside"].ToString()));
@@ -28,12 +28,12 @@ public class KubernetesInfoContributorTest
     }
 
     [Fact]
-    public void ReturnsNoPodInfoOutsideCluster()
+    public async Task ReturnsNoPodInfoOutsideCluster()
     {
         var builder = new InfoBuilder();
         var contributor = new KubernetesInfoContributor(new FakePodUtilities(null));
 
-        contributor.Contribute(builder);
+        await contributor.ContributeAsync(builder);
         var info = builder.Build()["kubernetes"] as Dictionary<string, object>;
 
         Assert.True(info.ContainsKey("inside"));

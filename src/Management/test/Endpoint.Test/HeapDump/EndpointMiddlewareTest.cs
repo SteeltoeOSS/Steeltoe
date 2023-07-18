@@ -12,9 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
@@ -37,23 +35,21 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
     {
-        IOptionsMonitor<HeapDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<HeapDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions>(AppSettings);
+        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
 
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
         var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
         ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
-        ILogger<HeapDumpEndpoint> logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
-        ILogger<HeapDumpEndpointMiddleware> logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
         var obs = new HeapDumper(opts, logger1);
 
-        var ep = new HeapDumpEndpoint(opts, obs, logger2);
-        var middle = new HeapDumpEndpointMiddleware(ep, managementOptions, logger3);
+        var ep = new HeapDumpEndpointHandler(opts, obs, loggerFactory);
+        var middle = new HeapDumpEndpointMiddleware(ep, managementOptions, loggerFactory);
         HttpContext context = CreateRequest("GET", "/heapdump");
-        await middle.HandleHeapDumpRequestAsync(context);
+        await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         byte[] buffer = new byte[1024];
         await context.Response.Body.ReadAsync(buffer);
@@ -96,10 +92,10 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<HeapDumpEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
         Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/heapdump", options.GetContextPath(managementOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/heapdump", options.GetContextPath(managementOptions.Get(CFContext.Name)));
+        Assert.Equal("/actuator/heapdump", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        Assert.Equal("/cloudfoundryapplication/heapdump", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 
