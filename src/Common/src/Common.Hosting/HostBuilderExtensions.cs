@@ -18,7 +18,7 @@ namespace Steeltoe.Common.Hosting;
 public static class HostBuilderExtensions
 {
     public const string DEFAULT_URL = "http://*:8080";
-    private const string DeprecatedServerUrlsKey = "server.urls";
+    internal const string DeprecatedServerUrlsKey = "server.urls";
 
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
@@ -88,7 +88,6 @@ public static class HostBuilderExtensions
         var urls = new HashSet<string>();
 
         var portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
-        var aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
         var serverUrlSetting = webHostBuilder.GetSetting(DeprecatedServerUrlsKey); // check for deprecated setting
         var urlSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
@@ -97,7 +96,7 @@ public static class HostBuilderExtensions
 
         if (!string.IsNullOrWhiteSpace(portStr))
         {
-            AddPortAndAspNetCoreUrls(urls, portStr, aspnetUrls);
+            AddPortAndAspNetCoreUrls(urls, portStr);
         }
         else if (Platform.IsKubernetes)
         {
@@ -194,7 +193,7 @@ public static class HostBuilderExtensions
         return canonicalUrl;
     }
 
-    private static void AddPortAndAspNetCoreUrls(HashSet<string> urls, string portStr, string aspnetUrls)
+    private static void AddPortAndAspNetCoreUrls(HashSet<string> urls, string portStr)
     {
         if (int.TryParse(portStr, out var port))
         {
@@ -202,19 +201,9 @@ public static class HostBuilderExtensions
         }
         else if (portStr?.Contains(";") == true)
         {
-            if (!string.IsNullOrEmpty(aspnetUrls))
-            {
-                foreach (var url in aspnetUrls.Split(';'))
-                {
-                   urls.Add(GetCanonical(url));
-                }
-            }
-            else
-            {
-                var ports = portStr.Split(';');
-                urls.Add($"http://*:{ports[0]}");
-                urls.Add($"https://*:{ports[1]}");
-            }
+            var ports = portStr.Split(';');
+            urls.Add($"http://*:{ports[0]}");
+            urls.Add($"https://*:{ports[1]}");
         }
     }
 

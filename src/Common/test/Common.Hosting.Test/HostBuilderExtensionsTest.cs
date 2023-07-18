@@ -158,9 +158,7 @@ public class HostBuilderExtensionsTest
     {
         var config = new ConfigurationBuilder().AddCommandLine(new string[]
         {
-            "--server.urls",
-            "http://*:8088",
-            "--urls",
+            $"--{HostBuilderExtensions.DeprecatedServerUrlsKey}",
             "http://*:8088"
         }).Build();
 
@@ -174,6 +172,26 @@ public class HostBuilderExtensionsTest
         Assert.Collection(addresses.Addresses,  (address) => Assert.Equal("http://*:8088", address));
     }
 
+    [Fact]
+    public void UseCloudHosting_UsesCommandLine_ServerUrls_Handles_Duplicates()
+    {
+        var config = new ConfigurationBuilder().AddCommandLine(new string[]
+        {
+            "--server.urls",
+            "http://*:8088",
+            "--urls",
+            "http://*:8088"
+        }).Build();
+
+        var hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>().UseKestrel();
+
+        hostBuilder.UseCloudHosting();
+        var server = hostBuilder.Build();
+
+        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+
+        Assert.Collection(addresses.Addresses, (address) => Assert.Equal("http://*:8088", address));
+    }
     [Fact]
     public void UseCloudHosting_AnyWildCard_Overrides_SpecificIps()
     {
