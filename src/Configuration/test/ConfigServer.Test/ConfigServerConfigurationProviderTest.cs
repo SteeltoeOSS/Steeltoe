@@ -422,8 +422,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-   
+                    ""propertySources"": [
+
                     ]
                 }";
 
@@ -466,8 +466,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""key1"": ""value1"",
@@ -516,8 +516,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""key1"": ""value1"",
@@ -805,8 +805,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""key1"": ""value1"",
@@ -849,8 +849,8 @@ public sealed class ConfigServerConfigurationProviderTest
                         ""profiles"": [""Production""],
                         ""label"": ""testlabel"",
                         ""version"": ""testversion"",
-                        ""propertySources"": [ 
-                            { 
+                        ""propertySources"": [
+                            {
                                 ""name"": ""source"",
                                 ""source"": {
                                             ""featureToggles.ShowModule[0]"": ""FT1"",
@@ -895,8 +895,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""featureToggles.ShowModule[0]"": ""none""
@@ -1250,8 +1250,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""name"": ""my-app"",
