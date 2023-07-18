@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.PostgreSql;
@@ -347,11 +346,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     [Fact]
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
-        string rootDirectory = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
-        using var scope = new EnvironmentVariableScope("SERVICE_BINDING_ROOT", rootDirectory);
-
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddKubernetesServiceBindings();
+
+        string rootDirectory = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
+        var reader = new DirectoryServiceBindingsReader(rootDirectory);
+        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {

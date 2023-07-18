@@ -4,18 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.FileProviders.Physical;
 using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 internal sealed class KubernetesServiceBindingConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
 {
-    internal const string ServiceBindingRootDirEnvVariable = "SERVICE_BINDING_ROOT";
-
-    public IFileProvider? FileProvider { get; set; }
-
-    public string? ServiceBindingRoot { get; set; }
+    public IFileProvider? FileProvider { get; }
 
     public bool ReloadOnChange { get; set; }
 
@@ -24,26 +19,15 @@ internal sealed class KubernetesServiceBindingConfigurationSource : PostProcesso
     public bool Optional { get; set; } = true;
 
     public KubernetesServiceBindingConfigurationSource()
-        : this(Environment.GetEnvironmentVariable(ServiceBindingRootDirEnvVariable))
+        : this(new EnvironmentServiceBindingsReader())
     {
     }
 
-    public KubernetesServiceBindingConfigurationSource(string? serviceBindingRootDirectory)
+    public KubernetesServiceBindingConfigurationSource(IServiceBindingsReader reader)
     {
-        ServiceBindingRoot = serviceBindingRootDirectory != null ? Path.GetFullPath(serviceBindingRootDirectory) : null;
+        ArgumentGuard.NotNull(reader);
 
-        if (Directory.Exists(ServiceBindingRoot))
-        {
-            var fileProvider = new PhysicalFileProvider(ServiceBindingRoot, ExclusionFilters.Sensitive);
-
-            if (ReloadOnChange)
-            {
-                fileProvider.UsePollingFileWatcher = true;
-                fileProvider.UseActivePolling = true;
-            }
-
-            FileProvider = fileProvider;
-        }
+        FileProvider = reader.GetRootDirectory();
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)

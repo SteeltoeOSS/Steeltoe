@@ -4,6 +4,7 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 using Steeltoe.Common.TestResources;
 using Xunit;
 
@@ -14,28 +15,33 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
     [Fact]
     public void EnvironmentVariableNotSet()
     {
-        using var scope = new EnvironmentVariableScope(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
+        using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, null);
+
         var source = new KubernetesServiceBindingConfigurationSource();
-        source.ServiceBindingRoot.Should().BeNull();
+
+        source.FileProvider.Should().BeNull();
     }
 
     [Fact]
     public void EnvironmentVariableSet()
     {
         string rootDirectory = GetK8SResourcesDirectory(string.Empty);
-        using var scope = new EnvironmentVariableScope(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDirectory);
+        using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, rootDirectory);
 
         var source = new KubernetesServiceBindingConfigurationSource();
-        source.ServiceBindingRoot.Should().Contain(Path.Combine("resources", "k8s"));
+
         source.FileProvider.Should().NotBeNull();
-        source.FileProvider!.GetDirectoryContents("/").Should().NotBeNull();
+
+        PhysicalFileProvider fileProvider = source.FileProvider.Should().BeOfType<PhysicalFileProvider>().Subject;
+        fileProvider.Root.Should().Contain(Path.Combine("resources", "k8s"));
+        fileProvider.GetDirectoryContents("/").Exists.Should().BeTrue();
     }
 
     [Fact]
     public void Build_CapturesParentConfiguration()
     {
         string rootDirectory = GetK8SResourcesDirectory(string.Empty);
-        var source = new KubernetesServiceBindingConfigurationSource(rootDirectory);
+        var source = new KubernetesServiceBindingConfigurationSource(new DirectoryServiceBindingsReader(rootDirectory));
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);
