@@ -356,11 +356,6 @@ Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.ContextMappings(Syste
 Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.Mappings.get -> System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription>>>
 Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.ParentId.get -> string
 Steeltoe.Management.Endpoint.RouteMappings.EndpointServiceCollectionExtensions
-Steeltoe.Management.Endpoint.RouteMappings.IRouteDetails
-Steeltoe.Management.Endpoint.RouteMappings.IRouteDetails.Consumes.get -> System.Collections.Generic.IList<string>
-Steeltoe.Management.Endpoint.RouteMappings.IRouteDetails.HttpMethods.get -> System.Collections.Generic.IList<string>
-Steeltoe.Management.Endpoint.RouteMappings.IRouteDetails.Produces.get -> System.Collections.Generic.IList<string>
-Steeltoe.Management.Endpoint.RouteMappings.IRouteDetails.RouteTemplate.get -> string
 Steeltoe.Management.Endpoint.RouteMappings.IRouteMappingsEndpointHandler
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.Details.get -> object
