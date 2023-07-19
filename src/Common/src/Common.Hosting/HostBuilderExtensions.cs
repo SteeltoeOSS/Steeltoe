@@ -107,17 +107,8 @@ public static class HostBuilderExtensions
             AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort);
         }
 
-        if (urls.Any())
+        if (!urls.Any())
         {
-            // setting ASPNETCORE_URLS should only be needed to override launchSettings.json
-            if (string.IsNullOrWhiteSpace(portStr) && !Platform.IsKubernetes)
-            {
-                Environment.SetEnvironmentVariable("ASPNETCORE_URLS", string.Join(";", urls));
-            }
-        }
-        else
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_URLS", DEFAULT_URL);
             urls.Add(DEFAULT_URL);
         }
 
