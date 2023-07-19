@@ -154,6 +154,26 @@ public class HostBuilderExtensionsTest
     }
 
     [Fact]
+    public void UseCloudHosting_UsesCommandLine_Urls()
+    {
+        var config = new ConfigurationBuilder().AddCommandLine(new[]
+        {
+            "--urls",
+            "http://*:8099"
+        }).Build();
+
+        var hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>().UseKestrel();
+
+        hostBuilder.UseCloudHosting();
+        var server = hostBuilder.Build();
+
+        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
+
+        Assert.Single(addresses.Addresses, "http://*:8099");
+        Assert.Contains("http://*:8099", addresses.Addresses);
+    }
+
+    [Fact]
     public void UseCloudHosting_UsesCommandLine_ServerUrls()
     {
         var config = new ConfigurationBuilder().AddCommandLine(new string[]
@@ -169,7 +189,7 @@ public class HostBuilderExtensionsTest
 
         var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
 
-        Assert.Collection(addresses.Addresses,  (address) => Assert.Equal("http://*:8088", address));
+        Assert.Contains(addresses.Addresses, address => address == "http://*:8088");
     }
 
     [Fact]
@@ -238,26 +258,6 @@ public class HostBuilderExtensionsTest
         {
             Environment.SetEnvironmentVariable("ASPNETCORE_URLS", string.Empty);
         }
-    }
-
-    [Fact]
-    public void UseCloudHosting_UsesCommandLine_Urls()
-    {
-        var config = new ConfigurationBuilder().AddCommandLine(new[]
-        {
-            "--urls",
-            "http://*:8081"
-        }).Build();
-
-        var hostBuilder = new WebHostBuilder().UseConfiguration(config).UseStartup<TestServerStartup>().UseKestrel();
-
-        hostBuilder.UseCloudHosting();
-        var server = hostBuilder.Build();
-
-        var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
-
-        Assert.Single(addresses.Addresses, "http://*:8081");
-        Assert.Contains("http://*:8081", addresses.Addresses);
     }
 
     [Fact]
