@@ -4,11 +4,14 @@
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
-internal abstract class Aggregator
+internal sealed class QuantileAggregation
 {
-    // This can be called concurrently with Collect()
-    public abstract void Update(double measurement);
+    public double[] Quantiles { get; }
+    public double MaxRelativeError => 0.001;
 
-    // This can be called concurrently with Update()
-    public abstract IAggregationStatistics Collect();
+    public QuantileAggregation(params double[] quantiles)
+    {
+        Quantiles = quantiles;
+        Array.Sort(Quantiles);
+    }
 }

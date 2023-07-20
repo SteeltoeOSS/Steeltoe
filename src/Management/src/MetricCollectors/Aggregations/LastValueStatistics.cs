@@ -4,11 +4,12 @@
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
-internal abstract class Aggregator
+internal sealed class LastValueStatistics : IAggregationStatistics
 {
-    // This can be called concurrently with Collect()
-    public abstract void Update(double measurement);
+    public double? LastValue { get; }
 
-    // This can be called concurrently with Update()
-    public abstract IAggregationStatistics Collect();
+    internal LastValueStatistics(double? lastValue)
+    {
+        LastValue = lastValue;
+    }
 }

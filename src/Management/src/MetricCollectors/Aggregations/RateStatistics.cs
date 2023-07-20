@@ -4,11 +4,12 @@
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
-internal abstract class Aggregator
+internal sealed class RateStatistics : IAggregationStatistics
 {
-    // This can be called concurrently with Collect()
-    public abstract void Update(double measurement);
+    public double? Delta { get; }
 
-    // This can be called concurrently with Update()
-    public abstract IAggregationStatistics Collect();
+    public RateStatistics(double? delta)
+    {
+        Delta = delta;
+    }
 }

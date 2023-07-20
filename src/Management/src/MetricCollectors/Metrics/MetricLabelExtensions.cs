@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Management.MetricCollectors.Metrics;
-#pragma warning disable S1135 // Track uses of "TODO" tags
-// TODO: Move to common 
+
 public static class MetricLabelExtensions
-#pragma warning restore S1135 // Track uses of "TODO" tags
 {
     internal static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IDictionary<string, object> keyValuePairs)
     {

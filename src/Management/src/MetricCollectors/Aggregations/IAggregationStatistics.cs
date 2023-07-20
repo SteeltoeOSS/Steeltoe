@@ -2,13 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
-internal abstract class Aggregator
+[SuppressMessage("Minor Code Smell", "S4023:Interfaces should not be empty", Justification = "Cannot be replaced by attributes as suggested")]
+public interface IAggregationStatistics
 {
-    // This can be called concurrently with Collect()
-    public abstract void Update(double measurement);
-
-    // This can be called concurrently with Update()
-    public abstract IAggregationStatistics Collect();
 }

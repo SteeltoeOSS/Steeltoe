@@ -8,9 +8,8 @@ using System.Diagnostics.Metrics;
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
-internal sealed class AggregationManager
+internal sealed class AggregationManager : IDisposable
 {
-    public const double MinCollectionTimeSecs = 0.1;
     private static readonly QuantileAggregation DefaultHistogramConfig = new(0.50, 0.95, 0.99);
 
     // these fields are modified after construction and accessed on multiple threads, use lock(_lockObject) to ensure the data
@@ -23,9 +22,6 @@ internal sealed class AggregationManager
     private readonly int _maxTimeSeries;
     private readonly int _maxHistograms;
     private readonly Action<Instrument, LabeledAggregationStatistics> _collectMeasurement;
-    private readonly Action<Instrument> _beginInstrumentMeasurements;
-    private readonly Action<Instrument> _endInstrumentMeasurements;
-    private readonly Action<Instrument> _instrumentPublished;
     private readonly Action _initialInstrumentEnumerationComplete;
     private readonly Action _timeSeriesLimitReached;
     private readonly Action _histogramLimitReached;
@@ -41,9 +37,6 @@ internal sealed class AggregationManager
         _maxTimeSeries = maxTimeSeries;
         _maxHistograms = maxHistograms;
         _collectMeasurement = collectMeasurement;
-        _beginInstrumentMeasurements = beginInstrumentMeasurements;
-        _endInstrumentMeasurements = endInstrumentMeasurements;
-        _instrumentPublished = instrumentPublished;
         _initialInstrumentEnumerationComplete = initialInstrumentEnumerationComplete;
         _timeSeriesLimitReached = timeSeriesLimitReached;
         _histogramLimitReached = histogramLimitReached;
@@ -53,29 +46,29 @@ internal sealed class AggregationManager
         {
             InstrumentPublished = (instrument, listener) =>
             {
-                _instrumentPublished(instrument);
+                instrumentPublished(instrument);
                 InstrumentState? state = GetInstrumentState(instrument);
 
                 if (state != null)
                 {
-                    _beginInstrumentMeasurements(instrument);
+                    beginInstrumentMeasurements(instrument);
                     listener.EnableMeasurementEvents(instrument, state);
                 }
             },
-            MeasurementsCompleted = (instrument, cookie) =>
+            MeasurementsCompleted = (instrument, _) =>
             {
-                _endInstrumentMeasurements(instrument);
+                endInstrumentMeasurements(instrument);
                 RemoveInstrumentState(instrument);
             }
         };
 
-        _listener.SetMeasurementEventCallback<double>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<float>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<long>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<int>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<short>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<byte>((i, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<decimal>((i, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
+        _listener.SetMeasurementEventCallback<double>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
+        _listener.SetMeasurementEventCallback<float>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
+        _listener.SetMeasurementEventCallback<long>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
+        _listener.SetMeasurementEventCallback<int>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
+        _listener.SetMeasurementEventCallback<short>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
+        _listener.SetMeasurementEventCallback<byte>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
+        _listener.SetMeasurementEventCallback<decimal>((_, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
     }
 
     public void Include(string meterName)
@@ -102,9 +95,7 @@ internal sealed class AggregationManager
         _initialInstrumentEnumerationComplete();
     }
 
-#pragma warning disable S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
     public void Dispose()
-#pragma warning restore S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
     {
         _listener.Dispose();
     }
@@ -118,7 +109,7 @@ internal sealed class AggregationManager
     {
         if (!_instrumentStates.TryGetValue(instrument, out InstrumentState? instrumentState))
         {
-            // protect _instrumentConfigFuncs list 
+            // protect _instrumentConfigFuncs list
             lock (_lockObject)
             {
                 foreach (Predicate<Instrument> filter in _instrumentConfigFuncs)
@@ -147,7 +138,7 @@ internal sealed class AggregationManager
 
     [UnconditionalSuppressMessage("AotAnalysis", "IL3050:RequiresDynamicCode",
         Justification = "MakeGenericType is creating instances over reference types that works fine in AOT.")]
-    internal InstrumentState? BuildInstrumentState(Instrument instrument)
+    private InstrumentState? BuildInstrumentState(Instrument instrument)
     {
         Func<Aggregator?>? createAggregatorFunc = GetAggregatorFactory(instrument);
 
@@ -164,8 +155,7 @@ internal sealed class AggregationManager
     private Func<Aggregator?>? GetAggregatorFactory(Instrument instrument)
     {
         Type type = instrument.GetType();
-        Type? genericDefType = null;
-        genericDefType = type.IsGenericType ? type.GetGenericTypeDefinition() : null;
+        Type? genericDefType = type.IsGenericType ? type.GetGenericTypeDefinition() : null;
 
         if (genericDefType == typeof(Counter<>))
         {

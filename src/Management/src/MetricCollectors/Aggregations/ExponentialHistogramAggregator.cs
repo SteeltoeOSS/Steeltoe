@@ -6,18 +6,6 @@ using System.Diagnostics;
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
-internal sealed class QuantileAggregation
-{
-    public double[] Quantiles { get; set; }
-    public double MaxRelativeError { get; set; } = 0.001;
-
-    public QuantileAggregation(params double[] quantiles)
-    {
-        Quantiles = quantiles;
-        Array.Sort(Quantiles);
-    }
-}
-
 // This histogram ensures that the quantiles reported from the histogram are within some bounded % error of the correct
 // value. More mathematically, if we have a set of measurements where quantile X = Y, the histogram should always report a
 // value Y` where Y*(1-E) <= Y` <= Y*(1+E). E is our allowable error, so if E = 0.01 then the reported value Y` is
@@ -60,11 +48,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
         if (_config.MaxRelativeError < MinRelativeError)
         {
             // Ensure that we don't create enormous histograms trying to get overly high precision
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-#pragma warning disable S3928 // Parameter names used into ArgumentException constructors should match an existing one 
-            throw new ArgumentException();
-#pragma warning restore S3928 // Parameter names used into ArgumentException constructors should match an existing one 
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
+            throw new ArgumentException("Invalid argument.", nameof(config));
         }
 
         int mantissaBits = (int)Math.Ceiling(Math.Log(1 / _config.MaxRelativeError, 2)) - 1;
@@ -79,8 +63,10 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
         int count;
         double max;
         double sum;
+
 #pragma warning disable S2551 // Shared resources should not be used for locking
         lock (this)
+#pragma warning restore S2551 // Shared resources should not be used for locking
         {
             counters = _counters;
             count = _count;
@@ -91,7 +77,6 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
             _sum = 0;
             _max = 0;
         }
-#pragma warning restore S2551 // Shared resources should not be used for locking
 
         var quantiles = new QuantileValue[_config.Quantiles.Length];
         int nextQuantileIndex = 0;
@@ -162,12 +147,13 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
     private IEnumerable<Bucket> IterateBuckets(int[]?[] counters)
     {
         // iterate over the negative exponent buckets
-        const int LowestNegativeOffset = ExponentArraySize / 2;
+        const int lowestNegativeOffset = ExponentArraySize / 2;
 
         // exponent = ExponentArraySize-1 encodes infinity and NaN, which we want to ignore
-        for (int exponent = ExponentArraySize - 2; exponent >= LowestNegativeOffset; exponent--)
+        for (int exponent = ExponentArraySize - 2; exponent >= lowestNegativeOffset; exponent--)
         {
             int[]? mantissaCounts = counters[exponent];
+
             if (mantissaCounts == null)
             {
                 continue;
@@ -186,9 +172,10 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
 
         // iterate over the positive exponent buckets
         // exponent = lowestNegativeOffset-1 encodes infinity and NaN, which we want to ignore
-        for (int exponent = 0; exponent < LowestNegativeOffset - 1; exponent++)
+        for (int exponent = 0; exponent < lowestNegativeOffset - 1; exponent++)
         {
             int[]? mantissaCounts = counters[exponent];
+
             if (mantissaCounts == null)
             {
                 continue;
@@ -210,6 +197,7 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
     {
 #pragma warning disable S2551 // Shared resources should not be used for locking
         lock (this)
+#pragma warning restore S2551 // Shared resources should not be used for locking
         {
             _sum += measurement;
             _max = Math.Max(_max, measurement);
@@ -227,7 +215,6 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
             mantissaCounts[mantissa]++;
             _count++;
         }
-#pragma warning restore S2551 // Shared resources should not be used for locking
     }
 
     private static int QuantileToRank(double quantile, int count)
@@ -243,17 +230,30 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
         return BitConverter.Int64BitsToDouble(bits);
     }
 
-#pragma warning disable S3898 // Value types should implement "IEquatable<T>"
-    private struct Bucket
-#pragma warning restore S3898 // Value types should implement "IEquatable<T>"
+    private readonly struct Bucket : IEquatable<Bucket>
     {
+        public readonly double Value;
+        public readonly int Count;
+
         public Bucket(double value, int count)
         {
             Value = value;
             Count = count;
         }
 
-        public readonly double Value;
-        public readonly int Count;
+        public bool Equals(Bucket other)
+        {
+            return Value.Equals(other.Value) && Count == other.Count;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is Bucket other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Value, Count);
+        }
     }
 }

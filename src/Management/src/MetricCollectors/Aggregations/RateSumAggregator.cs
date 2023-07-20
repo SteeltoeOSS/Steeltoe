@@ -4,17 +4,16 @@
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
-internal sealed class RateAggregator : Aggregator
+internal sealed class RateSumAggregator : Aggregator
 {
     private readonly object _lockObject = new();
-    private double? _prevValue;
-    private double _value;
+    private double _sum;
 
     public override void Update(double measurement)
     {
         lock (_lockObject)
         {
-            _value = measurement;
+            _sum += measurement;
         }
     }
 
@@ -22,15 +21,8 @@ internal sealed class RateAggregator : Aggregator
     {
         lock (_lockObject)
         {
-            double? delta = null;
-
-            if (_prevValue.HasValue)
-            {
-                delta = _value - _prevValue.Value;
-            }
-
-            var stats = new RateStatistics(delta);
-            _prevValue = _value;
+            var stats = new RateStatistics(_sum);
+            _sum = 0;
             return stats;
         }
     }

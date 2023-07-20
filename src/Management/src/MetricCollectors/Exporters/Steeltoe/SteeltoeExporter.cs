@@ -89,7 +89,7 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
             if (instrument.Unit == "s")
             {
                 _metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.TotalTime, sum, stats.Labels));
-                _metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.Max, histogramStats.HistograMax, stats.Labels));
+                _metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.Max, histogramStats.HistogramMax, stats.Labels));
             }
             else
             {

@@ -6,6 +6,7 @@ namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
 internal sealed class LastValue : Aggregator
 {
+    private readonly object _lockObject = new();
     private double? _lastValue;
 
     public override void Update(double measurement)
@@ -15,23 +16,11 @@ internal sealed class LastValue : Aggregator
 
     public override IAggregationStatistics Collect()
     {
-#pragma warning disable S2551 // Shared resources should not be used for locking
-        lock (this)
+        lock (_lockObject)
         {
             var stats = new LastValueStatistics(_lastValue);
             _lastValue = null;
             return stats;
         }
-#pragma warning restore S2551 // Shared resources should not be used for locking
-    }
-}
-
-internal sealed class LastValueStatistics : IAggregationStatistics
-{
-    public double? LastValue { get; }
-
-    internal LastValueStatistics(double? lastValue)
-    {
-        LastValue = lastValue;
     }
 }

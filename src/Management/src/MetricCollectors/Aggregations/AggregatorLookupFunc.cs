@@ -4,11 +4,4 @@
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
-internal abstract class Aggregator
-{
-    // This can be called concurrently with Collect()
-    public abstract void Update(double measurement);
-
-    // This can be called concurrently with Update()
-    public abstract IAggregationStatistics Collect();
-}
+internal delegate bool AggregatorLookupFunc<TAggregator>(ReadOnlySpan<KeyValuePair<string, object?>> labels, out TAggregator? aggregator);
