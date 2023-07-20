@@ -23,12 +23,11 @@ public class CloudFoundryCertificateIdentityAuthorizationHandler : IAuthorizatio
         OnCertRefresh(identityCert.CurrentValue);
     }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    public async Task HandleAsync(AuthorizationHandlerContext context)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+    public Task HandleAsync(AuthorizationHandlerContext context)
     {
         HandleCertRequirement<SameOrgRequirement>(context, ApplicationClaimTypes.CloudFoundryOrgId, _cloudFoundryCertificate?.OrgId);
         HandleCertRequirement<SameSpaceRequirement>(context, ApplicationClaimTypes.CloudFoundrySpaceId, _cloudFoundryCertificate?.SpaceId);
+        return Task.CompletedTask;
     }
 
     private void OnCertRefresh(CertificateOptions cert)

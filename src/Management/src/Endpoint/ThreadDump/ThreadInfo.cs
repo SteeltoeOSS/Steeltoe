@@ -2,8 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+
+#pragma warning disable S4004 // Collection properties should be readonly
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
@@ -34,7 +35,6 @@ public sealed class ThreadInfo
     public string LockOwnerName { get; set; }
 
     [JsonPropertyName("stackTrace")]
-    [SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "For serialization")]
     public IList<StackTraceElement> StackTrace { get; set; }
 
     [JsonPropertyName("threadId")]

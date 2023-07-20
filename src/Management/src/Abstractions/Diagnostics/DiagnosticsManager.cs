@@ -18,10 +18,10 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
     private readonly ILogger<DiagnosticsManager> _logger;
 
     private bool _isDisposed;
-#pragma warning disable S1450
+#pragma warning disable S1450 // Private fields only used as local variables in methods should become local variables
     // disabled because an object reference is needed to not dispose when method scope is completed.
     private IDisposable _listenersSubscription;
-#pragma warning restore S1450
+#pragma warning restore S1450 // Private fields only used as local variables in methods should become local variables
 
     private volatile int _started;
 

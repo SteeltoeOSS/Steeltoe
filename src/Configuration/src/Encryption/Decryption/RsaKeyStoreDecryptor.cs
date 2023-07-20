@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -88,10 +88,10 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
         try
         {
-#pragma warning disable S4040
             // Spring Cloud Config hex string is lower case
+#pragma warning disable S4040 // Strings should be normalized to uppercase
             string secret = Convert.ToHexString(_cipher.DoFinal(secretBytes)).ToLowerInvariant();
-#pragma warning restore S4040
+#pragma warning restore S4040 // Strings should be normalized to uppercase
             var decryptor = new AesTextDecryptor(secret, _salt, _strong);
             return decryptor.Decrypt(cipherTextBytes);
         }

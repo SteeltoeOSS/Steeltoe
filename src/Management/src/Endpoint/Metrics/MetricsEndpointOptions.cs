@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
+#pragma warning disable S4004 // Collection properties should be readonly
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -16,7 +16,6 @@ public sealed class MetricsEndpointOptions : HttpMiddlewareOptions
     public int MaxTimeSeries { get; set; } = 100;
     public int MaxHistograms { get; set; } = 100;
 
-    [SuppressMessage("Major Code Smell", "S4004:Collection properties should be readonly", Justification = "Allow in Options Classes")]
     public IList<string> IncludedMetrics { get; set; }
 
     public override bool ExactMatch => false;

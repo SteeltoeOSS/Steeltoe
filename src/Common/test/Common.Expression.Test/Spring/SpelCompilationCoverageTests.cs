@@ -5823,7 +5823,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(expr);
         Assert.Equal(expectedResult, expr.GetValue(p));
     }
-#pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning disable IDE0051 // Remove unused private members
 #pragma warning disable S1144 // Unused private types or members should be removed

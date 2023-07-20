@@ -9,6 +9,8 @@ using Steeltoe.Common;
 using Wavefront.SDK.CSharp.Common;
 using Wavefront.SDK.CSharp.DirectIngestion;
 
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+
 namespace Steeltoe.Management.Wavefront.Exporters;
 
 /// <summary>
@@ -25,12 +27,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(logger);
 
-        if (options is not WavefrontExporterOptions exporterOptions)
-        {
-            throw new ArgumentException($"Options must be convertible to {nameof(WavefrontExporterOptions)}.", nameof(options));
-        }
-
-        _options = exporterOptions;
+        _options = options;
 
         string token = string.Empty;
         string uri = _options.Uri;
@@ -42,8 +39,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
         else
         {
             // Token is required for Direct Ingestion
-            token = _options.ApiToken ??
-                throw new ArgumentException($"{nameof(exporterOptions.ApiToken)} in {nameof(options)} must be provided.", nameof(options));
+            token = _options.ApiToken ?? throw new ArgumentException($"{nameof(options.ApiToken)} in {nameof(options)} must be provided.", nameof(options));
         }
 
         int flushInterval = Math.Max(_options.Step / 1000, 1); // Minimum of 1 second
