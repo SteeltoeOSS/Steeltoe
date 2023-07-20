@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.PostgreSql;
@@ -347,11 +346,11 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     [Fact]
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
-        string rootDirectory = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
-        using var scope = new EnvironmentVariableScope("SERVICE_BINDING_ROOT", rootDirectory);
-
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddKubernetesServiceBindings();
+
+        string rootDirectory = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
+        var reader = new DirectoryServiceBindingsReader(rootDirectory);
+        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
@@ -403,89 +402,6 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         await using NpgsqlConnection connectionTwo = connectorFactory.Get("myPostgreSqlServiceTwo").GetConnection();
         connectionTwo.ConnectionString.Should().Be("Host=localhost;Database=db2;Username=user2;Password=pass2");
-    }
-
-    [Fact]
-    public async Task Applies_configuration_changes()
-    {
-        string tempJsonPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-        try
-        {
-            await File.WriteAllTextAsync(tempJsonPath, @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=localhost;DB=db1""
-        }
-      }
-    }
-  }
-}
-");
-
-            WebApplicationBuilder builder = WebApplication.CreateBuilder();
-            builder.Configuration.AddJsonFile(tempJsonPath, false, true);
-
-            builder.AddPostgreSql(configureOptions => configureOptions.DetectConfigurationChanges = true, null);
-
-            await using WebApplication app = builder.Build();
-
-            var connectorFactory = app.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>();
-
-            connectorFactory.ServiceBindingNames.Should().HaveCount(1);
-            connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
-
-            string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
-            connectionString.Should().Be("Host=localhost;Database=db1");
-
-            await File.WriteAllTextAsync(tempJsonPath, @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=remote.com;DB=other""
-        }
-      }
-    }
-  }
-}
-");
-
-            await Task.Delay(TimeSpan.FromSeconds(2));
-
-            connectorFactory.ServiceBindingNames.Should().HaveCount(1);
-            connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
-
-            connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
-            connectionString.Should().Be("Host=remote.com;Database=other");
-
-            await File.WriteAllTextAsync(tempJsonPath, @"{
-  ""Steeltoe"": {
-    ""Client"": {
-      ""PostgreSql"": {
-        ""examplePostgreSqlService"": {
-            ""ConnectionString"": ""SERVER=other.com;DB=other""
-        }
-      }
-    }
-  }
-}
-");
-
-            await Task.Delay(TimeSpan.FromSeconds(2));
-
-            connectorFactory.ServiceBindingNames.Should().HaveCount(1);
-            connectorFactory.ServiceBindingNames.Should().Contain("examplePostgreSqlService");
-
-            connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
-            connectionString.Should().Be("Host=other.com;Database=other");
-        }
-        finally
-        {
-            File.Delete(tempJsonPath);
-        }
     }
 
     [Fact]

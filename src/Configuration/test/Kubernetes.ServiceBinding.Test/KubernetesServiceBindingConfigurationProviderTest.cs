@@ -14,16 +14,16 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     [Fact]
     public void EnvironmentVariableNotSet()
     {
-        using var scope = new EnvironmentVariableScope(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, null);
+        using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, null);
 
         // Optional defaults true, no throw
-        var source = new KubernetesServiceBindingConfigurationSource();
+        var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
         var provider = new KubernetesServiceBindingConfigurationProvider(source);
 
         provider.Load();
 
         // Optional, no throw
-        source = new KubernetesServiceBindingConfigurationSource
+        source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader())
         {
             Optional = false
         };
@@ -38,15 +38,15 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     public void EnvironmentVariableSet_InvalidDirectory()
     {
         string rootDirectory = GetK8SResourcesDirectory("invalid");
-        using var scope = new EnvironmentVariableScope(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDirectory);
+        using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, rootDirectory);
 
         // Not optional, should throw
-        var source = new KubernetesServiceBindingConfigurationSource();
+        var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
         var provider = new KubernetesServiceBindingConfigurationProvider(source);
         provider.Load();
 
         // Optional, no throw
-        source = new KubernetesServiceBindingConfigurationSource
+        source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader())
         {
             Optional = false
         };
@@ -60,9 +60,9 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     public void EnvironmentVariableSet_ValidDirectory()
     {
         string rootDirectory = GetK8SResourcesDirectory(string.Empty);
-        using var scope = new EnvironmentVariableScope(KubernetesServiceBindingConfigurationSource.ServiceBindingRootDirEnvVariable, rootDirectory);
+        using var scope = new EnvironmentVariableScope(EnvironmentServiceBindingsReader.EnvironmentVariableName, rootDirectory);
 
-        var source = new KubernetesServiceBindingConfigurationSource();
+        var source = new KubernetesServiceBindingConfigurationSource(new EnvironmentServiceBindingsReader());
         var provider = new KubernetesServiceBindingConfigurationProvider(source);
         provider.Load();
 
@@ -92,7 +92,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     public void NoBindings_DoesNotThrow()
     {
         var builder = new ConfigurationBuilder();
-        builder.Add(new KubernetesServiceBindingConfigurationSource(GetEmptyK8SResourcesDirectory()));
+        builder.Add(new KubernetesServiceBindingConfigurationSource(new DirectoryServiceBindingsReader(GetEmptyK8SResourcesDirectory())));
 
         Action action = () => builder.Build();
         action.Should().NotThrow();
@@ -103,7 +103,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     {
         string rootDirectory = GetK8SResourcesDirectory(string.Empty);
 
-        var source = new KubernetesServiceBindingConfigurationSource(rootDirectory);
+        var source = new KubernetesServiceBindingConfigurationSource(new DirectoryServiceBindingsReader(rootDirectory));
         var postProcessor = new TestPostProcessor();
         source.RegisterPostProcessor(postProcessor);
 

@@ -20,8 +20,6 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
     private static readonly string ClientBindingsConfigurationKey = ConfigurationPath.Combine("Steeltoe", "Client");
     public static readonly string ServiceBindingsConfigurationKey = ConfigurationPath.Combine("steeltoe", "service-bindings");
 
-    private ConfigurationManager? _configurationManager;
-
     protected abstract string BindingType { get; }
 
     protected virtual IConnectionStringBuilder CreateConnectionStringBuilder()
@@ -29,15 +27,9 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         return new DbConnectionStringBuilderWrapper(new DbConnectionStringBuilder());
     }
 
-    public void CaptureConfigurationManager(ConfigurationManager configurationManager)
-    {
-        _configurationManager = configurationManager;
-    }
-
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
     {
-        // PERF: Use ConfigurationManager if available to avoid a (potentially expensive) reload of all configuration providers.
-        IConfigurationRoot parentConfiguration = _configurationManager ?? provider.Source.GetParentConfiguration();
+        IConfigurationRoot parentConfiguration = provider.Source.GetParentConfiguration();
 
         IDictionary<string, BindingInfo> bindingsByName = GetBindingsByName(parentConfiguration);
 
