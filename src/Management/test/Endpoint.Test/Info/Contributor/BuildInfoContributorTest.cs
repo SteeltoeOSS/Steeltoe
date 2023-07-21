@@ -16,7 +16,7 @@ public class BuildInfoContributorTest
         var contributor = new BuildInfoContributor();
         var builder = new InfoBuilder();
 
-        contributor.ContributeAsync(builder);
+        contributor.ContributeAsync(builder, CancellationToken.None);
         Dictionary<string, object> results = builder.Build();
 
         Assert.True(results.ContainsKey("applicationVersionInfo"));

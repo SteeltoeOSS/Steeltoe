@@ -16,7 +16,9 @@ public class GitInfoContributorTest : BaseTest
     [Fact]
     public async Task ReadGitPropertiesMissingPropertiesFile()
     {
-        IConfiguration configuration = await new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitPropertiesAsync("foobar");
+        IConfiguration configuration =
+            await new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitPropertiesAsync("foobar", CancellationToken.None);
+
         Assert.Null(configuration);
     }
 
@@ -24,7 +26,10 @@ public class GitInfoContributorTest : BaseTest
     public async Task ReadEmptyGitPropertiesFile()
     {
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}empty.git.properties";
-        IConfiguration configuration = await new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitPropertiesAsync(path);
+
+        IConfiguration configuration =
+            await new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitPropertiesAsync(path, CancellationToken.None);
+
         Assert.Null(configuration);
     }
 
@@ -32,7 +37,10 @@ public class GitInfoContributorTest : BaseTest
     public async Task ReadMalformedGitPropertiesFile()
     {
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}garbage.git.properties";
-        IConfiguration configuration = await new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitPropertiesAsync(path);
+
+        IConfiguration configuration =
+            await new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitPropertiesAsync(path, CancellationToken.None);
+
         Assert.NotNull(configuration);
         Assert.Null(configuration["git"]);
     }
@@ -41,7 +49,10 @@ public class GitInfoContributorTest : BaseTest
     public async Task ReadGoodPropertiesFile()
     {
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}git.properties";
-        IConfiguration configuration = await new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitPropertiesAsync(path);
+
+        IConfiguration configuration =
+            await new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitPropertiesAsync(path, CancellationToken.None);
+
         Assert.NotNull(configuration);
         Assert.Equal("true", configuration["git:dirty"]);
 
@@ -56,7 +67,7 @@ public class GitInfoContributorTest : BaseTest
     {
         // Uses git.properties file in test project
         var contrib = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
-        Assert.ThrowsAsync<ArgumentNullException>(() => contrib.ContributeAsync(null));
+        Assert.ThrowsAsync<ArgumentNullException>(() => contrib.ContributeAsync(null, CancellationToken.None));
     }
 
     [Fact]
@@ -65,7 +76,7 @@ public class GitInfoContributorTest : BaseTest
         // Uses git.properties file in test project
         var contrib = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
         var builder = new InfoBuilder();
-        await contrib.ContributeAsync(builder);
+        await contrib.ContributeAsync(builder, CancellationToken.None);
 
         Dictionary<string, object> result = builder.Build();
         Assert.NotNull(result);

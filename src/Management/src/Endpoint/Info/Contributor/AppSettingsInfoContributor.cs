@@ -16,7 +16,7 @@ internal sealed class AppSettingsInfoContributor : ConfigurationContributor, IIn
     {
     }
 
-    public Task ContributeAsync(IInfoBuilder builder)
+    public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
         Contribute(builder, AppsettingsPrefix, false);
         return Task.CompletedTask;

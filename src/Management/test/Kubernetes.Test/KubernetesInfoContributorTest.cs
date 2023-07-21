@@ -15,7 +15,7 @@ public class KubernetesInfoContributorTest
         var builder = new InfoBuilder();
         var contributor = new KubernetesInfoContributor(new FakePodUtilities(FakePodUtilities.SamplePod));
 
-        await contributor.ContributeAsync(builder);
+        await contributor.ContributeAsync(builder, CancellationToken.None);
         var info = builder.Build()["kubernetes"] as Dictionary<string, object>;
 
         Assert.True(bool.Parse(info["inside"].ToString()));
@@ -33,7 +33,7 @@ public class KubernetesInfoContributorTest
         var builder = new InfoBuilder();
         var contributor = new KubernetesInfoContributor(new FakePodUtilities(null));
 
-        await contributor.ContributeAsync(builder);
+        await contributor.ContributeAsync(builder, CancellationToken.None);
         var info = builder.Build()["kubernetes"] as Dictionary<string, object>;
 
         Assert.True(info.ContainsKey("inside"));

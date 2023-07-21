@@ -27,29 +27,22 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
         _logger = loggerFactory.CreateLogger<InfoEndpointHandler>();
     }
 
-    private async Task<Dictionary<string, object>> BuildInfoAsync(IList<IInfoContributor> infoContributors)
+    public async Task<Dictionary<string, object>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(infoContributors);
-
         IInfoBuilder builder = new InfoBuilder();
 
-        foreach (IInfoContributor contributor in infoContributors)
+        foreach (IInfoContributor contributor in _contributors)
         {
             try
             {
-                await contributor.ContributeAsync(builder);
+                await contributor.ContributeAsync(builder, cancellationToken);
             }
-            catch (Exception e)
+            catch (Exception exception) when (exception is not OperationCanceledException)
             {
-                _logger.LogError(e, "Operation failed.");
+                _logger.LogError(exception, "Operation failed.");
             }
         }
 
         return builder.Build();
-    }
-
-    public async Task<Dictionary<string, object>> InvokeAsync(object argument, CancellationToken cancellationToken)
-    {
-        return await BuildInfoAsync(_contributors);
     }
 }

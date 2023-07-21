@@ -10,25 +10,26 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
 internal sealed class BuildInfoContributor : IInfoContributor
 {
-    private readonly Assembly _application;
-    private readonly Assembly _steeltoe;
+    private readonly Assembly _applicationAssembly;
+    private readonly Assembly _steeltoeAssembly;
 
     public BuildInfoContributor()
     {
-        _application = Assembly.GetEntryAssembly();
-        _steeltoe = typeof(BuildInfoContributor).Assembly;
+        _applicationAssembly = Assembly.GetEntryAssembly();
+        _steeltoeAssembly = typeof(BuildInfoContributor).Assembly;
     }
 
-    public Task ContributeAsync(IInfoBuilder builder)
+    public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(builder);
-        builder.WithInfo("applicationVersionInfo", GetImportantDetails(_application));
-        builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoe));
+
+        builder.WithInfo("applicationVersionInfo", GetImportantDetails(_applicationAssembly));
+        builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoeAssembly));
 
         // this is for Spring Boot Admin
         builder.WithInfo("build", new Dictionary<string, string>
         {
-            { "version", _application.GetName().Version.ToString() }
+            { "version", _applicationAssembly.GetName().Version!.ToString() }
         });
 
         return Task.CompletedTask;
@@ -36,15 +37,14 @@ internal sealed class BuildInfoContributor : IInfoContributor
 
     private Dictionary<string, string> GetImportantDetails(Assembly assembly)
     {
+        string fileVersion = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;
+        string productVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
         return new Dictionary<string, string>
         {
             { "ProductName", assembly.GetName().Name },
-            { "FileVersion", ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyFileVersionAttribute), false)).Version },
-            {
-                "ProductVersion",
-                ((AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute), false))
-                .InformationalVersion
-            }
+            { "FileVersion", fileVersion },
+            { "ProductVersion", productVersion }
         };
     }
 }

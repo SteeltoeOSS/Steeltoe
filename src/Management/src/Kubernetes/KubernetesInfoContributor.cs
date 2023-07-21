@@ -18,7 +18,7 @@ internal sealed class KubernetesInfoContributor : IInfoContributor
         _podUtilities = podUtilities;
     }
 
-    public async Task ContributeAsync(IInfoBuilder builder)
+    public async Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(builder);
 

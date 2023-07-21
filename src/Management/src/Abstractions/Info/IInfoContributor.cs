@@ -6,5 +6,5 @@ namespace Steeltoe.Management.Info;
 
 public interface IInfoContributor
 {
-    Task ContributeAsync(IInfoBuilder builder);
+    Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken);
 }

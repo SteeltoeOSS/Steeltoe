@@ -24,7 +24,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
     private readonly ILogger _logger;
 
     public GitInfoContributor(ILogger<GitInfoContributor> logger)
-        : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GitPropertiesFile, logger)
+        : this($"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}{GitPropertiesFile}", logger)
     {
     }
 
@@ -36,21 +36,23 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
         _logger = logger;
     }
 
-    public async Task ContributeAsync(IInfoBuilder builder)
+    public async Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
-        Configuration = await ReadGitPropertiesAsync(_propFile);
+        ArgumentGuard.NotNull(builder);
+
+        Configuration = await ReadGitPropertiesAsync(_propFile, cancellationToken);
         Contribute(builder, GitSettingsPrefix, true);
     }
 
-    public async Task<IConfiguration> ReadGitPropertiesAsync(string propFile)
+    public async Task<IConfiguration> ReadGitPropertiesAsync(string propertiesPath, CancellationToken cancellationToken)
     {
-        if (File.Exists(propFile))
+        if (File.Exists(propertiesPath))
         {
-            string[] lines = await File.ReadAllLinesAsync(propFile);
+            string[] lines = await File.ReadAllLinesAsync(propertiesPath, cancellationToken);
 
-            if (lines != null && lines.Length > 0)
+            if (lines.Length > 0)
             {
-                var dict = new Dictionary<string, string>();
+                var dictionary = new Dictionary<string, string>();
 
                 foreach (string line in lines)
                 {
@@ -59,35 +61,35 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
                         continue;
                     }
 
-                    string[] keyVal = line.Split('=');
+                    string[] keyValuePair = line.Split('=');
 
-                    if (keyVal == null || keyVal.Length != 2)
+                    if (keyValuePair.Length != 2)
                     {
                         continue;
                     }
 
-                    string key = keyVal[0].Trim().Replace('.', ':');
-                    string val = keyVal[1].Replace("\\:", ":", StringComparison.Ordinal);
+                    string key = keyValuePair[0].Trim().Replace('.', ':');
+                    string value = keyValuePair[1].Replace("\\:", ":", StringComparison.Ordinal);
 
-                    dict[key] = val;
+                    dictionary[key] = value;
                 }
 
                 var builder = new ConfigurationBuilder();
-                builder.AddInMemoryCollection(dict);
+                builder.AddInMemoryCollection(dictionary);
                 return builder.Build();
             }
         }
         else
         {
-            _logger.LogWarning("Unable to locate GitInfo at {GitInfoLocation}", propFile);
+            _logger.LogWarning("Unable to locate GitInfo at {GitInfoLocation}", propertiesPath);
         }
 
         return null;
     }
 
-    protected override void AddKeyValue(Dictionary<string, object> dict, string key, string value)
+    protected override void AddKeyValue(Dictionary<string, object> dictionary, string key, string value)
     {
-        ArgumentGuard.NotNull(dict);
+        ArgumentGuard.NotNull(dictionary);
 
         object valueToInsert = value;
 
@@ -97,6 +99,6 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
             valueToInsert = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
         }
 
-        dict[key] = valueToInsert;
+        dictionary[key] = valueToInsert;
     }
 }

@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint.Test.Info;
 
 internal sealed class TestInfoContributor : IInfoContributor
 {
-    public Task ContributeAsync(IInfoBuilder builder)
+    public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

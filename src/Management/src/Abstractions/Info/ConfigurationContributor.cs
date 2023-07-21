@@ -49,32 +49,34 @@ public abstract class ConfigurationContributor
         return result;
     }
 
-    protected virtual void AddChildren(Dictionary<string, object> dict, IEnumerable<IConfigurationSection> sections)
+    protected virtual void AddChildren(Dictionary<string, object> dictionary, IEnumerable<IConfigurationSection> sections)
     {
-        ArgumentGuard.NotNull(dict);
+        ArgumentGuard.NotNull(dictionary);
         ArgumentGuard.NotNull(sections);
 
         foreach (IConfigurationSection section in sections)
         {
             string key = section.Key;
-            string val = section.Value;
+            string value = section.Value;
 
-            if (val == null)
+            if (value == null)
             {
-                var newDict = new Dictionary<string, object>();
-                dict[key] = newDict;
-                AddChildren(newDict, section.GetChildren());
+                var emptyDictionary = new Dictionary<string, object>();
+                dictionary[key] = emptyDictionary;
+                AddChildren(emptyDictionary, section.GetChildren());
             }
             else
             {
-                AddKeyValue(dict, key, val);
+                AddKeyValue(dictionary, key, value);
             }
         }
     }
 
-    protected virtual void AddKeyValue(Dictionary<string, object> dict, string key, string value)
+    protected virtual void AddKeyValue(Dictionary<string, object> dictionary, string key, string value)
     {
-        ArgumentGuard.NotNull(dict);
-        dict[key] = value;
+        ArgumentGuard.NotNull(dictionary);
+        ArgumentGuard.NotNull(key);
+
+        dictionary[key] = value;
     }
 }
