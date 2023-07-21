@@ -367,55 +367,50 @@ public static class ManagementWebHostBuilderExtensions
 
         if (string.IsNullOrEmpty(portSetting))
         {
-            IConfiguration config = GetConfigurationFallback(); // try reading directly from appsettings.json
-            portSetting = config?[ManagementPortKey];
-            sslSetting = config?[ManagementSSLKey];
+            IConfiguration configuration = GetConfigurationFallback(); // try reading directly from appsettings.json
+            portSetting = configuration?[ManagementPortKey];
+            sslSetting = configuration?[ManagementSSLKey];
         }
 
-        if (int.TryParse(portSetting, out int intManagementPort))
+        if (int.TryParse(portSetting, out int managementPort) && managementPort > 0)
         {
-            bool.TryParse(sslSetting, out bool sslEnabled);
-
-            if (intManagementPort > 0)
+            if (bool.TryParse(sslSetting, out bool enableSsl) && enableSsl)
             {
-                if (sslEnabled)
-                {
-                    httpsPort = intManagementPort;
-                }
-                else
-                {
-                    httpPort = intManagementPort;
-                }
+                httpsPort = managementPort;
+            }
+            else
+            {
+                httpPort = managementPort;
             }
         }
     }
 
-    private static IWebHostBuilder AddManagementPort(this IWebHostBuilder webhostBuilder)
+    private static IWebHostBuilder AddManagementPort(this IWebHostBuilder webHostBuilder)
     {
-        webhostBuilder.GetManagementUrl(out int? httpPort, out int? httpsPort);
+        webHostBuilder.GetManagementUrl(out int? httpPort, out int? httpsPort);
 
         if (httpPort.HasValue || httpsPort.HasValue)
         {
-            webhostBuilder.UseCloudHosting(httpPort, httpsPort);
+            webHostBuilder.UseCloudHosting(httpPort, httpsPort);
         }
 
-        return webhostBuilder;
+        return webHostBuilder;
     }
 
     private static IConfiguration GetConfigurationFallback()
     {
-        IConfiguration config = null;
+        IConfiguration configuration = null;
 
         try
         {
             string environment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            config = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile($"appsettings.{environment}.json", true).Build();
+            configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile($"appsettings.{environment}.json", true).Build();
         }
         catch (Exception)
         {
             // Not much we can do ...
         }
 
-        return config;
+        return configuration;
     }
 }

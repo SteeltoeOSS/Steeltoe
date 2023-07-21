@@ -38,7 +38,7 @@ public class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ThreadDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
 
-        var obs = new ThreadDumperEp(opts, NullLogger<ThreadDumperEp>.Instance);
+        var obs = new ThreadDumperEventPipe(opts, NullLogger<ThreadDumperEventPipe>.Instance);
         var ep = new ThreadDumpEndpointHandler(opts, obs, NullLoggerFactory.Instance);
         var middle = new ThreadDumpEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest("GET", "/dump");

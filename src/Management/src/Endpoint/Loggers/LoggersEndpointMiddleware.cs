@@ -85,9 +85,9 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
         {
             return await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
         }
-        catch (Exception e)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            _logger.LogError(e, "Exception deserializing loggers endpoint request.");
+            _logger.LogError(exception, "Exception deserializing loggers endpoint request.");
         }
 
         return new Dictionary<string, string>();

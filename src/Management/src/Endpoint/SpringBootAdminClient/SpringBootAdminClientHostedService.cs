@@ -63,18 +63,18 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         {
             result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app, cancellationToken);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             _logger.LogError(exception, "Error connecting to SpringBootAdmin: {Message}", exception.Message);
         }
 
         if (result is { IsSuccessStatusCode: true })
         {
-            RegistrationResult = await result.Content.ReadFromJsonAsync<RegistrationResult>();
+            RegistrationResult = await result.Content.ReadFromJsonAsync<RegistrationResult>(cancellationToken: cancellationToken);
         }
         else
         {
-            string errorResponse = result != null ? await result.Content.ReadAsStringAsync() : string.Empty;
+            string errorResponse = result != null ? await result.Content.ReadAsStringAsync(cancellationToken) : string.Empty;
             _logger.LogError("Error registering with SpringBootAdmin: {Message} \n {Response} ", result?.ToString(), errorResponse);
         }
     }
@@ -87,6 +87,6 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
 
         var requestUri = new Uri($"{_options.Url}/instances/{RegistrationResult.Id}");
-        await _httpClient.DeleteAsync(requestUri);
+        await _httpClient.DeleteAsync(requestUri, cancellationToken);
     }
 }

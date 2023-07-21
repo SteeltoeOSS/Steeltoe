@@ -248,9 +248,9 @@ internal sealed class AggregationManager : IDisposable
         {
             _listener.RecordObservableInstruments();
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            _observableInstrumentCallbackError(ex);
+            _observableInstrumentCallbackError(exception);
         }
 
         foreach (KeyValuePair<Instrument, InstrumentState> kv in _instrumentStates)

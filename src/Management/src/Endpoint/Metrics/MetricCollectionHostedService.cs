@@ -18,11 +18,11 @@ internal sealed class MetricCollectionHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() => _aggregationManager.Start());
+        return Task.Run(_aggregationManager.Start, cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() => _aggregationManager.Dispose());
+        return Task.Run(_aggregationManager.Dispose, cancellationToken);
     }
 }

@@ -126,7 +126,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         }
         catch (Exception ex)
         {
-            // Nothing we can do , log and move on 
+            // Nothing we can do, log and move on
             _logger.LogError(ex, "Error transforming metrics.");
         }
 

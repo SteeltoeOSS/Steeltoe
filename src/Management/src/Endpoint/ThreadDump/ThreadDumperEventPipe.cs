@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 /// <summary>
 /// Thread dumper that uses the EventPipe to acquire the call stacks of all the running Threads.
 /// </summary>
-internal sealed class ThreadDumperEp : IThreadDumper
+internal sealed class ThreadDumperEventPipe : IThreadDumper
 {
     private static readonly StackTraceElement UnknownStackTraceElement = new()
     {
@@ -36,9 +36,9 @@ internal sealed class ThreadDumperEp : IThreadDumper
     };
 
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
-    private readonly ILogger<ThreadDumperEp> _logger;
+    private readonly ILogger<ThreadDumperEventPipe> _logger;
 
-    public ThreadDumperEp(IOptionsMonitor<ThreadDumpEndpointOptions> options, ILogger<ThreadDumperEp> logger)
+    public ThreadDumperEventPipe(IOptionsMonitor<ThreadDumpEndpointOptions> options, ILogger<ThreadDumperEventPipe> logger)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(logger);
@@ -71,9 +71,9 @@ internal sealed class ThreadDumperEp : IThreadDumper
             using EventPipeSession session = client.StartEventPipeSession(providers);
             DumpThreads(session, results);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            _logger.LogError(e, "Unable to dump threads");
+            _logger.LogError(exception, "Unable to dump threads");
         }
         finally
         {
@@ -158,9 +158,9 @@ internal sealed class ThreadDumperEp : IThreadDumper
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            _logger.LogError(e, "Error processing trace file for thread dump");
+            _logger.LogError(exception, "Error processing trace file for thread dump");
             results.Clear();
         }
         finally
@@ -452,9 +452,9 @@ internal sealed class ThreadDumperEp : IThreadDumper
             // using the generated trace file, symbolocate and compute stacks.
             return TraceLog.CreateFromEventPipeDataFile(tempNetTraceFilename);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            _logger.LogError(e, "Error creating trace file for thread dump");
+            _logger.LogError(exception, "Error creating trace file for thread dump");
             return null;
         }
         finally

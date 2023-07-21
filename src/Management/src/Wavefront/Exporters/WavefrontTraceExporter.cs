@@ -69,9 +69,9 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
                     spanCount++;
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                _logger.LogError(ex, "Error sending metrics to wavefront: {message}", ex.Message);
+                _logger.LogError(exception, "Error sending metrics to wavefront: {message}", exception.Message);
             }
         }
 

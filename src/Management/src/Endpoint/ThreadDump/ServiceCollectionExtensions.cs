@@ -63,7 +63,7 @@ public static class ServiceCollectionExtensions
             });
         }
 
-        services.TryAddSingleton<IThreadDumper, ThreadDumperEp>();
+        services.TryAddSingleton<IThreadDumper, ThreadDumperEventPipe>();
 
         return services;
     }
