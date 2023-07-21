@@ -154,7 +154,6 @@ Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsDescriptor.DbMigrationsDes
 Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsDescriptor.PendingMigrations.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsEndpointOptions
 Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsEndpointOptions.DbMigrationsEndpointOptions() -> void
-Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsEndpointOptions.KeysToSanitize.get -> string[]
 Steeltoe.Management.Endpoint.DbMigrations.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.DbMigrations.IDbMigrationsEndpointHandler
 Steeltoe.Management.Endpoint.DbMigrations.ServiceCollectionExtensions
