@@ -38,7 +38,7 @@ public static class EndpointServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticsService>());
         services.AddCommonActuatorServices();
         services.AddTraceActuatorServices(version);
 
