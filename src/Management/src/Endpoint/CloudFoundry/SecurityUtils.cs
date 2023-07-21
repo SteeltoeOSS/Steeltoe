@@ -29,51 +29,38 @@ internal sealed class SecurityUtils
     private readonly ILogger _logger;
     private HttpClient _httpClient;
 
-    internal SecurityUtils(CloudFoundryEndpointOptions options, ILogger logger, HttpClient httpClient = null)
+    public SecurityUtils(CloudFoundryEndpointOptions options, ILogger logger, HttpClient httpClient = null)
     {
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(logger);
+
         _options = options;
         _logger = logger;
         _httpClient = httpClient;
     }
 
-    internal bool IsCloudFoundryRequest(string requestPath)
+    public static bool IsCloudFoundryRequest(string requestPath)
     {
-        string contextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
-        return requestPath.StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
+        return requestPath.StartsWith(ConfigureManagementEndpointOptions.DefaultCFPath, StringComparison.OrdinalIgnoreCase);
     }
 
-    internal string Serialize(SecurityResult error)
+    public async Task<SecurityResult> GetPermissionsAsync(string accessToken, CancellationToken cancellationToken)
     {
-        try
-        {
-            return JsonSerializer.Serialize(error);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Serialization Exception.");
-        }
-
-        return string.Empty;
-    }
-
-    internal async Task<SecurityResult> GetPermissionsAsync(string token)
-    {
-        if (string.IsNullOrEmpty(token))
+        if (string.IsNullOrEmpty(accessToken))
         {
             return new SecurityResult(HttpStatusCode.Unauthorized, AuthorizationHeaderInvalid);
         }
 
         string checkPermissionsUri = $"{_options.CloudFoundryApi}/v2/apps/{_options.ApplicationId}/permissions";
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri(checkPermissionsUri, UriKind.RelativeOrAbsolute));
-        var auth = new AuthenticationHeaderValue("bearer", token);
+        var auth = new AuthenticationHeaderValue("bearer", accessToken);
         request.Headers.Authorization = auth;
 
         try
         {
-            _logger.LogDebug("GetPermissionsAsync({uri}, {token})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
+            _logger.LogDebug("GetPermissionsAsync({uri}, {accessToken})", checkPermissionsUri, SecurityUtilities.SanitizeInput(accessToken));
             _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
-            using HttpResponseMessage response = await _httpClient.SendAsync(request);
+            using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -85,24 +72,25 @@ internal sealed class SecurityUtils
                     : new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
             }
 
-            return new SecurityResult(await GetPermissionsAsync(response));
+            Permissions permissions = await GetPermissionsAsync(response, cancellationToken);
+            return new SecurityResult(permissions);
         }
-        catch (Exception e)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            _logger.LogError(e, "Cloud Foundry returned exception while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
+            _logger.LogError(exception, "Cloud Foundry returned exception while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
 
             return new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
         }
     }
 
-    internal async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response)
+    public async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         string json = string.Empty;
         var permissions = Permissions.None;
 
         try
         {
-            json = await response.Content.ReadAsStringAsync();
+            json = await response.Content.ReadAsStringAsync(cancellationToken);
 
             _logger.LogDebug("GetPermissionsAsync returned json: {json}", SecurityUtilities.SanitizeInput(json));
 
@@ -114,9 +102,9 @@ internal sealed class SecurityUtils
                 permissions = boolResult ? Permissions.Full : Permissions.Restricted;
             }
         }
-        catch (Exception e)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            _logger.LogError(e, "Exception extracting permissions from {json}", SecurityUtilities.SanitizeInput(json));
+            _logger.LogError(exception, "Exception extracting permissions from {json}", SecurityUtilities.SanitizeInput(json));
             throw;
         }
 

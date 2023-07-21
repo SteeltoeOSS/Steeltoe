@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,35 +21,38 @@ public sealed class CloudFoundrySecurityMiddleware
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
 
     private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptionsMonitor;
-    private readonly IEnumerable<HttpMiddlewareOptions> _endpointsCollection;
+    private readonly List<HttpMiddlewareOptions> _endpointsCollection;
     private readonly SecurityUtils _base;
 
     public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
         IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor, IEnumerable<HttpMiddlewareOptions> endpointsCollection,
-        ILogger<CloudFoundrySecurityMiddleware> logger)
+        ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(logger);
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(endpointsCollection);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _next = next;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<CloudFoundrySecurityMiddleware>();
         _options = options;
         _managementOptionsMonitor = managementOptionsMonitor;
-        _endpointsCollection = endpointsCollection.Where(ep => ep is not HypermediaEndpointOptions && ep is not CloudFoundryEndpointOptions);
+        _endpointsCollection = endpointsCollection.Where(ep => ep is not HypermediaEndpointOptions && ep is not CloudFoundryEndpointOptions).ToList();
 
-        _base = new SecurityUtils(_options.CurrentValue, logger);
+        _base = new SecurityUtils(_options.CurrentValue, loggerFactory.CreateLogger<SecurityUtils>());
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-        string contextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
-        CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
-        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, contextPath);
 
-        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) && _base.IsCloudFoundryRequest(context.Request.Path))
+        CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
+
+        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value,
+            ConfigureManagementEndpointOptions.DefaultCFPath);
+
+        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) &&
+            SecurityUtils.IsCloudFoundryRequest(context.Request.Path))
         {
             if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {
@@ -111,40 +115,40 @@ public sealed class CloudFoundrySecurityMiddleware
 
     internal Task<SecurityResult> GetPermissionsAsync(HttpContext context)
     {
-        string token = GetAccessToken(context.Request);
-        return _base.GetPermissionsAsync(token);
+        string accessToken = GetAccessToken(context.Request);
+        return _base.GetPermissionsAsync(accessToken, context.RequestAborted);
     }
 
     private HttpMiddlewareOptions FindTargetEndpoint(PathString path)
     {
-        foreach (HttpMiddlewareOptions ep in _endpointsCollection)
+        foreach (HttpMiddlewareOptions endpointOptions in _endpointsCollection)
         {
             string contextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
 
-            if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(ep.Path))
+            if (!string.IsNullOrEmpty(endpointOptions.Path))
             {
                 contextPath += '/';
             }
 
-            string fullPath = contextPath + ep.Path;
+            string fullPath = contextPath + endpointOptions.Path;
 
-            if (ep is CloudFoundryEndpointOptions)
+            if (endpointOptions is CloudFoundryEndpointOptions)
             {
                 if (path.Value.Equals(contextPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    return ep;
+                    return endpointOptions;
                 }
             }
             else if (path.StartsWithSegments(new PathString(fullPath)))
             {
-                return ep;
+                return endpointOptions;
             }
         }
 
         return null;
     }
 
-    private Task ReturnErrorAsync(HttpContext context, SecurityResult error)
+    private async Task ReturnErrorAsync(HttpContext context, SecurityResult error)
     {
         LogError(context, error);
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
@@ -155,14 +159,14 @@ public sealed class CloudFoundrySecurityMiddleware
             context.Response.StatusCode = (int)error.Code;
         }
 
-        return context.Response.WriteAsync(_base.Serialize(error));
+        await JsonSerializer.SerializeAsync(context.Response.Body, error, cancellationToken: context.RequestAborted);
     }
 
     private void LogError(HttpContext context, SecurityResult error)
     {
         _logger.LogError("Actuator Security Error: {code} - {message}", error.Code, error.Message);
 
-        if (_logger != null && _logger.IsEnabled(LogLevel.Trace))
+        if (_logger.IsEnabled(LogLevel.Trace))
         {
             foreach (KeyValuePair<string, StringValues> header in context.Request.Headers)
             {

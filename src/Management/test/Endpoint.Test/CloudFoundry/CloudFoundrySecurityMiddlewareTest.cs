@@ -296,7 +296,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         IEnumerable<HttpMiddlewareOptions> endpointCollection = new List<HttpMiddlewareOptions>();
-        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions, endpointCollection, NullLogger<CloudFoundrySecurityMiddleware>.Instance);
+        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions, endpointCollection, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest("GET", "/");
         string token = middle.GetAccessToken(context.Request);
         Assert.Null(token);
@@ -314,7 +314,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
         IEnumerable<HttpMiddlewareOptions> endpointCollection = new List<HttpMiddlewareOptions>();
 
-        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions, endpointCollection, NullLogger<CloudFoundrySecurityMiddleware>.Instance);
+        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions, endpointCollection, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest("GET", "/");
         SecurityResult result = await middle.GetPermissionsAsync(context);
         Assert.NotNull(result);
