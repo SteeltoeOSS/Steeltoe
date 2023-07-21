@@ -19,8 +19,8 @@ public sealed class Exposure
     };
 
     public Exposure()
+        : this(false)
     {
-        Include = DefaultInclude;
     }
 
     public Exposure(bool allowAll)

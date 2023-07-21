@@ -6,10 +6,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 internal static class ClrRuntimeSource
 {
-    public const string DiagnosticName = "Steeltoe.ClrMetrics";
-    public const string HeapEvent = "Steeltoe.ClrMetrics.Heap";
-    public const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
-
     public static HeapMetrics GetHeapMetrics()
     {
         long totalMemory = GC.GetTotalMemory(false);
@@ -40,9 +36,9 @@ internal static class ClrRuntimeSource
     public record struct ThreadMetrics(long AvailableThreadPoolWorkers, long AvailableThreadCompletionPort, long MaxThreadPoolWorkers,
         long MaxThreadCompletionPort)
     {
-        public long AvailableThreadPoolWorkers = AvailableThreadPoolWorkers;
-        public long AvailableThreadCompletionPort = AvailableThreadCompletionPort;
-        public long MaxThreadPoolWorkers = MaxThreadPoolWorkers;
-        public long MaxThreadCompletionPort = MaxThreadCompletionPort;
+        public readonly long AvailableThreadPoolWorkers = AvailableThreadPoolWorkers;
+        public readonly long AvailableThreadCompletionPort = AvailableThreadCompletionPort;
+        public readonly long MaxThreadPoolWorkers = MaxThreadPoolWorkers;
+        public readonly long MaxThreadCompletionPort = MaxThreadCompletionPort;
     }
 }

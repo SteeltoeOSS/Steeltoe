@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -10,10 +11,7 @@ public static class EndpointApplicationBuilderExtensions
 {
     public static IApplicationBuilder UseActuators(this IApplicationBuilder builder)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentGuard.NotNull(builder);
 
         return builder.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }

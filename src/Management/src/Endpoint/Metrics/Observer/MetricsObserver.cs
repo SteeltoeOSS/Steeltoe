@@ -17,7 +17,7 @@ internal abstract class MetricsObserver : DiagnosticObserver
     {
     }
 
-    protected Regex GetPathMatcher()
+    private Regex GetPathMatcher()
     {
         return _pathMatcher;
     }
@@ -29,12 +29,7 @@ internal abstract class MetricsObserver : DiagnosticObserver
 
     public abstract override void ProcessEvent(string eventName, object value);
 
-    protected internal double MillisecondsToSeconds(double totalMilliseconds)
-    {
-        return totalMilliseconds / 1000;
-    }
-
-    protected internal virtual bool ShouldIgnoreRequest(string path)
+    public bool ShouldIgnoreRequest(string path)
     {
         if (string.IsNullOrEmpty(path))
         {

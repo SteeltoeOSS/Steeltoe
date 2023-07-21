@@ -12,8 +12,6 @@ public sealed class ManagementEndpointOptions
 
     public bool CloudFoundryEnabled { get; set; } = true;
 
-    public bool? Sensitive { get; set; }
-
     public string Path { get; set; }
 
     public string Port { get; set; }

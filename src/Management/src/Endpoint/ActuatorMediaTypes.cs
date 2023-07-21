@@ -25,11 +25,6 @@ internal static class ActuatorMediaTypes
         return $"{contentHeader};charset=UTF-8";
     }
 
-    internal static string GetContentHeaders(IList<string> acceptHeaders)
-    {
-        return GetContentHeaders(acceptHeaders, MediaTypeVersion.V2);
-    }
-
     private static string GetContentTypeHeaderForVersion(MediaTypeVersion version = MediaTypeVersion.V2)
     {
         return version switch

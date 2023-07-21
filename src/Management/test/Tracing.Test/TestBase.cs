@@ -17,18 +17,12 @@ namespace Steeltoe.Management.Tracing.Test;
 
 public class TestBase
 {
-    public virtual TracingOptions GetOptions()
-    {
-        var opts = new TracingOptions(null, GetConfiguration());
-        return opts;
-    }
-
-    public virtual IConfiguration GetConfiguration()
+    protected IConfiguration GetConfiguration()
     {
         return GetConfiguration(new Dictionary<string, string>());
     }
 
-    public virtual IConfiguration GetConfiguration(Dictionary<string, string> moreSettings)
+    protected IConfiguration GetConfiguration(Dictionary<string, string> moreSettings)
     {
         return new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>(moreSettings)
         {
@@ -36,13 +30,7 @@ public class TestBase
         }).Build();
     }
 
-    protected TelemetrySpan GetCurrentSpan(Tracer tracer)
-    {
-        TelemetrySpan span = Tracer.CurrentSpan;
-        return span.Context.IsValid ? span : null;
-    }
-
-    protected object GetPrivateField(object baseObject, string fieldName)
+    private object GetPrivateField(object baseObject, string fieldName)
     {
         return baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(baseObject);
     }

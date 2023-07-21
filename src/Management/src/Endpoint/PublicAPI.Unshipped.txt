@@ -329,8 +329,6 @@ Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Path.get -> strin
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Path.set -> void
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Port.get -> string
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Port.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Sensitive.get -> bool?
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Sensitive.set -> void
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.SerializerOptions.get -> System.Text.Json.JsonSerializerOptions
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.SerializerOptions.set -> void
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.UseStatusCodeFromResponse.get -> bool

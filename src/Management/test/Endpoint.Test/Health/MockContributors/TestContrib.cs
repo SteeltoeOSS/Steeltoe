@@ -19,12 +19,6 @@ internal sealed class TestContrib : IHealthContributor
         Throws = false;
     }
 
-    public TestContrib(string id, bool throws)
-    {
-        Id = id;
-        Throws = throws;
-    }
-
     public HealthCheckResult Health()
     {
         if (Throws)

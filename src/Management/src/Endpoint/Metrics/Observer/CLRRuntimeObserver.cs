@@ -14,11 +14,6 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
 {
     private const string GenerationTagValueName = "gen";
     private const string GenerationKey = "generation";
-    internal const string ObserverName = "CLRRuntimeObserver";
-    internal const string DiagnosticName = "Steeltoe.ClrMetrics";
-
-    internal const string HeapEvent = "Steeltoe.ClrMetrics.Heap";
-    internal const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
 
     private readonly Dictionary<string, object> _heapTags = new()
     {

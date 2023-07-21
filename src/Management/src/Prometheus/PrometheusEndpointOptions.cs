@@ -6,6 +6,5 @@ namespace Steeltoe.Management.Prometheus;
 
 public sealed class PrometheusEndpointOptions : HttpMiddlewareOptions
 {
-    public long ScrapeResponseCacheDurationMilliseconds { get; set; }
     public override bool ExactMatch => false;
 }

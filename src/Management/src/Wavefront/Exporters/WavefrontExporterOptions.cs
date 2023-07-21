@@ -31,8 +31,6 @@ public sealed class WavefrontExporterOptions
 
     public string Service => ApplicationOptions?.Service ?? "SteeltoeAppService";
 
-    public string Cluster { get; set; }
-
     public WavefrontExporterOptions(IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configuration);

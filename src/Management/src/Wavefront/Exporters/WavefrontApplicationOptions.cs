@@ -17,8 +17,6 @@ public sealed class WavefrontApplicationOptions
 
     public string Service { get; set; }
 
-    public string Cluster { get; set; }
-
     public WavefrontApplicationOptions(IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configuration);
