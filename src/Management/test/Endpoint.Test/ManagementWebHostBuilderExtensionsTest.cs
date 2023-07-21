@@ -84,13 +84,13 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
     }
 
     [Fact]
-    public void AddEnvActuator_IWebHostBuilder()
+    public void AddEnvironmentActuator_IWebHostBuilder()
     {
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
         {
         });
 
-        IWebHost host = hostBuilder.AddEnvActuator().Build();
+        IWebHost host = hostBuilder.AddEnvironmentActuator().Build();
         IEnumerable<IEnvironmentEndpointHandler> epHandler = host.Services.GetServices<IEnvironmentEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -100,11 +100,11 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
     }
 
     [Fact]
-    public async Task AddEnvActuator_IWebHostBuilder_IStartupFilterFires()
+    public async Task AddEnvironmentActuator_IWebHostBuilder_IStartupFilterFires()
     {
         IWebHostBuilder hostBuilder = _testServerWithRouting;
 
-        using IWebHost host = hostBuilder.AddEnvActuator().Start();
+        using IWebHost host = hostBuilder.AddEnvironmentActuator().Start();
 
         var requestUri = new Uri("/actuator/env", UriKind.Relative);
         HttpResponseMessage response = await host.GetTestServer().CreateClient().GetAsync(requestUri);

@@ -46,7 +46,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="applicationBuilder">
     /// Your <see cref="WebApplicationBuilder" />.
     /// </param>
-    public static WebApplicationBuilder AddEnvActuator(this WebApplicationBuilder applicationBuilder)
+    public static WebApplicationBuilder AddEnvironmentActuator(this WebApplicationBuilder applicationBuilder)
     {
         ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddEnvironmentActuator();

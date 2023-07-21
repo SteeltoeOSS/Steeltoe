@@ -10,12 +10,12 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Environment;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Env;
+namespace Steeltoe.Management.Endpoint.Test.Environment;
 
 public class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddEnvActuator_ThrowsOnNulls()
+    public void AddEnvironmentActuator_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
 
@@ -24,7 +24,7 @@ public class EndpointServiceCollectionTest : BaseTest
     }
 
     [Fact]
-    public void AddEnvActuator_AddsCorrectServices()
+    public void AddEnvironmentActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
         IHostEnvironment host = HostingHelpers.GetHostingEnvironment();

@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Environment;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Env actuator to the D/I container.
+    /// Adds components of the Environment actuator to the D/I container.
     /// </summary>
     /// <param name="services">
     /// Service collection to add actuator to.
@@ -36,7 +36,7 @@ public static class EndpointServiceCollectionExtensions
         });
 
         services.AddCommonActuatorServices();
-        services.AddEnvActuatorServices();
+        services.AddEnvironmentActuatorServices();
         return services;
     }
 }

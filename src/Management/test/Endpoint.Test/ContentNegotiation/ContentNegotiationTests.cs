@@ -27,52 +27,52 @@ public class ContentNegotiationTests
             {
                 new
                 {
-                    epName = EndpointNames.Hypermedia,
+                    epName = EndpointName.Hypermedia,
                     epPath = "http://localhost/actuator"
                 },
                 new
                 {
-                    epName = EndpointNames.Cloudfoundry,
+                    epName = EndpointName.Cloudfoundry,
                     epPath = "http://localhost/cloudfoundryapplication"
                 },
                 new
                 {
-                    epName = EndpointNames.Info,
+                    epName = EndpointName.Info,
                     epPath = "http://localhost/actuator/info"
                 },
                 new
                 {
-                    epName = EndpointNames.Metrics,
+                    epName = EndpointName.Metrics,
                     epPath = "http://localhost/actuator/metrics"
                 },
                 new
                 {
-                    epName = EndpointNames.Loggers,
+                    epName = EndpointName.Loggers,
                     epPath = "http://localhost/actuator/loggers"
                 },
                 new
                 {
-                    epName = EndpointNames.Health,
+                    epName = EndpointName.Health,
                     epPath = "http://localhost/actuator/health"
                 },
                 new
                 {
-                    epName = EndpointNames.Trace,
+                    epName = EndpointName.Trace,
                     epPath = "http://localhost/actuator/httptrace"
                 },
                 new
                 {
-                    epName = EndpointNames.Env,
+                    epName = EndpointName.Environment,
                     epPath = "http://localhost/actuator/env"
                 },
                 new
                 {
-                    epName = EndpointNames.Mappings,
+                    epName = EndpointName.Mappings,
                     epPath = "http://localhost/actuator/mappings"
                 },
                 new
                 {
-                    epName = EndpointNames.Refresh,
+                    epName = EndpointName.Refresh,
                     epPath = "http://localhost/actuator/refresh"
                 }
             };
@@ -173,17 +173,17 @@ public class ContentNegotiationTests
 
     [Theory]
     [MemberData(nameof(EndpointMiddlewareContentNegotiationTestCases))]
-    public async Task EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
+    public async Task EndpointMiddleware_ContentNegotiation(EndpointName epName, string epPath, string[] accepts, string contentType)
     {
         try
         {
-            if (epName == EndpointNames.Cloudfoundry)
+            if (epName == EndpointName.Cloudfoundry)
             {
                 System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
             }
 
             // arrange a server and client
-            IWebHostBuilder builder = new WebHostBuilder().StartupByEpName(epName)
+            IWebHostBuilder builder = new WebHostBuilder().UseStartupForEndpoint(epName)
                 .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                     (webHostContext, loggingBuilder) =>
                     {
@@ -202,7 +202,7 @@ public class ContentNegotiationTests
             // send the request
             HttpResponseMessage result;
 
-            if (epName == EndpointNames.Refresh)
+            if (epName == EndpointName.Refresh)
             {
                 result = await client.PostAsync(new Uri(epPath), null);
             }

@@ -51,7 +51,7 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    public static IWebHostBuilder AddEnvActuator(this IWebHostBuilder hostBuilder)
+    public static IWebHostBuilder AddEnvironmentActuator(this IWebHostBuilder hostBuilder)
     {
         return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
         {

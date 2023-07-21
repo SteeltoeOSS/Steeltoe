@@ -257,7 +257,7 @@ public class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalseViaEnvVariables()
+    public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalseViaEnvironmentVariables()
     {
         System.Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
 

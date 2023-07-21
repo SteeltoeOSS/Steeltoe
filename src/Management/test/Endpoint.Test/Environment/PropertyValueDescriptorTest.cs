@@ -5,7 +5,7 @@
 using Steeltoe.Management.Endpoint.Environment;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Env;
+namespace Steeltoe.Management.Endpoint.Test.Environment;
 
 public class PropertyValueDescriptorTest : BaseTest
 {

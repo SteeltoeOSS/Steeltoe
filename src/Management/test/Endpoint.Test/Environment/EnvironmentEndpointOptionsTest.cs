@@ -5,9 +5,9 @@
 using Steeltoe.Management.Endpoint.Environment;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Env;
+namespace Steeltoe.Management.Endpoint.Test.Environment;
 
-public class EnvEndpointOptionsTest : BaseTest
+public class EnvironmentEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()

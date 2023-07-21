@@ -50,11 +50,11 @@ public class ManagementWebApplicationBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddEnvActuator_WebApplicationBuilder_IStartupFilterFires()
+    public async Task AddEnvironmentActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        WebApplication host = hostBuilder.AddEnvActuator().Build();
+        WebApplication host = hostBuilder.AddEnvironmentActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Environment;
 
-namespace Steeltoe.Management.Endpoint.Test.Env;
+namespace Steeltoe.Management.Endpoint.Test.Environment;
 
 public class Startup
 {

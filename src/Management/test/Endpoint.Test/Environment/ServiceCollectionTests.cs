@@ -6,16 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Environment;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Env;
+namespace Steeltoe.Management.Endpoint.Test.Environment;
 
 public class ServiceCollectionTests
 {
     [Fact]
-    public void AddEnvActuatorServices_ThrowsOnNulls()
+    public void AddEnvironmentActuatorServices_ThrowsOnNulls()
     {
         const IServiceCollection services = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvActuatorServices());
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvironmentActuatorServices());
         Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
     }
 }

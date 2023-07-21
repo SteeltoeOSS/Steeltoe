@@ -18,7 +18,7 @@ using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Env;
+namespace Steeltoe.Management.Endpoint.Test.Environment;
 
 public class EndpointMiddlewareTest : BaseTest
 {
@@ -35,7 +35,7 @@ public class EndpointMiddlewareTest : BaseTest
     private readonly IHostEnvironment _host = HostingHelpers.GetHostingEnvironment();
 
     [Fact]
-    public async Task HandleEnvRequestAsync_ReturnsExpected()
+    public async Task HandleEnvironmentRequestAsync_ReturnsExpected()
     {
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
@@ -62,10 +62,10 @@ public class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task EnvActuator_ReturnsExpectedData()
+    public async Task EnvironmentActuator_ReturnsExpectedData()
     {
         // Some developers set ASPNETCORE_ENVIRONMENT in their environment, which will break this test if we don't un-set it
-        string originalEnv = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        string aspNetCoreEnvironment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
@@ -89,7 +89,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(expected, json);
         }
 
-        System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", originalEnv);
+        System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", aspNetCoreEnvironment);
     }
 
     [Fact]

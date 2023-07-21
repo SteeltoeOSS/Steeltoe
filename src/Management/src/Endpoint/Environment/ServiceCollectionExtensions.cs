@@ -10,12 +10,12 @@ using Steeltoe.Management.Endpoint.Middleware;
 namespace Steeltoe.Management.Endpoint.Environment;
 
 /// <summary>
-/// Add services used by the Env actuator.
+/// Add services used by the Environment actuator.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the services used by the Env actuator.
+    /// Adds the services used by the Environment actuator.
     /// </summary>
     /// <param name="services">
     /// Reference to the service collection.
@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// A reference to the service collection.
     /// </returns>
-    public static IServiceCollection AddEnvActuatorServices(this IServiceCollection services)
+    public static IServiceCollection AddEnvironmentActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
         services.ConfigureEndpointOptions<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();

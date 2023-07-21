@@ -8,27 +8,27 @@ namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
 public static class TestStartupExtensions
 {
-    public static IWebHostBuilder StartupByEpName(this IWebHostBuilder builder, EndpointNames endpointName)
+    public static IWebHostBuilder UseStartupForEndpoint(this IWebHostBuilder builder, EndpointName endpointName)
     {
         return endpointName switch
         {
-            EndpointNames.Cloudfoundry => builder.UseStartup<CloudFoundryStartup>(),
-            EndpointNames.Hypermedia => builder.UseStartup<HyperMediaStartup>(),
-            EndpointNames.Info => builder.UseStartup<InfoStartup>(),
-            EndpointNames.Metrics => builder.UseStartup<MetricsStartup>(),
-            EndpointNames.Loggers => builder.UseStartup<LoggersStartup>(),
-            EndpointNames.Health => builder.UseStartup<HealthStartup>(),
-            EndpointNames.Trace => builder.UseStartup<TraceStartup>(),
-            EndpointNames.DbMigrations => builder.UseStartup<DbMigrationsStartup>(),
-            EndpointNames.Env => builder.UseStartup<EnvStartup>(),
-            EndpointNames.Mappings => builder.UseStartup<MappingsStartup>(),
-            EndpointNames.Refresh => builder.UseStartup<RefreshStartup>(),
-            EndpointNames.ThreadDump => builder.UseStartup<ThreadDumpStartup>(),
+            EndpointName.Cloudfoundry => builder.UseStartup<CloudFoundryStartup>(),
+            EndpointName.Hypermedia => builder.UseStartup<HyperMediaStartup>(),
+            EndpointName.Info => builder.UseStartup<InfoStartup>(),
+            EndpointName.Metrics => builder.UseStartup<MetricsStartup>(),
+            EndpointName.Loggers => builder.UseStartup<LoggersStartup>(),
+            EndpointName.Health => builder.UseStartup<HealthStartup>(),
+            EndpointName.Trace => builder.UseStartup<TraceStartup>(),
+            EndpointName.DbMigrations => builder.UseStartup<DbMigrationsStartup>(),
+            EndpointName.Environment => builder.UseStartup<EnvironmentStartup>(),
+            EndpointName.Mappings => builder.UseStartup<MappingsStartup>(),
+            EndpointName.Refresh => builder.UseStartup<RefreshStartup>(),
+            EndpointName.ThreadDump => builder.UseStartup<ThreadDumpStartup>(),
             _ => builder
         };
     }
 
-    public enum EndpointNames
+    public enum EndpointName
     {
         Cloudfoundry,
         Hypermedia,
@@ -38,7 +38,7 @@ public static class TestStartupExtensions
         Health,
         Trace,
         DbMigrations,
-        Env,
+        Environment,
         Mappings,
         Refresh,
         ThreadDump
