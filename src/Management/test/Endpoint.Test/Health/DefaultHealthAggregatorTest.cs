@@ -16,7 +16,7 @@ public class DefaultHealthAggregatorTest : BaseTest
     public void Aggregate_NullContributorList_ReturnsExpectedHealth()
     {
         var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(null);
+        HealthCheckResult result = agg.Aggregate(null, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Unknown, result.Status);
         Assert.NotNull(result.Details);
@@ -31,7 +31,7 @@ public class DefaultHealthAggregatorTest : BaseTest
         };
 
         var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(contributors);
+        HealthCheckResult result = agg.Aggregate(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);
@@ -49,7 +49,7 @@ public class DefaultHealthAggregatorTest : BaseTest
         };
 
         var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(contributors);
+        HealthCheckResult result = agg.Aggregate(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Down, result.Status);
         Assert.NotNull(result.Details);
@@ -66,7 +66,7 @@ public class DefaultHealthAggregatorTest : BaseTest
         }
 
         var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(contributors);
+        HealthCheckResult result = agg.Aggregate(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Contains("Up-9", result.Details.Keys);
@@ -83,7 +83,7 @@ public class DefaultHealthAggregatorTest : BaseTest
         };
 
         var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(contributors);
+        HealthCheckResult result = agg.Aggregate(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.NotNull(result.Details);
@@ -103,7 +103,7 @@ public class DefaultHealthAggregatorTest : BaseTest
 
         var agg = new DefaultHealthAggregator();
         t.Start();
-        HealthCheckResult result = agg.Aggregate(contributors);
+        HealthCheckResult result = agg.Aggregate(contributors, CancellationToken.None);
         t.Stop();
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);

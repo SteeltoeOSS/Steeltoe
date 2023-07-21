@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 internal class DefaultHealthAggregator : IHealthAggregator
 {
-    public HealthCheckResult Aggregate(IEnumerable<IHealthContributor> contributors)
+    public HealthCheckResult Aggregate(IEnumerable<IHealthContributor> contributors, CancellationToken cancellationToken)
     {
         if (contributors == null)
         {
@@ -24,7 +24,7 @@ internal class DefaultHealthAggregator : IHealthAggregator
         Parallel.ForEach(contributors, contributor =>
         {
             string contributorId = GetKey(keyList, contributor.Id);
-            HealthCheckResult healthCheckResult = null;
+            HealthCheckResult healthCheckResult;
 
             try
             {

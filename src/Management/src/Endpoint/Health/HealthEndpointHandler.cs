@@ -42,7 +42,8 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
     public Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
     {
-        return Task.FromResult(BuildHealth(healthRequest));
+        HealthEndpointResponse response = RunHealthChecks(healthRequest, cancellationToken);
+        return Task.FromResult(response);
     }
 
     public int GetStatusCode(HealthCheckResult health)
@@ -51,12 +52,12 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService ? 503 : 200;
     }
 
-    private HealthEndpointResponse BuildHealth(HealthEndpointRequest healthRequest)
+    private HealthEndpointResponse RunHealthChecks(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
     {
         string groupName = healthRequest.GroupName;
         IEnumerable<HealthCheckRegistration> healthCheckRegistrations;
-        IEnumerable<IHealthContributor> filteredContributors;
-        var options = Options as HealthEndpointOptions;
+        IList<IHealthContributor> filteredContributors;
+        HealthEndpointOptions options = _options.CurrentValue;
 
         if (!string.IsNullOrEmpty(groupName) && groupName != options.Id)
         {
@@ -70,8 +71,8 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         }
 
         HealthCheckResult result = _aggregator is not IHealthRegistrationsAggregator registrationAggregator
-            ? _aggregator.Aggregate(filteredContributors)
-            : registrationAggregator.Aggregate(filteredContributors, healthCheckRegistrations, _provider);
+            ? _aggregator.Aggregate(filteredContributors, cancellationToken)
+            : registrationAggregator.Aggregate(filteredContributors, healthCheckRegistrations, _provider, cancellationToken);
 
         var response = new HealthEndpointResponse(result);
 
@@ -92,11 +93,9 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     private IEnumerable<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup,
         IOptionsMonitor<HealthCheckServiceOptions> svcOptions)
     {
-        var options = Options as HealthEndpointOptions;
-
         if (!string.IsNullOrEmpty(requestedGroup))
         {
-            if (options.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
+            if (_options.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
             {
                 List<string> includedContributors = groupOptions.Include.Split(',').ToList();
 
@@ -127,13 +126,11 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     /// <para />
     /// If group can't be parsed or is not configured, returns all health contributors.
     /// </returns>
-    private IEnumerable<IHealthContributor> GetFilteredContributorList(string requestedGroup, IList<IHealthContributor> contributors)
+    private IList<IHealthContributor> GetFilteredContributorList(string requestedGroup, IList<IHealthContributor> contributors)
     {
-        var options = Options as HealthEndpointOptions;
-
         if (!string.IsNullOrEmpty(requestedGroup))
         {
-            if (options.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
+            if (_options.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
             {
                 List<string> includedContributors = groupOptions.Include.Split(',').ToList();
                 contributors = contributors.Where(n => includedContributors.Contains(n.Id, StringComparer.OrdinalIgnoreCase)).ToList();
