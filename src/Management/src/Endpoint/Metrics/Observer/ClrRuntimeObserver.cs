@@ -10,7 +10,7 @@ using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-internal sealed class ClrRuntimeObserver1 : IRuntimeDiagnosticSource
+internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
 {
     private const string GenerationTagValueName = "gen";
     private const string GenerationKey = "generation";
@@ -30,17 +30,17 @@ internal sealed class ClrRuntimeObserver1 : IRuntimeDiagnosticSource
         { "kind", "completionPort" }
     };
 
-    private readonly ClrRuntimeSource1.HeapMetrics _previous = default;
+    private readonly ClrRuntimeSource.HeapMetrics _previous = default;
     private readonly IOptionsMonitor<MetricsObserverOptions> _options;
 
-    public ClrRuntimeObserver1(IOptionsMonitor<MetricsObserverOptions> options)
+    public ClrRuntimeObserver(IOptionsMonitor<MetricsObserverOptions> options)
     {
         _options = options;
     }
 
     private IEnumerable<Measurement<long>> GetCollectionCount()
     {
-        ClrRuntimeSource1.HeapMetrics metrics = ClrRuntimeSource1.GetHeapMetrics();
+        ClrRuntimeSource.HeapMetrics metrics = ClrRuntimeSource.GetHeapMetrics();
 
         for (int i = 0; i < metrics.CollectionCounts.Count; i++)
         {
@@ -62,7 +62,7 @@ internal sealed class ClrRuntimeObserver1 : IRuntimeDiagnosticSource
 
     private Measurement<double> GetMemoryUsed()
     {
-        ClrRuntimeSource1.HeapMetrics metrics = ClrRuntimeSource1.GetHeapMetrics();
+        ClrRuntimeSource.HeapMetrics metrics = ClrRuntimeSource.GetHeapMetrics();
         return new Measurement<double>(metrics.TotalMemory, _heapTags.AsReadonlySpan());
     }
 
@@ -74,7 +74,7 @@ internal sealed class ClrRuntimeObserver1 : IRuntimeDiagnosticSource
 
     private IEnumerable<Measurement<long>> GetActiveThreadPoolWorkers()
     {
-        ClrRuntimeSource1.ThreadMetrics metrics = ClrRuntimeSource1.GetThreadMetrics();
+        ClrRuntimeSource.ThreadMetrics metrics = ClrRuntimeSource.GetThreadMetrics();
         long active = metrics.MaxThreadPoolWorkers - metrics.AvailableThreadPoolWorkers;
         long activeCompPort = metrics.MaxThreadCompletionPort - metrics.AvailableThreadCompletionPort;
 
@@ -84,7 +84,7 @@ internal sealed class ClrRuntimeObserver1 : IRuntimeDiagnosticSource
 
     private IEnumerable<Measurement<long>> GetAvailableThreadPoolWorkers()
     {
-        ClrRuntimeSource1.ThreadMetrics metrics = ClrRuntimeSource1.GetThreadMetrics();
+        ClrRuntimeSource.ThreadMetrics metrics = ClrRuntimeSource.GetThreadMetrics();
         yield return new Measurement<long>(metrics.AvailableThreadPoolWorkers, _workerTags.AsReadonlySpan());
         yield return new Measurement<long>(metrics.AvailableThreadCompletionPort, _comPortTags.AsReadonlySpan());
     }
