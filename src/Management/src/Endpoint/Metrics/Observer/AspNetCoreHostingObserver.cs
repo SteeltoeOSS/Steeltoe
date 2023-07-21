@@ -60,7 +60,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
         {
             _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-            var context = DiagnosticHelpers.GetProperty<HttpContext>(value, "HttpContext");
+            var context = DiagnosticHelpers.GetPropertyOrDefault<HttpContext>(value, "HttpContext");
 
             if (context != null)
             {

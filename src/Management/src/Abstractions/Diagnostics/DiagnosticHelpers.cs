@@ -7,18 +7,20 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Diagnostics;
 
-public static class DiagnosticHelpers
+internal static class DiagnosticHelpers
 {
-    public static T GetProperty<T>(object o, string name)
+    public static T GetPropertyOrDefault<T>(object instance, string name)
     {
-        ArgumentGuard.NotNull(o);
-        PropertyInfo property = o.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+        ArgumentGuard.NotNull(instance);
+        ArgumentGuard.NotNull(name);
+
+        PropertyInfo property = instance.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
 
         if (property == null)
         {
             return default;
         }
 
-        return (T)property.GetValue(o);
+        return (T)property.GetValue(instance);
     }
 }

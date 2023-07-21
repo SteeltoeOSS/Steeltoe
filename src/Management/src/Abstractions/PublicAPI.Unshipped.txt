@@ -1,6 +1,4 @@
 abstract Steeltoe.Management.Diagnostics.DiagnosticObserver.ProcessEvent(string eventName, object value) -> void
-static Steeltoe.Management.Diagnostics.DiagnosticHelpers.GetProperty<T>(object o, string name) -> T
-Steeltoe.Management.Diagnostics.DiagnosticHelpers
 Steeltoe.Management.Diagnostics.DiagnosticObserver
 Steeltoe.Management.Diagnostics.DiagnosticObserver.DiagnosticObserver(string name, string listenerName, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
 Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose() -> void
