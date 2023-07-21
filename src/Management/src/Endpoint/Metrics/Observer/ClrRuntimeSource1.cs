@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-internal static class ClrRuntimeSource
+internal static class ClrRuntimeSource1
 {
     public static HeapMetrics GetHeapMetrics()
     {
