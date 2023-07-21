@@ -146,6 +146,11 @@ public class MappingsEndpoint : IMappingsEndpoint
             consumes.Add(reqTypes.MediaType);
         }
 
+        foreach (ConsumesAttribute consumesAttribute in desc.ActionDescriptor.ActionConstraints.Where(constraint => constraint.GetType() == typeof(ConsumesAttribute)).Select(constraint => constraint as ConsumesAttribute))
+        {
+            consumes.AddRange(consumesAttribute.ContentTypes);
+        }
+
         routeDetails.Consumes = consumes;
 
         return routeDetails;
