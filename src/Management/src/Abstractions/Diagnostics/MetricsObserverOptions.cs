@@ -31,10 +31,10 @@ public sealed class MetricsObserverOptions
     public bool HttpClientDesktop { get; set; }
 
     /// <summary>
-    /// Gets or sets an allow list of metrics that should be captured.
+    /// Gets or sets a list of metrics that should be captured. This takes precedence over <see cref="ExcludedMetrics" /> in case of conflict.
     /// </summary>
     /// <remarks>
-    /// Currently only applies to System.Runtime metrics captured by "EventCounterListener".
+    /// Currently only applies to System.Runtime metrics captured by EventCounterListener.
     /// <para />
     /// See this list for values to choose from: <see href="https://docs.microsoft.com/dotnet/core/diagnostics/available-counters#systemruntime-counters" />.
     /// </remarks>
