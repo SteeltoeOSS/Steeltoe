@@ -64,7 +64,7 @@ public class HealthEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(new List<IHealthContributor>());
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
@@ -92,7 +92,7 @@ public class HealthEndpointTest : BaseTest
             new TestContrib("h3")
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
@@ -122,7 +122,7 @@ public class HealthEndpointTest : BaseTest
             new TestContrib("h3")
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
@@ -161,7 +161,7 @@ public class HealthEndpointTest : BaseTest
             new DiskSpaceContributor()
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
@@ -203,7 +203,7 @@ public class HealthEndpointTest : BaseTest
             new LivenessHealthContributor(appAvailability)
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
@@ -239,7 +239,7 @@ public class HealthEndpointTest : BaseTest
             new ReadinessHealthContributor(appAvailability)
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
@@ -305,7 +305,7 @@ public class HealthEndpointTest : BaseTest
             new UpContributor()
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());

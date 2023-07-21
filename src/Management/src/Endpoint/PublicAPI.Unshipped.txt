@@ -196,11 +196,6 @@ Steeltoe.Management.Endpoint.Exposure.Exposure(bool allowAll) -> void
 Steeltoe.Management.Endpoint.Exposure.Exposure(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
 Steeltoe.Management.Endpoint.Exposure.Include.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Endpoint.Exposure.Include.set -> void
-Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributor
-Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributor.DiskSpaceContributor() -> void
-Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributor.DiskSpaceContributor(Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions options) -> void
-Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributor.Health() -> Steeltoe.Common.HealthChecks.HealthCheckResult
-Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributor.Id.get -> string
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.DiskSpaceContributorOptions() -> void
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.DiskSpaceContributorOptions(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void

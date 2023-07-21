@@ -7,19 +7,14 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor;
 
-public sealed class DiskSpaceContributor : IHealthContributor
+internal sealed class DiskSpaceContributor : IHealthContributor
 {
     private const string DefaultId = "diskSpace";
     private readonly DiskSpaceContributorOptions _options;
 
-    public string Id { get; } = DefaultId;
+    public string Id => DefaultId;
 
-    public DiskSpaceContributor()
-    {
-        _options = new DiskSpaceContributorOptions();
-    }
-
-    public DiskSpaceContributor(DiskSpaceContributorOptions options)
+    public DiskSpaceContributor(DiskSpaceContributorOptions options = null)
     {
         _options = options ?? new DiskSpaceContributorOptions();
     }
