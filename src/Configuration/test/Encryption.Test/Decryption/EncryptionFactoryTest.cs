@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Org.BouncyCastle.Security;
 using Steeltoe.Configuration.Encryption.Decryption;
 using Xunit;
 
@@ -39,7 +38,6 @@ public class EncryptionFactoryTest
             EncryptionKeyStorePassword = "letmein",
             EncryptionKeyStoreAlias = "mytestkey"
         };
-
     }
 
     [Fact]
@@ -75,7 +73,7 @@ public class EncryptionFactoryTest
         {
             EncryptionEnabled = true,
             EncryptionKeyStoreLocation = "./Decryption/server.jks",
-            EncryptionKeyStorePassword = "letmein",
+            EncryptionKeyStorePassword = "letmein"
         };
 
         Assert.Throws<DecryptionException>(() => EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
