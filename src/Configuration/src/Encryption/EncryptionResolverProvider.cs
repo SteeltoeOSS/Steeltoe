@@ -105,8 +105,8 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
 
             if (match.Success)
             {
-                var alias = match.Groups["alias"].Value;
-                var cipher = match.Groups["cipher"].Value;
+                string alias = match.Groups["alias"].Value;
+                string cipher = match.Groups["cipher"].Value;
 
                 if (!string.IsNullOrEmpty(alias))
                 {
