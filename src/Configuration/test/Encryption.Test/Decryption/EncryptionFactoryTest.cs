@@ -38,6 +38,7 @@ public class EncryptionFactoryTest
             EncryptionKeyStorePassword = "letmein",
             EncryptionKeyStoreAlias = "mytestkey"
         };
+        Assert.IsType<RsaKeyStoreDecryptor>(EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
     }
 
     [Fact]
