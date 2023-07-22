@@ -107,9 +107,10 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
             {
                 var alias = match.Groups["alias"].Value;
                 var cipher = match.Groups["cipher"].Value;
+
                 if (!string.IsNullOrEmpty(alias))
                 {
-                    value = Decriptor.Decrypt(cipher,alias);
+                    value = Decriptor.Decrypt(cipher, alias);
                 }
                 else
                 {
