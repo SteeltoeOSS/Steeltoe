@@ -95,4 +95,15 @@ public class EncryptionFactoryTest
 
         Assert.Throws<DecryptionException>(() => EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
     }
+
+    [Fact]
+    public void Create_WhenEnabledNothingConfigured_Throws()
+    {
+        var configServerEncryptionSettings = new ConfigServerEncryptionSettings
+        {
+            EncryptionEnabled = true
+        };
+
+        Assert.Throws<DecryptionException>(() => EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
+    }
 }
