@@ -38,7 +38,7 @@ internal static class EncryptionFactory
         if (!(validEncryptionKeySettings ^ validKeystoreSettings))
         {
             throw new DecryptionException(
-                "No valid configuration for encryption key or key store. Either 'encrypt.key' or the 'encrypt.keyStore' properties (location, password, alias) should be set. Not both.");
+                "No valid configuration for encryption key or key store. Either 'encrypt.key' or the 'encrypt.keyStore' properties (location, password, alias) must be set. Not both.");
         }
     }
 }
