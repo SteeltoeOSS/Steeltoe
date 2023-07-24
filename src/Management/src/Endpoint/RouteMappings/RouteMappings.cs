@@ -8,10 +8,5 @@ namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 public sealed class RouteMappings
 {
-    public IList<IRouter> Routers { get; }
-
-    public RouteMappings()
-    {
-        Routers = new List<IRouter>();
-    }
+    public IList<IRouter> Routers { get; } = new List<IRouter>();
 }

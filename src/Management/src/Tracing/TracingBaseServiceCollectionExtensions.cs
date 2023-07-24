@@ -97,7 +97,7 @@ public static class TracingBaseServiceCollectionExtensions
                 deferredBuilder.AddHttpClientInstrumentation(options =>
                 {
                     var pathMatcher = new Regex(traceOpts.EgressIgnorePattern);
-                    options.Filter += req => !pathMatcher.IsMatch(req.RequestUri.PathAndQuery);
+                    options.Filter += req => !pathMatcher.IsMatch(req.RequestUri?.PathAndQuery ?? string.Empty);
                 });
 
                 if (traceOpts.PropagationType.Equals("B3", StringComparison.OrdinalIgnoreCase))

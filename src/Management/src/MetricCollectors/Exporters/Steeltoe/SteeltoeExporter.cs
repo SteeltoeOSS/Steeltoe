@@ -14,8 +14,9 @@ namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 /// </summary>
 internal sealed class SteeltoeExporter : ISteeltoeExporter
 {
+    // ReSharper disable once CollectionNeverUpdated.Local
     private readonly MetricsCollection<List<MetricSample>> _metricSamples = new();
-    private readonly MetricsCollection<List<MetricTag>> _availTags = new();
+    private readonly MetricsCollection<List<MetricTag>> _availableTags = new();
 
     private readonly int _cacheDurationMilliseconds;
     private readonly object _collectionLock = new();
@@ -54,10 +55,10 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
             if (DateTime.Now > _lastCollection.AddMilliseconds(_cacheDurationMilliseconds))
             {
                 _metricSamples.Clear();
-                _availTags.Clear();
+                _availableTags.Clear();
                 _collect(); // Calls aggregation Manager.Collect
                 _lastCollectionSamples = new MetricsCollection<List<MetricSample>>(_metricSamples);
-                _lastAvailableTags = new MetricsCollection<List<MetricTag>>(_availTags);
+                _lastAvailableTags = new MetricsCollection<List<MetricTag>>(_availableTags);
                 _lastCollection = DateTime.Now;
             }
         }
@@ -67,7 +68,7 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
 
     public void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
     {
-        UpdateAvailableTags(_availTags, instrument.Name, stats.Labels);
+        UpdateAvailableTags(_availableTags, instrument.Name, stats.Labels);
 
         if (stats.AggregationStatistics is RateStatistics rateStats)
         {
@@ -102,11 +103,11 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
         }
     }
 
-    private static void UpdateAvailableTags(MetricsCollection<List<MetricTag>> availTags, string name, IEnumerable<KeyValuePair<string, string>> labels)
+    private static void UpdateAvailableTags(MetricsCollection<List<MetricTag>> availableTags, string name, IEnumerable<KeyValuePair<string, string>> labels)
     {
         foreach (KeyValuePair<string, string> label in labels)
         {
-            List<MetricTag> currentTags = availTags[name];
+            List<MetricTag> currentTags = availableTags[name];
             MetricTag? existingTag = currentTags.FirstOrDefault(tag => tag.Tag.Equals(label.Key, StringComparison.OrdinalIgnoreCase));
 
             if (existingTag != null)

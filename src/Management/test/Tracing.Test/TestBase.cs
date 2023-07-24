@@ -32,7 +32,7 @@ public class TestBase
 
     private object GetPrivateField(object baseObject, string fieldName)
     {
-        return baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(baseObject);
+        return baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(baseObject);
     }
 
     protected void ValidateServiceCollectionCommon(ServiceProvider serviceProvider)
@@ -60,6 +60,7 @@ public class TestBase
         Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
         var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
         var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
+        Assert.NotNull(props);
         Assert.Equal(2, props.Count);
 
         Assert.Contains(props, p => p is B3Propagator);

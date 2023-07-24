@@ -44,7 +44,7 @@ internal sealed class HeapDumper : IHeapDumper
 
         try
         {
-            if (System.Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+            if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogInformation("Attempting to create a gcdump");
 
@@ -57,13 +57,13 @@ internal sealed class HeapDumper : IHeapDumper
                 return null;
             }
 
-            if (!Enum.TryParse(typeof(DumpType), _options.CurrentValue.HeapDumpType, out object dumpType))
+            if (!Enum.TryParse(_options.CurrentValue.HeapDumpType, out DumpType dumpType))
             {
                 dumpType = DumpType.Full;
             }
 
             _logger.LogInformation($"Attempting to create a '{dumpType}' dump");
-            new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump((DumpType)dumpType, fileName);
+            new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump(dumpType, fileName);
             return fileName;
         }
         catch (DiagnosticsClientException exception)
@@ -75,7 +75,7 @@ internal sealed class HeapDumper : IHeapDumper
 
     private string CreateFileName()
     {
-        if (System.Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+        if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
         {
             return $"gcdump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
         }

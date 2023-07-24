@@ -18,7 +18,8 @@ public sealed class KubernetesInfoContributorTest
         await contributor.ContributeAsync(builder, CancellationToken.None);
         var info = builder.Build()["kubernetes"] as Dictionary<string, object>;
 
-        Assert.True(bool.Parse(info["inside"].ToString()));
+        Assert.NotNull(info);
+        Assert.True(bool.Parse(info["inside"].ToString()!));
         Assert.Equal("mynamespace", info["namespace"].ToString());
         Assert.Equal("mypod", info["podName"].ToString());
         Assert.Equal("mypodip", info["podIp"].ToString());

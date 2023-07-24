@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -14,13 +13,6 @@ namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
 public sealed class Startup
 {
-    public IConfiguration Configuration { get; set; }
-
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDbContext<MockDbContext>();

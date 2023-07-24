@@ -19,7 +19,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
     internal static readonly Type DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
 
-    internal static readonly MethodInfo GetDatabase = DbContextType?.GetProperty("Database", BindingFlags.Public | BindingFlags.Instance).GetMethod;
+    internal static readonly MethodInfo GetDatabaseMethod = DbContextType?.GetProperty("Database", BindingFlags.Public | BindingFlags.Instance)?.GetMethod;
 
     internal static readonly MethodInfo GetPendingMigrationsMethod =
         MigrationsExtensionsType?.GetMethod("GetPendingMigrations", BindingFlags.Static | BindingFlags.Public);
@@ -126,7 +126,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
         private IEnumerable<string> GetMigrationsReflectively(object dbContext, MethodInfo method)
         {
-            object dbFacade = GetDatabase.Invoke(dbContext, null);
+            object dbFacade = GetDatabaseMethod.Invoke(dbContext, null);
 
             return (IEnumerable<string>)method.Invoke(null, new[]
             {

@@ -59,8 +59,8 @@ public sealed class ServiceCollectionExtensionsTest
         services.AddKubernetesActuators(utils);
         ServiceProvider provider = services.BuildServiceProvider();
 
-        IEnumerable<IInfoContributor> contributors = provider.GetServices<IInfoContributor>();
-        Assert.Equal(4, contributors.Count());
+        IInfoContributor[] contributors = provider.GetServices<IInfoContributor>().ToArray();
+        Assert.Equal(4, contributors.Length);
         Assert.Equal(1, contributors.Count(contributor => contributor.GetType().IsAssignableFrom(typeof(KubernetesInfoContributor))));
     }
 }

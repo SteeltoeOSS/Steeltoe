@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.ThreadDump;
@@ -12,13 +11,6 @@ namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
 public sealed class StartupV1
 {
-    public IConfiguration Configuration { get; set; }
-
-    public StartupV1(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();

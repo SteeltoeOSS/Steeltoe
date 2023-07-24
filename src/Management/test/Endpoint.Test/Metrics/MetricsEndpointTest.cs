@@ -45,13 +45,13 @@ public sealed class MetricsEndpointTest : BaseTest
                 services.AddMetricsActuatorServices();
             };
 
-            MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+            MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
             await service.StartAsync(CancellationToken.None);
 
             try
             {
-                var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+                var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
                 Counter<long> requests = SteeltoeMetrics.Meter.CreateCounter<long>("http.server.requests");
                 requests.Add(1);
                 Counter<double> memory = SteeltoeMetrics.Meter.CreateCounter<double>("gc.memory.used");
@@ -78,13 +78,13 @@ public sealed class MetricsEndpointTest : BaseTest
                 services.AddMetricsActuatorServices();
             };
 
-            MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+            MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
             await service.StartAsync(CancellationToken.None);
 
             try
             {
-                var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+                var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
                 MetricsResponse result = await ep.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
 
@@ -109,7 +109,7 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
@@ -178,13 +178,13 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuator();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
         try
         {
-            var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+            var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             var additionalMeter = new Meter("AdditionalTestMeter");
@@ -245,13 +245,13 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
         try
         {
-            var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+            var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
 
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test7");
             counter.Add(100);
@@ -259,7 +259,7 @@ public sealed class MetricsEndpointTest : BaseTest
             (MetricsCollection<List<MetricSample>> measurements, _) = ep.GetMetrics();
             Assert.NotNull(measurements);
             Assert.Single(measurements.Values);
-            MetricSample sample = measurements.Values.FirstOrDefault()[0];
+            MetricSample sample = measurements.Values.First()[0];
             Assert.Equal(100, sample.Value);
             Assert.Equal(MetricStatistic.Rate, sample.Statistic);
         }
@@ -279,13 +279,13 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
         try
         {
-            var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+            var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test2");
 
             var v1Tags = new Dictionary<string, object>
@@ -357,13 +357,13 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
         try
         {
-            var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+            var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
 
             Histogram<double> testMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("test.test1");
 
@@ -536,7 +536,7 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().FirstOrDefault();
+        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 

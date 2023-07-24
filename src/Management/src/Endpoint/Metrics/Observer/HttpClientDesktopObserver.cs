@@ -97,9 +97,9 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            IEnumerable<KeyValuePair<string, object>> labels = GetLabels(request, statusCode);
-            _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels.AsReadonlySpan());
-            _clientCountMeasure.Record(1, labels.AsReadonlySpan());
+            ReadOnlySpan<KeyValuePair<string, object>> labels = GetLabels(request, statusCode).AsReadonlySpan();
+            _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels);
+            _clientCountMeasure.Record(1, labels);
         }
     }
 

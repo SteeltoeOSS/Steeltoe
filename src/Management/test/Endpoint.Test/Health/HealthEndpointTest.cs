@@ -34,7 +34,7 @@ public sealed class HealthEndpointTest : BaseTest
     [Fact]
     public void Constructor_ThrowsOnNulls()
     {
-        var contributors = new List<IHealthContributor>();
+        IHealthContributor[] contributors = Array.Empty<IHealthContributor>();
         var nullLoggerFactory = NullLoggerFactory.Instance;
 
         var optionsEx = Assert.Throws<ArgumentNullException>(() =>

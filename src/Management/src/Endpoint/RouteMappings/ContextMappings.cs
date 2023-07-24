@@ -15,18 +15,8 @@ public sealed class ContextMappings
     public IDictionary<string, IDictionary<string, IList<RouteMappingDescription>>> Mappings { get; } // "dispatcherServlets", "dispatcherServlet"
 
     public ContextMappings()
+        : this(null, null)
     {
-        var mappingList = new Dictionary<string, IList<RouteMappingDescription>>
-        {
-            { "dispatcherServlet", new List<RouteMappingDescription>() }
-        };
-
-        Mappings = new Dictionary<string, IDictionary<string, IList<RouteMappingDescription>>>
-        {
-            { "dispatcherServlets", mappingList }
-        };
-
-        ParentId = null;
     }
 
     public ContextMappings(IDictionary<string, IList<RouteMappingDescription>> mappingDictionary)

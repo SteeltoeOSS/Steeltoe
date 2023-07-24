@@ -12,8 +12,7 @@ public sealed class ExposureTest
     [Fact]
     public void ExposureReturnsDefaults()
     {
-        var appSettings = new Dictionary<string, string>();
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
         var exp = new Exposure(configurationRoot);
 

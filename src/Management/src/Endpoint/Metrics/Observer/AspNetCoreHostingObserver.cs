@@ -84,10 +84,9 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            IEnumerable<KeyValuePair<string, object>> labelSets = GetLabelSets(context);
-
-            _serverCount.Record(1, labelSets.AsReadonlySpan());
-            _responseTime.Record(current.Duration.TotalSeconds, labelSets.AsReadonlySpan());
+            ReadOnlySpan<KeyValuePair<string, object>> labels = GetLabelSets(context).AsReadonlySpan();
+            _serverCount.Record(1, labels);
+            _responseTime.Record(current.Duration.TotalSeconds, labels);
         }
     }
 

@@ -26,7 +26,7 @@ public sealed class DbMigrationsEndpointTests : BaseTest
     [Fact]
     public void DbMigrationsEndpoint_EfMigrationsReflectionTargets_NotNull()
     {
-        DbMigrationsEndpointHandler.GetDatabase.Should().NotBeNull();
+        DbMigrationsEndpointHandler.GetDatabaseMethod.Should().NotBeNull();
         DbMigrationsEndpointHandler.GetMigrationsMethod.Should().NotBeNull();
         DbMigrationsEndpointHandler.DbContextType.Should().NotBeNull();
         DbMigrationsEndpointHandler.GetAppliedMigrationsMethod.Should().NotBeNull();

@@ -55,7 +55,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
 
             if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
             {
-                string loggerName = remaining.Value.TrimStart('/');
+                string loggerName = remaining.Value!.TrimStart('/');
 
                 Dictionary<string, string> change = await DeserializeRequestAsync(request.Body);
 

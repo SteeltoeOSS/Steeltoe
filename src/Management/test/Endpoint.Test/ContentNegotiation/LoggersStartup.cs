@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
@@ -12,13 +11,6 @@ namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
 public sealed class LoggersStartup
 {
-    public IConfiguration Configuration { get; }
-
-    public LoggersStartup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();

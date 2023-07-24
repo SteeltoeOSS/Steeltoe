@@ -100,7 +100,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
         if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
         {
-            return remaining.Value.TrimStart('/');
+            return remaining.Value!.TrimStart('/');
         }
 
         return null;

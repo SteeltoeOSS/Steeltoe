@@ -87,23 +87,23 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
 
     private void HandleStopEvent(Activity current, HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
     {
-        if (ShouldIgnoreRequest(request.RequestUri.AbsolutePath))
+        if (ShouldIgnoreRequest(request.RequestUri?.AbsolutePath))
         {
-            _logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
+            _logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri?.AbsolutePath));
             return;
         }
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            IEnumerable<KeyValuePair<string, object>> labels = GetLabels(request, response, taskStatus);
-            _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels.AsReadonlySpan());
-            _clientCountMeasure.Record(1, labels.AsReadonlySpan());
+            ReadOnlySpan<KeyValuePair<string, object>> labels = GetLabels(request, response, taskStatus).AsReadonlySpan();
+            _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels);
+            _clientCountMeasure.Record(1, labels);
         }
     }
 
     private IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
     {
-        string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
+        string uri = request.RequestUri!.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string statusCode = GetStatusCode(response, taskStatus);
         string clientName = request.RequestUri.GetComponents(UriComponents.HostAndPort, UriFormat.UriEscaped);
 

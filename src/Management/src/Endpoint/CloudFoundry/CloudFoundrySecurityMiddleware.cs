@@ -134,7 +134,7 @@ public sealed class CloudFoundrySecurityMiddleware
 
             if (endpointOptions is CloudFoundryEndpointOptions)
             {
-                if (path.Value.Equals(contextPath, StringComparison.OrdinalIgnoreCase))
+                if (path.Value?.Equals(contextPath, StringComparison.OrdinalIgnoreCase) == true)
                 {
                     return endpointOptions;
                 }

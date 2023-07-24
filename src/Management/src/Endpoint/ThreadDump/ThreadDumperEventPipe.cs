@@ -393,7 +393,7 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
 
         if (pdbFileName == null)
         {
-            string simpleName = Path.GetFileNameWithoutExtension(moduleFile.FilePath);
+            string simpleName = Path.GetFileNameWithoutExtension(moduleFile.FilePath)!;
 
             if (simpleName.EndsWith(".il", StringComparison.Ordinal))
             {

@@ -49,7 +49,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
     /// </param>
     private string GetRequestedHealthGroup(HttpContext context)
     {
-        string[] requestComponents = context.Request.Path.Value.Split('/');
+        string[] requestComponents = context.Request.Path.Value?.Split('/') ?? Array.Empty<string>();
 
         if (requestComponents.Length > 0)
         {

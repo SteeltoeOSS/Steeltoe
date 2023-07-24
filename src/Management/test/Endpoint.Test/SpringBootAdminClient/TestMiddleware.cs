@@ -20,7 +20,7 @@ public sealed class TestMiddleware : IMiddleware
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (context.Request.Path.Value.EndsWith("instances", StringComparison.Ordinal))
+        if (context.Request.Path.Value?.EndsWith("instances", StringComparison.Ordinal) == true)
         {
             var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(context.Request.Body);
             context.Response.Headers.Add("Content-Type", "application/json");

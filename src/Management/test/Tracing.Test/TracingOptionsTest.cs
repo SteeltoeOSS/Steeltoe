@@ -18,7 +18,7 @@ public sealed class TracingOptionsTest
         IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>());
         var opts = new TracingOptions(new ApplicationInstanceInfo(configuration), configuration);
 
-        Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, opts.Name);
+        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name, opts.Name);
         Assert.Equal(TracingOptions.DefaultIngressIgnorePattern, opts.IngressIgnorePattern);
         Assert.False(opts.AlwaysSample);
         Assert.False(opts.NeverSample);
@@ -68,7 +68,7 @@ public sealed class TracingOptionsTest
 
         // Uses Assembly name as default
         var opts = new TracingOptions(appInstanceInfo, configurationRoot);
-        Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, opts.Name);
+        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name, opts.Name);
 
         // Finds Spring app name
         appsettings.Add("spring:application:name", "SpringApplicationName");

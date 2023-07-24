@@ -31,7 +31,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 
     public Task<MetricsResponse> InvokeAsync(MetricsRequest request, CancellationToken cancellationToken)
     {
-        (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
+        (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availableTags) = GetMetrics();
 
         var metricNames = new HashSet<string>(measurements.Keys);
         MetricsResponse response;
@@ -47,7 +47,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
                 _logger.LogTrace("Fetching metrics for " + request.MetricName);
                 IList<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
-                response = GetMetric(request, sampleList, availTags[request.MetricName]);
+                response = GetMetric(request, sampleList, availableTags[request.MetricName]);
             }
             else
             {
@@ -136,9 +136,9 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         return sampleList;
     }
 
-    private static MetricsResponse GetMetric(MetricsRequest request, IList<MetricSample> metricSamples, IList<MetricTag> availTags)
+    private static MetricsResponse GetMetric(MetricsRequest request, IList<MetricSample> metricSamples, IList<MetricTag> availableTags)
     {
-        return new MetricsResponse(request.MetricName, metricSamples, availTags);
+        return new MetricsResponse(request.MetricName, metricSamples, availableTags);
     }
 
     internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()

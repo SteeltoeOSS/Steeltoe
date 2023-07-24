@@ -54,7 +54,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
                 configuration.AddEnvironmentVariables();
             };
 
-            var ep = tc.GetRequiredService<IEnvironmentEndpointHandler>() as EnvironmentEndpointHandler;
+            var ep = (EnvironmentEndpointHandler)tc.GetRequiredService<IEnvironmentEndpointHandler>();
 
             IConfigurationProvider provider = tc.Configuration.Providers.Single();
             string name = ep.GetPropertySourceName(provider);

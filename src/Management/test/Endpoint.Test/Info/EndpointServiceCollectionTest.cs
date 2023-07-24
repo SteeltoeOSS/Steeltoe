@@ -45,7 +45,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         Assert.NotNull(contributors);
         List<IInfoContributor> listOfContributors = contributors.ToList();
         Assert.Equal(4, listOfContributors.Count);
-        Assert.Contains(contributors, item => item is GitInfoContributor or AppSettingsInfoContributor or BuildInfoContributor or TestInfoContributor);
+        Assert.Contains(listOfContributors, item => item is GitInfoContributor or AppSettingsInfoContributor or BuildInfoContributor or TestInfoContributor);
 
         var ep = serviceProvider.GetService<IInfoEndpointHandler>();
         Assert.NotNull(ep);

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.RouteMappings;
@@ -13,13 +12,6 @@ namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
 public sealed class MappingsStartup
 {
-    public IConfiguration Configuration { get; }
-
-    public MappingsStartup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();

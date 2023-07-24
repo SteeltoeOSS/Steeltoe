@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
@@ -12,13 +11,6 @@ namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
 public sealed class StartupWithSecurity
 {
-    public IConfiguration Configuration { get; set; }
-
-    public StartupWithSecurity(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
