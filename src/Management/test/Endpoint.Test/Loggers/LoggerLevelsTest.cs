@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
-public class LoggerLevelsTest : BaseTest
+public sealed class LoggerLevelsTest : BaseTest
 {
     [Fact]
     public void MapLogLevel_ToString_ReturnsExpected()

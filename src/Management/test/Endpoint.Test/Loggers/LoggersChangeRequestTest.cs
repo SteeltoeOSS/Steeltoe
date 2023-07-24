@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
-public class LoggersChangeRequestTest : BaseTest
+public sealed class LoggersChangeRequestTest : BaseTest
 {
     [Fact]
     public void Constructor_ThrowsOnNull_Name()

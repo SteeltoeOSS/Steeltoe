@@ -14,7 +14,9 @@ public static class WavefrontTraceExtensions
     public static TracerProviderBuilder AddWavefrontTraceExporter(this TracerProviderBuilder builder, WavefrontExporterOptions options,
         ILogger<WavefrontTraceExporter> logger)
     {
+        ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
         var exporter = new WavefrontTraceExporter(options, logger);
 

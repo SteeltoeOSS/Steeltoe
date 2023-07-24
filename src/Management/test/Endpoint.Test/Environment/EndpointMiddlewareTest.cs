@@ -20,7 +20,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Environment;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
@@ -97,10 +97,13 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<EnvironmentEndpointOptions>();
 
-        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/env", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
-        Assert.Equal("/cloudfoundryapplication/env", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
+        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
+        Assert.True(options.RequiresExactMatch());
+        Assert.Equal("/actuator/env", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+
+        Assert.Equal("/cloudfoundryapplication/env",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }

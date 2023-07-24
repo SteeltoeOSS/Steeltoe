@@ -73,7 +73,7 @@ internal sealed class TestContext : IDisposable
         _loggerProvider = new TestOutputLoggerProvider(output);
     }
 
-    public T GetService<T>()
+    public T GetRequiredService<T>()
     {
         return ServiceProvider.GetRequiredService<T>();
     }

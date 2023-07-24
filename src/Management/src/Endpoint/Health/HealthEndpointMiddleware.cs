@@ -26,7 +26,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         _healthEndpointOptionsMonitor = endpointOptions;
     }
 
-    internal HealthEndpointRequest GetRequest(HttpContext context)
+    private HealthEndpointRequest GetRequest(HttpContext context)
     {
         return new HealthEndpointRequest
         {
@@ -38,7 +38,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
     private bool GetClaim(HttpContext context)
     {
         EndpointClaim claim = _healthEndpointOptionsMonitor.CurrentValue.Claim;
-        return context != null && context.User != null && claim != null && context.User.HasClaim(claim.Type, claim.Value);
+        return context != null && claim != null && context.User.HasClaim(claim.Type, claim.Value);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
     {
         string[] requestComponents = context.Request.Path.Value.Split('/');
 
-        if (requestComponents != null && requestComponents.Length > 0)
+        if (requestComponents.Length > 0)
         {
             return requestComponents[^1];
         }

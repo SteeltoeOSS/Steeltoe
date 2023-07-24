@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddTraceActuator_ThrowsOnNulls()

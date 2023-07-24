@@ -87,7 +87,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
         return null;
     }
 
-    protected override void AddKeyValue(Dictionary<string, object> dictionary, string key, string value)
+    protected override void AddKeyValue(IDictionary<string, object> dictionary, string key, string value)
     {
         ArgumentGuard.NotNull(dictionary);
 

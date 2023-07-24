@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class Startup
+public sealed class Startup
 {
     public IConfiguration Configuration { get; set; }
 

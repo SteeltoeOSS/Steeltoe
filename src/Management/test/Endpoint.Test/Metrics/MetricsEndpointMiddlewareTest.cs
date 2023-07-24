@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class MetricsEndpointMiddlewareTest : BaseTest
+public sealed class MetricsEndpointMiddlewareTest : BaseTest
 {
     private readonly MetricsExporterOptions _scraperOptions = new()
     {
@@ -198,11 +198,11 @@ public class MetricsEndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<MetricsEndpointOptions>();
         ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.False(options.ExactMatch);
+        Assert.False(options.RequiresExactMatch());
         Assert.Equal("/actuator/metrics/{**_}", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
 
         Assert.Equal("/cloudfoundryapplication/metrics/{**_}",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
 
         Assert.Contains("Get", options.AllowedVerbs);
     }

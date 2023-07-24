@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class CloudFoundryManagementOptionsTest : BaseTest
+public sealed class CloudFoundryManagementOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
@@ -20,7 +20,7 @@ public class CloudFoundryManagementOptionsTest : BaseTest
 
         ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).CurrentValue;
 
-        Assert.False(opts.CloudFoundryEnabled);
+        Assert.False(opts.IsCloudFoundryEnabled);
     }
 
     [Fact]
@@ -30,6 +30,6 @@ public class CloudFoundryManagementOptionsTest : BaseTest
 
         ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).CurrentValue;
 
-        Assert.True(opts.CloudFoundryEnabled);
+        Assert.True(opts.IsCloudFoundryEnabled);
     }
 }

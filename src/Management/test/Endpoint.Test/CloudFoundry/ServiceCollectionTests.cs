@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class ServiceCollectionTests
+public sealed class ServiceCollectionTests
 {
     [Fact]
     public void AddCloudFoundryActuatorServices_ThrowsOnNulls()

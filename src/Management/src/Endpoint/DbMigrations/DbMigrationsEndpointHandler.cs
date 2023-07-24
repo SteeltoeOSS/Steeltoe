@@ -14,10 +14,10 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 
 internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 {
-    internal static readonly Type DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
-
-    internal static readonly Type MigrationsExtensionsType =
+    private static readonly Type MigrationsExtensionsType =
         Type.GetType("Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions,Microsoft.EntityFrameworkCore.Relational");
+
+    internal static readonly Type DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
 
     internal static readonly MethodInfo GetDatabase = DbContextType?.GetProperty("Database", BindingFlags.Public | BindingFlags.Instance).GetMethod;
 
@@ -54,7 +54,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
         _logger = loggerFactory.CreateLogger<DbMigrationsEndpointHandler>();
     }
 
-    private Dictionary<string, DbMigrationsDescriptor> DoInvoke()
+    public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         var result = new Dictionary<string, DbMigrationsDescriptor>();
 
@@ -64,16 +64,17 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
         }
         else
         {
-            List<Type> knownEfContexts = _endpointHelper.ScanRootAssembly.GetReferencedAssemblies().Select(Assembly.Load).SelectMany(x => x.DefinedTypes)
+            List<Type> knownDbContextTypes = _endpointHelper.ScanRootAssembly.GetReferencedAssemblies().Select(Assembly.Load).SelectMany(x => x.DefinedTypes)
                 .Union(_endpointHelper.ScanRootAssembly.DefinedTypes)
                 .Where(type => !type.IsAbstract && type.AsType() != DbContextType && DbContextType.GetTypeInfo().IsAssignableFrom(type.AsType()))
                 .Select(typeInfo => typeInfo.AsType()).ToList();
 
-            IServiceProvider scope = _container.CreateScope().ServiceProvider;
+            using IServiceScope scope = _container.CreateScope();
+            IServiceProvider serviceProvider = scope.ServiceProvider;
 
-            foreach (Type contextType in knownEfContexts)
+            foreach (Type contextType in knownDbContextTypes)
             {
-                object dbContext = scope.GetService(contextType);
+                object dbContext = serviceProvider.GetService(contextType);
 
                 if (dbContext == null)
                 {
@@ -89,25 +90,21 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
                     descriptor.PendingMigrations.AddRange(_endpointHelper.GetPendingMigrations(dbContext));
                     descriptor.AppliedMigrations.AddRange(_endpointHelper.GetAppliedMigrations(dbContext));
                 }
-                catch (DbException e) when (e.Message.Contains("exist", StringComparison.Ordinal))
+                catch (DbException exception) when (exception.Message.Contains("exist", StringComparison.Ordinal))
                 {
-                    _logger.LogWarning(e, "Encountered exception loading migrations: {exception}", e.Message);
+                    _logger.LogWarning(exception, "Encountered exception loading migrations: {exception}", exception.Message);
                     descriptor.PendingMigrations.AddRange(_endpointHelper.GetMigrations(dbContext));
                 }
             }
         }
 
-        return result;
-    }
-
-    public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object argument, CancellationToken cancellationToken)
-    {
-        return Task.FromResult(DoInvoke());
+        return Task.FromResult(result);
     }
 
     /// <summary>
     /// Hacky class to allow mocking migration methods in unit tests.
     /// </summary>
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     internal class DbMigrationsEndpointHelper
     {
         internal virtual Assembly ScanRootAssembly => Assembly.GetEntryAssembly();

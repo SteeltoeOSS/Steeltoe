@@ -39,7 +39,7 @@ public class TestBase
     {
         // confirm Steeltoe types were registered
         Assert.NotNull(serviceProvider.GetService<ITracingOptions>());
-        Assert.IsType<TracingLogProcessor>(serviceProvider.GetService<IDynamicMessageProcessor>());
+        Assert.IsType<TracingLogProcessor>(serviceProvider.GetRequiredService<IDynamicMessageProcessor>());
 
         // confirm OpenTelemetry types were registered
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
@@ -51,7 +51,7 @@ public class TestBase
     protected void ValidateServiceCollectionBase(ServiceProvider serviceProvider)
     {
         // confirm instrumentation(s) were added as expected
-        var tracerProvider = serviceProvider.GetService<TracerProvider>();
+        var tracerProvider = serviceProvider.GetRequiredService<TracerProvider>();
         var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
         Assert.NotNull(instrumentations);
         Assert.Single(instrumentations);
@@ -68,7 +68,7 @@ public class TestBase
 
     protected void ValidateServiceContainerCore(ServiceProvider serviceProvider)
     {
-        var tracerProvider = serviceProvider.GetService<TracerProvider>();
+        var tracerProvider = serviceProvider.GetRequiredService<TracerProvider>();
 
         // confirm instrumentation(s) were added as expected
         var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;

@@ -46,6 +46,7 @@ internal sealed class HypermediaService
     public Links Invoke(string baseUrl)
     {
         ArgumentGuard.NotNull(baseUrl);
+
         var links = new Links();
 
         if (!_options.IsEnabled(_managementOptionsMonitor.CurrentValue))
@@ -72,12 +73,12 @@ internal sealed class HypermediaService
             {
                 if (!string.IsNullOrEmpty(opt.Id))
                 {
-                    if (!links.LinkCollection.ContainsKey(opt.Id))
+                    if (!links.Entries.ContainsKey(opt.Id))
                     {
                         string linkPath = $"{baseUrl.TrimEnd('/')}/{opt.Path}";
-                        links.LinkCollection.Add(opt.Id, new Link(linkPath));
+                        links.Entries.Add(opt.Id, new Link(linkPath));
                     }
-                    else if (links.LinkCollection.ContainsKey(opt.Id))
+                    else if (links.Entries.ContainsKey(opt.Id))
                     {
                         _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", opt.Id);
                     }
@@ -87,7 +88,7 @@ internal sealed class HypermediaService
 
         if (selfLink != null)
         {
-            links.LinkCollection.Add("self", selfLink);
+            links.Entries.Add("self", selfLink);
         }
 
         return links;

@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private readonly Dictionary<string, string> _appSettings = new()
     {
@@ -33,16 +33,18 @@ public class EndpointMiddlewareTest : BaseTest
 
     public EndpointMiddlewareTest()
     {
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "some"); // Allow routing to /cloudfoundryapplication
     }
 
     [Fact]
     public void RoutesByPathAndVerb()
     {
         var options = new HypermediaEndpointOptions();
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/cloudfoundryapplication", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions.CurrentValue));
+        IOptionsMonitor<ManagementEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        Assert.True(options.RequiresExactMatch());
+
+        Assert.Equal("/cloudfoundryapplication",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, optionsMonitor.CurrentValue));
 
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
@@ -60,10 +62,10 @@ public class EndpointMiddlewareTest : BaseTest
         options.PropertyNameCaseInsensitive = true;
         var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", options);
         Assert.NotNull(links);
-        Assert.True(links.LinkCollection.ContainsKey("self"));
-        Assert.Equal("http://localhost/cloudfoundryapplication", links.LinkCollection["self"].Href);
-        Assert.True(links.LinkCollection.ContainsKey("info"));
-        Assert.Equal("http://localhost/cloudfoundryapplication/info", links.LinkCollection["info"].Href);
+        Assert.True(links.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost/cloudfoundryapplication", links.Entries["self"].Href);
+        Assert.True(links.Entries.ContainsKey("info"));
+        Assert.Equal("http://localhost/cloudfoundryapplication/info", links.Entries["info"].Href);
     }
 
     [Fact]

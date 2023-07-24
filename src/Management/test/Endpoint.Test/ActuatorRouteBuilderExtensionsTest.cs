@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ActuatorRouteBuilderExtensionsTest
+public sealed class ActuatorRouteBuilderExtensionsTest
 {
     [Fact]
     public async Task MapTestAuthSuccess()
@@ -41,7 +41,7 @@ public class ActuatorRouteBuilderExtensionsTest
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };
 
-        return new HostBuilder().AddDynamicLogging().ConfigureServices((context, s) =>
+        return new HostBuilder().AddDynamicLogging().ConfigureServices((_, s) =>
         {
             s.AddAllActuators();
             s.AddRouting();
@@ -73,8 +73,8 @@ public class ActuatorRouteBuilderExtensionsTest
 
         foreach (HttpMiddlewareOptions options in optionsCollection)
         {
-            ManagementEndpointOptions mgmtOptions = host.Services.GetService<IOptionsMonitor<ManagementEndpointOptions>>().CurrentValue;
-            string path = options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions);
+            ManagementEndpointOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementEndpointOptions>>().CurrentValue;
+            string path = options.GetPathMatchPattern(managementOptions.Path, managementOptions);
             path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
             Assert.NotNull(path);
             HttpResponseMessage response;

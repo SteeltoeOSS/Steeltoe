@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
-public class HomeController : Controller
+public sealed class HomeController : Controller
 {
     [HttpGet]
     [Produces("text/plain", "application/json", "text/json")]

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Task.Test;
 
-public class TaskRunTest
+public sealed class TaskRunTest
 {
     [Fact]
     public void DelegatingTask_WebHost_ExecutesRun()

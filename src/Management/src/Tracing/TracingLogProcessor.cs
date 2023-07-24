@@ -57,7 +57,7 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
         return inputLogMessage;
     }
 
-    internal TelemetrySpan GetCurrentSpan()
+    private TelemetrySpan GetCurrentSpan()
     {
         TelemetrySpan span = Tracer.CurrentSpan;
 

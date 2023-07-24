@@ -8,11 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Logging.DynamicLogger;
 using Xunit;
-using static Steeltoe.Management.Endpoint.Test.ContentNegotiation.TestStartupExtensions;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class ContentNegotiationTests
+public sealed class ContentNegotiationTests
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
@@ -179,7 +178,7 @@ public class ContentNegotiationTests
         {
             if (epName == EndpointName.Cloudfoundry)
             {
-                System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+                System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "some"); // Allow routing to /cloudfoundryapplication
             }
 
             // arrange a server and client

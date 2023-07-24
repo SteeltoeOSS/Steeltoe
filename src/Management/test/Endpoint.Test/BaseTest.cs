@@ -27,12 +27,12 @@ public abstract class BaseTest : IDisposable
     {
     }
 
-    public string Serialize<T>(T value)
+    protected string Serialize<T>(T value)
     {
         return JsonSerializer.Serialize(value, GetSerializerOptions());
     }
 
-    public JsonSerializerOptions GetSerializerOptions()
+    protected JsonSerializerOptions GetSerializerOptions()
     {
         var options = new JsonSerializerOptions
         {
@@ -46,22 +46,19 @@ public abstract class BaseTest : IDisposable
 
     internal AggregationManager GetTestMetrics(SteeltoeExporter steeltoeExporter)
     {
-        var aggregator = new AggregationManager(100, 100, steeltoeExporter.AddMetrics, instrument =>
+        var aggregator = new AggregationManager(100, 100, steeltoeExporter.AddMetrics, _ =>
         {
-        }, instrument =>
+        }, _ =>
         {
-        }, instrument =>
-        {
-        }, () =>
+        }, _ =>
         {
         }, () =>
         {
         }, () =>
         {
-        }, ex =>
+        }, () =>
         {
-            throw ex;
-        });
+        }, exception => throw exception);
 
         aggregator.Include(SteeltoeMetrics.InstrumentationName);
 
@@ -82,19 +79,19 @@ public abstract class BaseTest : IDisposable
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Dictionary<string, string> settings)
     {
-        Type tOptions = typeof(TOptions);
+        Type optionsType = typeof(TOptions);
 
         Type type = ReflectionHelpers.FindType(new[]
         {
-            tOptions.Assembly.FullName
+            optionsType.Assembly.FullName
         }, new[]
         {
-            $"{tOptions.Namespace}.Configure{tOptions.Name}"
+            $"{optionsType.Namespace}.Configure{optionsType.Name}"
         });
 
         if (type == null)
         {
-            throw new InvalidOperationException($"Could not find Type Configure{typeof(TOptions).Name} in assembly {tOptions.Assembly.FullName}");
+            throw new InvalidOperationException($"Could not find Type Configure{typeof(TOptions).Name} in assembly {optionsType.Assembly.FullName}");
         }
 
         return GetOptionsMonitorFromSettings<TOptions>(type, settings);

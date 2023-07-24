@@ -7,3 +7,5 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Prometheus")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Wavefront")]

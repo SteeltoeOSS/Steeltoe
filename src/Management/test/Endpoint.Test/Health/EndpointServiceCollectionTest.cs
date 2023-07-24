@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddHealthActuator_ThrowsOnNulls()

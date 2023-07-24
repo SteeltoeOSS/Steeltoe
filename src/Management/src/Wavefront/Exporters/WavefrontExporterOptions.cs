@@ -11,24 +11,16 @@ namespace Steeltoe.Management.Wavefront.Exporters;
 public sealed class WavefrontExporterOptions
 {
     // Note: this key is shared between tracing and metrics to mirror the Spring boot configuration settings.
-    public const string WavefrontPrefix = "management:metrics:export:wavefront";
+    private const string WavefrontPrefix = "management:metrics:export:wavefront";
 
     public string Uri { get; set; }
-
     public string ApiToken { get; set; }
-
     public int Step { get; set; } = 30_000; // milliseconds
-
     public int BatchSize { get; set; } = 10_000;
-
     public int MaxQueueSize { get; set; } = 500_000;
-
     public WavefrontApplicationOptions ApplicationOptions { get; }
-
     public string Source => ApplicationOptions?.Source ?? DnsTools.ResolveHostName();
-
     public string Name => ApplicationOptions?.Name ?? "SteeltoeApp";
-
     public string Service => ApplicationOptions?.Service ?? "SteeltoeAppService";
 
     public WavefrontExporterOptions(IConfiguration configuration)

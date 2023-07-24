@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 internal sealed class ConfigureMetricsObserverOptions : IConfigureOptions<MetricsObserverOptions>
 {
-    internal const string ManagementMetricsPrefix = "management:metrics:observer";
+    private const string ManagementMetricsPrefix = "management:metrics:observer";
 
     internal const string DefaultIngressIgnorePattern =
         "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";

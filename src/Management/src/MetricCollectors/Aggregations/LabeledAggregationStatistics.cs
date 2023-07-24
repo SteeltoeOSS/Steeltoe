@@ -6,7 +6,7 @@ namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
 public sealed class LabeledAggregationStatistics
 {
-    public KeyValuePair<string, string>[] Labels { get; }
+    public IList<KeyValuePair<string, string>> Labels { get; }
     public IAggregationStatistics AggregationStatistics { get; }
 
     public LabeledAggregationStatistics(IAggregationStatistics stats, params KeyValuePair<string, string>[] labels)

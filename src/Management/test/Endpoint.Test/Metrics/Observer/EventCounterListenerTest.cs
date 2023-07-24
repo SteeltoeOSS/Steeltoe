@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics.Observer;
 
-public class EventCounterListenerTest : BaseTest
+public sealed class EventCounterListenerTest : BaseTest
 {
     private readonly MetricsExporterOptions _exporterOptions = new()
     {

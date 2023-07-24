@@ -8,11 +8,11 @@ namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 internal sealed class TestTraceRepo : IHttpTraceRepository
 {
-    public bool GetTracesCalled { get; set; }
+    public bool GetTracesCalled { get; private set; }
 
     public HttpTraceResult GetTraces()
     {
         GetTracesCalled = true;
-        return new HttpTracesV1(new List<TraceResult>());
+        return new HttpTraceResultV1(new List<TraceResult>());
     }
 }

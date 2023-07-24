@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public static class TestStartupExtensions
+internal static class TestStartupExtensions
 {
-    public static IWebHostBuilder UseStartupForEndpoint(this IWebHostBuilder builder, EndpointName endpointName)
+    internal static IWebHostBuilder UseStartupForEndpoint(this IWebHostBuilder builder, EndpointName endpointName)
     {
         return endpointName switch
         {
@@ -26,21 +26,5 @@ public static class TestStartupExtensions
             EndpointName.ThreadDump => builder.UseStartup<ThreadDumpStartup>(),
             _ => builder
         };
-    }
-
-    public enum EndpointName
-    {
-        Cloudfoundry,
-        Hypermedia,
-        Info,
-        Metrics,
-        Loggers,
-        Health,
-        Trace,
-        DbMigrations,
-        Environment,
-        Mappings,
-        Refresh,
-        ThreadDump
     }
 }

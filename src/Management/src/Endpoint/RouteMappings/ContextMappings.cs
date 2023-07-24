@@ -29,26 +29,26 @@ public sealed class ContextMappings
         ParentId = null;
     }
 
-    public ContextMappings(IDictionary<string, IList<RouteMappingDescription>> mappingDict)
-        : this(mappingDict, null)
+    public ContextMappings(IDictionary<string, IList<RouteMappingDescription>> mappingDictionary)
+        : this(mappingDictionary, null)
     {
     }
 
-    public ContextMappings(IDictionary<string, IList<RouteMappingDescription>> mappingDict, string parentId)
+    public ContextMappings(IDictionary<string, IList<RouteMappingDescription>> mappingDictionary, string parentId)
     {
         // At this point, .NET will only ever has one context and it must be named "dispatcherServlets"
-        // For .NET, the mappingDict contains keys that represent the type name of the controller and then a
+        // For .NET, the mappingDictionary contains keys that represent the type name of the controller and then a
         // list of MappingDescriptions for that controller.
-        mappingDict ??= new Dictionary<string, IList<RouteMappingDescription>>();
+        mappingDictionary ??= new Dictionary<string, IList<RouteMappingDescription>>();
 
-        if (mappingDict.Count == 0)
+        if (mappingDictionary.Count == 0)
         {
-            mappingDict.Add("dispatcherServlet", new List<RouteMappingDescription>());
+            mappingDictionary.Add("dispatcherServlet", new List<RouteMappingDescription>());
         }
 
         Mappings = new Dictionary<string, IDictionary<string, IList<RouteMappingDescription>>>
         {
-            { "dispatcherServlets", mappingDict }
+            { "dispatcherServlets", mappingDictionary }
         };
 
         ParentId = parentId;

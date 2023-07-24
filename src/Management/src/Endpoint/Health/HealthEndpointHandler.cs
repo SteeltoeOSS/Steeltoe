@@ -40,19 +40,13 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         _logger = loggerFactory.CreateLogger<HealthEndpointHandler>();
     }
 
-    public Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
-    {
-        HealthEndpointResponse response = RunHealthChecks(healthRequest, cancellationToken);
-        return Task.FromResult(response);
-    }
-
     public int GetStatusCode(HealthCheckResult health)
     {
         ArgumentGuard.NotNull(health);
         return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService ? 503 : 200;
     }
 
-    private HealthEndpointResponse RunHealthChecks(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
+    public Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
     {
         string groupName = healthRequest.GroupName;
         IEnumerable<HealthCheckRegistration> healthCheckRegistrations;
@@ -87,7 +81,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
             response.Groups = options.Groups.Select(g => g.Key);
         }
 
-        return response;
+        return Task.FromResult(response);
     }
 
     private IEnumerable<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup,

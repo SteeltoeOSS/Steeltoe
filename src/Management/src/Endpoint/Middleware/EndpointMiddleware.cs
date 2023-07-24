@@ -20,7 +20,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 {
     private readonly ILogger _logger;
     protected IOptionsMonitor<ManagementEndpointOptions> ManagementEndpointOptionsMonitor { get; }
-    public IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
+    protected IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
 
     public HttpMiddlewareOptions EndpointOptions { get; }
 
@@ -33,22 +33,21 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         ManagementEndpointOptionsMonitor = managementOptions;
         EndpointOptions = EndpointHandler.Options;
 
-        _logger = loggerFactory.CreateLogger(GetType());
+        _logger = loggerFactory.CreateLogger<EndpointMiddleware<TArgument, TResult>>();
     }
 
     public virtual bool ShouldInvoke(PathString requestPath)
     {
         ArgumentGuard.NotNull(requestPath);
-        ManagementEndpointOptions mgmtOptions = ManagementEndpointOptionsMonitor.CurrentValue;
-        HttpMiddlewareOptions endpointOptions = EndpointHandler.Options;
-        bool enabled = endpointOptions.IsEnabled(mgmtOptions);
-        bool exposed = endpointOptions.IsExposed(mgmtOptions);
+        ManagementEndpointOptions endpointOptions = ManagementEndpointOptionsMonitor.CurrentValue;
+        bool enabled = EndpointHandler.Options.IsEnabled(endpointOptions);
+        bool exposed = EndpointHandler.Options.IsExposed(endpointOptions);
 
-        bool isCFContext = requestPath.StartsWithSegments(ConfigureManagementEndpointOptions.DefaultCFPath);
-        bool returnValue = isCFContext ? mgmtOptions.CloudFoundryEnabled && enabled : enabled && exposed;
+        bool isCloudFoundryEndpoint = requestPath.StartsWithSegments(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath);
+        bool returnValue = isCloudFoundryEndpoint ? endpointOptions.IsCloudFoundryEnabled && enabled : enabled && exposed;
 
-        _logger.LogDebug(
-            $"Returned {returnValue} for endpointHandler: {endpointOptions.Id}, contextPath: {requestPath}, enabled: {enabled}, exposed: {exposed}, isCfContext: {isCFContext}, cfEnabled: {mgmtOptions.CloudFoundryEnabled}");
+        _logger.LogDebug($"Returned {returnValue} for endpointHandler: {EndpointHandler.Options.Id}, contextPath: {requestPath}, enabled: {enabled}, " +
+            $"exposed: {exposed}, isCloudFoundry: {isCloudFoundryEndpoint}, cloudFoundryEnabled: {endpointOptions.IsCloudFoundryEnabled}");
 
         return returnValue;
     }
@@ -100,17 +99,17 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
             serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         }
 
-        if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
+        if (!serializerOptions.Converters.Any(c => c is JsonStringEnumConverter))
         {
             serializerOptions.Converters.Add(new JsonStringEnumConverter());
         }
 
-        if (serializerOptions.Converters?.Any(c => c is HealthConverter or HealthConverterV3) != true)
+        if (!serializerOptions.Converters.Any(c => c is HealthConverter or HealthConverterV3))
         {
             serializerOptions.Converters.Add(new HealthConverter());
         }
 
-        if (serializerOptions.Converters?.Any(c => c is HttpTraceResultConverter) != true)
+        if (!serializerOptions.Converters.Any(c => c is HttpTraceResultConverter))
         {
             serializerOptions.Converters.Add(new HttpTraceResultConverter());
         }

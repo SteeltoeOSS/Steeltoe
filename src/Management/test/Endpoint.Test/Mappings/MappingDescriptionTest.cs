@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
-public class MappingDescriptionTest : BaseTest
+public sealed class MappingDescriptionTest : BaseTest
 {
     [Fact]
     public void Constructor_SetsValues()

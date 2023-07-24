@@ -4,12 +4,12 @@
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class LoggersResponse
+public sealed class LoggersResponse
 {
-    public Dictionary<string, object> Data { get; }
+    public IDictionary<string, object> Data { get; }
     public bool HasError { get; }
 
-    public LoggersResponse(Dictionary<string, object> data, bool hasError)
+    public LoggersResponse(IDictionary<string, object> data, bool hasError)
     {
         HasError = hasError;
         Data = data;

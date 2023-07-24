@@ -4,17 +4,17 @@
 
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Management.Endpoint.Test.Health.MockContributors;
+namespace Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 
-public class UnknownContributor : IHealthContributor
+internal sealed class DownContributor : IHealthContributor
 {
-    public string Id { get; } = "Unknown";
+    public string Id => "Down";
 
     public HealthCheckResult Health()
     {
         return new HealthCheckResult
         {
-            Status = HealthStatus.Unknown
+            Status = HealthStatus.Down
         };
     }
 }

@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 public static class EndpointServiceCollectionExtensions
 {
-    internal static Type[] DefaultHealthContributors =>
+    private static Type[] DefaultHealthContributors =>
         new[]
         {
             typeof(DiskSpaceContributor),

@@ -9,14 +9,14 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 public sealed class MetricsEndpointOptions : HttpMiddlewareOptions
 {
     public string IngressIgnorePattern { get; set; }
-
     public string EgressIgnorePattern { get; set; }
-
     public int CacheDurationMilliseconds { get; set; } = 500;
     public int MaxTimeSeries { get; set; } = 100;
     public int MaxHistograms { get; set; } = 100;
-
     public IList<string> IncludedMetrics { get; set; }
 
-    public override bool ExactMatch => false;
+    public override bool RequiresExactMatch()
+    {
+        return false;
+    }
 }

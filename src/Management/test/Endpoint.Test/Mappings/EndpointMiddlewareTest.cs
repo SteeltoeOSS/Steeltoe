@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.TestHost;
@@ -21,7 +22,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
@@ -36,10 +37,13 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<RouteMappingsEndpointOptions>();
-        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/mappings", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
-        Assert.Equal("/cloudfoundryapplication/mappings", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
+        ManagementEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
+        Assert.True(options.RequiresExactMatch());
+        Assert.Equal("/actuator/mappings", options.GetPathMatchPattern(endpointOptions.Path, endpointOptions));
+
+        Assert.Equal("/cloudfoundryapplication/mappings",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, endpointOptions));
+
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }
@@ -54,12 +58,19 @@ public class EndpointMiddlewareTest : BaseTest
         configurationBuilder.AddInMemoryCollection(AppSettings);
         var routeMappings = new RouteMappings.RouteMappings();
         var mockActionDescriptorCollectionProvider = new Mock<IActionDescriptorCollectionProvider>();
-        var mockApiDescriptionProvider = new Mock<IEnumerable<IApiDescriptionProvider>>();
+
+        mockActionDescriptorCollectionProvider.Setup(provider => provider.ActionDescriptors)
+            .Returns(new ActionDescriptorCollection(Array.Empty<ActionDescriptor>(), 0));
+
+        var mockApiDescriptionProviders = new List<IApiDescriptionProvider>
+        {
+            new Mock<IApiDescriptionProvider>().Object
+        };
 
         var ep = new RouteMappingsEndpointHandler(opts, NullLoggerFactory.Instance, routeMappings, mockActionDescriptorCollectionProvider.Object,
-            mockApiDescriptionProvider.Object);
+            mockApiDescriptionProviders);
 
-        var middle = new RouteMappingsEndpointMiddleware(managementOptions, opts, ep, NullLoggerFactory.Instance);
+        var middle = new RouteMappingsEndpointMiddleware(managementOptions, ep, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
         await middle.InvokeAsync(context, null);
@@ -73,9 +84,10 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task MappingsActuator_ReturnsExpectedData()
     {
-        var appSettings = new Dictionary<string, string>(AppSettings);
-
-        appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
+        var appSettings = new Dictionary<string, string>(AppSettings)
+        {
+            { "management:endpoints:actuator:exposure:include:0", "*" }
+        };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(

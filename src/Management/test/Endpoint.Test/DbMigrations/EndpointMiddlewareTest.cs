@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
@@ -109,7 +109,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<DbMigrationsEndpointOptions>();
         ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.ExactMatch);
+        Assert.True(options.RequiresExactMatch());
         Assert.Equal("/actuator/dbmigrations", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
     }
 

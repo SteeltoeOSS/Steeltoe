@@ -31,40 +31,43 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 
     public Task<MetricsResponse> InvokeAsync(MetricsRequest request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(DoInvoke(request));
-    }
-
-    private MetricsResponse DoInvoke(MetricsRequest request)
-    {
         (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availTags) = GetMetrics();
 
         var metricNames = new HashSet<string>(measurements.Keys);
+        MetricsResponse response;
 
         if (request == null)
         {
-            return new MetricsResponse(metricNames);
+            response = new MetricsResponse(metricNames);
         }
-
-        if (metricNames.Contains(request.MetricName))
+        else
         {
-            _logger.LogTrace("Fetching metrics for " + request.MetricName);
-            IList<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
+            if (metricNames.Contains(request.MetricName))
+            {
+                _logger.LogTrace("Fetching metrics for " + request.MetricName);
+                IList<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
-            return GetMetric(request, sampleList, availTags[request.MetricName]);
+                response = GetMetric(request, sampleList, availTags[request.MetricName]);
+            }
+            else
+            {
+                response = null;
+            }
         }
 
-        return null;
+        return Task.FromResult(response);
     }
 
     internal IList<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName,
-        IEnumerable<KeyValuePair<string, string>> tags)
+        IList<KeyValuePair<string, string>> tags)
     {
-        IEnumerable<MetricSample> filtered = measurements[metricName];
+        List<MetricSample> filtered = measurements[metricName];
         var sampleList = new List<MetricSample>();
 
         if (tags != null && tags.Any())
         {
-            filtered = filtered.Where(sample => tags.All(rt => sample.Tags.Any(sampleTag => rt.Key == sampleTag.Key && rt.Value == sampleTag.Value)));
+            filtered = filtered.Where(sample =>
+                tags.All(rt => sample.Tags != null && sample.Tags.Any(sampleTag => rt.Key == sampleTag.Key && rt.Value == sampleTag.Value))).ToList();
         }
 
         static MetricSample SumAggregator(MetricSample current, MetricSample next)
@@ -133,7 +136,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         return sampleList;
     }
 
-    internal static MetricsResponse GetMetric(MetricsRequest request, IList<MetricSample> metricSamples, IList<MetricTag> availTags)
+    private static MetricsResponse GetMetric(MetricsRequest request, IList<MetricSample> metricSamples, IList<MetricTag> availTags)
     {
         return new MetricsResponse(request.MetricName, metricSamples, availTags);
     }

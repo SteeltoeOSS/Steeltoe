@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class EndpointApplicationBuilderExtensionsTest : BaseTest
+public sealed class EndpointApplicationBuilderExtensionsTest : BaseTest
 {
     [Fact]
     public void UseCloudFoundrySecurity_ThrowsIfNulls()

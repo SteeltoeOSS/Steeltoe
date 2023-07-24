@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Info;
 
-public abstract class ConfigurationContributor
+internal abstract class ConfigurationContributor
 {
     protected IConfiguration Configuration { get; set; }
 
@@ -20,40 +20,37 @@ public abstract class ConfigurationContributor
         Configuration = configuration;
     }
 
-    protected virtual void Contribute(IInfoBuilder builder, string prefix, bool keepPrefix)
+    protected void Contribute(IInfoBuilder builder, string prefix, bool keepPrefix)
     {
         ArgumentGuard.NotNull(builder);
 
         builder.WithInfo(CreateDictionary(prefix, keepPrefix));
     }
 
-    protected virtual Dictionary<string, object> CreateDictionary(string prefix, bool keepPrefix)
+    private Dictionary<string, object> CreateDictionary(string prefix, bool keepPrefix)
     {
         var result = new Dictionary<string, object>();
 
         if (Configuration != null)
         {
-            Dictionary<string, object> dict = result;
+            Dictionary<string, object> dictionary = result;
 
             IConfigurationSection section = Configuration.GetSection(prefix);
             IEnumerable<IConfigurationSection> children = section.GetChildren();
 
             if (keepPrefix)
             {
-                result[prefix] = dict = new Dictionary<string, object>();
+                result[prefix] = dictionary = new Dictionary<string, object>();
             }
 
-            AddChildren(dict, children);
+            AddChildren(dictionary, children);
         }
 
         return result;
     }
 
-    protected virtual void AddChildren(Dictionary<string, object> dictionary, IEnumerable<IConfigurationSection> sections)
+    private void AddChildren(IDictionary<string, object> dictionary, IEnumerable<IConfigurationSection> sections)
     {
-        ArgumentGuard.NotNull(dictionary);
-        ArgumentGuard.NotNull(sections);
-
         foreach (IConfigurationSection section in sections)
         {
             string key = section.Key;
@@ -72,7 +69,7 @@ public abstract class ConfigurationContributor
         }
     }
 
-    protected virtual void AddKeyValue(Dictionary<string, object> dictionary, string key, string value)
+    protected virtual void AddKeyValue(IDictionary<string, object> dictionary, string key, string value)
     {
         ArgumentGuard.NotNull(dictionary);
         ArgumentGuard.NotNull(key);

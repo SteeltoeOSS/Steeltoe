@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class ServiceCollectionTests
+public sealed class ServiceCollectionTests
 {
     [Fact]
     public void AddMetricsActuatorServices_ThrowsOnNulls()

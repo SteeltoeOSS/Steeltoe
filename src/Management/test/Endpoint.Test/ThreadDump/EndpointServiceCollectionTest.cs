@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddThreadDumpActuator_ThrowsOnNulls()

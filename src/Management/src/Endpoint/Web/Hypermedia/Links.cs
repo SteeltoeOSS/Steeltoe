@@ -4,6 +4,8 @@
 
 using System.Text.Json.Serialization;
 
+#pragma warning disable S4004 // Collection properties should be readonly
+
 namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 /// <summary>
@@ -19,10 +21,6 @@ public sealed class Links
     /// <summary>
     /// Gets or sets the list of links contained in this collection.
     /// </summary>
-
-    // ReSharper disable once InconsistentNaming
-#pragma warning disable S4004 // Collection properties should be readonly
     [JsonPropertyName("_links")]
-    public Dictionary<string, Link> LinkCollection { get; set; } = new();
-#pragma warning restore S4004 // Collection properties should be readonly
+    public IDictionary<string, Link> Entries { get; set; } = new Dictionary<string, Link>();
 }

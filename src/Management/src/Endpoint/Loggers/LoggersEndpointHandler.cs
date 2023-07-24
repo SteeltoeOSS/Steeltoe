@@ -43,21 +43,16 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
     {
         _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
-        return Task.FromResult(DoInvoke(_dynamicLoggerProvider, request));
-    }
-
-    private LoggersResponse DoInvoke(IDynamicLoggerProvider provider, ILoggersRequest request)
-    {
         var result = new Dictionary<string, object>();
 
         if (request is LoggersChangeRequest changeRequest)
         {
-            SetLogLevel(provider, changeRequest.Name, changeRequest.Level);
+            SetLogLevel(_dynamicLoggerProvider, changeRequest.Name, changeRequest.Level);
         }
         else
         {
             AddLevels(result);
-            ICollection<ILoggerConfiguration> configurations = GetLoggerConfigurations(provider);
+            ICollection<ILoggerConfiguration> configurations = GetLoggerConfigurations(_dynamicLoggerProvider);
             var loggers = new Dictionary<string, LoggerLevels>();
 
             foreach (ILoggerConfiguration configuration in configurations.OrderBy(entry => entry.Name))
@@ -70,7 +65,8 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
             result.Add("loggers", loggers);
         }
 
-        return new LoggersResponse(result, false);
+        var response = new LoggersResponse(result, false);
+        return Task.FromResult(response);
     }
 
     internal void AddLevels(Dictionary<string, object> result)

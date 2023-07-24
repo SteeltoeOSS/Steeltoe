@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Environment;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddEnvironmentActuator_ThrowsOnNulls()

@@ -87,7 +87,7 @@ public static class TracingBaseServiceCollectionExtensions
                     .GetApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
 
                 var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
-                ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>()?.CreateLogger("Steeltoe.Management.Tracing.Setup");
+                ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Steeltoe.Management.Tracing.Setup");
 
                 logger.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.",
                     exportToZipkin, exportToJaeger, exportToOpenTelemetryProtocol);
@@ -200,18 +200,18 @@ public static class TracingBaseServiceCollectionExtensions
 
     private static void AddWavefrontExporter(TracerProviderBuilder builder)
     {
-        var deferredTracerProviderBuilder = builder as IDeferredTracerProviderBuilder;
+        var deferredTracerProviderBuilder = (IDeferredTracerProviderBuilder)builder;
 
-        deferredTracerProviderBuilder.Configure(delegate(IServiceProvider sp, TracerProviderBuilder builder)
+        deferredTracerProviderBuilder.Configure(delegate(IServiceProvider sp, TracerProviderBuilder innerBuilder)
         {
-            var configuration = sp.GetService<IConfiguration>();
+            var configuration = sp.GetRequiredService<IConfiguration>();
             var wavefrontOptions = new WavefrontExporterOptions(configuration);
 
             // Only add if wavefront is configured
             if (!string.IsNullOrEmpty(wavefrontOptions.Uri))
             {
-                var logger = sp.GetService<ILogger<WavefrontTraceExporter>>();
-                builder.AddWavefrontTraceExporter(wavefrontOptions, logger);
+                var logger = sp.GetRequiredService<ILogger<WavefrontTraceExporter>>();
+                innerBuilder.AddWavefrontTraceExporter(wavefrontOptions, logger);
             }
         });
     }

@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddEntityFrameworkActuator_ThrowsOnNulls()
@@ -43,7 +43,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddDbMigrationsActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IOptionsMonitor<DbMigrationsEndpointOptions>>();
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<DbMigrationsEndpointOptions>>();
         options.CurrentValue.Id.Should().Be("dbmigrations");
         var ep = serviceProvider.GetService<IDbMigrationsEndpointHandler>();
         ep.Should().NotBeNull();

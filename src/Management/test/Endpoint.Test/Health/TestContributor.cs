@@ -8,38 +8,10 @@ namespace Steeltoe.Management.Endpoint.Test.Health;
 
 internal sealed class TestContributor : IHealthContributor
 {
-    public bool Called { get; private set; }
-    public bool Throws { get; }
-
-    public string Id { get; }
-
-    public TestContributor()
-    {
-        Id = "TestHealth";
-        Throws = false;
-    }
-
-    public TestContributor(string id)
-    {
-        Id = id;
-        Throws = false;
-    }
-
-    public TestContributor(string id, bool throws)
-    {
-        Id = id;
-        Throws = throws;
-    }
+    public string Id => "Test";
 
     public HealthCheckResult Health()
     {
-        if (Throws)
-        {
-            throw new Exception();
-        }
-
-        Called = true;
-
         return new HealthCheckResult
         {
             Status = HealthStatus.Up

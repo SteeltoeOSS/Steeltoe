@@ -47,7 +47,7 @@ public static class HostBuilderExtensions
     /// </param>
     public static IHostBuilder AddKubernetesActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
     {
-        return hostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((context, collection) =>
+        return hostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((_, collection) =>
         {
             collection.AddKubernetesActuators();
             IEndpointConventionBuilder epBuilder = collection.ActivateActuatorEndpoints();
@@ -66,7 +66,7 @@ public static class HostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddKubernetesActuators(this IWebHostBuilder webHostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
     {
-        return webHostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((context, collection) =>
+        return webHostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((_, collection) =>
         {
             collection.AddKubernetesActuators();
             IEndpointConventionBuilder epBuilder = collection.ActivateActuatorEndpoints();

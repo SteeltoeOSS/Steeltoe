@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Middleware;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     [Fact]
     public void Constructor_ThrowsIfEndpointNull()

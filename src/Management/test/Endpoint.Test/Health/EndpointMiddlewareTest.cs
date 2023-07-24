@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private readonly Dictionary<string, string> _appSettings = new()
     {
@@ -313,11 +313,14 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<HealthEndpointOptions>();
 
-        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
+        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
 
-        Assert.False(options.ExactMatch);
-        Assert.Equal("/actuator/health/{**_}", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
-        Assert.Equal("/cloudfoundryapplication/health/{**_}", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
+        Assert.False(options.RequiresExactMatch());
+        Assert.Equal("/actuator/health/{**_}", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+
+        Assert.Equal("/cloudfoundryapplication/health/{**_}",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }

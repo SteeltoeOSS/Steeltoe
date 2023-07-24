@@ -20,21 +20,21 @@ internal sealed class HealthConverter : JsonConverter<HealthEndpointResponse>
     {
         writer.WriteStartObject();
 
-        if (value is HealthEndpointResponse health)
+        if (value != null)
         {
-            writer.WriteString("status", health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            writer.WriteString("status", value.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
 
-            if (!string.IsNullOrEmpty(health.Description))
+            if (!string.IsNullOrEmpty(value.Description))
             {
-                writer.WriteString("description", health.Description);
+                writer.WriteString("description", value.Description);
             }
 
-            if (health.Details != null && health.Details.Count > 0)
+            if (value.Details != null && value.Details.Count > 0)
             {
                 writer.WritePropertyName("details");
                 writer.WriteStartObject();
 
-                foreach (KeyValuePair<string, object> detail in health.Details)
+                foreach (KeyValuePair<string, object> detail in value.Details)
                 {
                     writer.WritePropertyName(detail.Key);
 

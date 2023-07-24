@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Environment;
 
 namespace Steeltoe.Management.Endpoint.Test.Environment;
 
-public class Startup
+public sealed class Startup
 {
     public IConfiguration Configuration { get; set; }
 

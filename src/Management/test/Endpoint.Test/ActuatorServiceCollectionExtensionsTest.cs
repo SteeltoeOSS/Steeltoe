@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ActuatorServiceCollectionExtensionsTest
+public sealed class ActuatorServiceCollectionExtensionsTest
 {
     [Fact]
     public void AddAllActuators_ConfiguresCorsDefaults()
@@ -23,7 +23,7 @@ public class ActuatorServiceCollectionExtensionsTest
         {
         });
 
-        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
+        IWebHost host = hostBuilder.ConfigureServices((_, services) => services.AddAllActuators()).Build();
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
         Assert.NotNull(options);
@@ -40,8 +40,7 @@ public class ActuatorServiceCollectionExtensionsTest
         {
         });
 
-        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(myPolicy => myPolicy.WithOrigins("http://google.com")))
-            .Build();
+        IWebHost host = hostBuilder.ConfigureServices((_, services) => services.AddAllActuators(myPolicy => myPolicy.WithOrigins("http://google.com"))).Build();
 
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
@@ -63,7 +62,7 @@ public class ActuatorServiceCollectionExtensionsTest
         {
         }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
-        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
+        IWebHost host = hostBuilder.ConfigureServices((_, services) => services.AddAllActuators()).Build();
 
         Assert.NotNull(host.Services.GetService<ICloudFoundryEndpointHandler>());
         System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
@@ -76,7 +75,7 @@ public class ActuatorServiceCollectionExtensionsTest
         {
         }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
-        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
+        IWebHost host = hostBuilder.ConfigureServices((_, services) => services.AddAllActuators()).Build();
 
         Assert.Null(host.Services.GetService<ICloudFoundryEndpointHandler>());
     }

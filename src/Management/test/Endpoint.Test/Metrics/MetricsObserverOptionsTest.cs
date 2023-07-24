@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class MetricsObserverOptionsTest : BaseTest
+public sealed class MetricsObserverOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()

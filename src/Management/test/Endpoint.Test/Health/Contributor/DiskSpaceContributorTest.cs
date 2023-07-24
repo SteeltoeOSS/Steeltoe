@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health.Contributor;
 
-public class DiskSpaceContributorTest : BaseTest
+public sealed class DiskSpaceContributorTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()

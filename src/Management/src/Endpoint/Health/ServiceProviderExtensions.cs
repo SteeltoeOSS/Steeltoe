@@ -22,7 +22,7 @@ public static class ServiceProviderExtensions
 
         if (availability != null)
         {
-            var lifetime = serviceProvider.GetService<IHostApplicationLifetime>();
+            var lifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
 
             lifetime.ApplicationStarted.Register(() =>
             {

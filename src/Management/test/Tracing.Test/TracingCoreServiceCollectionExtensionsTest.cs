@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 
-public class TracingCoreServiceCollectionExtensionsTest : TestBase
+public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
 {
     [Fact]
     public void AddDistributedTracingAspNetCore_ThrowsOnNulls()

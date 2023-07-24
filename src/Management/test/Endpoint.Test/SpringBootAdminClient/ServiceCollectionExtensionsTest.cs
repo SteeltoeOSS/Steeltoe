@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public class ServiceCollectionExtensionsTest
+public sealed class ServiceCollectionExtensionsTest
 {
     [Fact]
     public void AddSpringBootAdminClient_ThrowsOnNull()
@@ -33,6 +33,6 @@ public class ServiceCollectionExtensionsTest
         services.AddSpringBootAdminClient();
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        Assert.IsType<SpringBootAdminClientHostedService>(serviceProvider.GetService<IHostedService>());
+        Assert.IsType<SpringBootAdminClientHostedService>(serviceProvider.GetRequiredService<IHostedService>());
     }
 }

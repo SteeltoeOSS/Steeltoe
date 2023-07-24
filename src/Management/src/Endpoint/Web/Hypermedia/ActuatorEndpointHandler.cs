@@ -37,6 +37,7 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
     public Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)
     {
         var service = new HypermediaService(_managementOption, _options, _endpointOptions, _logger);
-        return Task.FromResult(service.Invoke(baseUrl));
+        Links result = service.Invoke(baseUrl);
+        return Task.FromResult(result);
     }
 }

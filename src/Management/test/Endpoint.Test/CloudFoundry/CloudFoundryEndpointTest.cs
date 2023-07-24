@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class CloudFoundryEndpointTest : BaseTest
+public sealed class CloudFoundryEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -27,22 +27,22 @@ public class CloudFoundryEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddInfoActuatorServices();
             services.AddCloudFoundryActuatorServices();
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
+        var ep = tc.GetRequiredService<ICloudFoundryEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
-        Assert.NotNull(info.LinkCollection);
-        Assert.True(info.LinkCollection.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
-        Assert.True(info.LinkCollection.ContainsKey("info"));
-        Assert.Equal("http://localhost:5000/foobar/info", info.LinkCollection["info"].Href);
-        Assert.Equal(2, info.LinkCollection.Count);
+        Assert.NotNull(info.Entries);
+        Assert.True(info.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.Entries["self"].Href);
+        Assert.True(info.Entries.ContainsKey("info"));
+        Assert.Equal("http://localhost:5000/foobar/info", info.Entries["info"].Href);
+        Assert.Equal(2, info.Entries.Count);
     }
 
     [Fact]
@@ -50,19 +50,19 @@ public class CloudFoundryEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddCloudFoundryActuatorServices();
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
+        var ep = tc.GetRequiredService<ICloudFoundryEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
-        Assert.NotNull(info.LinkCollection);
-        Assert.True(info.LinkCollection.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
-        Assert.Single(info.LinkCollection);
+        Assert.NotNull(info.Entries);
+        Assert.True(info.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.Entries["self"].Href);
+        Assert.Single(info.Entries);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class CloudFoundryEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddCloudFoundryActuatorServices();
             services.AddInfoActuatorServices();
@@ -84,15 +84,15 @@ public class CloudFoundryEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpointHandler>();
+        var ep = tc.GetRequiredService<ICloudFoundryEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
-        Assert.NotNull(info.LinkCollection);
-        Assert.True(info.LinkCollection.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
-        Assert.True(info.LinkCollection.ContainsKey("info"));
-        Assert.Equal(2, info.LinkCollection.Count);
+        Assert.NotNull(info.Entries);
+        Assert.True(info.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.Entries["self"].Href);
+        Assert.True(info.Entries.ContainsKey("info"));
+        Assert.Equal(2, info.Entries.Count);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class CloudFoundryEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddCloudFoundryActuatorServices();
             services.AddInfoActuatorServices();
@@ -115,7 +115,7 @@ public class CloudFoundryEndpointTest : BaseTest
             });
         };
 
-        var middle = tc.GetService<CloudFoundryEndpointMiddleware>();
+        var middle = tc.GetRequiredService<CloudFoundryEndpointMiddleware>();
         bool shouldInvoke = middle.ShouldInvoke(new PathString("/cloudfoundryapplication/info"));
         Assert.False(shouldInvoke);
     }

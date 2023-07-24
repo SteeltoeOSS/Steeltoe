@@ -9,11 +9,9 @@ namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
 internal sealed class TestLogProvider : IDynamicLoggerProvider
 {
-    public string Category { get; set; }
-
-    public LogLevel Level { get; set; }
-
-    public bool GetLoggerConfigurationsCalled { get; set; }
+    public string Category { get; private set; }
+    public LogLevel Level { get; private set; }
+    public bool GetLoggerConfigurationsCalled { get; private set; }
 
     public ILogger CreateLogger(string categoryName)
     {

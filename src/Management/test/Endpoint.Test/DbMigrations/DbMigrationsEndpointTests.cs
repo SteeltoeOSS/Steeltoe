@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
-public class DbMigrationsEndpointTests : BaseTest
+public sealed class DbMigrationsEndpointTests : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -59,14 +59,14 @@ public class DbMigrationsEndpointTests : BaseTest
             "applied"
         });
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddScoped(_ => new MockDbContext());
             services.AddScoped(_ => helper);
             services.AddDbMigrationsActuatorServices();
         };
 
-        var sut = tc.GetService<IDbMigrationsEndpointHandler>();
+        var sut = tc.GetRequiredService<IDbMigrationsEndpointHandler>();
         Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(null, CancellationToken.None);
 
         const string contextName = nameof(MockDbContext);
@@ -88,14 +88,14 @@ public class DbMigrationsEndpointTests : BaseTest
             "migration"
         });
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddScoped(_ => new MockDbContext());
             services.AddScoped(_ => helper);
             services.AddDbMigrationsActuatorServices();
         };
 
-        var sut = tc.GetService<IDbMigrationsEndpointHandler>();
+        var sut = tc.GetRequiredService<IDbMigrationsEndpointHandler>();
         Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(null, CancellationToken.None);
 
         const string contextName = nameof(MockDbContext);
@@ -111,13 +111,13 @@ public class DbMigrationsEndpointTests : BaseTest
         var helper = Substitute.For<DbMigrationsEndpointHandler.DbMigrationsEndpointHelper>();
         helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddScoped(_ => helper);
             services.AddDbMigrationsActuatorServices();
         };
 
-        var sut = tc.GetService<IDbMigrationsEndpointHandler>();
+        var sut = tc.GetRequiredService<IDbMigrationsEndpointHandler>();
         Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(null, CancellationToken.None);
 
         result.Should().BeEmpty();

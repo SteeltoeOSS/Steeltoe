@@ -149,24 +149,24 @@ internal struct AggregatorStore<TAggregator> : IEquatable<AggregatorStore<TAggre
                 visitFunc(new LabeledAggregationStatistics(stats));
                 break;
 
-            case FixedSizeLabelNameDictionary<StringSequence1, ObjectSequence1, TAggregator> aggs1:
-                aggs1.Collect(visitFunc);
+            case FixedSizeLabelNameDictionary<StringSequence1, ObjectSequence1, TAggregator> aggregations1:
+                aggregations1.Collect(visitFunc);
                 break;
 
-            case FixedSizeLabelNameDictionary<StringSequence2, ObjectSequence2, TAggregator> aggs2:
-                aggs2.Collect(visitFunc);
+            case FixedSizeLabelNameDictionary<StringSequence2, ObjectSequence2, TAggregator> aggregations2:
+                aggregations2.Collect(visitFunc);
                 break;
 
-            case FixedSizeLabelNameDictionary<StringSequence3, ObjectSequence3, TAggregator> aggs3:
-                aggs3.Collect(visitFunc);
+            case FixedSizeLabelNameDictionary<StringSequence3, ObjectSequence3, TAggregator> aggregations3:
+                aggregations3.Collect(visitFunc);
                 break;
 
-            case FixedSizeLabelNameDictionary<StringSequenceMany, ObjectSequenceMany, TAggregator> aggsMany:
-                aggsMany.Collect(visitFunc);
+            case FixedSizeLabelNameDictionary<StringSequenceMany, ObjectSequenceMany, TAggregator> aggregationsMany:
+                aggregationsMany.Collect(visitFunc);
                 break;
 
-            case MultiSizeLabelNameDictionary<TAggregator> aggsMultiSize:
-                aggsMultiSize.Collect(visitFunc);
+            case MultiSizeLabelNameDictionary<TAggregator> aggregationsMultiSize:
+                aggregationsMultiSize.Collect(visitFunc);
                 break;
         }
     }

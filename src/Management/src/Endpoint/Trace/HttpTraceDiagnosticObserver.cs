@@ -29,7 +29,7 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
 
     public override HttpTraceResult GetTraces()
     {
-        return new HttpTracesV2(_queue.ToList());
+        return new HttpTraceResultV2(_queue.ToList());
     }
 
     protected override void RecordHttpTrace(Activity current, HttpContext context)
@@ -55,9 +55,9 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
         return new HttpTrace(request, response, GetJavaTime(DateTime.Now.Ticks), principal, session, duration.Milliseconds);
     }
 
-    internal new Dictionary<string, string[]> GetHeaders(IHeaderDictionary headers)
+    private Dictionary<string, IList<string>> GetHeaders(IHeaderDictionary headers)
     {
-        var result = new Dictionary<string, string[]>();
+        var result = new Dictionary<string, IList<string>>();
 
         foreach (KeyValuePair<string, StringValues> h in headers)
         {

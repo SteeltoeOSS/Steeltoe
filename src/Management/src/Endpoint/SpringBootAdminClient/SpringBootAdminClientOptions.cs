@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 public sealed class SpringBootAdminClientOptions
 {
     private const string Prefix = "spring:boot:admin:client";
-    private const string Urls = "URLS";
+    private const string UrlsKeyName = "URLS";
 
     public string Url { get; set; }
 
@@ -39,7 +39,7 @@ public sealed class SpringBootAdminClientOptions
     /// <summary>
     /// Gets or sets metadata to use when registering with SBA.
     /// </summary>
-    public Dictionary<string, object> Metadata { get; set; }
+    public IDictionary<string, object> Metadata { get; set; }
 
     public SpringBootAdminClientOptions(IConfiguration configuration, IApplicationInstanceInfo appInfo)
     {
@@ -48,13 +48,10 @@ public sealed class SpringBootAdminClientOptions
 
         IConfigurationSection section = configuration.GetSection(Prefix);
 
-        if (section != null)
-        {
-            section.Bind(this);
-        }
+        section?.Bind(this);
 
         // Require base path to be supplied directly, in the configuration, or in the app instance info
-        BasePath ??= GetBasePath(configuration) ?? appInfo?.Uris?.FirstOrDefault() ??
+        BasePath ??= GetBasePath(configuration) ?? appInfo.Uris?.FirstOrDefault() ??
             throw new NullReferenceException($"Please set {Prefix}:BasePath in order to register with Spring Boot Admin");
 
         ApplicationName ??= appInfo.GetApplicationNameInContext(SteeltoeComponent.Management);
@@ -62,7 +59,7 @@ public sealed class SpringBootAdminClientOptions
 
     private string GetBasePath(IConfiguration configuration)
     {
-        string urlString = configuration.GetValue<string>(Urls);
+        string urlString = configuration.GetValue<string>(UrlsKeyName);
         string[] urls = urlString?.Split(';');
 
         if (urls?.Length > 0)

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddCloudFoundryActuator_ThrowsOnNulls()
@@ -42,7 +42,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddCloudFoundryActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
         Assert.Equal(string.Empty, options.CurrentValue.Id);
         var ep = serviceProvider.GetService<ICloudFoundryEndpointHandler>();
         Assert.NotNull(ep);

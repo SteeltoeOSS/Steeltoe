@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
-public class HypermediaEndpointOptionsTest : BaseTest
+public sealed class HypermediaEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()

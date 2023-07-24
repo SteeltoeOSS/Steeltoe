@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 
-public class TraceDiagnosticObserverTest : BaseTest
+public sealed class TraceDiagnosticObserverTest : BaseTest
 {
     [Fact]
     public void Constructor_ThrowsOnNulls()
@@ -292,7 +292,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         Assert.NotNull(headers);
         Assert.True(headers.ContainsKey("request"));
         Assert.True(headers.ContainsKey("response"));
-        short timeTaken = short.Parse(result.Info["timeTaken"] as string, CultureInfo.InvariantCulture);
+        short timeTaken = short.Parse((string)result.Info["timeTaken"], CultureInfo.InvariantCulture);
         Assert.InRange(timeTaken, 1000, 1300);
 
         obs.Dispose();
@@ -381,7 +381,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         }
 
         Assert.Equal(option.CurrentValue.Capacity, obs.Queue.Count);
-        var result = (HttpTracesV1)obs.GetTraces();
+        var result = (HttpTraceResultV1)obs.GetTraces();
         Assert.Equal(option.CurrentValue.Capacity, result.Traces.Count);
         Assert.Equal(option.CurrentValue.Capacity, obs.Queue.Count);
 

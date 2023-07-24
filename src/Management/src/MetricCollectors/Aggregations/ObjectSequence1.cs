@@ -24,7 +24,7 @@ internal struct ObjectSequence1 : IEquatable<ObjectSequence1>, IObjectSequence
 
     public bool Equals(ObjectSequence1 other)
     {
-        return _value1 is null ? other._value1 is null : _value1.Equals(other._value1);
+        return Equals(_value1, other._value1);
     }
 
     public override bool Equals(object? obj)

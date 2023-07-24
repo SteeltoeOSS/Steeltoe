@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
 internal sealed class TestThreadDumper : IThreadDumper
 {
-    public bool DumpThreadsCalled { get; set; }
+    public bool DumpThreadsCalled { get; private set; }
 
     public IList<ThreadInfo> DumpThreads()
     {

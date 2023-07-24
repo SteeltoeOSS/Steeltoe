@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddHeapDumpActuator_ThrowsOnNulls()

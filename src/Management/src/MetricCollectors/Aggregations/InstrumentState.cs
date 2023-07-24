@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.Metrics;
 using System.Security;
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
@@ -14,7 +13,7 @@ internal abstract class InstrumentState
     public abstract void Update(double measurement, ReadOnlySpan<KeyValuePair<string, object?>> labels);
 
     // This can be called concurrently with Update()
-    public abstract void Collect(Instrument instrument, Action<LabeledAggregationStatistics> aggregationVisitFunc);
+    public abstract void Collect(Action<LabeledAggregationStatistics> aggregationVisitFunc);
 }
 
 internal sealed class InstrumentState<TAggregator> : InstrumentState
@@ -27,7 +26,7 @@ internal sealed class InstrumentState<TAggregator> : InstrumentState
         _aggregatorStore = new AggregatorStore<TAggregator>(createAggregatorFunc);
     }
 
-    public override void Collect(Instrument instrument, Action<LabeledAggregationStatistics> aggregationVisitFunc)
+    public override void Collect(Action<LabeledAggregationStatistics> aggregationVisitFunc)
     {
         _aggregatorStore.Collect(aggregationVisitFunc);
     }

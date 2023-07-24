@@ -7,13 +7,10 @@ using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Management.Endpoint.Environment;
 
-public sealed class GenericHostingEnvironment : IHostEnvironment
+internal sealed class GenericHostingEnvironment : IHostEnvironment
 {
     public string EnvironmentName { get; set; }
-
     public string ApplicationName { get; set; }
-
     public string ContentRootPath { get; set; }
-
     public IFileProvider ContentRootFileProvider { get; set; }
 }

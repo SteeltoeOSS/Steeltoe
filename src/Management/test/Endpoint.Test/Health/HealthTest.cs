@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class HealthTest : BaseTest
+public sealed class HealthTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesDefaults()
@@ -48,7 +48,7 @@ public class HealthTest : BaseTest
         string json = Serialize(health);
 
         Assert.Equal(
-            "{\"status\":\"OUT_OF_SERVICE\",\"description\":\"Test\",\"details\":{\"item1\":{\"stringProperty\":\"Testdata\",\"intProperty\":100,\"boolProperty\":true},\"item2\":\"String\",\"item3\":false}}",
+            "{\"status\":\"OUT_OF_SERVICE\",\"description\":\"Test\",\"details\":{\"item1\":{\"stringProperty\":\"TestData\",\"intProperty\":100,\"boolProperty\":true},\"item2\":\"String\",\"item3\":false}}",
             json);
     }
 

@@ -21,5 +21,5 @@ internal sealed class Application
     public Uri ServiceUrl { get; set; }
 
     [JsonPropertyName("metadata")]
-    public Dictionary<string, object> Metadata { get; set; }
+    public IDictionary<string, object> Metadata { get; set; }
 }

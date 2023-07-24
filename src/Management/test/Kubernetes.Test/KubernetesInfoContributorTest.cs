@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Kubernetes.Test;
 
-public class KubernetesInfoContributorTest
+public sealed class KubernetesInfoContributorTest
 {
     [Fact]
     public async Task ReturnsPodInfoInsideCluster()
@@ -34,10 +34,12 @@ public class KubernetesInfoContributorTest
         var contributor = new KubernetesInfoContributor(new FakePodUtilities(null));
 
         await contributor.ContributeAsync(builder, CancellationToken.None);
-        var info = builder.Build()["kubernetes"] as Dictionary<string, object>;
+        IDictionary<string, object> infos = builder.Build();
+
+        var info = (Dictionary<string, object>)infos["kubernetes"];
 
         Assert.True(info.ContainsKey("inside"));
-        Assert.False(bool.Parse(info["inside"].ToString()));
+        Assert.False(bool.Parse(info["inside"].ToString()!));
         Assert.False(info.ContainsKey("namespace"));
         Assert.False(info.ContainsKey("podName"));
         Assert.False(info.ContainsKey("podIp"));

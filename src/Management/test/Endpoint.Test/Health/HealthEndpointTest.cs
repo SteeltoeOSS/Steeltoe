@@ -11,7 +11,7 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
+using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -19,7 +19,7 @@ using MicrosoftHealth = Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class HealthEndpointTest : BaseTest
+public sealed class HealthEndpointTest : BaseTest
 {
     private readonly IOptionsMonitor<HealthEndpointOptions> _options = new TestOptionsMonitor<HealthEndpointOptions>(new HealthEndpointOptions());
     private readonly IHealthAggregator _aggregator = new DefaultHealthAggregator();
@@ -71,7 +71,7 @@ public class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var ep = tc.GetService<IHealthEndpointHandler>();
+        var ep = tc.GetRequiredService<IHealthEndpointHandler>();
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
 
@@ -99,7 +99,7 @@ public class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var ep = tc.GetService<IHealthEndpointHandler>();
+        var ep = tc.GetRequiredService<IHealthEndpointHandler>();
         HealthEndpointRequest healthRequest = GetHealthRequest();
         await ep.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -129,7 +129,7 @@ public class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var ep = tc.GetService<IHealthEndpointHandler>();
+        var ep = tc.GetRequiredService<IHealthEndpointHandler>();
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
         HealthEndpointResponse info = await ep.InvokeAsync(healthRequest, CancellationToken.None);
@@ -168,7 +168,7 @@ public class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var ep = (HealthEndpointHandler)tc.GetService<IHealthEndpointHandler>();
+        var ep = (HealthEndpointHandler)tc.GetRequiredService<IHealthEndpointHandler>();
 
         Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult
         {
@@ -210,7 +210,7 @@ public class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var ep = tc.GetService<IHealthEndpointHandler>();
+        var ep = tc.GetRequiredService<IHealthEndpointHandler>();
         appAvailability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
 
         var healthRequest = new HealthEndpointRequest
@@ -246,7 +246,7 @@ public class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var ep = tc.GetService<IHealthEndpointHandler>();
+        var ep = tc.GetRequiredService<IHealthEndpointHandler>();
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
         var healthRequest = new HealthEndpointRequest
@@ -312,7 +312,7 @@ public class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var ep = tc.GetService<IHealthEndpointHandler>();
+        var ep = tc.GetRequiredService<IHealthEndpointHandler>();
 
         var healthRequest = new HealthEndpointRequest
         {

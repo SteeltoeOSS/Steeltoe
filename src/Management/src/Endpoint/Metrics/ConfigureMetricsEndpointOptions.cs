@@ -9,12 +9,12 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 internal sealed class ConfigureMetricsEndpointOptions : ConfigureEndpointOptions<MetricsEndpointOptions>
 {
-    internal const string ManagementInfoPrefix = "management:endpoints:metrics";
+    private const string ManagementInfoPrefix = "management:endpoints:metrics";
 
-    internal const string DefaultIngressIgnorePattern =
+    private const string DefaultIngressIgnorePattern =
         "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";
 
-    internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions";
+    private const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions";
 
     public ConfigureMetricsEndpointOptions(IConfiguration configuration)
         : base(configuration, ManagementInfoPrefix, "metrics")

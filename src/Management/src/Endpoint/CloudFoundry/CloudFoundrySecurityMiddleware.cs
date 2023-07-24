@@ -49,7 +49,7 @@ public sealed class CloudFoundrySecurityMiddleware
         CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
 
         _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value,
-            ConfigureManagementEndpointOptions.DefaultCFPath);
+            ConfigureManagementEndpointOptions.DefaultCloudFoundryPath);
 
         if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) &&
             SecurityUtils.IsCloudFoundryRequest(context.Request.Path))
@@ -123,7 +123,7 @@ public sealed class CloudFoundrySecurityMiddleware
     {
         foreach (HttpMiddlewareOptions endpointOptions in _endpointsCollection)
         {
-            string contextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
+            string contextPath = ConfigureManagementEndpointOptions.DefaultCloudFoundryPath;
 
             if (!string.IsNullOrEmpty(endpointOptions.Path))
             {

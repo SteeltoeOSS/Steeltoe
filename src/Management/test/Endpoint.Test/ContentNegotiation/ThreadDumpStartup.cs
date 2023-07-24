@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class ThreadDumpStartup
+public sealed class ThreadDumpStartup
 {
     public IConfiguration Configuration { get; }
 

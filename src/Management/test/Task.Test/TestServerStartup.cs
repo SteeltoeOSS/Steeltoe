@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Management.Task.Test;
 
-public class TestServerStartup
+public sealed class TestServerStartup
 {
     public IConfiguration Configuration { get; }
 

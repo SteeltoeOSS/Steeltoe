@@ -24,7 +24,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
     private const string ExceptionTagKey = "exception";
     private const string MethodTagKey = "method";
     private const string UriTagKey = "uri";
-    internal const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
+    private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
@@ -71,7 +71,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
         }
     }
 
-    internal void HandleStopEvent(Activity current, HttpContext context)
+    private void HandleStopEvent(Activity current, HttpContext context)
     {
         ArgumentGuard.NotNull(current);
         ArgumentGuard.NotNull(context);
@@ -111,7 +111,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
     {
         var exception = arg.Features.Get<IExceptionHandlerFeature>();
 
-        if (exception != null && exception.Error != null)
+        if (exception != null)
         {
             return exception.Error.GetType().Name;
         }

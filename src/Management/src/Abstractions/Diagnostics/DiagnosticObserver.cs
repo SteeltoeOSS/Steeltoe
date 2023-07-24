@@ -11,11 +11,9 @@ namespace Steeltoe.Management.Diagnostics;
 public abstract class DiagnosticObserver : IDiagnosticObserver
 {
     private readonly ILogger _logger;
-
     private IDisposable _subscription;
 
     public string ListenerName { get; }
-
     public string ObserverName { get; }
 
     protected DiagnosticObserver(string name, string listenerName, ILoggerFactory loggerFactory)
@@ -76,9 +74,9 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
         {
             ProcessEvent(@event.Key, @event.Value);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            _logger.LogError(e, "ProcessEvent exception: {Id}", @event.Key);
+            _logger.LogError(exception, "ProcessEvent exception: {Id}", @event.Key);
         }
     }
 

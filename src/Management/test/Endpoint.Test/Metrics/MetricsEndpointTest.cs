@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
+using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;
 using Xunit;
@@ -15,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class MetricsEndpointTest : BaseTest
+public sealed class MetricsEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -31,7 +32,7 @@ public class MetricsEndpointTest : BaseTest
         Assert.Throws<ArgumentNullException>(() => new MetricsEndpointHandler(null, null, null));
         IOptionsMonitor<MetricsEndpointOptions> options = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         Assert.Throws<ArgumentNullException>(() => new MetricsEndpointHandler(options, null, null));
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointHandler(options, new SteeltoeExporter(null), null));
+        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointHandler(options, new SteeltoeExporter(new MetricsExporterOptions()), null));
     }
 
     [Fact]
@@ -39,7 +40,7 @@ public class MetricsEndpointTest : BaseTest
     {
         using (var tc = new TestContext(_output))
         {
-            tc.AdditionalServices = (services, configuration) =>
+            tc.AdditionalServices = (services, _) =>
             {
                 services.AddMetricsActuatorServices();
             };
@@ -50,7 +51,7 @@ public class MetricsEndpointTest : BaseTest
 
             try
             {
-                var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+                var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
                 Counter<long> requests = SteeltoeMetrics.Meter.CreateCounter<long>("http.server.requests");
                 requests.Add(1);
                 Counter<double> memory = SteeltoeMetrics.Meter.CreateCounter<double>("gc.memory.used");
@@ -72,7 +73,7 @@ public class MetricsEndpointTest : BaseTest
 
         using (var tc = new TestContext(_output))
         {
-            tc.AdditionalServices = (services, configuration) =>
+            tc.AdditionalServices = (services, _) =>
             {
                 services.AddMetricsActuatorServices();
             };
@@ -83,7 +84,7 @@ public class MetricsEndpointTest : BaseTest
 
             try
             {
-                var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+                var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
                 MetricsResponse result = await ep.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
 
@@ -103,7 +104,7 @@ public class MetricsEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuatorServices();
         };
@@ -114,7 +115,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpointHandler>();
+            var ep = tc.GetRequiredService<IMetricsEndpointHandler>();
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             long allKeysSum = 0;
@@ -160,7 +161,7 @@ public class MetricsEndpointTest : BaseTest
     }
 
     [Fact]
-    public async Task Invoke_WithMetricsRequest_ReturnsExpected_IncudesAdditionalInstruments()
+    public async Task Invoke_WithMetricsRequest_ReturnsExpected_IncludesAdditionalInstruments()
     {
         using var tc = new TestContext(_output);
 
@@ -172,7 +173,7 @@ public class MetricsEndpointTest : BaseTest
             });
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuator();
         };
@@ -183,7 +184,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+            var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             var additionalMeter = new Meter("AdditionalTestMeter");
@@ -239,7 +240,7 @@ public class MetricsEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuatorServices();
         };
@@ -250,7 +251,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+            var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
 
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test7");
             counter.Add(100);
@@ -273,7 +274,7 @@ public class MetricsEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuatorServices();
         };
@@ -284,7 +285,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+            var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test2");
 
             var v1Tags = new Dictionary<string, object>
@@ -351,7 +352,7 @@ public class MetricsEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuatorServices();
         };
@@ -362,7 +363,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
+            var ep = tc.GetRequiredService<IMetricsEndpointHandler>() as MetricsEndpointHandler;
 
             Histogram<double> testMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("test.test1");
 
@@ -530,7 +531,7 @@ public class MetricsEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuatorServices();
         };
@@ -541,7 +542,7 @@ public class MetricsEndpointTest : BaseTest
 
         try
         {
-            var ep = tc.GetService<IMetricsEndpointHandler>();
+            var ep = tc.GetRequiredService<IMetricsEndpointHandler>();
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.total");
 

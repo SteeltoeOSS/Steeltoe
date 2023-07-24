@@ -17,7 +17,7 @@ internal static class ContentNegotiationExtensions
         context.Response.Headers.SetContentType(context.Request.Headers, logger);
     }
 
-    internal static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
+    private static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
     {
         ArgumentGuard.NotNull(logger);
 
@@ -33,11 +33,11 @@ internal static class ContentNegotiationExtensions
         }
     }
 
-    internal static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger,
+    private static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger,
         MediaTypeVersion version = MediaTypeVersion.V2)
     {
         var headers = new RequestHeaders(requestHeaders);
-        List<string> acceptMediaTypes = headers.Accept?.Select(x => x.MediaType.Value).ToList();
+        List<string> acceptMediaTypes = headers.Accept.Select(x => x.MediaType.Value).ToList();
 
         string contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
 

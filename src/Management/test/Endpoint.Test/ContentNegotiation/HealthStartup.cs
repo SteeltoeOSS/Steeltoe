@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class HealthStartup
+public sealed class HealthStartup
 {
     public IConfiguration Configuration { get; }
 

@@ -39,20 +39,14 @@ internal sealed class ConfigureHealthEndpointOptions : IConfigureOptions<HealthE
             };
         }
 
-        if (!options.Groups.ContainsKey("liveness"))
+        options.Groups.TryAdd("liveness", new HealthGroupOptions
         {
-            options.Groups.Add("liveness", new HealthGroupOptions
-            {
-                Include = "liveness"
-            });
-        }
+            Include = "liveness"
+        });
 
-        if (!options.Groups.ContainsKey("readiness"))
+        options.Groups.TryAdd("readiness", new HealthGroupOptions
         {
-            options.Groups.Add("readiness", new HealthGroupOptions
-            {
-                Include = "readiness"
-            });
-        }
+            Include = "readiness"
+        });
     }
 }

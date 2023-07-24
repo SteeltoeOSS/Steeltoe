@@ -15,9 +15,9 @@ public sealed class MetricSample
     public double Value { get; }
 
     [JsonIgnore]
-    public IEnumerable<KeyValuePair<string, string>>? Tags { get; set; }
+    public IList<KeyValuePair<string, string>>? Tags { get; }
 
-    public MetricSample(MetricStatistic statistic, double value, IEnumerable<KeyValuePair<string, string>>? tags)
+    public MetricSample(MetricStatistic statistic, double value, IList<KeyValuePair<string, string>>? tags)
     {
         Statistic = statistic;
         Value = value;

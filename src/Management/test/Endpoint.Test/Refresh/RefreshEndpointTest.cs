@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
-public class RefreshEndpointTest : BaseTest
+public sealed class RefreshEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -26,16 +26,14 @@ public class RefreshEndpointTest : BaseTest
     {
         const IConfigurationRoot configuration = null;
 
-        IOptionsMonitor<RefreshEndpointOptions> options1 = null;
-
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpointHandler(options1, configuration, NullLoggerFactory.Instance));
+        Assert.Throws<ArgumentNullException>(() => new RefreshEndpointHandler(null, configuration, NullLoggerFactory.Instance));
         IOptionsMonitor<RefreshEndpointOptions> options = GetOptionsMonitorFromSettings<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
 
         Assert.Throws<ArgumentNullException>(() => new RefreshEndpointHandler(options, configuration, NullLoggerFactory.Instance));
     }
 
     [Fact]
-    public async Task DoInvoke_ReturnsExpected()
+    public async Task Invoke_ReturnsExpected()
     {
         var appsettings = new Dictionary<string, string>
         {
@@ -49,7 +47,7 @@ public class RefreshEndpointTest : BaseTest
 
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddRefreshActuatorServices();
         };
@@ -59,7 +57,7 @@ public class RefreshEndpointTest : BaseTest
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetService<IRefreshEndpointHandler>();
+        var ep = tc.GetRequiredService<IRefreshEndpointHandler>();
         IList<string> result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
 

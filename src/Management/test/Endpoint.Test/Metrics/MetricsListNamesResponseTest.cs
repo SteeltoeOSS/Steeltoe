@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class MetricsListNamesResponseTest : BaseTest
+public sealed class MetricsListNamesResponseTest : BaseTest
 {
     [Fact]
     public void Constructor_SetsValues()

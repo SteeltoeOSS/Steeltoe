@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class AspNetCoreHostingObserverTest : BaseTest
+public sealed class AspNetCoreHostingObserverTest : BaseTest
 {
     [Fact]
     public void ShouldIgnore_ReturnsExpected()
@@ -82,12 +82,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
         Assert.Contains(KeyValuePair.Create("method", (object)"GET"), tagContext);
     }
 
-    private HttpContext GetHttpRequestMessage()
-    {
-        return GetHttpRequestMessage("GET", "/foobar");
-    }
-
-    private HttpContext GetHttpRequestMessage(string method, string path)
+    private HttpContext GetHttpRequestMessage(string method = "GET", string path = "/foobar")
     {
         HttpContext context = new DefaultHttpContext
         {

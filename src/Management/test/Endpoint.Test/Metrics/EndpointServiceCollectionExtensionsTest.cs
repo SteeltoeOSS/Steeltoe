@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class EndpointServiceCollectionExtensionsTest : BaseTest
+public sealed class EndpointServiceCollectionExtensionsTest : BaseTest
 {
     [Fact]
     public void AddMetricsActuator_ThrowsOnNulls()
@@ -42,7 +42,7 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
         Assert.NotNull(mgr);
         var hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
-        var opts = serviceProvider.GetService<IOptionsMonitor<MetricsObserverOptions>>();
+        var opts = serviceProvider.GetRequiredService<IOptionsMonitor<MetricsObserverOptions>>();
         Assert.NotNull(opts.CurrentValue);
 
         IEnumerable<IDiagnosticObserver> observers = serviceProvider.GetServices<IDiagnosticObserver>();

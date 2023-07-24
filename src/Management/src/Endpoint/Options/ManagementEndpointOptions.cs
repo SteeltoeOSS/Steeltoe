@@ -4,18 +4,17 @@
 
 using System.Text.Json;
 
+#pragma warning disable S4004 // Collection properties should be readonly
+
 namespace Steeltoe.Management.Endpoint.Options;
 
 public sealed class ManagementEndpointOptions
 {
+    internal bool IsCloudFoundryEnabled { get; set; }
+
     public bool? Enabled { get; set; }
-
-    public bool CloudFoundryEnabled { get; set; } = true;
-
     public string Path { get; set; }
-
     public string Port { get; set; }
-
     public bool UseStatusCodeFromResponse { get; set; } = true;
 
     public JsonSerializerOptions SerializerOptions { get; set; } = new()
@@ -32,5 +31,5 @@ public sealed class ManagementEndpointOptions
     /// </see>
     /// custom JsonConverters.
     /// </summary>
-    public string[] CustomJsonConverters { get; set; }
+    public IList<string> CustomJsonConverters { get; set; }
 }

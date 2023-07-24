@@ -13,7 +13,6 @@ public sealed class DiskSpaceContributorOptions
     private const long DefaultThreshold = 10 * 1024 * 1024;
 
     public string Path { get; set; }
-
     public long Threshold { get; set; } = -1;
 
     public DiskSpaceContributorOptions()
@@ -28,10 +27,7 @@ public sealed class DiskSpaceContributorOptions
 
         IConfigurationSection section = configuration.GetSection(ManagementInfoPrefix);
 
-        if (section != null)
-        {
-            section.Bind(this);
-        }
+        section?.Bind(this);
 
         if (string.IsNullOrEmpty(Path))
         {

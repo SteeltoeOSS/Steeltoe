@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Health;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class AuthStartup
+public sealed class AuthStartup
 {
     public IConfiguration Configuration { get; }
 

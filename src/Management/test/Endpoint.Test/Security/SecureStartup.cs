@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test.Security;
 
-public class SecureStartup : Startup
+public sealed class SecureStartup : Startup
 {
     public SecureStartup(IConfiguration configuration)
         : base(configuration)

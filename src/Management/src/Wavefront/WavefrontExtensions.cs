@@ -60,7 +60,7 @@ public static class WavefrontExtensions
     /// </returns>
     public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        return hostBuilder.ConfigureServices((_, collection) =>
         {
             collection.AddWavefrontMetrics();
         });
@@ -86,15 +86,15 @@ public static class WavefrontExtensions
     /// </param>
     public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) => collection.AddWavefrontMetrics());
+        return hostBuilder.ConfigureServices((_, collection) => collection.AddWavefrontMetrics());
     }
 
     public static MeterProviderBuilder AddWavefrontExporter(this MeterProviderBuilder builder)
     {
         return builder.AddReader(sp =>
         {
-            var logger = sp.GetService<ILogger<WavefrontMetricsExporter>>();
-            var configuration = sp.GetService<IConfiguration>();
+            var logger = sp.GetRequiredService<ILogger<WavefrontMetricsExporter>>();
+            var configuration = sp.GetRequiredService<IConfiguration>();
             var wavefrontExporter = new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
 
             var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step)

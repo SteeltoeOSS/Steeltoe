@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class MappingsStartup
+public sealed class MappingsStartup
 {
     public IConfiguration Configuration { get; }
 

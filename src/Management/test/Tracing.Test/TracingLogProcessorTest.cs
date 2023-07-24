@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 
-public class TracingLogProcessorTest
+public sealed class TracingLogProcessorTest
 {
     [Fact]
     public void Process_NoCurrentSpan_DoesNothing()

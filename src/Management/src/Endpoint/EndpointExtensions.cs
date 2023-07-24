@@ -28,21 +28,21 @@ internal static class EndPointExtensions
         return options.DefaultEnabled;
     }
 
-    public static bool IsExposed(this HttpMiddlewareOptions options, ManagementEndpointOptions mgmtOptions)
+    public static bool IsExposed(this HttpMiddlewareOptions options, ManagementEndpointOptions endpointOptions)
     {
         ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(mgmtOptions);
+        ArgumentGuard.NotNull(endpointOptions);
 
-        if (!string.IsNullOrEmpty(options.Id) && mgmtOptions.Exposure != null)
+        if (!string.IsNullOrEmpty(options.Id) && endpointOptions.Exposure != null)
         {
-            IList<string> exclude = mgmtOptions.Exposure.Exclude;
+            IList<string> exclude = endpointOptions.Exposure.Exclude;
 
             if (exclude != null && (exclude.Contains("*") || exclude.Contains(options.Id)))
             {
                 return false;
             }
 
-            IList<string> include = mgmtOptions.Exposure.Include;
+            IList<string> include = endpointOptions.Exposure.Include;
 
             if (include != null && (include.Contains("*") || include.Contains(options.Id)))
             {
@@ -57,9 +57,9 @@ internal static class EndPointExtensions
 
     public static string GetContextBasePath(this ManagementEndpointOptions managementOptions, HttpRequest httpRequest)
     {
-        string defaultCFContextPath = ConfigureManagementEndpointOptions.DefaultCFPath;
-
-        return httpRequest.Path.StartsWithSegments(defaultCFContextPath) ? defaultCFContextPath : $"{managementOptions.Path}";
+        return httpRequest.Path.StartsWithSegments(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath)
+            ? ConfigureManagementEndpointOptions.DefaultCloudFoundryPath
+            : $"{managementOptions.Path}";
     }
 
     public static string GetPathMatchPattern(this HttpMiddlewareOptions options, string contextBasePath, ManagementEndpointOptions managementOptions)
@@ -76,7 +76,7 @@ internal static class EndPointExtensions
 
         contextPath += options.Path;
 
-        if (!options.ExactMatch)
+        if (!options.RequiresExactMatch())
         {
             if (!contextPath.EndsWith('/'))
             {

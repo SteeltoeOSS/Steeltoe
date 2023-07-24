@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class SecurityUtilsTest : BaseTest
+public sealed class SecurityUtilsTest : BaseTest
 {
     [Fact]
     public void IsCloudFoundryRequest_ReturnsExpected()

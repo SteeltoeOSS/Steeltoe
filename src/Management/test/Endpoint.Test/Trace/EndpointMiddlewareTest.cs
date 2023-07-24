@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
@@ -51,9 +51,12 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<TraceEndpointOptions>();
         ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.ExactMatch);
+        Assert.True(options.RequiresExactMatch());
         Assert.Equal("/actuator/httptrace", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
-        Assert.Equal("/cloudfoundryapplication/httptrace", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
+
+        Assert.Equal("/cloudfoundryapplication/httptrace",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+
         Assert.Contains("Get", options.AllowedVerbs);
     }
 
@@ -64,9 +67,12 @@ public class EndpointMiddlewareTest : BaseTest
             .Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
 
         ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.ExactMatch);
+        Assert.True(options.RequiresExactMatch());
         Assert.Equal("/actuator/trace", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
-        Assert.Equal("/cloudfoundryapplication/trace", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
+
+        Assert.Equal("/cloudfoundryapplication/trace",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+
         Assert.Contains("Get", options.AllowedVerbs);
     }
 }

@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-public class InfoEndpointTest : BaseTest
+public sealed class InfoEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -26,15 +26,15 @@ public class InfoEndpointTest : BaseTest
         using var tc = new TestContext(_output);
         var contributors = new List<IInfoContributor>();
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpointHandler>();
+        var ep = tc.GetRequiredService<IInfoEndpointHandler>();
 
-        Dictionary<string, object> info = await ep.InvokeAsync(null, CancellationToken.None);
+        IDictionary<string, object> info = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(info);
         Assert.Empty(info);
     }
@@ -51,13 +51,13 @@ public class InfoEndpointTest : BaseTest
             new TestContrib()
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpointHandler>();
+        var ep = tc.GetRequiredService<IInfoEndpointHandler>();
 
         await ep.InvokeAsync(null, CancellationToken.None);
 
@@ -80,13 +80,13 @@ public class InfoEndpointTest : BaseTest
             new TestContrib()
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpointHandler>();
+        var ep = tc.GetRequiredService<IInfoEndpointHandler>();
 
         await ep.InvokeAsync(null, CancellationToken.None);
 

@@ -2,11 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#pragma warning disable S4004 // Collection properties should be readonly
+
 namespace Steeltoe.Management;
 
 public abstract class HttpMiddlewareOptions
 {
     private string _path;
+
+    internal virtual bool DefaultEnabled { get; } = true;
 
     public virtual bool? Enabled { get; set; }
 
@@ -28,12 +32,13 @@ public abstract class HttpMiddlewareOptions
 
     public Permissions RequiredPermissions { get; set; } = Permissions.Undefined;
 
-    public virtual bool DefaultEnabled { get; } = true;
-
-    public virtual IEnumerable<string> AllowedVerbs { get; } = new List<string>
+    public virtual IList<string> AllowedVerbs { get; set; } = new List<string>
     {
         "Get"
     };
 
-    public virtual bool ExactMatch => true;
+    public virtual bool RequiresExactMatch()
+    {
+        return true;
+    }
 }

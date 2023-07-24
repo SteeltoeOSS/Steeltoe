@@ -15,9 +15,8 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 {
     private readonly IOptionsMonitor<EnvironmentEndpointOptions> _options;
     private readonly IConfiguration _configuration;
-    private readonly Sanitizer _sanitizer;
-
     private readonly IHostEnvironment _environment;
+    private readonly Sanitizer _sanitizer;
     private readonly ILogger<EnvironmentEndpointHandler> _logger;
 
     public HttpMiddlewareOptions Options => _options.CurrentValue;
@@ -25,10 +24,10 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
     public EnvironmentEndpointHandler(IOptionsMonitor<EnvironmentEndpointOptions> options, IConfiguration configuration, IHostEnvironment environment,
         ILoggerFactory loggerFactory)
     {
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(environment);
         ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(options);
 
         _options = options;
         _configuration = configuration;
@@ -37,7 +36,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         _logger = loggerFactory.CreateLogger<EnvironmentEndpointHandler>();
     }
 
-    private EnvironmentResponse DoInvoke(IConfiguration configuration)
+    public Task<EnvironmentResponse> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         IList<string> activeProfiles = new List<string>
         {
@@ -45,8 +44,10 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         };
 
         _logger.LogTrace("Fetching property sources");
-        IList<PropertySourceDescriptor> propertySources = GetPropertySources(configuration);
-        return new EnvironmentResponse(activeProfiles, propertySources);
+        IList<PropertySourceDescriptor> propertySources = GetPropertySources(_configuration);
+        var response = new EnvironmentResponse(activeProfiles, propertySources);
+
+        return Task.FromResult(response);
     }
 
     internal IList<PropertySourceDescriptor> GetPropertySources(IConfiguration configuration)
@@ -65,11 +66,11 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
             foreach (IConfigurationProvider provider in providers)
             {
-                PropertySourceDescriptor psd = GetPropertySourceDescriptor(provider);
+                PropertySourceDescriptor descriptor = GetPropertySourceDescriptor(provider);
 
-                if (psd != null)
+                if (descriptor != null)
                 {
-                    results.Add(psd);
+                    results.Add(descriptor);
                 }
             }
         }
@@ -126,10 +127,5 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         }
 
         return initialKeys;
-    }
-
-    public async Task<EnvironmentResponse> InvokeAsync(object argument, CancellationToken cancellationToken)
-    {
-        return await Task.FromResult(DoInvoke(_configuration));
     }
 }

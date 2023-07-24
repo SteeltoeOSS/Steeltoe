@@ -283,7 +283,7 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
             return false;
         }
 
-        if (!ParseClassName(remaining, ref remaining, ref className))
+        if (!ParseClassName(remaining, out remaining, out className))
         {
             return false;
         }
@@ -294,7 +294,7 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
         return true;
     }
 
-    private bool ParseClassName(string input, ref string remaining, ref string className)
+    private bool ParseClassName(string input, out string remaining, out string className)
     {
         int classStartIndex = input.IndexOf('!');
 

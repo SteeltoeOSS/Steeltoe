@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
-public class ActuatorManagementOptionsTest : BaseTest
+public sealed class ActuatorManagementOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()

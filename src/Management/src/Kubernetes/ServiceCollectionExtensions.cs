@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        if (!services.Any(srv => srv.ServiceType.IsAssignableFrom(typeof(IPodUtilities))))
+        if (!services.Any(descriptor => descriptor.ServiceType.IsAssignableFrom(typeof(IPodUtilities))))
         {
             if (podUtilities == null)
             {

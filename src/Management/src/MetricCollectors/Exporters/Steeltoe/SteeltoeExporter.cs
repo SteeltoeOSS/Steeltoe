@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.Metrics;
+using Steeltoe.Common;
 using Steeltoe.Management.MetricCollectors.Aggregations;
 using Steeltoe.Management.MetricCollectors.Metrics;
 
@@ -31,7 +32,9 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
     /// </param>
     internal SteeltoeExporter(IExporterOptions options)
     {
-        _cacheDurationMilliseconds = options?.CacheDurationMilliseconds ?? 5000;
+        ArgumentGuard.NotNull(options);
+
+        _cacheDurationMilliseconds = options.CacheDurationMilliseconds;
     }
 
     public void SetCollect(Action collect)

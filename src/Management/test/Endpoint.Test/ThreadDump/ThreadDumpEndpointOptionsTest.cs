@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
-public class ThreadDumpEndpointOptionsTest : BaseTest
+public sealed class ThreadDumpEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()

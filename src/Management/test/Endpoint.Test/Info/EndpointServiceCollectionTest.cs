@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddInfoActuator_AddsCorrectServices()
@@ -45,9 +45,7 @@ public class EndpointServiceCollectionTest : BaseTest
         Assert.NotNull(contributors);
         List<IInfoContributor> listOfContributors = contributors.ToList();
         Assert.Equal(4, listOfContributors.Count);
-
-        Assert.Contains(contributors,
-            item => item is GitInfoContributor || item is AppSettingsInfoContributor || item is BuildInfoContributor || item is TestInfoContributor);
+        Assert.Contains(contributors, item => item is GitInfoContributor or AppSettingsInfoContributor or BuildInfoContributor or TestInfoContributor);
 
         var ep = serviceProvider.GetService<IInfoEndpointHandler>();
         Assert.NotNull(ep);

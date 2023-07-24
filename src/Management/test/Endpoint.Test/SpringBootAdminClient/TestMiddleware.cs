@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public class MyMiddleware : IMiddleware
+public sealed class TestMiddleware : IMiddleware
 {
     private static readonly ISet<string> KeyNames = new[]
     {

@@ -23,16 +23,15 @@ using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
-using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
+using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
-using Steeltoe.Management.Info;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ManagementWebApplicationBuilderExtensionsTest
+public sealed class ManagementWebApplicationBuilderExtensionsTest
 {
     [Fact]
     public async Task AddDbMigrationsActuator_WebApplicationBuilder_IStartupFilterFires()
@@ -80,10 +79,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
-        WebApplication host = hostBuilder.AddHealthActuator(new[]
-        {
-            typeof(DownContributor)
-        }).Build();
+        WebApplication host = hostBuilder.AddHealthActuator(typeof(DownContributor)).Build();
 
         Assert.Single(host.Services.GetServices<IHealthEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
@@ -94,10 +90,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
-        WebApplication host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new[]
-        {
-            typeof(DownContributor)
-        }).Build();
+        WebApplication host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor)).Build();
 
         Assert.Single(host.Services.GetServices<IHealthEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
@@ -124,7 +117,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
         Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await readinessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
 
         // confirm that the Readiness state will be changed to refusing traffic when ApplicationStopping fires
-        var availability = host.Services.GetService<ApplicationAvailability>();
+        var availability = host.Services.GetRequiredService<ApplicationAvailability>();
         await host.StopAsync();
         Assert.Equal(LivenessState.Correct, availability.GetLivenessState());
         Assert.Equal(ReadinessState.RefusingTraffic, availability.GetReadinessState());
@@ -168,10 +161,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        WebApplication host = hostBuilder.AddInfoActuator(new IInfoContributor[]
-        {
-            new AppSettingsInfoContributor(hostBuilder.Configuration)
-        }).Build();
+        WebApplication host = hostBuilder.AddInfoActuator(new AppSettingsInfoContributor(hostBuilder.Configuration)).Build();
 
         host.UseRouting();
         await host.StartAsync();
@@ -350,7 +340,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
     {
         try
         {
-            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "some"); // Allow routing to /cloudfoundryapplication
 
             WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
             hostBuilder.WebHost.UseTestServer();

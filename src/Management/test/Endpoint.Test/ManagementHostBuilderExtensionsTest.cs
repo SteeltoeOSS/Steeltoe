@@ -25,16 +25,15 @@ using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
-using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
+using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
-using Steeltoe.Management.Info;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ManagementHostBuilderExtensionsTest
+public sealed class ManagementHostBuilderExtensionsTest
 {
     private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer()
         .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting()).ConfigureAppConfiguration(c =>
@@ -127,10 +126,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder();
 
-        IHost host = hostBuilder.AddHealthActuator(new[]
-        {
-            typeof(DownContributor)
-        }).Build();
+        IHost host = hostBuilder.AddHealthActuator(typeof(DownContributor)).Build();
 
         IEnumerable<IHealthEndpointHandler> epHandler = host.Services.GetServices<IHealthEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
@@ -145,10 +141,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder();
 
-        IHost host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new[]
-        {
-            typeof(DownContributor)
-        }).Build();
+        IHost host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor)).Build();
 
         IEnumerable<IHealthEndpointHandler> epHandler = host.Services.GetServices<IHealthEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
@@ -188,7 +181,7 @@ public class ManagementHostBuilderExtensionsTest
         Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await readinessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
 
         // confirm that the Readiness state will be changed to refusing traffic when ApplicationStopping fires
-        var availability = host.Services.GetService<ApplicationAvailability>();
+        var availability = host.Services.GetRequiredService<ApplicationAvailability>();
         await host.StopAsync();
         Assert.Equal(LivenessState.Correct, availability.GetLivenessState());
         Assert.Equal(ReadinessState.RefusingTraffic, availability.GetReadinessState());
@@ -271,10 +264,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder();
 
-        IHost host = hostBuilder.AddInfoActuator(new IInfoContributor[]
-        {
-            new AppSettingsInfoContributor(new ConfigurationBuilder().Build())
-        }).Build();
+        IHost host = hostBuilder.AddInfoActuator(new AppSettingsInfoContributor(new ConfigurationBuilder().Build())).Build();
 
         var epHandler = host.Services.GetService<IInfoEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();

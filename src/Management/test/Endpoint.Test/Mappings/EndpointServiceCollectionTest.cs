@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddMappingsActuator_ThrowsOnNulls()
@@ -42,7 +42,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddMappingsActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IOptionsMonitor<RouteMappingsEndpointOptions>>();
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<RouteMappingsEndpointOptions>>();
         Assert.Equal("mappings", options.CurrentValue.Id);
 
         var routeMappings = serviceProvider.GetService<RouteMappings.RouteMappings>();

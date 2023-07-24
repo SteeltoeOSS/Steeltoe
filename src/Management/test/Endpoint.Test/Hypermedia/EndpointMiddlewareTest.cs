@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private readonly Dictionary<string, string> _appSettings = new()
     {
@@ -43,10 +43,10 @@ public class EndpointMiddlewareTest : BaseTest
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", xForwarded);
         var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator");
         Assert.NotNull(links);
-        Assert.True(links.LinkCollection.ContainsKey("self"));
-        Assert.Equal($"{calculatedHost}/actuator", links.LinkCollection["self"].Href);
-        Assert.True(links.LinkCollection.ContainsKey("info"));
-        Assert.Equal($"{calculatedHost}/actuator/info", links.LinkCollection["info"].Href);
+        Assert.True(links.Entries.ContainsKey("self"));
+        Assert.Equal($"{calculatedHost}/actuator", links.Entries["self"].Href);
+        Assert.True(links.Entries.ContainsKey("info"));
+        Assert.Equal($"{calculatedHost}/actuator/info", links.Entries["info"].Href);
     }
 
     [Fact]
@@ -93,9 +93,9 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         HypermediaEndpointOptions options = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
-        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
+        ManagementEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().CurrentValue;
+        Assert.True(options.RequiresExactMatch());
+        Assert.Equal("/actuator", options.GetPathMatchPattern(endpointOptions.Path, endpointOptions));
         Assert.Contains("Get", options.AllowedVerbs);
     }
 }

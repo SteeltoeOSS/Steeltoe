@@ -29,19 +29,19 @@ internal sealed class ManagementPortMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
-        ManagementEndpointOptions mgmtOptions = _managementOptionsMonitor.CurrentValue;
-        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
+        ManagementEndpointOptions endpointOptions = _managementOptionsMonitor.CurrentValue;
+        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, endpointOptions.Path);
 
-        string contextPath = mgmtOptions.Path;
+        string contextPath = endpointOptions.Path;
         bool isManagementPath = context.Request.Path.ToString().StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
 
-        bool allowRequest = string.IsNullOrEmpty(mgmtOptions.Port);
-        allowRequest = allowRequest || (context.Request.Host.Port.ToString() == mgmtOptions.Port && isManagementPath);
-        allowRequest = allowRequest || (context.Request.Host.Port.ToString() != mgmtOptions.Port && !isManagementPath);
+        bool allowRequest = string.IsNullOrEmpty(endpointOptions.Port);
+        allowRequest = allowRequest || (context.Request.Host.Port.ToString() == endpointOptions.Port && isManagementPath);
+        allowRequest = allowRequest || (context.Request.Host.Port.ToString() != endpointOptions.Port && !isManagementPath);
 
         if (!allowRequest)
         {
-            await ReturnErrorAsync(context, mgmtOptions.Port);
+            await ReturnErrorAsync(context, endpointOptions.Port);
         }
         else
         {

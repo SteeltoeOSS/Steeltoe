@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-public class Startup
+public sealed class Startup
 {
     public IConfiguration Configuration { get; set; }
 
@@ -29,10 +29,6 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            app.UseEndpoints(endpoints => endpoints.MapAllActuators());
-        });
+        app.UseEndpoints(_ => app.UseEndpoints(builder => builder.MapAllActuators()));
     }
 }

@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.RouteMappings;
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
-public class Startup
+public sealed class Startup
 {
     public IConfiguration Configuration { get; set; }
 

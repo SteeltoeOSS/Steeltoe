@@ -37,7 +37,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     public virtual HttpTraceResult GetTraces()
     {
-        return new HttpTracesV1(Queue.ToList());
+        return new HttpTraceResultV1(Queue.ToList());
     }
 
     public override void ProcessEvent(string eventName, object value)
@@ -126,7 +126,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
         if (options.AddAuthType)
         {
-            details.Add("authType", GetAuthType(request));
+            details.Add("authType", string.Empty);
         }
 
         if (options.AddRemoteAddress)
@@ -165,28 +165,23 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
     }
 
-    internal string GetAuthType(HttpRequest request)
-    {
-        return string.Empty;
-    }
-
     internal Dictionary<string, string[]> GetRequestParameters(HttpRequest request)
     {
         var parameters = new Dictionary<string, string[]>();
         IQueryCollection query = request.Query;
 
-        foreach (KeyValuePair<string, StringValues> p in query)
+        foreach (KeyValuePair<string, StringValues> pair in query)
         {
-            parameters.Add(p.Key, p.Value.ToArray());
+            parameters.Add(pair.Key, pair.Value.ToArray());
         }
 
-        if (request.HasFormContentType && request.Form != null)
+        if (request.HasFormContentType)
         {
             IFormCollection formData = request.Form;
 
-            foreach (KeyValuePair<string, StringValues> p in formData)
+            foreach (KeyValuePair<string, StringValues> pair in formData)
             {
-                parameters.Add(p.Key, p.Value.ToArray());
+                parameters.Add(pair.Key, pair.Value.ToArray());
             }
         }
 
@@ -205,12 +200,12 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     internal string GetUserPrincipal(HttpContext context)
     {
-        return context?.User?.Identity?.Name;
+        return context?.User.Identity?.Name;
     }
 
     internal string GetRemoteAddress(HttpContext context)
     {
-        return context?.Connection?.RemoteIpAddress?.ToString();
+        return context?.Connection.RemoteIpAddress?.ToString();
     }
 
     internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
@@ -220,28 +215,28 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         return result;
     }
 
-    internal Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
+    private Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
     {
         var result = new Dictionary<string, object>();
 
-        foreach (KeyValuePair<string, StringValues> h in headers)
+        foreach (KeyValuePair<string, StringValues> pair in headers)
         {
             // Add filtering
 #pragma warning disable S4040 // Strings should be normalized to uppercase
-            result.Add(h.Key.ToLowerInvariant(), GetHeaderValue(h.Value));
+            result.Add(pair.Key.ToLowerInvariant(), GetHeaderValue(pair.Value));
 #pragma warning restore S4040 // Strings should be normalized to uppercase
         }
 
         return result;
     }
 
-    internal object GetHeaderValue(StringValues values)
+    private object GetHeaderValue(StringValues values)
     {
         var result = new List<string>();
 
-        foreach (string v in values)
+        foreach (string value in values)
         {
-            result.Add(v);
+            result.Add(value);
         }
 
         if (result.Count == 1)

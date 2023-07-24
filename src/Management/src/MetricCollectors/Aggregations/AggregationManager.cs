@@ -255,7 +255,7 @@ internal sealed class AggregationManager : IDisposable
 
         foreach (KeyValuePair<Instrument, InstrumentState> kv in _instrumentStates)
         {
-            kv.Value.Collect(kv.Key, labeledAggStats =>
+            kv.Value.Collect(labeledAggStats =>
             {
                 _collectMeasurement(kv.Key, labeledAggStats);
             });

@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
@@ -91,10 +91,13 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<RefreshEndpointOptions>();
-        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/refresh", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
-        Assert.Equal("/cloudfoundryapplication/refresh", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
+        ManagementEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
+        Assert.True(options.RequiresExactMatch());
+        Assert.Equal("/actuator/refresh", options.GetPathMatchPattern(endpointOptions.Path, endpointOptions));
+
+        Assert.Equal("/cloudfoundryapplication/refresh",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, endpointOptions));
+
         Assert.Contains("Post", options.AllowedVerbs);
     }
 

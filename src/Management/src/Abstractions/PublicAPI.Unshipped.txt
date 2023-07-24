@@ -43,22 +43,17 @@ Steeltoe.Management.HttpMiddlewareOptions.RequiredPermissions.set -> void
 Steeltoe.Management.IEndpointHandler<TArgument, TResult>
 Steeltoe.Management.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>
 Steeltoe.Management.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.HttpMiddlewareOptions
-Steeltoe.Management.Info.ConfigurationContributor
-Steeltoe.Management.Info.ConfigurationContributor.Configuration.get -> Microsoft.Extensions.Configuration.IConfiguration
-Steeltoe.Management.Info.ConfigurationContributor.Configuration.set -> void
-Steeltoe.Management.Info.ConfigurationContributor.ConfigurationContributor() -> void
-Steeltoe.Management.Info.ConfigurationContributor.ConfigurationContributor(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
 Steeltoe.Management.Info.IInfoBuilder
-Steeltoe.Management.Info.IInfoBuilder.Build() -> System.Collections.Generic.Dictionary<string, object>
+Steeltoe.Management.Info.IInfoBuilder.Build() -> System.Collections.Generic.IDictionary<string, object>
 Steeltoe.Management.Info.IInfoBuilder.WithInfo(string key, object value) -> Steeltoe.Management.Info.IInfoBuilder
-Steeltoe.Management.Info.IInfoBuilder.WithInfo(System.Collections.Generic.Dictionary<string, object> details) -> Steeltoe.Management.Info.IInfoBuilder
+Steeltoe.Management.Info.IInfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string, object> details) -> Steeltoe.Management.Info.IInfoBuilder
 Steeltoe.Management.Info.IInfoContributor
 Steeltoe.Management.Info.IInfoContributor.ContributeAsync(Steeltoe.Management.Info.IInfoBuilder builder, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
 Steeltoe.Management.Info.InfoBuilder
-Steeltoe.Management.Info.InfoBuilder.Build() -> System.Collections.Generic.Dictionary<string, object>
+Steeltoe.Management.Info.InfoBuilder.Build() -> System.Collections.Generic.IDictionary<string, object>
 Steeltoe.Management.Info.InfoBuilder.InfoBuilder() -> void
 Steeltoe.Management.Info.InfoBuilder.WithInfo(string key, object value) -> Steeltoe.Management.Info.IInfoBuilder
-Steeltoe.Management.Info.InfoBuilder.WithInfo(System.Collections.Generic.Dictionary<string, object> details) -> Steeltoe.Management.Info.IInfoBuilder
+Steeltoe.Management.Info.InfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string, object> details) -> Steeltoe.Management.Info.IInfoBuilder
 Steeltoe.Management.Permissions
 Steeltoe.Management.Permissions.Full = 3 -> Steeltoe.Management.Permissions
 Steeltoe.Management.Permissions.None = 1 -> Steeltoe.Management.Permissions
@@ -68,16 +63,12 @@ virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose(bool disposin
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnCompleted() -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnError(System.Exception error) -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnNext(System.Collections.Generic.KeyValuePair<string, object> event) -> void
-virtual Steeltoe.Management.HttpMiddlewareOptions.AllowedVerbs.get -> System.Collections.Generic.IEnumerable<string>
-virtual Steeltoe.Management.HttpMiddlewareOptions.DefaultEnabled.get -> bool
+virtual Steeltoe.Management.HttpMiddlewareOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string>
+virtual Steeltoe.Management.HttpMiddlewareOptions.AllowedVerbs.set -> void
 virtual Steeltoe.Management.HttpMiddlewareOptions.Enabled.get -> bool?
 virtual Steeltoe.Management.HttpMiddlewareOptions.Enabled.set -> void
-virtual Steeltoe.Management.HttpMiddlewareOptions.ExactMatch.get -> bool
 virtual Steeltoe.Management.HttpMiddlewareOptions.Id.get -> string
 virtual Steeltoe.Management.HttpMiddlewareOptions.Id.set -> void
 virtual Steeltoe.Management.HttpMiddlewareOptions.Path.get -> string
 virtual Steeltoe.Management.HttpMiddlewareOptions.Path.set -> void
-virtual Steeltoe.Management.Info.ConfigurationContributor.AddChildren(System.Collections.Generic.Dictionary<string, object> dictionary, System.Collections.Generic.IEnumerable<Microsoft.Extensions.Configuration.IConfigurationSection> sections) -> void
-virtual Steeltoe.Management.Info.ConfigurationContributor.AddKeyValue(System.Collections.Generic.Dictionary<string, object> dictionary, string key, string value) -> void
-virtual Steeltoe.Management.Info.ConfigurationContributor.Contribute(Steeltoe.Management.Info.IInfoBuilder builder, string prefix, bool keepPrefix) -> void
-virtual Steeltoe.Management.Info.ConfigurationContributor.CreateDictionary(string prefix, bool keepPrefix) -> System.Collections.Generic.Dictionary<string, object>
+virtual Steeltoe.Management.HttpMiddlewareOptions.RequiresExactMatch() -> bool

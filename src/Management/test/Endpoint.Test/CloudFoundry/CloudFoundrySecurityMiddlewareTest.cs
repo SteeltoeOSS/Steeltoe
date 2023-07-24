@@ -16,11 +16,11 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class CloudFoundrySecurityMiddlewareTest : BaseTest
+public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 {
     public CloudFoundrySecurityMiddlewareTest()
     {
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
+        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "some");
     }
 
     [Fact]

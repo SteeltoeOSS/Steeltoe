@@ -7,13 +7,11 @@ using System.Reflection;
 
 namespace Steeltoe.Management.MetricCollectors.Metrics;
 
-public static class SteeltoeMetrics
+internal static class SteeltoeMetrics
 {
     private static readonly AssemblyName AssemblyName = typeof(SteeltoeMetrics).Assembly.GetName();
-
     private static readonly string? InstrumentationVersion = AssemblyName.Version?.ToString();
 
     public static Meter Meter => new(InstrumentationName, InstrumentationVersion);
-
     public static string InstrumentationName { get; set; } = AssemblyName.Name ?? throw new InvalidOperationException(nameof(InstrumentationName));
 }

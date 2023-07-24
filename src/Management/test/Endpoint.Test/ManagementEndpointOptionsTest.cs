@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ManagementEndpointOptionsTest : BaseTest
+public sealed class ManagementEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void InitializedWithDefaults()

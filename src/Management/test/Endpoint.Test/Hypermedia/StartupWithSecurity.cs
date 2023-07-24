@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
-public class StartupWithSecurity
+public sealed class StartupWithSecurity
 {
     public IConfiguration Configuration { get; set; }
 

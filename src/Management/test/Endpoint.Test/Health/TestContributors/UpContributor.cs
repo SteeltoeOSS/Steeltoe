@@ -4,29 +4,25 @@
 
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Management.Endpoint.Test.Health.MockContributors;
+namespace Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 
-internal sealed class TestContrib : IHealthContributor
+internal sealed class UpContributor : IHealthContributor
 {
-    public bool Called { get; private set; }
-    public bool Throws { get; }
+    private readonly int? _sleepyTime;
 
-    public string Id { get; }
+    public string Id => "Up";
 
-    public TestContrib(string id)
+    internal UpContributor(int? sleepyTime = null)
     {
-        Id = id;
-        Throws = false;
+        _sleepyTime = sleepyTime;
     }
 
     public HealthCheckResult Health()
     {
-        if (Throws)
+        if (_sleepyTime != null)
         {
-            throw new Exception();
+            Thread.Sleep((int)_sleepyTime);
         }
-
-        Called = true;
 
         return new HealthCheckResult
         {

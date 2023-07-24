@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
-public class StartupV1
+public sealed class StartupV1
 {
     public IConfiguration Configuration { get; set; }
 

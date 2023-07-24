@@ -4,14 +4,14 @@
 
 namespace Steeltoe.Management.MetricCollectors.Metrics;
 
-public static class MetricLabelExtensions
+internal static class MetricLabelExtensions
 {
-    internal static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IDictionary<string, object> keyValuePairs)
+    public static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IDictionary<string, object> keyValuePairs)
     {
         return new ReadOnlySpan<KeyValuePair<string, object>>(keyValuePairs.ToArray());
     }
 
-    internal static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IEnumerable<KeyValuePair<string, object>> keyValuePairs)
+    public static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IEnumerable<KeyValuePair<string, object>> keyValuePairs)
     {
         return new ReadOnlySpan<KeyValuePair<string, object>>(keyValuePairs.ToArray());
     }

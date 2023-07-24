@@ -19,6 +19,7 @@ public sealed class Link
     public Link(string href)
     {
         ArgumentGuard.NotNull(href);
+
         Href = href;
         Templated = href.Contains('{');
     }

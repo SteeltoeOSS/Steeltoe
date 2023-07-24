@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-public class AppSettingsInfoContributorTest : BaseTest
+public sealed class AppSettingsInfoContributorTest : BaseTest
 {
     private readonly Dictionary<string, string> _appSettings = new()
     {
@@ -27,7 +27,7 @@ public class AppSettingsInfoContributorTest : BaseTest
         var contributor = new AppSettingsInfoContributor(null);
         var builder = new InfoBuilder();
         contributor.ContributeAsync(builder, CancellationToken.None);
-        Dictionary<string, object> result = builder.Build();
+        IDictionary<string, object> result = builder.Build();
         Assert.NotNull(result);
         Assert.Empty(result);
     }
@@ -56,7 +56,7 @@ public class AppSettingsInfoContributorTest : BaseTest
         var builder = new InfoBuilder();
         settings.ContributeAsync(builder, CancellationToken.None);
 
-        Dictionary<string, object> info = builder.Build();
+        IDictionary<string, object> info = builder.Build();
         Assert.NotNull(info);
         Assert.Equal(2, info.Count);
         Assert.True(info.ContainsKey("application"));

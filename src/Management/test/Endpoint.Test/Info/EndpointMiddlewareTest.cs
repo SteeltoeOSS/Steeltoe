@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private readonly Dictionary<string, string> _appSettings = new()
     {
@@ -103,11 +103,11 @@ public class EndpointMiddlewareTest : BaseTest
     public void RoutesByPathAndVerb()
     {
         var options = GetOptionsFromSettings<InfoEndpointOptions>();
-        ManagementEndpointOptions mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
+        ManagementEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
 
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/info", options.GetPathMatchPattern(mgmtOptions.Path, mgmtOptions));
-        Assert.Equal("/cloudfoundryapplication/info", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, mgmtOptions));
+        Assert.True(options.RequiresExactMatch());
+        Assert.Equal("/actuator/info", options.GetPathMatchPattern(endpointOptions.Path, endpointOptions));
+        Assert.Equal("/cloudfoundryapplication/info", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, endpointOptions));
         Assert.Single(options.AllowedVerbs);
         Assert.Contains("Get", options.AllowedVerbs);
     }

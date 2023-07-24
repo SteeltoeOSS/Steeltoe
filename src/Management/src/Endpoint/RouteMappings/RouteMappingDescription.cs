@@ -20,6 +20,7 @@ public sealed class RouteMappingDescription
     public string Predicate { get; }
 
     [JsonPropertyName("details")]
+    // ReSharper disable once UnassignedGetOnlyAutoProperty
     public object Details { get; } // Always null for .NET
 
     public RouteMappingDescription(string routeHandler, AspNetCoreRouteDetails routeDetails)
@@ -47,32 +48,32 @@ public sealed class RouteMappingDescription
 
     private string CreatePredicateString(AspNetCoreRouteDetails routeDetails)
     {
-        var sb = new StringBuilder("{");
+        var builder = new StringBuilder("{");
 
-        sb.Append($"[{routeDetails.RouteTemplate}]");
+        builder.Append($"[{routeDetails.RouteTemplate}]");
 
-        sb.Append(",methods=");
-        sb.Append($"[{CreateRouteMethods(routeDetails.HttpMethods)}]");
+        builder.Append(",methods=");
+        builder.Append($"[{CreateRouteMethods(routeDetails.HttpMethods)}]");
 
-        if (!IsEmpty(routeDetails.Produces))
+        if (!IsNullOrEmpty(routeDetails.Produces))
         {
-            sb.Append(",produces=");
-            sb.Append($"[{string.Join(" || ", routeDetails.Produces)}]");
+            builder.Append(",produces=");
+            builder.Append($"[{string.Join(" || ", routeDetails.Produces)}]");
         }
 
-        if (!IsEmpty(routeDetails.Consumes))
+        if (!IsNullOrEmpty(routeDetails.Consumes))
         {
-            sb.Append(",consumes=");
-            sb.Append($"[{string.Join(" || ", routeDetails.Consumes)}]");
+            builder.Append(",consumes=");
+            builder.Append($"[{string.Join(" || ", routeDetails.Consumes)}]");
         }
 
-        sb.Append('}');
-        return sb.ToString();
+        builder.Append('}');
+        return builder.ToString();
     }
 
     private string CreateRouteMethods(IList<string> httpMethods)
     {
-        if (IsEmpty(httpMethods))
+        if (IsNullOrEmpty(httpMethods))
         {
             return AllHttpMethods;
         }
@@ -80,7 +81,7 @@ public sealed class RouteMappingDescription
         return string.Join(" || ", httpMethods);
     }
 
-    private bool IsEmpty(IList<string> list)
+    private static bool IsNullOrEmpty(ICollection<string> list)
     {
         if (list == null || list.Count == 0)
         {

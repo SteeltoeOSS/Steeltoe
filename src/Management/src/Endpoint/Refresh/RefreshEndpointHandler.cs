@@ -29,32 +29,25 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
         _logger = loggerFactory.CreateLogger<RefreshEndpointHandler>();
     }
 
-    public IList<string> DoInvoke(IConfiguration configuration)
+    public Task<IList<string>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Refreshing Configuration");
 
-        if (configuration is IConfigurationRoot root)
+        if (_configuration is IConfigurationRoot root)
         {
             root.Reload();
         }
 
-        if (!_options.CurrentValue.ReturnConfiguration)
+        IList<string> keys = new List<string>();
+
+        if (_options.CurrentValue.ReturnConfiguration)
         {
-            return new List<string>();
+            foreach (KeyValuePair<string, string> kvp in _configuration.AsEnumerable())
+            {
+                keys.Add(kvp.Key);
+            }
         }
 
-        var keys = new List<string>();
-
-        foreach (KeyValuePair<string, string> kvp in configuration.AsEnumerable())
-        {
-            keys.Add(kvp.Key);
-        }
-
-        return keys;
-    }
-
-    public Task<IList<string>> InvokeAsync(object argument, CancellationToken cancellationToken)
-    {
-        return Task.FromResult(DoInvoke(_configuration));
+        return Task.FromResult(keys);
     }
 }

@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class DbMigrationsStartup
+public sealed class DbMigrationsStartup
 {
     public IConfiguration Configuration { get; }
 

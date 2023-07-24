@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
+internal sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
 {
     public HealthCheckServiceOptions CurrentValue { get; }
 

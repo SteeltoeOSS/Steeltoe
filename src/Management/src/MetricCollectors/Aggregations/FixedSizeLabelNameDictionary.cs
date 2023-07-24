@@ -21,7 +21,7 @@ internal sealed class FixedSizeLabelNameDictionary<TStringSequence, TObjectSeque
             foreach (KeyValuePair<TObjectSequence, TAggregator> kvValue in kvName.Value)
             {
                 Span<object?> indexedValues = kvValue.Key.AsSpan();
-                KeyValuePair<string, string>[] labels = new KeyValuePair<string, string>[indexedNames.Length];
+                var labels = new KeyValuePair<string, string>[indexedNames.Length];
 
                 for (int i = 0; i < labels.Length; i++)
                 {
@@ -34,6 +34,8 @@ internal sealed class FixedSizeLabelNameDictionary<TStringSequence, TObjectSeque
         }
     }
 
-    public ConcurrentDictionary<TObjectSequence, TAggregator> GetValuesDictionary(in TStringSequence names) =>
-        GetOrAdd(names, _ => new ConcurrentDictionary<TObjectSequence, TAggregator>());
+    public ConcurrentDictionary<TObjectSequence, TAggregator> GetValuesDictionary(in TStringSequence names)
+    {
+        return GetOrAdd(names, _ => new ConcurrentDictionary<TObjectSequence, TAggregator>());
+    }
 }

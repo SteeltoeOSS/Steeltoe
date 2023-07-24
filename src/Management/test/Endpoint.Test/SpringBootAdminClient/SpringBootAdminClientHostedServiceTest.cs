@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public class SpringBootAdminClientHostedServiceTest : BaseTest
+public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
 {
     [Fact]
     public async Task SpringBootAdminClient_RegistersAndDeletes()

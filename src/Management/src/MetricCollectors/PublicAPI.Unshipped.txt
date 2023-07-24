@@ -1,22 +1,17 @@
 override Steeltoe.Management.MetricCollectors.Metrics.MetricSample.ToString() -> string!
-static Steeltoe.Management.MetricCollectors.Metrics.SteeltoeMetrics.InstrumentationName.get -> string!
-static Steeltoe.Management.MetricCollectors.Metrics.SteeltoeMetrics.InstrumentationName.set -> void
-static Steeltoe.Management.MetricCollectors.Metrics.SteeltoeMetrics.Meter.get -> System.Diagnostics.Metrics.Meter!
 Steeltoe.Management.MetricCollectors.Aggregations.IAggregationStatistics
 Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics
 Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics.AggregationStatistics.get -> Steeltoe.Management.MetricCollectors.Aggregations.IAggregationStatistics!
 Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics.LabeledAggregationStatistics(Steeltoe.Management.MetricCollectors.Aggregations.IAggregationStatistics! stats, params System.Collections.Generic.KeyValuePair<string!, string!>[]! labels) -> void
-Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics.Labels.get -> System.Collections.Generic.KeyValuePair<string!, string!>[]!
+Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics.Labels.get -> System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<string!, string!>>!
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.AddMetrics(System.Diagnostics.Metrics.Instrument! instrument, Steeltoe.Management.MetricCollectors.Aggregations.LabeledAggregationStatistics! stats) -> void
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.Export() -> (Steeltoe.Management.MetricCollectors.Metrics.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.Metrics.MetricSample!>!>! MetricSamples, Steeltoe.Management.MetricCollectors.Metrics.MetricsCollection<System.Collections.Generic.List<Steeltoe.Management.MetricCollectors.Metrics.MetricTag!>!>! AvailableTags)
 Steeltoe.Management.MetricCollectors.Exporters.Steeltoe.ISteeltoeExporter.SetCollect(System.Action! collect) -> void
-Steeltoe.Management.MetricCollectors.Metrics.MetricLabelExtensions
 Steeltoe.Management.MetricCollectors.Metrics.MetricSample
-Steeltoe.Management.MetricCollectors.Metrics.MetricSample.MetricSample(Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic statistic, double value, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, string!>>? tags) -> void
+Steeltoe.Management.MetricCollectors.Metrics.MetricSample.MetricSample(Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic statistic, double value, System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<string!, string!>>? tags) -> void
 Steeltoe.Management.MetricCollectors.Metrics.MetricSample.Statistic.get -> Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic
-Steeltoe.Management.MetricCollectors.Metrics.MetricSample.Tags.get -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string!, string!>>?
-Steeltoe.Management.MetricCollectors.Metrics.MetricSample.Tags.set -> void
+Steeltoe.Management.MetricCollectors.Metrics.MetricSample.Tags.get -> System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<string!, string!>>?
 Steeltoe.Management.MetricCollectors.Metrics.MetricSample.Value.get -> double
 Steeltoe.Management.MetricCollectors.Metrics.MetricsCollection<T>
 Steeltoe.Management.MetricCollectors.Metrics.MetricsCollection<T>.this[string! key].get -> T
@@ -34,4 +29,3 @@ Steeltoe.Management.MetricCollectors.Metrics.MetricTag
 Steeltoe.Management.MetricCollectors.Metrics.MetricTag.MetricTag(string! tag, System.Collections.Generic.ISet<string!>! values) -> void
 Steeltoe.Management.MetricCollectors.Metrics.MetricTag.Tag.get -> string!
 Steeltoe.Management.MetricCollectors.Metrics.MetricTag.Values.get -> System.Collections.Generic.ISet<string!>!
-Steeltoe.Management.MetricCollectors.Metrics.SteeltoeMetrics

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ExposureTest
+public sealed class ExposureTest
 {
     [Fact]
     public void ExposureReturnsDefaults()

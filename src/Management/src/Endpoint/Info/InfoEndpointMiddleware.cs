@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object, Dictionary<string, object>>
+internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object, IDictionary<string, object>>
 {
     public InfoEndpointMiddleware(IInfoEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         ILoggerFactory loggerFactory)
@@ -18,7 +18,7 @@ internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object, Dictio
     {
     }
 
-    protected override async Task<Dictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<IDictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }

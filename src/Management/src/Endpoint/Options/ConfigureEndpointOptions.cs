@@ -8,14 +8,14 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
-internal class ConfigureEndpointOptions<T> : IConfigureOptions<T>
+internal abstract class ConfigureEndpointOptions<T> : IConfigureOptions<T>
     where T : HttpMiddlewareOptions
 {
     private readonly string _prefix;
     private readonly string _id;
     protected IConfiguration Configuration { get; }
 
-    public ConfigureEndpointOptions(IConfiguration configuration, string prefix, string id)
+    protected ConfigureEndpointOptions(IConfiguration configuration, string prefix, string id)
     {
         Configuration = configuration;
         _prefix = prefix;
@@ -28,10 +28,7 @@ internal class ConfigureEndpointOptions<T> : IConfigureOptions<T>
 
         Configuration.GetSection(_prefix).Bind(options);
 
-        if (options.Id == null)
-        {
-            options.Id = _id;
-        }
+        options.Id ??= _id;
 
         if (options.RequiredPermissions == Permissions.Undefined)
         {

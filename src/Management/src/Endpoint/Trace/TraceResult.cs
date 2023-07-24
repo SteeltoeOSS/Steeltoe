@@ -13,9 +13,9 @@ public sealed class TraceResult
     public long TimeStamp { get; }
 
     [JsonPropertyName("info")]
-    public Dictionary<string, object> Info { get; }
+    public IDictionary<string, object> Info { get; }
 
-    public TraceResult(long timestamp, Dictionary<string, object> info)
+    public TraceResult(long timestamp, IDictionary<string, object> info)
     {
         ArgumentGuard.NotNull(info);
 

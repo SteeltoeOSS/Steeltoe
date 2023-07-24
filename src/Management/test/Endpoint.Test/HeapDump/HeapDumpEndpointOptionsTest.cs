@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
-public class HeapDumpEndpointOptionsTest : BaseTest
+public sealed class HeapDumpEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()

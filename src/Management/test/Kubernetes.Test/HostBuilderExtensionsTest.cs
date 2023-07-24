@@ -16,16 +16,16 @@ using Xunit;
 
 namespace Steeltoe.Management.Kubernetes.Test;
 
-public class HostBuilderExtensionsTest
+public sealed class HostBuilderExtensionsTest
 {
-    private static readonly Dictionary<string, string> _appSettings = new()
+    private static readonly Dictionary<string, string> AppSettings = new()
     {
         { "management:endpoints:actuator:exposure:include:0", "*" }
     };
 
     private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer()
         .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting())
-        .ConfigureAppConfiguration(b => b.AddInMemoryCollection(_appSettings));
+        .ConfigureAppConfiguration(b => b.AddInMemoryCollection(AppSettings));
 
     private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(s =>
     {
@@ -38,7 +38,7 @@ public class HostBuilderExtensionsTest
             });
 
         s.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
-    }).Configure(a => a.UseRouting().UseAuthentication().UseAuthorization()).ConfigureAppConfiguration(b => b.AddInMemoryCollection(_appSettings));
+    }).Configure(a => a.UseRouting().UseAuthentication().UseAuthorization()).ConfigureAppConfiguration(b => b.AddInMemoryCollection(AppSettings));
 
     public HostBuilderExtensionsTest()
     {

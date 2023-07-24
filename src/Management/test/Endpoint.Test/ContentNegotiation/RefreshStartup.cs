@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class RefreshStartup
+public sealed class RefreshStartup
 {
     public IConfiguration Configuration { get; }
 

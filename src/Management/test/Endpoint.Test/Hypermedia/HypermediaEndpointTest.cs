@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
-public class HypermediaEndpointTest : BaseTest
+public sealed class HypermediaEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -25,22 +25,22 @@ public class HypermediaEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddHypermediaActuatorServices();
             services.AddInfoActuatorServices();
         };
 
-        var ep = tc.GetService<IActuatorEndpointHandler>();
+        var ep = tc.GetRequiredService<IActuatorEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
-        Assert.NotNull(info.LinkCollection);
-        Assert.True(info.LinkCollection.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
-        Assert.True(info.LinkCollection.ContainsKey("info"));
-        Assert.Equal("http://localhost:5000/foobar/info", info.LinkCollection["info"].Href);
-        Assert.Equal(2, info.LinkCollection.Count);
+        Assert.NotNull(info.Entries);
+        Assert.True(info.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.Entries["self"].Href);
+        Assert.True(info.Entries.ContainsKey("info"));
+        Assert.Equal("http://localhost:5000/foobar/info", info.Entries["info"].Href);
+        Assert.Equal(2, info.Entries.Count);
     }
 
     [Fact]
@@ -48,19 +48,19 @@ public class HypermediaEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddHypermediaActuatorServices();
         };
 
-        var ep = tc.GetService<IActuatorEndpointHandler>();
+        var ep = tc.GetRequiredService<IActuatorEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
-        Assert.NotNull(info.LinkCollection);
-        Assert.True(info.LinkCollection.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
-        Assert.Single(info.LinkCollection);
+        Assert.NotNull(info.Entries);
+        Assert.True(info.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.Entries["self"].Href);
+        Assert.Single(info.Entries);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class HypermediaEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddHypermediaActuatorServices();
             services.AddInfoActuatorServices();
@@ -82,15 +82,15 @@ public class HypermediaEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<IActuatorEndpointHandler>();
+        var ep = tc.GetRequiredService<IActuatorEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
-        Assert.NotNull(info.LinkCollection);
-        Assert.True(info.LinkCollection.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info.LinkCollection["self"].Href);
-        Assert.False(info.LinkCollection.ContainsKey("info"));
-        Assert.Single(info.LinkCollection);
+        Assert.NotNull(info.Entries);
+        Assert.True(info.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", info.Entries["self"].Href);
+        Assert.False(info.Entries.ContainsKey("info"));
+        Assert.Single(info.Entries);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class HypermediaEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddHypermediaActuatorServices();
             services.AddInfoActuatorServices();
@@ -113,11 +113,11 @@ public class HypermediaEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetService<IActuatorEndpointHandler>();
+        var ep = tc.GetRequiredService<IActuatorEndpointHandler>();
 
         Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
         Assert.NotNull(info);
-        Assert.NotNull(info.LinkCollection);
-        Assert.Empty(info.LinkCollection);
+        Assert.NotNull(info.Entries);
+        Assert.Empty(info.Entries);
     }
 }

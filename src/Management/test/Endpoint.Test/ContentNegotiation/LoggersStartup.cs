@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class LoggersStartup
+public sealed class LoggersStartup
 {
     public IConfiguration Configuration { get; }
 

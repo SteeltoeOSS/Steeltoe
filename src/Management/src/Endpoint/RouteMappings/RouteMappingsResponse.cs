@@ -13,7 +13,7 @@ public sealed class RouteMappingsResponse
 
     public RouteMappingsResponse(ContextMappings contextMappings)
     {
-        // At this point, .NET will only ever has one application => "application"
+        // At this point, .NET will only ever have one application => "application"
         ContextMappings = new Dictionary<string, ContextMappings>
         {
             { "application", contextMappings }

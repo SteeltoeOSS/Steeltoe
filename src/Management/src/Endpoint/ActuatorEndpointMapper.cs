@@ -29,7 +29,7 @@ internal sealed class ActuatorEndpointMapper
         _logger = logger;
     }
 
-    public IEndpointConventionBuilder Map(IEndpointRouteBuilder endpointRouteBuilder, ref ActuatorConventionBuilder conventionBuilder)
+    public void Map(IEndpointRouteBuilder endpointRouteBuilder, ref ActuatorConventionBuilder conventionBuilder)
     {
         var collection = new HashSet<string>();
 
@@ -42,10 +42,8 @@ internal sealed class ActuatorEndpointMapper
         if (Platform.IsCloudFoundry)
         {
             IEnumerable<IEndpointMiddleware> cfMiddlewares = _middlewares.Where(m => m is not ActuatorHypermediaEndpointMiddleware);
-            MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, ConfigureManagementEndpointOptions.DefaultCFPath, cfMiddlewares);
+            MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, cfMiddlewares);
         }
-
-        return conventionBuilder;
     }
 
     private void MapEndpoints(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder, HashSet<string> collection,

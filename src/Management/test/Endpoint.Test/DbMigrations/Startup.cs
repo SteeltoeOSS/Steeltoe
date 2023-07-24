@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.DbMigrations;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
-public class Startup
+public sealed class Startup
 {
     public IConfiguration Configuration { get; set; }
 

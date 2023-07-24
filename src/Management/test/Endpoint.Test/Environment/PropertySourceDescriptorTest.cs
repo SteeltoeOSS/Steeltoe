@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Environment;
 
-public class PropertySourceDescriptorTest : BaseTest
+public sealed class PropertySourceDescriptorTest : BaseTest
 {
     [Fact]
     public void Constructor_SetsValues()

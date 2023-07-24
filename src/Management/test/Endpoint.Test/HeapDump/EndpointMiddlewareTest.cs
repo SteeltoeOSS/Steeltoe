@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
@@ -40,7 +40,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-        var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
+        var loggerFactory = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
 
         ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
 
@@ -52,7 +52,7 @@ public class EndpointMiddlewareTest : BaseTest
         await middle.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         byte[] buffer = new byte[1024];
-        await context.Response.Body.ReadAsync(buffer);
+        _ = await context.Response.Body.ReadAsync(buffer);
         Assert.NotEqual(0, buffer[0]);
     }
 
@@ -93,9 +93,12 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<HeapDumpEndpointOptions>();
         ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.ExactMatch);
+        Assert.True(options.RequiresExactMatch());
         Assert.Equal("/actuator/heapdump", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
-        Assert.Equal("/cloudfoundryapplication/heapdump", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
+
+        Assert.Equal("/cloudfoundryapplication/heapdump",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+
         Assert.Contains("Get", options.AllowedVerbs);
     }
 

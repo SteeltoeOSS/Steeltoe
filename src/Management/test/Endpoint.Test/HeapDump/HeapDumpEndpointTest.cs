@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
-public class HeapDumpEndpointTest : BaseTest
+public sealed class HeapDumpEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -40,14 +40,14 @@ public class HeapDumpEndpointTest : BaseTest
         {
             using var tc = new TestContext(_output);
 
-            tc.AdditionalServices = (services, configuration) =>
+            tc.AdditionalServices = (services, _) =>
             {
                 services.AddHeapDumpActuatorServices();
 
                 services.AddSingleton<IHeapDumper>(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
             };
 
-            var ep = tc.GetService<IHeapDumpEndpointHandler>();
+            var ep = tc.GetRequiredService<IHeapDumpEndpointHandler>();
 
             string result = await ep.InvokeAsync(null, CancellationToken.None);
             Assert.NotNull(result);
@@ -60,14 +60,14 @@ public class HeapDumpEndpointTest : BaseTest
             {
                 using var tc = new TestContext(_output);
 
-                tc.AdditionalServices = (services, configuration) =>
+                tc.AdditionalServices = (services, _) =>
                 {
                     services.AddHeapDumpActuatorServices();
 
                     services.AddSingleton<IHeapDumper>(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
                 };
 
-                var ep = tc.GetService<IHeapDumpEndpointHandler>();
+                var ep = tc.GetRequiredService<IHeapDumpEndpointHandler>();
 
                 string result = await ep.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);

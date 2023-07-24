@@ -49,14 +49,14 @@ public static class ServiceCollectionExtensions
 
         if (version == MediaTypeVersion.V2)
         {
-            services.PostConfigure((ManagementEndpointOptions mgmtOptions) =>
+            services.PostConfigure((ManagementEndpointOptions endpointOptions) =>
             {
-                JsonSerializerOptions serializerOptions = mgmtOptions.SerializerOptions ?? new JsonSerializerOptions
+                JsonSerializerOptions serializerOptions = endpointOptions.SerializerOptions ?? new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
 
-                if (serializerOptions.Converters?.Any(c => c is ThreadDumpV2Converter) != true)
+                if (!serializerOptions.Converters.Any(c => c is ThreadDumpV2Converter))
                 {
                     serializerOptions.Converters.Add(new ThreadDumpV2Converter());
                 }

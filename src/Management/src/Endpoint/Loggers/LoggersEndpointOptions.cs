@@ -6,11 +6,14 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 
 public sealed class LoggersEndpointOptions : HttpMiddlewareOptions
 {
-    public override IEnumerable<string> AllowedVerbs { get; } = new List<string>
+    public override IList<string> AllowedVerbs { get; set; } = new List<string>
     {
         "Get",
         "Post"
     };
 
-    public override bool ExactMatch { get; }
+    public override bool RequiresExactMatch()
+    {
+        return false;
+    }
 }

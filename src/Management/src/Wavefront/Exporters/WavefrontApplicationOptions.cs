@@ -9,12 +9,10 @@ namespace Steeltoe.Management.Wavefront.Exporters;
 
 public sealed class WavefrontApplicationOptions
 {
-    internal const string WavefrontPrefix = "wavefront:application";
+    private const string WavefrontPrefix = "wavefront:application";
 
     public string Source { get; set; }
-
     public string Name { get; set; }
-
     public string Service { get; set; }
 
     public WavefrontApplicationOptions(IConfiguration configuration)

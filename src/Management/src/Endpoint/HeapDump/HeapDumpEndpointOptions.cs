@@ -8,8 +8,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 public sealed class HeapDumpEndpointOptions : HttpMiddlewareOptions
 {
-    public string HeapDumpType { get; set; }
-
     // Default to disabled on Linux + Cloud Foundry until PTRACE is allowed
-    public override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
+    internal override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
+
+    public string HeapDumpType { get; set; }
 }

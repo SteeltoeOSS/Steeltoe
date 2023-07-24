@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
     private static readonly Dictionary<string, string> AppSettings = new()
     {
@@ -104,9 +104,12 @@ public class EndpointMiddlewareTest : BaseTest
     {
         ThreadDumpEndpointOptions options = GetOptionsFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
         ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.ExactMatch);
+        Assert.True(options.RequiresExactMatch());
         Assert.Equal("/actuator/dump", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
-        Assert.Equal("/cloudfoundryapplication/dump", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
+
+        Assert.Equal("/cloudfoundryapplication/dump",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+
         Assert.Contains("Get", options.AllowedVerbs);
     }
 
@@ -115,9 +118,12 @@ public class EndpointMiddlewareTest : BaseTest
     {
         var options = GetOptionsFromSettings<ThreadDumpEndpointOptions>();
         ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.ExactMatch);
+        Assert.True(options.RequiresExactMatch());
         Assert.Equal("/actuator/threaddump", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
-        Assert.Equal("/cloudfoundryapplication/threaddump", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCFPath, managementOptions));
+
+        Assert.Equal("/cloudfoundryapplication/threaddump",
+            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+
         Assert.Contains("Get", options.AllowedVerbs);
     }
 

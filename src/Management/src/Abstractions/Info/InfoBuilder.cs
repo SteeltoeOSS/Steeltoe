@@ -8,7 +8,7 @@ public sealed class InfoBuilder : IInfoBuilder
 {
     private readonly Dictionary<string, object> _info = new();
 
-    public Dictionary<string, object> Build()
+    public IDictionary<string, object> Build()
     {
         return _info;
     }
@@ -23,7 +23,7 @@ public sealed class InfoBuilder : IInfoBuilder
         return this;
     }
 
-    public IInfoBuilder WithInfo(Dictionary<string, object> details)
+    public IInfoBuilder WithInfo(IDictionary<string, object> details)
     {
         if (details != null)
         {

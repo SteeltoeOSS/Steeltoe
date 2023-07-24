@@ -16,13 +16,13 @@ internal sealed class HttpTraceResultConverter : JsonConverter<HttpTraceResult>
 
     public override void Write(Utf8JsonWriter writer, HttpTraceResult value, JsonSerializerOptions options)
     {
-        if (value is HttpTracesV2 tracesV2)
+        if (value is HttpTraceResultV2 traceResultV2)
         {
-            JsonSerializer.Serialize(writer, tracesV2, options);
+            JsonSerializer.Serialize(writer, traceResultV2, options);
         }
-        else if (value is HttpTracesV1 tracesV1)
+        else if (value is HttpTraceResultV1 traceResultV1)
         {
-            JsonSerializer.Serialize(writer, tracesV1, options);
+            JsonSerializer.Serialize(writer, traceResultV1, options);
         }
     }
 }

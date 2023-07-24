@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.HeapDump;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
-public class Startup
+public sealed class Startup
 {
     public IConfiguration Configuration { get; set; }
 

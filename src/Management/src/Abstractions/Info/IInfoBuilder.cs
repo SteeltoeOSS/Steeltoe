@@ -8,7 +8,7 @@ public interface IInfoBuilder
 {
     IInfoBuilder WithInfo(string key, object value);
 
-    IInfoBuilder WithInfo(Dictionary<string, object> details);
+    IInfoBuilder WithInfo(IDictionary<string, object> details);
 
-    Dictionary<string, object> Build();
+    IDictionary<string, object> Build();
 }

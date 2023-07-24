@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
-public class LoggersEndpointTest : BaseTest
+public sealed class LoggersEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -27,13 +27,13 @@ public class LoggersEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = (LoggersEndpointHandler)tc.GetService<ILoggersEndpointHandler>();
+        var ep = (LoggersEndpointHandler)tc.GetRequiredService<ILoggersEndpointHandler>();
 
         var dict = new Dictionary<string, object>();
         ep.AddLevels(dict);
@@ -58,13 +58,13 @@ public class LoggersEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = (LoggersEndpointHandler)tc.GetService<ILoggersEndpointHandler>();
+        var ep = (LoggersEndpointHandler)tc.GetRequiredService<ILoggersEndpointHandler>();
 
         Assert.Throws<ArgumentNullException>(() => ep.SetLogLevel(new TestLogProvider(), null, null));
     }
@@ -74,13 +74,13 @@ public class LoggersEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = (LoggersEndpointHandler)tc.GetService<ILoggersEndpointHandler>();
+        var ep = (LoggersEndpointHandler)tc.GetRequiredService<ILoggersEndpointHandler>();
         var provider = new TestLogProvider();
         ep.SetLogLevel(provider, "foobar", "WARN");
 
@@ -93,13 +93,13 @@ public class LoggersEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = (LoggersEndpointHandler)tc.GetService<ILoggersEndpointHandler>();
+        var ep = (LoggersEndpointHandler)tc.GetRequiredService<ILoggersEndpointHandler>();
         ICollection<ILoggerConfiguration> result = ep.GetLoggerConfigurations(null);
         Assert.NotNull(result);
     }
@@ -109,13 +109,13 @@ public class LoggersEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = (LoggersEndpointHandler)tc.GetService<ILoggersEndpointHandler>();
+        var ep = (LoggersEndpointHandler)tc.GetRequiredService<ILoggersEndpointHandler>();
         var provider = new TestLogProvider();
         ICollection<ILoggerConfiguration> result = ep.GetLoggerConfigurations(provider);
         Assert.NotNull(result);
@@ -123,21 +123,21 @@ public class LoggersEndpointTest : BaseTest
     }
 
     [Fact]
-    public async Task DoInvoke_NoChangeRequest_ReturnsExpected()
+    public async Task Invoke_NoChangeRequest_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = tc.GetService<ILoggersEndpointHandler>();
+        var ep = tc.GetRequiredService<ILoggersEndpointHandler>();
 
         LoggersResponse loggersResponse = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(loggersResponse);
-        Dictionary<string, object> result = loggersResponse.Data;
+        IDictionary<string, object> result = loggersResponse.Data;
         Assert.NotNull(result);
         Assert.True(result.ContainsKey("levels"));
         var levels = result["levels"] as List<string>;

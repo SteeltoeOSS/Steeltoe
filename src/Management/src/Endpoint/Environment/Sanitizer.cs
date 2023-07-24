@@ -18,7 +18,7 @@ internal sealed class Sanitizer
 
     private readonly List<Regex> _matchers = new();
 
-    internal Sanitizer(string[] keysToSanitize)
+    internal Sanitizer(IEnumerable<string> keysToSanitize)
     {
         foreach (string key in keysToSanitize)
         {

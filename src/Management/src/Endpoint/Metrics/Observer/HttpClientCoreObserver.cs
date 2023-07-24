@@ -20,11 +20,11 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
     private const string UriTagKey = "uri";
     private const string MethodTagKey = "method";
     private const string ClientTagKey = "clientName";
-    internal const string DiagnosticName = "HttpHandlerDiagnosticListener";
-    internal const string DefaultObserverName = "HttpClientCoreObserver";
+    private const string DiagnosticName = "HttpHandlerDiagnosticListener";
+    private const string DefaultObserverName = "HttpClientCoreObserver";
 
-    internal const string StopEvent = "System.Net.Http.HttpRequestOut.Stop";
-    internal const string ExceptionEvent = "System.Net.Http.Exception";
+    private const string StopEvent = "System.Net.Http.HttpRequestOut.Stop";
+    private const string ExceptionEvent = "System.Net.Http.Exception";
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
     private readonly ILogger _logger;
@@ -101,7 +101,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
         }
     }
 
-    internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+    private IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
     {
         string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string statusCode = GetStatusCode(response, taskStatus);
@@ -116,7 +116,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
         };
     }
 
-    internal string GetStatusCode(HttpResponseMessage response, TaskStatus taskStatus)
+    private string GetStatusCode(HttpResponseMessage response, TaskStatus taskStatus)
     {
         if (response != null)
         {

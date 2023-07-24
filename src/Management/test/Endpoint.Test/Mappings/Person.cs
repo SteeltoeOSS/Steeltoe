@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
-public class Person
+public sealed class Person
 {
 }

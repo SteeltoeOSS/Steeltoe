@@ -4,11 +4,11 @@
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public sealed class HttpTracesV1 : HttpTraceResult
+public sealed class HttpTraceResultV1 : HttpTraceResult
 {
     public IList<TraceResult> Traces { get; }
 
-    public HttpTracesV1(IList<TraceResult> traces)
+    public HttpTraceResultV1(IList<TraceResult> traces)
     {
         Traces = traces;
         CurrentVersion = MediaTypeVersion.V1;

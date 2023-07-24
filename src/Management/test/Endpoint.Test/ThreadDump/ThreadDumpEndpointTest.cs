@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
-public class ThreadDumpEndpointTest : BaseTest
+public sealed class ThreadDumpEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -34,13 +34,13 @@ public class ThreadDumpEndpointTest : BaseTest
         using var tc = new TestContext(_output);
         var dumper = new TestThreadDumper();
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IThreadDumper>(dumper);
             services.AddThreadDumpActuatorServices(MediaTypeVersion.V1);
         };
 
-        var ep = tc.GetService<IThreadDumpEndpointHandler>();
+        var ep = tc.GetRequiredService<IThreadDumpEndpointHandler>();
         IList<ThreadInfo> result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
         Assert.True(dumper.DumpThreadsCalled);

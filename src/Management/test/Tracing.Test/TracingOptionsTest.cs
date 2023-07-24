@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 
-public class TracingOptionsTest
+public sealed class TracingOptionsTest
 {
     [Fact]
     public void InitializedWithDefaults()

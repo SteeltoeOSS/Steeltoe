@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class HyperMediaStartup
+public sealed class HyperMediaStartup
 {
     public IConfiguration Configuration { get; set; }
 

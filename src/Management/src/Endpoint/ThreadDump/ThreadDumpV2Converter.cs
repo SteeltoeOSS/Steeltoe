@@ -18,12 +18,12 @@ internal sealed class ThreadDumpV2Converter : JsonConverter<IList<ThreadInfo>>
     {
         writer.WriteStartObject();
 
-        if (value is IList<ThreadInfo> threadInfos)
+        if (value != null)
         {
             writer.WritePropertyName("threads");
             writer.WriteStartObject();
 
-            foreach (ThreadInfo threadInfo in threadInfos)
+            foreach (ThreadInfo threadInfo in value)
             {
                 JsonSerializer.Serialize(writer, threadInfo, options);
             }

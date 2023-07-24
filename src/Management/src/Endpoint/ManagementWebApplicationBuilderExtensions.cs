@@ -77,7 +77,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="contributors">
     /// Types that contribute to the overall health of the app.
     /// </param>
-    public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, Type[] contributors)
+    public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, params Type[] contributors)
     {
         ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddHealthActuator(contributors);
@@ -97,7 +97,8 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="contributors">
     /// Types that contribute to the overall health of the app.
     /// </param>
-    public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, IHealthAggregator aggregator, Type[] contributors)
+    public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, IHealthAggregator aggregator,
+        params Type[] contributors)
     {
         ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddHealthActuator(aggregator, contributors);
@@ -156,7 +157,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="contributors">
     /// Contributors to application information.
     /// </param>
-    public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder, IInfoContributor[] contributors)
+    public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder, params IInfoContributor[] contributors)
     {
         ArgumentGuard.NotNull(applicationBuilder);
         applicationBuilder.Services.AddInfoActuator(contributors);

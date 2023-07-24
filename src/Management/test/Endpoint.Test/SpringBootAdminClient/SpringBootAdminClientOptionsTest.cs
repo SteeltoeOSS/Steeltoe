@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public class SpringBootAdminClientOptionsTest
+public sealed class SpringBootAdminClientOptionsTest
 {
     [Fact]
     public void Constructor_ThrowsOnNulls()

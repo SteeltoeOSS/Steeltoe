@@ -24,16 +24,15 @@ using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
-using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
+using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
-using Steeltoe.Management.Info;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ManagementWebHostBuilderExtensionsTest : BaseTest
+public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
 {
     private readonly IWebHostBuilder _testServerWithRouting = new WebHostBuilder().UseTestServer()
         .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting()).ConfigureAppConfiguration(c =>
@@ -134,10 +133,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
         {
         });
 
-        IWebHost host = hostBuilder.AddHealthActuator(new[]
-        {
-            typeof(DownContributor)
-        }).Build();
+        IWebHost host = hostBuilder.AddHealthActuator(typeof(DownContributor)).Build();
 
         IEnumerable<IHealthEndpointHandler> epHandler = host.Services.GetServices<IHealthEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
@@ -154,10 +150,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
         {
         });
 
-        IWebHost host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new[]
-        {
-            typeof(DownContributor)
-        }).Build();
+        IWebHost host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor)).Build();
 
         IEnumerable<IHealthEndpointHandler> epHandler = host.Services.GetServices<IHealthEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
@@ -197,7 +190,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
         Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await readinessResult.Content.ReadAsStringAsync(), StringComparison.Ordinal);
 
         // confirm that the Readiness state will be changed to refusing traffic when ApplicationStopping fires
-        var availability = host.Services.GetService<ApplicationAvailability>();
+        var availability = host.Services.GetRequiredService<ApplicationAvailability>();
         await host.StopAsync();
         Assert.Equal(LivenessState.Correct, availability.GetLivenessState());
         Assert.Equal(ReadinessState.RefusingTraffic, availability.GetReadinessState());
@@ -288,10 +281,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
         {
         });
 
-        IWebHost host = hostBuilder.AddInfoActuator(new IInfoContributor[]
-        {
-            new AppSettingsInfoContributor(new ConfigurationBuilder().Build())
-        }).Build();
+        IWebHost host = hostBuilder.AddInfoActuator(new AppSettingsInfoContributor(new ConfigurationBuilder().Build())).Build();
 
         var epHandler = host.Services.GetService<IInfoEndpointHandler>();
         IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
@@ -580,7 +570,7 @@ public class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         try
         {
-            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "some"); // Allow routing to /cloudfoundryapplication
 
             using IWebHost host = _testServerWithRouting.AddCloudFoundryActuator().Start();
 

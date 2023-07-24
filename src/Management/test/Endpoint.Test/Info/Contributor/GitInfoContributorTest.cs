@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info.Contributor;
 
-public class GitInfoContributorTest : BaseTest
+public sealed class GitInfoContributorTest : BaseTest
 {
     [Fact]
     public async Task ReadGitPropertiesMissingPropertiesFile()
@@ -78,7 +78,7 @@ public class GitInfoContributorTest : BaseTest
         var builder = new InfoBuilder();
         await contrib.ContributeAsync(builder, CancellationToken.None);
 
-        Dictionary<string, object> result = builder.Build();
+        IDictionary<string, object> result = builder.Build();
         Assert.NotNull(result);
         var gitDict = result["git"] as Dictionary<string, object>;
         Assert.NotNull(gitDict);

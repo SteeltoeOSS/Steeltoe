@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Prometheus;
 
 internal sealed class ConfigurePrometheusEndpointOptions : ConfigureEndpointOptions<PrometheusEndpointOptions>
 {
-    internal const string ManagementInfoPrefix = "management:endpoints:prometheus";
+    private const string ManagementInfoPrefix = "management:endpoints:prometheus";
 
     public ConfigurePrometheusEndpointOptions(IConfiguration configuration)
         : base(configuration, ManagementInfoPrefix, "prometheus")

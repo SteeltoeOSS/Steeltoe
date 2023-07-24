@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.Loggers;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
-public class Startup
+public sealed class Startup
 {
     public IConfiguration Configuration { get; set; }
 

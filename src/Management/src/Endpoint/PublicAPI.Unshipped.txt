@@ -1,12 +1,13 @@
 abstract Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.InvokeEndpointHandlerAsync(Microsoft.AspNetCore.Http.HttpContext context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>
-override Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.ExactMatch.get -> bool
-override Steeltoe.Management.Endpoint.HeapDump.HeapDumpEndpointOptions.DefaultEnabled.get -> bool
+override Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type typeToConvert, System.Text.Json.JsonSerializerOptions options) -> System.DateTime
 override Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter.Write(System.Text.Json.Utf8JsonWriter writer, System.DateTime value, System.Text.Json.JsonSerializerOptions options) -> void
-override Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IEnumerable<string>
-override Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions.ExactMatch.get -> bool
-override Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions.ExactMatch.get -> bool
-override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IEnumerable<string>
+override Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string>
+override Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions.AllowedVerbs.set -> void
+override Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions.RequiresExactMatch() -> bool
+override Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions.RequiresExactMatch() -> bool
+override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string>
+override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.set -> void
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder builder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder endpoints, Steeltoe.Management.Endpoint.ActuatorConventionBuilder conventionBuilder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
@@ -20,7 +21,6 @@ static Steeltoe.Management.Endpoint.CloudFoundry.EndpointServiceCollectionExtens
 static Steeltoe.Management.Endpoint.CloudFoundry.ServiceCollectionExtensions.AddCloudFoundryActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Steeltoe.Management.Endpoint.DbMigrations.EndpointServiceCollectionExtensions.AddDbMigrationsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> void
 static Steeltoe.Management.Endpoint.DbMigrations.ServiceCollectionExtensions.AddDbMigrationsActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
-static Steeltoe.Management.Endpoint.EndpointApplicationBuilderExtensions.UseActuators(this Microsoft.AspNetCore.Builder.IApplicationBuilder builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder
 static Steeltoe.Management.Endpoint.Environment.EndpointServiceCollectionExtensions.AddEnvironmentActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Steeltoe.Management.Endpoint.Environment.ServiceCollectionExtensions.AddEnvironmentActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> void
@@ -45,12 +45,12 @@ static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddCloudFoun
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddDbMigrationsActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddEnvironmentActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder, Steeltoe.Common.HealthChecks.IHealthAggregator aggregator, System.Type[] contributors) -> Microsoft.Extensions.Hosting.IHostBuilder
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder, System.Type[] contributors) -> Microsoft.Extensions.Hosting.IHostBuilder
+static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder, params System.Type[] contributors) -> Microsoft.Extensions.Hosting.IHostBuilder
+static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder, Steeltoe.Common.HealthChecks.IHealthAggregator aggregator, params System.Type[] contributors) -> Microsoft.Extensions.Hosting.IHostBuilder
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHeapDumpActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHypermediaActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddInfoActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddInfoActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder, Steeltoe.Management.Info.IInfoContributor[] contributors) -> Microsoft.Extensions.Hosting.IHostBuilder
+static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddInfoActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder, params Steeltoe.Management.Info.IInfoContributor[] contributors) -> Microsoft.Extensions.Hosting.IHostBuilder
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddLoggersActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddMappingsActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddMetricsActuator(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
@@ -66,12 +66,12 @@ static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.Ad
 static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddDbMigrationsActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddEnvironmentActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
-static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder, Steeltoe.Common.HealthChecks.IHealthAggregator aggregator, System.Type[] contributors) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
-static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder, System.Type[] contributors) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
+static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder, params System.Type[] contributors) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
+static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder, Steeltoe.Common.HealthChecks.IHealthAggregator aggregator, params System.Type[] contributors) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHeapDumpActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddHypermediaActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddInfoActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
-static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddInfoActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder, Steeltoe.Management.Info.IInfoContributor[] contributors) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
+static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddInfoActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder, params Steeltoe.Management.Info.IInfoContributor[] contributors) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddLoggersActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddMappingsActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
 static Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions.AddMetricsActuator(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
@@ -87,12 +87,12 @@ static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddCloudF
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddDbMigrationsActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddEnvironmentActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder, Steeltoe.Common.HealthChecks.IHealthAggregator aggregator, System.Type[] contributors) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder, System.Type[] contributors) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
+static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder, params System.Type[] contributors) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
+static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder, Steeltoe.Common.HealthChecks.IHealthAggregator aggregator, params System.Type[] contributors) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHeapDumpActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHypermediaActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddInfoActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddInfoActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder, Steeltoe.Management.Info.IInfoContributor[] contributors) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
+static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddInfoActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder, params Steeltoe.Management.Info.IInfoContributor[] contributors) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddLoggersActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddMappingsActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddMetricsActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
@@ -141,12 +141,6 @@ Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware.InvokeA
 Steeltoe.Management.Endpoint.CloudFoundry.EndpointApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.ICloudFoundryEndpointHandler
-Steeltoe.Management.Endpoint.CloudFoundry.SecurityResult
-Steeltoe.Management.Endpoint.CloudFoundry.SecurityResult.Code.get -> System.Net.HttpStatusCode
-Steeltoe.Management.Endpoint.CloudFoundry.SecurityResult.Message.get -> string
-Steeltoe.Management.Endpoint.CloudFoundry.SecurityResult.Permissions.get -> Steeltoe.Management.Permissions
-Steeltoe.Management.Endpoint.CloudFoundry.SecurityResult.SecurityResult(Steeltoe.Management.Permissions level) -> void
-Steeltoe.Management.Endpoint.CloudFoundry.SecurityResult.SecurityResult(System.Net.HttpStatusCode code, string message) -> void
 Steeltoe.Management.Endpoint.CloudFoundry.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsDescriptor
 Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsDescriptor.AppliedMigrations.get -> System.Collections.Generic.IList<string>
@@ -157,26 +151,15 @@ Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsEndpointOptions.DbMigratio
 Steeltoe.Management.Endpoint.DbMigrations.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.DbMigrations.IDbMigrationsEndpointHandler
 Steeltoe.Management.Endpoint.DbMigrations.ServiceCollectionExtensions
-Steeltoe.Management.Endpoint.EndpointApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.Environment.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Environment.EnvironmentEndpointOptions
 Steeltoe.Management.Endpoint.Environment.EnvironmentEndpointOptions.EnvironmentEndpointOptions() -> void
-Steeltoe.Management.Endpoint.Environment.EnvironmentEndpointOptions.KeysToSanitize.get -> string[]
+Steeltoe.Management.Endpoint.Environment.EnvironmentEndpointOptions.KeysToSanitize.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Endpoint.Environment.EnvironmentEndpointOptions.KeysToSanitize.set -> void
 Steeltoe.Management.Endpoint.Environment.EnvironmentResponse
 Steeltoe.Management.Endpoint.Environment.EnvironmentResponse.ActiveProfiles.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Endpoint.Environment.EnvironmentResponse.EnvironmentResponse(System.Collections.Generic.IList<string> activeProfiles, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Environment.PropertySourceDescriptor> sources) -> void
 Steeltoe.Management.Endpoint.Environment.EnvironmentResponse.PropertySources.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Environment.PropertySourceDescriptor>
-Steeltoe.Management.Endpoint.Environment.GenericHostingEnvironment
-Steeltoe.Management.Endpoint.Environment.GenericHostingEnvironment.ApplicationName.get -> string
-Steeltoe.Management.Endpoint.Environment.GenericHostingEnvironment.ApplicationName.set -> void
-Steeltoe.Management.Endpoint.Environment.GenericHostingEnvironment.ContentRootFileProvider.get -> Microsoft.Extensions.FileProviders.IFileProvider
-Steeltoe.Management.Endpoint.Environment.GenericHostingEnvironment.ContentRootFileProvider.set -> void
-Steeltoe.Management.Endpoint.Environment.GenericHostingEnvironment.ContentRootPath.get -> string
-Steeltoe.Management.Endpoint.Environment.GenericHostingEnvironment.ContentRootPath.set -> void
-Steeltoe.Management.Endpoint.Environment.GenericHostingEnvironment.EnvironmentName.get -> string
-Steeltoe.Management.Endpoint.Environment.GenericHostingEnvironment.EnvironmentName.set -> void
-Steeltoe.Management.Endpoint.Environment.GenericHostingEnvironment.GenericHostingEnvironment() -> void
 Steeltoe.Management.Endpoint.Environment.IEnvironmentEndpointHandler
 Steeltoe.Management.Endpoint.Environment.PropertySourceDescriptor
 Steeltoe.Management.Endpoint.Environment.PropertySourceDescriptor.Name.get -> string
@@ -207,7 +190,7 @@ Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Health.HealthEndpointOptions
 Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.Claim.get -> Steeltoe.Management.Endpoint.Security.EndpointClaim
 Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.Claim.set -> void
-Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.Groups.get -> System.Collections.Generic.Dictionary<string, Steeltoe.Management.Endpoint.Health.HealthGroupOptions>
+Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.Groups.get -> System.Collections.Generic.IDictionary<string, Steeltoe.Management.Endpoint.Health.HealthGroupOptions>
 Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.Groups.set -> void
 Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.HealthEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.Role.get -> string
@@ -263,9 +246,9 @@ Steeltoe.Management.Endpoint.Loggers.LoggerLevels.LoggerLevels(Microsoft.Extensi
 Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions
 Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions.LoggersEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Loggers.LoggersResponse
-Steeltoe.Management.Endpoint.Loggers.LoggersResponse.Data.get -> System.Collections.Generic.Dictionary<string, object>
+Steeltoe.Management.Endpoint.Loggers.LoggersResponse.Data.get -> System.Collections.Generic.IDictionary<string, object>
 Steeltoe.Management.Endpoint.Loggers.LoggersResponse.HasError.get -> bool
-Steeltoe.Management.Endpoint.Loggers.LoggersResponse.LoggersResponse(System.Collections.Generic.Dictionary<string, object> data, bool hasError) -> void
+Steeltoe.Management.Endpoint.Loggers.LoggersResponse.LoggersResponse(System.Collections.Generic.IDictionary<string, object> data, bool hasError) -> void
 Steeltoe.Management.Endpoint.Loggers.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions
 Steeltoe.Management.Endpoint.ManagementWebApplicationBuilderExtensions
@@ -311,9 +294,7 @@ Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.M
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware.EndpointOptions.get -> Steeltoe.Management.HttpMiddlewareOptions
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.CloudFoundryEnabled.get -> bool
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.CloudFoundryEnabled.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.CustomJsonConverters.get -> string[]
+Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.CustomJsonConverters.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.CustomJsonConverters.set -> void
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Enabled.get -> bool?
 Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Enabled.set -> void
@@ -338,13 +319,17 @@ Steeltoe.Management.Endpoint.Refresh.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.AspNetCoreRouteDetails() -> void
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.Consumes.get -> System.Collections.Generic.IList<string>
+Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.Consumes.set -> void
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.HttpMethods.get -> System.Collections.Generic.IList<string>
+Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.HttpMethods.set -> void
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.Produces.get -> System.Collections.Generic.IList<string>
+Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.Produces.set -> void
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.RouteTemplate.get -> string
+Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.RouteTemplate.set -> void
 Steeltoe.Management.Endpoint.RouteMappings.ContextMappings
 Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.ContextMappings() -> void
-Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.ContextMappings(System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription>> mappingDict) -> void
-Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.ContextMappings(System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription>> mappingDict, string parentId) -> void
+Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.ContextMappings(System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription>> mappingDictionary) -> void
+Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.ContextMappings(System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription>> mappingDictionary, string parentId) -> void
 Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.Mappings.get -> System.Collections.Generic.IDictionary<string, System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription>>>
 Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.ParentId.get -> string
 Steeltoe.Management.Endpoint.RouteMappings.EndpointServiceCollectionExtensions
@@ -378,7 +363,7 @@ Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BasePath.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ConnectionTimeoutMs.get -> int
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ConnectionTimeoutMs.set -> void
-Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Metadata.get -> System.Collections.Generic.Dictionary<string, object>
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Metadata.get -> System.Collections.Generic.IDictionary<string, object>
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Metadata.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.SpringBootAdminClientOptions(Microsoft.Extensions.Configuration.IConfiguration configuration, Steeltoe.Common.IApplicationInstanceInfo appInfo) -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Url.get -> string
@@ -468,12 +453,12 @@ Steeltoe.Management.Endpoint.Trace.HttpTrace.Timestamp.get -> long
 Steeltoe.Management.Endpoint.Trace.HttpTrace.TimeTaken.get -> long
 Steeltoe.Management.Endpoint.Trace.HttpTraceResult
 Steeltoe.Management.Endpoint.Trace.HttpTraceResult.HttpTraceResult() -> void
-Steeltoe.Management.Endpoint.Trace.HttpTracesV1
-Steeltoe.Management.Endpoint.Trace.HttpTracesV1.HttpTracesV1(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.TraceResult> traces) -> void
-Steeltoe.Management.Endpoint.Trace.HttpTracesV1.Traces.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.TraceResult>
-Steeltoe.Management.Endpoint.Trace.HttpTracesV2
-Steeltoe.Management.Endpoint.Trace.HttpTracesV2.HttpTracesV2(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.HttpTrace> traces) -> void
-Steeltoe.Management.Endpoint.Trace.HttpTracesV2.Traces.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.HttpTrace>
+Steeltoe.Management.Endpoint.Trace.HttpTraceResultV1
+Steeltoe.Management.Endpoint.Trace.HttpTraceResultV1.HttpTraceResultV1(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.TraceResult> traces) -> void
+Steeltoe.Management.Endpoint.Trace.HttpTraceResultV1.Traces.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.TraceResult>
+Steeltoe.Management.Endpoint.Trace.HttpTraceResultV2
+Steeltoe.Management.Endpoint.Trace.HttpTraceResultV2.HttpTraceResultV2(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.HttpTrace> traces) -> void
+Steeltoe.Management.Endpoint.Trace.HttpTraceResultV2.Traces.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Trace.HttpTrace>
 Steeltoe.Management.Endpoint.Trace.IHttpTraceEndpointHandler
 Steeltoe.Management.Endpoint.Trace.IHttpTraceRepository
 Steeltoe.Management.Endpoint.Trace.IHttpTraceRepository.GetTraces() -> Steeltoe.Management.Endpoint.Trace.HttpTraceResult
@@ -481,14 +466,14 @@ Steeltoe.Management.Endpoint.Trace.Principal
 Steeltoe.Management.Endpoint.Trace.Principal.Name.get -> string
 Steeltoe.Management.Endpoint.Trace.Principal.Principal(string name) -> void
 Steeltoe.Management.Endpoint.Trace.Request
-Steeltoe.Management.Endpoint.Trace.Request.Headers.get -> System.Collections.Generic.IDictionary<string, string[]>
+Steeltoe.Management.Endpoint.Trace.Request.Headers.get -> System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<string>>
 Steeltoe.Management.Endpoint.Trace.Request.Method.get -> string
 Steeltoe.Management.Endpoint.Trace.Request.RemoteAddress.get -> string
-Steeltoe.Management.Endpoint.Trace.Request.Request(string method, string uri, System.Collections.Generic.IDictionary<string, string[]> headers, string remoteAddress) -> void
+Steeltoe.Management.Endpoint.Trace.Request.Request(string method, string uri, System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<string>> headers, string remoteAddress) -> void
 Steeltoe.Management.Endpoint.Trace.Request.Uri.get -> string
 Steeltoe.Management.Endpoint.Trace.Response
-Steeltoe.Management.Endpoint.Trace.Response.Headers.get -> System.Collections.Generic.IDictionary<string, string[]>
-Steeltoe.Management.Endpoint.Trace.Response.Response(int status, System.Collections.Generic.IDictionary<string, string[]> headers) -> void
+Steeltoe.Management.Endpoint.Trace.Response.Headers.get -> System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<string>>
+Steeltoe.Management.Endpoint.Trace.Response.Response(int status, System.Collections.Generic.IDictionary<string, System.Collections.Generic.IList<string>> headers) -> void
 Steeltoe.Management.Endpoint.Trace.Response.Status.get -> int
 Steeltoe.Management.Endpoint.Trace.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Trace.Session
@@ -519,9 +504,9 @@ Steeltoe.Management.Endpoint.Trace.TraceEndpointOptions.Capacity.get -> int
 Steeltoe.Management.Endpoint.Trace.TraceEndpointOptions.Capacity.set -> void
 Steeltoe.Management.Endpoint.Trace.TraceEndpointOptions.TraceEndpointOptions() -> void
 Steeltoe.Management.Endpoint.Trace.TraceResult
-Steeltoe.Management.Endpoint.Trace.TraceResult.Info.get -> System.Collections.Generic.Dictionary<string, object>
+Steeltoe.Management.Endpoint.Trace.TraceResult.Info.get -> System.Collections.Generic.IDictionary<string, object>
 Steeltoe.Management.Endpoint.Trace.TraceResult.TimeStamp.get -> long
-Steeltoe.Management.Endpoint.Trace.TraceResult.TraceResult(long timestamp, System.Collections.Generic.Dictionary<string, object> info) -> void
+Steeltoe.Management.Endpoint.Trace.TraceResult.TraceResult(long timestamp, System.Collections.Generic.IDictionary<string, object> info) -> void
 Steeltoe.Management.Endpoint.Web.Hypermedia.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Web.Hypermedia.HypermediaEndpointOptions
 Steeltoe.Management.Endpoint.Web.Hypermedia.HypermediaEndpointOptions.HypermediaEndpointOptions() -> void
@@ -533,8 +518,8 @@ Steeltoe.Management.Endpoint.Web.Hypermedia.Link.Link() -> void
 Steeltoe.Management.Endpoint.Web.Hypermedia.Link.Link(string href) -> void
 Steeltoe.Management.Endpoint.Web.Hypermedia.Link.Templated.get -> bool
 Steeltoe.Management.Endpoint.Web.Hypermedia.Links
-Steeltoe.Management.Endpoint.Web.Hypermedia.Links.LinkCollection.get -> System.Collections.Generic.Dictionary<string, Steeltoe.Management.Endpoint.Web.Hypermedia.Link>
-Steeltoe.Management.Endpoint.Web.Hypermedia.Links.LinkCollection.set -> void
+Steeltoe.Management.Endpoint.Web.Hypermedia.Links.Entries.get -> System.Collections.Generic.IDictionary<string, Steeltoe.Management.Endpoint.Web.Hypermedia.Link>
+Steeltoe.Management.Endpoint.Web.Hypermedia.Links.Entries.set -> void
 Steeltoe.Management.Endpoint.Web.Hypermedia.Links.Links() -> void
 Steeltoe.Management.Endpoint.Web.Hypermedia.Links.Type.get -> string
 Steeltoe.Management.Endpoint.Web.Hypermedia.Links.Type.set -> void

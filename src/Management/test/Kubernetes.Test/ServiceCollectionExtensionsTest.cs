@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Kubernetes.Test;
 
-public class ServiceCollectionExtensionsTest
+public sealed class ServiceCollectionExtensionsTest
 {
     [Fact]
     public void AddKubernetesInfoContributorThrowsOnNull()
@@ -51,9 +51,7 @@ public class ServiceCollectionExtensionsTest
     public void AddKubernetesActuators()
     {
         var services = new ServiceCollection();
-        var appSettings = new Dictionary<string, string>();
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
         services.AddSingleton<IConfiguration>(configurationBuilder.Build());
         var utils = new FakePodUtilities(FakePodUtilities.SamplePod);
 

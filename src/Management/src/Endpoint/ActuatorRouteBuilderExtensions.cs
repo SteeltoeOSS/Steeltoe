@@ -21,11 +21,10 @@ public static class ActuatorRouteBuilderExtensions
         ArgumentGuard.NotNull(endpoints);
         IServiceProvider serviceProvider = endpoints.ServiceProvider;
 
-        using (IServiceScope scope = serviceProvider.CreateScope())
-        {
-            var mapper = scope.ServiceProvider.GetService<ActuatorEndpointMapper>();
-            mapper.Map(endpoints, ref conventionBuilder);
-            return conventionBuilder;
-        }
+        using IServiceScope scope = serviceProvider.CreateScope();
+
+        var mapper = scope.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
+        mapper.Map(endpoints, ref conventionBuilder);
+        return conventionBuilder;
     }
 }

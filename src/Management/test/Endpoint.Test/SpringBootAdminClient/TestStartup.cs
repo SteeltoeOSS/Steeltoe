@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public class TestStartup
+public sealed class TestStartup
 {
     public IConfiguration Configuration { get; set; }
 
@@ -20,11 +20,11 @@ public class TestStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddSingleton(new MyMiddleware());
+        services.TryAddSingleton(new TestMiddleware());
     }
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseMiddleware<MyMiddleware>();
+        app.UseMiddleware<TestMiddleware>();
     }
 }

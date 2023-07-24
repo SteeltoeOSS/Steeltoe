@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.ManagementPort;
 
-public class ManagementEndpointServedOnDifferentPort
+public sealed class ManagementEndpointServedOnDifferentPort
 {
     [Fact]
     public void AddAllActuators_WebApplication_MakeSureTheManagementPortIsSet()
@@ -112,15 +112,15 @@ public class ManagementEndpointServedOnDifferentPort
             { "management:endpoints:sslenabled", "true" }
         }.ToImmutableDictionary();
 
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(settings)).ConfigureWebHost(
-            webhostBuilder =>
+        IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(settings)).ConfigureWebHost(
+            webHostBuilder =>
             {
-                webhostBuilder.Configure(app => app.UseRouting());
-                webhostBuilder.ConfigureServices(svc => svc.AddRouting());
-                webhostBuilder.UseSetting("management:endpoints:port", "9090");
-                webhostBuilder.ConfigureServices(svc => svc.AddActionDescriptorCollectionProvider());
-                webhostBuilder.AddAllActuators();
-                webhostBuilder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+                webHostBuilder.Configure(app => app.UseRouting());
+                webHostBuilder.ConfigureServices(svc => svc.AddRouting());
+                webHostBuilder.UseSetting("management:endpoints:port", "9090");
+                webHostBuilder.ConfigureServices(svc => svc.AddActionDescriptorCollectionProvider());
+                webHostBuilder.AddAllActuators();
+                webHostBuilder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
             });
 
         using IHost host = hostBuilder.Build();
@@ -138,15 +138,15 @@ public class ManagementEndpointServedOnDifferentPort
         System.Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
         System.Environment.SetEnvironmentVariable("PORT", null);
 
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(webhostBuilder =>
+        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(webHostBuilder =>
         {
-            webhostBuilder.Configure(app => app.UseRouting().Run(async context => await context.Response.WriteAsync("Response from Run Middleware")));
-            webhostBuilder.ConfigureServices(svc => svc.AddRouting());
-            webhostBuilder.ConfigureServices(svc => svc.AddActionDescriptorCollectionProvider());
-            webhostBuilder.UseSetting("management:endpoints:port", "9090");
-            webhostBuilder.UseSetting("management:endpoints:sslenabled", "true");
-            webhostBuilder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
-            webhostBuilder.AddAllActuators();
+            webHostBuilder.Configure(app => app.UseRouting().Run(async context => await context.Response.WriteAsync("Response from Run Middleware")));
+            webHostBuilder.ConfigureServices(svc => svc.AddRouting());
+            webHostBuilder.ConfigureServices(svc => svc.AddActionDescriptorCollectionProvider());
+            webHostBuilder.UseSetting("management:endpoints:port", "9090");
+            webHostBuilder.UseSetting("management:endpoints:sslenabled", "true");
+            webHostBuilder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+            webHostBuilder.AddAllActuators();
         });
 
         using IHost host = hostBuilder.Build();

@@ -45,97 +45,94 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
     public Task<RouteMappingsResponse> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching application mappings");
-        return Task.FromResult(GetApplicationMappings());
-    }
-
-    internal RouteMappingsResponse GetApplicationMappings()
-    {
-        IDictionary<string, IList<RouteMappingDescription>> desc = new Dictionary<string, IList<RouteMappingDescription>>();
+        IDictionary<string, IList<RouteMappingDescription>> dictionary = new Dictionary<string, IList<RouteMappingDescription>>();
 
         if (_actionDescriptorCollectionProvider != null)
         {
-            ApiDescriptionProviderContext apiContext = GetApiDescriptions(_actionDescriptorCollectionProvider?.ActionDescriptors?.Items);
-            desc = GetMappingDescriptions(apiContext);
+            ApiDescriptionProviderContext apiContext = GetApiDescriptions(_actionDescriptorCollectionProvider?.ActionDescriptors.Items);
+            dictionary = GetMappingDescriptions(apiContext);
         }
 
         if (_routeMappings != null)
         {
-            AddRouteMappingsDescriptions(_routeMappings, desc);
+            AddRouteMappingsDescriptions(_routeMappings, dictionary);
         }
 
-        var contextMappings = new ContextMappings(desc);
-        return new RouteMappingsResponse(contextMappings);
+        var contextMappings = new ContextMappings(dictionary);
+        var response = new RouteMappingsResponse(contextMappings);
+
+        return Task.FromResult(response);
     }
 
-    internal IDictionary<string, IList<RouteMappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
+    private IDictionary<string, IList<RouteMappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
     {
         IDictionary<string, IList<RouteMappingDescription>> mappingDescriptions = new Dictionary<string, IList<RouteMappingDescription>>();
 
-        foreach (ApiDescription desc in apiContext.Results)
+        foreach (ApiDescription description in apiContext.Results)
         {
-            var descriptor = desc.ActionDescriptor as ControllerActionDescriptor;
-            AspNetCoreRouteDetails details = GetRouteDetails(desc);
-            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<RouteMappingDescription> mapList);
+            var descriptor = (ControllerActionDescriptor)description.ActionDescriptor;
+            AspNetCoreRouteDetails details = GetRouteDetails(description);
+            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName!, out IList<RouteMappingDescription> descriptions);
 
-            if (mapList == null)
+            if (descriptions == null)
             {
-                mapList = new List<RouteMappingDescription>();
-                mappingDescriptions.Add(descriptor.ControllerTypeInfo.FullName, mapList);
+                descriptions = new List<RouteMappingDescription>();
+                mappingDescriptions.Add(descriptor.ControllerTypeInfo.FullName, descriptions);
             }
 
-            var mapDesc = new RouteMappingDescription(descriptor.MethodInfo, details);
-            mapList.Add(mapDesc);
+            var routeMappingDescription = new RouteMappingDescription(descriptor.MethodInfo, details);
+            descriptions.Add(routeMappingDescription);
         }
 
-        foreach (ActionDescriptor desc in apiContext.Actions)
+        foreach (ActionDescriptor descriptor in apiContext.Actions)
         {
-            if (desc is ControllerActionDescriptor descriptor)
+            if (descriptor is ControllerActionDescriptor controllerDescriptor)
             {
                 if (apiContext.Results.Any() &&
-                    mappingDescriptions.Any(description => description.Value.Any(n => n.Handler == descriptor.MethodInfo.ToString())))
+                    mappingDescriptions.Any(description => description.Value.Any(n => n.Handler == controllerDescriptor.MethodInfo.ToString())))
                 {
                     continue;
                 }
 
-                AspNetCoreRouteDetails details = GetRouteDetails(desc);
-                mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<RouteMappingDescription> mapList);
+                AspNetCoreRouteDetails details = GetRouteDetails(descriptor);
+                mappingDescriptions.TryGetValue(controllerDescriptor.ControllerTypeInfo.FullName!, out IList<RouteMappingDescription> descriptions);
 
-                if (mapList == null)
+                if (descriptions == null)
                 {
-                    mapList = new List<RouteMappingDescription>();
-                    mappingDescriptions.Add(descriptor.ControllerTypeInfo.FullName, mapList);
+                    descriptions = new List<RouteMappingDescription>();
+                    mappingDescriptions.Add(controllerDescriptor.ControllerTypeInfo.FullName, descriptions);
                 }
 
-                var mapDesc = new RouteMappingDescription(descriptor.MethodInfo, details);
-                mapList.Add(mapDesc);
+                var routeMappingDescription = new RouteMappingDescription(controllerDescriptor.MethodInfo, details);
+                descriptions.Add(routeMappingDescription);
             }
         }
 
         return mappingDescriptions;
     }
 
-    internal AspNetCoreRouteDetails GetRouteDetails(ApiDescription desc)
+    private AspNetCoreRouteDetails GetRouteDetails(ApiDescription description)
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
-            HttpMethods = GetHttpMethods(desc)
+            HttpMethods = GetHttpMethods(description)
         };
 
-        if (desc.ActionDescriptor.AttributeRouteInfo?.Template != null)
+        if (description.ActionDescriptor.AttributeRouteInfo?.Template != null)
         {
-            routeDetails.RouteTemplate = desc.ActionDescriptor.AttributeRouteInfo.Template;
+            routeDetails.RouteTemplate = description.ActionDescriptor.AttributeRouteInfo.Template;
         }
         else
         {
-            var descriptor = desc.ActionDescriptor as ControllerActionDescriptor;
+            var descriptor = (ControllerActionDescriptor)description.ActionDescriptor;
             routeDetails.RouteTemplate = $"/{descriptor.ControllerName}/{descriptor.ActionName}";
         }
 
         var produces = new List<string>();
 
-        foreach (ApiResponseType respTypes in desc.SupportedResponseTypes)
+        foreach (ApiResponseType responseType in description.SupportedResponseTypes)
         {
-            foreach (ApiResponseFormat format in respTypes.ApiResponseFormats)
+            foreach (ApiResponseFormat format in responseType.ApiResponseFormats)
             {
                 produces.Add(format.MediaType);
             }
@@ -145,9 +142,9 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
 
         var consumes = new List<string>();
 
-        foreach (ApiRequestFormat reqTypes in desc.SupportedRequestFormats)
+        foreach (ApiRequestFormat format in description.SupportedRequestFormats)
         {
-            consumes.Add(reqTypes.MediaType);
+            consumes.Add(format.MediaType);
         }
 
         routeDetails.Consumes = consumes;
@@ -155,11 +152,11 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         return routeDetails;
     }
 
-    internal AspNetCoreRouteDetails GetRouteDetails(ActionDescriptor desc)
+    private AspNetCoreRouteDetails GetRouteDetails(ActionDescriptor descriptor)
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
-            HttpMethods = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string>
+            HttpMethods = descriptor.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string>
             {
                 RouteMappingDescription.AllHttpMethods
             },
@@ -167,17 +164,17 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             Produces = new List<string>()
         };
 
-        if (desc.AttributeRouteInfo?.Template != null)
+        if (descriptor.AttributeRouteInfo?.Template != null)
         {
-            routeDetails.RouteTemplate = desc.AttributeRouteInfo.Template;
+            routeDetails.RouteTemplate = descriptor.AttributeRouteInfo.Template;
         }
         else
         {
-            var descriptor = desc as ControllerActionDescriptor;
-            routeDetails.RouteTemplate = $"/{descriptor.ControllerName}/{descriptor.ActionName}";
+            var controllerDescriptor = (ControllerActionDescriptor)descriptor;
+            routeDetails.RouteTemplate = $"/{controllerDescriptor.ControllerName}/{controllerDescriptor.ActionName}";
         }
 
-        foreach (ProducesAttribute filter in desc.FilterDescriptors.Where(f => f.Filter is ProducesAttribute).Select(f => (ProducesAttribute)f.Filter))
+        foreach (ProducesAttribute filter in descriptor.FilterDescriptors.Where(f => f.Filter is ProducesAttribute).Select(f => (ProducesAttribute)f.Filter))
         {
             foreach (string format in filter.ContentTypes)
             {
@@ -185,7 +182,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             }
         }
 
-        foreach (ConsumesAttribute filter in desc.FilterDescriptors.Where(f => f.Filter is ConsumesAttribute).Select(f => (ConsumesAttribute)f.Filter))
+        foreach (ConsumesAttribute filter in descriptor.FilterDescriptors.Where(f => f.Filter is ConsumesAttribute).Select(f => (ConsumesAttribute)f.Filter))
         {
             foreach (string format in filter.ContentTypes)
             {
@@ -196,7 +193,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         return routeDetails;
     }
 
-    internal AspNetCoreRouteDetails GetRouteDetails(Route route)
+    private AspNetCoreRouteDetails GetRouteDetails(Route route)
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
@@ -207,7 +204,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         return routeDetails;
     }
 
-    internal void AddRouteMappingsDescriptions(RouteMappings routeMappings, IDictionary<string, IList<RouteMappingDescription>> desc)
+    private void AddRouteMappingsDescriptions(RouteMappings routeMappings, IDictionary<string, IList<RouteMappingDescription>> dictionary)
     {
         if (routeMappings == null)
         {
@@ -219,27 +216,27 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             if (router is Route route)
             {
                 AspNetCoreRouteDetails details = GetRouteDetails(route);
-                desc.TryGetValue("CoreRouteHandler", out IList<RouteMappingDescription> mapList);
+                dictionary.TryGetValue("CoreRouteHandler", out IList<RouteMappingDescription> descriptions);
 
-                if (mapList == null)
+                if (descriptions == null)
                 {
-                    mapList = new List<RouteMappingDescription>();
-                    desc.Add("CoreRouteHandler", mapList);
+                    descriptions = new List<RouteMappingDescription>();
+                    dictionary.Add("CoreRouteHandler", descriptions);
                 }
 
-                var mapDesc = new RouteMappingDescription("CoreRouteHandler", details);
-                mapList.Add(mapDesc);
+                var routeMappingDescription = new RouteMappingDescription("CoreRouteHandler", details);
+                descriptions.Add(routeMappingDescription);
             }
         }
     }
 
-    private IList<string> GetHttpMethods(ApiDescription desc)
+    private IList<string> GetHttpMethods(ApiDescription description)
     {
-        if (!string.IsNullOrEmpty(desc.HttpMethod))
+        if (!string.IsNullOrEmpty(description.HttpMethod))
         {
             return new List<string>
             {
-                desc.HttpMethod
+                description.HttpMethod
             };
         }
 

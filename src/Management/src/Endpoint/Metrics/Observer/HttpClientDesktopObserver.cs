@@ -21,11 +21,11 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
     private const string UriTagKey = "uri";
     private const string MethodTagKey = "method";
     private const string ClientTagKey = "clientName";
-    internal const string DiagnosticName = "System.Net.Http.Desktop";
-    internal const string DefaultObserverName = "HttpClientDesktopObserver";
+    private const string DiagnosticName = "System.Net.Http.Desktop";
+    private const string DefaultObserverName = "HttpClientDesktopObserver";
+    private const string StopEvent = "System.Net.Http.Desktop.HttpRequestOut.Stop";
+    private const string StopExEvent = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
 
-    internal const string StopEvent = "System.Net.Http.Desktop.HttpRequestOut.Stop";
-    internal const string StopExEvent = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
     private readonly ILogger _logger;

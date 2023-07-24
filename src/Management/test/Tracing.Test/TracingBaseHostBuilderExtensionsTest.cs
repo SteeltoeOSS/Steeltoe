@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 
-public class TracingBaseHostBuilderExtensionsTest : TestBase
+public sealed class TracingBaseHostBuilderExtensionsTest : TestBase
 {
     [Fact]
     public void AddDistributedTracing_ThrowsOnNulls()

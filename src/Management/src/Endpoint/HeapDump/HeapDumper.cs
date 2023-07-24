@@ -73,7 +73,7 @@ internal sealed class HeapDumper : IHeapDumper
         }
     }
 
-    internal string CreateFileName()
+    private string CreateFileName()
     {
         if (System.Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
         {
@@ -83,7 +83,7 @@ internal sealed class HeapDumper : IHeapDumper
         return $"minidump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.dmp";
     }
 
-    internal bool TryCollectMemoryGraph(CancellationToken ct, int processId, int timeout, bool verbose, out MemoryGraph memoryGraph)
+    private bool TryCollectMemoryGraph(CancellationToken ct, int processId, int timeout, bool verbose, out MemoryGraph memoryGraph)
     {
         var heapInfo = new DotNetHeapInfo();
         TextWriter log = verbose ? Console.Out : TextWriter.Null;

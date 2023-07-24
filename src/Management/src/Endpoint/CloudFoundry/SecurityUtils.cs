@@ -14,16 +14,16 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 internal sealed class SecurityUtils
 {
-    public const int DefaultGetPermissionsTimeout = 5000; // Milliseconds
+    private const int DefaultGetPermissionsTimeout = 5000; // Milliseconds
+    private const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
+    private const string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
+    private const string ReadSensitiveData = "read_sensitive_data";
     public const string ApplicationIdMissingMessage = "Application id is not available";
     public const string EndpointNotConfiguredMessage = "Endpoint is not available";
-    public const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
     public const string CloudfoundryApiMissingMessage = "Cloud controller URL is not available";
-    public const string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
     public const string AccessDeniedMessage = "Access denied";
     public const string AuthorizationHeader = "Authorization";
     public const string Bearer = "bearer";
-    public const string ReadSensitiveData = "read_sensitive_data";
     private readonly CloudFoundryEndpointOptions _options;
 
     private readonly ILogger _logger;
@@ -41,7 +41,7 @@ internal sealed class SecurityUtils
 
     public static bool IsCloudFoundryRequest(string requestPath)
     {
-        return requestPath.StartsWith(ConfigureManagementEndpointOptions.DefaultCFPath, StringComparison.OrdinalIgnoreCase);
+        return requestPath.StartsWith(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, StringComparison.OrdinalIgnoreCase);
     }
 
     public async Task<SecurityResult> GetPermissionsAsync(string accessToken, CancellationToken cancellationToken)

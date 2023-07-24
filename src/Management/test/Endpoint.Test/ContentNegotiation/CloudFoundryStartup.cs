@@ -9,7 +9,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class CloudFoundryStartup
+public sealed class CloudFoundryStartup
 {
     public IConfiguration Configuration { get; set; }
 

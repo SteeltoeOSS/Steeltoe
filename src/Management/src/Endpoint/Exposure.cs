@@ -5,6 +5,8 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
+#pragma warning disable S4004 // Collection properties should be readonly
+
 namespace Steeltoe.Management.Endpoint;
 
 public sealed class Exposure
@@ -12,11 +14,14 @@ public sealed class Exposure
     private const string ExposurePrefix = "management:endpoints:actuator:exposure";
     private const string ExposureSecondChancePrefix = "management:endpoints:web:exposure";
 
-    private static readonly List<string> DefaultInclude = new()
+    private static readonly List<string> DefaultIncludes = new()
     {
         "health",
         "info"
     };
+
+    public IList<string> Include { get; set; }
+    public IList<string> Exclude { get; set; }
 
     public Exposure()
         : this(false)
@@ -30,7 +35,7 @@ public sealed class Exposure
             {
                 "*"
             }
-            : DefaultInclude;
+            : DefaultIncludes;
     }
 
     public Exposure(IConfiguration configuration)
@@ -54,7 +59,7 @@ public sealed class Exposure
 
         if (Include == null && Exclude == null)
         {
-            Include = DefaultInclude;
+            Include = DefaultIncludes;
         }
     }
 
@@ -62,11 +67,4 @@ public sealed class Exposure
     {
         return configSection.GetValue<string>(key)?.Split(',').ToList();
     }
-
-#pragma warning disable S4004 // Collection properties should be readonly
-    public IList<string> Include { get; set; }
-
-    public IList<string> Exclude { get; set; }
-
-#pragma warning restore S4004 // Collection properties should be readonly
 }

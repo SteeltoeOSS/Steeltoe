@@ -6,7 +6,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Task;
 
-public sealed class DelegatingTask : IApplicationTask
+internal sealed class DelegatingTask : IApplicationTask
 {
     private readonly Action _run;
 

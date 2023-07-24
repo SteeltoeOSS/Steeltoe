@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 
-public class TraceEndpointTest : BaseTest
+public sealed class TraceEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -25,13 +25,13 @@ public class TraceEndpointTest : BaseTest
         using var tc = new TestContext(_output);
         var repo = new TestTraceRepo();
 
-        tc.AdditionalServices = (services, configuration) =>
+        tc.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IHttpTraceRepository>(repo);
             services.AddTraceActuatorServices(MediaTypeVersion.V1);
         };
 
-        var ep = tc.GetService<IHttpTraceEndpointHandler>();
+        var ep = tc.GetRequiredService<IHttpTraceEndpointHandler>();
         HttpTraceResult result = await ep.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
         Assert.True(repo.GetTracesCalled);

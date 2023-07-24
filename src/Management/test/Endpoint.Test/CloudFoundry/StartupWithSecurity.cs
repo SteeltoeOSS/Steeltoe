@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class StartupWithSecurity
+public sealed class StartupWithSecurity
 {
     public IConfiguration Configuration { get; set; }
 

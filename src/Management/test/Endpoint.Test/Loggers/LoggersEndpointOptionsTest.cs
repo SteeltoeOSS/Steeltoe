@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
-public class LoggersEndpointOptionsTest : BaseTest
+public sealed class LoggersEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
