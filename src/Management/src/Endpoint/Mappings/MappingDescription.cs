@@ -20,7 +20,7 @@ public class MappingDescription
     public string Predicate { get; }
 
     [JsonPropertyName("details")]
-    public MappingDetails Details { get; } 
+    public RouteMappingDetails Details { get; } 
 
     public MappingDescription(string routeHandler, IRouteDetails routeDetails)
     {
@@ -42,9 +42,9 @@ public class MappingDescription
         
     }
 
-    private MappingDetails CreateMappingDetails(IRouteDetails routeDetails)
+    private RouteMappingDetails CreateMappingDetails(IRouteDetails routeDetails)
     {
-        return new MappingDetails()
+        return new RouteMappingDetails()
         {
             RequestMappingConditions = new RequestMappingConditions()
             {

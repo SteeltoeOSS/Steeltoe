@@ -9,18 +9,18 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 public class RequestMappingConditions
 {
     [JsonPropertyName("consumes")]
-    public MediaTypeDescriptor[] Consumes  { get; set; }
+    public IList<MediaTypeDescriptor> Consumes  { get; set; }
 
     [JsonPropertyName("produces")]
-    public MediaTypeDescriptor[] Produces { get; set; }
+    public IList<MediaTypeDescriptor> Produces { get; set; }
 
     [JsonPropertyName("headers")]
-    public string [] Headers { get; set; }
+    public IList<string> Headers { get; set; }
 
     [JsonPropertyName("methods")]
 
-    public string[] Methods { get; set; }
+    public IList<string> Methods { get; set; }
 
     [JsonPropertyName("patterns")]
-    public string[] Patterns { get; set; }
+    public IList<string> Patterns { get; set; }
 }
