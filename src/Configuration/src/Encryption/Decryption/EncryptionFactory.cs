@@ -35,7 +35,7 @@ internal static class EncryptionFactory
         bool validKeystoreSettings = !string.IsNullOrEmpty(settings.EncryptionKeyStoreLocation) && !string.IsNullOrEmpty(settings.EncryptionKeyStorePassword) &&
             !string.IsNullOrEmpty(settings.EncryptionKeyStoreAlias);
 
-        if (!(validEncryptionKeySettings ^ validKeystoreSettings))
+        if ((validEncryptionKeySettings && validKeystoreSettings) || (!validEncryptionKeySettings && !validKeystoreSettings))
         {
             throw new DecryptionException(
                 "No valid configuration for encryption key or key store. Either 'encrypt.key' or the 'encrypt.keyStore' properties (location, password, alias) must be set. Not both.");
