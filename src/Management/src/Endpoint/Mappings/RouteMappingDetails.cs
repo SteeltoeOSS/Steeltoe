@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace Steeltoe.Management.Endpoint.Mappings;
 
 public class RouteMappingDetails
-{ 
+{
     [JsonPropertyName("requestMappingConditions")]
-    public RequestMappingConditions RequestMappingConditions{ get; set; }
+    public RequestMappingConditions RequestMappingConditions { get; set; }
 }

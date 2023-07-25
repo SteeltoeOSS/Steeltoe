@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 public class RequestMappingConditions
 {
     [JsonPropertyName("consumes")]
-    public IList<MediaTypeDescriptor> Consumes  { get; set; }
+    public IList<MediaTypeDescriptor> Consumes { get; set; }
 
     [JsonPropertyName("produces")]
     public IList<MediaTypeDescriptor> Produces { get; set; }

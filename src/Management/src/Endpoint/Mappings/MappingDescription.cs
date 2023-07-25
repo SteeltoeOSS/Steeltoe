@@ -20,7 +20,7 @@ public class MappingDescription
     public string Predicate { get; }
 
     [JsonPropertyName("details")]
-    public RouteMappingDetails Details { get; } 
+    public RouteMappingDetails Details { get; }
 
     public MappingDescription(string routeHandler, IRouteDetails routeDetails)
     {
@@ -39,19 +39,27 @@ public class MappingDescription
         Predicate = CreatePredicateString(routeDetails);
         Handler = CreateHandlerString(routeHandler);
         Details = CreateMappingDetails(routeDetails);
-        
     }
 
     private RouteMappingDetails CreateMappingDetails(IRouteDetails routeDetails)
     {
-        return new RouteMappingDetails()
+        return new RouteMappingDetails
         {
-            RequestMappingConditions = new RequestMappingConditions()
+            RequestMappingConditions = new RequestMappingConditions
             {
-                Consumes = routeDetails.Consumes.Select(consumes => new MediaTypeDescriptor() { MediaType = consumes }).ToArray(),
-                Produces = routeDetails.Produces.Select(produces => new MediaTypeDescriptor() { MediaType = produces }).ToArray(),
+                Consumes = routeDetails.Consumes.Select(consumes => new MediaTypeDescriptor
+                {
+                    MediaType = consumes
+                }).ToArray(),
+                Produces = routeDetails.Produces.Select(produces => new MediaTypeDescriptor
+                {
+                    MediaType = produces
+                }).ToArray(),
                 Methods = routeDetails.HttpMethods.ToArray(),
-                Patterns = new[] { routeDetails.RouteTemplate }
+                Patterns = new[]
+                {
+                    routeDetails.RouteTemplate
+                }
             }
         };
     }
