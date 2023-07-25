@@ -226,9 +226,11 @@ Steeltoe.Management.Endpoint.HeapDump.HeapDumpEndpointOptions
 Steeltoe.Management.Endpoint.HeapDump.HeapDumpEndpointOptions.HeapDumpEndpointOptions() -> void
 Steeltoe.Management.Endpoint.HeapDump.HeapDumpEndpointOptions.HeapDumpType.get -> string
 Steeltoe.Management.Endpoint.HeapDump.HeapDumpEndpointOptions.HeapDumpType.set -> void
+Steeltoe.Management.Endpoint.HeapDump.HeapDumper
+Steeltoe.Management.Endpoint.HeapDump.HeapDumper.DumpHeapToFile(System.Threading.CancellationToken cancellationToken) -> string
+Steeltoe.Management.Endpoint.HeapDump.HeapDumper.HeapDumper(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.HeapDump.HeapDumpEndpointOptions> options, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.HeapDump.HeapDumper> logger) -> void
+Steeltoe.Management.Endpoint.HeapDump.HeapDumper.HeapDumper(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.HeapDump.HeapDumpEndpointOptions> options, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.HeapDump.HeapDumper> logger, string basePathOverride) -> void
 Steeltoe.Management.Endpoint.HeapDump.IHeapDumpEndpointHandler
-Steeltoe.Management.Endpoint.HeapDump.IHeapDumper
-Steeltoe.Management.Endpoint.HeapDump.IHeapDumper.DumpHeapToFile() -> string
 Steeltoe.Management.Endpoint.HeapDump.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Info.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter

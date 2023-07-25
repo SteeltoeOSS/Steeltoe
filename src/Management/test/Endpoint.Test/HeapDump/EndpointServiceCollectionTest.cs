@@ -42,9 +42,9 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddHeapDumpActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var repo = serviceProvider.GetService<IHeapDumper>();
-        Assert.NotNull(repo);
-        var ep = serviceProvider.GetService<IHeapDumpEndpointHandler>();
-        Assert.NotNull(ep);
+        var heapDumper = serviceProvider.GetService<HeapDumper>();
+        Assert.NotNull(heapDumper);
+        var handler = serviceProvider.GetService<IHeapDumpEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

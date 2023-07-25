@@ -12,7 +12,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-internal sealed class HeapDumper : IHeapDumper
+public sealed class HeapDumper
 {
     private readonly string _basePathOverride;
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
@@ -33,7 +33,7 @@ internal sealed class HeapDumper : IHeapDumper
         _basePathOverride = basePathOverride;
     }
 
-    public string DumpHeapToFile()
+    public string DumpHeapToFile(CancellationToken cancellationToken)
     {
         string fileName = CreateFileName();
 
@@ -44,11 +44,13 @@ internal sealed class HeapDumper : IHeapDumper
 
         try
         {
+            using var process = Process.GetCurrentProcess();
+
             if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogInformation("Attempting to create a gcdump");
 
-                if (TryCollectMemoryGraph(CancellationToken.None, Process.GetCurrentProcess().Id, 30, true, out MemoryGraph memoryGraph))
+                if (TryCollectMemoryGraph(process.Id, 30, true, out MemoryGraph memoryGraph, cancellationToken))
                 {
                     GCHeapDump.WriteMemoryGraph(memoryGraph, fileName, "dotnet-gcdump");
                     return fileName;
@@ -63,12 +65,13 @@ internal sealed class HeapDumper : IHeapDumper
             }
 
             _logger.LogInformation($"Attempting to create a '{dumpType}' dump");
-            new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump(dumpType, fileName);
+            var client = new DiagnosticsClient(process.Id);
+            client.WriteDump(dumpType, fileName);
             return fileName;
         }
         catch (DiagnosticsClientException exception)
         {
-            _logger.LogError($"Could not create core dump to process. Error {exception}.");
+            _logger.LogError(exception, "Could not create core dump to process.");
             return null;
         }
     }
@@ -83,14 +86,14 @@ internal sealed class HeapDumper : IHeapDumper
         return $"minidump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.dmp";
     }
 
-    private bool TryCollectMemoryGraph(CancellationToken ct, int processId, int timeout, bool verbose, out MemoryGraph memoryGraph)
+    private bool TryCollectMemoryGraph(int processId, int timeout, bool verbose, out MemoryGraph memoryGraph, CancellationToken cancellationToken)
     {
         var heapInfo = new DotNetHeapInfo();
         TextWriter log = verbose ? Console.Out : TextWriter.Null;
 
         memoryGraph = new MemoryGraph(50_000);
 
-        if (!EventPipeDotNetHeapDumper.DumpFromEventPipe(ct, processId, memoryGraph, log, timeout, heapInfo))
+        if (!EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, memoryGraph, log, timeout, heapInfo))
         {
             return false;
         }

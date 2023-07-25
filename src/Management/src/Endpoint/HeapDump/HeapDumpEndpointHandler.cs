@@ -10,13 +10,13 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
 {
-    private readonly IHeapDumper _heapDumper;
+    private readonly HeapDumper _heapDumper;
     private readonly ILogger<HeapDumpEndpointHandler> _logger;
     private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;
 
     public HttpMiddlewareOptions Options => _optionsMonitor.CurrentValue;
 
-    public HeapDumpEndpointHandler(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, IHeapDumper heapDumper, ILoggerFactory loggerFactory)
+    public HeapDumpEndpointHandler(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, HeapDumper heapDumper, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(heapDumper);
@@ -29,7 +29,7 @@ internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
     public Task<string> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Invoking the heap dumper");
-        string filePath = _heapDumper.DumpHeapToFile();
+        string filePath = _heapDumper.DumpHeapToFile(cancellationToken);
         return Task.FromResult(filePath);
     }
 }
