@@ -39,15 +39,16 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         _logger = loggerFactory.CreateLogger<LoggersEndpointHandler>();
     }
 
-    public Task<LoggersResponse> InvokeAsync(ILoggersRequest request, CancellationToken cancellationToken)
+    public Task<LoggersResponse> InvokeAsync(LoggersRequest request, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request?.ToString()));
+        request ??= new LoggersRequest();
+        _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request.ToString()));
 
         var result = new Dictionary<string, object>();
 
-        if (request is LoggersChangeRequest changeRequest)
+        if (request.Type == LoggersRequestType.Change)
         {
-            SetLogLevel(_dynamicLoggerProvider, changeRequest.Name, changeRequest.Level);
+            SetLogLevel(_dynamicLoggerProvider, request.Name, request.Level);
         }
         else
         {

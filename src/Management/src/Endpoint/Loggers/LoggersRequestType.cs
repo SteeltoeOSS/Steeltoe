@@ -4,9 +4,15 @@
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-internal enum LoggersRequestType
+public enum LoggersRequestType
 {
-    Default = 0,
-    Change = 1,
-    Error = 2
+    /// <summary>
+    /// Get existing log levels.
+    /// </summary>
+    Get,
+
+    /// <summary>
+    /// Change a log level.
+    /// </summary>
+    Change
 }

@@ -13,7 +13,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersRequest, LoggersResponse>
+internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequest, LoggersResponse>
 {
     private readonly ILogger<LoggersEndpointMiddleware> _logger;
 
@@ -26,14 +26,14 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
 
     protected override async Task<LoggersResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        ILoggersRequest loggersRequest = await GetLoggersChangeRequestAsync(context);
+        LoggersRequest loggersRequest = await GetLoggersChangeRequestAsync(context);
 
-        return loggersRequest is ErrorLoggersRequest
+        return loggersRequest == null
             ? new LoggersResponse(new Dictionary<string, object>(), true)
             : await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
     }
 
-    private async Task<ILoggersRequest> GetLoggersChangeRequestAsync(HttpContext context)
+    private async Task<LoggersRequest> GetLoggersChangeRequestAsync(HttpContext context)
     {
         HttpRequest request = context.Request;
 
@@ -68,15 +68,15 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<ILoggersReq
                     if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
                     {
                         _logger.LogDebug("Invalid LogLevel specified: {level}", level);
-                        return new ErrorLoggersRequest();
+                        return null;
                     }
 
-                    return new LoggersChangeRequest(loggerName, level);
+                    return new LoggersRequest(loggerName, level);
                 }
             }
         }
 
-        return new DefaultLoggersRequest();
+        return new LoggersRequest();
     }
 
     private async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream)

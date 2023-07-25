@@ -7,18 +7,18 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
-public sealed class LoggersChangeRequestTest : BaseTest
+public sealed class LoggersRequestTest : BaseTest
 {
     [Fact]
     public void Constructor_ThrowsOnNull_Name()
     {
-        Assert.Throws<ArgumentNullException>(() => new LoggersChangeRequest(null, "foobar"));
+        Assert.Throws<ArgumentNullException>(() => new LoggersRequest(null, "foobar"));
     }
 
     [Fact]
     public void Constructor_SetsProperties()
     {
-        var cr = new LoggersChangeRequest("foo", "bar");
+        var cr = new LoggersRequest("foo", "bar");
         Assert.Equal("foo", cr.Name);
         Assert.Equal("bar", cr.Level);
     }
@@ -26,7 +26,7 @@ public sealed class LoggersChangeRequestTest : BaseTest
     [Fact]
     public void Constructor_AllowsReset()
     {
-        var cr = new LoggersChangeRequest("foo", null);
+        var cr = new LoggersRequest("foo", null);
         Assert.Equal("foo", cr.Name);
         Assert.Null(cr.Level);
     }

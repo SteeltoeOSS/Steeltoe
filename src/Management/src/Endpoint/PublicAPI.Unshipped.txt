@@ -5,6 +5,7 @@ override Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter.Write(S
 override Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string>
 override Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions.AllowedVerbs.set -> void
 override Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions.RequiresExactMatch() -> bool
+override Steeltoe.Management.Endpoint.Loggers.LoggersRequest.ToString() -> string
 override Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string>
 override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.set -> void
@@ -238,13 +239,21 @@ Steeltoe.Management.Endpoint.Info.InfoEndpointOptions.InfoEndpointOptions() -> v
 Steeltoe.Management.Endpoint.Info.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Loggers.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Loggers.ILoggersEndpointHandler
-Steeltoe.Management.Endpoint.Loggers.ILoggersRequest
 Steeltoe.Management.Endpoint.Loggers.LoggerLevels
 Steeltoe.Management.Endpoint.Loggers.LoggerLevels.ConfiguredLevel.get -> string
 Steeltoe.Management.Endpoint.Loggers.LoggerLevels.EffectiveLevel.get -> string
 Steeltoe.Management.Endpoint.Loggers.LoggerLevels.LoggerLevels(Microsoft.Extensions.Logging.LogLevel? configured, Microsoft.Extensions.Logging.LogLevel effective) -> void
 Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions
 Steeltoe.Management.Endpoint.Loggers.LoggersEndpointOptions.LoggersEndpointOptions() -> void
+Steeltoe.Management.Endpoint.Loggers.LoggersRequest
+Steeltoe.Management.Endpoint.Loggers.LoggersRequest.Level.get -> string
+Steeltoe.Management.Endpoint.Loggers.LoggersRequest.LoggersRequest() -> void
+Steeltoe.Management.Endpoint.Loggers.LoggersRequest.LoggersRequest(string name, string level) -> void
+Steeltoe.Management.Endpoint.Loggers.LoggersRequest.Name.get -> string
+Steeltoe.Management.Endpoint.Loggers.LoggersRequest.Type.get -> Steeltoe.Management.Endpoint.Loggers.LoggersRequestType
+Steeltoe.Management.Endpoint.Loggers.LoggersRequestType
+Steeltoe.Management.Endpoint.Loggers.LoggersRequestType.Change = 1 -> Steeltoe.Management.Endpoint.Loggers.LoggersRequestType
+Steeltoe.Management.Endpoint.Loggers.LoggersRequestType.Get = 0 -> Steeltoe.Management.Endpoint.Loggers.LoggersRequestType
 Steeltoe.Management.Endpoint.Loggers.LoggersResponse
 Steeltoe.Management.Endpoint.Loggers.LoggersResponse.Data.get -> System.Collections.Generic.IDictionary<string, object>
 Steeltoe.Management.Endpoint.Loggers.LoggersResponse.HasError.get -> bool
