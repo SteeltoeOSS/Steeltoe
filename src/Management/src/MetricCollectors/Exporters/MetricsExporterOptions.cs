@@ -4,11 +4,10 @@
 
 namespace Steeltoe.Management.MetricCollectors.Exporters;
 
-internal sealed class MetricsExporterOptions : IExporterOptions
+internal sealed class MetricsExporterOptions
 {
     public int CacheDurationMilliseconds { get; set; }
     public int MaxTimeSeries { get; set; }
     public int MaxHistograms { get; set; }
     public IList<string>? IncludedMetrics { get; set; }
-    public int MetricsCacheDurationMilliseconds { get; set; }
 }

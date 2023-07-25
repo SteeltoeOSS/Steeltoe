@@ -31,7 +31,7 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
     /// <param name="options">
     /// Options for the exporter.
     /// </param>
-    internal SteeltoeExporter(IExporterOptions options)
+    public SteeltoeExporter(MetricsExporterOptions options)
     {
         ArgumentGuard.NotNull(options);
 

@@ -20,7 +20,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 {
     private readonly MetricsExporterOptions _scraperOptions = new()
     {
-        MetricsCacheDurationMilliseconds = 500
+        CacheDurationMilliseconds = 500
     };
 
     [Fact]

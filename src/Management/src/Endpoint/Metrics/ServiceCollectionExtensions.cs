@@ -38,7 +38,7 @@ public static class ServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
         services.TryAddSingleton<MetricsEndpointMiddleware>();
 
-        services.TryAddSingleton<IExporterOptions>(provider =>
+        services.TryAddSingleton(provider =>
         {
             MetricsEndpointOptions options = provider.GetRequiredService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
 
@@ -53,7 +53,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<ISteeltoeExporter>(provider =>
         {
-            var exporterOptions = provider.GetRequiredService<IExporterOptions>();
+            var exporterOptions = provider.GetRequiredService<MetricsExporterOptions>();
             return new SteeltoeExporter(exporterOptions);
         });
 
@@ -68,7 +68,7 @@ public static class ServiceCollectionExtensions
         {
             var steeltoeExporter = provider.GetRequiredService<ISteeltoeExporter>();
 
-            var exporterOptions = provider.GetRequiredService<IExporterOptions>();
+            var exporterOptions = provider.GetRequiredService<MetricsExporterOptions>();
             var logger = provider.GetRequiredService<ILogger<SteeltoeExporter>>();
 
             var aggregationManager = new AggregationManager(exporterOptions.MaxTimeSeries, exporterOptions.MaxHistograms, steeltoeExporter.AddMetrics,
