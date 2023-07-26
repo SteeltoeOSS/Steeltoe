@@ -17,9 +17,9 @@ using Steeltoe.Common;
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 /// <summary>
-/// Thread dumper that uses the EventPipe to acquire the call stacks of all the running Threads.
+/// Thread dumper that uses the EventPipe to acquire the call stacks of all the running threads.
 /// </summary>
-internal sealed class ThreadDumperEventPipe : IThreadDumper
+public sealed class EventPipeThreadDumper
 {
     private static readonly StackTraceElement UnknownStackTraceElement = new()
     {
@@ -36,9 +36,9 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
     };
 
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
-    private readonly ILogger<ThreadDumperEventPipe> _logger;
+    private readonly ILogger<EventPipeThreadDumper> _logger;
 
-    public ThreadDumperEventPipe(IOptionsMonitor<ThreadDumpEndpointOptions> options, ILogger<ThreadDumperEventPipe> logger)
+    public EventPipeThreadDumper(IOptionsMonitor<ThreadDumpEndpointOptions> options, ILogger<EventPipeThreadDumper> logger)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(logger);
@@ -48,12 +48,15 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
     }
 
     /// <summary>
-    /// Connect using the EventPipe and obtain a dump of all the Threads and for each thread a stacktrace.
+    /// Connect using the EventPipe and obtain a dump of all the threads, and for each thread a stack trace.
     /// </summary>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     /// <returns>
-    /// the list of threads with stack trace information.
+    /// The list of threads with stack trace information.
     /// </returns>
-    public IList<ThreadInfo> DumpThreads()
+    public async Task<IList<ThreadInfo>> DumpThreadsAsync(CancellationToken cancellationToken)
     {
         var results = new List<ThreadInfo>();
 
@@ -61,7 +64,8 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
         {
             _logger.LogDebug("Starting thread dump");
 
-            var client = new DiagnosticsClient(Process.GetCurrentProcess().Id);
+            using var process = Process.GetCurrentProcess();
+            var client = new DiagnosticsClient(process.Id);
 
             var providers = new List<EventPipeProvider>
             {
@@ -69,9 +73,9 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
             };
 
             using EventPipeSession session = client.StartEventPipeSession(providers);
-            DumpThreads(session, results);
+            await DumpThreadsAsync(session, results, cancellationToken);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             _logger.LogError(exception, "Unable to dump threads");
         }
@@ -85,13 +89,13 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
     }
 
     // Much of this code is from diagnostics/dotnet-stack
-    private void DumpThreads(EventPipeSession session, List<ThreadInfo> results)
+    private async Task DumpThreadsAsync(EventPipeSession session, List<ThreadInfo> results, CancellationToken cancellationToken)
     {
         string traceFileName = null;
 
         try
         {
-            traceFileName = CreateTraceFileAsync(session).Result;
+            traceFileName = await CreateTraceFileAsync(session, cancellationToken);
 
             if (traceFileName != null)
             {
@@ -158,7 +162,7 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
                 }
             }
         }
-        catch (Exception exception)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             _logger.LogError(exception, "Error processing trace file for thread dump");
             results.Clear();
@@ -425,20 +429,20 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
         return null;
     }
 
-    private async Task<string> CreateTraceFileAsync(EventPipeSession session)
+    private async Task<string> CreateTraceFileAsync(EventPipeSession session, CancellationToken cancellationToken)
     {
         string tempNetTraceFilename = $"{Path.GetRandomFileName()}.nettrace";
 
         try
         {
-            await using (FileStream fs = File.OpenWrite(tempNetTraceFilename))
+            await using (FileStream outputStream = File.OpenWrite(tempNetTraceFilename))
             {
-                Task copyTask = session.EventStream.CopyToAsync(fs);
-                await Task.Delay(_options.CurrentValue.Duration);
-                session.Stop();
+                Task copyTask = session.EventStream.CopyToAsync(outputStream, cancellationToken);
+                await Task.Delay(_options.CurrentValue.Duration, cancellationToken);
+                await session.StopAsync(cancellationToken);
 
                 // check if rundown is taking more than 5 seconds and log
-                Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
+                Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
                 Task completedTask = await Task.WhenAny(copyTask, timeoutTask);
 
                 if (completedTask == timeoutTask)
@@ -452,7 +456,7 @@ internal sealed class ThreadDumperEventPipe : IThreadDumper
             // using the generated trace file, symbolocate and compute stacks.
             return TraceLog.CreateFromEventPipeDataFile(tempNetTraceFilename);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             _logger.LogError(exception, "Error creating trace file for thread dump");
             return null;

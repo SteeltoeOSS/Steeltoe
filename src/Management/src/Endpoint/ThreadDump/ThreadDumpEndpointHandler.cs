@@ -12,11 +12,11 @@ internal sealed class ThreadDumpEndpointHandler : IThreadDumpEndpointHandler
 {
     private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
     private readonly ILogger<ThreadDumpEndpointHandler> _logger;
-    private readonly IThreadDumper _threadDumper;
+    private readonly EventPipeThreadDumper _threadDumper;
 
     public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public ThreadDumpEndpointHandler(IOptionsMonitor<ThreadDumpEndpointOptions> options, IThreadDumper threadDumper, ILoggerFactory loggerFactory)
+    public ThreadDumpEndpointHandler(IOptionsMonitor<ThreadDumpEndpointOptions> options, EventPipeThreadDumper threadDumper, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(threadDumper);
@@ -27,10 +27,9 @@ internal sealed class ThreadDumpEndpointHandler : IThreadDumpEndpointHandler
         _logger = loggerFactory.CreateLogger<ThreadDumpEndpointHandler>();
     }
 
-    public Task<IList<ThreadInfo>> InvokeAsync(object argument, CancellationToken cancellationToken)
+    public async Task<IList<ThreadInfo>> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Invoking ThreadDumper");
-        IList<ThreadInfo> infos = _threadDumper.DumpThreads();
-        return Task.FromResult(infos);
+        return await _threadDumper.DumpThreadsAsync(cancellationToken);
     }
 }

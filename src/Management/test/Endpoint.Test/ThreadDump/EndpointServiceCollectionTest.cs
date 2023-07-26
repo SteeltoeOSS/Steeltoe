@@ -44,7 +44,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<ThreadDumpEndpointOptions>>();
         Assert.NotNull(options);
-        var repo = serviceProvider.GetService<IThreadDumper>();
+        var repo = serviceProvider.GetService<EventPipeThreadDumper>();
         Assert.NotNull(repo);
         var ep = serviceProvider.GetService<IThreadDumpEndpointHandler>();
         Assert.NotNull(ep);

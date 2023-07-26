@@ -382,9 +382,10 @@ Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.set -> void
 Steeltoe.Management.Endpoint.ThreadDump.EndpointServiceCollectionExtensions
+Steeltoe.Management.Endpoint.ThreadDump.EventPipeThreadDumper
+Steeltoe.Management.Endpoint.ThreadDump.EventPipeThreadDumper.DumpThreadsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Management.Endpoint.ThreadDump.ThreadInfo>>
+Steeltoe.Management.Endpoint.ThreadDump.EventPipeThreadDumper.EventPipeThreadDumper(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.ThreadDump.ThreadDumpEndpointOptions> options, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.ThreadDump.EventPipeThreadDumper> logger) -> void
 Steeltoe.Management.Endpoint.ThreadDump.IThreadDumpEndpointHandler
-Steeltoe.Management.Endpoint.ThreadDump.IThreadDumper
-Steeltoe.Management.Endpoint.ThreadDump.IThreadDumper.DumpThreads() -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.ThreadDump.ThreadInfo>
 Steeltoe.Management.Endpoint.ThreadDump.LockInfo
 Steeltoe.Management.Endpoint.ThreadDump.LockInfo.ClassName.get -> string
 Steeltoe.Management.Endpoint.ThreadDump.LockInfo.ClassName.set -> void
