@@ -13,4 +13,8 @@ public interface IRouteDetails
     IList<string> Produces { get; }
 
     IList<string> Consumes { get; }
+
+    IList<string> Params { get; }
+
+    IList<string> Headers { get; }
 }
