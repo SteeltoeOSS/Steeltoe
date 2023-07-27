@@ -12,6 +12,8 @@ internal static class EncryptionFactory
 
         if (settings.EncryptionEnabled)
         {
+            EnsureValidEncryptionSettings(settings);
+
             if (!string.IsNullOrEmpty(settings.EncryptionKey))
             {
                 return new AesTextDecryptor(settings.EncryptionKey);
@@ -24,5 +26,19 @@ internal static class EncryptionFactory
         }
 
         return decryptor;
+    }
+
+    private static void EnsureValidEncryptionSettings(ConfigServerEncryptionSettings settings)
+    {
+        bool validEncryptionKeySettings = !string.IsNullOrEmpty(settings.EncryptionKey);
+
+        bool validKeystoreSettings = !string.IsNullOrEmpty(settings.EncryptionKeyStoreLocation) && !string.IsNullOrEmpty(settings.EncryptionKeyStorePassword) &&
+            !string.IsNullOrEmpty(settings.EncryptionKeyStoreAlias);
+
+        if ((validEncryptionKeySettings && validKeystoreSettings) || (!validEncryptionKeySettings && !validKeystoreSettings))
+        {
+            throw new DecryptionException(
+                "No valid configuration for encryption key or key store. Either 'encrypt.key' or the 'encrypt.keyStore' properties (location, password, alias) must be set. Not both.");
+        }
     }
 }

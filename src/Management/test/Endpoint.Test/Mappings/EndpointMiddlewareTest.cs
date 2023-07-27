@@ -91,6 +91,7 @@ public class EndpointMiddlewareTest : BaseTest
             "{\"requestMappingConditions\":{\"consumes\":[{\"mediaType\":\"text/plain\",\"negated\":false},{\"mediaType\":\"application/json\",\"negated\":false},{\"mediaType\":\"text/json\",\"negated\":false}],"+
             "\"produces\":[{\"mediaType\":\"text/plain\",\"negated\":false},{\"mediaType\":\"application/json\",\"negated\":false},{\"mediaType\":\"text/json\",\"negated\":false}],\"headers\":[],\"methods\":[\"GET\"],\"patterns\":[\"/Home/Index\"],\"params\":[]}}}]}}}}}";
 
+
         Assert.Equal(expected, json);
     }
 
