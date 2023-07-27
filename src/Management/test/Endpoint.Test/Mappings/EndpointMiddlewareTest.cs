@@ -85,10 +85,11 @@ public class EndpointMiddlewareTest : BaseTest
         string json = await result.Content.ReadAsStringAsync();
 
         string expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"" + typeof(HomeController).FullName + "\":[{\"handler\":\"" +
-            typeof(Person).FullName + " Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json]," +
-            "consumes=[text/plain || application/json || text/json]}\",\"details\":" +
-            "{\"requestMappingConditions\":{\"consumes\":[{\"mediaType\":\"text/plain\",\"negated\":false},{\"mediaType\":\"application/json\",\"negated\":false},{\"mediaType\":\"text/json\",\"negated\":false}]," +
-            "\"produces\":[{\"mediaType\":\"text/plain\",\"negated\":false},{\"mediaType\":\"application/json\",\"negated\":false},{\"mediaType\":\"text/json\",\"negated\":false}],\"methods\":[\"GET\"],\"patterns\":[\"/Home/Index\"]}}}]}}}}}";
+            typeof(Person).FullName +
+            " Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json],"+
+            "consumes=[text/plain || application/json || text/json]}\",\"details\":"+
+            "{\"requestMappingConditions\":{\"consumes\":[{\"mediaType\":\"text/plain\",\"negated\":false},{\"mediaType\":\"application/json\",\"negated\":false},{\"mediaType\":\"text/json\",\"negated\":false}],"+
+            "\"produces\":[{\"mediaType\":\"text/plain\",\"negated\":false},{\"mediaType\":\"application/json\",\"negated\":false},{\"mediaType\":\"text/json\",\"negated\":false}],\"headers\":[],\"methods\":[\"GET\"],\"patterns\":[\"/Home/Index\"],\"params\":[]}}}]}}}}}";
 
         Assert.Equal(expected, json);
     }

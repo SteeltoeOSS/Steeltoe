@@ -15,4 +15,8 @@ public class TestRouteDetails : IRouteDetails
     public IList<string> Produces { get; set; }
 
     public IList<string> Consumes { get; set; }
+
+    public IList<string> Params { get; set; }
+
+    public IList<string> Headers { get; set; }
 }
