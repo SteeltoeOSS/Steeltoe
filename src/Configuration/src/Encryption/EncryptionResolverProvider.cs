@@ -20,7 +20,7 @@ namespace Steeltoe.Configuration.Encryption;
 internal sealed class EncryptionResolverProvider : IConfigurationProvider
 {
     // regex for matching {cipher}{key:keyAlias} at the start of the string
-    private readonly Regex _cipherRegex = new("^{cipher}({key:(.*)})?");
+    private readonly Regex _cipherRegex = new("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)");
     internal ILogger<EncryptionResolverProvider> Logger { get; }
 
     /// <summary>
@@ -105,16 +105,16 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
 
             if (match.Success)
             {
-                string cipherText = originalValue.Substring(match.Length);
+                string alias = match.Groups["alias"].Value;
+                string cipher = match.Groups["cipher"].Value;
 
-                if (match.Groups.Values.Any())
+                if (!string.IsNullOrEmpty(alias))
                 {
-                    string keyAlias = match.Groups[2].Value;
-                    value = string.IsNullOrEmpty(keyAlias) ? Decriptor.Decrypt(cipherText) : Decriptor.Decrypt(cipherText, keyAlias.TrimStart(':'));
+                    value = Decriptor.Decrypt(cipher, alias);
                 }
                 else
                 {
-                    value = Decriptor.Decrypt(cipherText);
+                    value = Decriptor.Decrypt(cipher);
                 }
             }
         }
