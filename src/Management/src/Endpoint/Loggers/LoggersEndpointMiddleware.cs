@@ -26,14 +26,14 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
 
     protected override async Task<LoggersResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        LoggersRequest loggersRequest = await GetLoggersChangeRequestAsync(context);
+        LoggersRequest loggersRequest = await GetLoggersRequestAsync(context);
 
         return loggersRequest == null
             ? new LoggersResponse(new Dictionary<string, object>(), true)
             : await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
     }
 
-    private async Task<LoggersRequest> GetLoggersChangeRequestAsync(HttpContext context)
+    private async Task<LoggersRequest> GetLoggersRequestAsync(HttpContext context)
     {
         HttpRequest request = context.Request;
 
@@ -65,7 +65,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
 
                 if (!string.IsNullOrEmpty(loggerName))
                 {
-                    if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
+                    if (!string.IsNullOrEmpty(level) && LoggerLevels.StringToLogLevel(level) == null)
                     {
                         _logger.LogDebug("Invalid LogLevel specified: {level}", level);
                         return null;

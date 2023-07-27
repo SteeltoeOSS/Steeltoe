@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -13,6 +14,8 @@ public sealed class HttpTraceResultV2 : HttpTraceResult
 
     public HttpTraceResultV2(IList<HttpTrace> traces)
     {
+        ArgumentGuard.NotNull(traces);
+
         Traces = traces;
         CurrentVersion = MediaTypeVersion.V2;
     }

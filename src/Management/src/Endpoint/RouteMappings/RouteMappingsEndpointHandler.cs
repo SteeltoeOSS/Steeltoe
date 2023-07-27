@@ -26,14 +26,15 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
 
     public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public RouteMappingsEndpointHandler(IOptionsMonitor<RouteMappingsEndpointOptions> options, ILoggerFactory loggerFactory, RouteMappings routeMappings,
-        IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders)
+    public RouteMappingsEndpointHandler(IOptionsMonitor<RouteMappingsEndpointOptions> options,
+        IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders,
+        RouteMappings routeMappings, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(routeMappings);
         ArgumentGuard.NotNull(actionDescriptorCollectionProvider);
         ArgumentGuard.NotNull(apiDescriptionProviders);
+        ArgumentGuard.NotNull(routeMappings);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _options = options;
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;

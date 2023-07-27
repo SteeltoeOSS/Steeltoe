@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.InteropServices;
+using Steeltoe.Common;
 
 #pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
 
@@ -16,6 +17,10 @@ internal struct StringSequence3 : IEquatable<StringSequence3>, IStringSequence
 
     public StringSequence3(string value1, string value2, string value3)
     {
+        ArgumentGuard.NotNull(value1);
+        ArgumentGuard.NotNull(value2);
+        ArgumentGuard.NotNull(value3);
+
         _value1 = value1;
         _value2 = value2;
         _value3 = value3;

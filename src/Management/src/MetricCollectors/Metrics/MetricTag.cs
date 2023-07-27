@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.MetricCollectors.Metrics;
 
@@ -16,6 +17,9 @@ public sealed class MetricTag
 
     public MetricTag(string tag, ISet<string> values)
     {
+        ArgumentGuard.NotNull(tag);
+        ArgumentGuard.NotNull(values);
+
         Tag = tag;
         Values = values;
     }

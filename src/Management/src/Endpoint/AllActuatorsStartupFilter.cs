@@ -19,11 +19,15 @@ public sealed class AllActuatorsStartupFilter : IStartupFilter
 
     public AllActuatorsStartupFilter(ActuatorConventionBuilder conventionBuilder)
     {
+        ArgumentGuard.NotNull(conventionBuilder);
+
         _conventionBuilder = conventionBuilder;
     }
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
+        ArgumentGuard.NotNull(next);
+
         return app =>
         {
             if (app.ApplicationServices.GetService<ICorsService>() != null)

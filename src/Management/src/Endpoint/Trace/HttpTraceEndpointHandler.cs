@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Trace;
 internal sealed class HttpTraceEndpointHandler : IHttpTraceEndpointHandler
 {
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
-    private readonly IHttpTraceRepository _traceRepo;
+    private readonly IHttpTraceRepository _traceRepository;
     private readonly ILogger<HttpTraceEndpointHandler> _logger;
     internal MediaTypeVersion Version { get; set; } = MediaTypeVersion.V2;
 
@@ -25,14 +25,14 @@ internal sealed class HttpTraceEndpointHandler : IHttpTraceEndpointHandler
         ArgumentGuard.NotNull(loggerFactory);
 
         _options = options;
-        _traceRepo = traceRepository;
+        _traceRepository = traceRepository;
         _logger = loggerFactory.CreateLogger<HttpTraceEndpointHandler>();
     }
 
     public Task<HttpTraceResult> InvokeAsync(object argument, CancellationToken cancellationToken)
     {
         _logger.LogTrace("Fetching Traces");
-        HttpTraceResult result = _traceRepo.GetTraces();
+        HttpTraceResult result = _traceRepository.GetTraces();
         return Task.FromResult(result);
     }
 }

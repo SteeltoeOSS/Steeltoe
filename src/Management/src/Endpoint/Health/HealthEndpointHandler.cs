@@ -43,13 +43,14 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     public int GetStatusCode(HealthCheckResult health)
     {
         ArgumentGuard.NotNull(health);
+
         return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService ? 503 : 200;
     }
 
     public Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
     {
         string groupName = healthRequest.GroupName;
-        IEnumerable<HealthCheckRegistration> healthCheckRegistrations;
+        ICollection<HealthCheckRegistration> healthCheckRegistrations;
         IList<IHealthContributor> filteredContributors;
         HealthEndpointOptions options = _options.CurrentValue;
 
@@ -84,7 +85,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         return Task.FromResult(response);
     }
 
-    private IEnumerable<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup,
+    private ICollection<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup,
         IOptionsMonitor<HealthCheckServiceOptions> svcOptions)
     {
         if (!string.IsNullOrEmpty(requestedGroup))

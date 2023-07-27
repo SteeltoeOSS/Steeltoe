@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
 internal sealed class QuantileAggregation
@@ -11,6 +13,8 @@ internal sealed class QuantileAggregation
 
     public QuantileAggregation(params double[] quantiles)
     {
+        ArgumentGuard.NotNull(quantiles);
+
         Quantiles = quantiles;
         Array.Sort(Quantiles);
     }

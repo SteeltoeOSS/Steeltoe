@@ -44,17 +44,17 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         };
 
         _logger.LogTrace("Fetching property sources");
-        IList<PropertySourceDescriptor> propertySources = GetPropertySources(_configuration);
+        IList<PropertySourceDescriptor> propertySources = GetPropertySources();
         var response = new EnvironmentResponse(activeProfiles, propertySources);
 
         return Task.FromResult(response);
     }
 
-    internal IList<PropertySourceDescriptor> GetPropertySources(IConfiguration configuration)
+    internal IList<PropertySourceDescriptor> GetPropertySources()
     {
         var results = new List<PropertySourceDescriptor>();
 
-        if (configuration is IConfigurationRoot root)
+        if (_configuration is IConfigurationRoot root)
         {
             List<IConfigurationProvider> providers = root.Providers.ToList();
 
@@ -81,6 +81,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
     public PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider)
     {
         ArgumentGuard.NotNull(provider);
+
         var properties = new Dictionary<string, PropertyValueDescriptor>();
         string sourceName = GetPropertySourceName(provider);
 
@@ -104,6 +105,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
     public string GetPropertySourceName(IConfigurationProvider provider)
     {
         ArgumentGuard.NotNull(provider);
+
         return provider is FileConfigurationProvider fileProvider ? $"{provider.GetType().Name}: [{fileProvider.Source.Path}]" : provider.GetType().Name;
     }
 

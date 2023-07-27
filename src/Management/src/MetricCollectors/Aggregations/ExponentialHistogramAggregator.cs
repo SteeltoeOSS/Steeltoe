@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
@@ -42,6 +43,8 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
 
     public ExponentialHistogramAggregator(QuantileAggregation config)
     {
+        ArgumentGuard.NotNull(config);
+
         _config = config;
         _counters = new int[ExponentArraySize][];
 

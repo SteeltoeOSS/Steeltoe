@@ -28,6 +28,7 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(endpointOptions);
         ArgumentGuard.NotNull(loggerFactory);
+
         _options = options;
         _managementOption = managementOptions;
         _endpointOptions = endpointOptions;
@@ -36,6 +37,8 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
 
     public Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)
     {
+        ArgumentGuard.NotNull(baseUrl);
+
         var service = new HypermediaService(_managementOption, _options, _endpointOptions, _logger);
         Links result = service.Invoke(baseUrl);
         return Task.FromResult(result);

@@ -214,7 +214,7 @@ Steeltoe.Management.Endpoint.Health.HealthGroupOptions.Include.get -> string
 Steeltoe.Management.Endpoint.Health.HealthGroupOptions.Include.set -> void
 Steeltoe.Management.Endpoint.Health.IHealthEndpointHandler
 Steeltoe.Management.Endpoint.Health.IHealthRegistrationsAggregator
-Steeltoe.Management.Endpoint.Health.IHealthRegistrationsAggregator.Aggregate(System.Collections.Generic.IEnumerable<Steeltoe.Common.HealthChecks.IHealthContributor> contributors, System.Collections.Generic.IEnumerable<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckRegistration> healthCheckRegistrations, System.IServiceProvider serviceProvider, System.Threading.CancellationToken cancellationToken) -> Steeltoe.Common.HealthChecks.HealthCheckResult
+Steeltoe.Management.Endpoint.Health.IHealthRegistrationsAggregator.Aggregate(System.Collections.Generic.ICollection<Steeltoe.Common.HealthChecks.IHealthContributor> contributors, System.Collections.Generic.ICollection<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckRegistration> healthCheckRegistrations, System.IServiceProvider serviceProvider, System.Threading.CancellationToken cancellationToken) -> Steeltoe.Common.HealthChecks.HealthCheckResult
 Steeltoe.Management.Endpoint.Health.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Health.ServiceProviderExtensions
 Steeltoe.Management.Endpoint.Health.ShowDetails

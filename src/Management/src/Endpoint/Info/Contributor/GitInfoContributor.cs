@@ -30,6 +30,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
 
     public GitInfoContributor(string propFile, ILogger<GitInfoContributor> logger)
     {
+        ArgumentGuard.NotNull(propFile);
         ArgumentGuard.NotNull(logger);
 
         _propFile = propFile;
@@ -46,6 +47,8 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
 
     public async Task<IConfiguration> ReadGitPropertiesAsync(string propertiesPath, CancellationToken cancellationToken)
     {
+        ArgumentGuard.NotNull(propertiesPath);
+
         if (File.Exists(propertiesPath))
         {
             string[] lines = await File.ReadAllLinesAsync(propertiesPath, cancellationToken);
@@ -90,6 +93,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
     protected override void AddKeyValue(IDictionary<string, object> dictionary, string key, string value)
     {
         ArgumentGuard.NotNull(dictionary);
+        ArgumentGuard.NotNull(key);
 
         object valueToInsert = value;
 

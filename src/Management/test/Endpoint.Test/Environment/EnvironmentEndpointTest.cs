@@ -170,7 +170,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         };
 
         var ep = (EnvironmentEndpointHandler)tc.GetRequiredService<IEnvironmentEndpointHandler>();
-        IList<PropertySourceDescriptor> result = ep.GetPropertySources(tc.Configuration);
+        IList<PropertySourceDescriptor> result = ep.GetPropertySources();
         Assert.NotNull(result);
         Assert.Single(result);
 
@@ -212,7 +212,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
 
         var endpoint = (EnvironmentEndpointHandler)tc.GetRequiredService<IEnvironmentEndpointHandler>();
 
-        IList<PropertySourceDescriptor> result = endpoint.GetPropertySources(tc.Configuration);
+        IList<PropertySourceDescriptor> result = endpoint.GetPropertySources();
         string testProp = tc.Configuration["appsManagerBase"];
 
         Assert.NotNull(result);

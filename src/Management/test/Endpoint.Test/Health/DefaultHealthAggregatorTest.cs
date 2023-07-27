@@ -13,10 +13,10 @@ namespace Steeltoe.Management.Endpoint.Test.Health;
 public sealed class DefaultHealthAggregatorTest : BaseTest
 {
     [Fact]
-    public void Aggregate_NullContributorList_ReturnsExpectedHealth()
+    public void Aggregate_EmptyContributorList_ReturnsExpectedHealth()
     {
         var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(null, CancellationToken.None);
+        HealthCheckResult result = agg.Aggregate(Array.Empty<IHealthContributor>(), CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Unknown, result.Status);
         Assert.NotNull(result.Details);

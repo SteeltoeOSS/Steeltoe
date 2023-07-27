@@ -21,6 +21,7 @@ internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(heapDumper);
         ArgumentGuard.NotNull(loggerFactory);
+
         _optionsMonitor = optionsMonitor;
         _heapDumper = heapDumper;
         _logger = loggerFactory.CreateLogger<HeapDumpEndpointHandler>();

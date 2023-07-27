@@ -60,6 +60,8 @@ public static class WavefrontExtensions
     /// </returns>
     public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.ConfigureServices((_, collection) =>
         {
             collection.AddWavefrontMetrics();
@@ -74,6 +76,8 @@ public static class WavefrontExtensions
     /// </param>
     public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
+
         applicationBuilder.Services.AddWavefrontMetrics();
         return applicationBuilder;
     }
@@ -86,11 +90,15 @@ public static class WavefrontExtensions
     /// </param>
     public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.ConfigureServices((_, collection) => collection.AddWavefrontMetrics());
     }
 
     public static MeterProviderBuilder AddWavefrontExporter(this MeterProviderBuilder builder)
     {
+        ArgumentGuard.NotNull(builder);
+
         return builder.AddReader(sp =>
         {
             var logger = sp.GetRequiredService<ILogger<WavefrontMetricsExporter>>();

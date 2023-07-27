@@ -3,11 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
-using System.Security;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
-[SecurityCritical] // using SecurityCritical type ReadOnlySpan
 internal sealed class LabelInstructionInterpreter<TObjectSequence, TAggregator>
     where TObjectSequence : struct, IObjectSequence, IEquatable<TObjectSequence>
     where TAggregator : Aggregator
@@ -20,6 +19,10 @@ internal sealed class LabelInstructionInterpreter<TObjectSequence, TAggregator>
     public LabelInstructionInterpreter(int expectedLabelCount, LabelInstruction[] instructions, ConcurrentDictionary<TObjectSequence, TAggregator> valuesDict,
         Func<TAggregator?> createAggregator)
     {
+        ArgumentGuard.NotNull(instructions);
+        ArgumentGuard.NotNull(valuesDict);
+        ArgumentGuard.NotNull(createAggregator);
+
         _expectedLabelCount = expectedLabelCount;
         _instructions = instructions;
         _valuesDict = valuesDict;

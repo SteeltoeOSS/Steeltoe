@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
@@ -27,11 +28,17 @@ public sealed class MetricsResponse
 
     public MetricsResponse(ISet<string> names)
     {
+        ArgumentGuard.NotNull(names);
+
         Names = names;
     }
 
     public MetricsResponse(string name, IList<MetricSample> measurements, IList<MetricTag> availableTags)
     {
+        ArgumentGuard.NotNull(name);
+        ArgumentGuard.NotNull(measurements);
+        ArgumentGuard.NotNull(availableTags);
+
         Name = name;
         Measurements = measurements;
         AvailableTags = availableTags;

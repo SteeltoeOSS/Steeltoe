@@ -28,17 +28,6 @@ public static class HostBuilderExtensions
     /// <summary>
     /// Adds all standard and Kubernetes-specific actuators to the application.
     /// </summary>
-    /// <param name="webHostBuilder">
-    /// Your WebHostBuilder.
-    /// </param>
-    public static IWebHostBuilder AddKubernetesActuators(this IWebHostBuilder webHostBuilder)
-    {
-        return webHostBuilder.AddKubernetesActuators(null);
-    }
-
-    /// <summary>
-    /// Adds all standard and Kubernetes-specific actuators to the application.
-    /// </summary>
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
@@ -47,6 +36,8 @@ public static class HostBuilderExtensions
     /// </param>
     public static IHostBuilder AddKubernetesActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((_, collection) =>
         {
             collection.AddKubernetesActuators();
@@ -61,11 +52,24 @@ public static class HostBuilderExtensions
     /// <param name="webHostBuilder">
     /// Your WebHostBuilder.
     /// </param>
+    public static IWebHostBuilder AddKubernetesActuators(this IWebHostBuilder webHostBuilder)
+    {
+        return webHostBuilder.AddKubernetesActuators(null);
+    }
+
+    /// <summary>
+    /// Adds all standard and Kubernetes-specific actuators to the application.
+    /// </summary>
+    /// <param name="webHostBuilder">
+    /// Your WebHostBuilder.
+    /// </param>
     /// <param name="configureEndpoints">
     /// Customize endpoint behavior. Useful for tailoring auth requirements.
     /// </param>
     public static IWebHostBuilder AddKubernetesActuators(this IWebHostBuilder webHostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
     {
+        ArgumentGuard.NotNull(webHostBuilder);
+
         return webHostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((_, collection) =>
         {
             collection.AddKubernetesActuators();

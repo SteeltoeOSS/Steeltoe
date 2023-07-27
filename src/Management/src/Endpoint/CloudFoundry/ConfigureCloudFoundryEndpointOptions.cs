@@ -22,6 +22,7 @@ internal sealed class ConfigureCloudFoundryEndpointOptions : ConfigureEndpointOp
     public override void Configure(CloudFoundryEndpointOptions options)
     {
         ArgumentGuard.NotNull(options);
+
         base.Configure(options);
         options.ApplicationId = Configuration[VcapApplicationIdKey];
         options.CloudFoundryApi = Configuration[VcapApplicationCloudfoundryApiKey];

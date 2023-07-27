@@ -25,6 +25,7 @@ public static class TaskServiceCollectionExtensions
         where T : class, IApplicationTask
     {
         ArgumentGuard.NotNull(services);
+
         services.Add(new ServiceDescriptor(typeof(IApplicationTask), typeof(T), lifetime));
     }
 
@@ -55,6 +56,8 @@ public static class TaskServiceCollectionExtensions
     public static void AddTask(this IServiceCollection services, IApplicationTask task)
     {
         ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(task);
+
         services.Add(new ServiceDescriptor(typeof(IApplicationTask), task));
     }
 
@@ -73,6 +76,8 @@ public static class TaskServiceCollectionExtensions
     public static void AddTask(this IServiceCollection services, Func<IServiceProvider, IApplicationTask> factory, ServiceLifetime lifetime)
     {
         ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(factory);
+
         services.Add(new ServiceDescriptor(typeof(IApplicationTask), factory, lifetime));
     }
 
@@ -108,6 +113,9 @@ public static class TaskServiceCollectionExtensions
     public static void AddTask(this IServiceCollection services, string name, Action<IServiceProvider> runAction, ServiceLifetime lifetime)
     {
         ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(name);
+        ArgumentGuard.NotNull(runAction);
+
         services.Add(new ServiceDescriptor(typeof(IApplicationTask), svc => new DelegatingTask(name, () => runAction(svc)), lifetime));
     }
 

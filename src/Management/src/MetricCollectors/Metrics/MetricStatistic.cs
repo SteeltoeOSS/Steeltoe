@@ -17,8 +17,5 @@ public enum MetricStatistic
     Count,
     Max,
     Value,
-    Unknown,
-    Activetasks,
-    Duration,
     Rate
 }

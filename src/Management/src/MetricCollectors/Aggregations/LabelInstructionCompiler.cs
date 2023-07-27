@@ -3,17 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
-using System.Security;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
-[SecurityCritical] // using SecurityCritical type ReadOnlySpan
 internal static class LabelInstructionCompiler
 {
     public static AggregatorLookupFunc<TAggregator> Create<TAggregator>(ref AggregatorStore<TAggregator> aggregatorStore,
         Func<TAggregator?> createAggregatorFunc, ReadOnlySpan<KeyValuePair<string, object?>> labels)
         where TAggregator : Aggregator
     {
+        ArgumentGuard.NotNull(createAggregatorFunc);
+
         LabelInstruction[] instructions = Compile(labels);
         Array.Sort(instructions, (a, b) => string.CompareOrdinal(a.LabelName, b.LabelName));
         int expectedLabels = labels.Length;

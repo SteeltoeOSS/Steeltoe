@@ -13,10 +13,15 @@ internal abstract class ConfigureEndpointOptions<T> : IConfigureOptions<T>
 {
     private readonly string _prefix;
     private readonly string _id;
+
     protected IConfiguration Configuration { get; }
 
     protected ConfigureEndpointOptions(IConfiguration configuration, string prefix, string id)
     {
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(prefix);
+        ArgumentGuard.NotNull(id);
+
         Configuration = configuration;
         _prefix = prefix;
         _id = id;

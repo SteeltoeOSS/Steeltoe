@@ -28,6 +28,8 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(endpointHandler);
+        ArgumentGuard.NotNull(managementOptions);
+        ArgumentGuard.NotNull(loggerFactory);
 
         EndpointHandler = endpointHandler;
         ManagementEndpointOptionsMonitor = managementOptions;
@@ -39,15 +41,16 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     public virtual bool ShouldInvoke(PathString requestPath)
     {
         ArgumentGuard.NotNull(requestPath);
+
         ManagementEndpointOptions endpointOptions = ManagementEndpointOptionsMonitor.CurrentValue;
-        bool enabled = EndpointHandler.Options.IsEnabled(endpointOptions);
-        bool exposed = EndpointHandler.Options.IsExposed(endpointOptions);
+        bool isEnabled = EndpointHandler.Options.IsEnabled(endpointOptions);
+        bool isExposed = EndpointHandler.Options.IsExposed(endpointOptions);
 
         bool isCloudFoundryEndpoint = requestPath.StartsWithSegments(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath);
-        bool returnValue = isCloudFoundryEndpoint ? endpointOptions.IsCloudFoundryEnabled && enabled : enabled && exposed;
+        bool returnValue = isCloudFoundryEndpoint ? endpointOptions.IsCloudFoundryEnabled && isEnabled : isEnabled && isExposed;
 
-        _logger.LogDebug($"Returned {returnValue} for endpointHandler: {EndpointHandler.Options.Id}, contextPath: {requestPath}, enabled: {enabled}, " +
-            $"exposed: {exposed}, isCloudFoundry: {isCloudFoundryEndpoint}, cloudFoundryEnabled: {endpointOptions.IsCloudFoundryEnabled}");
+        _logger.LogDebug($"Returned {returnValue} for endpointHandler: {EndpointHandler.Options.Id}, requestPath: {requestPath}, isEnabled: {isEnabled}, " +
+            $"isExposed: {isExposed}, isCloudFoundryEndpoint: {isCloudFoundryEndpoint}, isCloudFoundryEnabled: {endpointOptions.IsCloudFoundryEnabled}");
 
         return returnValue;
     }

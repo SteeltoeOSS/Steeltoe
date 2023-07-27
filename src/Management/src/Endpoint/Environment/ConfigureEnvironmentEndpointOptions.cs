@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Environment;
 
@@ -25,11 +26,15 @@ internal sealed class ConfigureEnvironmentEndpointOptions : IConfigureOptions<En
 
     public ConfigureEnvironmentEndpointOptions(IConfiguration configuration)
     {
+        ArgumentGuard.NotNull(configuration);
+
         _configuration = configuration;
     }
 
     public void Configure(EnvironmentEndpointOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 
         options.Id ??= "env";

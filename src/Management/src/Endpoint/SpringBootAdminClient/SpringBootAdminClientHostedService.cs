@@ -26,6 +26,9 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
     public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
         IOptionsMonitor<HealthEndpointOptions> healthOptions, ILogger<SpringBootAdminClientHostedService> logger, HttpClient httpClient = null)
     {
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(managementOptions);
+        ArgumentGuard.NotNull(healthOptions);
         ArgumentGuard.NotNull(logger);
 
         _options = options;
@@ -53,7 +56,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
             }
         };
 
-        app.Metadata.Merge(_options.Metadata);
+        Merge(app.Metadata, _options.Metadata);
 
         _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMs);
 
@@ -77,6 +80,11 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
             string errorResponse = result != null ? await result.Content.ReadAsStringAsync(cancellationToken) : string.Empty;
             _logger.LogError("Error registering with SpringBootAdmin: {Message} \n {Response} ", result?.ToString(), errorResponse);
         }
+    }
+
+    private static void Merge<TKey, TValue>(IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)
+    {
+        from?.ToList().ForEach(to.Add);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

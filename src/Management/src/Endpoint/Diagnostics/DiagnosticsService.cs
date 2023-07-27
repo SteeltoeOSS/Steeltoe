@@ -16,6 +16,7 @@ internal sealed class DiagnosticsService : IHostedService
 
     public DiagnosticsService(IDiagnosticsManager observerManager, ILogger<DiagnosticsService> logger)
     {
+        ArgumentGuard.NotNull(observerManager);
         ArgumentGuard.NotNull(logger);
 
         _logger = logger;

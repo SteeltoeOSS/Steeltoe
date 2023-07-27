@@ -18,23 +18,24 @@ internal sealed class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
     public override void Write(Utf8JsonWriter writer, HealthEndpointResponse value, JsonSerializerOptions options)
     {
         ArgumentGuard.NotNull(writer);
+
         writer.WriteStartObject();
 
-        if (value is { } health)
+        if (value != null)
         {
-            writer.WriteString("status", health.Status.ToString());
+            writer.WriteString("status", value.Status.ToString());
 
-            if (!string.IsNullOrEmpty(health.Description))
+            if (!string.IsNullOrEmpty(value.Description))
             {
-                writer.WriteString("description", health.Description);
+                writer.WriteString("description", value.Description);
             }
 
-            if (health.Details != null && health.Details.Count > 0)
+            if (value.Details != null && value.Details.Count > 0)
             {
                 writer.WritePropertyName("components");
                 writer.WriteStartObject();
 
-                foreach (KeyValuePair<string, object> detail in health.Details)
+                foreach (KeyValuePair<string, object> detail in value.Details)
                 {
                     writer.WritePropertyName(detail.Key);
                     JsonSerializer.Serialize(writer, detail.Value, options);

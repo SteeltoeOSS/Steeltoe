@@ -64,6 +64,8 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddSteeltoeCollector(this IServiceCollection services)
     {
+        ArgumentGuard.NotNull(services);
+
         return services.AddSingleton(provider =>
         {
             var steeltoeExporter = provider.GetRequiredService<ISteeltoeExporter>();

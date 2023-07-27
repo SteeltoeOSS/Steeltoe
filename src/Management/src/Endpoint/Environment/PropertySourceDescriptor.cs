@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Environment;
 
@@ -16,6 +17,9 @@ public sealed class PropertySourceDescriptor
 
     public PropertySourceDescriptor(string name, IDictionary<string, PropertyValueDescriptor> properties)
     {
+        ArgumentGuard.NotNullOrEmpty(name);
+        ArgumentGuard.NotNull(properties);
+
         Name = name;
         Properties = properties;
     }

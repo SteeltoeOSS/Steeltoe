@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Management.MetricCollectors.Aggregations;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
@@ -13,6 +14,8 @@ internal sealed class MetricCollectionHostedService : IHostedService
 
     public MetricCollectionHostedService(AggregationManager aggregationManager)
     {
+        ArgumentGuard.NotNull(aggregationManager);
+
         _aggregationManager = aggregationManager;
     }
 

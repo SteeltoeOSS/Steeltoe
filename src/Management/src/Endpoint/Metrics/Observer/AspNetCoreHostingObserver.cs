@@ -24,7 +24,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
     private const string ExceptionTagKey = "exception";
     private const string MethodTagKey = "method";
     private const string UriTagKey = "uri";
-    private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
+    private const string StopEventName = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
@@ -34,6 +34,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
         ArgumentGuard.NotNull(optionsMonitor);
+
         SetPathMatcher(new Regex(optionsMonitor.CurrentValue.IngressIgnorePattern));
         Meter meter = SteeltoeMetrics.Meter;
 
@@ -56,7 +57,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
             return;
         }
 
-        if (eventName == StopEvent)
+        if (eventName == StopEventName)
         {
             _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
@@ -93,6 +94,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
     internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
+
         string uri = context.Request.Path.ToString();
         string statusCode = context.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
         string exception = GetException(context);
@@ -106,9 +108,9 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
         };
     }
 
-    internal string GetException(HttpContext arg)
+    internal string GetException(HttpContext context)
     {
-        var exception = arg.Features.Get<IExceptionHandlerFeature>();
+        var exception = context.Features.Get<IExceptionHandlerFeature>();
 
         if (exception != null)
         {

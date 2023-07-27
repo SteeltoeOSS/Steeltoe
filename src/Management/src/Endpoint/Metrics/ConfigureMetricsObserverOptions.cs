@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
@@ -20,11 +21,15 @@ internal sealed class ConfigureMetricsObserverOptions : IConfigureOptions<Metric
 
     public ConfigureMetricsObserverOptions(IConfiguration configuration)
     {
+        ArgumentGuard.NotNull(configuration);
+
         _configuration = configuration;
     }
 
     public void Configure(MetricsObserverOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         _configuration.GetSection(ManagementMetricsPrefix).Bind(options);
 
         if (string.IsNullOrEmpty(options.IngressIgnorePattern))

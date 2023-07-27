@@ -23,7 +23,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
     private const string DiagnosticName = "HttpHandlerDiagnosticListener";
     private const string DefaultObserverName = "HttpClientCoreObserver";
 
-    private const string StopEvent = "System.Net.Http.HttpRequestOut.Stop";
+    private const string StopEventName = "System.Net.Http.HttpRequestOut.Stop";
     private const string ExceptionEvent = "System.Net.Http.Exception";
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
@@ -33,7 +33,9 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
         ArgumentGuard.NotNull(options);
+
         SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
+
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.count");
         _logger = loggerFactory.CreateLogger<HttpClientCoreObserver>();
@@ -60,7 +62,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
             return;
         }
 
-        if (eventName == StopEvent)
+        if (eventName == StopEventName)
         {
             _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 

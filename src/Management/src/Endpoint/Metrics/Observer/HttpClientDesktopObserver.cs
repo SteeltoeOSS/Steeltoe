@@ -23,8 +23,8 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
     private const string ClientTagKey = "clientName";
     private const string DiagnosticName = "System.Net.Http.Desktop";
     private const string DefaultObserverName = "HttpClientDesktopObserver";
-    private const string StopEvent = "System.Net.Http.Desktop.HttpRequestOut.Stop";
-    private const string StopExEvent = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
+    private const string StopEventName = "System.Net.Http.Desktop.HttpRequestOut.Stop";
+    private const string StopExEventName = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
 
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
@@ -34,6 +34,7 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
         ArgumentGuard.NotNull(options);
+
         SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
 
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.time");
@@ -62,7 +63,7 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
             return;
         }
 
-        if (eventName == StopEvent)
+        if (eventName == StopEventName)
         {
             _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
@@ -75,7 +76,7 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
 
             _logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
-        else if (eventName == StopExEvent)
+        else if (eventName == StopExEventName)
         {
             _logger.LogTrace("HandleStopEventEx start {thread}", Thread.CurrentThread.ManagedThreadId);
 

@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddEnvironmentActuatorServices(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
+
         services.ConfigureEndpointOptions<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
         services.TryAddSingleton<IEnvironmentEndpointHandler, EnvironmentEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, EnvironmentEndpointMiddleware>());

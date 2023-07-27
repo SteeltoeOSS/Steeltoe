@@ -17,11 +17,6 @@ internal abstract class MetricsObserver : DiagnosticObserver
     {
     }
 
-    private Regex GetPathMatcher()
-    {
-        return _pathMatcher;
-    }
-
     protected void SetPathMatcher(Regex value)
     {
         _pathMatcher = value;
@@ -36,6 +31,6 @@ internal abstract class MetricsObserver : DiagnosticObserver
             return false;
         }
 
-        return GetPathMatcher().IsMatch(path);
+        return _pathMatcher != null && _pathMatcher.IsMatch(path);
     }
 }

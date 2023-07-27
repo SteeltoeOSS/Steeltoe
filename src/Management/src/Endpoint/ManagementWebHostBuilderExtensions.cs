@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
@@ -38,6 +39,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddDbMigrationsActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddDbMigrationsActuator();
@@ -53,6 +56,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddEnvironmentActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddEnvironmentActuator();
@@ -68,6 +73,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddHealthActuator();
@@ -86,6 +93,9 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, params Type[] contributors)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(contributors);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddHealthActuator(contributors);
@@ -107,6 +117,10 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, IHealthAggregator aggregator, params Type[] contributors)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(aggregator);
+        ArgumentGuard.NotNull(contributors);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddHealthActuator(aggregator, contributors);
@@ -122,6 +136,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddHeapDumpActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddHeapDumpActuator();
@@ -137,6 +153,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddHypermediaActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddHypermediaActuator();
@@ -152,6 +170,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddInfoActuator();
@@ -170,6 +190,9 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder hostBuilder, params IInfoContributor[] contributors)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(contributors);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddInfoActuator(contributors);
@@ -185,6 +208,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddLoggersActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((_, collection) =>
         {
             collection.AddLoggersActuator();
@@ -200,6 +225,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddMappingsActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddMappingsActuator();
@@ -215,6 +242,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddMetricsActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddMetricsActuator();
@@ -230,6 +259,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddRefreshActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddRefreshActuator();
@@ -248,6 +279,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddThreadDumpActuator(mediaTypeVersion);
@@ -277,6 +310,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddTraceActuator(mediaTypeVersion);
@@ -303,6 +338,8 @@ public static class ManagementWebHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddCloudFoundryActuator(this IWebHostBuilder hostBuilder)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddCloudFoundryActuator();
@@ -325,6 +362,8 @@ public static class ManagementWebHostBuilderExtensions
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
         MediaTypeVersion mediaTypeVersion)
     {
+        ArgumentGuard.NotNull(hostBuilder);
+
         return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((_, collection) =>
         {
             collection.AddAllActuators(mediaTypeVersion);
@@ -360,6 +399,8 @@ public static class ManagementWebHostBuilderExtensions
 
     internal static void GetManagementUrl(this IWebHostBuilder webHostBuilder, out int? httpPort, out int? httpsPort)
     {
+        ArgumentGuard.NotNull(webHostBuilder);
+
         string portSetting = webHostBuilder.GetSetting(ManagementPortKey);
         string sslSetting = webHostBuilder.GetSetting(ManagementSslKey);
 

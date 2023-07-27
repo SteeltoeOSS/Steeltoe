@@ -28,6 +28,8 @@ public static class ActuatorServiceCollectionExtensions
 {
     public static void AddCommonActuatorServices(this IServiceCollection services)
     {
+        ArgumentGuard.NotNull(services);
+
         services.TryAddScoped<ActuatorEndpointMapper>();
         services.ConfigureOptions<ConfigureManagementEndpointOptions>();
     }
@@ -36,6 +38,8 @@ public static class ActuatorServiceCollectionExtensions
         where TOptions : HttpMiddlewareOptions
         where TConfigureOptions : class
     {
+        ArgumentGuard.NotNull(services);
+
         services.ConfigureOptions<TConfigureOptions>();
 
         services.TryAddEnumerable(
@@ -86,9 +90,11 @@ public static class ActuatorServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+    private static void AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
-        return services.AddCors(setup =>
+        ArgumentGuard.NotNull(services);
+
+        services.AddCors(setup =>
         {
             setup.AddPolicy("SteeltoeManagement", policy =>
             {

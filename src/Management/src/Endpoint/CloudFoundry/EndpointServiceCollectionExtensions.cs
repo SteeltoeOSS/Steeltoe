@@ -12,6 +12,7 @@ public static class EndpointServiceCollectionExtensions
     public static void AddCloudFoundryActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
+
         services.AddCommonActuatorServices();
         services.AddCloudFoundryActuatorServices();
     }

@@ -4,7 +4,7 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Security;
+using Steeltoe.Common;
 
 #pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
 
@@ -48,7 +48,6 @@ namespace Steeltoe.Management.MetricCollectors.Aggregations;
 //   instrument to have the same keys so this can be a sizable savings. We also use a union to store the 1st level dictionaries
 //   for different label set sizes because most instruments always specify label sets with the same number of labels (most likely
 //   zero).
-[SecuritySafeCritical] // using SecurityCritical type ReadOnlySpan
 internal struct AggregatorStore<TAggregator> : IEquatable<AggregatorStore<TAggregator>>
     where TAggregator : Aggregator
 {
@@ -66,6 +65,8 @@ internal struct AggregatorStore<TAggregator> : IEquatable<AggregatorStore<TAggre
 
     public AggregatorStore(Func<TAggregator?> createAggregator)
     {
+        ArgumentGuard.NotNull(createAggregator);
+
         _stateUnion = null;
         _cachedLookupFunc = null;
         _createAggregatorFunc = createAggregator;
@@ -142,6 +143,8 @@ internal struct AggregatorStore<TAggregator> : IEquatable<AggregatorStore<TAggre
 
     public void Collect(Action<LabeledAggregationStatistics> visitFunc)
     {
+        ArgumentGuard.NotNull(visitFunc);
+
         switch (_stateUnion)
         {
             case TAggregator agg:

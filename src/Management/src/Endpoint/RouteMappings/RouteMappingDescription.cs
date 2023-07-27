@@ -25,8 +25,8 @@ public sealed class RouteMappingDescription
 
     public RouteMappingDescription(string routeHandler, AspNetCoreRouteDetails routeDetails)
     {
-        ArgumentGuard.NotNull(routeDetails);
         ArgumentGuard.NotNull(routeHandler);
+        ArgumentGuard.NotNull(routeDetails);
 
         Predicate = CreatePredicateString(routeDetails);
         Handler = routeHandler;

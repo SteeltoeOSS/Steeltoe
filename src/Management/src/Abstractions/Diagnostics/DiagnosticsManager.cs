@@ -29,10 +29,10 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
         IEnumerable<IDiagnosticObserver> observers, IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger)
     {
         ArgumentGuard.NotNull(observerOptions);
-        ArgumentGuard.NotNull(observers);
-        ArgumentGuard.NotNull(logger);
         ArgumentGuard.NotNull(runtimeSources);
+        ArgumentGuard.NotNull(observers);
         ArgumentGuard.NotNull(eventListeners);
+        ArgumentGuard.NotNull(logger);
 
         _logger = logger;
         var filteredObservers = new List<IDiagnosticObserver>();

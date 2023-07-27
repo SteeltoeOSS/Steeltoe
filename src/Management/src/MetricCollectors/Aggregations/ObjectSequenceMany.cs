@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
 internal readonly struct ObjectSequenceMany : IEquatable<ObjectSequenceMany>, IObjectSequence
@@ -10,6 +12,8 @@ internal readonly struct ObjectSequenceMany : IEquatable<ObjectSequenceMany>, IO
 
     public ObjectSequenceMany(object[] values)
     {
+        ArgumentGuard.NotNull(values);
+
         _values = values;
     }
 

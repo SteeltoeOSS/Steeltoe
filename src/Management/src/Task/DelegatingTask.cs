@@ -14,6 +14,9 @@ internal sealed class DelegatingTask : IApplicationTask
 
     public DelegatingTask(string name, Action run)
     {
+        ArgumentGuard.NotNull(name);
+        ArgumentGuard.NotNull(run);
+
         _run = run;
         Name = name;
     }

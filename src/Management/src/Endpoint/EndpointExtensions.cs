@@ -57,6 +57,9 @@ internal static class EndPointExtensions
 
     public static string GetContextBasePath(this ManagementEndpointOptions managementOptions, HttpRequest httpRequest)
     {
+        ArgumentGuard.NotNull(managementOptions);
+        ArgumentGuard.NotNull(httpRequest);
+
         return httpRequest.Path.StartsWithSegments(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath)
             ? ConfigureManagementEndpointOptions.DefaultCloudFoundryPath
             : $"{managementOptions.Path}";
@@ -65,6 +68,7 @@ internal static class EndPointExtensions
     public static string GetPathMatchPattern(this HttpMiddlewareOptions options, string contextBasePath, ManagementEndpointOptions managementOptions)
     {
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(contextBasePath);
         ArgumentGuard.NotNull(managementOptions);
 
         string contextPath = contextBasePath;

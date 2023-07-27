@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Management.Endpoint.Metrics;
 
 public sealed class MetricsRequest
@@ -12,6 +14,9 @@ public sealed class MetricsRequest
 
     public MetricsRequest(string metricName, IList<KeyValuePair<string, string>> tags)
     {
+        ArgumentGuard.NotNull(metricName);
+        ArgumentGuard.NotNull(tags);
+
         MetricName = metricName;
         Tags = tags;
     }

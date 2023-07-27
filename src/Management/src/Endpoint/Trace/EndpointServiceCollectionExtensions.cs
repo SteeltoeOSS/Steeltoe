@@ -21,6 +21,8 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddTraceActuator(this IServiceCollection services)
     {
+        ArgumentGuard.NotNull(services);
+
         services.AddTraceActuator(MediaTypeVersion.V2);
     }
 

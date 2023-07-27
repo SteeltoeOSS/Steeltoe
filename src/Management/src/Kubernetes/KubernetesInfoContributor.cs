@@ -15,6 +15,8 @@ internal sealed class KubernetesInfoContributor : IInfoContributor
 
     public KubernetesInfoContributor(IPodUtilities podUtilities)
     {
+        ArgumentGuard.NotNull(podUtilities);
+
         _podUtilities = podUtilities;
     }
 

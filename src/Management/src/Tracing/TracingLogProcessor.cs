@@ -15,11 +15,15 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
 
     public TracingLogProcessor(ITracingOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         _options = options;
     }
 
     public string Process(string inputLogMessage)
     {
+        ArgumentGuard.NotNull(inputLogMessage);
+
         TelemetrySpan currentSpan = GetCurrentSpan();
 
         if (currentSpan != null)

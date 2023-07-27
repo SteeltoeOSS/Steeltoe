@@ -68,6 +68,9 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
 
     public void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
     {
+        ArgumentGuard.NotNull(instrument);
+        ArgumentGuard.NotNull(stats);
+
         UpdateAvailableTags(_availableTags, instrument.Name, stats.Labels);
 
         if (stats.AggregationStatistics is RateStatistics rateStats)

@@ -22,12 +22,13 @@ internal sealed class HypermediaService
     {
         ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(endpointOptions);
         ArgumentGuard.NotNull(logger);
 
-        _logger = logger;
         _managementOptionsMonitor = managementOptionsMonitor;
-        _endpointOptions = endpointOptions;
         _options = options.CurrentValue;
+        _endpointOptions = endpointOptions;
+        _logger = logger;
     }
 
     public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor, IOptionsMonitor<CloudFoundryEndpointOptions> options,
@@ -35,12 +36,13 @@ internal sealed class HypermediaService
     {
         ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(endpointOptions);
         ArgumentGuard.NotNull(logger);
 
+        _managementOptionsMonitor = managementOptionsMonitor;
+        _options = options.CurrentValue;
         _endpointOptions = endpointOptions;
         _logger = logger;
-        _options = options.CurrentValue;
-        _managementOptionsMonitor = managementOptionsMonitor;
     }
 
     public Links Invoke(string baseUrl)

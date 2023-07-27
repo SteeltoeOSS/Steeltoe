@@ -5,6 +5,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
@@ -19,11 +20,15 @@ internal sealed class ConfigureManagementEndpointOptions : IConfigureOptions<Man
 
     public ConfigureManagementEndpointOptions(IConfiguration configuration)
     {
+        ArgumentGuard.NotNull(configuration);
+
         _configuration = configuration;
     }
 
     public void Configure(ManagementEndpointOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 
         options.IsCloudFoundryEnabled = !bool.TryParse(_configuration[CloudFoundryEnabledPrefix], out bool enabled) || enabled; // Default true

@@ -17,11 +17,11 @@ public sealed class LoggerLevels
 
     public LoggerLevels(LogLevel? configured, LogLevel effective)
     {
-        ConfiguredLevel = configured.HasValue ? MapLogLevel(configured.Value) : null;
-        EffectiveLevel = MapLogLevel(effective);
+        ConfiguredLevel = configured.HasValue ? LogLevelToString(configured.Value) : null;
+        EffectiveLevel = LogLevelToString(effective);
     }
 
-    internal static string MapLogLevel(LogLevel level)
+    internal static string LogLevelToString(LogLevel level)
     {
         return level switch
         {
@@ -36,7 +36,7 @@ public sealed class LoggerLevels
         };
     }
 
-    internal static LogLevel? MapLogLevel(string level)
+    internal static LogLevel? StringToLogLevel(string level)
     {
         return level switch
         {

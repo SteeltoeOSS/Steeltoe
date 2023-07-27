@@ -5,6 +5,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
@@ -34,6 +35,15 @@ internal sealed class AggregationManager : IDisposable
         Action initialInstrumentEnumerationComplete, Action timeSeriesLimitReached, Action histogramLimitReached,
         Action<Exception> observableInstrumentCallbackError)
     {
+        ArgumentGuard.NotNull(collectMeasurement);
+        ArgumentGuard.NotNull(beginInstrumentMeasurements);
+        ArgumentGuard.NotNull(endInstrumentMeasurements);
+        ArgumentGuard.NotNull(instrumentPublished);
+        ArgumentGuard.NotNull(initialInstrumentEnumerationComplete);
+        ArgumentGuard.NotNull(timeSeriesLimitReached);
+        ArgumentGuard.NotNull(histogramLimitReached);
+        ArgumentGuard.NotNull(observableInstrumentCallbackError);
+
         _maxTimeSeries = maxTimeSeries;
         _maxHistograms = maxHistograms;
         _collectMeasurement = collectMeasurement;

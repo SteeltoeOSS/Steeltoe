@@ -10,9 +10,11 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 internal class DefaultHealthAggregator : IHealthAggregator
 {
-    public HealthCheckResult Aggregate(IEnumerable<IHealthContributor> contributors, CancellationToken cancellationToken)
+    public HealthCheckResult Aggregate(ICollection<IHealthContributor> contributors, CancellationToken cancellationToken)
     {
-        if (contributors == null)
+        ArgumentGuard.NotNull(contributors);
+
+        if (contributors.Count == 0)
         {
             return new HealthCheckResult();
         }

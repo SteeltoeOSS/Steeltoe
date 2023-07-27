@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
@@ -14,6 +15,8 @@ internal sealed class FixedSizeLabelNameDictionary<TStringSequence, TObjectSeque
 {
     public void Collect(Action<LabeledAggregationStatistics> visitFunc)
     {
+        ArgumentGuard.NotNull(visitFunc);
+
         foreach (KeyValuePair<TStringSequence, ConcurrentDictionary<TObjectSequence, TAggregator>> kvName in this)
         {
             Span<string> indexedNames = kvName.Key.AsSpan();

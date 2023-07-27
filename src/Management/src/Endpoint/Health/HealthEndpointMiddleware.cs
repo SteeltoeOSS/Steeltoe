@@ -21,35 +21,32 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         IOptionsMonitor<HealthEndpointOptions> endpointOptions, ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptions, loggerFactory)
     {
+        ArgumentGuard.NotNull(managementOptions);
+        ArgumentGuard.NotNull(endpointHandler);
         ArgumentGuard.NotNull(endpointOptions);
+        ArgumentGuard.NotNull(loggerFactory);
+
         _logger = loggerFactory.CreateLogger<HealthEndpointMiddleware>();
         _healthEndpointOptionsMonitor = endpointOptions;
     }
 
-    private HealthEndpointRequest GetRequest(HttpContext context)
+    protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        return new HealthEndpointRequest
+        var request = new HealthEndpointRequest
         {
-            GroupName = GetRequestedHealthGroup(context),
-            HasClaim = GetClaim(context)
+            GroupName = GetRequestedHealthGroup(context.Request.Path),
+            HasClaim = GetHasClaim(context)
         };
-    }
 
-    private bool GetClaim(HttpContext context)
-    {
-        EndpointClaim claim = _healthEndpointOptionsMonitor.CurrentValue.Claim;
-        return context != null && claim != null && context.User.HasClaim(claim.Type, claim.Value);
+        return await EndpointHandler.InvokeAsync(request, context.RequestAborted);
     }
 
     /// <summary>
-    /// Returns the last value returned by <see cref="HttpContext.Request" />.Path, expected to be the name of a configured health group.
+    /// Returns the last segment of the HTTP request path, which is expected to be the name of a configured health group.
     /// </summary>
-    /// <param name="context">
-    /// Last value of <see cref="HttpContext.Request" />.Path is used as group name.
-    /// </param>
-    private string GetRequestedHealthGroup(HttpContext context)
+    private string GetRequestedHealthGroup(PathString requestPath)
     {
-        string[] requestComponents = context.Request.Path.Value?.Split('/') ?? Array.Empty<string>();
+        string[] requestComponents = requestPath.Value?.Split('/') ?? Array.Empty<string>();
 
         if (requestComponents.Length > 0)
         {
@@ -61,9 +58,10 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         return string.Empty;
     }
 
-    protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    private bool GetHasClaim(HttpContext context)
     {
-        return await EndpointHandler.InvokeAsync(GetRequest(context), context.RequestAborted);
+        EndpointClaim claim = _healthEndpointOptionsMonitor.CurrentValue.Claim;
+        return claim != null && context.User.HasClaim(claim.Type, claim.Value);
     }
 
     protected override async Task WriteResponseAsync(HealthEndpointResponse result, HttpContext context, CancellationToken cancellationToken)

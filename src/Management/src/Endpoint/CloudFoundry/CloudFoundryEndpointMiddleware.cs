@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
@@ -29,6 +30,8 @@ internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<string
 
     protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
+        ArgumentGuard.NotNull(context);
+
         _logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
         string uri = GetRequestUri(context);
         return await EndpointHandler.InvokeAsync(uri, cancellationToken);

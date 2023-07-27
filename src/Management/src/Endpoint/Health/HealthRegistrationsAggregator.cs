@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 using SteeltoeHealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
@@ -15,14 +16,18 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
 {
-    public SteeltoeHealthCheckResult Aggregate(IEnumerable<IHealthContributor> contributors, IEnumerable<HealthCheckRegistration> healthCheckRegistrations,
+    public SteeltoeHealthCheckResult Aggregate(ICollection<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations,
         IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
+        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(healthCheckRegistrations);
+        ArgumentGuard.NotNull(serviceProvider);
+
         // get results from DefaultHealthAggregator first
         SteeltoeHealthCheckResult aggregatorResult = Aggregate(contributors, cancellationToken);
 
         // if there aren't any Microsoft health checks, return now
-        if (healthCheckRegistrations == null)
+        if (healthCheckRegistrations.Count == 0)
         {
             return aggregatorResult;
         }

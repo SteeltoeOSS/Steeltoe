@@ -19,7 +19,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 {
     private const string DiagnosticName = "Microsoft.AspNetCore";
     private const string DefaultObserverName = "TraceDiagnosticObserver";
-    private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
+    private const string StopEventName = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly IOptionsMonitor<TraceEndpointOptions> _options;
@@ -42,7 +42,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     public override void ProcessEvent(string eventName, object value)
     {
-        if (eventName != StopEvent)
+        if (eventName != StopEventName)
         {
             return;
         }
@@ -69,6 +69,9 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     protected virtual void RecordHttpTrace(Activity current, HttpContext context)
     {
+        ArgumentGuard.NotNull(current);
+        ArgumentGuard.NotNull(context);
+
         TraceResult trace = MakeTrace(context, current.Duration);
         Queue.Enqueue(trace);
 
@@ -81,6 +84,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
     internal TraceResult MakeTrace(HttpContext context, TimeSpan duration)
     {
         ArgumentGuard.NotNull(context);
+
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
         TraceEndpointOptions options = _options.CurrentValue;
@@ -155,6 +159,8 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     internal string GetSessionId(HttpContext context)
     {
+        ArgumentGuard.NotNull(context);
+
         var sessionFeature = context.Features.Get<ISessionFeature>();
         return sessionFeature == null ? null : context.Session.Id;
     }
@@ -167,6 +173,8 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     internal Dictionary<string, string[]> GetRequestParameters(HttpRequest request)
     {
+        ArgumentGuard.NotNull(request);
+
         var parameters = new Dictionary<string, string[]>();
         IQueryCollection query = request.Query;
 
@@ -190,26 +198,36 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     internal string GetRequestUri(HttpRequest request)
     {
+        ArgumentGuard.NotNull(request);
+
         return $"{request.Scheme}://{request.Host.Value}{request.Path.Value}";
     }
 
     internal string GetPathInfo(HttpRequest request)
     {
+        ArgumentGuard.NotNull(request);
+
         return request.Path.Value;
     }
 
     internal string GetUserPrincipal(HttpContext context)
     {
-        return context?.User.Identity?.Name;
+        ArgumentGuard.NotNull(context);
+
+        return context.User.Identity?.Name;
     }
 
     internal string GetRemoteAddress(HttpContext context)
     {
-        return context?.Connection.RemoteIpAddress?.ToString();
+        ArgumentGuard.NotNull(context);
+
+        return context.Connection.RemoteIpAddress?.ToString();
     }
 
     internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
     {
+        ArgumentGuard.NotNull(headers);
+
         Dictionary<string, object> result = GetHeaders(headers);
         result.Add("status", status.ToString(CultureInfo.InvariantCulture));
         return result;
@@ -252,8 +270,8 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         return result;
     }
 
-    internal HttpContext GetHttpContextPropertyValue(object obj)
+    internal HttpContext GetHttpContextPropertyValue(object instance)
     {
-        return DiagnosticHelpers.GetPropertyOrDefault<HttpContext>(obj, "HttpContext");
+        return DiagnosticHelpers.GetPropertyOrDefault<HttpContext>(instance, "HttpContext");
     }
 }

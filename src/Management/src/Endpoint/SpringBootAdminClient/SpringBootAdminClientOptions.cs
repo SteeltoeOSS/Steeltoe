@@ -39,7 +39,7 @@ public sealed class SpringBootAdminClientOptions
     /// <summary>
     /// Gets or sets metadata to use when registering with SBA.
     /// </summary>
-    public IDictionary<string, object> Metadata { get; set; }
+    public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
 
     public SpringBootAdminClientOptions(IConfiguration configuration, IApplicationInstanceInfo appInfo)
     {

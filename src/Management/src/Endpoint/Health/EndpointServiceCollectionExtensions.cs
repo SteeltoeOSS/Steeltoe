@@ -29,7 +29,7 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddHealthActuator(this IServiceCollection services)
     {
-        services.AddHealthActuator(new HealthRegistrationsAggregator(), DefaultHealthContributors);
+        AddHealthActuator(services, DefaultHealthContributors);
     }
 
     /// <summary>
@@ -44,6 +44,7 @@ public static class EndpointServiceCollectionExtensions
     public static void AddHealthActuator(this IServiceCollection services, params Type[] contributors)
     {
         ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(contributors);
 
         services.AddHealthActuator(new HealthRegistrationsAggregator(), contributors);
     }
@@ -64,6 +65,7 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(aggregator);
+        ArgumentGuard.NotNull(contributors);
 
         services.AddCommonActuatorServices();
         services.AddHealthActuatorServices();
@@ -76,7 +78,9 @@ public static class EndpointServiceCollectionExtensions
 
     public static void AddHealthContributors(this IServiceCollection services, params Type[] contributors)
     {
+        ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(contributors);
+
         var descriptors = new List<ServiceDescriptor>();
 
         foreach (Type c in contributors)

@@ -23,6 +23,15 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
         _logger = loggerFactory.CreateLogger<ActuatorHypermediaEndpointMiddleware>();
     }
 
+    protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        ArgumentGuard.NotNull(context);
+
+        _logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        string requestUri = GetRequestUri(context.Request);
+        return await EndpointHandler.InvokeAsync(requestUri, cancellationToken);
+    }
+
     private static string GetRequestUri(HttpRequest request)
     {
         string scheme = request.Scheme;
@@ -40,13 +49,5 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
         }
 
         return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
-    }
-
-    protected override async Task<Links> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
-    {
-        ArgumentGuard.NotNull(context);
-        _logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
-        string requestUri = GetRequestUri(context.Request);
-        return await EndpointHandler.InvokeAsync(requestUri, cancellationToken);
     }
 }

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Management.Endpoint;
 
 internal static class ActuatorMediaTypes
@@ -14,6 +16,8 @@ internal static class ActuatorMediaTypes
 
     internal static string GetContentHeaders(IList<string> acceptHeaders, MediaTypeVersion version)
     {
+        ArgumentGuard.NotNull(acceptHeaders);
+
         string contentHeader = AppJson;
         string versionContentHeader = GetContentTypeHeaderForVersion(version);
 

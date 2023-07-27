@@ -19,6 +19,7 @@ public static class ActuatorRouteBuilderExtensions
     public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, ActuatorConventionBuilder conventionBuilder)
     {
         ArgumentGuard.NotNull(endpoints);
+
         IServiceProvider serviceProvider = endpoints.ServiceProvider;
 
         using IServiceScope scope = serviceProvider.CreateScope();

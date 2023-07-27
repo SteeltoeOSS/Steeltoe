@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.MetricCollectors.Metrics;
 
@@ -25,7 +26,7 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
         { "kind", "worker" }
     };
 
-    private readonly Dictionary<string, object> _comPortTags = new()
+    private readonly Dictionary<string, object> _completionPortTags = new()
     {
         { "kind", "completionPort" }
     };
@@ -35,6 +36,8 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
 
     public ClrRuntimeObserver(IOptionsMonitor<MetricsObserverOptions> options)
     {
+        ArgumentGuard.NotNull(options);
+
         _options = options;
     }
 
@@ -79,14 +82,14 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
         long activeCompPort = metrics.MaxThreadCompletionPort - metrics.AvailableThreadCompletionPort;
 
         yield return new Measurement<long>(active, _workerTags.AsReadonlySpan());
-        yield return new Measurement<long>(activeCompPort, _comPortTags.AsReadonlySpan());
+        yield return new Measurement<long>(activeCompPort, _completionPortTags.AsReadonlySpan());
     }
 
     private IEnumerable<Measurement<long>> GetAvailableThreadPoolWorkers()
     {
         ClrRuntimeSource.ThreadMetrics metrics = ClrRuntimeSource.GetThreadMetrics();
         yield return new Measurement<long>(metrics.AvailableThreadPoolWorkers, _workerTags.AsReadonlySpan());
-        yield return new Measurement<long>(metrics.AvailableThreadCompletionPort, _comPortTags.AsReadonlySpan());
+        yield return new Measurement<long>(metrics.AvailableThreadCompletionPort, _completionPortTags.AsReadonlySpan());
     }
 
     public void AddInstrumentation()

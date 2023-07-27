@@ -41,6 +41,8 @@ internal sealed class SecurityUtils
 
     public static bool IsCloudFoundryRequest(string requestPath)
     {
+        ArgumentGuard.NotNull(requestPath);
+
         return requestPath.StartsWith(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -85,6 +87,8 @@ internal sealed class SecurityUtils
 
     public async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
+        ArgumentGuard.NotNull(response);
+
         string json = string.Empty;
         var permissions = Permissions.None;
 

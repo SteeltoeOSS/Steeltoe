@@ -43,7 +43,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
     public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container,
         DbMigrationsEndpointHelper endpointHelper, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(container);
         ArgumentGuard.NotNull(endpointHelper);
         ArgumentGuard.NotNull(loggerFactory);

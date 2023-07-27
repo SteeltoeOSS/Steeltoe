@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Logging;
@@ -23,129 +24,99 @@ public sealed class LoggersEndpointTest : BaseTest
     }
 
     [Fact]
-    public void AddLevels_AddsExpected()
+    public async Task GetLoggerConfiguration_CallsProvider()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
+            services.AddSingleton<IDynamicLoggerProvider, TestLogProvider>();
             services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = (LoggersEndpointHandler)tc.GetRequiredService<ILoggersEndpointHandler>();
+        var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
+        var provider = (TestLogProvider)testContext.GetRequiredService<IDynamicLoggerProvider>();
 
-        var dict = new Dictionary<string, object>();
-        ep.AddLevels(dict);
+        _ = await handler.InvokeAsync(new LoggersRequest(), CancellationToken.None);
 
-        Assert.Single(dict);
-        Assert.True(dict.ContainsKey("levels"));
-        var levels = dict["levels"] as List<string>;
-        Assert.NotNull(levels);
-        Assert.Equal(7, levels.Count);
-
-        Assert.Contains("OFF", levels);
-        Assert.Contains("FATAL", levels);
-        Assert.Contains("ERROR", levels);
-        Assert.Contains("WARN", levels);
-        Assert.Contains("INFO", levels);
-        Assert.Contains("DEBUG", levels);
-        Assert.Contains("TRACE", levels);
+        provider.GetLoggerConfigurationsCalled.Should().BeTrue();
     }
 
     [Fact]
-    public void SetLogLevel_ThrowsIfNullName()
+    public async Task GetLoggerConfiguration_ReturnsExpected()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = (LoggersEndpointHandler)tc.GetRequiredService<ILoggersEndpointHandler>();
+        var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
 
-        Assert.Throws<ArgumentNullException>(() => ep.SetLogLevel(new TestLogProvider(), null, null));
+        LoggersResponse response = await handler.InvokeAsync(new LoggersRequest(), CancellationToken.None);
+
+        response.Should().NotBeNull();
+        response.HasError.Should().BeFalse();
+        response.Data.Should().NotBeNull();
+
+        var levels = response.Data.Should().ContainKey("levels").WhoseValue.As<ICollection<string>>();
+        levels.Should().HaveCount(7);
+        levels.Should().Contain("OFF");
+        levels.Should().Contain("FATAL");
+        levels.Should().Contain("ERROR");
+        levels.Should().Contain("WARN");
+        levels.Should().Contain("INFO");
+        levels.Should().Contain("DEBUG");
+        levels.Should().Contain("TRACE");
+
+        response.Data.Should().ContainKey("loggers").WhoseValue.As<IDictionary<string, LoggerLevels>>().Should().NotBeEmpty();
     }
 
     [Fact]
-    public void SetLogLevel_CallsProvider()
+    public async Task SetLogLevel_CallsProvider()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
+            services.AddSingleton<IDynamicLoggerProvider, TestLogProvider>();
             services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = (LoggersEndpointHandler)tc.GetRequiredService<ILoggersEndpointHandler>();
-        var provider = new TestLogProvider();
-        ep.SetLogLevel(provider, "foobar", "WARN");
+        var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
+        var provider = (TestLogProvider)testContext.GetRequiredService<IDynamicLoggerProvider>();
 
-        Assert.Equal("foobar", provider.Category);
-        Assert.Equal(LogLevel.Warning, provider.Level);
+        var changeRequest = new LoggersRequest("foobar", "WARN");
+        LoggersResponse response = await handler.InvokeAsync(changeRequest, CancellationToken.None);
+
+        response.HasError.Should().BeFalse();
+        response.Data.Should().BeEmpty();
+
+        provider.Category.Should().Be("foobar");
+        provider.Level.Should().Be(LogLevel.Warning);
     }
 
     [Fact]
-    public void GetLoggerConfigurations_NullProvider()
+    public async Task SetLogLevel_ReturnsExpected()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddLogging(builder => builder.AddDynamicConsole());
             services.AddLoggersActuatorServices();
         };
 
-        var ep = (LoggersEndpointHandler)tc.GetRequiredService<ILoggersEndpointHandler>();
-        ICollection<ILoggerConfiguration> result = ep.GetLoggerConfigurations(null);
-        Assert.NotNull(result);
-    }
+        var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
 
-    [Fact]
-    public void GetLoggerConfiguration_CallsProvider()
-    {
-        using var tc = new TestContext(_output);
+        var changeRequest = new LoggersRequest("foobar", "WARN");
+        LoggersResponse response = await handler.InvokeAsync(changeRequest, CancellationToken.None);
 
-        tc.AdditionalServices = (services, _) =>
-        {
-            services.AddLogging(builder => builder.AddDynamicConsole());
-            services.AddLoggersActuatorServices();
-        };
-
-        var ep = (LoggersEndpointHandler)tc.GetRequiredService<ILoggersEndpointHandler>();
-        var provider = new TestLogProvider();
-        ICollection<ILoggerConfiguration> result = ep.GetLoggerConfigurations(provider);
-        Assert.NotNull(result);
-        Assert.True(provider.GetLoggerConfigurationsCalled);
-    }
-
-    [Fact]
-    public async Task Invoke_NoChangeRequest_ReturnsExpected()
-    {
-        using var tc = new TestContext(_output);
-
-        tc.AdditionalServices = (services, _) =>
-        {
-            services.AddLogging(builder => builder.AddDynamicConsole());
-            services.AddLoggersActuatorServices();
-        };
-
-        var ep = tc.GetRequiredService<ILoggersEndpointHandler>();
-
-        LoggersResponse loggersResponse = await ep.InvokeAsync(null, CancellationToken.None);
-        Assert.NotNull(loggersResponse);
-        IDictionary<string, object> result = loggersResponse.Data;
-        Assert.NotNull(result);
-        Assert.True(result.ContainsKey("levels"));
-        var levels = result["levels"] as List<string>;
-        Assert.NotNull(levels);
-        Assert.Equal(7, levels.Count);
-
-        Assert.True(result.ContainsKey("loggers"));
-        var loggers = result["loggers"] as Dictionary<string, LoggerLevels>;
-        Assert.NotNull(loggers);
+        response.HasError.Should().BeFalse();
+        response.Data.Should().BeEmpty();
     }
 }

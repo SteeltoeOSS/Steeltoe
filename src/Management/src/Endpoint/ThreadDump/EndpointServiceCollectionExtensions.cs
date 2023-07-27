@@ -17,6 +17,8 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddThreadDumpActuator(this IServiceCollection services)
     {
+        ArgumentGuard.NotNull(services);
+
         services.AddThreadDumpActuator(MediaTypeVersion.V2);
     }
 

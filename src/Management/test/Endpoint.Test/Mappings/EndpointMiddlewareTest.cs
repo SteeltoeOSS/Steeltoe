@@ -67,8 +67,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
             new Mock<IApiDescriptionProvider>().Object
         };
 
-        var ep = new RouteMappingsEndpointHandler(opts, NullLoggerFactory.Instance, routeMappings, mockActionDescriptorCollectionProvider.Object,
-            mockApiDescriptionProviders);
+        var ep = new RouteMappingsEndpointHandler(opts, mockActionDescriptorCollectionProvider.Object,
+            mockApiDescriptionProviders, routeMappings, NullLoggerFactory.Instance);
 
         var middle = new RouteMappingsEndpointMiddleware(managementOptions, ep, NullLoggerFactory.Instance);
 

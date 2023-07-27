@@ -19,6 +19,7 @@ internal sealed class ManagementPortMiddleware
     public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor,
         ILogger<ManagementPortMiddleware> logger)
     {
+        ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(logger);
 
         _next = next;
@@ -29,6 +30,7 @@ internal sealed class ManagementPortMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
+
         ManagementEndpointOptions endpointOptions = _managementOptionsMonitor.CurrentValue;
         _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, endpointOptions.Path);
 

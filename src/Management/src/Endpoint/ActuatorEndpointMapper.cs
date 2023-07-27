@@ -31,6 +31,8 @@ internal sealed class ActuatorEndpointMapper
 
     public void Map(IEndpointRouteBuilder endpointRouteBuilder, ref ActuatorConventionBuilder conventionBuilder)
     {
+        ArgumentGuard.NotNull(endpointRouteBuilder);
+
         var collection = new HashSet<string>();
 
         conventionBuilder ??= new ActuatorConventionBuilder();

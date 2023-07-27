@@ -23,8 +23,10 @@ internal abstract class ConfigurationContributor
     protected void Contribute(IInfoBuilder builder, string prefix, bool keepPrefix)
     {
         ArgumentGuard.NotNull(builder);
+        ArgumentGuard.NotNull(prefix);
 
-        builder.WithInfo(CreateDictionary(prefix, keepPrefix));
+        Dictionary<string, object> dictionary = CreateDictionary(prefix, keepPrefix);
+        builder.WithInfo(dictionary);
     }
 
     private Dictionary<string, object> CreateDictionary(string prefix, bool keepPrefix)

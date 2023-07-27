@@ -21,8 +21,6 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
     public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILoggerFactory loggerFactory)
         : base(options, loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
-
         _options = options;
         _logger = loggerFactory.CreateLogger<HttpTraceDiagnosticObserver>();
     }
@@ -34,6 +32,9 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
 
     protected override void RecordHttpTrace(Activity current, HttpContext context)
     {
+        ArgumentGuard.NotNull(current);
+        ArgumentGuard.NotNull(context);
+
         HttpTrace trace = MakeTraceV2(context, current.Duration);
         _queue.Enqueue(trace);
 
@@ -45,11 +46,8 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
 
     private HttpTrace MakeTraceV2(HttpContext context, TimeSpan duration)
     {
-        HttpRequest req = context.Request;
-        HttpResponse res = context.Response;
-
-        var request = new Request(req.Method, GetRequestUri(req), GetHeaders(req.Headers), GetRemoteAddress(context));
-        var response = new Response(res.StatusCode, GetHeaders(res.Headers));
+        var request = new Request(context.Request.Method, GetRequestUri(context.Request), GetHeaders(context.Request.Headers), GetRemoteAddress(context));
+        var response = new Response(context.Response.StatusCode, GetHeaders(context.Response.Headers));
         var principal = new Principal(GetUserPrincipal(context));
         var session = new Session(GetSessionId(context));
         return new HttpTrace(request, response, GetJavaTime(DateTime.Now.Ticks), principal, session, duration.Milliseconds);

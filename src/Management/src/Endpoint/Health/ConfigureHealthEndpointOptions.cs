@@ -5,6 +5,7 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
@@ -16,11 +17,15 @@ internal sealed class ConfigureHealthEndpointOptions : IConfigureOptions<HealthE
 
     public ConfigureHealthEndpointOptions(IConfiguration configuration)
     {
+        ArgumentGuard.NotNull(configuration);
+
         _configuration = configuration;
     }
 
     public void Configure(HealthEndpointOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         _configuration.GetSection(HealthOptionsPrefix).Bind(options);
 
         options.Id ??= "health";

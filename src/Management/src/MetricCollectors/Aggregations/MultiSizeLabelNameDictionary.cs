@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.MetricCollectors.Aggregations;
 
@@ -17,6 +18,8 @@ internal sealed class MultiSizeLabelNameDictionary<TAggregator>
 
     public MultiSizeLabelNameDictionary(object initialLabelNameDict)
     {
+        ArgumentGuard.NotNull(initialLabelNameDict);
+
         _noLabelAggregator = null;
         _label1 = null;
         _label2 = null;
@@ -49,6 +52,8 @@ internal sealed class MultiSizeLabelNameDictionary<TAggregator>
 
     public TAggregator? GetNoLabelAggregator(Func<TAggregator?> createFunc)
     {
+        ArgumentGuard.NotNull(createFunc);
+
         if (_noLabelAggregator == null)
         {
             TAggregator? aggregator = createFunc();
@@ -111,6 +116,8 @@ internal sealed class MultiSizeLabelNameDictionary<TAggregator>
 
     public void Collect(Action<LabeledAggregationStatistics> visitFunc)
     {
+        ArgumentGuard.NotNull(visitFunc);
+
         if (_noLabelAggregator != null)
         {
             IAggregationStatistics stats = _noLabelAggregator.Collect();

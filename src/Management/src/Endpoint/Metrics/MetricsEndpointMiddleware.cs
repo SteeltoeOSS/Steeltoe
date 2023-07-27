@@ -44,33 +44,29 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
     internal string GetMetricName(HttpRequest request)
     {
         string contextBasePath = ManagementEndpointOptionsMonitor.CurrentValue.GetContextBasePath(request);
-
         string path = $"{contextBasePath}/{EndpointHandler.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
-        string metricName = GetMetricName(request, path);
 
-        return metricName;
+        return GetMetricName(request, path);
     }
 
     internal IList<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
     {
         var results = new List<KeyValuePair<string, string>>();
 
-        if (query == null)
+        if (query != null)
         {
-            return results;
-        }
-
-        foreach (KeyValuePair<string, StringValues> q in query)
-        {
-            if (q.Key.Equals("tag", StringComparison.OrdinalIgnoreCase))
+            foreach (KeyValuePair<string, StringValues> q in query)
             {
-                foreach (string kvp in q.Value)
+                if (q.Key.Equals("tag", StringComparison.OrdinalIgnoreCase))
                 {
-                    KeyValuePair<string, string>? pair = ParseTag(kvp);
-
-                    if (pair != null && !results.Contains(pair.Value))
+                    foreach (string kvp in q.Value)
                     {
-                        results.Add(pair.Value);
+                        KeyValuePair<string, string>? pair = ParseTag(kvp);
+
+                        if (pair != null && !results.Contains(pair.Value))
+                        {
+                            results.Add(pair.Value);
+                        }
                     }
                 }
             }
