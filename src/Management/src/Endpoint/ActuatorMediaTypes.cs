@@ -21,7 +21,7 @@ internal static class ActuatorMediaTypes
         string contentHeader = AppJson;
         string versionContentHeader = GetContentTypeHeaderForVersion(version);
 
-        if (acceptHeaders != null && acceptHeaders.Any(x => x == Any || x == versionContentHeader))
+        if (acceptHeaders.Any(x => x == Any || x == versionContentHeader))
         {
             contentHeader = versionContentHeader;
         }
