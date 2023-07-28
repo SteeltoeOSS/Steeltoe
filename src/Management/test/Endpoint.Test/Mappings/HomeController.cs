@@ -10,6 +10,7 @@ public sealed class HomeController : Controller
 {
     [HttpGet]
     [Produces("text/plain", "application/json", "text/json")]
+    [Consumes("text/plain", "application/json", "text/json")]
     public Person Index()
     {
         return new Person();

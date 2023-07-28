@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
@@ -141,8 +140,8 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
         public string Type { get; }
 
         // Creates a new Binding instance using the specified file system directory
-        public ServiceBinding(string path)
-            : this(System.IO.Path.GetFileName(path), path, CreateSecrets(path))
+        public ServiceBinding(string path, IFileProvider fileProvider)
+            : this(System.IO.Path.GetFileName(path), path, CreateSecrets(path, fileProvider))
         {
         }
 
@@ -177,25 +176,24 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
             Provider = provider;
         }
 
-        private static IDictionary<string, string> CreateSecrets(string path)
+        private static IDictionary<string, string> CreateSecrets(string path, IFileProvider fileProvider)
         {
-            return CreateFilePerEntry(path);
+            return CreateFilePerEntry(path, fileProvider);
         }
 
-        private static IDictionary<string, string> CreateFilePerEntry(string path)
+        private static IDictionary<string, string> CreateFilePerEntry(string path, IFileProvider fileProvider)
         {
             try
             {
-                IEnumerable<string> files = Directory.EnumerateFiles(path);
+                IDirectoryContents directoryContents = fileProvider.GetDirectoryContents(path);
                 var result = new Dictionary<string, string>();
 
-                foreach (string file in files)
+                foreach (IFileInfo fileInfo in directoryContents.Where(element => !element.IsDirectory))
                 {
-                    FileInfo fileInfo = new(file);
-
-                    if (fileInfo.Exists && !IsHidden(file))
+                    if (fileInfo.Exists)
                     {
-                        result.Add(fileInfo.Name, ReadContentsAsString(file));
+                        string fileContents = ReadContentsAsString(fileInfo);
+                        result.Add(fileInfo.Name, fileContents);
                     }
                 }
 
@@ -208,50 +206,28 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
             }
         }
 
-        private static bool IsHidden(string file)
+        private static string ReadContentsAsString(IFileInfo fileInfo)
         {
-            try
-            {
-                return (File.GetAttributes(file) & FileAttributes.Hidden) != 0;
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException($"Unable to determine if file {file} is hidden", e);
-            }
-        }
-
-        private static string ReadContentsAsString(string file)
-        {
-            try
-            {
-                byte[] bytes = File.ReadAllBytes(file);
-                return Encoding.UTF8.GetString(bytes).Trim();
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException($"Unable to read file {file}", e);
-            }
+            using Stream stream = fileInfo.CreateReadStream();
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd().Trim();
         }
     }
 
     internal sealed class ServiceBindings
     {
-        public IList<ServiceBinding> Bindings { get; }
+        public IList<ServiceBinding> Bindings { get; } = new List<ServiceBinding>();
 
         public ServiceBindings(IFileProvider? fileProvider)
         {
-            Bindings = new List<ServiceBinding>();
-
-            if (fileProvider == null)
+            if (fileProvider != null)
             {
-                return;
-            }
+                IDirectoryContents directoryContents = fileProvider.GetDirectoryContents("/");
 
-            IDirectoryContents contents = fileProvider.GetDirectoryContents("/");
-
-            foreach (IFileInfo element in contents.Where(element => element?.Exists == true))
-            {
-                Bindings.Add(new ServiceBinding(element.PhysicalPath));
+                foreach (IFileInfo fileInfo in directoryContents.Where(element => element.Exists && element.IsDirectory))
+                {
+                    Bindings.Add(new ServiceBinding(fileInfo.Name, fileProvider));
+                }
             }
         }
     }

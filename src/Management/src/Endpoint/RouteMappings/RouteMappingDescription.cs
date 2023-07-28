@@ -20,8 +20,7 @@ public sealed class RouteMappingDescription
     public string Predicate { get; }
 
     [JsonPropertyName("details")]
-    // ReSharper disable once UnassignedGetOnlyAutoProperty
-    public object Details { get; } // Always null for .NET
+    public RouteMappingDetails Details { get; }
 
     public RouteMappingDescription(string routeHandler, AspNetCoreRouteDetails routeDetails)
     {
@@ -39,6 +38,7 @@ public sealed class RouteMappingDescription
 
         Predicate = CreatePredicateString(routeDetails);
         Handler = CreateHandlerString(routeHandler);
+        Details = CreateMappingDetails(routeDetails);
     }
 
     private string CreateHandlerString(MethodInfo actionHandlerMethod)
@@ -79,6 +79,29 @@ public sealed class RouteMappingDescription
         }
 
         return string.Join(" || ", httpMethods);
+    }
+
+    private RouteMappingDetails CreateMappingDetails(AspNetCoreRouteDetails routeDetails)
+    {
+        return new RouteMappingDetails
+        {
+            RequestMappingConditions = new RequestMappingConditions
+            {
+                Consumes = routeDetails.Consumes.Select(consumes => new MediaTypeDescriptor
+                {
+                    MediaType = consumes
+                }).ToArray(),
+                Produces = routeDetails.Produces.Select(produces => new MediaTypeDescriptor
+                {
+                    MediaType = produces
+                }).ToArray(),
+                Methods = routeDetails.HttpMethods.ToArray(),
+                Patterns = new[]
+                {
+                    routeDetails.RouteTemplate
+                }
+            }
+        };
     }
 
     private static bool IsNullOrEmpty(ICollection<string> list)

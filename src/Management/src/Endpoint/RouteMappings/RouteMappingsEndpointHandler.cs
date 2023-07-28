@@ -148,6 +148,17 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             consumes.Add(format.MediaType);
         }
 
+        if (description.ActionDescriptor.ActionConstraints != null)
+        {
+            foreach (ConsumesAttribute consumesAttribute in description.ActionDescriptor.ActionConstraints.OfType<ConsumesAttribute>())
+            {
+                if (consumesAttribute.ContentTypes.Count > 0)
+                {
+                    consumes.AddRange(consumesAttribute.ContentTypes);
+                }
+            }
+        }
+
         routeDetails.Consumes = consumes;
 
         return routeDetails;

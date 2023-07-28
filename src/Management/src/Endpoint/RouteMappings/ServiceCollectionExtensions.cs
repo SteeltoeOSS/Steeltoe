@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<RouteMappingsEndpointMiddleware>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, RouteMappingsEndpointMiddleware>());
 
+        services.ConfigureEndpointOptions<RouteMappingsEndpointOptions, ConfigureRouteMappingsEndpointOptions>();
         return services;
     }
 }

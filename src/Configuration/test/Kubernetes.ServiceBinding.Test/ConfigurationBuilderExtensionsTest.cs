@@ -11,18 +11,6 @@ namespace Steeltoe.Configuration.Kubernetes.ServiceBinding.Test;
 public sealed class ConfigurationBuilderExtensionsTest
 {
     [Fact]
-    public void AddKubernetesServiceBindings_ThrowsOnNulls()
-    {
-        var builder = new ConfigurationBuilder();
-
-        Action action1 = () => ((ConfigurationBuilder)null!).AddKubernetesServiceBindings();
-        action1.Should().ThrowExactly<ArgumentNullException>().WithParameterName("builder");
-
-        Action action2 = () => builder.AddKubernetesServiceBindings(true, false, null!);
-        action2.Should().ThrowExactly<ArgumentNullException>().WithParameterName("ignoreKeyPredicate");
-    }
-
-    [Fact]
     public void AddKubernetesServiceBindings_RegistersProcessors()
     {
         var builder = new ConfigurationBuilder();

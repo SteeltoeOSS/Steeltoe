@@ -346,12 +346,34 @@ Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.Mappings.get -> Syste
 Steeltoe.Management.Endpoint.RouteMappings.ContextMappings.ParentId.get -> string
 Steeltoe.Management.Endpoint.RouteMappings.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.RouteMappings.IRouteMappingsEndpointHandler
+Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor
+Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor.MediaType.get -> string
+Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor.MediaType.set -> void
+Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor.MediaTypeDescriptor() -> void
+Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor.Negated.get -> bool
+Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor.Negated.set -> void
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Consumes.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor>
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Consumes.set -> void
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Headers.get -> System.Collections.Generic.IList<string>
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Headers.set -> void
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Methods.get -> System.Collections.Generic.IList<string>
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Methods.set -> void
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Patterns.get -> System.Collections.Generic.IList<string>
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Patterns.set -> void
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Produces.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor>
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Produces.set -> void
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.RequestMappingConditions() -> void
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription
-Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.Details.get -> object
+Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.Details.get -> Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDetails
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.Handler.get -> string
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.Predicate.get -> string
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.RouteMappingDescription(string routeHandler, Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails routeDetails) -> void
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.RouteMappingDescription(System.Reflection.MethodInfo routeHandler, Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails routeDetails) -> void
+Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDetails
+Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDetails.RequestMappingConditions.get -> Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions
+Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDetails.RequestMappingConditions.set -> void
+Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDetails.RouteMappingDetails() -> void
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappings
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappings.RouteMappings() -> void
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappings.Routers.get -> System.Collections.Generic.IList<Microsoft.AspNetCore.Routing.IRouter>

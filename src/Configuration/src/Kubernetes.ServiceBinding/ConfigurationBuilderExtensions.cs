@@ -16,6 +16,7 @@ public static class ConfigurationBuilderExtensions
     private const bool DefaultOptional = true;
     private const bool DefaultReloadOnChange = false;
     private static readonly Predicate<string> DefaultIgnoreKeyPredicate = _ => false;
+    private static readonly IServiceBindingsReader DefaultReader = new EnvironmentServiceBindingsReader();
 
     /// <summary>
     /// Adds configuration using files from the directory path specified by the environment variable "SERVICE_BINDING_ROOT". File name and directory paths
@@ -29,7 +30,7 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder)
     {
-        return builder.AddKubernetesServiceBindings(DefaultOptional, DefaultReloadOnChange, DefaultIgnoreKeyPredicate);
+        return builder.AddKubernetesServiceBindings(DefaultOptional, DefaultReloadOnChange, DefaultIgnoreKeyPredicate, DefaultReader);
     }
 
     /// <summary>
@@ -47,7 +48,7 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional)
     {
-        return builder.AddKubernetesServiceBindings(optional, DefaultReloadOnChange, DefaultIgnoreKeyPredicate);
+        return builder.AddKubernetesServiceBindings(optional, DefaultReloadOnChange, DefaultIgnoreKeyPredicate, DefaultReader);
     }
 
     /// <summary>
@@ -68,7 +69,7 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional, bool reloadOnChange)
     {
-        return builder.AddKubernetesServiceBindings(optional, reloadOnChange, DefaultIgnoreKeyPredicate);
+        return builder.AddKubernetesServiceBindings(optional, reloadOnChange, DefaultIgnoreKeyPredicate, DefaultReader);
     }
 
     /// <summary>
@@ -93,12 +94,19 @@ public static class ConfigurationBuilderExtensions
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional, bool reloadOnChange,
         Predicate<string> ignoreKeyPredicate)
     {
+        return AddKubernetesServiceBindings(builder, optional, reloadOnChange, ignoreKeyPredicate, DefaultReader);
+    }
+
+    internal static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional, bool reloadOnChange,
+        Predicate<string> ignoreKeyPredicate, IServiceBindingsReader serviceBindingsReader)
+    {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(ignoreKeyPredicate);
+        ArgumentGuard.NotNull(serviceBindingsReader);
 
         if (!builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().Any())
         {
-            var source = new KubernetesServiceBindingConfigurationSource
+            var source = new KubernetesServiceBindingConfigurationSource(serviceBindingsReader)
             {
                 Optional = optional,
                 ReloadOnChange = reloadOnChange,
