@@ -14,20 +14,15 @@ public static class HelperExtensions
     /// <summary>
     /// Add a mock IActionDescriptorCollectionProvider for testing
     /// </summary>
-    /// <param name="svc">
+    /// <param name="services">
     /// The IServiceCollection to update
     /// </param>
-    /// <returns>
-    /// The updated IServiceCollection
-    /// </returns>
-    public static IServiceCollection AddActionDescriptorCollectionProvider(this IServiceCollection svc)
+    public static void AddActionDescriptorCollectionProvider(this IServiceCollection services)
     {
-        return svc.AddSingleton(_ =>
+        services.AddSingleton(_ =>
         {
             var actionDescriptorCollectionProviderMock = new Mock<IActionDescriptorCollectionProvider>();
-
             actionDescriptorCollectionProviderMock.Setup(m => m.ActionDescriptors).Returns(new ActionDescriptorCollection(new List<ActionDescriptor>(), 0));
-
             return actionDescriptorCollectionProviderMock.Object;
         });
     }

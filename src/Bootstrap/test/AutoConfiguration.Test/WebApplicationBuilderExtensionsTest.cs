@@ -224,8 +224,8 @@ public sealed class WebApplicationBuilderExtensionsTest
         webApp.UseRouting();
         await webApp.StartAsync();
 
-        IEnumerable<IActuatorEndpointHandler> managementEndpoints = webApp.Services.GetServices<IActuatorEndpointHandler>();
-        Assert.Single(managementEndpoints);
+        IEnumerable<IActuatorEndpointHandler> handlers = webApp.Services.GetServices<IActuatorEndpointHandler>();
+        Assert.Single(handlers);
 
         _ = webApp.Services.GetRequiredService<IStartupFilter>();
 
@@ -239,8 +239,8 @@ public sealed class WebApplicationBuilderExtensionsTest
         webApp.UseRouting();
         await webApp.StartAsync();
 
-        IEnumerable<IActuatorEndpointHandler> managementEndpoints = webApp.Services.GetServices<IActuatorEndpointHandler>();
-        Assert.Single(managementEndpoints);
+        IEnumerable<IActuatorEndpointHandler> handlers = webApp.Services.GetServices<IActuatorEndpointHandler>();
+        Assert.Single(handlers);
 
         var filter = webApp.Services.GetRequiredService<IStartupFilter>();
         Assert.IsType<AllActuatorsStartupFilter>(filter);

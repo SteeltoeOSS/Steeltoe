@@ -4,22 +4,22 @@
 
 namespace Steeltoe.Common.Util;
 
-internal static class IListExtensions
+internal static class ListExtensions
 {
-    public static void AddRange<T>(this IList<T> list, IEnumerable<T> items)
+    public static void AddRange<T>(this IList<T> source, IEnumerable<T> items)
     {
-        ArgumentGuard.NotNull(list);
+        ArgumentGuard.NotNull(source);
         ArgumentGuard.NotNull(items);
 
-        if (list is List<T> asList)
+        if (source is List<T> list)
         {
-            asList.AddRange(items);
+            list.AddRange(items);
         }
         else
         {
             foreach (T item in items)
             {
-                list.Add(item);
+                source.Add(item);
             }
         }
     }

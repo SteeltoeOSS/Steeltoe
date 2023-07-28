@@ -303,8 +303,8 @@ public sealed class HostBuilderExtensionsTest
         IHostBuilder hostBuilder = new HostBuilder();
 
         IHost host = hostBuilder.AddSteeltoe(exclusions).Build();
-        IEnumerable<IActuatorEndpointHandler> managementEndpoints = host.Services.GetServices<IActuatorEndpointHandler>();
-        Assert.Single(managementEndpoints);
+        IEnumerable<IActuatorEndpointHandler> handlers = host.Services.GetServices<IActuatorEndpointHandler>();
+        Assert.Single(handlers);
 
         var filter = host.Services.GetRequiredService<IStartupFilter>();
         Assert.IsType<AllActuatorsStartupFilter>(filter);
