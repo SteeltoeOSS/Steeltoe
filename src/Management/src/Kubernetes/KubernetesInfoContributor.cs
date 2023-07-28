@@ -11,9 +11,9 @@ namespace Steeltoe.Management.Kubernetes;
 
 internal sealed class KubernetesInfoContributor : IInfoContributor
 {
-    private readonly IPodUtilities _podUtilities;
+    private readonly PodUtilities _podUtilities;
 
-    public KubernetesInfoContributor(IPodUtilities podUtilities)
+    public KubernetesInfoContributor(PodUtilities podUtilities)
     {
         ArgumentGuard.NotNull(podUtilities);
 
@@ -24,7 +24,7 @@ internal sealed class KubernetesInfoContributor : IInfoContributor
     {
         ArgumentGuard.NotNull(builder);
 
-        V1Pod current = await _podUtilities.GetCurrentPodAsync();
+        V1Pod current = await _podUtilities.GetCurrentPodAsync(cancellationToken);
         var details = new Dictionary<string, object>();
 
         if (current != null)

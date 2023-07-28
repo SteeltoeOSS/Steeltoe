@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 using Steeltoe.Management.Endpoint;
@@ -18,56 +19,14 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// <see cref="IServiceCollection" />.
     /// </param>
-    /// <param name="podUtilities">
-    /// Bring your own <see cref="IPodUtilities" />. Defaults to <see cref="StandardPodUtilities" />.
-    /// </param>
-    public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services, IPodUtilities podUtilities)
-    {
-        ArgumentGuard.NotNull(services);
-
-        if (!services.Any(descriptor => descriptor.ServiceType.IsAssignableFrom(typeof(IPodUtilities))))
-        {
-            if (podUtilities == null)
-            {
-                services.AddKubernetesClient();
-                services.AddSingleton<IPodUtilities, StandardPodUtilities>();
-            }
-            else
-            {
-                services.Add(new ServiceDescriptor(typeof(IPodUtilities), podUtilities));
-            }
-        }
-
-        services.AddSingleton<IInfoContributor, KubernetesInfoContributor>();
-        return services;
-    }
-
-    /// <summary>
-    /// Add an IInfoContributor that reports basic Kubernetes pod and host information.
-    /// </summary>
-    /// <param name="services">
-    /// <see cref="IServiceCollection" />.
-    /// </param>
     public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services)
     {
-        return services.AddKubernetesInfoContributor(null);
-    }
-
-    /// <summary>
-    /// Add actuators that are useful when running in Kubernetes.
-    /// </summary>
-    /// <param name="services">
-    /// <see cref="IServiceCollection" />.
-    /// </param>
-    /// <param name="podUtilities">
-    /// Bring your own <see cref="IPodUtilities" />. Defaults to <see cref="StandardPodUtilities" />.
-    /// </param>
-    public static IServiceCollection AddKubernetesActuators(this IServiceCollection services, IPodUtilities podUtilities)
-    {
         ArgumentGuard.NotNull(services);
 
-        services.AddKubernetesInfoContributor(podUtilities);
-        services.AddAllActuators();
+        services.AddKubernetesClient();
+        services.TryAddSingleton<PodUtilities>();
+        services.AddSingleton<IInfoContributor, KubernetesInfoContributor>();
+
         return services;
     }
 
@@ -79,6 +38,11 @@ public static class ServiceCollectionExtensions
     /// </param>
     public static IServiceCollection AddKubernetesActuators(this IServiceCollection services)
     {
-        return services.AddKubernetesActuators(null);
+        ArgumentGuard.NotNull(services);
+
+        services.AddKubernetesInfoContributor();
+        services.AddAllActuators();
+
+        return services;
     }
 }
