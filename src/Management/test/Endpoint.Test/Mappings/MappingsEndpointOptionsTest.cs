@@ -12,9 +12,9 @@ public sealed class MappingsEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<RouteMappingsEndpointOptions>();
-        Assert.Null(opts.Enabled);
-        Assert.Equal("mappings", opts.Id);
-        Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
+        var options = GetOptionsFromSettings<RouteMappingsEndpointOptions>();
+        Assert.Null(options.Enabled);
+        Assert.Equal("mappings", options.Id);
+        Assert.Equal(Permissions.Restricted, options.RequiredPermissions);
     }
 }

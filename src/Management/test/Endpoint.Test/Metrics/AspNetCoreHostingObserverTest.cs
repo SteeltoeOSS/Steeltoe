@@ -93,7 +93,7 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
         context.Response.Body = new MemoryStream();
 
         context.Request.Method = method;
-        context.Request.Path = new PathString(path);
+        context.Request.Path = path;
         context.Request.Scheme = "http";
 
         context.Request.Host = new HostString("localhost", 5555);

@@ -13,16 +13,16 @@ public sealed class DiskSpaceContributorTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var contrib = new DiskSpaceContributor();
-        Assert.Equal("diskSpace", contrib.Id);
+        var contributor = new DiskSpaceContributor();
+        Assert.Equal("diskSpace", contributor.Id);
     }
 
     [Fact]
     public void Health_InitializedWithDefaults_ReturnsExpected()
     {
-        var contrib = new DiskSpaceContributor();
-        Assert.Equal("diskSpace", contrib.Id);
-        HealthCheckResult result = contrib.Health();
+        var contributor = new DiskSpaceContributor();
+        Assert.Equal("diskSpace", contributor.Id);
+        HealthCheckResult result = contributor.Health();
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);

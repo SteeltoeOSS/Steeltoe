@@ -9,7 +9,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
-internal sealed class ConfigureManagementEndpointOptions : IConfigureOptions<ManagementEndpointOptions>
+internal sealed class ConfigureManagementOptions : IConfigureOptions<ManagementOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints";
     private const string CloudFoundryEnabledPrefix = "management:cloudfoundry:enabled";
@@ -18,14 +18,14 @@ internal sealed class ConfigureManagementEndpointOptions : IConfigureOptions<Man
 
     private readonly IConfiguration _configuration;
 
-    public ConfigureManagementEndpointOptions(IConfiguration configuration)
+    public ConfigureManagementOptions(IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configuration);
 
         _configuration = configuration;
     }
 
-    public void Configure(ManagementEndpointOptions options)
+    public void Configure(ManagementOptions options)
     {
         ArgumentGuard.NotNull(options);
 

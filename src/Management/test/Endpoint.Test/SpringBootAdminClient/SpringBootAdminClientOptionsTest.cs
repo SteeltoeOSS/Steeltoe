@@ -12,21 +12,12 @@ namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 public sealed class SpringBootAdminClientOptionsTest
 {
     [Fact]
-    public void Constructor_ThrowsOnNulls()
-    {
-        var ex1 = Assert.Throws<ArgumentNullException>(() => new SpringBootAdminClientOptions(null, new ApplicationInstanceInfo()));
-        Assert.Equal("configuration", ex1.ParamName);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => new SpringBootAdminClientOptions(new ConfigurationBuilder().Build(), null));
-        Assert.Equal("appInfo", ex2.ParamName);
-    }
-
-    [Fact]
     public void ConstructorFailsWithoutBaseAppUrl()
     {
-        var ex = Assert.Throws<NullReferenceException>(() =>
+        var exception = Assert.Throws<NullReferenceException>(() =>
             new SpringBootAdminClientOptions(new ConfigurationBuilder().Build(), new ApplicationInstanceInfo()));
 
-        Assert.Contains(":BasePath in order to register with Spring Boot Admin", ex.Message, StringComparison.Ordinal);
+        Assert.Contains(":BasePath in order to register with Spring Boot Admin", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -40,10 +31,10 @@ public sealed class SpringBootAdminClientOptionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         var appInfo = new ApplicationInstanceInfo(configurationRoot, string.Empty);
 
-        var opts = new SpringBootAdminClientOptions(configurationRoot, appInfo);
+        var options = new SpringBootAdminClientOptions(configurationRoot, appInfo);
 
-        Assert.NotNull(opts);
-        Assert.Equal("http://somehost", opts.BasePath);
+        Assert.NotNull(options);
+        Assert.Equal("http://somehost", options.BasePath);
     }
 
     [Fact]
@@ -63,15 +54,15 @@ public sealed class SpringBootAdminClientOptionsTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        var opts = new SpringBootAdminClientOptions(configurationRoot, new ApplicationInstanceInfo(configurationRoot));
+        var options = new SpringBootAdminClientOptions(configurationRoot, new ApplicationInstanceInfo(configurationRoot));
 
-        Assert.NotNull(opts);
-        Assert.Equal("MySteeltoeApplication", opts.ApplicationName);
-        Assert.Equal("http://localhost:8080", opts.BasePath);
-        Assert.Equal("http://springbootadmin:9090", opts.Url);
+        Assert.NotNull(options);
+        Assert.Equal("MySteeltoeApplication", options.ApplicationName);
+        Assert.Equal("http://localhost:8080", options.BasePath);
+        Assert.Equal("http://springbootadmin:9090", options.Url);
 
-        Assert.Contains(new KeyValuePair<string, object>("user.name", "userName"), opts.Metadata);
-        Assert.Contains(new KeyValuePair<string, object>("user.password", "userPassword"), opts.Metadata);
+        Assert.Contains(new KeyValuePair<string, object>("user.name", "userName"), options.Metadata);
+        Assert.Contains(new KeyValuePair<string, object>("user.password", "userPassword"), options.Metadata);
     }
 
     [Fact]
@@ -84,9 +75,9 @@ public sealed class SpringBootAdminClientOptionsTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        var opts = new SpringBootAdminClientOptions(configurationRoot, new ApplicationInstanceInfo(configurationRoot));
+        var options = new SpringBootAdminClientOptions(configurationRoot, new ApplicationInstanceInfo(configurationRoot));
 
-        Assert.NotNull(opts);
-        Assert.NotEmpty(opts.ApplicationName);
+        Assert.NotNull(options);
+        Assert.NotEmpty(options.ApplicationName);
     }
 }

@@ -14,13 +14,6 @@ namespace Steeltoe.Management.Tracing.Test;
 public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
 {
     [Fact]
-    public void AddDistributedTracingAspNetCore_ThrowsOnNulls()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(null));
-        Assert.Equal("services", ex.ParamName);
-    }
-
-    [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
@@ -31,7 +24,6 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
         ValidateServiceContainerCore(serviceProvider);
     }
 
-    // this test should find OTLP exporter is configured, see TracingBase.Test for Zipkin & Jaeger
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
     {

@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
@@ -22,17 +20,6 @@ public sealed class RefreshEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsIfNulls()
-    {
-        const IConfigurationRoot configuration = null;
-
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpointHandler(null, configuration, NullLoggerFactory.Instance));
-        IOptionsMonitor<RefreshEndpointOptions> options = GetOptionsMonitorFromSettings<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
-
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpointHandler(options, configuration, NullLoggerFactory.Instance));
-    }
-
-    [Fact]
     public async Task Invoke_ReturnsExpected()
     {
         var appsettings = new Dictionary<string, string>
@@ -45,20 +32,20 @@ public sealed class RefreshEndpointTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddRefreshActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetRequiredService<IRefreshEndpointHandler>();
-        IList<string> result = await ep.InvokeAsync(null, CancellationToken.None);
+        var handler = testContext.GetRequiredService<IRefreshEndpointHandler>();
+        IList<string> result = await handler.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
 
         Assert.Contains("management:endpoints:loggers:enabled", result);

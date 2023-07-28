@@ -18,25 +18,25 @@ namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandler
 {
-    private readonly IOptionsMonitor<RouteMappingsEndpointOptions> _options;
+    private readonly IOptionsMonitor<RouteMappingsEndpointOptions> _optionsMonitor;
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
     private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
     private readonly RouteMappings _routeMappings;
     private readonly ILogger<RouteMappingsEndpointHandler> _logger;
 
-    public HttpMiddlewareOptions Options => _options.CurrentValue;
+    public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public RouteMappingsEndpointHandler(IOptionsMonitor<RouteMappingsEndpointOptions> options,
+    public RouteMappingsEndpointHandler(IOptionsMonitor<RouteMappingsEndpointOptions> optionsMonitor,
         IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders,
         RouteMappings routeMappings, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(actionDescriptorCollectionProvider);
         ArgumentGuard.NotNull(apiDescriptionProviders);
         ArgumentGuard.NotNull(routeMappings);
         ArgumentGuard.NotNull(loggerFactory);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
         _apiDescriptionProviders = apiDescriptionProviders;
         _routeMappings = routeMappings;

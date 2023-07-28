@@ -12,36 +12,36 @@ namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 internal sealed class HypermediaService
 {
-    private readonly IEnumerable<HttpMiddlewareOptions> _endpointOptions;
+    private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
+    private readonly EndpointOptions _endpointOptions;
+    private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
     private readonly ILogger _logger;
-    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptionsMonitor;
-    private readonly HttpMiddlewareOptions _options;
 
-    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor, IOptionsMonitor<HypermediaEndpointOptions> options,
-        IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger logger)
+    public HypermediaService(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        IOptionsMonitor<HypermediaEndpointOptions> hypermediaEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection, ILogger logger)
     {
         ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(endpointOptions);
+        ArgumentGuard.NotNull(hypermediaEndpointOptionsMonitor);
+        ArgumentGuard.NotNull(endpointOptionsCollection);
         ArgumentGuard.NotNull(logger);
 
         _managementOptionsMonitor = managementOptionsMonitor;
-        _options = options.CurrentValue;
-        _endpointOptions = endpointOptions;
+        _endpointOptions = hypermediaEndpointOptionsMonitor.CurrentValue;
+        _endpointOptionsCollection = endpointOptionsCollection;
         _logger = logger;
     }
 
-    public HypermediaService(IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor, IOptionsMonitor<CloudFoundryEndpointOptions> options,
-        IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger logger)
+    public HypermediaService(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        IOptionsMonitor<CloudFoundryEndpointOptions> cloudFoundryEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection, ILogger logger)
     {
         ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(endpointOptions);
+        ArgumentGuard.NotNull(cloudFoundryEndpointOptionsMonitor);
+        ArgumentGuard.NotNull(endpointOptionsCollection);
         ArgumentGuard.NotNull(logger);
 
         _managementOptionsMonitor = managementOptionsMonitor;
-        _options = options.CurrentValue;
-        _endpointOptions = endpointOptions;
+        _endpointOptions = cloudFoundryEndpointOptionsMonitor.CurrentValue;
+        _endpointOptionsCollection = endpointOptionsCollection;
         _logger = logger;
     }
 
@@ -51,7 +51,7 @@ internal sealed class HypermediaService
 
         var links = new Links();
 
-        if (!_options.IsEnabled(_managementOptionsMonitor.CurrentValue))
+        if (!_endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue))
         {
             return links;
         }
@@ -60,29 +60,29 @@ internal sealed class HypermediaService
 
         Link selfLink = null;
 
-        foreach (HttpMiddlewareOptions opt in _endpointOptions)
+        foreach (EndpointOptions endpointOptions in _endpointOptionsCollection)
         {
-            if (!opt.IsEnabled(_managementOptionsMonitor.CurrentValue) || !opt.IsExposed(_managementOptionsMonitor.CurrentValue))
+            if (!endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) || !endpointOptions.IsExposed(_managementOptionsMonitor.CurrentValue))
             {
                 continue;
             }
 
-            if (opt.Id == _options.Id)
+            if (endpointOptions.Id == _endpointOptions.Id)
             {
                 selfLink = new Link(baseUrl);
             }
             else
             {
-                if (!string.IsNullOrEmpty(opt.Id))
+                if (!string.IsNullOrEmpty(endpointOptions.Id))
                 {
-                    if (!links.Entries.ContainsKey(opt.Id))
+                    if (!links.Entries.ContainsKey(endpointOptions.Id))
                     {
-                        string linkPath = $"{baseUrl.TrimEnd('/')}/{opt.Path}";
-                        links.Entries.Add(opt.Id, new Link(linkPath));
+                        string linkPath = $"{baseUrl.TrimEnd('/')}/{endpointOptions.Path}";
+                        links.Entries.Add(endpointOptions.Id, new Link(linkPath));
                     }
-                    else if (links.Entries.ContainsKey(opt.Id))
+                    else
                     {
-                        _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", opt.Id);
+                        _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", endpointOptions.Id);
                     }
                 }
             }

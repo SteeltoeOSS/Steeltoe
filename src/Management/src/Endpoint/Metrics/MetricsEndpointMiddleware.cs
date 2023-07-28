@@ -16,9 +16,9 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 {
     private readonly ILogger<MetricsEndpointMiddleware> _logger;
 
-    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptions, loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
         _logger = loggerFactory.CreateLogger<MetricsEndpointMiddleware>();
     }
@@ -43,8 +43,8 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
     internal string GetMetricName(HttpRequest request)
     {
-        string contextBasePath = ManagementEndpointOptionsMonitor.CurrentValue.GetContextBasePath(request);
-        string path = $"{contextBasePath}/{EndpointHandler.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
+        string baseRequestPath = ManagementOptionsMonitor.CurrentValue.GetBaseRequestPath(request);
+        string path = $"{baseRequestPath}/{EndpointHandler.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
 
         return GetMetricName(request, path);
     }
@@ -92,9 +92,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
     private string GetMetricName(HttpRequest request, string path)
     {
-        var epPath = new PathString(path);
-
-        if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
+        if (request.Path.StartsWithSegments(path, out PathString remaining) && remaining.HasValue)
         {
             return remaining.Value!.TrimStart('/');
         }

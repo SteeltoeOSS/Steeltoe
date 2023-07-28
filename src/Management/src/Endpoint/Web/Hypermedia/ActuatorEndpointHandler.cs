@@ -10,28 +10,28 @@ using Steeltoe.Management.Endpoint.Options;
 namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 /// <summary>
-/// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators.
+/// Provides the hypermedia link collection for all registered and enabled actuators.
 /// </summary>
 internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
 {
+    private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
+    private readonly IOptionsMonitor<HypermediaEndpointOptions> _endpointOptionsMonitor;
+    private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
     private readonly ILogger<ActuatorEndpointHandler> _logger;
-    private readonly IOptionsMonitor<HypermediaEndpointOptions> _options;
-    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOption;
-    private readonly IEnumerable<HttpMiddlewareOptions> _endpointOptions;
 
-    public HttpMiddlewareOptions Options => _options.CurrentValue;
+    public EndpointOptions Options => _endpointOptionsMonitor.CurrentValue;
 
-    public ActuatorEndpointHandler(IOptionsMonitor<HypermediaEndpointOptions> options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IEnumerable<HttpMiddlewareOptions> endpointOptions, ILoggerFactory loggerFactory)
+    public ActuatorEndpointHandler(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        IOptionsMonitor<HypermediaEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(managementOptions);
-        ArgumentGuard.NotNull(endpointOptions);
+        ArgumentGuard.NotNull(managementOptionsMonitor);
+        ArgumentGuard.NotNull(endpointOptionsMonitor);
+        ArgumentGuard.NotNull(endpointOptionsCollection);
         ArgumentGuard.NotNull(loggerFactory);
 
-        _options = options;
-        _managementOption = managementOptions;
-        _endpointOptions = endpointOptions;
+        _managementOptionsMonitor = managementOptionsMonitor;
+        _endpointOptionsMonitor = endpointOptionsMonitor;
+        _endpointOptionsCollection = endpointOptionsCollection.ToList();
         _logger = loggerFactory.CreateLogger<ActuatorEndpointHandler>();
     }
 
@@ -39,7 +39,7 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
     {
         ArgumentGuard.NotNull(baseUrl);
 
-        var service = new HypermediaService(_managementOption, _options, _endpointOptions, _logger);
+        var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsCollection, _logger);
         Links result = service.Invoke(baseUrl);
         return Task.FromResult(result);
     }

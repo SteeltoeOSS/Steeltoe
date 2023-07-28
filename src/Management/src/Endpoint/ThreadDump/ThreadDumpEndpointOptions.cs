@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public sealed class ThreadDumpEndpointOptions : HttpMiddlewareOptions
+public sealed class ThreadDumpEndpointOptions : EndpointOptions
 {
     public int Duration { get; set; } = 10; // 10 ms
 }

@@ -28,28 +28,30 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
         MigrationsExtensionsType?.GetMethod("GetAppliedMigrations", BindingFlags.Static | BindingFlags.Public);
 
     internal static readonly MethodInfo GetMigrationsMethod = MigrationsExtensionsType?.GetMethod("GetMigrations", BindingFlags.Static | BindingFlags.Public);
-    private readonly IOptionsMonitor<DbMigrationsEndpointOptions> _options;
-    private readonly IServiceProvider _container;
+
+    private readonly IOptionsMonitor<DbMigrationsEndpointOptions> _optionsMonitor;
+    private readonly IServiceProvider _serviceProvider;
     private readonly DbMigrationsEndpointHelper _endpointHelper;
     private readonly ILogger<DbMigrationsEndpointHandler> _logger;
 
-    public HttpMiddlewareOptions Options => _options.CurrentValue;
+    public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container, ILoggerFactory loggerFactory)
-        : this(options, container, new DbMigrationsEndpointHelper(), loggerFactory)
+    public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> optionsMonitor, IServiceProvider serviceProvider,
+        ILoggerFactory loggerFactory)
+        : this(optionsMonitor, serviceProvider, new DbMigrationsEndpointHelper(), loggerFactory)
     {
     }
 
-    public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> options, IServiceProvider container,
+    public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> optionsMonitor, IServiceProvider serviceProvider,
         DbMigrationsEndpointHelper endpointHelper, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(container);
+        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(serviceProvider);
         ArgumentGuard.NotNull(endpointHelper);
         ArgumentGuard.NotNull(loggerFactory);
 
-        _options = options;
-        _container = container;
+        _optionsMonitor = optionsMonitor;
+        _serviceProvider = serviceProvider;
         _endpointHelper = endpointHelper;
         _logger = loggerFactory.CreateLogger<DbMigrationsEndpointHandler>();
     }
@@ -69,12 +71,11 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
                 .Where(type => !type.IsAbstract && type.AsType() != DbContextType && DbContextType.GetTypeInfo().IsAssignableFrom(type.AsType()))
                 .Select(typeInfo => typeInfo.AsType()).ToList();
 
-            using IServiceScope scope = _container.CreateScope();
-            IServiceProvider serviceProvider = scope.ServiceProvider;
+            using IServiceScope scope = _serviceProvider.CreateScope();
 
             foreach (Type contextType in knownDbContextTypes)
             {
-                object dbContext = serviceProvider.GetService(contextType);
+                object dbContext = scope.ServiceProvider.GetService(contextType);
 
                 if (dbContext == null)
                 {

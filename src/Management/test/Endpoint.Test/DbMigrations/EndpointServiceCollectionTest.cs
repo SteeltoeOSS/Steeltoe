@@ -14,16 +14,6 @@ namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddEntityFrameworkActuator_ThrowsOnNulls()
-    {
-        const ServiceCollection nullServices = null;
-
-        Action action1 = () => nullServices.AddDbMigrationsActuator();
-
-        action1.Should().ThrowExactly<ArgumentNullException>().Where(exception => exception.ParamName == "services");
-    }
-
-    [Fact]
     public void AddEntityFrameworkActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
@@ -45,7 +35,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<DbMigrationsEndpointOptions>>();
         options.CurrentValue.Id.Should().Be("dbmigrations");
-        var ep = serviceProvider.GetService<IDbMigrationsEndpointHandler>();
-        ep.Should().NotBeNull();
+        var handler = serviceProvider.GetService<IDbMigrationsEndpointHandler>();
+        handler.Should().NotBeNull();
     }
 }

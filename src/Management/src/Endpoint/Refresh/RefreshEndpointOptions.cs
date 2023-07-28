@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public sealed class RefreshEndpointOptions : HttpMiddlewareOptions
+public sealed class RefreshEndpointOptions : EndpointOptions
 {
     public override IList<string> AllowedVerbs { get; set; } = new List<string>
     {

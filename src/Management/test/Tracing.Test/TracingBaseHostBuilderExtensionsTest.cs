@@ -11,13 +11,6 @@ namespace Steeltoe.Management.Tracing.Test;
 public sealed class TracingBaseHostBuilderExtensionsTest : TestBase
 {
     [Fact]
-    public void AddDistributedTracing_ThrowsOnNulls()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => TracingBaseServiceCollectionExtensions.AddDistributedTracing(null));
-        Assert.Equal("services", ex.ParamName);
-    }
-
-    [Fact]
     public void AddDistributedTracing_ConfiguresExpectedDefaults()
     {
         var hostBuilder = new HostBuilder();

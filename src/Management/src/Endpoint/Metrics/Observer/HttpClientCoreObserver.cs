@@ -122,8 +122,8 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
     {
         if (response != null)
         {
-            int val = (int)response.StatusCode;
-            return val.ToString(CultureInfo.InvariantCulture);
+            int value = (int)response.StatusCode;
+            return value.ToString(CultureInfo.InvariantCulture);
         }
 
         if (taskStatus == TaskStatus.Faulted)

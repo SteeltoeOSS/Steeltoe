@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
-public sealed class HypermediaEndpointOptions : HttpMiddlewareOptions
+public sealed class HypermediaEndpointOptions : EndpointOptions
 {
 }

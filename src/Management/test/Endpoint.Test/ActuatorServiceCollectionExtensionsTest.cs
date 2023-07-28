@@ -58,7 +58,7 @@ public sealed class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_YesCF_onCF()
     {
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
 
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
         {
@@ -67,7 +67,6 @@ public sealed class ActuatorServiceCollectionExtensionsTest
         IWebHost host = hostBuilder.ConfigureServices((_, services) => services.AddAllActuators()).Build();
 
         Assert.NotNull(host.Services.GetService<ICloudFoundryEndpointHandler>());
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
     }
 
     [Fact]

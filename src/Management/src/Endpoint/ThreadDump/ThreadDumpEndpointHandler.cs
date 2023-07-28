@@ -10,19 +10,20 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 internal sealed class ThreadDumpEndpointHandler : IThreadDumpEndpointHandler
 {
-    private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
-    private readonly ILogger<ThreadDumpEndpointHandler> _logger;
+    private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _optionsMonitor;
     private readonly EventPipeThreadDumper _threadDumper;
+    private readonly ILogger<ThreadDumpEndpointHandler> _logger;
 
-    public HttpMiddlewareOptions Options => _options.CurrentValue;
+    public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public ThreadDumpEndpointHandler(IOptionsMonitor<ThreadDumpEndpointOptions> options, EventPipeThreadDumper threadDumper, ILoggerFactory loggerFactory)
+    public ThreadDumpEndpointHandler(IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor, EventPipeThreadDumper threadDumper,
+        ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(threadDumper);
         ArgumentGuard.NotNull(loggerFactory);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _threadDumper = threadDumper;
         _logger = loggerFactory.CreateLogger<ThreadDumpEndpointHandler>();
     }

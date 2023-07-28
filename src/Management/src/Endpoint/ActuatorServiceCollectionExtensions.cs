@@ -31,11 +31,11 @@ public static class ActuatorServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.TryAddScoped<ActuatorEndpointMapper>();
-        services.ConfigureOptions<ConfigureManagementEndpointOptions>();
+        services.ConfigureOptions<ConfigureManagementOptions>();
     }
 
     public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
-        where TOptions : HttpMiddlewareOptions
+        where TOptions : EndpointOptions
         where TConfigureOptions : class
     {
         ArgumentGuard.NotNull(services);
@@ -43,7 +43,7 @@ public static class ActuatorServiceCollectionExtensions
         services.ConfigureOptions<TConfigureOptions>();
 
         services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<HttpMiddlewareOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+            ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
 
     public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy)

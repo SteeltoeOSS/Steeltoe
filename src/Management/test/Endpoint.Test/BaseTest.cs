@@ -97,7 +97,7 @@ public abstract class BaseTest : IDisposable
         return GetOptionsMonitorFromSettings<TOptions>(type, settings);
     }
 
-    private static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Type tConfigureOptions, Dictionary<string, string> settings)
+    private static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Type configureOptionsType, Dictionary<string, string> settings)
     {
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(settings);
@@ -105,11 +105,10 @@ public abstract class BaseTest : IDisposable
 
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configurationRoot);
-        services.ConfigureOptions(tConfigureOptions);
+        services.ConfigureOptions(configureOptionsType);
 
         ServiceProvider provider = services.BuildServiceProvider();
-        var opts = provider.GetService<IOptionsMonitor<TOptions>>();
-        return opts;
+        return provider.GetService<IOptionsMonitor<TOptions>>();
     }
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>()

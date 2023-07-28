@@ -33,12 +33,12 @@ public sealed class SecurityUtilsTest : BaseTest
         SecurityUtils securityUtils = GetSecurityUtils();
         var response = new HttpResponseMessage(HttpStatusCode.OK);
 
-        var perms = new Dictionary<string, object>
+        var permissions = new Dictionary<string, object>
         {
             { "read_sensitive_data", true }
         };
 
-        response.Content = JsonContent.Create(perms);
+        response.Content = JsonContent.Create(permissions);
         Permissions result = await securityUtils.GetPermissionsAsync(response, CancellationToken.None);
         Assert.Equal(Permissions.Full, result);
     }

@@ -24,13 +24,13 @@ public sealed class ManagementEndpointServedOnDifferentPort
     [Fact]
     public void AddAllActuators_WebApplication_MakeSureTheManagementPortIsSet()
     {
-        ImmutableDictionary<string, string> config = new Dictionary<string, string>
+        ImmutableDictionary<string, string> appsettings = new Dictionary<string, string>
         {
             { "management:endpoints:port", "9090" }
         }.ToImmutableDictionary();
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-        hostBuilder.Configuration.AddInMemoryCollection(config);
+        hostBuilder.Configuration.AddInMemoryCollection(appsettings);
         hostBuilder.AddAllActuators();
         hostBuilder.WebHost.UseTestServer();
         hostBuilder.Services.AddActionDescriptorCollectionProvider();
@@ -39,8 +39,7 @@ public sealed class ManagementEndpointServedOnDifferentPort
         app.MapGet("/", () => "Hello World!");
         app.Start();
 
-        HttpClient httpClient = app.GetTestServer().CreateClient();
-
+        using HttpClient httpClient = app.GetTestServer().CreateClient();
         HttpResponseMessage response = httpClient.GetAsync(new Uri("http://localhost:9090/actuator")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = httpClient.GetAsync(new Uri("http://localhost:8080")).Result;
@@ -50,13 +49,13 @@ public sealed class ManagementEndpointServedOnDifferentPort
     [Fact]
     public void AddAllActuators_WorksWithUseCloudHosting()
     {
-        ImmutableDictionary<string, string> config = new Dictionary<string, string>
+        ImmutableDictionary<string, string> appsettings = new Dictionary<string, string>
         {
             { "management:endpoints:port", "9090" }
         }.ToImmutableDictionary();
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-        hostBuilder.Configuration.AddInMemoryCollection(config);
+        hostBuilder.Configuration.AddInMemoryCollection(appsettings);
         hostBuilder.UseCloudHosting();
         hostBuilder.AddAllActuators();
         hostBuilder.Services.AddActionDescriptorCollectionProvider();
@@ -66,7 +65,7 @@ public sealed class ManagementEndpointServedOnDifferentPort
         app.MapGet("/", () => "Hello World!");
         app.Start();
 
-        HttpClient httpClient = app.GetTestServer().CreateClient();
+        using HttpClient httpClient = app.GetTestServer().CreateClient();
         HttpResponseMessage response = httpClient.GetAsync(new Uri("https://localhost:9090/actuator")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = httpClient.GetAsync(new Uri("http://localhost:5100")).Result;
@@ -76,17 +75,17 @@ public sealed class ManagementEndpointServedOnDifferentPort
     [Fact]
     public void AddAllActuators_WebApplication_MakeSure_SSLEnabled()
     {
-        System.Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-        System.Environment.SetEnvironmentVariable("PORT", null);
+        using var scope1 = new EnvironmentVariableScope("ASPNETCORE_URLS", null);
+        using var scope2 = new EnvironmentVariableScope("PORT", null);
 
-        ImmutableDictionary<string, string> config = new Dictionary<string, string>
+        ImmutableDictionary<string, string> appsettings = new Dictionary<string, string>
         {
             { "management:endpoints:port", "9090" },
             { "management:endpoints:sslenabled", "true" }
         }.ToImmutableDictionary();
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-        hostBuilder.Configuration.AddInMemoryCollection(config);
+        hostBuilder.Configuration.AddInMemoryCollection(appsettings);
         hostBuilder.AddAllActuators();
 
         hostBuilder.Services.AddActionDescriptorCollectionProvider();
@@ -96,7 +95,7 @@ public sealed class ManagementEndpointServedOnDifferentPort
         app.MapGet("/", () => "Hello World!");
         app.Start();
 
-        HttpClient httpClient = app.GetTestServer().CreateClient();
+        using HttpClient httpClient = app.GetTestServer().CreateClient();
         HttpResponseMessage response = httpClient.GetAsync(new Uri("https://localhost:9090/actuator")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = httpClient.GetAsync(new Uri("http://localhost:8080")).Result;
@@ -120,14 +119,16 @@ public sealed class ManagementEndpointServedOnDifferentPort
                 webHostBuilder.UseSetting("management:endpoints:port", "9090");
                 webHostBuilder.ConfigureServices(svc => svc.AddActionDescriptorCollectionProvider());
                 webHostBuilder.AddAllActuators();
-                webHostBuilder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+
+                webHostBuilder.UseTestServer().ConfigureServices(services => services.AddRouting())
+                    .Configure(applicationBuilder => applicationBuilder.UseRouting());
             });
 
         using IHost host = hostBuilder.Build();
 
         host.Start();
 
-        HttpClient httpClient = host.GetTestServer().CreateClient();
+        using HttpClient httpClient = host.GetTestServer().CreateClient();
         HttpResponseMessage response = httpClient.GetAsync(new Uri("http://localhost:9090/actuator")).Result;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -135,8 +136,8 @@ public sealed class ManagementEndpointServedOnDifferentPort
     [Fact]
     public async Task AddAllActuators_GenericHost_MakeSure_SSLEnabled()
     {
-        System.Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
-        System.Environment.SetEnvironmentVariable("PORT", null);
+        using var scope1 = new EnvironmentVariableScope("ASPNETCORE_URLS", null);
+        using var scope2 = new EnvironmentVariableScope("PORT", null);
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(webHostBuilder =>
         {
@@ -145,14 +146,17 @@ public sealed class ManagementEndpointServedOnDifferentPort
             webHostBuilder.ConfigureServices(svc => svc.AddActionDescriptorCollectionProvider());
             webHostBuilder.UseSetting("management:endpoints:port", "9090");
             webHostBuilder.UseSetting("management:endpoints:sslenabled", "true");
-            webHostBuilder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+
+            webHostBuilder.UseTestServer().ConfigureServices(services => services.AddRouting())
+                .Configure(applicationBuilder => applicationBuilder.UseRouting());
+
             webHostBuilder.AddAllActuators();
         });
 
         using IHost host = hostBuilder.Build();
 
         host.Start();
-        HttpClient httpClient = host.GetTestServer().CreateClient();
+        using HttpClient httpClient = host.GetTestServer().CreateClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("https://localhost:9090/actuator"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

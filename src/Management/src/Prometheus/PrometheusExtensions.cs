@@ -44,9 +44,9 @@ public static class PrometheusExtensions
     {
         ArgumentGuard.NotNull(builder);
 
-        ManagementEndpointOptions? managementOptions = builder.ApplicationServices.GetService<IOptionsMonitor<ManagementEndpointOptions>>()?.CurrentValue;
+        ManagementOptions? managementOptions = builder.ApplicationServices.GetService<IOptionsMonitor<ManagementOptions>>()?.CurrentValue;
 
-        PrometheusEndpointOptions? prometheusOptions = builder.ApplicationServices.GetService<IEnumerable<HttpMiddlewareOptions>>()
+        PrometheusEndpointOptions? prometheusOptions = builder.ApplicationServices.GetService<IEnumerable<EndpointOptions>>()
             ?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
 
         string root = managementOptions?.Path ?? "/actuator";

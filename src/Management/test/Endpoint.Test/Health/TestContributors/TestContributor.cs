@@ -6,14 +6,14 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 
-internal sealed class TestContrib : IHealthContributor
+internal sealed class TestContributor : IHealthContributor
 {
     public bool Called { get; private set; }
     public bool Throws { get; }
 
     public string Id { get; }
 
-    public TestContrib(string id)
+    public TestContributor(string id)
     {
         Id = id;
         Throws = false;

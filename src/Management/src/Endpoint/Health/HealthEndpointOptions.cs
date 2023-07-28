@@ -8,7 +8,7 @@ using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public sealed class HealthEndpointOptions : HttpMiddlewareOptions
+public sealed class HealthEndpointOptions : EndpointOptions
 {
     public ShowDetails ShowDetails { get; set; }
     public EndpointClaim Claim { get; set; }

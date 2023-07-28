@@ -8,20 +8,20 @@ namespace Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 
 internal sealed class UpContributor : IHealthContributor
 {
-    private readonly int? _sleepyTime;
+    private readonly int? _sleepTime;
 
     public string Id => "Up";
 
-    internal UpContributor(int? sleepyTime = null)
+    internal UpContributor(int? sleepTime = null)
     {
-        _sleepyTime = sleepyTime;
+        _sleepTime = sleepTime;
     }
 
     public HealthCheckResult Health()
     {
-        if (_sleepyTime != null)
+        if (_sleepTime != null)
         {
-            Thread.Sleep((int)_sleepyTime);
+            Thread.Sleep((int)_sleepTime);
         }
 
         return new HealthCheckResult

@@ -60,8 +60,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         // send the request
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator"));
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator"));
+        string json = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(
             "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false}}}",
@@ -81,8 +81,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         // send the request
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/"));
+        string json = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(
             "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/\",\"templated\":false}}}",
@@ -92,10 +92,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        HypermediaEndpointOptions options = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
-        ManagementEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.RequiresExactMatch());
-        Assert.Equal("/actuator", options.GetPathMatchPattern(endpointOptions.Path, endpointOptions));
-        Assert.Contains("Get", options.AllowedVerbs);
+        HypermediaEndpointOptions endpointOptions = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions, ConfigureManagementOptions>().CurrentValue;
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 }

@@ -30,7 +30,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddHypermediaActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var ep = serviceProvider.GetService<IActuatorEndpointHandler>();
-        Assert.NotNull(ep);
+        var handler = serviceProvider.GetService<IActuatorEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

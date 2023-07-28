@@ -26,10 +26,10 @@ public sealed class MetricsResponseTest : BaseTest
             })
         };
 
-        var resp = new MetricsResponse("foo.bar", samples, tags);
-        Assert.Equal("foo.bar", resp.Name);
-        Assert.Same(samples, resp.Measurements);
-        Assert.Same(tags, resp.AvailableTags);
+        var response = new MetricsResponse("foo.bar", samples, tags);
+        Assert.Equal("foo.bar", response.Name);
+        Assert.Same(samples, response.Measurements);
+        Assert.Same(tags, response.AvailableTags);
     }
 
     [Fact]
@@ -48,8 +48,8 @@ public sealed class MetricsResponseTest : BaseTest
             })
         };
 
-        var resp = new MetricsResponse("foo.bar", samples, tags);
-        string result = Serialize(resp);
+        var response = new MetricsResponse("foo.bar", samples, tags);
+        string result = Serialize(response);
 
         Assert.Equal(
             "{\"name\":\"foo.bar\",\"measurements\":[{\"statistic\":\"TOTAL_TIME\",\"value\":100.1}],\"availableTags\":[{\"tag\":\"tag\",\"values\":[\"tagValue\"]}]}",

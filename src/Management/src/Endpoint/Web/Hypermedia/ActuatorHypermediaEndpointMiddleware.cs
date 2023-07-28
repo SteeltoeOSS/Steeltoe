@@ -16,9 +16,9 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
 {
     private readonly ILogger _logger;
 
-    public ActuatorHypermediaEndpointMiddleware(IActuatorEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public ActuatorHypermediaEndpointMiddleware(IActuatorEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptions, loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
         _logger = loggerFactory.CreateLogger<ActuatorHypermediaEndpointMiddleware>();
     }

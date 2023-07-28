@@ -86,7 +86,7 @@ public static class TracingBaseServiceCollectionExtensions
                 string appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>()
                     .GetApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
 
-                var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
+                var tracingOptions = serviceProvider.GetRequiredService<ITracingOptions>();
                 ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Steeltoe.Management.Tracing.Setup");
 
                 logger.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.",
@@ -96,26 +96,26 @@ public static class TracingBaseServiceCollectionExtensions
 
                 deferredBuilder.AddHttpClientInstrumentation(options =>
                 {
-                    var pathMatcher = new Regex(traceOpts.EgressIgnorePattern);
-                    options.Filter += req => !pathMatcher.IsMatch(req.RequestUri?.PathAndQuery ?? string.Empty);
+                    var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern);
+                    options.Filter += requestMessage => !pathMatcher.IsMatch(requestMessage.RequestUri?.PathAndQuery ?? string.Empty);
                 });
 
-                if (traceOpts.PropagationType.Equals("B3", StringComparison.OrdinalIgnoreCase))
+                if (tracingOptions.PropagationType.Equals("B3", StringComparison.OrdinalIgnoreCase))
                 {
                     var propagators = new List<TextMapPropagator>
                     {
-                        new B3Propagator(traceOpts.SingleB3Header),
+                        new B3Propagator(tracingOptions.SingleB3Header),
                         new BaggagePropagator()
                     };
 
                     Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator(propagators));
                 }
 
-                if (traceOpts.NeverSample)
+                if (tracingOptions.NeverSample)
                 {
                     deferredBuilder.SetSampler(new AlwaysOffSampler());
                 }
-                else if (traceOpts.AlwaysSample)
+                else if (tracingOptions.AlwaysSample)
                 {
                     deferredBuilder.SetSampler(new AlwaysOnSampler());
                 }

@@ -13,16 +13,9 @@ public sealed class DiskSpaceContributorOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = new DiskSpaceContributorOptions();
-        Assert.Equal(".", opts.Path);
-        Assert.Equal(10 * 1024 * 1024, opts.Threshold);
-    }
-
-    [Fact]
-    public void Constructor_ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new DiskSpaceContributorOptions(configuration));
+        var options = new DiskSpaceContributorOptions();
+        Assert.Equal(".", options.Path);
+        Assert.Equal(10 * 1024 * 1024, options.Threshold);
     }
 
     [Fact]
@@ -39,8 +32,8 @@ public sealed class DiskSpaceContributorOptionsTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var opts = new DiskSpaceContributorOptions(configurationRoot);
-        Assert.Equal("foobar", opts.Path);
-        Assert.Equal(5, opts.Threshold);
+        var options = new DiskSpaceContributorOptions(configurationRoot);
+        Assert.Equal("foobar", options.Path);
+        Assert.Equal(5, options.Threshold);
     }
 }

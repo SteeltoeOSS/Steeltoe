@@ -6,7 +6,7 @@
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public sealed class MetricsEndpointOptions : HttpMiddlewareOptions
+public sealed class MetricsEndpointOptions : EndpointOptions
 {
     public string IngressIgnorePattern { get; set; }
     public string EgressIgnorePattern { get; set; }

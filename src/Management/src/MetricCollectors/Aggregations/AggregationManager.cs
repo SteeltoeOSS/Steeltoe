@@ -15,7 +15,7 @@ internal sealed class AggregationManager : IDisposable
 
     // these fields are modified after construction and accessed on multiple threads, use lock(_lockObject) to ensure the data
     // is synchronized
-    private readonly List<Predicate<Instrument>> _instrumentConfigFuncs = new();
+    private readonly List<Predicate<Instrument>> _instrumentConfigPredicates = new();
     private readonly ConcurrentDictionary<Instrument, InstrumentState> _instrumentStates = new();
     private readonly MeterListener _listener;
     private readonly object _lockObject = new();
@@ -95,7 +95,7 @@ internal sealed class AggregationManager : IDisposable
     {
         lock (_lockObject)
         {
-            _instrumentConfigFuncs.Add(instrumentFilter);
+            _instrumentConfigPredicates.Add(instrumentFilter);
         }
     }
 
@@ -119,10 +119,10 @@ internal sealed class AggregationManager : IDisposable
     {
         if (!_instrumentStates.TryGetValue(instrument, out InstrumentState? instrumentState))
         {
-            // protect _instrumentConfigFuncs list
+            // protect _instrumentConfigPredicates list
             lock (_lockObject)
             {
-                foreach (Predicate<Instrument> filter in _instrumentConfigFuncs)
+                foreach (Predicate<Instrument> filter in _instrumentConfigPredicates)
                 {
                     if (filter(instrument))
                     {

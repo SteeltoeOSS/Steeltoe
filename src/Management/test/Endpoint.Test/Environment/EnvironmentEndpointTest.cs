@@ -4,9 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Management.Endpoint.Environment;
@@ -26,58 +23,45 @@ public sealed class EnvironmentEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsIfNulls()
-    {
-        IOptionsMonitor<EnvironmentEndpointOptions> options = GetOptionsMonitorFromSettings<EnvironmentEndpointOptions>();
-        IConfiguration configuration = null;
-        const IHostEnvironment environment = null;
-
-        Assert.Throws<ArgumentNullException>(() => new EnvironmentEndpointHandler(options, configuration, environment, NullLoggerFactory.Instance));
-
-        configuration = new ConfigurationBuilder().Build();
-        Assert.Throws<ArgumentNullException>(() => new EnvironmentEndpointHandler(options, configuration, environment, NullLoggerFactory.Instance));
-    }
-
-    [Fact]
     public void GetPropertySourceName_ReturnsExpected()
     {
-        using (var tc = new TestContext(_output))
+        using (var testContext = new TestContext(_output))
         {
-            tc.AdditionalServices = (services, _) =>
+            testContext.AdditionalServices = (services, _) =>
             {
                 services.AddSingleton(HostingHelpers.GetHostingEnvironment());
                 services.AddEnvironmentActuatorServices();
             };
 
-            tc.AdditionalConfiguration = configuration =>
+            testContext.AdditionalConfiguration = configuration =>
             {
                 configuration.AddEnvironmentVariables();
             };
 
-            var ep = (EnvironmentEndpointHandler)tc.GetRequiredService<IEnvironmentEndpointHandler>();
+            var handler = (EnvironmentEndpointHandler)testContext.GetRequiredService<IEnvironmentEndpointHandler>();
 
-            IConfigurationProvider provider = tc.Configuration.Providers.Single();
-            string name = ep.GetPropertySourceName(provider);
+            IConfigurationProvider provider = testContext.Configuration.Providers.Single();
+            string name = handler.GetPropertySourceName(provider);
             Assert.Equal(provider.GetType().Name, name);
         }
 
-        using (var tc = new TestContext(_output))
+        using (var testContext = new TestContext(_output))
         {
-            tc.AdditionalServices = (services, _) =>
+            testContext.AdditionalServices = (services, _) =>
             {
                 services.AddSingleton(HostingHelpers.GetHostingEnvironment());
                 services.AddEnvironmentActuatorServices();
             };
 
-            tc.AdditionalConfiguration = configuration =>
+            testContext.AdditionalConfiguration = configuration =>
             {
                 configuration.AddJsonFile("foobar", true);
             };
 
-            var ep = (EnvironmentEndpointHandler)tc.GetRequiredService<IEnvironmentEndpointHandler>();
+            var handler = (EnvironmentEndpointHandler)testContext.GetRequiredService<IEnvironmentEndpointHandler>();
 
-            IConfigurationProvider provider = tc.Configuration.Providers.Single();
-            string name = ep.GetPropertySourceName(provider);
+            IConfigurationProvider provider = testContext.Configuration.Providers.Single();
+            string name = handler.GetPropertySourceName(provider);
             Assert.Equal("JsonConfigurationProvider: [foobar]", name);
         }
     }
@@ -104,27 +88,27 @@ public sealed class EnvironmentEndpointTest : BaseTest
             ["charSize"] = "should not duplicate"
         };
 
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvironmentActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
             configuration.AddInMemoryCollection(otherAppsettings);
         };
 
-        var ep = (EnvironmentEndpointHandler)tc.GetRequiredService<IEnvironmentEndpointHandler>();
+        var handler = (EnvironmentEndpointHandler)testContext.GetRequiredService<IEnvironmentEndpointHandler>();
 
-        IConfigurationProvider appsettingsProvider = tc.Configuration.Providers.ElementAt(0);
-        PropertySourceDescriptor appsettingsDesc = ep.GetPropertySourceDescriptor(appsettingsProvider);
+        IConfigurationProvider appsettingsProvider = testContext.Configuration.Providers.ElementAt(0);
+        PropertySourceDescriptor appsettingsDesc = handler.GetPropertySourceDescriptor(appsettingsProvider);
 
-        IConfigurationProvider otherAppsettingsProvider = tc.Configuration.Providers.ElementAt(1);
-        PropertySourceDescriptor otherAppsettingsDesc = ep.GetPropertySourceDescriptor(otherAppsettingsProvider);
+        IConfigurationProvider otherAppsettingsProvider = testContext.Configuration.Providers.ElementAt(1);
+        PropertySourceDescriptor otherAppsettingsDesc = handler.GetPropertySourceDescriptor(otherAppsettingsProvider);
 
         Assert.Equal("MemoryConfigurationProvider", appsettingsDesc.Name);
         IDictionary<string, PropertyValueDescriptor> props = appsettingsDesc.Properties;
@@ -156,21 +140,21 @@ public sealed class EnvironmentEndpointTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvironmentActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = (EnvironmentEndpointHandler)tc.GetRequiredService<IEnvironmentEndpointHandler>();
-        IList<PropertySourceDescriptor> result = ep.GetPropertySources();
+        var handler = (EnvironmentEndpointHandler)testContext.GetRequiredService<IEnvironmentEndpointHandler>();
+        IList<PropertySourceDescriptor> result = handler.GetPropertySources();
         Assert.NotNull(result);
         Assert.Single(result);
 
@@ -196,24 +180,24 @@ public sealed class EnvironmentEndpointTest : BaseTest
             ["appsManagerBase"] = "${management:endpoints:path}"
         };
 
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvironmentActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
             configuration.AddPlaceholderResolver();
         };
 
-        var endpoint = (EnvironmentEndpointHandler)tc.GetRequiredService<IEnvironmentEndpointHandler>();
+        var endpoint = (EnvironmentEndpointHandler)testContext.GetRequiredService<IEnvironmentEndpointHandler>();
 
         IList<PropertySourceDescriptor> result = endpoint.GetPropertySources();
-        string testProp = tc.Configuration["appsManagerBase"];
+        string testProp = testContext.Configuration["appsManagerBase"];
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -234,21 +218,21 @@ public sealed class EnvironmentEndpointTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvironmentActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetRequiredService<IEnvironmentEndpointHandler>();
-        EnvironmentResponse result = await ep.InvokeAsync(null, CancellationToken.None);
+        var handler = testContext.GetRequiredService<IEnvironmentEndpointHandler>();
+        EnvironmentResponse result = await handler.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Single(result.ActiveProfiles);
         Assert.Equal("EnvironmentName", result.ActiveProfiles[0]);
@@ -282,21 +266,21 @@ public sealed class EnvironmentEndpointTest : BaseTest
             ["vcap_services"] = "mysecret"
         };
 
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvironmentActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetRequiredService<IEnvironmentEndpointHandler>();
-        EnvironmentResponse result = await ep.InvokeAsync(null, CancellationToken.None);
+        var handler = testContext.GetRequiredService<IEnvironmentEndpointHandler>();
+        EnvironmentResponse result = await handler.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
 
         PropertySourceDescriptor desc = result.PropertySources[0];
@@ -323,21 +307,21 @@ public sealed class EnvironmentEndpointTest : BaseTest
             ["password"] = "mysecret"
         };
 
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvironmentActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetRequiredService<IEnvironmentEndpointHandler>();
-        EnvironmentResponse result = await ep.InvokeAsync(null, CancellationToken.None);
+        var handler = testContext.GetRequiredService<IEnvironmentEndpointHandler>();
+        EnvironmentResponse result = await handler.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
 
         PropertySourceDescriptor desc = result.PropertySources[0];

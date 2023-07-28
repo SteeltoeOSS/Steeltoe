@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Prometheus;
 
-public sealed class PrometheusEndpointOptions : HttpMiddlewareOptions
+public sealed class PrometheusEndpointOptions : EndpointOptions
 {
     public override bool RequiresExactMatch()
     {

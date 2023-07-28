@@ -17,7 +17,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
 {
     private readonly ILogger<LoggersEndpointMiddleware> _logger;
 
-    public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor,
+    public LoggersEndpointMiddleware(ILoggersEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
         : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
@@ -41,19 +41,17 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
         {
             // POST - change a logger level
             _logger.LogDebug("Incoming path: {path}", request.Path.Value);
-            string contextBasePath = ManagementEndpointOptionsMonitor.CurrentValue.GetContextBasePath(context.Request);
+            string baseRequestPath = ManagementOptionsMonitor.CurrentValue.GetBaseRequestPath(context.Request);
 
-            string path = EndpointOptions.Path;
+            string path = EndpointHandler.Options.Path;
 
-            if (contextBasePath != null)
+            if (baseRequestPath != null)
             {
-                path = contextBasePath + "/" + path;
+                path = baseRequestPath + "/" + path;
                 path = path.Replace("//", "/", StringComparison.Ordinal);
             }
 
-            var epPath = new PathString(path);
-
-            if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
+            if (request.Path.StartsWithSegments(path, out PathString remaining) && remaining.HasValue)
             {
                 string loggerName = remaining.Value!.TrimStart('/');
 

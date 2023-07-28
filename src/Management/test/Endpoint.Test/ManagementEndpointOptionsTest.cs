@@ -13,12 +13,12 @@ public sealed class ManagementEndpointOptionsTest : BaseTest
     [Fact]
     public void InitializedWithDefaults()
     {
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.False(opts.Enabled.HasValue);
-        Assert.Equal("/actuator", opts.Path);
-        Assert.NotNull(opts.Exposure);
-        Assert.Contains("health", opts.Exposure.Include);
-        Assert.Contains("info", opts.Exposure.Include);
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+        Assert.False(managementOptions.Enabled.HasValue);
+        Assert.Equal("/actuator", managementOptions.Path);
+        Assert.NotNull(managementOptions.Exposure);
+        Assert.Contains("health", managementOptions.Exposure.Include);
+        Assert.Contains("info", managementOptions.Exposure.Include);
     }
 
     [Fact]
@@ -32,15 +32,15 @@ public sealed class ManagementEndpointOptionsTest : BaseTest
             ["management:endpoints:info:id"] = "/infomanagement"
         };
 
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).CurrentValue;
-        Assert.False(opts.Enabled);
-        Assert.Equal("/management", opts.Path);
+        ManagementOptions options = GetOptionsMonitorFromSettings<ManagementOptions>(appsettings).CurrentValue;
+        Assert.False(options.Enabled);
+        Assert.Equal("/management", options.Path);
     }
 
     [Fact]
     public void IsExposedCorrectly()
     {
-        var managementOptions = new ManagementEndpointOptions
+        var managementOptions = new ManagementOptions
         {
             Exposure =
             {

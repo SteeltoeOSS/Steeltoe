@@ -36,8 +36,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
     {
-        IOptionsMonitor<DbMigrationsEndpointOptions> opts = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
+        IOptionsMonitor<DbMigrationsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
 
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
@@ -54,12 +54,12 @@ public sealed class EndpointMiddlewareTest : BaseTest
             "applied"
         });
 
-        var ep = new DbMigrationsEndpointHandler(opts, container.BuildServiceProvider(), helper, NullLoggerFactory.Instance);
+        var handler = new DbMigrationsEndpointHandler(endpointOptionsMonitor, container.BuildServiceProvider(), helper, NullLoggerFactory.Instance);
 
-        var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
+        var middleware = new DbMigrationsEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/dbmigrations");
-        await middle.InvokeAsync(context, null);
+        await middleware.InvokeAsync(context, null);
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
@@ -89,9 +89,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/dbmigrations"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/dbmigrations"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
         var descriptor = new DbMigrationsDescriptor();
         descriptor.AppliedMigrations.Add("applied");
         descriptor.PendingMigrations.Add("pending");
@@ -107,10 +107,11 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<DbMigrationsEndpointOptions>();
-        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.RequiresExactMatch());
-        Assert.Equal("/actuator/dbmigrations", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        var endpointOptions = GetOptionsFromSettings<DbMigrationsEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/dbmigrations", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
     }
 
     private HttpContext CreateRequest(string method, string path)
@@ -122,7 +123,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
-        context.Request.Path = new PathString(path);
+        context.Request.Path = path;
         context.Request.Scheme = "http";
         context.Request.Host = new HostString("localhost");
         return context;

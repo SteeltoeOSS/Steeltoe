@@ -139,15 +139,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<LoggersEndpointOptions>();
-        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.False(options.RequiresExactMatch());
-        Assert.Equal("/actuator/loggers/{**_}", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        var endpointOptions = GetOptionsFromSettings<LoggersEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+
+        Assert.False(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/loggers/{**_}", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
 
         Assert.Equal("/cloudfoundryapplication/loggers/{**_}",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        Assert.Collection(options.AllowedVerbs, verb => Assert.Contains("Get", verb, StringComparison.Ordinal),
+        Assert.Collection(endpointOptions.AllowedVerbs, verb => Assert.Contains("Get", verb, StringComparison.Ordinal),
             verb => Assert.Contains("Post", verb, StringComparison.Ordinal));
     }
 

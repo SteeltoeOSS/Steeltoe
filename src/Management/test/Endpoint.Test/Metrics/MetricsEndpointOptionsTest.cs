@@ -12,9 +12,9 @@ public sealed class MetricsEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<MetricsEndpointOptions>();
-        Assert.Null(opts.Enabled);
-        Assert.Equal("metrics", opts.Id);
+        var options = GetOptionsFromSettings<MetricsEndpointOptions>();
+        Assert.Null(options.Enabled);
+        Assert.Equal("metrics", options.Id);
     }
 
     [Fact]
@@ -28,8 +28,8 @@ public sealed class MetricsEndpointOptionsTest : BaseTest
             ["management:endpoints:metrics:id"] = "metricsmanagement"
         };
 
-        MetricsEndpointOptions opts = GetOptionsFromSettings<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>(appsettings);
-        Assert.False(opts.Enabled);
-        Assert.Equal("metricsmanagement", opts.Id);
+        MetricsEndpointOptions options = GetOptionsFromSettings<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>(appsettings);
+        Assert.False(options.Enabled);
+        Assert.Equal("metricsmanagement", options.Id);
     }
 }

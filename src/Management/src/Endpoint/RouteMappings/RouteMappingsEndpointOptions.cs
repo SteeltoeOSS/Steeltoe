@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
-public sealed class RouteMappingsEndpointOptions : HttpMiddlewareOptions
+public sealed class RouteMappingsEndpointOptions : EndpointOptions
 {
 }

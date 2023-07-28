@@ -13,13 +13,6 @@ namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 public sealed class ServiceCollectionExtensionsTest
 {
     [Fact]
-    public void AddSpringBootAdminClient_ThrowsOnNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddSpringBootAdminClient(null));
-        Assert.Contains("services", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void AddSpringBootAdminClient_AddsHostedService()
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().AddCommandLine(new[]

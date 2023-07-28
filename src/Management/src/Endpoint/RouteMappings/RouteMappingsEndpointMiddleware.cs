@@ -15,9 +15,9 @@ namespace Steeltoe.Management.Endpoint.RouteMappings;
 /// </summary>
 internal sealed class RouteMappingsEndpointMiddleware : EndpointMiddleware<object, RouteMappingsResponse>
 {
-    public RouteMappingsEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IRouteMappingsEndpointHandler endpointHandler,
+    public RouteMappingsEndpointMiddleware(IRouteMappingsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptions, loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
     }
 

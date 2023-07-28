@@ -45,18 +45,18 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
     {
         ClrRuntimeSource.HeapMetrics metrics = ClrRuntimeSource.GetHeapMetrics();
 
-        for (int i = 0; i < metrics.CollectionCounts.Count; i++)
+        for (int index = 0; index < metrics.CollectionCounts.Count; index++)
         {
-            long count = metrics.CollectionCounts[i];
+            long count = metrics.CollectionCounts[index];
 
-            if (_previous.CollectionCounts != null && i < _previous.CollectionCounts.Count && _previous.CollectionCounts[i] <= count)
+            if (_previous.CollectionCounts != null && index < _previous.CollectionCounts.Count && _previous.CollectionCounts[index] <= count)
             {
-                count = count - _previous.CollectionCounts[i];
+                count -= _previous.CollectionCounts[index];
             }
 
             var tags = new Dictionary<string, object>
             {
-                { GenerationKey, GenerationTagValueName + i }
+                { GenerationKey, GenerationTagValueName + index }
             };
 
             yield return new Measurement<long>(count, tags.AsReadonlySpan());

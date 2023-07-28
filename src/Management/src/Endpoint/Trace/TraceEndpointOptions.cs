@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public sealed class TraceEndpointOptions : HttpMiddlewareOptions
+public sealed class TraceEndpointOptions : EndpointOptions
 {
     public int Capacity { get; set; } = -1;
 

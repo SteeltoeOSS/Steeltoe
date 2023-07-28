@@ -12,24 +12,24 @@ public sealed class ApplicationMappingsTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        var mappingDict = new Dictionary<string, IList<RouteMappingDescription>>
+        var mappingDictionary = new Dictionary<string, IList<RouteMappingDescription>>
         {
             { "dispatcherServlet", new List<RouteMappingDescription>() }
         };
 
-        var contextMappings = new ContextMappings(mappingDict);
+        var contextMappings = new ContextMappings(mappingDictionary);
 
         var appMappings = new RouteMappingsResponse(contextMappings);
-        IDictionary<string, ContextMappings> ctxMappings = appMappings.ContextMappings;
-        Assert.Contains("application", ctxMappings.Keys);
-        Assert.Single(ctxMappings.Keys);
-        Assert.Same(contextMappings, ctxMappings["application"]);
+        IDictionary<string, ContextMappings> appContextMappings = appMappings.ContextMappings;
+        Assert.Contains("application", appContextMappings.Keys);
+        Assert.Single(appContextMappings.Keys);
+        Assert.Same(contextMappings, appContextMappings["application"]);
     }
 
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var routeDetail = new AspNetCoreRouteDetails
+        var routeDetails = new AspNetCoreRouteDetails
         {
             HttpMethods = new List<string>
             {
@@ -48,15 +48,15 @@ public sealed class ApplicationMappingsTest : BaseTest
 
         var mappingDescriptions = new List<RouteMappingDescription>
         {
-            new("foobar", routeDetail)
+            new("foobar", routeDetails)
         };
 
-        var mappingDict = new Dictionary<string, IList<RouteMappingDescription>>
+        var mappingDictionary = new Dictionary<string, IList<RouteMappingDescription>>
         {
             { "controllerTypeName", mappingDescriptions }
         };
 
-        var contextMappings = new ContextMappings(mappingDict);
+        var contextMappings = new ContextMappings(mappingDictionary);
         var appMappings = new RouteMappingsResponse(contextMappings);
 
         string result = Serialize(appMappings);

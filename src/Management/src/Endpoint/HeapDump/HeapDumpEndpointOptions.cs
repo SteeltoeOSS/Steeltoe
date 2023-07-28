@@ -6,7 +6,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-public sealed class HeapDumpEndpointOptions : HttpMiddlewareOptions
+public sealed class HeapDumpEndpointOptions : EndpointOptions
 {
     // Default to disabled on Linux + Cloud Foundry until PTRACE is allowed
     internal override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);

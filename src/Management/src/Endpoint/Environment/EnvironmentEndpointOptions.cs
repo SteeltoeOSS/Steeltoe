@@ -6,7 +6,7 @@
 
 namespace Steeltoe.Management.Endpoint.Environment;
 
-public sealed class EnvironmentEndpointOptions : HttpMiddlewareOptions
+public sealed class EnvironmentEndpointOptions : EndpointOptions
 {
     public IList<string> KeysToSanitize { get; set; }
 }

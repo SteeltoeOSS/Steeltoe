@@ -12,9 +12,9 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 
 internal sealed class RefreshEndpointMiddleware : EndpointMiddleware<object, IList<string>>
 {
-    public RefreshEndpointMiddleware(IRefreshEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public RefreshEndpointMiddleware(IRefreshEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptions, loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
     }
 

@@ -22,18 +22,18 @@ public sealed class TraceEndpointTest : BaseTest
     [Fact]
     public async Task TraceEndpointHandler_CallsTraceRepo()
     {
-        using var tc = new TestContext(_output);
-        var repo = new TestTraceRepo();
+        using var testContext = new TestContext(_output);
+        var repository = new TestTraceRepository();
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton<IHttpTraceRepository>(repo);
+            services.AddSingleton<IHttpTraceRepository>(repository);
             services.AddTraceActuatorServices(MediaTypeVersion.V1);
         };
 
-        var ep = tc.GetRequiredService<IHttpTraceEndpointHandler>();
-        HttpTraceResult result = await ep.InvokeAsync(null, CancellationToken.None);
+        var handler = testContext.GetRequiredService<IHttpTraceEndpointHandler>();
+        HttpTraceResult result = await handler.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
-        Assert.True(repo.GetTracesCalled);
+        Assert.True(repository.GetTracesCalled);
     }
 }

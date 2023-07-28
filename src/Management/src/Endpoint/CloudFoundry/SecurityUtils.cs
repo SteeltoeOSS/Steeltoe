@@ -5,6 +5,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
@@ -39,11 +40,11 @@ internal sealed class SecurityUtils
         _httpClient = httpClient;
     }
 
-    public static bool IsCloudFoundryRequest(string requestPath)
+    public static bool IsCloudFoundryRequest(PathString requestPath)
     {
         ArgumentGuard.NotNull(requestPath);
 
-        return requestPath.StartsWith(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, StringComparison.OrdinalIgnoreCase);
+        return requestPath.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath);
     }
 
     public async Task<SecurityResult> GetPermissionsAsync(string accessToken, CancellationToken cancellationToken)

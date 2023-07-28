@@ -41,19 +41,19 @@ public sealed class ActuatorRouteBuilderExtensionsTest
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };
 
-        return new HostBuilder().AddDynamicLogging().ConfigureServices((_, s) =>
+        return new HostBuilder().AddDynamicLogging().ConfigureServices((_, services) =>
         {
-            s.AddAllActuators();
-            s.AddRouting();
-            s.AddActionDescriptorCollectionProvider();
+            services.AddAllActuators();
+            services.AddRouting();
+            services.AddActionDescriptorCollectionProvider();
 
-            s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+            services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.AuthenticationScheme, _ =>
                 {
                 });
 
-            s.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
-            s.AddServerSideBlazor();
+            services.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
+            services.AddServerSideBlazor();
         }).ConfigureWebHost(builder =>
         {
             builder.Configure(app => app.UseRouting().UseAuthentication().UseAuthorization().UseEndpoints(endpoints =>
@@ -69,12 +69,12 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         using IHost host = await hostBuilder.StartAsync();
         using TestServer server = host.GetTestServer();
 
-        IEnumerable<HttpMiddlewareOptions> optionsCollection = host.Services.GetServices<HttpMiddlewareOptions>();
+        IEnumerable<EndpointOptions> optionsCollection = host.Services.GetServices<EndpointOptions>();
 
-        foreach (HttpMiddlewareOptions options in optionsCollection)
+        foreach (EndpointOptions options in optionsCollection)
         {
-            ManagementEndpointOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementEndpointOptions>>().CurrentValue;
-            string path = options.GetPathMatchPattern(managementOptions.Path, managementOptions);
+            ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
+            string path = options.GetPathMatchPattern(managementOptions, managementOptions.Path);
             path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
             Assert.NotNull(path);
             HttpResponseMessage response;

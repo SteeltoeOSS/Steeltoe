@@ -10,11 +10,11 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 internal sealed class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
 {
+    private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;
     private readonly HeapDumper _heapDumper;
     private readonly ILogger<HeapDumpEndpointHandler> _logger;
-    private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;
 
-    public HttpMiddlewareOptions Options => _optionsMonitor.CurrentValue;
+    public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
     public HeapDumpEndpointHandler(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, HeapDumper heapDumper, ILoggerFactory loggerFactory)
     {

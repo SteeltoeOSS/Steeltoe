@@ -6,7 +6,7 @@ using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 
-internal sealed class TestTraceRepo : IHttpTraceRepository
+internal sealed class TestTraceRepository : IHttpTraceRepository
 {
     public bool GetTracesCalled { get; private set; }
 

@@ -66,45 +66,45 @@ public sealed class GitInfoContributorTest : BaseTest
     public void ContributeWithNullBuilderThrows()
     {
         // Uses git.properties file in test project
-        var contrib = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
-        Assert.ThrowsAsync<ArgumentNullException>(() => contrib.ContributeAsync(null, CancellationToken.None));
+        var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
+        Assert.ThrowsAsync<ArgumentNullException>(() => contributor.ContributeAsync(null, CancellationToken.None));
     }
 
     [Fact]
     public async Task ContributeAddsToBuilder()
     {
         // Uses git.properties file in test project
-        var contrib = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
+        var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
         var builder = new InfoBuilder();
-        await contrib.ContributeAsync(builder, CancellationToken.None);
+        await contributor.ContributeAsync(builder, CancellationToken.None);
 
         IDictionary<string, object> result = builder.Build();
         Assert.NotNull(result);
-        var gitDict = result["git"] as Dictionary<string, object>;
-        Assert.NotNull(gitDict);
-        Assert.Equal(7, gitDict.Count);
-        Assert.True(gitDict.ContainsKey("build"));
-        Assert.True(gitDict.ContainsKey("branch"));
-        Assert.True(gitDict.ContainsKey("commit"));
-        Assert.True(gitDict.ContainsKey("closest"));
-        Assert.True(gitDict.ContainsKey("dirty"));
-        Assert.True(gitDict.ContainsKey("remote"));
-        Assert.True(gitDict.ContainsKey("tags"));
+        var gitDictionary = result["git"] as Dictionary<string, object>;
+        Assert.NotNull(gitDictionary);
+        Assert.Equal(7, gitDictionary.Count);
+        Assert.True(gitDictionary.ContainsKey("build"));
+        Assert.True(gitDictionary.ContainsKey("branch"));
+        Assert.True(gitDictionary.ContainsKey("commit"));
+        Assert.True(gitDictionary.ContainsKey("closest"));
+        Assert.True(gitDictionary.ContainsKey("dirty"));
+        Assert.True(gitDictionary.ContainsKey("remote"));
+        Assert.True(gitDictionary.ContainsKey("tags"));
 
-        var gitBuildDict = gitDict["build"] as Dictionary<string, object>;
-        Assert.NotNull(gitBuildDict);
-        Assert.True(gitBuildDict.ContainsKey("time"));
+        var gitBuildDictionary = gitDictionary["build"] as Dictionary<string, object>;
+        Assert.NotNull(gitBuildDictionary);
+        Assert.True(gitBuildDictionary.ContainsKey("time"));
 
         // Verify that datetime values are normalized correctly
-        object gitBuildTime = gitBuildDict["time"];
+        object gitBuildTime = gitBuildDictionary["time"];
         Assert.Equal(DateTime.Parse("2017-07-12T18:40:39Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), gitBuildTime);
 
-        var gitCommitDict = gitDict["commit"] as Dictionary<string, object>;
-        Assert.NotNull(gitCommitDict);
-        Assert.True(gitCommitDict.ContainsKey("time"));
+        var gitCommitDictionary = gitDictionary["commit"] as Dictionary<string, object>;
+        Assert.NotNull(gitCommitDictionary);
+        Assert.True(gitCommitDictionary.ContainsKey("time"));
 
         // Verify that datetime values are normalized correctly
-        object gitCommitTime = gitCommitDict["time"];
+        object gitCommitTime = gitCommitDictionary["time"];
         Assert.Equal(DateTime.Parse("2017-06-08T12:47:02Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), gitCommitTime);
     }
 }

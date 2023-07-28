@@ -13,9 +13,9 @@ public sealed class HypermediaEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<HypermediaEndpointOptions>();
-        Assert.Equal(string.Empty, opts.Id);
-        Assert.Equal(string.Empty, opts.Path);
+        var options = GetOptionsFromSettings<HypermediaEndpointOptions>();
+        Assert.Equal(string.Empty, options.Id);
+        Assert.Equal(string.Empty, options.Path);
     }
 
     [Fact]
@@ -33,9 +33,9 @@ public sealed class HypermediaEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        InfoEndpointOptions opts = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
+        InfoEndpointOptions options = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
 
-        Assert.Equal("info", opts.Id);
-        Assert.Equal("infopath", opts.Path);
+        Assert.Equal("info", options.Id);
+        Assert.Equal("infopath", options.Path);
     }
 }

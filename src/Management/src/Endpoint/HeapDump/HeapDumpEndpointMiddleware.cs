@@ -15,9 +15,9 @@ internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, st
 {
     private readonly ILogger<HeapDumpEndpointMiddleware> _logger;
 
-    public HeapDumpEndpointMiddleware(IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public HeapDumpEndpointMiddleware(IHeapDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptions, loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
         _logger = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
     }

@@ -23,17 +23,17 @@ public sealed class InfoEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_NoContributors_ReturnsExpectedInfo()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(Array.Empty<IInfoContributor>());
         };
 
-        var ep = tc.GetRequiredService<IInfoEndpointHandler>();
+        var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        IDictionary<string, object> info = await ep.InvokeAsync(null, CancellationToken.None);
+        IDictionary<string, object> info = await handler.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(info);
         Assert.Empty(info);
     }
@@ -41,65 +41,65 @@ public sealed class InfoEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_CallsAllContributors()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
         var contributors = new List<IInfoContributor>
         {
-            new TestContrib(),
-            new TestContrib(),
-            new TestContrib()
+            new TestContributor(),
+            new TestContributor(),
+            new TestContributor()
         };
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetRequiredService<IInfoEndpointHandler>();
+        var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        await ep.InvokeAsync(null, CancellationToken.None);
+        await handler.InvokeAsync(null, CancellationToken.None);
 
-        foreach (IInfoContributor contrib in contributors)
+        foreach (IInfoContributor contributor in contributors)
         {
-            var tcc = (TestContrib)contrib;
-            Assert.True(tcc.Called);
+            var testContributor = (TestContributor)contributor;
+            Assert.True(testContributor.Called);
         }
     }
 
     [Fact]
     public async Task Invoke_HandlesExceptions()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
         var contributors = new List<IInfoContributor>
         {
-            new TestContrib(),
-            new TestContrib(true),
-            new TestContrib()
+            new TestContributor(),
+            new TestContributor(true),
+            new TestContributor()
         };
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetRequiredService<IInfoEndpointHandler>();
+        var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        await ep.InvokeAsync(null, CancellationToken.None);
+        await handler.InvokeAsync(null, CancellationToken.None);
 
-        foreach (IInfoContributor contrib in contributors)
+        foreach (IInfoContributor contributor in contributors)
         {
-            var tcc = (TestContrib)contrib;
+            var testContributor = (TestContributor)contributor;
 
-            if (tcc.Throws)
+            if (testContributor.Throws)
             {
-                Assert.False(tcc.Called);
+                Assert.False(testContributor.Called);
             }
             else
             {
-                Assert.True(tcc.Called);
+                Assert.True(testContributor.Called);
             }
         }
     }

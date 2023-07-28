@@ -19,22 +19,21 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
 {
     private readonly ILogger _logger;
-    protected IOptionsMonitor<ManagementEndpointOptions> ManagementEndpointOptionsMonitor { get; }
+
+    protected IOptionsMonitor<ManagementOptions> ManagementOptionsMonitor { get; }
     protected IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
 
-    public HttpMiddlewareOptions EndpointOptions { get; }
+    public EndpointOptions EndpointOptions => EndpointHandler.Options;
 
-    protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(endpointHandler);
-        ArgumentGuard.NotNull(managementOptions);
+        ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(loggerFactory);
 
         EndpointHandler = endpointHandler;
-        ManagementEndpointOptionsMonitor = managementOptions;
-        EndpointOptions = EndpointHandler.Options;
-
+        ManagementOptionsMonitor = managementOptionsMonitor;
         _logger = loggerFactory.CreateLogger<EndpointMiddleware<TArgument, TResult>>();
     }
 
@@ -42,15 +41,15 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     {
         ArgumentGuard.NotNull(requestPath);
 
-        ManagementEndpointOptions endpointOptions = ManagementEndpointOptionsMonitor.CurrentValue;
-        bool isEnabled = EndpointHandler.Options.IsEnabled(endpointOptions);
-        bool isExposed = EndpointHandler.Options.IsExposed(endpointOptions);
+        ManagementOptions managementOptions = ManagementOptionsMonitor.CurrentValue;
+        bool isEnabled = EndpointOptions.IsEnabled(managementOptions);
+        bool isExposed = EndpointOptions.IsExposed(managementOptions);
 
-        bool isCloudFoundryEndpoint = requestPath.StartsWithSegments(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath);
-        bool returnValue = isCloudFoundryEndpoint ? endpointOptions.IsCloudFoundryEnabled && isEnabled : isEnabled && isExposed;
+        bool isCloudFoundryEndpoint = requestPath.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath);
+        bool returnValue = isCloudFoundryEndpoint ? managementOptions.IsCloudFoundryEnabled && isEnabled : isEnabled && isExposed;
 
-        _logger.LogDebug($"Returned {returnValue} for endpointHandler: {EndpointHandler.Options.Id}, requestPath: {requestPath}, isEnabled: {isEnabled}, " +
-            $"isExposed: {isExposed}, isCloudFoundryEndpoint: {isCloudFoundryEndpoint}, isCloudFoundryEnabled: {endpointOptions.IsCloudFoundryEnabled}");
+        _logger.LogDebug($"Returned {returnValue} for endpointHandler: {EndpointOptions.Id}, requestPath: {requestPath}, isEnabled: {isEnabled}, " +
+            $"isExposed: {isExposed}, isCloudFoundryEndpoint: {isCloudFoundryEndpoint}, isCloudFoundryEnabled: {managementOptions.IsCloudFoundryEnabled}");
 
         return returnValue;
     }
@@ -88,9 +87,9 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
     }
 
-    protected virtual JsonSerializerOptions GetSerializerOptions()
+    protected JsonSerializerOptions GetSerializerOptions()
     {
-        JsonSerializerOptions serializerOptions = ManagementEndpointOptionsMonitor.CurrentValue.SerializerOptions;
+        JsonSerializerOptions serializerOptions = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
 
         serializerOptions ??= new JsonSerializerOptions
         {

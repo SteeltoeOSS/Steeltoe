@@ -17,14 +17,18 @@ namespace Steeltoe.Management.Endpoint;
 
 internal sealed class ActuatorEndpointMapper
 {
-    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
+    private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IEnumerable<IEndpointMiddleware> _middlewares;
     private readonly ILogger<ActuatorEndpointMapper> _logger;
 
-    public ActuatorEndpointMapper(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IEnumerable<IEndpointMiddleware> middlewares,
+    public ActuatorEndpointMapper(IOptionsMonitor<ManagementOptions> managementOptionsMonitor, IEnumerable<IEndpointMiddleware> middlewares,
         ILogger<ActuatorEndpointMapper> logger)
     {
-        _managementOptions = managementOptions;
+        ArgumentGuard.NotNull(managementOptionsMonitor);
+        ArgumentGuard.NotNull(middlewares);
+        ArgumentGuard.NotNull(logger);
+
+        _managementOptionsMonitor = managementOptionsMonitor;
         _middlewares = middlewares;
         _logger = logger;
     }
@@ -38,34 +42,34 @@ internal sealed class ActuatorEndpointMapper
         conventionBuilder ??= new ActuatorConventionBuilder();
         // Map Default configured context
         IEnumerable<IEndpointMiddleware> middlewares = _middlewares.Where(m => m is not CloudFoundryEndpointMiddleware);
-        MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, _managementOptions.CurrentValue.Path, middlewares);
+        MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, _managementOptionsMonitor.CurrentValue.Path, middlewares);
 
         // Map Cloudfoundry context
         if (Platform.IsCloudFoundry)
         {
             IEnumerable<IEndpointMiddleware> cfMiddlewares = _middlewares.Where(m => m is not ActuatorHypermediaEndpointMiddleware);
-            MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, cfMiddlewares);
+            MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, ConfigureManagementOptions.DefaultCloudFoundryPath, cfMiddlewares);
         }
     }
 
     private void MapEndpoints(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder, HashSet<string> collection,
-        string contextBasePath, IEnumerable<IEndpointMiddleware> middlewares)
+        string baseRequestPath, IEnumerable<IEndpointMiddleware> middlewares)
     {
         foreach (IEndpointMiddleware middleware in middlewares)
         {
             Type middlewareType = middleware.GetType();
             RequestDelegate pipeline = endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middlewareType).Build();
-            HttpMiddlewareOptions endpointOptions = middleware.EndpointOptions;
-            string contextPath = endpointOptions.GetPathMatchPattern(contextBasePath, _managementOptions.CurrentValue);
+            EndpointOptions endpointOptions = middleware.EndpointOptions;
+            string requestPath = endpointOptions.GetPathMatchPattern(_managementOptionsMonitor.CurrentValue, baseRequestPath);
 
-            if (collection.Add(contextPath))
+            if (collection.Add(requestPath))
             {
-                IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(contextPath, endpointOptions.AllowedVerbs, pipeline);
+                IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(requestPath, endpointOptions.AllowedVerbs, pipeline);
                 conventionBuilder.Add(builder);
             }
             else
             {
-                _logger.LogError("Skipping over duplicate path at {path}", contextPath);
+                _logger.LogError("Skipping over duplicate path at {path}", requestPath);
             }
         }
     }

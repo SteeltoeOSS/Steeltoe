@@ -11,20 +11,19 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 
 internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
 {
-    private readonly IOptionsMonitor<RefreshEndpointOptions> _options;
-
+    private readonly IOptionsMonitor<RefreshEndpointOptions> _optionsMonitor;
     private readonly IConfiguration _configuration;
     private readonly ILogger<RefreshEndpointHandler> _logger;
 
-    public HttpMiddlewareOptions Options => _options.CurrentValue;
+    public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public RefreshEndpointHandler(IOptionsMonitor<RefreshEndpointOptions> options, IConfiguration configuration, ILoggerFactory loggerFactory)
+    public RefreshEndpointHandler(IOptionsMonitor<RefreshEndpointOptions> optionsMonitor, IConfiguration configuration, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(loggerFactory);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _configuration = configuration;
         _logger = loggerFactory.CreateLogger<RefreshEndpointHandler>();
     }
@@ -40,7 +39,7 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
 
         IList<string> keys = new List<string>();
 
-        if (_options.CurrentValue.ReturnConfiguration)
+        if (_optionsMonitor.CurrentValue.ReturnConfiguration)
         {
             foreach (KeyValuePair<string, string> kvp in _configuration.AsEnumerable())
             {

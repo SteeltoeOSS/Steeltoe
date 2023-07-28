@@ -32,9 +32,9 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
             };
 
             IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var appInfo = new ApplicationInstanceInfo(configurationRoot);
-            var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-            IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
+            var instanceInfo = new ApplicationInstanceInfo(configurationRoot);
+            var clientOptions = new SpringBootAdminClientOptions(configurationRoot, instanceInfo);
+            IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings);
             IOptionsMonitor<HealthEndpointOptions> healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
             var httpMessageHandler = new MockHttpMessageHandler();
             httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", "{\"Id\":\"1234567\"}");
@@ -44,7 +44,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
 
             Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
 
-            var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions,
+            var service = new SpringBootAdminClientHostedService(clientOptions, managementOptions, healthOptions,
                 NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
 
             await service.StartAsync(default);
@@ -72,9 +72,9 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
         };
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var appInfo = new ApplicationInstanceInfo(configurationRoot);
-        var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
+        var instanceInfo = new ApplicationInstanceInfo(configurationRoot);
+        var clientOptions = new SpringBootAdminClientOptions(configurationRoot, instanceInfo);
+        IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings);
         IOptionsMonitor<HealthEndpointOptions> healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions>(appSettings);
         var httpMessageHandler = new MockHttpMessageHandler();
 
@@ -83,7 +83,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
 
         Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
 
-        var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions,
+        var service = new SpringBootAdminClientHostedService(clientOptions, managementOptions, healthOptions,
             NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
 
         await service.StartAsync(default);

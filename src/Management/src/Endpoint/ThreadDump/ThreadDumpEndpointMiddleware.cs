@@ -14,9 +14,9 @@ internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object, 
 {
     private readonly ILogger<ThreadDumpEndpointMiddleware> _logger;
 
-    public ThreadDumpEndpointMiddleware(IThreadDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public ThreadDumpEndpointMiddleware(IThreadDumpEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptions, loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
         _logger = loggerFactory.CreateLogger<ThreadDumpEndpointMiddleware>();
     }

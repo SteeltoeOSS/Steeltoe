@@ -31,9 +31,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -55,9 +55,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
 
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -81,9 +81,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
 
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -106,9 +106,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
         // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
@@ -132,9 +132,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
         // {"status":"UP","components":{"diskSpace":{"status":"UP","details":{"total":1003588939776,"free":597722619904,"threshold":10485760,"status":"UP"}},"readiness":{"status":"UNKNOWN","description":"Failed to get current availability state","details":{}}}}
@@ -158,9 +158,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
 
         var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
@@ -186,9 +186,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
     }
 
@@ -201,9 +201,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            string json = await result.Content.ReadAsStringAsync();
+            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            string json = await response.Content.ReadAsStringAsync();
             Assert.NotNull(json);
             Assert.Contains("\"status\":\"UP\"", json, StringComparison.Ordinal);
         }
@@ -311,17 +311,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<HealthEndpointOptions>();
+        var endpointOptions = GetOptionsFromSettings<HealthEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
-        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-
-        Assert.False(options.RequiresExactMatch());
-        Assert.Equal("/actuator/health/{**_}", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        Assert.False(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/health/{**_}", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
 
         Assert.Equal("/cloudfoundryapplication/health/{**_}",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        Assert.Single(options.AllowedVerbs);
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.Single(endpointOptions.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 }

@@ -12,7 +12,7 @@ public sealed class MappingDescriptionTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        var routeDetail = new AspNetCoreRouteDetails
+        var routeDetails = new AspNetCoreRouteDetails
         {
             HttpMethods = new List<string>
             {
@@ -29,7 +29,7 @@ public sealed class MappingDescriptionTest : BaseTest
             }
         };
 
-        var mapDesc = new RouteMappingDescription("foobar", routeDetail);
+        var mapDesc = new RouteMappingDescription("foobar", routeDetails);
 
         Assert.Null(mapDesc.Details);
         Assert.Equal("foobar", mapDesc.Handler);
@@ -39,7 +39,7 @@ public sealed class MappingDescriptionTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var routeDetail = new AspNetCoreRouteDetails
+        var routeDetails = new AspNetCoreRouteDetails
         {
             HttpMethods = new List<string>
             {
@@ -56,7 +56,7 @@ public sealed class MappingDescriptionTest : BaseTest
             }
         };
 
-        var mapDesc = new RouteMappingDescription("foobar", routeDetail);
+        var mapDesc = new RouteMappingDescription("foobar", routeDetails);
 
         string result = Serialize(mapDesc);
 

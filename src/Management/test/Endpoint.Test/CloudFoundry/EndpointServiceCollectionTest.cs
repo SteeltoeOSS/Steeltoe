@@ -13,15 +13,6 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddCloudFoundryActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddCloudFoundryActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void AddCloudFoundryActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
@@ -44,7 +35,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
         Assert.Equal(string.Empty, options.CurrentValue.Id);
-        var ep = serviceProvider.GetService<ICloudFoundryEndpointHandler>();
-        Assert.NotNull(ep);
+        var handler = serviceProvider.GetService<ICloudFoundryEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

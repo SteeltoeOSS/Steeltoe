@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
-public sealed class ManagementEndpointOptions
+public sealed class ManagementOptions
 {
     internal bool IsCloudFoundryEnabled { get; set; }
 

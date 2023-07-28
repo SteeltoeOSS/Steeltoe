@@ -49,9 +49,9 @@ public static class ServiceCollectionExtensions
 
         if (version == MediaTypeVersion.V2)
         {
-            services.PostConfigure((ManagementEndpointOptions endpointOptions) =>
+            services.PostConfigure((ManagementOptions managementOptions) =>
             {
-                JsonSerializerOptions serializerOptions = endpointOptions.SerializerOptions ?? new JsonSerializerOptions
+                JsonSerializerOptions serializerOptions = managementOptions.SerializerOptions ?? new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };

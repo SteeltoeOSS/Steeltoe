@@ -12,9 +12,9 @@ namespace Steeltoe.Management.Endpoint.Info;
 
 internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object, IDictionary<string, object>>
 {
-    public InfoEndpointMiddleware(IInfoEndpointHandler endpointHandler, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public InfoEndpointMiddleware(IInfoEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptions, loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
     }
 

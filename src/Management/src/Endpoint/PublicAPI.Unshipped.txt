@@ -137,7 +137,7 @@ Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.CloudFound
 Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.ValidateCertificates.set -> void
 Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware
-Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware.CloudFoundrySecurityMiddleware(Microsoft.AspNetCore.Http.RequestDelegate next, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions> options, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions> managementOptionsMonitor, System.Collections.Generic.IEnumerable<Steeltoe.Management.HttpMiddlewareOptions> endpointsCollection, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware.CloudFoundrySecurityMiddleware(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions> managementOptionsMonitor, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions> cloudFoundryEndpointOptionsMonitor, System.Collections.Generic.IEnumerable<Steeltoe.Management.EndpointOptions> endpointsOptionsCollection, Microsoft.AspNetCore.Http.RequestDelegate next, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
 Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext context) -> System.Threading.Tasks.Task
 Steeltoe.Management.Endpoint.CloudFoundry.EndpointApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.EndpointServiceCollectionExtensions
@@ -298,28 +298,29 @@ Steeltoe.Management.Endpoint.Metrics.MetricsResponse.Names.get -> System.Collect
 Steeltoe.Management.Endpoint.Metrics.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointHandler.get -> Steeltoe.Management.IEndpointHandler<TArgument, TResult>
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointMiddleware(Steeltoe.Management.IEndpointHandler<TArgument, TResult> endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions> managementOptions, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointOptions.get -> Steeltoe.Management.HttpMiddlewareOptions
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointMiddleware(Steeltoe.Management.IEndpointHandler<TArgument, TResult> endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions> managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointOptions.get -> Steeltoe.Management.EndpointOptions
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.GetSerializerOptions() -> System.Text.Json.JsonSerializerOptions
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext context, Microsoft.AspNetCore.Http.RequestDelegate next) -> System.Threading.Tasks.Task
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ManagementEndpointOptionsMonitor.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions>
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ManagementOptionsMonitor.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions>
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware
-Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware.EndpointOptions.get -> Steeltoe.Management.HttpMiddlewareOptions
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.CustomJsonConverters.get -> System.Collections.Generic.IList<string>
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.CustomJsonConverters.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Enabled.get -> bool?
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Enabled.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Exposure.get -> Steeltoe.Management.Endpoint.Exposure
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Exposure.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.ManagementEndpointOptions() -> void
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Path.get -> string
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Path.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Port.get -> string
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.Port.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.SerializerOptions.get -> System.Text.Json.JsonSerializerOptions
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.SerializerOptions.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.UseStatusCodeFromResponse.get -> bool
-Steeltoe.Management.Endpoint.Options.ManagementEndpointOptions.UseStatusCodeFromResponse.set -> void
+Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware.EndpointOptions.get -> Steeltoe.Management.EndpointOptions
+Steeltoe.Management.Endpoint.Options.ManagementOptions
+Steeltoe.Management.Endpoint.Options.ManagementOptions.CustomJsonConverters.get -> System.Collections.Generic.IList<string>
+Steeltoe.Management.Endpoint.Options.ManagementOptions.CustomJsonConverters.set -> void
+Steeltoe.Management.Endpoint.Options.ManagementOptions.Enabled.get -> bool?
+Steeltoe.Management.Endpoint.Options.ManagementOptions.Enabled.set -> void
+Steeltoe.Management.Endpoint.Options.ManagementOptions.Exposure.get -> Steeltoe.Management.Endpoint.Exposure
+Steeltoe.Management.Endpoint.Options.ManagementOptions.Exposure.set -> void
+Steeltoe.Management.Endpoint.Options.ManagementOptions.ManagementOptions() -> void
+Steeltoe.Management.Endpoint.Options.ManagementOptions.Path.get -> string
+Steeltoe.Management.Endpoint.Options.ManagementOptions.Path.set -> void
+Steeltoe.Management.Endpoint.Options.ManagementOptions.Port.get -> string
+Steeltoe.Management.Endpoint.Options.ManagementOptions.Port.set -> void
+Steeltoe.Management.Endpoint.Options.ManagementOptions.SerializerOptions.get -> System.Text.Json.JsonSerializerOptions
+Steeltoe.Management.Endpoint.Options.ManagementOptions.SerializerOptions.set -> void
+Steeltoe.Management.Endpoint.Options.ManagementOptions.UseStatusCodeFromResponse.get -> bool
+Steeltoe.Management.Endpoint.Options.ManagementOptions.UseStatusCodeFromResponse.set -> void
 Steeltoe.Management.Endpoint.Refresh.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Refresh.IRefreshEndpointHandler
 Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions
@@ -536,6 +537,5 @@ Steeltoe.Management.Endpoint.Web.Hypermedia.Links.Links() -> void
 Steeltoe.Management.Endpoint.Web.Hypermedia.Links.Type.get -> string
 Steeltoe.Management.Endpoint.Web.Hypermedia.Links.Type.set -> void
 Steeltoe.Management.Endpoint.Web.Hypermedia.ServiceCollectionExtensions
-virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.GetSerializerOptions() -> System.Text.Json.JsonSerializerOptions
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ShouldInvoke(Microsoft.AspNetCore.Http.PathString requestPath) -> bool
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.WriteResponseAsync(TResult result, Microsoft.AspNetCore.Http.HttpContext context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task

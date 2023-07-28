@@ -14,13 +14,6 @@ namespace Steeltoe.Management.Tracing.Test;
 public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
 {
     [Fact]
-    public void AddDistributedTracing_ThrowsOnNulls()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => TracingBaseServiceCollectionExtensions.AddDistributedTracing(null));
-        Assert.Equal("services", ex.ParamName);
-    }
-
-    [Fact]
     public void AddDistributedTracing_ConfiguresExpectedDefaults()
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
@@ -32,7 +25,6 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
         ValidateServiceCollectionBase(serviceProvider);
     }
 
-    // this test should find Jaeger and Zipkin exporters, see TracingCore.Test for OTLP
     [Fact]
     public void AddDistributedTracing_WiresIncludedExporters()
     {

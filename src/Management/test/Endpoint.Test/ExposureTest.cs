@@ -14,11 +14,11 @@ public sealed class ExposureTest
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var exp = new Exposure(configurationRoot);
+        var exposure = new Exposure(configurationRoot);
 
-        Assert.Contains("health", exp.Include);
-        Assert.Contains("info", exp.Include);
-        Assert.Null(exp.Exclude);
+        Assert.Contains("health", exposure.Include);
+        Assert.Contains("info", exposure.Include);
+        Assert.Null(exposure.Exclude);
     }
 
     [Fact]
@@ -34,12 +34,12 @@ public sealed class ExposureTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var exp = new Exposure(configurationRoot);
+        var exposure = new Exposure(configurationRoot);
 
-        Assert.Contains("httptrace", exp.Include);
-        Assert.Contains("dbmigrations", exp.Include);
-        Assert.Contains("trace", exp.Exclude);
-        Assert.Contains("env", exp.Exclude);
+        Assert.Contains("httptrace", exposure.Include);
+        Assert.Contains("dbmigrations", exposure.Include);
+        Assert.Contains("trace", exposure.Exclude);
+        Assert.Contains("env", exposure.Exclude);
     }
 
     [Fact]
@@ -53,12 +53,12 @@ public sealed class ExposureTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var exp = new Exposure(configurationRoot);
+        var exposure = new Exposure(configurationRoot);
 
-        Assert.Contains("heapdump", exp.Include);
-        Assert.Contains("env", exp.Include);
-        Assert.Contains("dbmigrations", exp.Exclude);
-        Assert.Contains("info", exp.Exclude);
+        Assert.Contains("heapdump", exposure.Include);
+        Assert.Contains("env", exposure.Include);
+        Assert.Contains("dbmigrations", exposure.Exclude);
+        Assert.Contains("info", exposure.Exclude);
     }
 
     [Fact]
@@ -71,9 +71,9 @@ public sealed class ExposureTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var exp = new Exposure(configurationRoot);
+        var exposure = new Exposure(configurationRoot);
 
-        Assert.Contains("heapdump;env", exp.Include);
-        Assert.Null(exp.Exclude);
+        Assert.Contains("heapdump;env", exposure.Include);
+        Assert.Null(exposure.Exclude);
     }
 }

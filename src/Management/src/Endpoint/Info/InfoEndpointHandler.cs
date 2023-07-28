@@ -11,18 +11,19 @@ namespace Steeltoe.Management.Endpoint.Info;
 
 internal sealed class InfoEndpointHandler : IInfoEndpointHandler
 {
+    private readonly IOptionsMonitor<InfoEndpointOptions> _optionsMonitor;
     private readonly IList<IInfoContributor> _contributors;
-    private readonly IOptionsMonitor<InfoEndpointOptions> _options;
     private readonly ILogger<InfoEndpointHandler> _logger;
-    public HttpMiddlewareOptions Options => _options.CurrentValue;
 
-    public InfoEndpointHandler(IOptionsMonitor<InfoEndpointOptions> options, IEnumerable<IInfoContributor> contributors, ILoggerFactory loggerFactory)
+    public EndpointOptions Options => _optionsMonitor.CurrentValue;
+
+    public InfoEndpointHandler(IOptionsMonitor<InfoEndpointOptions> optionsMonitor, IEnumerable<IInfoContributor> contributors, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(contributors);
         ArgumentGuard.NotNull(loggerFactory);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _contributors = contributors.ToList();
         _logger = loggerFactory.CreateLogger<InfoEndpointHandler>();
     }

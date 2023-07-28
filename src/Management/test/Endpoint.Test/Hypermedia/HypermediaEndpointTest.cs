@@ -23,58 +23,58 @@ public sealed class HypermediaEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_ReturnsExpectedLinks()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddHypermediaActuatorServices();
             services.AddInfoActuatorServices();
         };
 
-        var ep = tc.GetRequiredService<IActuatorEndpointHandler>();
+        var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
 
-        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        Assert.NotNull(info);
-        Assert.NotNull(info.Entries);
-        Assert.True(info.Entries.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info.Entries["self"].Href);
-        Assert.True(info.Entries.ContainsKey("info"));
-        Assert.Equal("http://localhost:5000/foobar/info", info.Entries["info"].Href);
-        Assert.Equal(2, info.Entries.Count);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Assert.NotNull(links);
+        Assert.NotNull(links.Entries);
+        Assert.True(links.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", links.Entries["self"].Href);
+        Assert.True(links.Entries.ContainsKey("info"));
+        Assert.Equal("http://localhost:5000/foobar/info", links.Entries["info"].Href);
+        Assert.Equal(2, links.Entries.Count);
     }
 
     [Fact]
     public async Task Invoke_OnlyActuatorHypermediaEndpoint_ReturnsExpectedLinks()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddHypermediaActuatorServices();
         };
 
-        var ep = tc.GetRequiredService<IActuatorEndpointHandler>();
+        var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
 
-        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        Assert.NotNull(info);
-        Assert.NotNull(info.Entries);
-        Assert.True(info.Entries.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info.Entries["self"].Href);
-        Assert.Single(info.Entries);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Assert.NotNull(links);
+        Assert.NotNull(links.Entries);
+        Assert.True(links.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", links.Entries["self"].Href);
+        Assert.Single(links.Entries);
     }
 
     [Fact]
     public async Task Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddHypermediaActuatorServices();
             services.AddInfoActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string>
             {
@@ -82,29 +82,29 @@ public sealed class HypermediaEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetRequiredService<IActuatorEndpointHandler>();
+        var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
 
-        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        Assert.NotNull(info);
-        Assert.NotNull(info.Entries);
-        Assert.True(info.Entries.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info.Entries["self"].Href);
-        Assert.False(info.Entries.ContainsKey("info"));
-        Assert.Single(info.Entries);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Assert.NotNull(links);
+        Assert.NotNull(links.Entries);
+        Assert.True(links.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", links.Entries["self"].Href);
+        Assert.False(links.Entries.ContainsKey("info"));
+        Assert.Single(links.Entries);
     }
 
     [Fact]
     public async Task Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddHypermediaActuatorServices();
             services.AddInfoActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string>
             {
@@ -113,11 +113,11 @@ public sealed class HypermediaEndpointTest : BaseTest
             });
         };
 
-        var ep = tc.GetRequiredService<IActuatorEndpointHandler>();
+        var handler = testContext.GetRequiredService<IActuatorEndpointHandler>();
 
-        Links info = await ep.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
-        Assert.NotNull(info);
-        Assert.NotNull(info.Entries);
-        Assert.Empty(info.Entries);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Assert.NotNull(links);
+        Assert.NotNull(links.Entries);
+        Assert.Empty(links.Entries);
     }
 }

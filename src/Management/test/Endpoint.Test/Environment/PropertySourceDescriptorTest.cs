@@ -18,9 +18,9 @@ public sealed class PropertySourceDescriptorTest : BaseTest
             { "key2", new PropertyValueDescriptor(false) }
         };
 
-        var propDesc = new PropertySourceDescriptor("name", properties);
-        Assert.Equal("name", propDesc.Name);
-        Assert.Same(properties, propDesc.Properties);
+        var descriptor = new PropertySourceDescriptor("name", properties);
+        Assert.Equal("name", descriptor.Name);
+        Assert.Same(properties, descriptor.Properties);
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public sealed class PropertySourceDescriptorTest : BaseTest
             { "key2", new PropertyValueDescriptor(false) }
         };
 
-        var propDesc = new PropertySourceDescriptor("name", properties);
-        string result = Serialize(propDesc);
+        var descriptor = new PropertySourceDescriptor("name", properties);
+        string result = Serialize(descriptor);
         Assert.Equal("{\"name\":\"name\",\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}}}", result);
     }
 }

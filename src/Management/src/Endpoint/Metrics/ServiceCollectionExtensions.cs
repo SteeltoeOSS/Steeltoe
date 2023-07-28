@@ -80,7 +80,7 @@ public static class ServiceCollectionExtensions
                 () => logger.LogTrace("Steeltoe metrics collector started."),
                 () => logger.LogWarning($"Cannot collect any more time series because the configured limit of {exporterOptions.MaxTimeSeries} was reached"),
                 () => logger.LogWarning($"Cannot collect any more Histograms because the configured limit of {exporterOptions.MaxHistograms} was reached"),
-                ex => logger.LogError(ex, "An error occurred while collecting Observable Instruments "));
+                exception => logger.LogError(exception, "An error occurred while collecting Observable Instruments "));
 
             steeltoeExporter.SetCollect(aggregationManager.Collect);
             aggregationManager.Include(SteeltoeMetrics.InstrumentationName); // Default to Steeltoe Metrics

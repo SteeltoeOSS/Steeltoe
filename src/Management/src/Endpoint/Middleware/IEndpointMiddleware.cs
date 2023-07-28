@@ -8,5 +8,5 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 
 public interface IEndpointMiddleware : IMiddleware
 {
-    HttpMiddlewareOptions EndpointOptions { get; }
+    EndpointOptions EndpointOptions { get; }
 }

@@ -14,20 +14,17 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRequest, HealthEndpointResponse>
 {
-    private readonly IOptionsMonitor<HealthEndpointOptions> _healthEndpointOptionsMonitor;
+    private readonly IOptionsMonitor<HealthEndpointOptions> _endpointOptionsMonitor;
     private readonly ILogger<HealthEndpointMiddleware> _logger;
 
-    public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpointHandler endpointHandler,
-        IOptionsMonitor<HealthEndpointOptions> endpointOptions, ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptions, loggerFactory)
+    public HealthEndpointMiddleware(IHealthEndpointHandler endpointHandler, IOptionsMonitor<HealthEndpointOptions> endpointOptionsMonitor,
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
-        ArgumentGuard.NotNull(managementOptions);
-        ArgumentGuard.NotNull(endpointHandler);
-        ArgumentGuard.NotNull(endpointOptions);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(endpointOptionsMonitor);
 
+        _endpointOptionsMonitor = endpointOptionsMonitor;
         _logger = loggerFactory.CreateLogger<HealthEndpointMiddleware>();
-        _healthEndpointOptionsMonitor = endpointOptions;
     }
 
     protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
@@ -60,15 +57,13 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     private bool GetHasClaim(HttpContext context)
     {
-        EndpointClaim claim = _healthEndpointOptionsMonitor.CurrentValue.Claim;
+        EndpointClaim claim = _endpointOptionsMonitor.CurrentValue.Claim;
         return claim != null && context.User.HasClaim(claim.Type, claim.Value);
     }
 
     protected override async Task WriteResponseAsync(HealthEndpointResponse result, HttpContext context, CancellationToken cancellationToken)
     {
-        ManagementEndpointOptions currentOptions = ManagementEndpointOptionsMonitor.CurrentValue;
-
-        if (currentOptions.UseStatusCodeFromResponse)
+        if (ManagementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse)
         {
             context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
         }

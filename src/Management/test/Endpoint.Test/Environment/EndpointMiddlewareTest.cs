@@ -44,13 +44,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<EnvironmentEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
 
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
+        IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
 
-        var ep = new EnvironmentEndpointHandler(optionsMonitor, configurationRoot, _host, NullLoggerFactory.Instance);
-        var middle = new EnvironmentEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
+        var handler = new EnvironmentEndpointHandler(optionsMonitor, configurationRoot, _host, NullLoggerFactory.Instance);
+        var middleware = new EnvironmentEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/env");
-        await middle.InvokeAsync(context, null);
+        await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadLineAsync();
@@ -65,8 +65,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     public async Task EnvironmentActuator_ReturnsExpectedData()
     {
         // Some developers set ASPNETCORE_ENVIRONMENT in their environment, which will break this test if we don't un-set it
-        string aspNetCoreEnvironment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
+        using var scope = new EnvironmentVariableScope("ASPNETCORE_ENVIRONMENT", null);
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
@@ -76,36 +75,33 @@ public sealed class EndpointMiddlewareTest : BaseTest
                     loggingBuilder.AddDynamicConsole();
                 });
 
-        using (var server = new TestServer(builder))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/env"));
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            string json = await result.Content.ReadAsStringAsync();
+        using var server = new TestServer(builder);
 
-            const string expected =
-                "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"name\":\"ChainedConfigurationProvider\",\"properties\":{\"applicationName\":{\"value\":\"Steeltoe.Management.Endpoint.Test\"}}},{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:actuator:exposure:include:0\":{\"value\":\"*\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/env"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
 
-            Assert.Equal(expected, json);
-        }
+        const string expected =
+            "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"name\":\"ChainedConfigurationProvider\",\"properties\":{\"applicationName\":{\"value\":\"Steeltoe.Management.Endpoint.Test\"}}},{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:actuator:exposure:include:0\":{\"value\":\"*\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
 
-        System.Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", aspNetCoreEnvironment);
+        Assert.Equal(expected, json);
     }
 
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<EnvironmentEndpointOptions>();
+        var endpointOptions = GetOptionsFromSettings<EnvironmentEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
-        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.RequiresExactMatch());
-        Assert.Equal("/actuator/env", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/env", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
 
         Assert.Equal("/cloudfoundryapplication/env",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        Assert.Single(options.AllowedVerbs);
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.Single(endpointOptions.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)
@@ -117,7 +113,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
-        context.Request.Path = new PathString(path);
+        context.Request.Path = path;
         context.Request.Scheme = "http";
         context.Request.Host = new HostString("localhost");
         return context;

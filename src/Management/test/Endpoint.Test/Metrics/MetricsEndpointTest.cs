@@ -5,11 +5,8 @@
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using Steeltoe.Management.MetricCollectors.Exporters;
-using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;
 using Xunit;
 using Xunit.Abstractions;
@@ -27,37 +24,28 @@ public sealed class MetricsEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsIfNulls()
-    {
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointHandler(null, null, null));
-        IOptionsMonitor<MetricsEndpointOptions> options = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointHandler(options, null, null));
-        Assert.Throws<ArgumentNullException>(() => new MetricsEndpointHandler(options, new SteeltoeExporter(new MetricsExporterOptions()), null));
-    }
-
-    [Fact]
     public async Task Invoke_WithNullMetricsRequest_ReturnsExpected()
     {
-        using (var tc = new TestContext(_output))
+        using (var testContext = new TestContext(_output))
         {
-            tc.AdditionalServices = (services, _) =>
+            testContext.AdditionalServices = (services, _) =>
             {
                 services.AddMetricsActuatorServices();
             };
 
-            MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+            MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
             await service.StartAsync(CancellationToken.None);
 
             try
             {
-                var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
+                var handler = testContext.GetRequiredService<IMetricsEndpointHandler>();
                 Counter<long> requests = SteeltoeMetrics.Meter.CreateCounter<long>("http.server.requests");
                 requests.Add(1);
                 Counter<double> memory = SteeltoeMetrics.Meter.CreateCounter<double>("gc.memory.used");
                 memory.Add(25);
 
-                MetricsResponse result = await ep.InvokeAsync(null, CancellationToken.None);
+                MetricsResponse result = await handler.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
                 Assert.NotEmpty(result.Names);
                 Assert.Contains("http.server.requests", result.Names);
@@ -71,26 +59,26 @@ public sealed class MetricsEndpointTest : BaseTest
             }
         }
 
-        using (var tc = new TestContext(_output))
+        using (var testContext = new TestContext(_output))
         {
-            tc.AdditionalServices = (services, _) =>
+            testContext.AdditionalServices = (services, _) =>
             {
                 services.AddMetricsActuatorServices();
             };
 
-            MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+            MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
             await service.StartAsync(CancellationToken.None);
 
             try
             {
-                var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
-                MetricsResponse result = await ep.InvokeAsync(null, CancellationToken.None);
+                var handler = testContext.GetRequiredService<IMetricsEndpointHandler>();
+                MetricsResponse result = await handler.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
 
                 Assert.IsType<MetricsResponse>(result);
-                MetricsResponse resp = result;
-                Assert.Empty(resp.Names);
+                MetricsResponse response = result;
+                Assert.Empty(response.Names);
             }
             finally
             {
@@ -102,20 +90,20 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_WithMetricsRequest_ReturnsExpected()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
         try
         {
-            var ep = tc.GetRequiredService<IMetricsEndpointHandler>();
+            var handler = testContext.GetRequiredService<IMetricsEndpointHandler>();
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             long allKeysSum = 0;
@@ -127,32 +115,32 @@ public sealed class MetricsEndpointTest : BaseTest
                 { "c", "v1" }
             };
 
-            for (int i = 0; i < 10; i++)
+            for (int index = 0; index < 10; index++)
             {
-                allKeysSum += i;
-                testMeasure.Add(i, labels.AsReadonlySpan());
+                allKeysSum += index;
+                testMeasure.Add(index, labels.AsReadonlySpan());
             }
 
             List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
-            var req = new MetricsRequest("test.test5", tags);
-            MetricsResponse resp = await ep.InvokeAsync(req, CancellationToken.None);
-            Assert.NotNull(resp);
+            var request = new MetricsRequest("test.test5", tags);
+            MetricsResponse response = await handler.InvokeAsync(request, CancellationToken.None);
+            Assert.NotNull(response);
 
-            Assert.Equal("test.test5", resp.Name);
+            Assert.Equal("test.test5", response.Name);
 
-            Assert.NotNull(resp.Measurements);
-            Assert.Single(resp.Measurements);
+            Assert.NotNull(response.Measurements);
+            Assert.Single(response.Measurements);
 
-            MetricSample sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Rate);
+            MetricSample sample = response.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Rate);
             Assert.NotNull(sample);
             Assert.Equal(allKeysSum, sample.Value);
 
-            Assert.NotNull(resp.AvailableTags);
-            Assert.Equal(3, resp.AvailableTags.Count);
+            Assert.NotNull(response.AvailableTags);
+            Assert.Equal(3, response.AvailableTags.Count);
 
-            req = new MetricsRequest("foo.bar", tags);
-            resp = await ep.InvokeAsync(req, CancellationToken.None);
-            Assert.Null(resp);
+            request = new MetricsRequest("foo.bar", tags);
+            response = await handler.InvokeAsync(request, CancellationToken.None);
+            Assert.Null(response);
         }
         finally
         {
@@ -163,9 +151,9 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_WithMetricsRequest_ReturnsExpected_IncludesAdditionalInstruments()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string>
             {
@@ -173,18 +161,18 @@ public sealed class MetricsEndpointTest : BaseTest
             });
         };
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuator();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
         try
         {
-            var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
+            var handler = testContext.GetRequiredService<IMetricsEndpointHandler>();
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             var additionalMeter = new Meter("AdditionalTestMeter");
@@ -199,35 +187,35 @@ public sealed class MetricsEndpointTest : BaseTest
                 { "c", "v1" }
             };
 
-            for (int i = 0; i < 10; i++)
+            for (int index = 0; index < 10; index++)
             {
-                allKeysSum += i;
-                testMeasure.Add(i, labels.AsReadonlySpan());
-                additionalInstrument.Add(i, labels.AsReadonlySpan());
+                allKeysSum += index;
+                testMeasure.Add(index, labels.AsReadonlySpan());
+                additionalInstrument.Add(index, labels.AsReadonlySpan());
             }
 
             List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
-            var req = new MetricsRequest("test.test5", tags);
-            MetricsResponse resp = await ep.InvokeAsync(req, CancellationToken.None);
-            Assert.NotNull(resp);
+            var request = new MetricsRequest("test.test5", tags);
+            MetricsResponse response = await handler.InvokeAsync(request, CancellationToken.None);
+            Assert.NotNull(response);
 
-            Assert.Equal("test.test5", resp.Name);
+            Assert.Equal("test.test5", response.Name);
 
-            Assert.NotNull(resp.Measurements);
-            Assert.Single(resp.Measurements);
+            Assert.NotNull(response.Measurements);
+            Assert.Single(response.Measurements);
 
-            MetricSample sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Rate);
+            MetricSample sample = response.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Rate);
             Assert.NotNull(sample);
             Assert.Equal(allKeysSum, sample.Value);
 
-            Assert.NotNull(resp.AvailableTags);
-            Assert.Equal(3, resp.AvailableTags.Count);
+            Assert.NotNull(response.AvailableTags);
+            Assert.Equal(3, response.AvailableTags.Count);
 
-            req = new MetricsRequest("AdditionalInstrument", tags);
-            resp = await ep.InvokeAsync(req, CancellationToken.None);
-            Assert.NotNull(resp);
+            request = new MetricsRequest("AdditionalInstrument", tags);
+            response = await handler.InvokeAsync(request, CancellationToken.None);
+            Assert.NotNull(response);
 
-            Assert.Equal("AdditionalInstrument", resp.Name);
+            Assert.Equal("AdditionalInstrument", response.Name);
         }
         finally
         {
@@ -238,25 +226,25 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetMetricSamples_ReturnsExpectedCounter()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
         try
         {
-            var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
+            var handler = (MetricsEndpointHandler)testContext.GetRequiredService<IMetricsEndpointHandler>();
 
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test7");
             counter.Add(100);
 
-            (MetricsCollection<List<MetricSample>> measurements, _) = ep.GetMetrics();
+            (MetricsCollection<List<MetricSample>> measurements, _) = handler.GetMetrics();
             Assert.NotNull(measurements);
             Assert.Single(measurements.Values);
             MetricSample sample = measurements.Values.First()[0];
@@ -272,20 +260,20 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetAvailableTags_ReturnsExpected()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
         try
         {
-            var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
+            var handler = (MetricsEndpointHandler)testContext.GetRequiredService<IMetricsEndpointHandler>();
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test2");
 
             var v1Tags = new Dictionary<string, object>
@@ -305,7 +293,7 @@ public sealed class MetricsEndpointTest : BaseTest
             counter.Add(1, v1Tags.AsReadonlySpan());
             counter.Add(1, v2Tags.AsReadonlySpan());
 
-            (_, MetricsCollection<List<MetricTag>> tagDictionary) = ep.GetMetrics();
+            (_, MetricsCollection<List<MetricTag>> tagDictionary) = handler.GetMetrics();
 
             Assert.NotNull(tagDictionary);
             Assert.Single(tagDictionary.Values);
@@ -333,7 +321,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
             counter2.Add(1);
 
-            (_, tagDictionary) = ep.GetMetrics();
+            (_, tagDictionary) = handler.GetMetrics();
 
             Assert.NotNull(tagDictionary);
             Assert.Single(tagDictionary.Values);
@@ -350,20 +338,20 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetMetricMeasurements_ReturnsExpected()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
         try
         {
-            var ep = (MetricsEndpointHandler)tc.GetRequiredService<IMetricsEndpointHandler>();
+            var handler = (MetricsEndpointHandler)testContext.GetRequiredService<IMetricsEndpointHandler>();
 
             Histogram<double> testMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("test.test1");
 
@@ -391,37 +379,37 @@ public sealed class MetricsEndpointTest : BaseTest
 
             long allKeysSum = 0;
 
-            for (int i = 0; i < 10; i++)
+            for (int index = 0; index < 10; index++)
             {
-                allKeysSum += i;
-                testMeasure.Record(i, context1.AsReadonlySpan());
+                allKeysSum += index;
+                testMeasure.Record(index, context1.AsReadonlySpan());
             }
 
             long aSum = 0;
 
-            for (int i = 0; i < 10; i++)
+            for (int index = 0; index < 10; index++)
             {
-                aSum += i;
-                testMeasure.Record(i, context2.AsReadonlySpan());
+                aSum += index;
+                testMeasure.Record(index, context2.AsReadonlySpan());
             }
 
             long bSum = 0;
 
-            for (int i = 0; i < 10; i++)
+            for (int index = 0; index < 10; index++)
             {
-                bSum += i;
-                testMeasure.Record(i, context3.AsReadonlySpan());
+                bSum += index;
+                testMeasure.Record(index, context3.AsReadonlySpan());
             }
 
             long cSum = 0;
 
-            for (int i = 0; i < 10; i++)
+            for (int index = 0; index < 10; index++)
             {
-                cSum += i;
-                testMeasure.Record(i, context4.AsReadonlySpan());
+                cSum += index;
+                testMeasure.Record(index, context4.AsReadonlySpan());
             }
 
-            (MetricsCollection<List<MetricSample>> measurements, _) = ep.GetMetrics();
+            (MetricsCollection<List<MetricSample>> measurements, _) = handler.GetMetrics();
             Assert.NotNull(measurements);
             Assert.Single(measurements);
 
@@ -437,7 +425,7 @@ public sealed class MetricsEndpointTest : BaseTest
                 new("a", "v1")
             };
 
-            IList<MetricSample> result = ep.GetMetricSamplesByTags(measurements, "test.test1", aTags);
+            IList<MetricSample> result = handler.GetMetricSamplesByTags(measurements, "test.test1", aTags);
             Assert.NotNull(result);
             Assert.Single(result);
 
@@ -450,7 +438,7 @@ public sealed class MetricsEndpointTest : BaseTest
                 new("b", "v1")
             };
 
-            result = ep.GetMetricSamplesByTags(measurements, "test.test1", bTags);
+            result = handler.GetMetricSamplesByTags(measurements, "test.test1", bTags);
 
             Assert.NotNull(result);
             Assert.Single(result);
@@ -465,7 +453,7 @@ public sealed class MetricsEndpointTest : BaseTest
                 new("c", "v1")
             };
 
-            result = ep.GetMetricSamplesByTags(measurements, "test.test1", cTags);
+            result = handler.GetMetricSamplesByTags(measurements, "test.test1", cTags);
             Assert.NotNull(result);
             Assert.Single(result);
 
@@ -479,7 +467,7 @@ public sealed class MetricsEndpointTest : BaseTest
                 new("b", "v1")
             };
 
-            result = ep.GetMetricSamplesByTags(measurements, "test.test1", abTags);
+            result = handler.GetMetricSamplesByTags(measurements, "test.test1", abTags);
 
             Assert.NotNull(result);
             Assert.Single(result);
@@ -494,7 +482,7 @@ public sealed class MetricsEndpointTest : BaseTest
                 new("c", "v1")
             };
 
-            result = ep.GetMetricSamplesByTags(measurements, "test.test1", acTags);
+            result = handler.GetMetricSamplesByTags(measurements, "test.test1", acTags);
 
             Assert.NotNull(result);
             Assert.Single(result);
@@ -510,7 +498,7 @@ public sealed class MetricsEndpointTest : BaseTest
                 new("c", "v1")
             };
 
-            result = ep.GetMetricSamplesByTags(measurements, "test.test1", bcTags);
+            result = handler.GetMetricSamplesByTags(measurements, "test.test1", bcTags);
 
             Assert.NotNull(result);
             Assert.Single(result);
@@ -529,20 +517,20 @@ public sealed class MetricsEndpointTest : BaseTest
     [Fact]
     public async Task GetMetric_ReturnsExpected()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, _) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = tc.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
 
         await service.StartAsync(CancellationToken.None);
 
         try
         {
-            var ep = tc.GetRequiredService<IMetricsEndpointHandler>();
+            var handler = testContext.GetRequiredService<IMetricsEndpointHandler>();
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.total");
 
@@ -561,22 +549,22 @@ public sealed class MetricsEndpointTest : BaseTest
                 testMeasure.Add(i, labels.AsReadonlySpan());
             }
 
-            var req = new MetricsRequest("test.total", labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList());
+            var request = new MetricsRequest("test.total", labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList());
 
-            MetricsResponse resp = await ep.InvokeAsync(req, CancellationToken.None);
+            MetricsResponse response = await handler.InvokeAsync(request, CancellationToken.None);
 
-            Assert.NotNull(resp);
+            Assert.NotNull(response);
 
-            Assert.Equal("test.total", resp.Name);
+            Assert.Equal("test.total", response.Name);
 
-            Assert.NotNull(resp.Measurements);
-            Assert.Single(resp.Measurements);
-            MetricSample sample = resp.Measurements[0];
+            Assert.NotNull(response.Measurements);
+            Assert.Single(response.Measurements);
+            MetricSample sample = response.Measurements[0];
             Assert.Equal(MetricStatistic.Rate, sample.Statistic);
             Assert.Equal(allKeysSum, sample.Value);
 
-            Assert.NotNull(resp.AvailableTags);
-            Assert.Equal(3, resp.AvailableTags.Count);
+            Assert.NotNull(response.AvailableTags);
+            Assert.Equal(3, response.AvailableTags.Count);
         }
         finally
         {

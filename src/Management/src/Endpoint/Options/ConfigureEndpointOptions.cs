@@ -9,7 +9,7 @@ using Steeltoe.Common;
 namespace Steeltoe.Management.Endpoint.Options;
 
 internal abstract class ConfigureEndpointOptions<T> : IConfigureOptions<T>
-    where T : HttpMiddlewareOptions
+    where T : EndpointOptions
 {
     private readonly string _prefix;
     private readonly string _id;

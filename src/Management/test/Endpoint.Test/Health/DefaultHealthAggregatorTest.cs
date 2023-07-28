@@ -15,8 +15,8 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
     [Fact]
     public void Aggregate_EmptyContributorList_ReturnsExpectedHealth()
     {
-        var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(Array.Empty<IHealthContributor>(), CancellationToken.None);
+        var aggregator = new DefaultHealthAggregator();
+        HealthCheckResult result = aggregator.Aggregate(Array.Empty<IHealthContributor>(), CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Unknown, result.Status);
         Assert.NotNull(result.Details);
@@ -30,8 +30,8 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
             new UpContributor()
         };
 
-        var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(contributors, CancellationToken.None);
+        var aggregator = new DefaultHealthAggregator();
+        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);
@@ -48,8 +48,8 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
             new UnknownContributor()
         };
 
-        var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(contributors, CancellationToken.None);
+        var aggregator = new DefaultHealthAggregator();
+        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Down, result.Status);
         Assert.NotNull(result.Details);
@@ -60,13 +60,13 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
     {
         var contributors = new List<IHealthContributor>();
 
-        for (int i = 0; i < 10; i++)
+        for (int index = 0; index < 10; index++)
         {
             contributors.Add(new UpContributor());
         }
 
-        var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(contributors, CancellationToken.None);
+        var aggregator = new DefaultHealthAggregator();
+        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Contains("Up-9", result.Details.Keys);
@@ -82,8 +82,8 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
             new UnknownContributor()
         };
 
-        var agg = new DefaultHealthAggregator();
-        HealthCheckResult result = agg.Aggregate(contributors, CancellationToken.None);
+        var aggregator = new DefaultHealthAggregator();
+        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.NotNull(result.Details);
@@ -92,7 +92,7 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
     [Fact]
     public void AggregatesInParallel()
     {
-        var t = new Stopwatch();
+        var stopwatch = new Stopwatch();
 
         var contributors = new List<IHealthContributor>
         {
@@ -101,12 +101,12 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
             new UpContributor(500)
         };
 
-        var agg = new DefaultHealthAggregator();
-        t.Start();
-        HealthCheckResult result = agg.Aggregate(contributors, CancellationToken.None);
-        t.Stop();
+        var aggregator = new DefaultHealthAggregator();
+        stopwatch.Start();
+        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
+        stopwatch.Stop();
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
-        Assert.InRange(t.ElapsedMilliseconds, 450, 1200);
+        Assert.InRange(stopwatch.ElapsedMilliseconds, 450, 1200);
     }
 }

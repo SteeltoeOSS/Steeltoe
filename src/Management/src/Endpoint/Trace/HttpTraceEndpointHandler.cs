@@ -10,21 +10,24 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 internal sealed class HttpTraceEndpointHandler : IHttpTraceEndpointHandler
 {
-    private readonly IOptionsMonitor<TraceEndpointOptions> _options;
+    private readonly IOptionsMonitor<TraceEndpointOptions> _optionsMonitor;
     private readonly IHttpTraceRepository _traceRepository;
     private readonly ILogger<HttpTraceEndpointHandler> _logger;
-    internal MediaTypeVersion Version { get; set; } = MediaTypeVersion.V2;
 
-    public HttpMiddlewareOptions Options =>
-        Version == MediaTypeVersion.V2 ? _options.CurrentValue : _options.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
+    public MediaTypeVersion Version { get; set; } = MediaTypeVersion.V2;
 
-    public HttpTraceEndpointHandler(IOptionsMonitor<TraceEndpointOptions> options, IHttpTraceRepository traceRepository, ILoggerFactory loggerFactory)
+    public EndpointOptions Options =>
+        Version == MediaTypeVersion.V2
+            ? _optionsMonitor.CurrentValue
+            : _optionsMonitor.Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
+
+    public HttpTraceEndpointHandler(IOptionsMonitor<TraceEndpointOptions> optionsMonitor, IHttpTraceRepository traceRepository, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(traceRepository);
         ArgumentGuard.NotNull(loggerFactory);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _traceRepository = traceRepository;
         _logger = loggerFactory.CreateLogger<HttpTraceEndpointHandler>();
     }

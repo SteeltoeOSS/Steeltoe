@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public sealed class DbMigrationsEndpointOptions : HttpMiddlewareOptions
+public sealed class DbMigrationsEndpointOptions : EndpointOptions
 {
 }

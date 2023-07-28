@@ -13,26 +13,26 @@ namespace Steeltoe.Management.Endpoint.Environment;
 
 internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 {
-    private readonly IOptionsMonitor<EnvironmentEndpointOptions> _options;
+    private readonly IOptionsMonitor<EnvironmentEndpointOptions> _optionsMonitor;
     private readonly IConfiguration _configuration;
     private readonly IHostEnvironment _environment;
     private readonly Sanitizer _sanitizer;
     private readonly ILogger<EnvironmentEndpointHandler> _logger;
 
-    public HttpMiddlewareOptions Options => _options.CurrentValue;
+    public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public EnvironmentEndpointHandler(IOptionsMonitor<EnvironmentEndpointOptions> options, IConfiguration configuration, IHostEnvironment environment,
+    public EnvironmentEndpointHandler(IOptionsMonitor<EnvironmentEndpointOptions> optionsMonitor, IConfiguration configuration, IHostEnvironment environment,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(environment);
         ArgumentGuard.NotNull(loggerFactory);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _configuration = configuration;
         _environment = environment;
-        _sanitizer = new Sanitizer(options.CurrentValue.KeysToSanitize);
+        _sanitizer = new Sanitizer(optionsMonitor.CurrentValue.KeysToSanitize);
         _logger = loggerFactory.CreateLogger<EnvironmentEndpointHandler>();
     }
 

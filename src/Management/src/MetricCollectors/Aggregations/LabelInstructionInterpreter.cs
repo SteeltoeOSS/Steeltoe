@@ -13,19 +13,19 @@ internal sealed class LabelInstructionInterpreter<TObjectSequence, TAggregator>
 {
     private readonly int _expectedLabelCount;
     private readonly LabelInstruction[] _instructions;
-    private readonly ConcurrentDictionary<TObjectSequence, TAggregator> _valuesDict;
+    private readonly ConcurrentDictionary<TObjectSequence, TAggregator> _valuesDictionary;
     private readonly Func<TObjectSequence, TAggregator?> _createAggregator;
 
-    public LabelInstructionInterpreter(int expectedLabelCount, LabelInstruction[] instructions, ConcurrentDictionary<TObjectSequence, TAggregator> valuesDict,
-        Func<TAggregator?> createAggregator)
+    public LabelInstructionInterpreter(int expectedLabelCount, LabelInstruction[] instructions,
+        ConcurrentDictionary<TObjectSequence, TAggregator> valuesDictionary, Func<TAggregator?> createAggregator)
     {
         ArgumentGuard.NotNull(instructions);
-        ArgumentGuard.NotNull(valuesDict);
+        ArgumentGuard.NotNull(valuesDictionary);
         ArgumentGuard.NotNull(createAggregator);
 
         _expectedLabelCount = expectedLabelCount;
         _instructions = instructions;
-        _valuesDict = valuesDict;
+        _valuesDictionary = valuesDictionary;
         _createAggregator = _ => createAggregator();
     }
 
@@ -62,7 +62,7 @@ internal sealed class LabelInstructionInterpreter<TObjectSequence, TAggregator>
             indexedValues[i] = labels[instr.SourceIndex].Value;
         }
 
-        if (!_valuesDict.TryGetValue(values, out aggregator))
+        if (!_valuesDictionary.TryGetValue(values, out aggregator))
         {
             // running this delegate will increment the counter for the number of time series
             // even though in the rare race condition we don't store it. If we wanted to be perfectly
@@ -75,7 +75,7 @@ internal sealed class LabelInstructionInterpreter<TObjectSequence, TAggregator>
                 return true;
             }
 
-            aggregator = _valuesDict.GetOrAdd(values, aggregator);
+            aggregator = _valuesDictionary.GetOrAdd(values, aggregator);
         }
 
         return true;

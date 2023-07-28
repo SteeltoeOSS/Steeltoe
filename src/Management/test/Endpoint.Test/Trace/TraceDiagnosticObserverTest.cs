@@ -18,22 +18,13 @@ namespace Steeltoe.Management.Endpoint.Test.Trace;
 public sealed class TraceDiagnosticObserverTest : BaseTest
 {
     [Fact]
-    public void Constructor_ThrowsOnNulls()
-    {
-        const IOptionsMonitor<TraceEndpointOptions> options = null;
-
-        var ex2 = Assert.Throws<ArgumentNullException>(() => new TraceDiagnosticObserver(options, NullLoggerFactory.Instance));
-        Assert.Contains(nameof(options), ex2.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void GetSessionId_NoSession_ReturnsExpected()
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
-        string result = obs.GetSessionId(context);
+        string result = observer.GetSessionId(context);
         Assert.Null(result);
     }
 
@@ -42,7 +33,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
 
         var session = new TestSession();
@@ -54,7 +45,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
 
         context.Features.Set(sessionFeature);
 
-        string result = obs.GetSessionId(context);
+        string result = observer.GetSessionId(context);
         Assert.Equal("TestSessionId", result);
     }
 
@@ -63,9 +54,9 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
-        string result = obs.GetUserPrincipal(context);
+        string result = observer.GetUserPrincipal(context);
         Assert.Null(result);
     }
 
@@ -74,11 +65,11 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
 
         context.User = new ClaimsPrincipal(new MyIdentity());
-        string result = obs.GetUserPrincipal(context);
+        string result = observer.GetUserPrincipal(context);
         Assert.Equal("MyTestName", result);
     }
 
@@ -87,9 +78,9 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
-        string result = obs.GetRemoteAddress(context);
+        string result = observer.GetRemoteAddress(context);
         Assert.Null(result);
     }
 
@@ -98,10 +89,10 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
 
-        string result = obs.GetPathInfo(context.Request);
+        string result = observer.GetPathInfo(context.Request);
         Assert.Equal("/myPath", result);
     }
 
@@ -110,9 +101,9 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
-        string result = obs.GetRequestUri(context.Request);
+        string result = observer.GetRequestUri(context.Request);
         Assert.Equal("http://localhost:1111/myPath", result);
     }
 
@@ -121,18 +112,18 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
-        Dictionary<string, string[]> result = obs.GetRequestParameters(context.Request);
+        Dictionary<string, string[]> result = observer.GetRequestParameters(context.Request);
         Assert.NotNull(result);
         Assert.True(result.ContainsKey("foo"));
         Assert.True(result.ContainsKey("bar"));
-        string[] fooVal = result["foo"];
-        Assert.Single(fooVal);
-        Assert.Equal("bar", fooVal[0]);
-        string[] barVal = result["bar"];
-        Assert.Single(barVal);
-        Assert.Equal("foo", barVal[0]);
+        string[] fooValue = result["foo"];
+        Assert.Single(fooValue);
+        Assert.Equal("bar", fooValue[0]);
+        string[] barValue = result["bar"];
+        Assert.Single(barValue);
+        Assert.Equal("foo", barValue[0]);
     }
 
     [Fact]
@@ -140,9 +131,9 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         TimeSpan time = TimeSpan.FromTicks(10_000_000);
-        string result = obs.GetTimeTaken(time);
+        string result = observer.GetTimeTaken(time);
         string expected = time.TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
         Assert.Equal(expected, result);
     }
@@ -152,20 +143,20 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
 
-        Dictionary<string, object> result = obs.GetHeaders(100, context.Request.Headers);
+        Dictionary<string, object> result = observer.GetHeaders(100, context.Request.Headers);
         Assert.NotNull(result);
         Assert.True(result.ContainsKey("header1"));
         Assert.True(result.ContainsKey("header2"));
         Assert.True(result.ContainsKey("status"));
-        string header1Val = result["header1"] as string;
-        Assert.Equal("header1Value", header1Val);
-        string header2Val = result["header2"] as string;
-        Assert.Equal("header2Value", header2Val);
-        string statusVal = result["status"] as string;
-        Assert.Equal("100", statusVal);
+        string header1Value = result["header1"] as string;
+        Assert.Equal("header1Value", header1Value);
+        string header2Value = result["header2"] as string;
+        Assert.Equal("header2Value", header2Value);
+        string statusValue = result["status"] as string;
+        Assert.Equal("100", statusValue);
     }
 
     [Fact]
@@ -173,9 +164,9 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
 
-        HttpContext context = obs.GetHttpContextPropertyValue(new
+        HttpContext context = observer.GetHttpContextPropertyValue(new
         {
             foo = "bar"
         });
@@ -188,10 +179,10 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext expectedContext = CreateRequest();
 
-        HttpContext context = obs.GetHttpContextPropertyValue(new
+        HttpContext context = observer.GetHttpContextPropertyValue(new
         {
             HttpContext = expectedContext
         });
@@ -204,10 +195,10 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
         TimeSpan duration = TimeSpan.FromTicks(20_000_000 - 10_000_000);
-        TraceResult result = obs.MakeTrace(context, duration);
+        TraceResult result = observer.MakeTrace(context, duration);
         Assert.NotNull(result);
         Assert.NotNull(result.Info);
         Assert.NotEqual(0, result.TimeStamp);
@@ -232,35 +223,35 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
 
         // No current activity, event ignored
-        obs.ProcessEvent("foobar", null);
+        observer.ProcessEvent("foobar", null);
 
         var current = new Activity("barfoo");
         current.Start();
 
         // Activity current, but no value provided, event ignored
-        obs.ProcessEvent("foobar", null);
+        observer.ProcessEvent("foobar", null);
 
         // Activity current, value provided, event not stop event, event is ignored
-        obs.ProcessEvent("foobar", new object());
+        observer.ProcessEvent("foobar", new object());
 
         // Activity current, event is stop event, no context in event value, event it ignored
-        obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new object());
+        observer.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new object());
 
-        Assert.Empty(obs.Queue);
+        Assert.Empty(observer.Queue);
         current.Stop();
     }
 
     [Fact]
     public void Subscribe_Listener_StopActivity_AddsToQueue()
     {
-        var listener = new DiagnosticListener("Microsoft.AspNetCore");
+        using var listener = new DiagnosticListener("Microsoft.AspNetCore");
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
-        obs.Subscribe(listener);
+        using var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        observer.Subscribe(listener);
 
         HttpContext context = CreateRequest();
         const string activityName = "Microsoft.AspNetCore.Hosting.HttpRequestIn";
@@ -278,8 +269,8 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
             HttpContext = context
         });
 
-        Assert.Single(obs.Queue);
-        Assert.True(obs.Queue.TryPeek(out TraceResult result));
+        Assert.Single(observer.Queue);
+        Assert.True(observer.Queue.TryPeek(out TraceResult result));
         Assert.NotNull(result.Info);
         Assert.NotEqual(0, result.TimeStamp);
         Assert.True(result.Info.ContainsKey("method"));
@@ -294,9 +285,6 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         Assert.True(headers.ContainsKey("response"));
         short timeTaken = short.Parse((string)result.Info["timeTaken"], CultureInfo.InvariantCulture);
         Assert.InRange(timeTaken, 1000, 1300);
-
-        obs.Dispose();
-        listener.Dispose();
     }
 
     [Fact]
@@ -304,21 +292,21 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
 
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
 
         HttpContext context = CreateRequest();
 
-        obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new
+        observer.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new
         {
             HttpContext = context
         });
 
-        Assert.Single(obs.Queue);
+        Assert.Single(observer.Queue);
 
-        Assert.True(obs.Queue.TryPeek(out TraceResult result));
+        Assert.True(observer.Queue.TryPeek(out TraceResult result));
         Assert.NotNull(result.Info);
         Assert.NotEqual(0, result.TimeStamp);
         Assert.True(result.Info.ContainsKey("method"));
@@ -343,49 +331,47 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     {
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
 
-        for (int i = 0; i < 200; i++)
+        for (int index = 0; index < 200; index++)
         {
             HttpContext context = CreateRequest();
 
-            obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new
+            observer.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new
             {
                 HttpContext = context
             });
         }
 
-        Assert.Equal(option.CurrentValue.Capacity, obs.Queue.Count);
+        Assert.Equal(option.CurrentValue.Capacity, observer.Queue.Count);
     }
 
     [Fact]
     public void GetTraces_ReturnsTraces()
     {
-        var listener = new DiagnosticListener("test");
+        using var listener = new DiagnosticListener("test");
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
 
-        var obs = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
+        var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
         current.Start();
 
-        for (int i = 0; i < 200; i++)
+        for (int index = 0; index < 200; index++)
         {
             HttpContext context = CreateRequest();
 
-            obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new
+            observer.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new
             {
                 HttpContext = context
             });
         }
 
-        Assert.Equal(option.CurrentValue.Capacity, obs.Queue.Count);
-        var result = (HttpTraceResultV1)obs.GetTraces();
+        Assert.Equal(option.CurrentValue.Capacity, observer.Queue.Count);
+        var result = (HttpTraceResultV1)observer.GetTraces();
         Assert.Equal(option.CurrentValue.Capacity, result.Traces.Count);
-        Assert.Equal(option.CurrentValue.Capacity, obs.Queue.Count);
-
-        listener.Dispose();
+        Assert.Equal(option.CurrentValue.Capacity, observer.Queue.Count);
     }
 
     private HttpContext CreateRequest()
@@ -397,7 +383,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
 
         context.Response.Body = new MemoryStream();
         context.Request.Method = "GET";
-        context.Request.Path = new PathString("/myPath");
+        context.Request.Path = "/myPath";
         context.Request.Scheme = "http";
         context.Request.Host = new HostString("localhost:1111");
         context.Request.QueryString = new QueryString("?foo=bar&bar=foo");

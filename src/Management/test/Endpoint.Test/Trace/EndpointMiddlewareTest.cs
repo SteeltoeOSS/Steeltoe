@@ -40,39 +40,41 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/httptrace"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/httptrace"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
     }
 
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<TraceEndpointOptions>();
-        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.RequiresExactMatch());
-        Assert.Equal("/actuator/httptrace", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        var endpointOptions = GetOptionsFromSettings<TraceEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/httptrace", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
 
         Assert.Equal("/cloudfoundryapplication/httptrace",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 
     [Fact]
     public void RoutesByPathAndVerbTrace()
     {
-        TraceEndpointOptions options = GetOptionsMonitorFromSettings<TraceEndpointOptions>()
+        TraceEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<TraceEndpointOptions>()
             .Get(ConfigureTraceEndpointOptions.TraceEndpointOptionNames.V1.ToString());
 
-        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.RequiresExactMatch());
-        Assert.Equal("/actuator/trace", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/trace", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
 
         Assert.Equal("/cloudfoundryapplication/trace",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 }

@@ -36,13 +36,13 @@ Steeltoe.Management.Diagnostics.MetricsObserverOptions.IngressIgnorePattern.set 
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.MetricsObserverOptions() -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.get -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.set -> void
-Steeltoe.Management.HttpMiddlewareOptions
-Steeltoe.Management.HttpMiddlewareOptions.HttpMiddlewareOptions() -> void
-Steeltoe.Management.HttpMiddlewareOptions.RequiredPermissions.get -> Steeltoe.Management.Permissions
-Steeltoe.Management.HttpMiddlewareOptions.RequiredPermissions.set -> void
+Steeltoe.Management.EndpointOptions
+Steeltoe.Management.EndpointOptions.EndpointOptions() -> void
+Steeltoe.Management.EndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Permissions
+Steeltoe.Management.EndpointOptions.RequiredPermissions.set -> void
 Steeltoe.Management.IEndpointHandler<TArgument, TResult>
 Steeltoe.Management.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>
-Steeltoe.Management.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.HttpMiddlewareOptions
+Steeltoe.Management.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.EndpointOptions
 Steeltoe.Management.Info.IInfoBuilder
 Steeltoe.Management.Info.IInfoBuilder.Build() -> System.Collections.Generic.IDictionary<string, object>
 Steeltoe.Management.Info.IInfoBuilder.WithInfo(string key, object value) -> Steeltoe.Management.Info.IInfoBuilder
@@ -63,12 +63,12 @@ virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose(bool disposin
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnCompleted() -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnError(System.Exception error) -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnNext(System.Collections.Generic.KeyValuePair<string, object> event) -> void
-virtual Steeltoe.Management.HttpMiddlewareOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string>
-virtual Steeltoe.Management.HttpMiddlewareOptions.AllowedVerbs.set -> void
-virtual Steeltoe.Management.HttpMiddlewareOptions.Enabled.get -> bool?
-virtual Steeltoe.Management.HttpMiddlewareOptions.Enabled.set -> void
-virtual Steeltoe.Management.HttpMiddlewareOptions.Id.get -> string
-virtual Steeltoe.Management.HttpMiddlewareOptions.Id.set -> void
-virtual Steeltoe.Management.HttpMiddlewareOptions.Path.get -> string
-virtual Steeltoe.Management.HttpMiddlewareOptions.Path.set -> void
-virtual Steeltoe.Management.HttpMiddlewareOptions.RequiresExactMatch() -> bool
+virtual Steeltoe.Management.EndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string>
+virtual Steeltoe.Management.EndpointOptions.AllowedVerbs.set -> void
+virtual Steeltoe.Management.EndpointOptions.Enabled.get -> bool?
+virtual Steeltoe.Management.EndpointOptions.Enabled.set -> void
+virtual Steeltoe.Management.EndpointOptions.Id.get -> string
+virtual Steeltoe.Management.EndpointOptions.Id.set -> void
+virtual Steeltoe.Management.EndpointOptions.Path.get -> string
+virtual Steeltoe.Management.EndpointOptions.Path.set -> void
+virtual Steeltoe.Management.EndpointOptions.RequiresExactMatch() -> bool

@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.RegisterDefaultApplicationInstanceInfo();
-        services.ConfigureOptions<ConfigureManagementEndpointOptions>();
+        services.ConfigureOptions<ConfigureManagementOptions>();
         services.ConfigureOptions<ConfigureHealthEndpointOptions>();
         services.AddSingleton<SpringBootAdminClientOptions>();
         services.AddHostedService<SpringBootAdminClientHostedService>();

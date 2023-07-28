@@ -18,9 +18,9 @@ public sealed class CloudFoundryManagementOptionsTest : BaseTest
             ["management:endpoints:path"] = "/management"
         };
 
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).CurrentValue;
+        ManagementOptions options = GetOptionsMonitorFromSettings<ManagementOptions>(appsettings).CurrentValue;
 
-        Assert.False(opts.IsCloudFoundryEnabled);
+        Assert.False(options.IsCloudFoundryEnabled);
     }
 
     [Fact]
@@ -28,8 +28,8 @@ public sealed class CloudFoundryManagementOptionsTest : BaseTest
     {
         var appsettings = new Dictionary<string, string>();
 
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appsettings).CurrentValue;
+        ManagementOptions options = GetOptionsMonitorFromSettings<ManagementOptions>(appsettings).CurrentValue;
 
-        Assert.True(opts.IsCloudFoundryEnabled);
+        Assert.True(options.IsCloudFoundryEnabled);
     }
 }

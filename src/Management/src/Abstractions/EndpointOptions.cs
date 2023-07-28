@@ -6,7 +6,7 @@
 
 namespace Steeltoe.Management;
 
-public abstract class HttpMiddlewareOptions
+public abstract class EndpointOptions
 {
     private string _path;
 

@@ -15,15 +15,6 @@ namespace Steeltoe.Management.Endpoint.Test.Environment;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddEnvironmentActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvironmentActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void AddEnvironmentActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
@@ -46,7 +37,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<EnvironmentEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<IEnvironmentEndpointHandler>();
-        Assert.NotNull(ep);
+        var handler = serviceProvider.GetService<IEnvironmentEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

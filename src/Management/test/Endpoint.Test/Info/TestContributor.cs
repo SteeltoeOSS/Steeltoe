@@ -6,17 +6,17 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-internal sealed class TestContrib : IInfoContributor
+internal sealed class TestContributor : IInfoContributor
 {
     public bool Called { get; private set; }
     public bool Throws { get; }
 
-    public TestContrib()
+    public TestContributor()
     {
         Throws = false;
     }
 
-    public TestContrib(bool throws)
+    public TestContributor(bool throws)
     {
         Throws = throws;
     }

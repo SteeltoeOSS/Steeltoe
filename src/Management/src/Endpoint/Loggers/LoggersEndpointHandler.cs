@@ -25,19 +25,20 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
 
     private static readonly IDictionary<string, object> EmptyDictionary = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>());
 
-    private readonly ILogger<LoggersEndpointHandler> _logger;
-    private readonly IOptionsMonitor<LoggersEndpointOptions> _options;
+    private readonly IOptionsMonitor<LoggersEndpointOptions> _optionsMonitor;
     private readonly IDynamicLoggerProvider _dynamicLoggerProvider;
+    private readonly ILogger<LoggersEndpointHandler> _logger;
 
-    public HttpMiddlewareOptions Options => _options.CurrentValue;
+    public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public LoggersEndpointHandler(IOptionsMonitor<LoggersEndpointOptions> options, ILoggerFactory loggerFactory, IDynamicLoggerProvider dynamicLoggerProvider)
+    public LoggersEndpointHandler(IOptionsMonitor<LoggersEndpointOptions> optionsMonitor, IDynamicLoggerProvider dynamicLoggerProvider,
+        ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(dynamicLoggerProvider);
+        ArgumentGuard.NotNull(loggerFactory);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _dynamicLoggerProvider = dynamicLoggerProvider;
         _logger = loggerFactory.CreateLogger<LoggersEndpointHandler>();
     }

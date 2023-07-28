@@ -16,24 +16,25 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 /// </summary>
 internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
 {
-    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
-    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
-    private readonly IEnumerable<HttpMiddlewareOptions> _endpointOptions;
+    private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
+    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
+    private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
     private readonly ILogger<CloudFoundryEndpointHandler> _logger;
 
-    public HttpMiddlewareOptions Options => _options.CurrentValue;
+    public EndpointOptions Options => _endpointOptionsMonitor.CurrentValue;
 
-    public CloudFoundryEndpointHandler(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IOptionsMonitor<CloudFoundryEndpointOptions> options,
-        IEnumerable<HttpMiddlewareOptions> endpointOptions, ILogger<CloudFoundryEndpointHandler> logger)
+    public CloudFoundryEndpointHandler(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection,
+        ILogger<CloudFoundryEndpointHandler> logger)
     {
-        ArgumentGuard.NotNull(managementOptions);
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(endpointOptions);
+        ArgumentGuard.NotNull(managementOptionsMonitor);
+        ArgumentGuard.NotNull(endpointOptionsMonitor);
+        ArgumentGuard.NotNull(endpointOptionsCollection);
         ArgumentGuard.NotNull(logger);
 
-        _managementOptions = managementOptions;
-        _options = options;
-        _endpointOptions = endpointOptions;
+        _managementOptionsMonitor = managementOptionsMonitor;
+        _endpointOptionsMonitor = endpointOptionsMonitor;
+        _endpointOptionsCollection = endpointOptionsCollection.ToList();
         _logger = logger;
     }
 
@@ -41,7 +42,7 @@ internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
     {
         ArgumentGuard.NotNull(baseUrl);
 
-        var hypermediaService = new HypermediaService(_managementOptions, _options, _endpointOptions, _logger);
+        var hypermediaService = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsCollection, _logger);
         Links result = hypermediaService.Invoke(baseUrl);
         return await Task.FromResult(result);
     }

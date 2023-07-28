@@ -38,11 +38,12 @@ public sealed class LoggerLevelsTest : BaseTest
     [Fact]
     public void Constructor_SetsProperties()
     {
-        var lv1 = new LoggerLevels(null, LogLevel.Warning);
-        Assert.Null(lv1.ConfiguredLevel);
-        Assert.Equal("WARN", lv1.EffectiveLevel);
-        var lv2 = new LoggerLevels(LogLevel.Information, LogLevel.Warning);
-        Assert.Equal("INFO", lv2.ConfiguredLevel);
-        Assert.Equal("WARN", lv2.EffectiveLevel);
+        var levels1 = new LoggerLevels(null, LogLevel.Warning);
+        Assert.Null(levels1.ConfiguredLevel);
+        Assert.Equal("WARN", levels1.EffectiveLevel);
+
+        var levels2 = new LoggerLevels(LogLevel.Information, LogLevel.Warning);
+        Assert.Equal("INFO", levels2.ConfiguredLevel);
+        Assert.Equal("WARN", levels2.EffectiveLevel);
     }
 }

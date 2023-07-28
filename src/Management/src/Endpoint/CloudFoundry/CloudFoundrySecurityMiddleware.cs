@@ -16,40 +16,39 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public sealed class CloudFoundrySecurityMiddleware
 {
+    private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
+    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
+    private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
     private readonly RequestDelegate _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
-    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
+    private readonly SecurityUtils _securityUtils;
 
-    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptionsMonitor;
-    private readonly List<HttpMiddlewareOptions> _endpointsCollection;
-    private readonly SecurityUtils _base;
-
-    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptionsMonitor, IEnumerable<HttpMiddlewareOptions> endpointsCollection,
+    public CloudFoundrySecurityMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection, RequestDelegate next,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(endpointsCollection);
+        ArgumentGuard.NotNull(endpointOptionsMonitor);
+        ArgumentGuard.NotNull(endpointOptionsCollection);
         ArgumentGuard.NotNull(loggerFactory);
+
+        _managementOptionsMonitor = managementOptionsMonitor;
+        _endpointOptionsMonitor = endpointOptionsMonitor;
+
+        _endpointOptionsCollection = endpointOptionsCollection
+            .Where(options => options is not HypermediaEndpointOptions && options is not CloudFoundryEndpointOptions).ToList();
 
         _next = next;
         _logger = loggerFactory.CreateLogger<CloudFoundrySecurityMiddleware>();
-        _options = options;
-        _managementOptionsMonitor = managementOptionsMonitor;
-        _endpointsCollection = endpointsCollection.Where(ep => ep is not HypermediaEndpointOptions && ep is not CloudFoundryEndpointOptions).ToList();
-
-        _base = new SecurityUtils(_options.CurrentValue, loggerFactory.CreateLogger<SecurityUtils>());
+        _securityUtils = new SecurityUtils(endpointOptionsMonitor.CurrentValue, loggerFactory.CreateLogger<SecurityUtils>());
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
 
-        CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
-
-        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value,
-            ConfigureManagementEndpointOptions.DefaultCloudFoundryPath);
+        _logger.LogDebug("InvokeAsync({requestPath})", context.Request.Path.Value);
+        CloudFoundryEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
 
         if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) &&
             SecurityUtils.IsCloudFoundryRequest(context.Request.Path))
@@ -71,9 +70,9 @@ public sealed class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            HttpMiddlewareOptions target = FindTargetEndpoint(context.Request.Path);
+            EndpointOptions targetEndpointOptions = FindTargetEndpoint(context.Request.Path);
 
-            if (target == null)
+            if (targetEndpointOptions == null)
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityUtils.EndpointNotConfiguredMessage));
 
@@ -88,14 +87,17 @@ public sealed class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            if (target.RequiredPermissions > givenPermissions.Permissions)
+            if (targetEndpointOptions.RequiredPermissions > givenPermissions.Permissions)
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, SecurityUtils.AccessDeniedMessage));
                 return;
             }
         }
 
-        await _next(context);
+        if (_next != null)
+        {
+            await _next(context);
+        }
     }
 
     internal string GetAccessToken(HttpRequest request)
@@ -116,32 +118,33 @@ public sealed class CloudFoundrySecurityMiddleware
     internal Task<SecurityResult> GetPermissionsAsync(HttpContext context)
     {
         string accessToken = GetAccessToken(context.Request);
-        return _base.GetPermissionsAsync(accessToken, context.RequestAborted);
+        return _securityUtils.GetPermissionsAsync(accessToken, context.RequestAborted);
     }
 
-    private HttpMiddlewareOptions FindTargetEndpoint(PathString path)
+    private EndpointOptions FindTargetEndpoint(PathString requestPath)
     {
-        foreach (HttpMiddlewareOptions endpointOptions in _endpointsCollection)
+        foreach (EndpointOptions endpointOptions in _endpointOptionsCollection)
         {
-            string contextPath = ConfigureManagementEndpointOptions.DefaultCloudFoundryPath;
+            string basePath = ConfigureManagementOptions.DefaultCloudFoundryPath;
 
             if (!string.IsNullOrEmpty(endpointOptions.Path))
             {
-                contextPath += '/';
+                basePath += '/';
             }
-
-            string fullPath = contextPath + endpointOptions.Path;
 
             if (endpointOptions is CloudFoundryEndpointOptions)
             {
-                if (path.Value?.Equals(contextPath, StringComparison.OrdinalIgnoreCase) == true)
+                if (requestPath.Equals(basePath))
                 {
                     return endpointOptions;
                 }
             }
-            else if (path.StartsWithSegments(new PathString(fullPath)))
+            else
             {
-                return endpointOptions;
+                if (requestPath.StartsWithSegments(basePath + endpointOptions.Path))
+                {
+                    return endpointOptions;
+                }
             }
         }
 

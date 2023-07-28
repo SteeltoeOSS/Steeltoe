@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
@@ -16,6 +17,9 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
+    // Allow routing to /cloudfoundryapplication
+    private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "some");
+
     private readonly Dictionary<string, string> _appSettings = new()
     {
         ["management:endpoints:enabled"] = "true",
@@ -31,23 +35,18 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ["info:NET:ASPNET:version"] = "2.0.0"
     };
 
-    public EndpointMiddlewareTest()
-    {
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "some"); // Allow routing to /cloudfoundryapplication
-    }
-
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = new HypermediaEndpointOptions();
-        IOptionsMonitor<ManagementEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        Assert.True(options.RequiresExactMatch());
+        var endpointOptions = new HypermediaEndpointOptions();
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
+        Assert.True(endpointOptions.RequiresExactMatch());
 
         Assert.Equal("/cloudfoundryapplication",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, optionsMonitor.CurrentValue));
+            endpointOptions.GetPathMatchPattern(managementOptionsMonitor.CurrentValue, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        Assert.Single(options.AllowedVerbs);
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.Single(endpointOptions.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 
     [Fact]
@@ -79,8 +78,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         // send the request
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
+        string json = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(
             "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}",
@@ -120,5 +119,15 @@ public sealed class EndpointMiddlewareTest : BaseTest
         Assert.DoesNotContain("2017-07-12T18:40:39Z", response, StringComparison.Ordinal);
         Assert.Contains("1496926022000", response, StringComparison.Ordinal);
         Assert.DoesNotContain("2017-06-08T12:47:02Z", response, StringComparison.Ordinal);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _scope.Dispose();
+        }
+
+        base.Dispose(disposing);
     }
 }

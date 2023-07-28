@@ -12,8 +12,8 @@ public sealed class EnvironmentEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        EnvironmentEndpointOptions opts = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
-        Assert.Equal("env", opts.Id);
+        EnvironmentEndpointOptions options = GetOptionsFromSettings<EnvironmentEndpointOptions, ConfigureEnvironmentEndpointOptions>();
+        Assert.Equal("env", options.Id);
 
         Assert.Equal(new[]
         {
@@ -23,8 +23,8 @@ public sealed class EnvironmentEndpointOptionsTest : BaseTest
             "token",
             ".*credentials.*",
             "vcap_services"
-        }, opts.KeysToSanitize);
+        }, options.KeysToSanitize);
 
-        Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
+        Assert.Equal(Permissions.Restricted, options.RequiredPermissions);
     }
 }

@@ -35,17 +35,17 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleThreadDumpRequestAsync_ReturnsExpected()
     {
-        IOptionsMonitor<ThreadDumpEndpointOptions> opts = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(AppSettings);
+        IOptionsMonitor<ThreadDumpEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
 
-        var obs = new EventPipeThreadDumper(opts, NullLogger<EventPipeThreadDumper>.Instance);
-        var ep = new ThreadDumpEndpointHandler(opts, obs, NullLoggerFactory.Instance);
-        var middle = new ThreadDumpEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
+        var threadDumper = new EventPipeThreadDumper(endpointOptionsMonitor, NullLogger<EventPipeThreadDumper>.Instance);
+        var handler = new ThreadDumpEndpointHandler(endpointOptionsMonitor, threadDumper, NullLoggerFactory.Instance);
+        var middleware = new ThreadDumpEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest("GET", "/dump");
-        await middle.InvokeAsync(context, null);
+        await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
+        var reader = new StreamReader(context.Response.Body);
+        string json = await reader.ReadToEndAsync();
         Assert.NotNull(json);
         Assert.NotEqual("[]", json);
         Assert.StartsWith("[", json, StringComparison.Ordinal);
@@ -65,9 +65,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/dump"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/dump"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
         Assert.NotNull(json);
         Assert.NotEqual("[]", json);
         Assert.StartsWith("[", json, StringComparison.Ordinal);
@@ -89,9 +89,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
             using var server = new TestServer(builder);
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/threaddump"));
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            string json = await result.Content.ReadAsStringAsync();
+            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/threaddump"));
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            string json = await response.Content.ReadAsStringAsync();
             Assert.NotNull(json);
             Assert.NotEqual("{}", json);
             Assert.StartsWith("{", json, StringComparison.Ordinal);
@@ -102,29 +102,31 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb_V1()
     {
-        ThreadDumpEndpointOptions options = GetOptionsFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
-        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.RequiresExactMatch());
-        Assert.Equal("/actuator/dump", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        ThreadDumpEndpointOptions endpointOptions = GetOptionsFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/dump", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
 
         Assert.Equal("/cloudfoundryapplication/dump",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<ThreadDumpEndpointOptions>();
-        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.RequiresExactMatch());
-        Assert.Equal("/actuator/threaddump", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        var endpointOptions = GetOptionsFromSettings<ThreadDumpEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/threaddump", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
 
         Assert.Equal("/cloudfoundryapplication/threaddump",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)
@@ -136,7 +138,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
-        context.Request.Path = new PathString(path);
+        context.Request.Path = path;
         context.Request.Scheme = "http";
         context.Request.Host = new HostString("localhost");
         return context;

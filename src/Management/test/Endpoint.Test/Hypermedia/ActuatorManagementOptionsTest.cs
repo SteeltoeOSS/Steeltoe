@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
@@ -12,23 +13,21 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.Equal("/actuator", opts.Path);
-        Assert.Contains("health", opts.Exposure.Include);
-        Assert.Contains("info", opts.Exposure.Include);
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+        Assert.Equal("/actuator", managementOptions.Path);
+        Assert.Contains("health", managementOptions.Exposure.Include);
+        Assert.Contains("info", managementOptions.Exposure.Include);
     }
 
     [Fact]
     public void Constructor_InitializesWithDefaultsOnCF()
     {
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "something");
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
-        Assert.Equal("/actuator", opts.Path);
-        Assert.Contains("health", opts.Exposure.Include);
-        Assert.Contains("info", opts.Exposure.Include);
-
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Assert.Equal("/actuator", managementOptions.Path);
+        Assert.Contains("health", managementOptions.Exposure.Include);
+        Assert.Contains("info", managementOptions.Exposure.Include);
     }
 
     [Fact]
@@ -40,13 +39,13 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
             ["management:endpoints:path"] = "/management"
         };
 
-        var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
+        var options = GetOptionsFromSettings<ManagementOptions>(appsettings);
 
-        Assert.Equal("/management", opts.Path);
-        Assert.False(opts.Enabled);
+        Assert.Equal("/management", options.Path);
+        Assert.False(options.Enabled);
 
-        Assert.Contains("health", opts.Exposure.Include);
-        Assert.Contains("info", opts.Exposure.Include);
+        Assert.Contains("health", options.Exposure.Include);
+        Assert.Contains("info", options.Exposure.Include);
     }
 
     [Fact]
@@ -58,16 +57,14 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
             ["management:endpoints:path"] = "/management"
         };
 
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "something");
 
-        var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
+        var options = GetOptionsFromSettings<ManagementOptions>(appsettings);
 
-        Assert.Equal("/management", opts.Path);
-        Assert.False(opts.Enabled);
+        Assert.Equal("/management", options.Path);
+        Assert.False(options.Enabled);
 
-        Assert.Contains("health", opts.Exposure.Include);
-        Assert.Contains("info", opts.Exposure.Include);
-
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Assert.Contains("health", options.Exposure.Include);
+        Assert.Contains("info", options.Exposure.Include);
     }
 }

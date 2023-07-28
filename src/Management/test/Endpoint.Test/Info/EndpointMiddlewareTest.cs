@@ -43,25 +43,25 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
 
-        var dict = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/infomanagement",
+        var dictionary = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/infomanagement",
             GetSerializerOptions());
 
-        Assert.NotNull(dict);
+        Assert.NotNull(dictionary);
 
-        Assert.Equal(6, dict.Count);
-        Assert.True(dict.ContainsKey("application"));
-        Assert.True(dict.ContainsKey("NET"));
-        Assert.True(dict.ContainsKey("git"));
+        Assert.Equal(6, dictionary.Count);
+        Assert.True(dictionary.ContainsKey("application"));
+        Assert.True(dictionary.ContainsKey("NET"));
+        Assert.True(dictionary.ContainsKey("git"));
 
-        Dictionary<string, JsonElement> appNode = dict["application"];
+        Dictionary<string, JsonElement> appNode = dictionary["application"];
         Assert.NotNull(appNode);
         Assert.Equal("foobar", appNode["name"].ToString());
 
-        Dictionary<string, JsonElement> netNode = dict["NET"];
+        Dictionary<string, JsonElement> netNode = dictionary["NET"];
         Assert.NotNull(netNode);
         Assert.Equal("Core", netNode["type"].ToString());
 
-        Dictionary<string, JsonElement> gitNode = dict["git"];
+        Dictionary<string, JsonElement> gitNode = dictionary["git"];
         Assert.NotNull(gitNode);
         Assert.True(gitNode.ContainsKey("build"));
         Assert.True(gitNode.ContainsKey("branch"));
@@ -102,13 +102,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<InfoEndpointOptions>();
-        ManagementEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
+        var endpointOptions = GetOptionsFromSettings<InfoEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
-        Assert.True(options.RequiresExactMatch());
-        Assert.Equal("/actuator/info", options.GetPathMatchPattern(endpointOptions.Path, endpointOptions));
-        Assert.Equal("/cloudfoundryapplication/info", options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, endpointOptions));
-        Assert.Single(options.AllowedVerbs);
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/info", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
+
+        Assert.Equal("/cloudfoundryapplication/info",
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
+
+        Assert.Single(endpointOptions.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 }

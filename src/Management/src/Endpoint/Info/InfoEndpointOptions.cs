@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public sealed class InfoEndpointOptions : HttpMiddlewareOptions
+public sealed class InfoEndpointOptions : EndpointOptions
 {
 }

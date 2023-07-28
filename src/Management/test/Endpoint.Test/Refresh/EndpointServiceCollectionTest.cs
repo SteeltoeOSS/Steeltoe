@@ -13,14 +13,6 @@ namespace Steeltoe.Management.Endpoint.Test.Refresh;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddRefreshActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRefreshActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void AddRefreshActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
@@ -41,7 +33,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<RefreshEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<IRefreshEndpointHandler>();
-        Assert.NotNull(ep);
+        var handler = serviceProvider.GetService<IRefreshEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
@@ -18,10 +19,7 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
 public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 {
-    public CloudFoundrySecurityMiddlewareTest()
-    {
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", "some");
-    }
+    private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "some");
 
     [Fact]
     public async Task CloudFoundrySecurityMiddleware_ReturnsServiceUnavailable()
@@ -48,8 +46,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-            Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
+            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         }
 
         var appSettings2 = new Dictionary<string, string>
@@ -75,8 +73,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder2))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-            Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
+            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         }
 
         var appSettings3 = new Dictionary<string, string>
@@ -103,8 +101,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder3))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/barfoo"));
-            Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
+            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/barfoo"));
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         }
 
         var appSettings4 = new Dictionary<string, string>
@@ -130,8 +128,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder4))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-            Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
+            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
     }
 
@@ -160,8 +158,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         var appSettings3 = new Dictionary<string, string>
@@ -188,8 +186,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         using (var server = new TestServer(builder3))
         {
             HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-            Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
+            HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
     }
 
@@ -220,8 +218,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-        Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
@@ -252,14 +250,14 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/info"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/info"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalseViaEnvironmentVariables()
     {
-        System.Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
+        using var scope = new EnvironmentVariableScope("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
 
         var appSettings = new Dictionary<string, string>
         {
@@ -286,37 +284,42 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public void GetAccessToken_ReturnsExpected()
     {
-        IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        IEnumerable<HttpMiddlewareOptions> endpointCollection = new List<HttpMiddlewareOptions>();
-        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions, endpointCollection, NullLoggerFactory.Instance);
-        HttpContext context = CreateRequest("GET", "/");
-        string token = middle.GetAccessToken(context.Request);
+        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
+        IEnumerable<EndpointOptions> endpointOptionsCollection = new List<EndpointOptions>();
+
+        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, endpointOptionsCollection, null,
+            NullLoggerFactory.Instance);
+
+        HttpContext context1 = CreateRequest("GET", "/");
+        string token = middleware.GetAccessToken(context1.Request);
         Assert.Null(token);
 
         HttpContext context2 = CreateRequest("GET", "/");
         context2.Request.Headers.Add("Authorization", new StringValues("Bearer foobar"));
-        string token2 = middle.GetAccessToken(context2.Request);
+        string token2 = middleware.GetAccessToken(context2.Request);
         Assert.Equal("foobar", token2);
     }
 
     [Fact]
     public async Task GetPermissions_ReturnsExpected()
     {
-        IOptionsMonitor<CloudFoundryEndpointOptions> opts = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        IEnumerable<HttpMiddlewareOptions> endpointCollection = new List<HttpMiddlewareOptions>();
+        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
+        IEnumerable<EndpointOptions> endpointOptionsCollection = new List<EndpointOptions>();
 
-        var middle = new CloudFoundrySecurityMiddleware(null, opts, managementOptions, endpointCollection, NullLoggerFactory.Instance);
+        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, endpointOptionsCollection, null,
+            NullLoggerFactory.Instance);
+
         HttpContext context = CreateRequest("GET", "/");
-        SecurityResult result = await middle.GetPermissionsAsync(context);
+        SecurityResult result = await middleware.GetPermissionsAsync(context);
         Assert.NotNull(result);
         Assert.Equal(Permissions.None, result.Permissions);
         Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
@@ -326,8 +329,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         if (disposing)
         {
-            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            System.Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", null);
+            _scope.Dispose();
         }
 
         base.Dispose(disposing);
@@ -342,7 +344,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
-        context.Request.Path = new PathString(path);
+        context.Request.Path = path;
         context.Request.Scheme = "http";
         context.Request.Host = new HostString("localhost");
         return context;

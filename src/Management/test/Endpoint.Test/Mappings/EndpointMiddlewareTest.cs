@@ -36,23 +36,24 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<RouteMappingsEndpointOptions>();
-        ManagementEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.True(options.RequiresExactMatch());
-        Assert.Equal("/actuator/mappings", options.GetPathMatchPattern(endpointOptions.Path, endpointOptions));
+        var endpointOptions = GetOptionsFromSettings<RouteMappingsEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/mappings", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
 
         Assert.Equal("/cloudfoundryapplication/mappings",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, endpointOptions));
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        Assert.Single(options.AllowedVerbs);
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.Single(endpointOptions.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 
     [Fact]
     public async Task HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
     {
-        IOptionsMonitor<RouteMappingsEndpointOptions> opts = GetOptionsMonitorFromSettings<RouteMappingsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<RouteMappingsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<RouteMappingsEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
@@ -67,13 +68,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
             new Mock<IApiDescriptionProvider>().Object
         };
 
-        var ep = new RouteMappingsEndpointHandler(opts, mockActionDescriptorCollectionProvider.Object,
-            mockApiDescriptionProviders, routeMappings, NullLoggerFactory.Instance);
+        var handler = new RouteMappingsEndpointHandler(endpointOptionsMonitor, mockActionDescriptorCollectionProvider.Object, mockApiDescriptionProviders,
+            routeMappings, NullLoggerFactory.Instance);
 
-        var middle = new RouteMappingsEndpointMiddleware(managementOptions, ep, NullLoggerFactory.Instance);
+        var middleware = new RouteMappingsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
-        await middle.InvokeAsync(context, null);
+        await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadLineAsync();
@@ -99,9 +100,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
 
         string expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"" + typeof(HomeController).FullName + "\":[{\"handler\":\"" +
             typeof(Person).FullName +
@@ -119,7 +120,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
-        context.Request.Path = new PathString(path);
+        context.Request.Path = path;
         context.Request.Scheme = "http";
         context.Request.Host = new HostString("localhost");
         return context;

@@ -14,9 +14,9 @@ public sealed class ThreadDumpEndpointOptionsTest : BaseTest
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<ThreadDumpEndpointOptions>();
-        Assert.Null(opts.Enabled);
-        Assert.Equal("threaddump", opts.Id);
+        var options = GetOptionsFromSettings<ThreadDumpEndpointOptions>();
+        Assert.Null(options.Enabled);
+        Assert.Equal("threaddump", options.Id);
     }
 
     [Fact]
@@ -34,16 +34,18 @@ public sealed class ThreadDumpEndpointOptionsTest : BaseTest
         IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptions>(appsettings);
 
-        CloudFoundryEndpointOptions cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
-        ThreadDumpEndpointOptions opts = optionsMonitor.CurrentValue;
-        Assert.True(cloudOpts.Enabled);
-        Assert.Equal(string.Empty, cloudOpts.Id);
-        Assert.Equal(string.Empty, cloudOpts.Path);
-        Assert.True(cloudOpts.ValidateCertificates);
+        CloudFoundryEndpointOptions cloudFoundryEndpointOptions =
+            GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
 
-        Assert.True(opts.Enabled);
-        Assert.Equal("threaddump", opts.Id);
-        Assert.Equal("threaddump", opts.Path);
+        ThreadDumpEndpointOptions options = optionsMonitor.CurrentValue;
+        Assert.True(cloudFoundryEndpointOptions.Enabled);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Path);
+        Assert.True(cloudFoundryEndpointOptions.ValidateCertificates);
+
+        Assert.True(options.Enabled);
+        Assert.Equal("threaddump", options.Id);
+        Assert.Equal("threaddump", options.Path);
     }
 
     [Fact]
@@ -61,15 +63,17 @@ public sealed class ThreadDumpEndpointOptionsTest : BaseTest
         IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor =
             GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions, ConfigureThreadDumpEndpointOptionsV1>(appsettings);
 
-        CloudFoundryEndpointOptions cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
-        ThreadDumpEndpointOptions opts = optionsMonitor.CurrentValue;
-        Assert.True(cloudOpts.Enabled);
-        Assert.Equal(string.Empty, cloudOpts.Id);
-        Assert.Equal(string.Empty, cloudOpts.Path);
-        Assert.True(cloudOpts.ValidateCertificates);
+        CloudFoundryEndpointOptions cloudFoundryEndpointOptions =
+            GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
 
-        Assert.True(opts.Enabled);
-        Assert.Equal("dump", opts.Id);
-        Assert.Equal("dump", opts.Path);
+        ThreadDumpEndpointOptions options = optionsMonitor.CurrentValue;
+        Assert.True(cloudFoundryEndpointOptions.Enabled);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Path);
+        Assert.True(cloudFoundryEndpointOptions.ValidateCertificates);
+
+        Assert.True(options.Enabled);
+        Assert.Equal("dump", options.Id);
+        Assert.Equal("dump", options.Path);
     }
 }

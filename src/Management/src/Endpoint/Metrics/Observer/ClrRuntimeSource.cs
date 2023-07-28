@@ -12,9 +12,9 @@ internal static class ClrRuntimeSource
 
         var counts = new List<long>(GC.MaxGeneration);
 
-        for (int i = 0; i < GC.MaxGeneration; i++)
+        for (int index = 0; index < GC.MaxGeneration; index++)
         {
-            counts.Add(GC.CollectionCount(i));
+            counts.Add(GC.CollectionCount(index));
         }
 
         return new HeapMetrics(totalMemory, counts);

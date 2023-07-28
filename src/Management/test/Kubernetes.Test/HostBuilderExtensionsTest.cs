@@ -24,21 +24,22 @@ public sealed class HostBuilderExtensionsTest
     };
 
     private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer()
-        .ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting())
-        .ConfigureAppConfiguration(b => b.AddInMemoryCollection(AppSettings));
+        .ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProvider())
+        .Configure(applicationBuilder => applicationBuilder.UseRouting()).ConfigureAppConfiguration(b => b.AddInMemoryCollection(AppSettings));
 
-    private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(s =>
-    {
-        s.AddRouting();
-        s.AddActionDescriptorCollectionProvider();
+    private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(services =>
+        {
+            services.AddRouting();
+            services.AddActionDescriptorCollectionProvider();
 
-        s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme,
-            _ =>
-            {
-            });
+            services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                TestAuthHandler.AuthenticationScheme, _ =>
+                {
+                });
 
-        s.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
-    }).Configure(a => a.UseRouting().UseAuthentication().UseAuthorization()).ConfigureAppConfiguration(b => b.AddInMemoryCollection(AppSettings));
+            services.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
+        }).Configure(applicationBuilder => applicationBuilder.UseRouting().UseAuthentication().UseAuthorization())
+        .ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
 
     public HostBuilderExtensionsTest()
     {

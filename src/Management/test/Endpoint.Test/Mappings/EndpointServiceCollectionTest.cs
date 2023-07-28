@@ -14,15 +14,6 @@ namespace Steeltoe.Management.Endpoint.Test.Mappings;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddMappingsActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMappingsActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void AddMappingsActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();

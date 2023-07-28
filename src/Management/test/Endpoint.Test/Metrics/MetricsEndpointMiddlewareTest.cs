@@ -26,48 +26,48 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public void ParseTag_ReturnsExpected()
     {
-        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var ep = new MetricsEndpointHandler(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
+        var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
-        Assert.Null(middle.ParseTag("foobar"));
-        Assert.Equal(new KeyValuePair<string, string>("foo", "bar"), middle.ParseTag("foo:bar"));
-        Assert.Equal(new KeyValuePair<string, string>("foo", "bar:bar"), middle.ParseTag("foo:bar:bar"));
-        Assert.Null(middle.ParseTag("foo,bar"));
+        Assert.Null(middleware.ParseTag("foobar"));
+        Assert.Equal(new KeyValuePair<string, string>("foo", "bar"), middleware.ParseTag("foo:bar"));
+        Assert.Equal(new KeyValuePair<string, string>("foo", "bar:bar"), middleware.ParseTag("foo:bar:bar"));
+        Assert.Null(middleware.ParseTag("foo,bar"));
     }
 
     [Fact]
     public void ParseTags_ReturnsExpected()
     {
-        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var ep = new MetricsEndpointHandler(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
+        var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
         HttpContext context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
-        IList<KeyValuePair<string, string>> result = middle.ParseTags(context1.Request.Query);
+        IList<KeyValuePair<string, string>> result = middleware.ParseTags(context1.Request.Query);
         Assert.NotNull(result);
         Assert.Empty(result);
 
         HttpContext context2 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value");
-        result = middle.ParseTags(context2.Request.Query);
+        result = middleware.ParseTags(context2.Request.Query);
         Assert.NotNull(result);
         Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
 
         HttpContext context3 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value&foo=key:value&tag=key1:value1");
-        result = middle.ParseTags(context3.Request.Query);
+        result = middleware.ParseTags(context3.Request.Query);
         Assert.NotNull(result);
         Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
         Assert.Contains(new KeyValuePair<string, string>("key1", "value1"), result);
         Assert.Equal(2, result.Count);
 
         HttpContext context4 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?tag=key:value&foo=key:value&tag=key:value");
-        result = middle.ParseTags(context4.Request.Query);
+        result = middleware.ParseTags(context4.Request.Query);
         Assert.NotNull(result);
         Assert.Contains(new KeyValuePair<string, string>("key", "value"), result);
         Assert.Single(result);
@@ -76,42 +76,41 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public void GetMetricName_ReturnsExpected()
     {
-        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
-        var ep = new MetricsEndpointHandler(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
-
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
+        var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
         HttpContext context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics");
-        Assert.Null(middle.GetMetricName(context1.Request));
+        Assert.Null(middleware.GetMetricName(context1.Request));
 
         HttpContext context2 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class");
-        Assert.Equal("Foo.Bar.Class", middle.GetMetricName(context2.Request));
+        Assert.Equal("Foo.Bar.Class", middleware.GetMetricName(context2.Request));
 
         HttpContext context3 = CreateRequest("GET", "/cloudfoundryapplication/metrics", "?tag=key:value&tag=key1:value1");
-        Assert.Null(middle.GetMetricName(context3.Request));
+        Assert.Null(middleware.GetMetricName(context3.Request));
     }
 
     [Fact]
     public void GetMetricName_ReturnsExpected_When_ManagementPath_Is_Slash()
     {
-        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var ep = new MetricsEndpointHandler(opts, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
+        var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
         HttpContext context1 = CreateRequest("GET", "/actuator/metrics");
-        Assert.Null(middle.GetMetricName(context1.Request));
+        Assert.Null(middleware.GetMetricName(context1.Request));
 
         HttpContext context2 = CreateRequest("GET", "/actuator/metrics/Foo.Bar.Class");
-        Assert.Equal("Foo.Bar.Class", middle.GetMetricName(context2.Request));
+        Assert.Equal("Foo.Bar.Class", middleware.GetMetricName(context2.Request));
 
         HttpContext context3 = CreateRequest("GET", "/actuator/metrics", "?tag=key:value&tag=key1:value1");
-        Assert.Null(middle.GetMetricName(context3.Request));
+        Assert.Null(middleware.GetMetricName(context3.Request));
     }
 
     [Fact]
@@ -122,71 +121,69 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
             ["management:endpoints:actuator:exposure:include:0"] = "*"
         };
 
-        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
+        IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings);
 
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);
 
         GetTestMetrics(exporter);
 
-        var ep = new MetricsEndpointHandler(opts, exporter, NullLoggerFactory.Instance);
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, exporter, NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
+        var middleware = new MetricsEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
 
-        await middle.InvokeAsync(context, null);
+        await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
+        var reader = new StreamReader(context.Response.Body);
+        string json = await reader.ReadToEndAsync();
         Assert.Equal("{\"names\":[]}", json);
     }
 
     [Fact]
     public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
     {
-        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
 
-        var ep = new MetricsEndpointHandler(opts, exporter, NullLoggerFactory.Instance);
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, exporter, NullLoggerFactory.Instance);
 
         GetTestMetrics(exporter);
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
+        var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
 
-        await middle.InvokeAsync(context, null);
+        await middleware.InvokeAsync(context, null);
         Assert.Equal(404, context.Response.StatusCode);
     }
 
     [Fact]
     public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
     {
-        IOptionsMonitor<MetricsEndpointOptions> opts = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
-
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
         AggregationManager aggManager = GetTestMetrics(exporter);
         aggManager.Start();
-        var ep = new MetricsEndpointHandler(opts, exporter, NullLoggerFactory.Instance);
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, exporter, NullLoggerFactory.Instance);
 
-        var middle = new MetricsEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
+        var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
         SetupTestView();
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test", "?tag=a:v1");
 
-        await middle.InvokeAsync(context, null);
+        await middleware.InvokeAsync(context, null);
         Assert.Equal(200, context.Response.StatusCode);
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
+        var reader = new StreamReader(context.Response.Body);
+        string json = await reader.ReadToEndAsync();
 
         Assert.Equal(
             "{\"name\":\"test\",\"measurements\":[{\"statistic\":\"Rate\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}",
@@ -196,15 +193,16 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<MetricsEndpointOptions>();
-        ManagementEndpointOptions managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().CurrentValue;
-        Assert.False(options.RequiresExactMatch());
-        Assert.Equal("/actuator/metrics/{**_}", options.GetPathMatchPattern(managementOptions.Path, managementOptions));
+        var endpointOptions = GetOptionsFromSettings<MetricsEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+
+        Assert.False(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/metrics/{**_}", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
 
         Assert.Equal("/cloudfoundryapplication/metrics/{**_}",
-            options.GetPathMatchPattern(ConfigureManagementEndpointOptions.DefaultCloudFoundryPath, managementOptions));
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path, string query = null)
@@ -216,7 +214,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
-        context.Request.Path = new PathString(path);
+        context.Request.Path = path;
         context.Request.Scheme = "http";
         context.Request.Host = new HostString("localhost");
 
@@ -239,9 +237,9 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
             { "c", "v1" }
         };
 
-        for (int i = 0; i < 10; i++)
+        for (int index = 0; index < 10; index++)
         {
-            counter.Add(i, new ReadOnlySpan<KeyValuePair<string, object>>(labels.ToArray()));
+            counter.Add(index, new ReadOnlySpan<KeyValuePair<string, object>>(labels.ToArray()));
         }
     }
 }
