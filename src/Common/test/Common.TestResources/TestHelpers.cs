@@ -40,11 +40,6 @@ public static class TestHelpers
         { "spring:cloud:config:enabled", "false" },
         { "eureka:client:serviceUrl", "http://127.0.0.1" },
         { "eureka:client:enabled", "false" },
-        { "mysql:client:ConnectionTimeout", "1" },
-        { "postgres:client:timeout", "1" },
-        { "redis:client:abortOnConnectFail", "false" },
-        { "redis:client:connectTimeout", "1" },
-        { "sqlserver:credentials:timeout", "1" },
         { "management:endpoints:actuator:exposure:include:0", "*" }
     }.ToImmutableDictionary();
 
