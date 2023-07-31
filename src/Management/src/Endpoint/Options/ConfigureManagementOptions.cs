@@ -31,7 +31,12 @@ internal sealed class ConfigureManagementOptions : IConfigureOptions<ManagementO
 
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 
-        options.IsCloudFoundryEnabled = !bool.TryParse(_configuration[CloudFoundryEnabledPrefix], out bool enabled) || enabled; // Default true
+        options.IsCloudFoundryEnabled = true;
+
+        if (bool.TryParse(_configuration[CloudFoundryEnabledPrefix], out bool isEnabled))
+        {
+            options.IsCloudFoundryEnabled = isEnabled;
+        }
 
         foreach (string converterTypeName in options.CustomJsonConverters ?? Array.Empty<string>())
         {

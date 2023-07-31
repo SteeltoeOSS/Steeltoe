@@ -397,14 +397,15 @@ public static class ManagementWebHostBuilderExtensions
         return AddAllActuators(hostBuilder, null);
     }
 
-    internal static void GetManagementUrl(this IWebHostBuilder webHostBuilder, out int? httpPort, out int? httpsPort)
+    internal static (int? HttpPort, int? HttpsPort) GetManagementPorts(this IWebHostBuilder webHostBuilder)
     {
         ArgumentGuard.NotNull(webHostBuilder);
 
         string portSetting = webHostBuilder.GetSetting(ManagementPortKey);
         string sslSetting = webHostBuilder.GetSetting(ManagementSslKey);
 
-        httpPort = httpsPort = null;
+        int? httpPort = null;
+        int? httpsPort = null;
 
         if (string.IsNullOrEmpty(portSetting))
         {
@@ -424,11 +425,13 @@ public static class ManagementWebHostBuilderExtensions
                 httpPort = managementPort;
             }
         }
+
+        return (httpPort, httpsPort);
     }
 
     private static IWebHostBuilder AddManagementPort(this IWebHostBuilder webHostBuilder)
     {
-        webHostBuilder.GetManagementUrl(out int? httpPort, out int? httpsPort);
+        (int? httpPort, int? httpsPort) = webHostBuilder.GetManagementPorts();
 
         if (httpPort.HasValue || httpsPort.HasValue)
         {

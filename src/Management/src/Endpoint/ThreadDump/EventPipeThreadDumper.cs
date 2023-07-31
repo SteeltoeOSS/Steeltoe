@@ -244,7 +244,7 @@ public sealed class EventPipeThreadDumper
             ClassName = "Unknown"
         };
 
-        if (ParseFrameName(frameName, out string assemblyName, out string className, out string methodName, out string parameters))
+        if (TryParseFrameName(frameName, out string assemblyName, out string className, out string methodName, out string parameters))
         {
             result.ClassName = $"{assemblyName}!{className}";
             result.MethodName = methodName + parameters;
@@ -263,7 +263,7 @@ public sealed class EventPipeThreadDumper
         return result;
     }
 
-    private bool ParseFrameName(string frameName, out string assemblyName, out string className, out string methodName, out string parameters)
+    private bool TryParseFrameName(string frameName, out string assemblyName, out string className, out string methodName, out string parameters)
     {
         assemblyName = null;
         className = null;
@@ -277,17 +277,17 @@ public sealed class EventPipeThreadDumper
 
         string remaining = null;
 
-        if (!ParseParameters(frameName, ref remaining, ref parameters))
+        if (!TryParseParameters(frameName, ref remaining, ref parameters))
         {
             return false;
         }
 
-        if (!ParseMethod(remaining, ref remaining, ref methodName))
+        if (!TryParseMethod(remaining, ref remaining, ref methodName))
         {
             return false;
         }
 
-        if (!ParseClassName(remaining, out remaining, out className))
+        if (!TryParseClassName(remaining, out remaining, out className))
         {
             return false;
         }
@@ -298,7 +298,7 @@ public sealed class EventPipeThreadDumper
         return true;
     }
 
-    private bool ParseClassName(string input, out string remaining, out string className)
+    private bool TryParseClassName(string input, out string remaining, out string className)
     {
         int classStartIndex = input.IndexOf('!');
 
@@ -316,7 +316,7 @@ public sealed class EventPipeThreadDumper
         return true;
     }
 
-    private bool ParseMethod(string input, ref string remaining, ref string methodName)
+    private bool TryParseMethod(string input, ref string remaining, ref string methodName)
     {
         int methodStartIndex = input.LastIndexOf('.');
 
@@ -330,7 +330,7 @@ public sealed class EventPipeThreadDumper
         return false;
     }
 
-    private bool ParseParameters(string input, ref string remaining, ref string parameters)
+    private bool TryParseParameters(string input, ref string remaining, ref string parameters)
     {
         int paramStartIndex = input.IndexOf('(');
 

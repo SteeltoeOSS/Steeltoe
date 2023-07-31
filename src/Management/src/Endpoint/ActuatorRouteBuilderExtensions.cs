@@ -23,9 +23,10 @@ public static class ActuatorRouteBuilderExtensions
         IServiceProvider serviceProvider = endpoints.ServiceProvider;
 
         using IServiceScope scope = serviceProvider.CreateScope();
-
         var mapper = scope.ServiceProvider.GetRequiredService<ActuatorEndpointMapper>();
-        mapper.Map(endpoints, ref conventionBuilder);
+        conventionBuilder ??= new ActuatorConventionBuilder();
+
+        mapper.Map(endpoints, conventionBuilder);
         return conventionBuilder;
     }
 }

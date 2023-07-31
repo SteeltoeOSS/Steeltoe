@@ -457,7 +457,7 @@ public static class ManagementHostBuilderExtensions
     {
         return hostBuilder.ConfigureWebHost(webHostBuilder =>
         {
-            webHostBuilder.GetManagementUrl(out int? httpPort, out int? httpsPort);
+            (int? httpPort, int? httpsPort) = webHostBuilder.GetManagementPorts();
 
             if (httpPort.HasValue || httpsPort.HasValue)
             {

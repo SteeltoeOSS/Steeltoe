@@ -362,7 +362,7 @@ public static class ManagementWebApplicationBuilderExtensions
 
     private static void AddCommonServices(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null)
     {
-        applicationBuilder.WebHost.GetManagementUrl(out int? httpPort, out int? httpsPort);
+        (int? httpPort, int? httpsPort) = applicationBuilder.WebHost.GetManagementPorts();
 
         if (httpPort.HasValue || httpsPort.HasValue)
         {

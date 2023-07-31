@@ -33,13 +33,13 @@ internal sealed class ActuatorEndpointMapper
         _logger = logger;
     }
 
-    public void Map(IEndpointRouteBuilder endpointRouteBuilder, ref ActuatorConventionBuilder conventionBuilder)
+    public void Map(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder)
     {
         ArgumentGuard.NotNull(endpointRouteBuilder);
+        ArgumentGuard.NotNull(conventionBuilder);
 
         var collection = new HashSet<string>();
 
-        conventionBuilder ??= new ActuatorConventionBuilder();
         // Map Default configured context
         IEnumerable<IEndpointMiddleware> middlewares = _middlewares.Where(m => m is not CloudFoundryEndpointMiddleware);
         MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, _managementOptionsMonitor.CurrentValue.Path, middlewares);
