@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.ObjectModel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -22,8 +21,6 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         LoggerLevels.LogLevelToString(LogLevel.Debug),
         LoggerLevels.LogLevelToString(LogLevel.Trace)
     }.AsReadOnly();
-
-    private static readonly IDictionary<string, object> EmptyDictionary = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>());
 
     private readonly IOptionsMonitor<LoggersEndpointOptions> _optionsMonitor;
     private readonly IDynamicLoggerProvider _dynamicLoggerProvider;
@@ -58,7 +55,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         else
         {
             SetLogLevel(request.Name, request.Level);
-            result = EmptyDictionary;
+            result = new Dictionary<string, object>();
         }
 
         var response = new LoggersResponse(result, false);
@@ -82,8 +79,8 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
             loggers.Add(configuration.Name, levels);
         }
 
-        result.Add("loggers", new ReadOnlyDictionary<string, LoggerLevels>(loggers));
-        return new ReadOnlyDictionary<string, object>(result);
+        result.Add("loggers", loggers);
+        return result;
     }
 
     private void SetLogLevel(string name, string level)
