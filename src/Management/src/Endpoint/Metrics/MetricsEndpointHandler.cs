@@ -82,44 +82,44 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 
         try
         {
-            IEnumerable<MetricSample> rateSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Rate).ToList();
+            List<MetricSample> rateSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Rate).ToList();
 
             if (rateSamples.Any())
             {
                 MetricSample sample = rateSamples.Aggregate(SumAggregator);
-                sampleList.Add(new MetricSample(MetricStatistic.Rate, sample.Value / rateSamples.Count(), sample.Tags));
+                sampleList.Add(new MetricSample(MetricStatistic.Rate, sample.Value / rateSamples.Count, sample.Tags));
             }
 
-            IEnumerable<MetricSample> valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Value).ToList();
+            List<MetricSample> valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Value).ToList();
 
             if (valueSamples.Any())
             {
                 MetricSample sample = valueSamples.Aggregate(SumAggregator);
-                sampleList.Add(new MetricSample(MetricStatistic.Value, sample.Value / valueSamples.Count(), sample.Tags));
+                sampleList.Add(new MetricSample(MetricStatistic.Value, sample.Value / valueSamples.Count, sample.Tags));
             }
 
-            IEnumerable<MetricSample> totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Total).ToList();
+            List<MetricSample> totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Total).ToList();
 
             if (totalSamples.Any())
             {
                 sampleList.Add(totalSamples.Aggregate(SumAggregator));
             }
 
-            IEnumerable<MetricSample> totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TotalTime).ToList();
+            List<MetricSample> totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TotalTime).ToList();
 
             if (totalTimeSamples.Any())
             {
                 sampleList.Add(totalTimeSamples.Aggregate(SumAggregator));
             }
 
-            IEnumerable<MetricSample> countSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Count).ToList();
+            List<MetricSample> countSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Count).ToList();
 
             if (countSamples.Any())
             {
                 sampleList.Add(countSamples.Aggregate(SumAggregator));
             }
 
-            IEnumerable<MetricSample> maxSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Max).ToList();
+            List<MetricSample> maxSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.Max).ToList();
 
             if (maxSamples.Any())
             {

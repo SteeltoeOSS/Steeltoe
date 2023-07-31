@@ -82,7 +82,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         }
         else
         {
-            response.Groups = endpointOptions.Groups.Select(g => g.Key);
+            response.Groups = endpointOptions.Groups.Select(group => group.Key).ToList();
         }
 
         return Task.FromResult(response);

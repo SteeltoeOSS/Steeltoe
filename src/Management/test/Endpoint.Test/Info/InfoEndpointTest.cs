@@ -24,12 +24,7 @@ public sealed class InfoEndpointTest : BaseTest
     public async Task Invoke_NoContributors_ReturnsExpectedInfo()
     {
         using var testContext = new TestContext(_output);
-
-        testContext.AdditionalServices = (services, _) =>
-        {
-            services.AddInfoActuatorServices();
-            services.AddSingleton<IEnumerable<IInfoContributor>>(Array.Empty<IInfoContributor>());
-        };
+        testContext.AdditionalServices = (services, _) => services.AddInfoActuatorServices();
 
         var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 

@@ -20,7 +20,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
 {
     private readonly IOptionsMonitor<RouteMappingsEndpointOptions> _optionsMonitor;
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
-    private readonly IEnumerable<IApiDescriptionProvider> _apiDescriptionProviders;
+    private readonly IList<IApiDescriptionProvider> _apiDescriptionProviders;
     private readonly RouteMappings _routeMappings;
     private readonly ILogger<RouteMappingsEndpointHandler> _logger;
 
@@ -38,7 +38,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
 
         _optionsMonitor = optionsMonitor;
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
-        _apiDescriptionProviders = apiDescriptionProviders;
+        _apiDescriptionProviders = apiDescriptionProviders.ToList();
         _routeMappings = routeMappings;
         _logger = loggerFactory.CreateLogger<RouteMappingsEndpointHandler>();
     }

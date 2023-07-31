@@ -91,7 +91,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
         }
     }
 
-    internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext context)
+    internal IDictionary<string, object> GetLabelSets(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
 

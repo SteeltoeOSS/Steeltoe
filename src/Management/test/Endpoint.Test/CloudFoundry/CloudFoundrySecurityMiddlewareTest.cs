@@ -293,9 +293,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
-        IEnumerable<EndpointOptions> endpointOptionsCollection = new List<EndpointOptions>();
 
-        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, endpointOptionsCollection, null,
+        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, Enumerable.Empty<EndpointOptions>(), null,
             NullLoggerFactory.Instance);
 
         HttpContext context1 = CreateRequest("GET", "/");
@@ -313,9 +312,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
-        IEnumerable<EndpointOptions> endpointOptionsCollection = new List<EndpointOptions>();
 
-        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, endpointOptionsCollection, null,
+        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, Enumerable.Empty<EndpointOptions>(), null,
             NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/");

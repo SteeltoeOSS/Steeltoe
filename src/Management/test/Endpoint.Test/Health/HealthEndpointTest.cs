@@ -192,7 +192,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Single(result.Details.Keys);
-        Assert.True(result.Groups.Count() == 2);
+        Assert.True(result.Groups.Count == 2);
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.True(result.Details.Keys.Count == 1);
-        Assert.True(result.Groups.Count() == 2);
+        Assert.True(result.Groups.Count == 2);
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Single(result.Details.Keys);
-        Assert.Equal(2, result.Groups.Count());
+        Assert.Equal(2, result.Groups.Count);
     }
 
     [Fact]
@@ -295,7 +295,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.True(result.Details.Keys.Count == 4);
-        Assert.True(result.Groups.Count() == 2);
+        Assert.True(result.Groups.Count == 2);
     }
 
     [Fact]
@@ -328,7 +328,7 @@ public sealed class HealthEndpointTest : BaseTest
         Assert.Equal(2, result.Details.Keys.Count);
         Assert.Contains("Up", result.Details.Keys);
         Assert.Contains("privatememory", result.Details.Keys);
-        Assert.Equal(3, result.Groups.Count());
+        Assert.Equal(3, result.Groups.Count);
     }
 
     private static HealthEndpointRequest GetHealthRequest()

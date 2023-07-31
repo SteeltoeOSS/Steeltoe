@@ -205,7 +205,7 @@ Steeltoe.Management.Endpoint.Health.HealthEndpointRequest.HasClaim.get -> bool
 Steeltoe.Management.Endpoint.Health.HealthEndpointRequest.HasClaim.set -> void
 Steeltoe.Management.Endpoint.Health.HealthEndpointRequest.HealthEndpointRequest() -> void
 Steeltoe.Management.Endpoint.Health.HealthEndpointResponse
-Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Groups.get -> System.Collections.Generic.IEnumerable<string>
+Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Groups.get -> System.Collections.Generic.IList<string>
 Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Groups.set -> void
 Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.HealthEndpointResponse(Steeltoe.Common.HealthChecks.HealthCheckResult result) -> void
 Steeltoe.Management.Endpoint.Health.HealthGroupOptions

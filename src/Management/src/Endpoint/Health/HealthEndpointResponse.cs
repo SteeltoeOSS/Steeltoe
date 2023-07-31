@@ -4,6 +4,8 @@
 
 using Steeltoe.Common.HealthChecks;
 
+#pragma warning disable S4004 // Collection properties should be readonly
+
 namespace Steeltoe.Management.Endpoint.Health;
 
 public sealed class HealthEndpointResponse : HealthCheckResult
@@ -11,7 +13,7 @@ public sealed class HealthEndpointResponse : HealthCheckResult
     /// <summary>
     /// Gets or sets the list of available health groups.
     /// </summary>
-    public IEnumerable<string> Groups { get; set; }
+    public IList<string> Groups { get; set; } = new List<string>();
 
     public HealthEndpointResponse(HealthCheckResult result)
     {

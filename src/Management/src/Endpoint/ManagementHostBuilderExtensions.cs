@@ -440,8 +440,9 @@ public static class ManagementHostBuilderExtensions
         ArgumentGuard.NotNull(collection);
 
         // check for existing AllActuatorsStartupFilter
-        IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(t =>
-            t.ImplementationType == typeof(AllActuatorsStartupFilter) || t.ImplementationFactory?.Method.ReturnType == typeof(AllActuatorsStartupFilter));
+        IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(descriptor =>
+            descriptor.ImplementationType == typeof(AllActuatorsStartupFilter) ||
+            descriptor.ImplementationFactory?.Method.ReturnType == typeof(AllActuatorsStartupFilter));
 
         var actuatorConventionBuilder = new ActuatorConventionBuilder();
 

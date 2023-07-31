@@ -104,7 +104,7 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
         }
     }
 
-    private IEnumerable<KeyValuePair<string, object>> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
+    private IDictionary<string, object> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
     {
         string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string status = ((int)statusCode).ToString(CultureInfo.InvariantCulture);

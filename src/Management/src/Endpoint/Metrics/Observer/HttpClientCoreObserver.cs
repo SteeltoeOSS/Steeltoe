@@ -103,7 +103,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
         }
     }
 
-    private IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+    private IDictionary<string, object> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
     {
         string uri = request.RequestUri!.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string statusCode = GetStatusCode(response, taskStatus);

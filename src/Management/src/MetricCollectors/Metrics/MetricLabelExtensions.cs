@@ -14,11 +14,4 @@ internal static class MetricLabelExtensions
 
         return new ReadOnlySpan<KeyValuePair<string, object>>(keyValuePairs.ToArray());
     }
-
-    public static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IEnumerable<KeyValuePair<string, object>> keyValuePairs)
-    {
-        ArgumentGuard.NotNull(keyValuePairs);
-
-        return new ReadOnlySpan<KeyValuePair<string, object>>(keyValuePairs.ToArray());
-    }
 }

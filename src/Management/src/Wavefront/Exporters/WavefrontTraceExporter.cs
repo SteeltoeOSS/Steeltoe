@@ -85,8 +85,8 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
 
         tags.Add(new KeyValuePair<string, string>("application", _options.Name.ToLowerInvariant()));
         tags.Add(new KeyValuePair<string, string>("service", _options.Service.ToLowerInvariant()));
-
         tags.Add(new KeyValuePair<string, string>("component", "wavefront-trace-exporter"));
+
         return tags;
     }
 
