@@ -18,7 +18,7 @@ public sealed class WavefrontExporterOptions
     public int Step { get; set; } = 30_000; // milliseconds
     public int BatchSize { get; set; } = 10_000;
     public int MaxQueueSize { get; set; } = 500_000;
-    public WavefrontApplicationOptions ApplicationOptions { get; }
+    public WavefrontApplicationOptions ApplicationOptions { get; set; }
     public string Source => ApplicationOptions?.Source ?? DnsTools.ResolveHostName();
     public string Name => ApplicationOptions?.Name ?? "SteeltoeApp";
     public string Service => ApplicationOptions?.Service ?? "SteeltoeAppService";
