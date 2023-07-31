@@ -31,7 +31,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 
     public Task<MetricsResponse> InvokeAsync(MetricsRequest request, CancellationToken cancellationToken)
     {
-        (MetricsCollection<List<MetricSample>> measurements, MetricsCollection<List<MetricTag>> availableTags) = GetMetrics();
+        (MetricsCollection<IList<MetricSample>> measurements, MetricsCollection<IList<MetricTag>> availableTags) = GetMetrics();
 
         var metricNames = new HashSet<string>(measurements.Keys);
         MetricsResponse response;
@@ -47,7 +47,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
                 _logger.LogTrace("Fetching metrics for " + request.MetricName);
                 IList<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
-                response = GetMetric(request, sampleList, availableTags[request.MetricName]);
+                response = GetMetric(request, sampleList, availableTags.GetOrAdd(request.MetricName, new List<MetricTag>()));
             }
             else
             {
@@ -58,10 +58,10 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         return Task.FromResult(response);
     }
 
-    internal IList<MetricSample> GetMetricSamplesByTags(MetricsCollection<List<MetricSample>> measurements, string metricName,
+    internal IList<MetricSample> GetMetricSamplesByTags(MetricsCollection<IList<MetricSample>> measurements, string metricName,
         IList<KeyValuePair<string, string>> tags)
     {
-        List<MetricSample> filtered = measurements[metricName];
+        IList<MetricSample> filtered = measurements.GetOrAdd(metricName, new List<MetricSample>());
         var sampleList = new List<MetricSample>();
 
         if (tags != null && tags.Any())
@@ -141,7 +141,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         return new MetricsResponse(request.MetricName, metricSamples, availableTags);
     }
 
-    internal (MetricsCollection<List<MetricSample>> Samples, MetricsCollection<List<MetricTag>> Tags) GetMetrics()
+    internal (MetricsCollection<IList<MetricSample>> Samples, MetricsCollection<IList<MetricTag>> Tags) GetMetrics()
     {
         return _exporter.Export();
     }

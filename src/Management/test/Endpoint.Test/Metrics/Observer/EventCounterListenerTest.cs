@@ -61,11 +61,11 @@ public sealed class EventCounterListenerTest : BaseTest
         aggregationManager.Start();
         await Task.Delay(2000);
 
-        (MetricsCollection<List<MetricSample>> metricSamples, _) = exporter.Export();
+        (MetricsCollection<IList<MetricSample>> metricSamples, _) = exporter.Export();
 
         foreach (string metric in _metrics)
         {
-            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(pair => pair.Key == metric).ToList();
+            List<KeyValuePair<string, IList<MetricSample>>> summary = metricSamples.Where(pair => pair.Key == metric).ToList();
             Assert.True(summary != null, $"Summary was null for {metric}");
             Assert.True(summary.Count > 0, $"Summary was empty for {metric}");
         }
@@ -98,11 +98,11 @@ public sealed class EventCounterListenerTest : BaseTest
         aggregationManager.Start();
         await Task.Delay(2000);
 
-        (MetricsCollection<List<MetricSample>> metricSamples, _) = exporter.Export();
+        (MetricsCollection<IList<MetricSample>> metricSamples, _) = exporter.Export();
 
         foreach (string metric in _metrics)
         {
-            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(pair => pair.Key == metric).ToList();
+            List<KeyValuePair<string, IList<MetricSample>>> summary = metricSamples.Where(pair => pair.Key == metric).ToList();
 
             if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty, StringComparison.Ordinal)))
             {
@@ -139,11 +139,11 @@ public sealed class EventCounterListenerTest : BaseTest
         aggregationManager.Start();
         await Task.Delay(2000);
 
-        (MetricsCollection<List<MetricSample>> metricSamples, _) = exporter.Export();
+        (MetricsCollection<IList<MetricSample>> metricSamples, _) = exporter.Export();
 
         foreach (string metric in _metrics)
         {
-            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(pair => pair.Key == metric).ToList();
+            List<KeyValuePair<string, IList<MetricSample>>> summary = metricSamples.Where(pair => pair.Key == metric).ToList();
 
             if (inclusions.Contains(metric.Substring("System.Runtime.".Length)))
             {

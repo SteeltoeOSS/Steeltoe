@@ -12,7 +12,7 @@ public interface ISteeltoeExporter
 {
     void SetCollect(Action collect);
 
-    (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export();
+    (MetricsCollection<IList<MetricSample>> MetricSamples, MetricsCollection<IList<MetricTag>> AvailableTags) Export();
 
     public void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats);
 }

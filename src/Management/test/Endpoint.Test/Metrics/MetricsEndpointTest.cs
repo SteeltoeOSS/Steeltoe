@@ -244,7 +244,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test7");
             counter.Add(100);
 
-            (MetricsCollection<List<MetricSample>> measurements, _) = handler.GetMetrics();
+            (MetricsCollection<IList<MetricSample>> measurements, _) = handler.GetMetrics();
             Assert.NotNull(measurements);
             Assert.Single(measurements.Values);
             MetricSample sample = measurements.Values.First()[0];
@@ -293,12 +293,12 @@ public sealed class MetricsEndpointTest : BaseTest
             counter.Add(1, v1Tags.AsReadonlySpan());
             counter.Add(1, v2Tags.AsReadonlySpan());
 
-            (_, MetricsCollection<List<MetricTag>> tagDictionary) = handler.GetMetrics();
+            (_, MetricsCollection<IList<MetricTag>> tagDictionary) = handler.GetMetrics();
 
             Assert.NotNull(tagDictionary);
             Assert.Single(tagDictionary.Values);
 
-            List<MetricTag> tags = tagDictionary["test.test2"];
+            IList<MetricTag> tags = tagDictionary.GetOrAdd("test.test2", new List<MetricTag>());
 
             Assert.Equal(3, tags.Count);
 
@@ -326,7 +326,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.NotNull(tagDictionary);
             Assert.Single(tagDictionary.Values);
 
-            tags = tagDictionary["test.test3"];
+            tags = tagDictionary.GetOrAdd("test.test3", new List<MetricTag>());
             Assert.Empty(tags);
         }
         finally
@@ -409,11 +409,11 @@ public sealed class MetricsEndpointTest : BaseTest
                 testMeasure.Record(index, context4.AsReadonlySpan());
             }
 
-            (MetricsCollection<List<MetricSample>> measurements, _) = handler.GetMetrics();
+            (MetricsCollection<IList<MetricSample>> measurements, _) = handler.GetMetrics();
             Assert.NotNull(measurements);
             Assert.Single(measurements);
 
-            List<MetricSample> measurement = measurements["test.test1"];
+            IList<MetricSample> measurement = measurements.GetOrAdd("test.test1", new List<MetricSample>());
             Assert.Equal(4, measurement.Count);
 
             MetricSample sample = measurement[0];

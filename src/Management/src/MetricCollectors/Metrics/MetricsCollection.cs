@@ -7,27 +7,13 @@ using System.Collections.Concurrent;
 namespace Steeltoe.Management.MetricCollectors.Metrics;
 
 public sealed class MetricsCollection<T> : ConcurrentDictionary<string, T>
-    where T : new()
 {
-    public new T this[string key]
-    {
-        get
-        {
-            if (!ContainsKey(key))
-            {
-                base[key] = new T();
-            }
-
-            return base[key];
-        }
-    }
-
-    internal MetricsCollection()
+    public MetricsCollection()
     {
     }
 
-    internal MetricsCollection(IEnumerable<KeyValuePair<string, T>> instance)
-        : base(instance)
+    public MetricsCollection(IEnumerable<KeyValuePair<string, T>> source)
+        : base(source)
     {
     }
 }

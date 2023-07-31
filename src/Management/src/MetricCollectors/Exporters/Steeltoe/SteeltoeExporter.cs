@@ -15,13 +15,13 @@ namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 internal sealed class SteeltoeExporter : ISteeltoeExporter
 {
     // ReSharper disable once CollectionNeverUpdated.Local
-    private readonly MetricsCollection<List<MetricSample>> _metricSamples = new();
-    private readonly MetricsCollection<List<MetricTag>> _availableTags = new();
+    private readonly MetricsCollection<IList<MetricSample>> _metricSamples = new();
+    private readonly MetricsCollection<IList<MetricTag>> _availableTags = new();
 
     private readonly int _cacheDurationMilliseconds;
     private readonly object _collectionLock = new();
-    private MetricsCollection<List<MetricSample>> _lastCollectionSamples = new();
-    private MetricsCollection<List<MetricTag>> _lastAvailableTags = new();
+    private MetricsCollection<IList<MetricSample>> _lastCollectionSamples = new();
+    private MetricsCollection<IList<MetricTag>> _lastAvailableTags = new();
     private DateTime _lastCollection = DateTime.MinValue;
     private Action? _collect;
 
@@ -43,7 +43,7 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
         _collect = collect;
     }
 
-    public (MetricsCollection<List<MetricSample>> MetricSamples, MetricsCollection<List<MetricTag>> AvailableTags) Export()
+    public (MetricsCollection<IList<MetricSample>> MetricSamples, MetricsCollection<IList<MetricTag>> AvailableTags) Export()
     {
         if (_collect == null)
         {
@@ -57,8 +57,8 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
                 _metricSamples.Clear();
                 _availableTags.Clear();
                 _collect(); // Calls aggregation Manager.Collect
-                _lastCollectionSamples = new MetricsCollection<List<MetricSample>>(_metricSamples);
-                _lastAvailableTags = new MetricsCollection<List<MetricTag>>(_availableTags);
+                _lastCollectionSamples = new MetricsCollection<IList<MetricSample>>(_metricSamples);
+                _lastAvailableTags = new MetricsCollection<IList<MetricTag>>(_availableTags);
                 _lastCollection = DateTime.Now;
             }
         }
@@ -78,7 +78,7 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
             if (rateStats.Delta.HasValue)
             {
                 var sample = new MetricSample(MetricStatistic.Rate, rateStats.Delta.Value, stats.Labels);
-                _metricSamples[instrument.Name].Add(sample);
+                _metricSamples.GetOrAdd(instrument.Name, new List<MetricSample>()).Add(sample);
             }
         }
         else if (stats.AggregationStatistics is LastValueStatistics lastValueStats)
@@ -86,7 +86,7 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
             if (lastValueStats.LastValue.HasValue)
             {
                 var sample = new MetricSample(MetricStatistic.Value, lastValueStats.LastValue.Value, stats.Labels);
-                _metricSamples[instrument.Name].Add(sample);
+                _metricSamples.GetOrAdd(instrument.Name, new List<MetricSample>()).Add(sample);
             }
         }
         else if (stats.AggregationStatistics is HistogramStatistics histogramStats)
@@ -95,22 +95,25 @@ internal sealed class SteeltoeExporter : ISteeltoeExporter
 
             if (instrument.Unit == "s")
             {
-                _metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.TotalTime, sum, stats.Labels));
-                _metricSamples[instrument.Name].Add(new MetricSample(MetricStatistic.Max, histogramStats.HistogramMax, stats.Labels));
+                var timeSample = new MetricSample(MetricStatistic.TotalTime, sum, stats.Labels);
+                _metricSamples.GetOrAdd(instrument.Name, new List<MetricSample>()).Add(timeSample);
+
+                var maxSample = new MetricSample(MetricStatistic.Max, histogramStats.HistogramMax, stats.Labels);
+                _metricSamples.GetOrAdd(instrument.Name, new List<MetricSample>()).Add(maxSample);
             }
             else
             {
                 var sample = new MetricSample(MetricStatistic.Total, sum, stats.Labels);
-                _metricSamples[instrument.Name].Add(sample);
+                _metricSamples.GetOrAdd(instrument.Name, new List<MetricSample>()).Add(sample);
             }
         }
     }
 
-    private static void UpdateAvailableTags(MetricsCollection<List<MetricTag>> availableTags, string name, IEnumerable<KeyValuePair<string, string>> labels)
+    private static void UpdateAvailableTags(MetricsCollection<IList<MetricTag>> availableTags, string name, IEnumerable<KeyValuePair<string, string>> labels)
     {
         foreach (KeyValuePair<string, string> label in labels)
         {
-            List<MetricTag> currentTags = availableTags[name];
+            IList<MetricTag> currentTags = availableTags.GetOrAdd(name, new List<MetricTag>());
             MetricTag? existingTag = currentTags.FirstOrDefault(tag => tag.Tag.Equals(label.Key, StringComparison.OrdinalIgnoreCase));
 
             if (existingTag != null)
