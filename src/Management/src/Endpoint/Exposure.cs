@@ -11,8 +11,8 @@ namespace Steeltoe.Management.Endpoint;
 
 public sealed class Exposure
 {
-    private const string ExposurePrefix = "management:endpoints:actuator:exposure";
-    private const string ExposureSecondChancePrefix = "management:endpoints:web:exposure";
+    private const string Prefix = "management:endpoints:actuator:exposure";
+    private const string SecondChancePrefix = "management:endpoints:web:exposure";
 
     private static readonly List<string> DefaultIncludes = new()
     {
@@ -42,14 +42,14 @@ public sealed class Exposure
     {
         ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = configuration.GetSection(ExposurePrefix);
+        IConfigurationSection section = configuration.GetSection(Prefix);
 
         if (section != null)
         {
             section.Bind(this);
         }
 
-        IConfigurationSection secondSection = configuration.GetSection(ExposureSecondChancePrefix);
+        IConfigurationSection secondSection = configuration.GetSection(SecondChancePrefix);
 
         if (secondSection.Exists())
         {
