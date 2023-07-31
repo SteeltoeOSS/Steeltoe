@@ -104,13 +104,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         string json = await response.Content.ReadAsStringAsync();
 
-        string expected = $@"{{""contexts"":{{""application"":{{""mappings"":{{""dispatcherServlets"":{{""{typeof(HomeController).FullName}"":" +
-            $@"[{{""handler"":""{typeof(Person).FullName} Index()"",""predicate"":""{{[/Home/Index],methods=[GET],produces=[text/plain || " +
-            $@"application/json || text/json],consumes=[text/plain || application/json || text/json]}}"",""details"":{{""requestMappingConditions"":" +
-            $@"{{""consumes"":[{{""mediaType"":""text/plain"",""negated"":false}},{{""mediaType"":""application/json"",""negated"":false}}," +
-            $@"{{""mediaType"":""text/json"",""negated"":false}}],""produces"":[{{""mediaType"":""text/plain"",""negated"":false}},{{""mediaType"":" +
-            $@"""application/json"",""negated"":false}},{{""mediaType"":""text/json"",""negated"":false}}],""headers"":[],""methods"":[""GET""]," +
-            $@"""patterns"":[""/Home/Index""]}}}}}}]}}}}}}}}}}";
+        string expected = $"{{\"contexts\":{{\"application\":{{\"mappings\":{{\"dispatcherServlets\":{{\"{typeof(HomeController).FullName}\":" +
+            $"[{{\"handler\":\"{typeof(Person).FullName} Index()\",\"predicate\":\"{{[/Home/Index],methods=[GET],produces=[text/plain || " +
+            "application/json || text/json],consumes=[text/plain || application/json || text/json]}\",\"details\":{\"requestMappingConditions\":" +
+            "{\"consumes\":[{\"mediaType\":\"text/plain\",\"negated\":false},{\"mediaType\":\"application/json\",\"negated\":false}," +
+            "{\"mediaType\":\"text/json\",\"negated\":false}],\"produces\":[{\"mediaType\":\"text/plain\",\"negated\":false},{\"mediaType\":" +
+            "\"application/json\",\"negated\":false},{\"mediaType\":\"text/json\",\"negated\":false}],\"headers\":[],\"methods\":[\"GET\"]," +
+            "\"patterns\":[\"/Home/Index\"]}}}]}}}}}";
 
         Assert.Equal(expected, json);
     }
