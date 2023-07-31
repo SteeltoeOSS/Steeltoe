@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 
@@ -81,4 +82,19 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     }
 
     public abstract void ProcessEvent(string eventName, object value);
+
+    private protected static T GetPropertyOrDefault<T>(object instance, string name)
+    {
+        ArgumentGuard.NotNull(instance);
+        ArgumentGuard.NotNull(name);
+
+        PropertyInfo property = instance.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+
+        if (property == null)
+        {
+            return default;
+        }
+
+        return (T)property.GetValue(instance);
+    }
 }

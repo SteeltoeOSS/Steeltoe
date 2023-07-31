@@ -19,20 +19,20 @@ public sealed class Startup
         services.AddCloudFoundryActuator();
         services.AddEntityFrameworkInMemoryDatabase().AddDbContext<MockDbContext>();
         services.AddDbMigrationsActuator();
-        var helper = Substitute.For<DbMigrationsEndpointHandler.DbMigrationsEndpointHelper>();
+        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
 
-        helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
+        scanner.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
         {
             "pending"
         });
 
-        helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
+        scanner.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
         {
             "applied"
         });
 
-        helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
-        services.AddSingleton(helper);
+        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+        services.AddSingleton(scanner);
         services.AddRouting();
     }
 

@@ -34,11 +34,11 @@ public sealed class DbMigrationsEndpointTests : BaseTest
     }
 
     [Fact]
-    public void DbMigrationsHelper_GetDeclaredMigrations_InvokesRealExtensionMethodAndThrows()
+    public void DatabaseMigrationScanner_GetDeclaredMigrations_InvokesRealExtensionMethodAndThrows()
     {
-        var sut = new DbMigrationsEndpointHandler.DbMigrationsEndpointHelper();
+        var sut = new DbMigrationsEndpointHandler.DatabaseMigrationScanner();
 
-        sut.Invoking(helper => helper.GetMigrations(new MockDbContext())).Should().Throw<TargetInvocationException>()
+        sut.Invoking(scanner => scanner.GetMigrations(new MockDbContext())).Should().Throw<TargetInvocationException>()
             .WithInnerException<InvalidOperationException>().WithMessage("*No database provider has been configured for this DbContext*");
     }
 
@@ -46,15 +46,15 @@ public sealed class DbMigrationsEndpointTests : BaseTest
     public async Task Invoke_WhenExistingDatabase_ReturnsExpected()
     {
         using var testContext = new TestContext(_output);
-        var helper = Substitute.For<DbMigrationsEndpointHandler.DbMigrationsEndpointHelper>();
-        helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
+        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
 
-        helper.GetPendingMigrations(Arg.Any<object>()).Returns(new[]
+        scanner.GetPendingMigrations(Arg.Any<object>()).Returns(new[]
         {
             "pending"
         });
 
-        helper.GetAppliedMigrations(Arg.Any<object>()).Returns(new[]
+        scanner.GetAppliedMigrations(Arg.Any<object>()).Returns(new[]
         {
             "applied"
         });
@@ -62,7 +62,7 @@ public sealed class DbMigrationsEndpointTests : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddScoped(_ => new MockDbContext());
-            services.AddScoped(_ => helper);
+            services.AddScoped(_ => scanner);
             services.AddDbMigrationsActuatorServices();
         };
 
@@ -79,11 +79,11 @@ public sealed class DbMigrationsEndpointTests : BaseTest
     public async Task Invoke_NonExistingDatabase_ReturnsExpected()
     {
         using var testContext = new TestContext(_output);
-        var helper = Substitute.For<DbMigrationsEndpointHandler.DbMigrationsEndpointHelper>();
-        helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
-        helper.GetPendingMigrations(Arg.Any<object>()).Throws(new SomeDbException("database doesn't exist"));
+        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
+        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+        scanner.GetPendingMigrations(Arg.Any<object>()).Throws(new SomeDbException("database doesn't exist"));
 
-        helper.GetMigrations(Arg.Any<object>()).Returns(new[]
+        scanner.GetMigrations(Arg.Any<object>()).Returns(new[]
         {
             "migration"
         });
@@ -91,7 +91,7 @@ public sealed class DbMigrationsEndpointTests : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddScoped(_ => new MockDbContext());
-            services.AddScoped(_ => helper);
+            services.AddScoped(_ => scanner);
             services.AddDbMigrationsActuatorServices();
         };
 
@@ -108,12 +108,12 @@ public sealed class DbMigrationsEndpointTests : BaseTest
     public async Task Invoke_NonContainerRegistered_ReturnsExpected()
     {
         using var testContext = new TestContext(_output);
-        var helper = Substitute.For<DbMigrationsEndpointHandler.DbMigrationsEndpointHelper>();
-        helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
+        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddScoped(_ => helper);
+            services.AddScoped(_ => scanner);
             services.AddDbMigrationsActuatorServices();
         };
 

@@ -55,7 +55,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
             return;
         }
 
-        var request = DiagnosticHelpers.GetPropertyOrDefault<HttpRequestMessage>(value, "Request");
+        var request = GetPropertyOrDefault<HttpRequestMessage>(value, "Request");
 
         if (request == null)
         {
@@ -66,8 +66,8 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
         {
             _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-            var response = DiagnosticHelpers.GetPropertyOrDefault<HttpResponseMessage>(value, "Response");
-            var requestStatus = DiagnosticHelpers.GetPropertyOrDefault<TaskStatus>(value, "RequestTaskStatus");
+            var response = GetPropertyOrDefault<HttpResponseMessage>(value, "Response");
+            var requestStatus = GetPropertyOrDefault<TaskStatus>(value, "RequestTaskStatus");
             HandleStopEvent(current, request, response, requestStatus);
 
             _logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);

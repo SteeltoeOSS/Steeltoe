@@ -56,7 +56,7 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
             return;
         }
 
-        var request = DiagnosticHelpers.GetPropertyOrDefault<HttpWebRequest>(value, "Request");
+        var request = GetPropertyOrDefault<HttpWebRequest>(value, "Request");
 
         if (request == null)
         {
@@ -67,7 +67,7 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
         {
             _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-            var response = DiagnosticHelpers.GetPropertyOrDefault<HttpWebResponse>(value, "Response");
+            var response = GetPropertyOrDefault<HttpWebResponse>(value, "Response");
 
             if (response != null)
             {
@@ -80,7 +80,7 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
         {
             _logger.LogTrace("HandleStopEventEx start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-            var statusCode = DiagnosticHelpers.GetPropertyOrDefault<HttpStatusCode>(value, "StatusCode");
+            var statusCode = GetPropertyOrDefault<HttpStatusCode>(value, "StatusCode");
 
             HandleStopEvent(current, request, statusCode);
 

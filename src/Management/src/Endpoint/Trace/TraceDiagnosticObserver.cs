@@ -272,6 +272,6 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     internal HttpContext GetHttpContextPropertyValue(object instance)
     {
-        return DiagnosticHelpers.GetPropertyOrDefault<HttpContext>(instance, "HttpContext");
+        return GetPropertyOrDefault<HttpContext>(instance, "HttpContext");
     }
 }

@@ -41,20 +41,20 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
-        var helper = Substitute.For<DbMigrationsEndpointHandler.DbMigrationsEndpointHelper>();
-        helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
+        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
 
-        helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
+        scanner.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
         {
             "pending"
         });
 
-        helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
+        scanner.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
         {
             "applied"
         });
 
-        var handler = new DbMigrationsEndpointHandler(endpointOptionsMonitor, container.BuildServiceProvider(), helper, NullLoggerFactory.Instance);
+        var handler = new DbMigrationsEndpointHandler(endpointOptionsMonitor, container.BuildServiceProvider(), scanner, NullLoggerFactory.Instance);
 
         var middleware = new DbMigrationsEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 

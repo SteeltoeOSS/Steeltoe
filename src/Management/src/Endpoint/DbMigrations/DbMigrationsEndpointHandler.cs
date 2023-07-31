@@ -31,28 +31,28 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
     private readonly IOptionsMonitor<DbMigrationsEndpointOptions> _optionsMonitor;
     private readonly IServiceProvider _serviceProvider;
-    private readonly DbMigrationsEndpointHelper _endpointHelper;
+    private readonly DatabaseMigrationScanner _scanner;
     private readonly ILogger<DbMigrationsEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
     public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> optionsMonitor, IServiceProvider serviceProvider,
         ILoggerFactory loggerFactory)
-        : this(optionsMonitor, serviceProvider, new DbMigrationsEndpointHelper(), loggerFactory)
+        : this(optionsMonitor, serviceProvider, new DatabaseMigrationScanner(), loggerFactory)
     {
     }
 
     public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> optionsMonitor, IServiceProvider serviceProvider,
-        DbMigrationsEndpointHelper endpointHelper, ILoggerFactory loggerFactory)
+        DatabaseMigrationScanner scanner, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(endpointHelper);
+        ArgumentGuard.NotNull(scanner);
         ArgumentGuard.NotNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
         _serviceProvider = serviceProvider;
-        _endpointHelper = endpointHelper;
+        _scanner = scanner;
         _logger = loggerFactory.CreateLogger<DbMigrationsEndpointHandler>();
     }
 
@@ -66,8 +66,8 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
         }
         else
         {
-            List<Type> knownDbContextTypes = _endpointHelper.ScanRootAssembly.GetReferencedAssemblies().Select(Assembly.Load).SelectMany(x => x.DefinedTypes)
-                .Union(_endpointHelper.ScanRootAssembly.DefinedTypes)
+            List<Type> knownDbContextTypes = _scanner.ScanRootAssembly.GetReferencedAssemblies().Select(Assembly.Load).SelectMany(x => x.DefinedTypes)
+                .Union(_scanner.ScanRootAssembly.DefinedTypes)
                 .Where(type => !type.IsAbstract && type.AsType() != DbContextType && DbContextType.GetTypeInfo().IsAssignableFrom(type.AsType()))
                 .Select(typeInfo => typeInfo.AsType()).ToList();
 
@@ -88,13 +88,13 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
                 try
                 {
-                    descriptor.PendingMigrations.AddRange(_endpointHelper.GetPendingMigrations(dbContext));
-                    descriptor.AppliedMigrations.AddRange(_endpointHelper.GetAppliedMigrations(dbContext));
+                    descriptor.PendingMigrations.AddRange(_scanner.GetPendingMigrations(dbContext));
+                    descriptor.AppliedMigrations.AddRange(_scanner.GetAppliedMigrations(dbContext));
                 }
                 catch (DbException exception) when (exception.Message.Contains("exist", StringComparison.Ordinal))
                 {
                     _logger.LogWarning(exception, "Encountered exception loading migrations: {exception}", exception.Message);
-                    descriptor.PendingMigrations.AddRange(_endpointHelper.GetMigrations(dbContext));
+                    descriptor.PendingMigrations.AddRange(_scanner.GetMigrations(dbContext));
                 }
             }
         }
@@ -106,7 +106,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
     /// Hacky class to allow mocking migration methods in unit tests.
     /// </summary>
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-    internal class DbMigrationsEndpointHelper
+    internal class DatabaseMigrationScanner
     {
         internal virtual Assembly ScanRootAssembly => Assembly.GetEntryAssembly();
 
