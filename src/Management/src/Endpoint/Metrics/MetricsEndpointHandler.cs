@@ -127,10 +127,10 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
                 sampleList.Add(new MetricSample(MetricStatistic.Max, sample.Value, sample.Tags));
             }
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
             // Nothing we can do, log and move on
-            _logger.LogError(ex, "Error transforming metrics.");
+            _logger.LogError(exception, "Error transforming metrics.");
         }
 
         return sampleList;

@@ -75,9 +75,9 @@ internal sealed class EventCounterListener : EventListener
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            _logger.LogError(ex.Message);
+            _logger.LogError(exception, "Failed to write event {Id}", eventData.EventId);
         }
     }
 
@@ -122,9 +122,9 @@ internal sealed class EventCounterListener : EventListener
 
             EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All, _refreshInterval);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            _logger.LogError($"Failed to enable events: {ex.Message}", ex);
+            _logger.LogError(exception, "Failed to enable events for {Source}", eventSource.Guid);
         }
     }
 

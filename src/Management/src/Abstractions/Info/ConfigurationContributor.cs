@@ -42,7 +42,8 @@ internal abstract class ConfigurationContributor
 
             if (keepPrefix)
             {
-                result[prefix] = dictionary = new Dictionary<string, object>();
+                dictionary = new Dictionary<string, object>();
+                result[prefix] = dictionary;
             }
 
             AddChildren(dictionary, children);

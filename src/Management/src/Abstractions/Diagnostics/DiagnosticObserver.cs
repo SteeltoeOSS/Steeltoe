@@ -76,7 +76,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "ProcessEvent exception: {Id}", @event.Key);
+            _logger.LogError(exception, "Failed to process event {Id}", @event.Key);
         }
     }
 

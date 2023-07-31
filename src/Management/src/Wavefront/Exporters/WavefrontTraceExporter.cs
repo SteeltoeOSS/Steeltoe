@@ -71,7 +71,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Error sending metrics to wavefront: {message}", exception.Message);
+                _logger.LogError(exception, "Error sending metrics to wavefront");
             }
         }
 
