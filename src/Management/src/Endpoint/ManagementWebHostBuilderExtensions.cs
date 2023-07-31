@@ -88,17 +88,17 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    /// <param name="contributors">
+    /// <param name="contributorTypes">
     /// Types that contribute to the overall health of the app.
     /// </param>
-    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, params Type[] contributors)
+    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, params Type[] contributorTypes)
     {
         ArgumentGuard.NotNull(hostBuilder);
-        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(contributorTypes);
 
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
-            collection.AddHealthActuator(contributors);
+            collection.AddHealthActuator(contributorTypes);
             collection.ActivateActuatorEndpoints();
         });
     }
@@ -112,18 +112,18 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="aggregator">
     /// Custom health aggregator.
     /// </param>
-    /// <param name="contributors">
+    /// <param name="contributorTypes">
     /// Types that contribute to the overall health of the app.
     /// </param>
-    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, IHealthAggregator aggregator, params Type[] contributors)
+    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, IHealthAggregator aggregator, params Type[] contributorTypes)
     {
         ArgumentGuard.NotNull(hostBuilder);
         ArgumentGuard.NotNull(aggregator);
-        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(contributorTypes);
 
         return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
-            collection.AddHealthActuator(aggregator, contributors);
+            collection.AddHealthActuator(aggregator, contributorTypes);
             collection.ActivateActuatorEndpoints();
         });
     }

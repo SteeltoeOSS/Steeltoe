@@ -77,15 +77,15 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="applicationBuilder">
     /// Your <see cref="WebApplicationBuilder" />.
     /// </param>
-    /// <param name="contributors">
+    /// <param name="contributorTypes">
     /// Types that contribute to the overall health of the app.
     /// </param>
-    public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, params Type[] contributors)
+    public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, params Type[] contributorTypes)
     {
         ArgumentGuard.NotNull(applicationBuilder);
-        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(contributorTypes);
 
-        applicationBuilder.Services.AddHealthActuator(contributors);
+        applicationBuilder.Services.AddHealthActuator(contributorTypes);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }
@@ -99,17 +99,17 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="aggregator">
     /// Custom health aggregator.
     /// </param>
-    /// <param name="contributors">
+    /// <param name="contributorTypes">
     /// Types that contribute to the overall health of the app.
     /// </param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, IHealthAggregator aggregator,
-        params Type[] contributors)
+        params Type[] contributorTypes)
     {
         ArgumentGuard.NotNull(applicationBuilder);
         ArgumentGuard.NotNull(aggregator);
-        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(contributorTypes);
 
-        applicationBuilder.Services.AddHealthActuator(aggregator, contributors);
+        applicationBuilder.Services.AddHealthActuator(aggregator, contributorTypes);
         applicationBuilder.AddCommonServices();
         return applicationBuilder;
     }

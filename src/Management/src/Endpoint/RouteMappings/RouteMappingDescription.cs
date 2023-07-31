@@ -31,19 +31,14 @@ public sealed class RouteMappingDescription
         Handler = routeHandler;
     }
 
-    public RouteMappingDescription(MethodInfo routeHandler, AspNetCoreRouteDetails routeDetails)
+    public RouteMappingDescription(MethodInfo routeHandlerMethod, AspNetCoreRouteDetails routeDetails)
     {
-        ArgumentGuard.NotNull(routeHandler);
+        ArgumentGuard.NotNull(routeHandlerMethod);
         ArgumentGuard.NotNull(routeDetails);
 
+        Handler = routeHandlerMethod.ToString();
         Predicate = CreatePredicateString(routeDetails);
-        Handler = CreateHandlerString(routeHandler);
         Details = CreateMappingDetails(routeDetails);
-    }
-
-    private string CreateHandlerString(MethodInfo actionHandlerMethod)
-    {
-        return actionHandlerMethod.ToString();
     }
 
     private string CreatePredicateString(AspNetCoreRouteDetails routeDetails)

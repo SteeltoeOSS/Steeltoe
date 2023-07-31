@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 public static class EndpointServiceCollectionExtensions
 {
-    private static Type[] DefaultHealthContributors =>
+    private static Type[] DefaultHealthContributorTypes =>
         new[]
         {
             typeof(DiskSpaceContributor),
@@ -29,7 +29,7 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddHealthActuator(this IServiceCollection services)
     {
-        AddHealthActuator(services, DefaultHealthContributors);
+        AddHealthActuator(services, DefaultHealthContributorTypes);
     }
 
     /// <summary>
@@ -38,15 +38,15 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add health to.
     /// </param>
-    /// <param name="contributors">
+    /// <param name="contributorTypes">
     /// Contributors to application health.
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, params Type[] contributors)
+    public static void AddHealthActuator(this IServiceCollection services, params Type[] contributorTypes)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(contributorTypes);
 
-        services.AddHealthActuator(new HealthRegistrationsAggregator(), contributors);
+        services.AddHealthActuator(new HealthRegistrationsAggregator(), contributorTypes);
     }
 
     /// <summary>
@@ -58,34 +58,34 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="aggregator">
     /// Custom health aggregator.
     /// </param>
-    /// <param name="contributors">
+    /// <param name="contributorTypes">
     /// Contributors to application health.
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IHealthAggregator aggregator, params Type[] contributors)
+    public static void AddHealthActuator(this IServiceCollection services, IHealthAggregator aggregator, params Type[] contributorTypes)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(aggregator);
-        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(contributorTypes);
 
         services.AddCommonActuatorServices();
         services.AddHealthActuatorServices();
 
-        AddHealthContributors(services, contributors);
+        AddHealthContributors(services, contributorTypes);
 
         services.TryAddSingleton(aggregator);
         services.TryAddSingleton<ApplicationAvailability>();
     }
 
-    public static void AddHealthContributors(this IServiceCollection services, params Type[] contributors)
+    public static void AddHealthContributors(this IServiceCollection services, params Type[] contributorTypes)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(contributorTypes);
 
         var descriptors = new List<ServiceDescriptor>();
 
-        foreach (Type c in contributors)
+        foreach (Type contributorType in contributorTypes)
         {
-            descriptors.Add(new ServiceDescriptor(typeof(IHealthContributor), c, ServiceLifetime.Scoped));
+            descriptors.Add(new ServiceDescriptor(typeof(IHealthContributor), contributorType, ServiceLifetime.Scoped));
         }
 
         services.TryAddEnumerable(descriptors);
