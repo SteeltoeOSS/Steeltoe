@@ -97,7 +97,7 @@ public sealed class EventPipeThreadDumper
         {
             traceFileName = await CreateTraceFileAsync(session, cancellationToken);
 
-            if (traceFileName != null)
+            if (!string.IsNullOrEmpty(traceFileName))
             {
                 using var symbolReader = new SymbolReader(TextWriter.Null)
                 {
@@ -169,7 +169,7 @@ public sealed class EventPipeThreadDumper
         }
         finally
         {
-            if (File.Exists(traceFileName))
+            if (!string.IsNullOrEmpty(traceFileName) && File.Exists(traceFileName))
             {
                 File.Delete(traceFileName);
             }
@@ -459,7 +459,7 @@ public sealed class EventPipeThreadDumper
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
             _logger.LogError(exception, "Error creating trace file for thread dump");
-            return null;
+            return string.Empty;
         }
         finally
         {

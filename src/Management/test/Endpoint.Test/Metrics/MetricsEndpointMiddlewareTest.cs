@@ -83,14 +83,14 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 
         var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
-        HttpContext context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics");
-        Assert.Null(middleware.GetMetricName(context1.Request));
+        HttpContext context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics", null);
+        Assert.Empty(middleware.GetMetricName(context1.Request));
 
-        HttpContext context2 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class");
+        HttpContext context2 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", null);
         Assert.Equal("Foo.Bar.Class", middleware.GetMetricName(context2.Request));
 
         HttpContext context3 = CreateRequest("GET", "/cloudfoundryapplication/metrics", "?tag=key:value&tag=key1:value1");
-        Assert.Null(middleware.GetMetricName(context3.Request));
+        Assert.Empty(middleware.GetMetricName(context3.Request));
     }
 
     [Fact]
@@ -103,14 +103,14 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 
         var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
-        HttpContext context1 = CreateRequest("GET", "/actuator/metrics");
-        Assert.Null(middleware.GetMetricName(context1.Request));
+        HttpContext context1 = CreateRequest("GET", "/actuator/metrics", null);
+        Assert.Empty(middleware.GetMetricName(context1.Request));
 
-        HttpContext context2 = CreateRequest("GET", "/actuator/metrics/Foo.Bar.Class");
+        HttpContext context2 = CreateRequest("GET", "/actuator/metrics/Foo.Bar.Class", null);
         Assert.Equal("Foo.Bar.Class", middleware.GetMetricName(context2.Request));
 
         HttpContext context3 = CreateRequest("GET", "/actuator/metrics", "?tag=key:value&tag=key1:value1");
-        Assert.Null(middleware.GetMetricName(context3.Request));
+        Assert.Empty(middleware.GetMetricName(context3.Request));
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 
         var middleware = new MetricsEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 
-        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
+        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics", null);
 
         await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -155,7 +155,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         GetTestMetrics(exporter);
         var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
-        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
+        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar", null);
 
         await middleware.InvokeAsync(context, null);
         Assert.Equal(404, context.Response.StatusCode);
@@ -205,7 +205,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 
-    private HttpContext CreateRequest(string method, string path, string query = null)
+    private HttpContext CreateRequest(string method, string path, string query)
     {
         HttpContext context = new DefaultHttpContext
         {

@@ -112,7 +112,7 @@ public sealed class CloudFoundrySecurityMiddleware
             }
         }
 
-        return null;
+        return string.Empty;
     }
 
     internal Task<SecurityResult> GetPermissionsAsync(HttpContext context)

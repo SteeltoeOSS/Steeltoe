@@ -97,7 +97,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
             return remaining.Value!.TrimStart('/');
         }
 
-        return null;
+        return string.Empty;
     }
 
     protected override async Task<MetricsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
