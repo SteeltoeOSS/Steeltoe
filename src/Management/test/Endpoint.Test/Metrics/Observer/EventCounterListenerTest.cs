@@ -65,7 +65,7 @@ public sealed class EventCounterListenerTest : BaseTest
 
         foreach (string metric in _metrics)
         {
-            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(x => x.Key == metric).ToList();
+            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(pair => pair.Key == metric).ToList();
             Assert.True(summary != null, $"Summary was null for {metric}");
             Assert.True(summary.Count > 0, $"Summary was empty for {metric}");
         }
@@ -102,7 +102,7 @@ public sealed class EventCounterListenerTest : BaseTest
 
         foreach (string metric in _metrics)
         {
-            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(x => x.Key == metric).ToList();
+            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(pair => pair.Key == metric).ToList();
 
             if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty, StringComparison.Ordinal)))
             {
@@ -143,7 +143,7 @@ public sealed class EventCounterListenerTest : BaseTest
 
         foreach (string metric in _metrics)
         {
-            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(x => x.Key == metric).ToList();
+            List<KeyValuePair<string, List<MetricSample>>> summary = metricSamples.Where(pair => pair.Key == metric).ToList();
 
             if (inclusions.Contains(metric.Substring("System.Runtime.".Length)))
             {

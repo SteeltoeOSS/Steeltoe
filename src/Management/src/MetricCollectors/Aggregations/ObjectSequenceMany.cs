@@ -29,10 +29,10 @@ internal readonly struct ObjectSequenceMany : IEquatable<ObjectSequenceMany>, IO
             return false;
         }
 
-        for (int i = 0; i < _values.Length; i++)
+        for (int index = 0; index < _values.Length; index++)
         {
-            object? value = _values[i];
-            object? otherValue = other._values[i];
+            object? value = _values[index];
+            object? otherValue = other._values[index];
 
             if (value is null)
             {

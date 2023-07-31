@@ -58,13 +58,13 @@ public class TestBase
         Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http", StringComparison.Ordinal));
 
         Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-        var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
-        var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
-        Assert.NotNull(props);
-        Assert.Equal(2, props.Count);
+        var composite = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
+        var propagators = GetPrivateField(composite, "propagators") as List<TextMapPropagator>;
+        Assert.NotNull(propagators);
+        Assert.Equal(2, propagators.Count);
 
-        Assert.Contains(props, p => p is B3Propagator);
-        Assert.Contains(props, p => p is BaggagePropagator);
+        Assert.Contains(propagators, propagator => propagator is B3Propagator);
+        Assert.Contains(propagators, propagator => propagator is BaggagePropagator);
     }
 
     protected void ValidateServiceContainerCore(ServiceProvider serviceProvider)

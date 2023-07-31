@@ -50,16 +50,16 @@ internal sealed class LabelInstructionInterpreter<TObjectSequence, TAggregator>
 
         Span<object?> indexedValues = values.AsSpan();
 
-        for (int i = 0; i < _instructions.Length; i++)
+        for (int index = 0; index < _instructions.Length; index++)
         {
-            LabelInstruction instr = _instructions[i];
+            LabelInstruction instr = _instructions[index];
 
             if (instr.LabelName != labels[instr.SourceIndex].Key)
             {
                 return false;
             }
 
-            indexedValues[i] = labels[instr.SourceIndex].Value;
+            indexedValues[index] = labels[instr.SourceIndex].Value;
         }
 
         if (!_valuesDictionary.TryGetValue(values, out aggregator))

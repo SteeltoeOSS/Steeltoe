@@ -66,10 +66,21 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
         }
         else
         {
-            List<Type> knownDbContextTypes = _scanner.ScanRootAssembly.GetReferencedAssemblies().Select(Assembly.Load).SelectMany(x => x.DefinedTypes)
+            // @formatter:wrap_chained_method_calls chop_always
+            // @formatter:keep_existing_linebreaks true
+
+            List<Type> knownDbContextTypes = _scanner.ScanRootAssembly
+                .GetReferencedAssemblies()
+                .Select(Assembly.Load)
+                .SelectMany(assembly => assembly.DefinedTypes)
                 .Union(_scanner.ScanRootAssembly.DefinedTypes)
-                .Where(type => !type.IsAbstract && type.AsType() != DbContextType && DbContextType.GetTypeInfo().IsAssignableFrom(type.AsType()))
-                .Select(typeInfo => typeInfo.AsType()).ToList();
+                .Where(type => !type.IsAbstract && type.AsType() != DbContextType && DbContextType.GetTypeInfo()
+                    .IsAssignableFrom(type.AsType()))
+                .Select(typeInfo => typeInfo.AsType())
+                .ToList();
+
+            // @formatter:keep_existing_linebreaks restore
+            // @formatter:wrap_chained_method_calls restore
 
             using IServiceScope scope = _serviceProvider.CreateScope();
 

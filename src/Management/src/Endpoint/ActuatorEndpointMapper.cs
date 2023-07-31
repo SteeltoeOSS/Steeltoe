@@ -41,14 +41,14 @@ internal sealed class ActuatorEndpointMapper
         var collection = new HashSet<string>();
 
         // Map Default configured context
-        IEnumerable<IEndpointMiddleware> middlewares = _middlewares.Where(m => m is not CloudFoundryEndpointMiddleware);
+        IEnumerable<IEndpointMiddleware> middlewares = _middlewares.Where(middleware => middleware is not CloudFoundryEndpointMiddleware);
         MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, _managementOptionsMonitor.CurrentValue.Path, middlewares);
 
         // Map Cloudfoundry context
         if (Platform.IsCloudFoundry)
         {
-            IEnumerable<IEndpointMiddleware> cfMiddlewares = _middlewares.Where(m => m is not ActuatorHypermediaEndpointMiddleware);
-            MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, ConfigureManagementOptions.DefaultCloudFoundryPath, cfMiddlewares);
+            IEnumerable<IEndpointMiddleware> cloudFoundryMiddlewares = _middlewares.Where(middleware => middleware is not ActuatorHypermediaEndpointMiddleware);
+            MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, ConfigureManagementOptions.DefaultCloudFoundryPath, cloudFoundryMiddlewares);
         }
     }
 

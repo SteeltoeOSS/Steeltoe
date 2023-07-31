@@ -25,7 +25,8 @@ public sealed class HostBuilderExtensionsTest
 
     private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer()
         .ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProvider())
-        .Configure(applicationBuilder => applicationBuilder.UseRouting()).ConfigureAppConfiguration(b => b.AddInMemoryCollection(AppSettings));
+        .Configure(applicationBuilder => applicationBuilder.UseRouting())
+        .ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
 
     private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(services =>
         {
@@ -108,7 +109,7 @@ public sealed class HostBuilderExtensionsTest
     [Fact]
     public async Task AddKubernetesActuatorsWithConventions_WebApplicationBuilder_AddsAndActivatesActuatorsAddAllActuators()
     {
-        await using WebApplication host = GetTestWebAppWithSecureRouting(b => b.AddKubernetesActuators(ep => ep.RequireAuthorization("TestAuth")));
+        await using WebApplication host = GetTestWebAppWithSecureRouting(builder => builder.AddKubernetesActuators(ep => ep.RequireAuthorization("TestAuth")));
 
         await host.StartAsync();
         HttpClient testClient = host.GetTestServer().CreateClient();

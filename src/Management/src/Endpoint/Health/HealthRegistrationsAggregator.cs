@@ -42,12 +42,12 @@ internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, I
         IEnumerable<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var healthChecks = new ConcurrentDictionary<string, SteeltoeHealthCheckResult>();
-        var keyList = new ConcurrentBag<string>(contributors.Select(x => x.Id));
+        var keys = new ConcurrentBag<string>(contributors.Select(contributor => contributor.Id));
 
         // run all HealthCheckRegistration checks in parallel
         Parallel.ForEach(healthCheckRegistrations, registration =>
         {
-            string contributorName = GetKey(keyList, registration.Name);
+            string contributorName = GetKey(keys, registration.Name);
             SteeltoeHealthCheckResult healthCheckResult;
 
             try

@@ -100,13 +100,13 @@ internal sealed class ExponentialHistogramAggregator : Aggregator
         // the total number of entries in all buckets iterated so far
         int cur = 0;
 
-        foreach (Bucket b in IterateBuckets(counters))
+        foreach (Bucket bucket in IterateBuckets(counters))
         {
-            cur += b.Count;
+            cur += bucket.Count;
 
             while (cur > target)
             {
-                quantiles[nextQuantileIndex] = new QuantileValue(_config.Quantiles[nextQuantileIndex], b.Value);
+                quantiles[nextQuantileIndex] = new QuantileValue(_config.Quantiles[nextQuantileIndex], bucket.Value);
                 nextQuantileIndex++;
 
                 if (nextQuantileIndex == _config.Quantiles.Length)

@@ -30,7 +30,7 @@ internal sealed class Sanitizer
 
     internal KeyValuePair<string, string> Sanitize(KeyValuePair<string, string> kvp)
     {
-        if (kvp.Value != null && _matchers.Any(m => m.IsMatch(kvp.Key)))
+        if (kvp.Value != null && _matchers.Any(regex => regex.IsMatch(kvp.Key)))
         {
             return new KeyValuePair<string, string>(kvp.Key, "******");
         }

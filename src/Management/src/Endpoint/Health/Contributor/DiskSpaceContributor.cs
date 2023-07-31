@@ -29,11 +29,11 @@ internal sealed class DiskSpaceContributor : IHealthContributor
         if (dirInfo.Exists)
         {
             string rootName = dirInfo.Root.Name;
-            var d = new DriveInfo(rootName);
-            long freeSpace = d.TotalFreeSpace;
+            var driveInfo = new DriveInfo(rootName);
+            long freeSpace = driveInfo.TotalFreeSpace;
             result.Status = freeSpace >= _options.Threshold ? HealthStatus.Up : HealthStatus.Down;
 
-            result.Details.Add("total", d.TotalSize);
+            result.Details.Add("total", driveInfo.TotalSize);
             result.Details.Add("free", freeSpace);
             result.Details.Add("threshold", _options.Threshold);
             result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));

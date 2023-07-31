@@ -30,8 +30,8 @@ public sealed class ActuatorServiceCollectionExtensionsTest
         CorsPolicy policy = options.Value.GetPolicy("SteeltoeManagement");
         Assert.NotNull(policy);
         Assert.True(policy.IsOriginAllowed("*"));
-        Assert.Contains(policy.Methods, m => m == "GET");
-        Assert.Contains(policy.Methods, m => m == "POST");
+        Assert.Contains(policy.Methods, method => method == "GET");
+        Assert.Contains(policy.Methods, method => method == "POST");
     }
 
     [Fact]
@@ -51,8 +51,8 @@ public sealed class ActuatorServiceCollectionExtensionsTest
         Assert.True(policy.IsOriginAllowed("http://google.com"));
         Assert.False(policy.IsOriginAllowed("http://bing.com"));
         Assert.False(policy.IsOriginAllowed("*"));
-        Assert.Contains(policy.Methods, m => m == "GET");
-        Assert.Contains(policy.Methods, m => m == "POST");
+        Assert.Contains(policy.Methods, method => method == "GET");
+        Assert.Contains(policy.Methods, method => method == "POST");
     }
 
     [Fact]

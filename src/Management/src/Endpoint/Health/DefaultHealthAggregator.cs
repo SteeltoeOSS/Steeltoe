@@ -50,9 +50,9 @@ internal class DefaultHealthAggregator : IHealthAggregator
         lock (keys)
         {
             // add the contributor with a -n appended to the id
-            if (keys.Any(k => k == key))
+            if (keys.Any(value => value == key))
             {
-                string newKey = $"{key}-{keys.Count(k => k.StartsWith(key, StringComparison.Ordinal))}";
+                string newKey = $"{key}-{keys.Count(value => value.StartsWith(key, StringComparison.Ordinal))}";
                 keys.Add(newKey);
                 return newKey;
             }

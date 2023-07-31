@@ -72,7 +72,7 @@ public static class TaskWebHostExtensions
         if (taskName != null)
         {
             IApplicationTask task = provider.GetServices<IApplicationTask>()
-                .FirstOrDefault(x => string.Equals(x.Name, taskName, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(applicationTask => string.Equals(applicationTask.Name, taskName, StringComparison.OrdinalIgnoreCase));
 
             if (task != null)
             {

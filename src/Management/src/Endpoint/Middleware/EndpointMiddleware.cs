@@ -101,17 +101,17 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
             serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         }
 
-        if (!serializerOptions.Converters.Any(c => c is JsonStringEnumConverter))
+        if (!serializerOptions.Converters.Any(converter => converter is JsonStringEnumConverter))
         {
             serializerOptions.Converters.Add(new JsonStringEnumConverter());
         }
 
-        if (!serializerOptions.Converters.Any(c => c is HealthConverter or HealthConverterV3))
+        if (!serializerOptions.Converters.Any(converter => converter is HealthConverter or HealthConverterV3))
         {
             serializerOptions.Converters.Add(new HealthConverter());
         }
 
-        if (!serializerOptions.Converters.Any(c => c is HttpTraceResultConverter))
+        if (!serializerOptions.Converters.Any(converter => converter is HttpTraceResultConverter))
         {
             serializerOptions.Converters.Add(new HttpTraceResultConverter());
         }

@@ -36,10 +36,11 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
 {
     private readonly IWebHostBuilder _testServerWithRouting = new WebHostBuilder().UseTestServer()
         .ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProvider())
-        .Configure(applicationBuilder => applicationBuilder.UseRouting()).ConfigureAppConfiguration(c => c.AddInMemoryCollection(new Dictionary<string, string>
-        {
-            ["management:endpoints:actuator:exposure:include:0"] = "*"
-        }));
+        .Configure(applicationBuilder => applicationBuilder.UseRouting()).ConfigureAppConfiguration(configurationBuilder =>
+            configurationBuilder.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["management:endpoints:actuator:exposure:include:0"] = "*"
+            }));
 
     private readonly IWebHostBuilder _testServerWithSecureRouting = new WebHostBuilder().UseTestServer().ConfigureServices(services =>
     {
@@ -52,7 +53,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
             });
 
         services.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
-    }).Configure(a => a.UseRouting().UseAuthentication().UseAuthorization());
+    }).Configure(applicationBuilder => applicationBuilder.UseRouting().UseAuthentication().UseAuthorization());
 
     [Fact]
     public void AddDbMigrationsActuator_IWebHostBuilder()

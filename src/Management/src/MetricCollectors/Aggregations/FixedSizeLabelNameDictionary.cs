@@ -26,9 +26,9 @@ internal sealed class FixedSizeLabelNameDictionary<TStringSequence, TObjectSeque
                 Span<object?> indexedValues = kvValue.Key.AsSpan();
                 var labels = new KeyValuePair<string, string>[indexedNames.Length];
 
-                for (int i = 0; i < labels.Length; i++)
+                for (int index = 0; index < labels.Length; index++)
                 {
-                    labels[i] = new KeyValuePair<string, string>(indexedNames[i], indexedValues[i]?.ToString() ?? string.Empty);
+                    labels[index] = new KeyValuePair<string, string>(indexedNames[index], indexedValues[index]?.ToString() ?? string.Empty);
                 }
 
                 IAggregationStatistics stats = kvValue.Value.Collect();

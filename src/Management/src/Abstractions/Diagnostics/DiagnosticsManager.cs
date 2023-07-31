@@ -94,7 +94,8 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
 
             if (_eventListeners != null)
             {
-                _logger.LogTrace("Subscribed to EventListeners: {eventListeners}", string.Join(",", _eventListeners.Select(e => e.GetType().Name)));
+                _logger.LogTrace("Subscribed to EventListeners: {eventListeners}",
+                    string.Join(",", _eventListeners.Select(listener => listener.GetType().Name)));
             }
         }
     }

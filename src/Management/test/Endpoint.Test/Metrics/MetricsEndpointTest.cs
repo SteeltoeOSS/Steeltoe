@@ -121,7 +121,7 @@ public sealed class MetricsEndpointTest : BaseTest
                 testMeasure.Add(index, labels.AsReadonlySpan());
             }
 
-            List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
+            List<KeyValuePair<string, string>> tags = labels.Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ToString())).ToList();
             var request = new MetricsRequest("test.test5", tags);
             MetricsResponse response = await handler.InvokeAsync(request, CancellationToken.None);
             Assert.NotNull(response);
@@ -131,7 +131,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.NotNull(response.Measurements);
             Assert.Single(response.Measurements);
 
-            MetricSample sample = response.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Rate);
+            MetricSample sample = response.Measurements.SingleOrDefault(metricSample => metricSample.Statistic == MetricStatistic.Rate);
             Assert.NotNull(sample);
             Assert.Equal(allKeysSum, sample.Value);
 
@@ -194,7 +194,7 @@ public sealed class MetricsEndpointTest : BaseTest
                 additionalInstrument.Add(index, labels.AsReadonlySpan());
             }
 
-            List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
+            List<KeyValuePair<string, string>> tags = labels.Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ToString())).ToList();
             var request = new MetricsRequest("test.test5", tags);
             MetricsResponse response = await handler.InvokeAsync(request, CancellationToken.None);
             Assert.NotNull(response);
@@ -204,7 +204,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.NotNull(response.Measurements);
             Assert.Single(response.Measurements);
 
-            MetricSample sample = response.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Rate);
+            MetricSample sample = response.Measurements.SingleOrDefault(metricSample => metricSample.Statistic == MetricStatistic.Rate);
             Assert.NotNull(sample);
             Assert.Equal(allKeysSum, sample.Value);
 
@@ -543,13 +543,13 @@ public sealed class MetricsEndpointTest : BaseTest
 
             double allKeysSum = 0;
 
-            for (double i = 0; i < 10; i++)
+            for (double index = 0; index < 10; index++)
             {
-                allKeysSum += i;
-                testMeasure.Add(i, labels.AsReadonlySpan());
+                allKeysSum += index;
+                testMeasure.Add(index, labels.AsReadonlySpan());
             }
 
-            var request = new MetricsRequest("test.total", labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList());
+            var request = new MetricsRequest("test.total", labels.Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ToString())).ToList());
 
             MetricsResponse response = await handler.InvokeAsync(request, CancellationToken.None);
 

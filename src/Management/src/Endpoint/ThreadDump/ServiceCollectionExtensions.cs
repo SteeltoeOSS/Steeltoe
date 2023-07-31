@@ -56,7 +56,7 @@ public static class ServiceCollectionExtensions
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
 
-                if (!serializerOptions.Converters.Any(c => c is ThreadDumpV2Converter))
+                if (!serializerOptions.Converters.Any(converter => converter is ThreadDumpV2Converter))
                 {
                     serializerOptions.Converters.Add(new ThreadDumpV2Converter());
                 }

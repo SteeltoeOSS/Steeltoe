@@ -58,7 +58,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
         {
             try
             {
-                if (!activity.Tags.Any(t => t.Key == "http.url" && t.Value != null && t.Value.Contains(_options.Uri, StringComparison.Ordinal)))
+                if (!activity.Tags.Any(pair => pair.Key == "http.url" && pair.Value != null && pair.Value.Contains(_options.Uri, StringComparison.Ordinal)))
                 {
                     _wavefrontSender.SendSpan(activity.OperationName, DateTimeUtils.UnixTimeMilliseconds(activity.StartTimeUtc), activity.Duration.Milliseconds,
                         _options.Source, Guid.Parse(activity.TraceId.ToString()), FromActivitySpanId(activity.SpanId), new List<Guid>

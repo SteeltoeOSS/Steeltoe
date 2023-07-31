@@ -37,7 +37,7 @@ internal static class ContentNegotiationExtensions
         MediaTypeVersion version = MediaTypeVersion.V2)
     {
         var headers = new RequestHeaders(requestHeaders);
-        List<string> acceptMediaTypes = headers.Accept.Select(x => x.MediaType.Value).ToList();
+        List<string> acceptMediaTypes = headers.Accept.Select(header => header.MediaType.Value).ToList();
 
         string contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
 

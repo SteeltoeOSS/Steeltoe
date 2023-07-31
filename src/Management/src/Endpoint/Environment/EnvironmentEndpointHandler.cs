@@ -58,9 +58,9 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         {
             List<IConfigurationProvider> providers = root.Providers.ToList();
 
-            if (providers.Any(p => p is IPlaceholderResolverProvider))
+            if (providers.Any(provider => provider is IPlaceholderResolverProvider))
             {
-                IConfigurationProvider placeholderProvider = providers.First(p => p is IPlaceholderResolverProvider);
+                IConfigurationProvider placeholderProvider = providers.First(provider => provider is IPlaceholderResolverProvider);
                 providers.InsertRange(0, ((IPlaceholderResolverProvider)placeholderProvider).Providers);
             }
 
@@ -122,7 +122,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
             GetFullKeyNames(provider, surrogateKey, initialKeys);
 
-            if (!initialKeys.Any(k => k.StartsWith(surrogateKey, StringComparison.Ordinal)))
+            if (!initialKeys.Any(value => value.StartsWith(surrogateKey, StringComparison.Ordinal)))
             {
                 initialKeys.Add(surrogateKey);
             }

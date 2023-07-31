@@ -55,13 +55,13 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
         if (query != null)
         {
-            foreach (KeyValuePair<string, StringValues> q in query)
+            foreach (KeyValuePair<string, StringValues> parameter in query)
             {
-                if (q.Key.Equals("tag", StringComparison.OrdinalIgnoreCase))
+                if (parameter.Key.Equals("tag", StringComparison.OrdinalIgnoreCase))
                 {
-                    foreach (string kvp in q.Value)
+                    foreach (string value in parameter.Value)
                     {
-                        KeyValuePair<string, string>? pair = ParseTag(kvp);
+                        KeyValuePair<string, string>? pair = ParseTag(value);
 
                         if (pair != null && !results.Contains(pair.Value))
                         {
@@ -77,14 +77,14 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
     internal KeyValuePair<string, string>? ParseTag(string kvp)
     {
-        string[] str = kvp.Split(new[]
+        string[] segments = kvp.Split(new[]
         {
             ':'
         }, 2);
 
-        if (str.Length == 2)
+        if (segments.Length == 2)
         {
-            return new KeyValuePair<string, string>(str[0], str[1]);
+            return new KeyValuePair<string, string>(segments[0], segments[1]);
         }
 
         return null;

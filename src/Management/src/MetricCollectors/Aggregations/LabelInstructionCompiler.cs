@@ -16,7 +16,7 @@ internal static class LabelInstructionCompiler
         ArgumentGuard.NotNull(createAggregatorFunc);
 
         LabelInstruction[] instructions = Compile(labels);
-        Array.Sort(instructions, (a, b) => string.CompareOrdinal(a.LabelName, b.LabelName));
+        Array.Sort(instructions, (left, right) => string.CompareOrdinal(left.LabelName, right.LabelName));
         int expectedLabels = labels.Length;
 
         switch (instructions.Length)
@@ -24,9 +24,9 @@ internal static class LabelInstructionCompiler
             case 0:
                 TAggregator? defaultAggregator = aggregatorStore.GetAggregator();
 
-                return (ReadOnlySpan<KeyValuePair<string, object?>> l, out TAggregator? aggregator) =>
+                return (ReadOnlySpan<KeyValuePair<string, object?>> pair, out TAggregator? aggregator) =>
                 {
-                    if (l.Length != expectedLabels)
+                    if (pair.Length != expectedLabels)
                     {
                         aggregator = null;
                         return false;
@@ -72,9 +72,9 @@ internal static class LabelInstructionCompiler
             default:
                 string[] labelNames = new string[instructions.Length];
 
-                for (int i = 0; i < instructions.Length; i++)
+                for (int index = 0; index < instructions.Length; index++)
                 {
-                    labelNames[i] = instructions[i].LabelName;
+                    labelNames[index] = instructions[index].LabelName;
                 }
 
                 var namesMany = new StringSequenceMany(labelNames);
@@ -93,9 +93,9 @@ internal static class LabelInstructionCompiler
     {
         var valueFetches = new LabelInstruction[labels.Length];
 
-        for (int i = 0; i < labels.Length; i++)
+        for (int index = 0; index < labels.Length; index++)
         {
-            valueFetches[i] = new LabelInstruction(i, labels[i].Key);
+            valueFetches[index] = new LabelInstruction(index, labels[index].Key);
         }
 
         return valueFetches;

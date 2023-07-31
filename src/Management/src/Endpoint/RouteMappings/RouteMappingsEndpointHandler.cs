@@ -89,8 +89,8 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         {
             if (descriptor is ControllerActionDescriptor controllerDescriptor)
             {
-                if (apiContext.Results.Any() &&
-                    mappingDescriptions.Any(description => description.Value.Any(n => n.Handler == controllerDescriptor.MethodInfo.ToString())))
+                if (apiContext.Results.Any() && mappingDescriptions.Any(description =>
+                    description.Value.Any(mappingDescription => mappingDescription.Handler == controllerDescriptor.MethodInfo.ToString())))
                 {
                     continue;
                 }
@@ -164,11 +164,11 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         return routeDetails;
     }
 
-    private AspNetCoreRouteDetails GetRouteDetails(ActionDescriptor descriptor)
+    private AspNetCoreRouteDetails GetRouteDetails(ActionDescriptor actionDescriptor)
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
-            HttpMethods = descriptor.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string>
+            HttpMethods = actionDescriptor.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string>
             {
                 RouteMappingDescription.AllHttpMethods
             },
@@ -176,27 +176,29 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             Produces = new List<string>()
         };
 
-        if (descriptor.AttributeRouteInfo?.Template != null)
+        if (actionDescriptor.AttributeRouteInfo?.Template != null)
         {
-            routeDetails.RouteTemplate = descriptor.AttributeRouteInfo.Template;
+            routeDetails.RouteTemplate = actionDescriptor.AttributeRouteInfo.Template;
         }
         else
         {
-            var controllerDescriptor = (ControllerActionDescriptor)descriptor;
+            var controllerDescriptor = (ControllerActionDescriptor)actionDescriptor;
             routeDetails.RouteTemplate = $"/{controllerDescriptor.ControllerName}/{controllerDescriptor.ActionName}";
         }
 
-        foreach (ProducesAttribute filter in descriptor.FilterDescriptors.Where(f => f.Filter is ProducesAttribute).Select(f => (ProducesAttribute)f.Filter))
+        foreach (ProducesAttribute produces in actionDescriptor.FilterDescriptors.Where(descriptor => descriptor.Filter is ProducesAttribute)
+            .Select(descriptor => (ProducesAttribute)descriptor.Filter))
         {
-            foreach (string format in filter.ContentTypes)
+            foreach (string format in produces.ContentTypes)
             {
                 routeDetails.Produces.Add(format);
             }
         }
 
-        foreach (ConsumesAttribute filter in descriptor.FilterDescriptors.Where(f => f.Filter is ConsumesAttribute).Select(f => (ConsumesAttribute)f.Filter))
+        foreach (ConsumesAttribute consumes in actionDescriptor.FilterDescriptors.Where(descriptor => descriptor.Filter is ConsumesAttribute)
+            .Select(descriptor => (ConsumesAttribute)descriptor.Filter))
         {
-            foreach (string format in filter.ContentTypes)
+            foreach (string format in consumes.ContentTypes)
             {
                 routeDetails.Consumes.Add(format);
             }

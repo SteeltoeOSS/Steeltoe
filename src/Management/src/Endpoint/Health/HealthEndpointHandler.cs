@@ -96,8 +96,8 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
             {
                 List<string> includedContributors = groupOptions.Include.Split(',').ToList();
 
-                return _healthOptionsMonitor.CurrentValue.Registrations.Where(n => includedContributors.Contains(n.Name, StringComparer.OrdinalIgnoreCase))
-                    .ToList();
+                return _healthOptionsMonitor.CurrentValue.Registrations
+                    .Where(registration => includedContributors.Contains(registration.Name, StringComparer.OrdinalIgnoreCase)).ToList();
             }
 
             _logger.LogInformation("Health check requested for a group that is not configured");
@@ -128,7 +128,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
             if (_endpointOptionsMonitor.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
             {
                 List<string> includedContributors = groupOptions.Include.Split(',').ToList();
-                return _healthContributors.Where(n => includedContributors.Contains(n.Id, StringComparer.OrdinalIgnoreCase)).ToList();
+                return _healthContributors.Where(contributor => includedContributors.Contains(contributor.Id, StringComparer.OrdinalIgnoreCase)).ToList();
             }
 
             _logger.LogInformation("Health check requested for a group that is not configured");

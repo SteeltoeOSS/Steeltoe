@@ -72,23 +72,23 @@ internal sealed class AggregationManager : IDisposable
             }
         };
 
-        _listener.SetMeasurementEventCallback<double>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<float>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<long>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<int>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<short>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<byte>((_, m, l, c) => ((InstrumentState)c!).Update(m, l));
-        _listener.SetMeasurementEventCallback<decimal>((_, m, l, c) => ((InstrumentState)c!).Update((double)m, l));
+        _listener.SetMeasurementEventCallback<double>((_, measurement, labels, state) => ((InstrumentState)state!).Update(measurement, labels));
+        _listener.SetMeasurementEventCallback<float>((_, measurement, labels, state) => ((InstrumentState)state!).Update(measurement, labels));
+        _listener.SetMeasurementEventCallback<long>((_, measurement, labels, state) => ((InstrumentState)state!).Update(measurement, labels));
+        _listener.SetMeasurementEventCallback<int>((_, measurement, labels, state) => ((InstrumentState)state!).Update(measurement, labels));
+        _listener.SetMeasurementEventCallback<short>((_, measurement, labels, state) => ((InstrumentState)state!).Update(measurement, labels));
+        _listener.SetMeasurementEventCallback<byte>((_, measurement, labels, state) => ((InstrumentState)state!).Update(measurement, labels));
+        _listener.SetMeasurementEventCallback<decimal>((_, measurement, labels, state) => ((InstrumentState)state!).Update((double)measurement, labels));
     }
 
     public void Include(string meterName)
     {
-        Include(i => i.Meter.Name == meterName);
+        Include(instrument => instrument.Meter.Name == meterName);
     }
 
     public void Include(string meterName, string instrumentName)
     {
-        Include(i => i.Meter.Name == meterName && i.Name == instrumentName);
+        Include(instrument => instrument.Meter.Name == meterName && instrument.Name == instrumentName);
     }
 
     private void Include(Predicate<Instrument> instrumentFilter)

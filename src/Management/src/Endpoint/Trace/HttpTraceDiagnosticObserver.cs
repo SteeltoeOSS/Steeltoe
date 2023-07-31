@@ -57,11 +57,11 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
     {
         var result = new Dictionary<string, IList<string>>();
 
-        foreach (KeyValuePair<string, StringValues> h in headers)
+        foreach (KeyValuePair<string, StringValues> pair in headers)
         {
             // Add filtering
 #pragma warning disable S4040 // Strings should be normalized to uppercase
-            result.Add(h.Key.ToLowerInvariant(), h.Value.ToArray());
+            result.Add(pair.Key.ToLowerInvariant(), pair.Value.ToArray());
 #pragma warning restore S4040 // Strings should be normalized to uppercase
         }
 
