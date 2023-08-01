@@ -12,7 +12,7 @@ internal sealed class HttpTraceResultConverter : JsonConverter<HttpTraceResult>
 {
     public override HttpTraceResult Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     public override void Write(Utf8JsonWriter writer, HttpTraceResult value, JsonSerializerOptions options)

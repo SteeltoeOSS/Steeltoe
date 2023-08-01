@@ -12,19 +12,19 @@ public sealed class MetricsResponse
 {
     [JsonPropertyName("name")]
     [JsonPropertyOrder(1)]
-    public string Name { get; }
+    public string? Name { get; }
 
     [JsonPropertyName("measurements")]
     [JsonPropertyOrder(2)]
-    public IList<MetricSample> Measurements { get; }
+    public IList<MetricSample>? Measurements { get; }
 
     [JsonPropertyOrder(3)]
     [JsonPropertyName("availableTags")]
-    public IList<MetricTag> AvailableTags { get; }
+    public IList<MetricTag>? AvailableTags { get; }
 
     [JsonPropertyName("names")]
     [JsonPropertyOrder(0)]
-    public ISet<string> Names { get; }
+    public ISet<string>? Names { get; }
 
     public MetricsResponse(ISet<string> names)
     {

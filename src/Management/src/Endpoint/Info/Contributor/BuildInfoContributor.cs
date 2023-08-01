@@ -10,14 +10,8 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
 internal sealed class BuildInfoContributor : IInfoContributor
 {
-    private readonly Assembly _applicationAssembly;
-    private readonly Assembly _steeltoeAssembly;
-
-    public BuildInfoContributor()
-    {
-        _applicationAssembly = Assembly.GetEntryAssembly();
-        _steeltoeAssembly = typeof(BuildInfoContributor).Assembly;
-    }
+    private readonly Assembly _applicationAssembly = Assembly.GetEntryAssembly()!;
+    private readonly Assembly _steeltoeAssembly = typeof(BuildInfoContributor).Assembly;
 
     public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
@@ -27,20 +21,20 @@ internal sealed class BuildInfoContributor : IInfoContributor
         builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoeAssembly));
 
         // this is for Spring Boot Admin
-        builder.WithInfo("build", new Dictionary<string, string>
+        builder.WithInfo("build", new Dictionary<string, string?>
         {
-            { "version", _applicationAssembly.GetName().Version!.ToString() }
+            { "version", _applicationAssembly.GetName().Version?.ToString() }
         });
 
         return Task.CompletedTask;
     }
 
-    private Dictionary<string, string> GetImportantDetails(Assembly assembly)
+    private Dictionary<string, string?> GetImportantDetails(Assembly assembly)
     {
-        string fileVersion = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;
-        string productVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+        string? fileVersion = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;
+        string? productVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
 
-        return new Dictionary<string, string>
+        return new Dictionary<string, string?>
         {
             { "ProductName", assembly.GetName().Name },
             { "FileVersion", fileVersion },

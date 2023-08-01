@@ -53,7 +53,7 @@ internal sealed class ActuatorEndpointMapper
     }
 
     private void MapEndpoints(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder, HashSet<string> collection,
-        string baseRequestPath, IEnumerable<IEndpointMiddleware> middlewares)
+        string? baseRequestPath, IEnumerable<IEndpointMiddleware> middlewares)
     {
         foreach (IEndpointMiddleware middleware in middlewares)
         {

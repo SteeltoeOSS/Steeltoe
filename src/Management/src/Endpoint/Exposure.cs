@@ -20,8 +20,8 @@ public sealed class Exposure
         "info"
     };
 
-    public IList<string> Include { get; set; }
-    public IList<string> Exclude { get; set; }
+    public IList<string> Include { get; set; } = new List<string>();
+    public IList<string> Exclude { get; set; } = new List<string>();
 
     public Exposure()
         : this(false)
@@ -42,29 +42,24 @@ public sealed class Exposure
     {
         ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = configuration.GetSection(Prefix);
-
-        if (section != null)
-        {
-            section.Bind(this);
-        }
+        configuration.GetSection(Prefix).Bind(this);
 
         IConfigurationSection secondSection = configuration.GetSection(SecondChancePrefix);
 
         if (secondSection.Exists())
         {
-            Include = GetListFromConfigCsvString(secondSection, "include");
-            Exclude = GetListFromConfigCsvString(secondSection, "exclude");
+            Include = GetListFromConfigurationCsvString(secondSection, "include") ?? new List<string>();
+            Exclude = GetListFromConfigurationCsvString(secondSection, "exclude") ?? new List<string>();
         }
 
-        if (Include == null && Exclude == null)
+        if (Include.Count == 0 && Exclude.Count == 0)
         {
             Include = DefaultIncludes;
         }
     }
 
-    private List<string> GetListFromConfigCsvString(IConfigurationSection configSection, string key)
+    private List<string>? GetListFromConfigurationCsvString(IConfigurationSection section, string key)
     {
-        return configSection.GetValue<string>(key)?.Split(',').ToList();
+        return section.GetValue<string?>(key)?.Split(',').ToList();
     }
 }

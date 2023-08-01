@@ -1,3 +1,4 @@
+#nullable enable
 override Steeltoe.Management.MetricCollectors.Metrics.MetricSample.ToString() -> string!
 Steeltoe.Management.MetricCollectors.Metrics.MetricSample
 Steeltoe.Management.MetricCollectors.Metrics.MetricSample.MetricSample(Steeltoe.Management.MetricCollectors.Metrics.MetricStatistic statistic, double value, System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<string!, string!>>? tags) -> void

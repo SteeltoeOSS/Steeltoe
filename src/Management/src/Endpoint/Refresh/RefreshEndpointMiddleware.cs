@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-internal sealed class RefreshEndpointMiddleware : EndpointMiddleware<object, IList<string>>
+internal sealed class RefreshEndpointMiddleware : EndpointMiddleware<object?, IList<string>>
 {
     public RefreshEndpointMiddleware(IRefreshEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)

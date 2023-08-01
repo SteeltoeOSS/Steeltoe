@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
@@ -27,7 +28,14 @@ public static class ServiceCollectionExtensions
         services.RegisterDefaultApplicationInstanceInfo();
         services.ConfigureOptions<ConfigureManagementOptions>();
         services.ConfigureOptions<ConfigureHealthEndpointOptions>();
-        services.AddSingleton<SpringBootAdminClientOptions>();
+
+        services.AddSingleton<SpringBootAdminClientOptions>(serviceProvider =>
+        {
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            IApplicationInstanceInfo applicationInstanceInfo = serviceProvider.GetApplicationInstanceInfo();
+            return new SpringBootAdminClientOptions(configuration, applicationInstanceInfo);
+        });
+
         services.AddHostedService<SpringBootAdminClientHostedService>();
         return services;
     }

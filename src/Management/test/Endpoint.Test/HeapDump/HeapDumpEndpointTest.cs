@@ -41,7 +41,7 @@ public sealed class HeapDumpEndpointTest : BaseTest
 
             var handler = testContext.GetRequiredService<IHeapDumpEndpointHandler>();
 
-            string result = await handler.InvokeAsync(null, CancellationToken.None);
+            string? result = await handler.InvokeAsync(null, CancellationToken.None);
             Assert.NotNull(result);
             Assert.True(File.Exists(result));
             File.Delete(result);
@@ -61,7 +61,7 @@ public sealed class HeapDumpEndpointTest : BaseTest
 
                 var handler = testContext.GetRequiredService<IHeapDumpEndpointHandler>();
 
-                string result = await handler.InvokeAsync(null, CancellationToken.None);
+                string? result = await handler.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
                 Assert.True(File.Exists(result));
                 File.Delete(result);

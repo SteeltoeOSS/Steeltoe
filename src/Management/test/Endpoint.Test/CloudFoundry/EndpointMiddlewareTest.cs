@@ -20,7 +20,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     // Allow routing to /cloudfoundryapplication
     private readonly EnvironmentVariableScope _scope = new("VCAP_APPLICATION", "some");
 
-    private readonly Dictionary<string, string> _appSettings = new()
+    private readonly Dictionary<string, string?> _appSettings = new()
     {
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -103,7 +103,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundryOptions_UseCustomJsonSerializerOptions()
     {
-        Dictionary<string, string> settings = new(_appSettings)
+        Dictionary<string, string?> settings = new(_appSettings)
         {
             { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" }
         };

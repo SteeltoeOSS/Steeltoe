@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Metric Collectors, intended for use within Steeltoe Management</Description>
+    <PackageTags>management;monitoring;distributed tracing;metrics</PackageTags>
     <IsPackable>true</IsPackable>
     <Nullable>enable</Nullable>
     <!-- The compiler constants below are required for the copied code in SystemDiagnosticsMetrics -->

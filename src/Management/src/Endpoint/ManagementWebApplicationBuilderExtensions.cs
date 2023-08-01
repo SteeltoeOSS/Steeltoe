@@ -324,7 +324,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
+    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder>? configureEndpoints,
         MediaTypeVersion mediaTypeVersion)
     {
         ArgumentGuard.NotNull(applicationBuilder);
@@ -355,12 +355,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// <param name="configureEndpoints">
     /// <see cref="IEndpointConventionBuilder" />.
     /// </param>
-    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
+    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder>? configureEndpoints)
     {
         return AddAllActuators(applicationBuilder, configureEndpoints, MediaTypeVersion.V2);
     }
 
-    private static void AddCommonServices(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null)
+    private static void AddCommonServices(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder>? configureEndpoints = null)
     {
         (int? httpPort, int? httpsPort) = applicationBuilder.WebHost.GetManagementPorts();
 

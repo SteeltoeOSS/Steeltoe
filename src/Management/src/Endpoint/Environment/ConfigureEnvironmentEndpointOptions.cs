@@ -44,6 +44,11 @@ internal sealed class ConfigureEnvironmentEndpointOptions : IConfigureOptions<En
             options.RequiredPermissions = Permissions.Restricted;
         }
 
-        options.KeysToSanitize ??= DefaultKeysToSanitize;
+        // It's not possible to distinguish between null and an empty list in configuration.
+        // See https://github.com/dotnet/extensions/issues/1341.
+        if (options.KeysToSanitize.Count == 0)
+        {
+            options.KeysToSanitize = DefaultKeysToSanitize;
+        }
     }
 }

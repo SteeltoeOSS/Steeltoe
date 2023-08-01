@@ -359,7 +359,7 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder>? configureEndpoints,
         MediaTypeVersion mediaTypeVersion)
     {
         ArgumentGuard.NotNull(hostBuilder);
@@ -381,7 +381,7 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="configureEndpoints">
     /// <see cref="IEndpointConventionBuilder" />.
     /// </param>
-    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder>? configureEndpoints)
     {
         return AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
     }
@@ -401,15 +401,15 @@ public static class ManagementWebHostBuilderExtensions
     {
         ArgumentGuard.NotNull(webHostBuilder);
 
-        string portSetting = webHostBuilder.GetSetting(ManagementPortKey);
-        string sslSetting = webHostBuilder.GetSetting(ManagementSslKey);
+        string? portSetting = webHostBuilder.GetSetting(ManagementPortKey);
+        string? sslSetting = webHostBuilder.GetSetting(ManagementSslKey);
 
         int? httpPort = null;
         int? httpsPort = null;
 
         if (string.IsNullOrEmpty(portSetting))
         {
-            IConfiguration configuration = GetConfigurationFallback(); // try reading directly from appsettings.json
+            IConfiguration? configuration = GetConfigurationFallback(); // try reading directly from appsettings.json
             portSetting = configuration?[ManagementPortKey];
             sslSetting = configuration?[ManagementSslKey];
         }
@@ -441,14 +441,18 @@ public static class ManagementWebHostBuilderExtensions
         return webHostBuilder;
     }
 
-    private static IConfiguration GetConfigurationFallback()
+    private static IConfiguration? GetConfigurationFallback()
     {
-        IConfiguration configuration = null;
+        IConfiguration? configuration = null;
 
         try
         {
-            string environment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile($"appsettings.{environment}.json", true).Build();
+            string? environment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            if (environment != null)
+            {
+                configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile($"appsettings.{environment}.json", true).Build();
+            }
         }
         catch (Exception)
         {

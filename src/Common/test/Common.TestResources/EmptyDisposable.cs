@@ -4,9 +4,16 @@
 
 namespace Steeltoe.Common.TestResources;
 
-internal sealed class EmptyDisposable : IDisposable
+public sealed class EmptyDisposable : IDisposable
 {
+    public static IDisposable Instance { get; } = new EmptyDisposable();
+
+    private EmptyDisposable()
+    {
+    }
+
     public void Dispose()
     {
+        // Intentionally left empty.
     }
 }

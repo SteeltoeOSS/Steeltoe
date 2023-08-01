@@ -46,7 +46,7 @@ public static class ActuatorServiceCollectionExtensions
             ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
 
-    public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy)
+    public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
         services.AddAllActuators(MediaTypeVersion.V2, buildCorsPolicy);
     }
@@ -61,7 +61,7 @@ public static class ActuatorServiceCollectionExtensions
         return AddAllActuators(services, version, null);
     }
 
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version, Action<CorsPolicyBuilder> buildCorsPolicy)
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
         ArgumentGuard.NotNull(services);
 
@@ -90,7 +90,7 @@ public static class ActuatorServiceCollectionExtensions
         return services;
     }
 
-    private static void AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+    private static void AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy = null)
     {
         ArgumentGuard.NotNull(services);
 

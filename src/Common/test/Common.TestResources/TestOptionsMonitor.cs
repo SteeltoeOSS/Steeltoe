@@ -22,6 +22,6 @@ public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
 
     public IDisposable OnChange(Action<T, string> listener)
     {
-        return new EmptyDisposable();
+        return EmptyDisposable.Instance;
     }
 }

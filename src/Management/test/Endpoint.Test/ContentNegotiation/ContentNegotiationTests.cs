@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
 public sealed class ContentNegotiationTests
 {
-    private static readonly Dictionary<string, string> AppSettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["management:endpoints:actuator:exposure:include:0"] = "*"
     };

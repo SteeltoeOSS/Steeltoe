@@ -12,10 +12,6 @@ public sealed class Link
 
     public bool Templated { get; }
 
-    public Link()
-    {
-    }
-
     public Link(string href)
     {
         ArgumentGuard.NotNull(href);

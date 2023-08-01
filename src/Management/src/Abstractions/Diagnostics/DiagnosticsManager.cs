@@ -20,7 +20,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
     private bool _isDisposed;
 #pragma warning disable S1450 // Private fields only used as local variables in methods should become local variables
     // disabled because an object reference is needed to not dispose when method scope is completed.
-    private IDisposable _listenersSubscription;
+    private IDisposable? _listenersSubscription;
 #pragma warning restore S1450 // Private fields only used as local variables in methods should become local variables
 
     private volatile int _started;
@@ -84,19 +84,12 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
                 _logger.LogTrace("Subscribed to Diagnostic Listener");
             }
 
-            if (_runtimeSources != null)
+            foreach (IRuntimeDiagnosticSource source in _runtimeSources)
             {
-                foreach (IRuntimeDiagnosticSource source in _runtimeSources)
-                {
-                    source.AddInstrumentation();
-                }
+                source.AddInstrumentation();
             }
 
-            if (_eventListeners != null)
-            {
-                _logger.LogTrace("Subscribed to EventListeners: {eventListeners}",
-                    string.Join(",", _eventListeners.Select(listener => listener.GetType().Name)));
-            }
+            _logger.LogTrace("Subscribed to EventListeners: {eventListeners}", string.Join(",", _eventListeners.Select(listener => listener.GetType().Name)));
         }
     }
 

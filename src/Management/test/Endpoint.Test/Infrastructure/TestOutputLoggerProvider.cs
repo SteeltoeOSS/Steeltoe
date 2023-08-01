@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Infrastructure;
@@ -18,6 +19,8 @@ internal sealed class TestOutputLoggerProvider : ILoggerProvider
 
     public TestOutputLoggerProvider(ITestOutputHelper output)
     {
+        ArgumentGuard.NotNull(output);
+
         _output = output;
     }
 

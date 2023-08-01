@@ -46,7 +46,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     {
         ArgumentGuard.NotNull(health);
 
-        return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService ? 503 : 200;
+        return health.Status is HealthStatus.Down or HealthStatus.OutOfService ? 503 : 200;
     }
 
     public Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
@@ -92,7 +92,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     {
         if (!string.IsNullOrEmpty(requestedGroup))
         {
-            if (_endpointOptionsMonitor.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
+            if (_endpointOptionsMonitor.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions? groupOptions) && groupOptions.Include != null)
             {
                 List<string> includedContributors = groupOptions.Include.Split(',').ToList();
 
@@ -125,7 +125,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     {
         if (!string.IsNullOrEmpty(requestedGroup))
         {
-            if (_endpointOptionsMonitor.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
+            if (_endpointOptionsMonitor.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions? groupOptions) && groupOptions.Include != null)
             {
                 List<string> includedContributors = groupOptions.Include.Split(',').ToList();
                 return _healthContributors.Where(contributor => includedContributors.Contains(contributor.Id, StringComparer.OrdinalIgnoreCase)).ToList();

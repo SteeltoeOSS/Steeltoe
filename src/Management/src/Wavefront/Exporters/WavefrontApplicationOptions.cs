@@ -11,21 +11,14 @@ public sealed class WavefrontApplicationOptions
 {
     private const string WavefrontPrefix = "wavefront:application";
 
-    public string Source { get; set; }
-    public string Name { get; set; }
-    public string Service { get; set; }
+    public string? Source { get; set; }
+    public string? Name { get; set; }
+    public string? Service { get; set; }
 
     public WavefrontApplicationOptions(IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = configuration.GetSection(WavefrontPrefix);
-
-        if (section == null)
-        {
-            throw new InvalidOperationException($"Failed to locate configuration section '{WavefrontPrefix}'.");
-        }
-
-        section.Bind(this);
+        configuration.GetSection(WavefrontPrefix).Bind(this);
     }
 }

@@ -9,18 +9,18 @@ namespace Steeltoe.Management.Endpoint.Environment;
 public sealed class PropertyValueDescriptor
 {
     [JsonPropertyName("value")]
-    public object Value { get; }
+    public object? Value { get; }
 
     [JsonPropertyName("origin")]
-    public string Origin { get; }
+    public string? Origin { get; }
 
-    public PropertyValueDescriptor(object value, string origin)
+    public PropertyValueDescriptor(object? value, string origin)
     {
         Value = value;
         Origin = origin;
     }
 
-    public PropertyValueDescriptor(object value)
+    public PropertyValueDescriptor(object? value)
     {
         Value = value;
         Origin = null;

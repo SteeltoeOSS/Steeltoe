@@ -69,7 +69,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
     [Fact]
     public void GetPropertySourceDescriptor_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -82,7 +82,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
             ["CharSize"] = "should not duplicate"
         };
 
-        var otherAppsettings = new Dictionary<string, string>
+        var otherAppsettings = new Dictionary<string, string?>
         {
             ["common"] = "otherAppsettings",
             ["charSize"] = "should not duplicate"
@@ -130,7 +130,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
     [Fact]
     public void GetPropertySources_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -174,7 +174,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
     [Fact]
     public void GetPropertySources_ReturnsExpected_WithPlaceholders()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["appsManagerBase"] = "${management:endpoints:path}"
@@ -197,7 +197,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         var endpoint = (EnvironmentEndpointHandler)testContext.GetRequiredService<IEnvironmentEndpointHandler>();
 
         IList<PropertySourceDescriptor> result = endpoint.GetPropertySources();
-        string testProp = testContext.Configuration["appsManagerBase"];
+        string? testProp = testContext.Configuration["appsManagerBase"];
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -208,7 +208,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -254,7 +254,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
     [Fact]
     public async Task Sanitized_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["password"] = "mysecret",
             ["secret"] = "mysecret",
@@ -301,7 +301,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
     [Fact]
     public async Task Sanitized_NonDefault_WhenSet()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:env:keystosanitize:0"] = "credentials",
             ["password"] = "mysecret"

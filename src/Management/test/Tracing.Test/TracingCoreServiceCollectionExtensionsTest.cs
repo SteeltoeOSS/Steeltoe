@@ -41,7 +41,7 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresWavefrontExporters()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string>
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string?>
         {
             { "management:metrics:export:wavefront:uri", "https://test.wavefront.com" },
             { "management:metrics:export:wavefront:apiToken", "fakeSecret" }

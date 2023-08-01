@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <Description>Enabling request tracing in distributed systems.</Description>
-    <PackageTags>management;monitoring;distributed trace</PackageTags>
+    <Description>Enables request tracing in distributed systems.</Description>
+    <PackageTags>management;monitoring;distributed tracing</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

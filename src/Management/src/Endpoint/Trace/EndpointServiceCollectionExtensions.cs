@@ -51,14 +51,14 @@ public static class EndpointServiceCollectionExtensions
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
 
                 services.TryAddSingleton<IHttpTraceRepository>(provider =>
-                    provider.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().FirstOrDefault());
+                    provider.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
 
                 break;
             default:
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
 
                 services.TryAddSingleton<IHttpTraceRepository>(provider =>
-                    provider.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().FirstOrDefault());
+                    provider.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single());
 
                 break;
         }

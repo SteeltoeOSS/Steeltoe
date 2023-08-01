@@ -11,14 +11,14 @@ public sealed class LoggersRequest
     public LoggersRequestType Type { get; }
 
     /// <summary>
-    /// Gets the name or namespace of the logger level to change.
+    /// Gets the name or namespace of the logger level to change, or <c>null</c> if <see cref="Type" /> is <see cref="LoggersRequestType.Get" />.
     /// </summary>
-    public string Name { get; }
+    public string? Name { get; }
 
     /// <summary>
     /// Gets the new minimum level to log at, or <c>null</c> to reset back to the original level.
     /// </summary>
-    public string Level { get; }
+    public string? Level { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoggersRequest" /> class for getting the log levels.
@@ -37,7 +37,7 @@ public sealed class LoggersRequest
     /// <param name="level">
     /// The minimum level to log, or <c>null</c> to reset back to the original level.
     /// </param>
-    public LoggersRequest(string name, string level)
+    public LoggersRequest(string name, string? level)
     {
         ArgumentGuard.NotNullOrEmpty(name);
 

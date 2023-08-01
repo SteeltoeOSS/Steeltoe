@@ -11,8 +11,8 @@ namespace Steeltoe.Management.Endpoint.Health;
 public sealed class HealthEndpointOptions : EndpointOptions
 {
     public ShowDetails ShowDetails { get; set; }
-    public EndpointClaim Claim { get; set; }
-    public string Role { get; set; }
+    public EndpointClaim? Claim { get; set; }
+    public string? Role { get; set; }
     public IDictionary<string, HealthGroupOptions> Groups { get; set; } = new Dictionary<string, HealthGroupOptions>(StringComparer.OrdinalIgnoreCase);
 
     public override bool RequiresExactMatch()

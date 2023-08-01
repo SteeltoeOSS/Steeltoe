@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
+using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Metrics;
 using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 
@@ -73,15 +73,15 @@ public abstract class BaseTest : IDisposable
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>()
     {
-        return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(new Dictionary<string, string>());
+        return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(new Dictionary<string, string?>());
     }
 
-    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> settings)
+    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string?> settings)
     {
         return GetOptionsMonitorFromSettings<TOptions>(typeof(TConfigureOptions), settings);
     }
 
-    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Dictionary<string, string> settings)
+    protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Dictionary<string, string?> settings)
     {
         Type optionsType = typeof(TOptions);
 
@@ -101,7 +101,7 @@ public abstract class BaseTest : IDisposable
         return GetOptionsMonitorFromSettings<TOptions>(type, settings);
     }
 
-    private static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Type configureOptionsType, Dictionary<string, string> settings)
+    private static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Type configureOptionsType, Dictionary<string, string?> settings)
     {
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(settings);
@@ -112,12 +112,12 @@ public abstract class BaseTest : IDisposable
         services.ConfigureOptions(configureOptionsType);
 
         ServiceProvider provider = services.BuildServiceProvider();
-        return provider.GetService<IOptionsMonitor<TOptions>>();
+        return provider.GetRequiredService<IOptionsMonitor<TOptions>>();
     }
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>()
     {
-        return GetOptionsMonitorFromSettings<TOptions>(new Dictionary<string, string>());
+        return GetOptionsMonitorFromSettings<TOptions>(new Dictionary<string, string?>());
     }
 
     protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>()
@@ -125,7 +125,7 @@ public abstract class BaseTest : IDisposable
         return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>().CurrentValue;
     }
 
-    protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string> settings)
+    protected static TOptions GetOptionsFromSettings<TOptions, TConfigureOptions>(Dictionary<string, string?> settings)
     {
         return GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>(settings).CurrentValue;
     }
@@ -135,7 +135,7 @@ public abstract class BaseTest : IDisposable
         return GetOptionsMonitorFromSettings<TOptions>().CurrentValue;
     }
 
-    protected static TOptions GetOptionsFromSettings<TOptions>(Dictionary<string, string> settings)
+    protected static TOptions GetOptionsFromSettings<TOptions>(Dictionary<string, string?> settings)
     {
         return GetOptionsMonitorFromSettings<TOptions>(settings).CurrentValue;
     }

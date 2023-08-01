@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Test.Info;
 
 public sealed class AppSettingsInfoContributorTest : BaseTest
 {
-    private readonly Dictionary<string, string> _appSettings = new()
+    private readonly Dictionary<string, string?> _appSettings = new()
     {
         ["info:application:name"] = "foobar",
         ["info:application:version"] = "1.0.0",
@@ -40,7 +40,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(configurationRoot);
 
-        Assert.ThrowsAsync<ArgumentNullException>(() => settings.ContributeAsync(null, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentNullException>(() => settings.ContributeAsync(null!, CancellationToken.None));
     }
 
     [Fact]

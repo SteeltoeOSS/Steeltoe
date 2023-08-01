@@ -9,9 +9,9 @@ namespace Steeltoe.Management.Endpoint.Trace;
 public sealed class Response
 {
     public int Status { get; }
-    public IDictionary<string, IList<string>> Headers { get; }
+    public IDictionary<string, IList<string?>> Headers { get; }
 
-    public Response(int status, IDictionary<string, IList<string>> headers)
+    public Response(int status, IDictionary<string, IList<string?>> headers)
     {
         ArgumentGuard.NotNull(headers);
 

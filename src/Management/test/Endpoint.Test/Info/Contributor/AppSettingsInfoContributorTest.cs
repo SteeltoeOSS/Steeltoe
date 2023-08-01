@@ -25,7 +25,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
     [Fact]
     public void ContributeWithNullBuilderThrows()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0",
@@ -40,13 +40,13 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(configurationRoot);
 
-        Assert.ThrowsAsync<ArgumentNullException>(() => settings.ContributeAsync(null, CancellationToken.None));
+        Assert.ThrowsAsync<ArgumentNullException>(() => settings.ContributeAsync(null!, CancellationToken.None));
     }
 
     [Fact]
     public void ContributeAddsToBuilder()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["info:application:name"] = "foobar",
             ["info:application:version"] = "1.0.0",

@@ -11,7 +11,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, string>
+internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object?, string?>
 {
     private readonly ILogger<HeapDumpEndpointMiddleware> _logger;
 
@@ -22,12 +22,12 @@ internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object, st
         _logger = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
     }
 
-    protected override async Task<string> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<string?> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, context.RequestAborted);
     }
 
-    protected override async Task WriteResponseAsync(string fileName, HttpContext context, CancellationToken cancellationToken)
+    protected override async Task WriteResponseAsync(string? fileName, HttpContext context, CancellationToken cancellationToken)
     {
         _logger.LogDebug("Returning: {fileName}", fileName);
 

@@ -11,7 +11,7 @@ internal sealed class AppSettingsInfoContributor : ConfigurationContributor, IIn
 {
     private const string AppsettingsPrefix = "info";
 
-    public AppSettingsInfoContributor(IConfiguration configuration)
+    public AppSettingsInfoContributor(IConfiguration? configuration)
         : base(configuration)
     {
     }

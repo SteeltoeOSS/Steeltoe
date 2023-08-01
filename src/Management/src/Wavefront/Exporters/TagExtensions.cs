@@ -8,9 +8,9 @@ namespace Steeltoe.Management.Wavefront.Exporters;
 
 internal static class TagExtensions
 {
-    public static IDictionary<string, string> AsDictionary(this ReadOnlyTagCollection tagCollection)
+    public static IDictionary<string, string?> AsDictionary(this ReadOnlyTagCollection tagCollection)
     {
-        var tags = new Dictionary<string, string>();
+        var tags = new Dictionary<string, string?>();
 
         foreach (KeyValuePair<string, object> tag in tagCollection)
         {

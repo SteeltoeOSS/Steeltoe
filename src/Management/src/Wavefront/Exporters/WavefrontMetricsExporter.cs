@@ -29,7 +29,7 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
         _logger = logger;
 
         string token = string.Empty;
-        string uri = Options.Uri;
+        string? uri = Options.Uri;
 
         if (string.IsNullOrEmpty(uri))
         {
@@ -38,7 +38,7 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
 
         if (uri.StartsWith("proxy://", StringComparison.Ordinal))
         {
-            uri = $"http{Options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
+            uri = $"http{uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
         }
         else
         {
@@ -79,7 +79,7 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
                             doubleValue = isSum ? metricPoint.GetSumDouble() : metricPoint.GetGaugeLastValueDouble();
                         }
 
-                        IDictionary<string, string> tags = GetTags(metricPoint.Tags);
+                        IDictionary<string, string?> tags = GetTags(metricPoint.Tags);
 
                         _wavefrontSender.SendMetric(metric.Name.ToLowerInvariant(), doubleValue, timestamp, Options.Source, tags);
 
@@ -92,7 +92,7 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
                     {
                         long timestamp = metricPoint.EndTime.ToUnixTimeMilliseconds();
 
-                        IDictionary<string, string> tags = GetTags(metricPoint.Tags);
+                        IDictionary<string, string?> tags = GetTags(metricPoint.Tags);
 
                         _wavefrontSender.SendMetric($"{metric.Name.ToLowerInvariant()}_count", metricPoint.GetHistogramCount(), timestamp, Options.Source,
                             tags);
@@ -113,9 +113,9 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
         return ExportResult.Success;
     }
 
-    private IDictionary<string, string> GetTags(ReadOnlyTagCollection inputTags)
+    private IDictionary<string, string?> GetTags(ReadOnlyTagCollection inputTags)
     {
-        IDictionary<string, string> tags = inputTags.AsDictionary();
+        IDictionary<string, string?> tags = inputTags.AsDictionary();
 
         tags.Add("application", Options.Name.ToLowerInvariant());
         tags.Add("service", Options.Service.ToLowerInvariant());

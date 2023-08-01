@@ -15,6 +15,7 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
     {
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
         Assert.Equal("/actuator", managementOptions.Path);
+        Assert.NotNull(managementOptions.Exposure);
         Assert.Contains("health", managementOptions.Exposure.Include);
         Assert.Contains("info", managementOptions.Exposure.Include);
     }
@@ -26,6 +27,7 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
         ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
         Assert.Equal("/actuator", managementOptions.Path);
+        Assert.NotNull(managementOptions.Exposure);
         Assert.Contains("health", managementOptions.Exposure.Include);
         Assert.Contains("info", managementOptions.Exposure.Include);
     }
@@ -33,7 +35,7 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management"
@@ -44,6 +46,7 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
         Assert.Equal("/management", options.Path);
         Assert.False(options.Enabled);
 
+        Assert.NotNull(options.Exposure);
         Assert.Contains("health", options.Exposure.Include);
         Assert.Contains("info", options.Exposure.Include);
     }
@@ -51,7 +54,7 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly_OnCF()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management"
@@ -64,6 +67,7 @@ public sealed class ActuatorManagementOptionsTest : BaseTest
         Assert.Equal("/management", options.Path);
         Assert.False(options.Enabled);
 
+        Assert.NotNull(options.Exposure);
         Assert.Contains("health", options.Exposure.Include);
         Assert.Contains("info", options.Exposure.Include);
     }

@@ -86,9 +86,13 @@ internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, I
 
             healthCheckResult.Details = new Dictionary<string, object>(result.Data)
             {
-                { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
-                { "description", result.Description }
+                { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) }
             };
+
+            if (result.Description != null)
+            {
+                healthCheckResult.Details.Add("description", result.Description);
+            }
 
             if (result.Exception != null && !string.IsNullOrEmpty(result.Exception.Message))
             {

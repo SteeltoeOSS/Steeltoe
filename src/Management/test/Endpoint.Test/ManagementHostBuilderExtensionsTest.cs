@@ -38,7 +38,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer()
         .ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProvider())
         .Configure(applicationBuilder => applicationBuilder.UseRouting()).ConfigureAppConfiguration(configurationBuilder =>
-            configurationBuilder.AddInMemoryCollection(new Dictionary<string, string>
+            configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["management:endpoints:actuator:exposure:include:0"] = "*"
             }));
@@ -63,7 +63,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddDbMigrationsActuator().Build();
         var handler = host.Services.GetService<IDbMigrationsEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.NotNull(handler);
         Assert.NotNull(filter);
@@ -89,7 +89,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddEnvironmentActuator().Build();
         IEnumerable<IEnvironmentEndpointHandler> handlers = host.Services.GetServices<IEnvironmentEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(handlers);
         Assert.NotNull(filter);
@@ -115,7 +115,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddHealthActuator().Build();
         IEnumerable<IHealthEndpointHandler> handlers = host.Services.GetServices<IHealthEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(handlers);
         Assert.NotNull(filter);
@@ -130,7 +130,7 @@ public sealed class ManagementHostBuilderExtensionsTest
         IHost host = hostBuilder.AddHealthActuator(typeof(DownContributor)).Build();
 
         IEnumerable<IHealthEndpointHandler> handlers = host.Services.GetServices<IHealthEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(handlers);
         Assert.NotNull(filter);
@@ -145,7 +145,7 @@ public sealed class ManagementHostBuilderExtensionsTest
         IHost host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor)).Build();
 
         IEnumerable<IHealthEndpointHandler> handlers = host.Services.GetServices<IHealthEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(handlers);
         Assert.NotNull(filter);
@@ -197,7 +197,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
             IHost host = hostBuilder.AddHeapDumpActuator().Build();
             IEnumerable<IHeapDumpEndpointHandler> handlers = host.Services.GetServices<IHeapDumpEndpointHandler>();
-            IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+            IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(handlers);
             Assert.NotNull(filter);
@@ -227,7 +227,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddHypermediaActuator().Build();
         IEnumerable<IActuatorEndpointHandler> handlers = host.Services.GetServices<IActuatorEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(handlers);
         Assert.NotNull(filter);
@@ -253,7 +253,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddInfoActuator().Build();
         var handler = host.Services.GetService<IInfoEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.NotNull(handler);
         Assert.NotNull(filter);
@@ -268,7 +268,7 @@ public sealed class ManagementHostBuilderExtensionsTest
         IHost host = hostBuilder.AddInfoActuator(new AppSettingsInfoContributor(new ConfigurationBuilder().Build())).Build();
 
         var handler = host.Services.GetService<IInfoEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.NotNull(handler);
         Assert.NotNull(filter);
@@ -294,7 +294,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddLoggersActuator().Build();
         IEnumerable<ILoggersEndpointHandler> handlers = host.Services.GetServices<ILoggersEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(handlers);
         Assert.NotNull(filter);
@@ -341,7 +341,7 @@ public sealed class ManagementHostBuilderExtensionsTest
         IHost host = hostBuilder.AddMappingsActuator().Build();
 
         var mappings = host.Services.GetRequiredService<RouteMappings.RouteMappings>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.NotNull(mappings);
         Assert.NotNull(filter);
@@ -367,7 +367,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddMetricsActuator().Build();
         var handler = host.Services.GetService<IMetricsEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.NotNull(handler);
         Assert.NotNull(filter);
@@ -393,7 +393,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddRefreshActuator().Build();
         IEnumerable<IRefreshEndpointHandler> handlers = host.Services.GetServices<IRefreshEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(handlers);
         Assert.NotNull(filter);
@@ -421,7 +421,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
             IHost host = hostBuilder.AddThreadDumpActuator().Build();
             IEnumerable<IThreadDumpEndpointHandler> handlers = host.Services.GetServices<IThreadDumpEndpointHandler>();
-            IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+            IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(handlers);
             Assert.NotNull(filter);
@@ -451,7 +451,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddTraceActuator().Build();
         IEnumerable<IHttpTraceEndpointHandler> handlers = host.Services.GetServices<IHttpTraceEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(handlers);
         Assert.NotNull(filter);
@@ -477,7 +477,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddCloudFoundryActuator().Build();
         var handler = host.Services.GetService<ICloudFoundryEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.NotNull(handler);
         Assert.NotNull(filter);
@@ -523,7 +523,7 @@ public sealed class ManagementHostBuilderExtensionsTest
 
         IHost host = hostBuilder.AddAllActuators().Build();
         IEnumerable<IActuatorEndpointHandler> handlers = host.Services.GetServices<IActuatorEndpointHandler>();
-        IStartupFilter filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
         Assert.Single(handlers);
         Assert.NotNull(filter);

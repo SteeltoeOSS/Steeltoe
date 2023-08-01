@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Management.Endpoint.Trace;
 
 public sealed class Session
@@ -10,6 +12,8 @@ public sealed class Session
 
     public Session(string id)
     {
+        ArgumentGuard.NotNull(id);
+
         Id = id;
     }
 }

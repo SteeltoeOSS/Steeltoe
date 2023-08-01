@@ -19,7 +19,7 @@ public sealed class ContextMappingsTest : BaseTest
             { "dispatcherServlet", mappingList }
         };
 
-        var contextMappings = new ContextMappings(mappingDictionary);
+        var contextMappings = new ContextMappings(mappingDictionary, null);
         IDictionary<string, IDictionary<string, IList<RouteMappingDescription>>> contextMappingsMappings = contextMappings.Mappings;
         Assert.Contains("dispatcherServlets", contextMappingsMappings.Keys);
         IDictionary<string, IList<RouteMappingDescription>> mappings = contextMappingsMappings["dispatcherServlets"];
@@ -30,22 +30,17 @@ public sealed class ContextMappingsTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var routeDetails = new AspNetCoreRouteDetails
+        var httpMethods = new List<string>
         {
-            HttpMethods = new List<string>
-            {
-                "GET"
-            },
-            RouteTemplate = "/Home/Index",
-            Consumes = new List<string>
-            {
-                "application/json"
-            },
-            Produces = new List<string>
-            {
-                "application/json"
-            }
+            "GET"
         };
+
+        var contentTypes = new List<string>
+        {
+            "application/json"
+        };
+
+        var routeDetails = new AspNetCoreRouteDetails(httpMethods, "/Home/Index", contentTypes, contentTypes);
 
         var mappingDescriptions = new List<RouteMappingDescription>
         {
@@ -57,7 +52,7 @@ public sealed class ContextMappingsTest : BaseTest
             { "controllerTypeName", mappingDescriptions }
         };
 
-        var contextMappings = new ContextMappings(mappingDictionary);
+        var contextMappings = new ContextMappings(mappingDictionary, null);
         string result = Serialize(contextMappings);
 
         Assert.Equal(

@@ -29,7 +29,7 @@ public sealed class TracingOptionsTest
     [Fact]
     public void ThrowsIfConfigNull()
     {
-        const IConfiguration configuration = null;
+        const IConfiguration? configuration = null;
         Assert.Throws<ArgumentNullException>(() => new TracingOptions(null, configuration));
     }
 
@@ -60,7 +60,7 @@ public sealed class TracingOptionsTest
     [Fact]
     public void ApplicationName_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string>();
+        var appsettings = new Dictionary<string, string?>();
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appsettings);
         IConfigurationRoot configurationRoot = builder.Build();

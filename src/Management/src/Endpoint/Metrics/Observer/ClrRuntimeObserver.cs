@@ -16,17 +16,17 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
     private const string GenerationTagValueName = "gen";
     private const string GenerationKey = "generation";
 
-    private readonly Dictionary<string, object> _heapTags = new()
+    private readonly Dictionary<string, object?> _heapTags = new()
     {
         { "area", "heap" }
     };
 
-    private readonly Dictionary<string, object> _workerTags = new()
+    private readonly Dictionary<string, object?> _workerTags = new()
     {
         { "kind", "worker" }
     };
 
-    private readonly Dictionary<string, object> _completionPortTags = new()
+    private readonly Dictionary<string, object?> _completionPortTags = new()
     {
         { "kind", "completionPort" }
     };
@@ -54,7 +54,7 @@ internal sealed class ClrRuntimeObserver : IRuntimeDiagnosticSource
                 count -= _previous.CollectionCounts[index];
             }
 
-            var tags = new Dictionary<string, object>
+            var tags = new Dictionary<string, object?>
             {
                 { GenerationKey, GenerationTagValueName + index }
             };

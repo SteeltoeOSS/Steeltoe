@@ -24,7 +24,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
 
         var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
-        string result = observer.GetSessionId(context);
+        string? result = observer.GetSessionId(context);
         Assert.Null(result);
     }
 
@@ -36,16 +36,11 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
 
-        var session = new TestSession();
-
-        ISessionFeature sessionFeature = new SessionFeature
-        {
-            Session = session
-        };
+        ISessionFeature sessionFeature = new SessionFeature(new TestSession());
 
         context.Features.Set(sessionFeature);
 
-        string result = observer.GetSessionId(context);
+        string? result = observer.GetSessionId(context);
         Assert.Equal("TestSessionId", result);
     }
 
@@ -56,7 +51,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
 
         var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
-        string result = observer.GetUserPrincipal(context);
+        string? result = observer.GetUserPrincipal(context);
         Assert.Null(result);
     }
 
@@ -69,7 +64,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         HttpContext context = CreateRequest();
 
         context.User = new ClaimsPrincipal(new MyIdentity());
-        string result = observer.GetUserPrincipal(context);
+        string? result = observer.GetUserPrincipal(context);
         Assert.Equal("MyTestName", result);
     }
 
@@ -80,7 +75,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
 
         var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
-        string result = observer.GetRemoteAddress(context);
+        string? result = observer.GetRemoteAddress(context);
         Assert.Null(result);
     }
 
@@ -92,7 +87,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
 
-        string result = observer.GetPathInfo(context.Request);
+        string? result = observer.GetPathInfo(context.Request);
         Assert.Equal("/myPath", result);
     }
 
@@ -114,14 +109,14 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
 
         var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
-        Dictionary<string, string[]> result = observer.GetRequestParameters(context.Request);
+        Dictionary<string, IList<string?>> result = observer.GetRequestParameters(context.Request);
         Assert.NotNull(result);
         Assert.True(result.ContainsKey("foo"));
         Assert.True(result.ContainsKey("bar"));
-        string[] fooValue = result["foo"];
+        IList<string?> fooValue = result["foo"];
         Assert.Single(fooValue);
         Assert.Equal("bar", fooValue[0]);
-        string[] barValue = result["bar"];
+        IList<string?> barValue = result["bar"];
         Assert.Single(barValue);
         Assert.Equal("foo", barValue[0]);
     }
@@ -146,16 +141,16 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext context = CreateRequest();
 
-        Dictionary<string, object> result = observer.GetHeaders(100, context.Request.Headers);
+        Dictionary<string, object?> result = observer.GetHeaders(100, context.Request.Headers);
         Assert.NotNull(result);
         Assert.True(result.ContainsKey("header1"));
         Assert.True(result.ContainsKey("header2"));
         Assert.True(result.ContainsKey("status"));
-        string header1Value = result["header1"] as string;
+        string? header1Value = (string?)result["header1"];
         Assert.Equal("header1Value", header1Value);
-        string header2Value = result["header2"] as string;
+        string? header2Value = (string?)result["header2"];
         Assert.Equal("header2Value", header2Value);
-        string statusValue = result["status"] as string;
+        string? statusValue = (string?)result["status"];
         Assert.Equal("100", statusValue);
     }
 
@@ -166,7 +161,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
 
         var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
 
-        HttpContext context = observer.GetHttpContextPropertyValue(new
+        HttpContext? context = observer.GetHttpContextPropertyValue(new
         {
             foo = "bar"
         });
@@ -182,7 +177,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         var observer = new TraceDiagnosticObserver(option, NullLoggerFactory.Instance);
         HttpContext expectedContext = CreateRequest();
 
-        HttpContext context = observer.GetHttpContextPropertyValue(new
+        HttpContext? context = observer.GetHttpContextPropertyValue(new
         {
             HttpContext = expectedContext
         });
@@ -212,7 +207,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         Assert.NotNull(headers);
         Assert.True(headers.ContainsKey("request"));
         Assert.True(headers.ContainsKey("response"));
-        string timeTaken = result.Info["timeTaken"] as string;
+        string? timeTaken = (string?)result.Info["timeTaken"];
         Assert.NotNull(timeTaken);
         string expected = duration.TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
         Assert.Equal(expected, timeTaken);
@@ -270,7 +265,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         });
 
         Assert.Single(observer.Queue);
-        Assert.True(observer.Queue.TryPeek(out TraceResult result));
+        Assert.True(observer.Queue.TryPeek(out TraceResult? result));
         Assert.NotNull(result.Info);
         Assert.NotEqual(0, result.TimeStamp);
         Assert.True(result.Info.ContainsKey("method"));
@@ -283,7 +278,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         Assert.NotNull(headers);
         Assert.True(headers.ContainsKey("request"));
         Assert.True(headers.ContainsKey("response"));
-        short timeTaken = short.Parse((string)result.Info["timeTaken"], CultureInfo.InvariantCulture);
+        short timeTaken = short.Parse((string)result.Info["timeTaken"]!, CultureInfo.InvariantCulture);
         Assert.InRange(timeTaken, 1000, 1300);
     }
 
@@ -306,7 +301,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
 
         Assert.Single(observer.Queue);
 
-        Assert.True(observer.Queue.TryPeek(out TraceResult result));
+        Assert.True(observer.Queue.TryPeek(out TraceResult? result));
         Assert.NotNull(result.Info);
         Assert.NotEqual(0, result.TimeStamp);
         Assert.True(result.Info.ContainsKey("method"));
@@ -319,7 +314,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         Assert.NotNull(headers);
         Assert.True(headers.ContainsKey("request"));
         Assert.True(headers.ContainsKey("response"));
-        string timeTaken = result.Info["timeTaken"] as string;
+        string? timeTaken = (string?)result.Info["timeTaken"];
         Assert.NotNull(timeTaken);
         Assert.Equal("0", timeTaken); // 0 because activity not stopped
 

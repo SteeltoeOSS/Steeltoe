@@ -11,12 +11,12 @@ public sealed class MetricsObserverOptions
     /// <summary>
     /// Gets or sets a regex pattern for requests coming into this application where metrics should not be captured.
     /// </summary>
-    public string IngressIgnorePattern { get; set; }
+    public string? IngressIgnorePattern { get; set; }
 
     /// <summary>
     /// Gets or sets a regex pattern for requests leaving this application where metrics should not be captured.
     /// </summary>
-    public string EgressIgnorePattern { get; set; }
+    public string? EgressIgnorePattern { get; set; }
 
     public bool AspNetCoreHosting { get; set; } = true;
 

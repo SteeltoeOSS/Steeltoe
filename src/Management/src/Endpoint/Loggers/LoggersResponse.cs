@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Management.Endpoint.Loggers;
 
 public sealed class LoggersResponse
@@ -11,6 +13,8 @@ public sealed class LoggersResponse
 
     public LoggersResponse(IDictionary<string, object> data, bool hasError)
     {
+        ArgumentGuard.NotNull(data);
+
         HasError = hasError;
         Data = data;
     }

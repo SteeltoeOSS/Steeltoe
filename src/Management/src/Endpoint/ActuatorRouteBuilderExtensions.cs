@@ -16,7 +16,7 @@ public static class ActuatorRouteBuilderExtensions
         return MapAllActuators(builder, null);
     }
 
-    public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, ActuatorConventionBuilder conventionBuilder)
+    public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, ActuatorConventionBuilder? conventionBuilder)
     {
         ArgumentGuard.NotNull(endpoints);
 

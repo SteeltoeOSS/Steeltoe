@@ -24,7 +24,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundrySecurityMiddleware_ReturnsServiceUnavailable()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/",
@@ -50,7 +50,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         }
 
-        var appSettings2 = new Dictionary<string, string>
+        var appSettings2 = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/",
@@ -77,7 +77,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         }
 
-        var appSettings3 = new Dictionary<string, string>
+        var appSettings3 = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/",
@@ -105,7 +105,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         }
 
-        var appSettings4 = new Dictionary<string, string>
+        var appSettings4 = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/",
@@ -136,7 +136,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundrySecurityMiddleware_ReturnsWithStatusOverride()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/",
@@ -162,7 +162,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        var appSettings3 = new Dictionary<string, string>
+        var appSettings3 = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/",
@@ -194,7 +194,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundrySecurityMiddleware_ReturnsSecurityException()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
 
@@ -225,7 +225,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalse()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
 
@@ -259,7 +259,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     {
         using var scope = new EnvironmentVariableScope("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/",

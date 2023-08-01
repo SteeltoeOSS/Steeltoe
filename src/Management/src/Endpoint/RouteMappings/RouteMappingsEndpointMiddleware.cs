@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.RouteMappings;
 /// <summary>
 /// Middleware for displaying <see cref="RouteMappings" /> information.
 /// </summary>
-internal sealed class RouteMappingsEndpointMiddleware : EndpointMiddleware<object, RouteMappingsResponse>
+internal sealed class RouteMappingsEndpointMiddleware : EndpointMiddleware<object?, RouteMappingsResponse>
 {
     public RouteMappingsEndpointMiddleware(IRouteMappingsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)

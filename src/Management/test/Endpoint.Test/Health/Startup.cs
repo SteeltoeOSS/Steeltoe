@@ -26,7 +26,7 @@ public sealed class Startup
     {
         services.AddRouting();
 
-        switch (_configuration.GetValue<string>("HealthCheckType"))
+        switch (_configuration.GetValue<string?>("HealthCheckType"))
         {
             case "down":
                 services.AddHealthActuator(typeof(DownContributor));

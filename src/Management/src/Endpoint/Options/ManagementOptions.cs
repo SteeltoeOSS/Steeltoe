@@ -13,8 +13,8 @@ public sealed class ManagementOptions
     internal bool IsCloudFoundryEnabled { get; set; }
 
     public bool? Enabled { get; set; }
-    public string Path { get; set; }
-    public string Port { get; set; }
+    public string? Path { get; set; }
+    public string? Port { get; set; }
     public bool UseStatusCodeFromResponse { get; set; } = true;
 
     public JsonSerializerOptions SerializerOptions { get; set; } = new()
@@ -22,7 +22,7 @@ public sealed class ManagementOptions
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public Exposure Exposure { get; set; } = new();
+    public Exposure? Exposure { get; set; } = new();
 
     /// <summary>
     /// Gets or sets a list of
@@ -31,5 +31,5 @@ public sealed class ManagementOptions
     /// </see>
     /// custom JsonConverters.
     /// </summary>
-    public IList<string> CustomJsonConverters { get; set; }
+    public IList<string> CustomJsonConverters { get; set; } = new List<string>();
 }

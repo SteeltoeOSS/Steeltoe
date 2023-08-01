@@ -17,7 +17,7 @@ public sealed class ApplicationMappingsTest : BaseTest
             { "dispatcherServlet", new List<RouteMappingDescription>() }
         };
 
-        var contextMappings = new ContextMappings(mappingDictionary);
+        var contextMappings = new ContextMappings(mappingDictionary, null);
 
         var appMappings = new RouteMappingsResponse(contextMappings);
         IDictionary<string, ContextMappings> appContextMappings = appMappings.ContextMappings;
@@ -29,22 +29,17 @@ public sealed class ApplicationMappingsTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var routeDetails = new AspNetCoreRouteDetails
+        var httpMethods = new List<string>
         {
-            HttpMethods = new List<string>
-            {
-                "GET"
-            },
-            RouteTemplate = "/Home/Index",
-            Consumes = new List<string>
-            {
-                "application/json"
-            },
-            Produces = new List<string>
-            {
-                "application/json"
-            }
+            "GET"
         };
+
+        var contentTypes = new List<string>
+        {
+            "application/json"
+        };
+
+        var routeDetails = new AspNetCoreRouteDetails(httpMethods, "/Home/Index", contentTypes, contentTypes);
 
         var mappingDescriptions = new List<RouteMappingDescription>
         {
@@ -56,7 +51,7 @@ public sealed class ApplicationMappingsTest : BaseTest
             { "controllerTypeName", mappingDescriptions }
         };
 
-        var contextMappings = new ContextMappings(mappingDictionary);
+        var contextMappings = new ContextMappings(mappingDictionary, null);
         var appMappings = new RouteMappingsResponse(contextMappings);
 
         string result = Serialize(appMappings);

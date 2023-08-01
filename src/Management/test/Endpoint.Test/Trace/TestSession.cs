@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
@@ -39,7 +40,7 @@ internal sealed class TestSession : ISession
         _store[key] = value;
     }
 
-    public bool TryGetValue(string key, out byte[] value)
+    public bool TryGetValue(string key, [NotNullWhen(true)] out byte[]? value)
     {
         return _store.TryGetValue(key, out value);
     }

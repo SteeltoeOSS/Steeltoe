@@ -14,7 +14,7 @@ public sealed class TracingBaseHostBuilderExtensionsTest : TestBase
     public void AddDistributedTracing_ConfiguresExpectedDefaults()
     {
         var hostBuilder = new HostBuilder();
-        IServiceCollection services = null;
+        IServiceCollection? services = null;
 
         hostBuilder.ConfigureServices(svc =>
         {
@@ -24,7 +24,7 @@ public sealed class TracingBaseHostBuilderExtensionsTest : TestBase
         });
 
         hostBuilder.Build();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services!.BuildServiceProvider();
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceCollectionBase(serviceProvider);
     }

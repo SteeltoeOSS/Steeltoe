@@ -9,13 +9,9 @@ namespace Steeltoe.Management.Info;
 
 internal abstract class ConfigurationContributor
 {
-    protected IConfiguration Configuration { get; set; }
+    protected IConfiguration? Configuration { get; set; }
 
-    protected ConfigurationContributor()
-    {
-    }
-
-    protected ConfigurationContributor(IConfiguration configuration)
+    protected ConfigurationContributor(IConfiguration? configuration)
     {
         Configuration = configuration;
     }

@@ -24,10 +24,8 @@ public sealed class AllActuatorsStartupFilter : IStartupFilter
         _conventionBuilder = conventionBuilder;
     }
 
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder>? next)
     {
-        ArgumentGuard.NotNull(next);
-
         return app =>
         {
             if (app.ApplicationServices.GetService<ICorsService>() != null)
@@ -41,7 +39,8 @@ public sealed class AllActuatorsStartupFilter : IStartupFilter
             }
 
             app.UseMiddleware<ManagementPortMiddleware>();
-            next(app);
+
+            next?.Invoke(app);
 
             app.UseEndpoints(endpoints =>
             {

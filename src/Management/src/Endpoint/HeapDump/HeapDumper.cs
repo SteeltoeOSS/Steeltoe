@@ -14,26 +14,26 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 public sealed class HeapDumper
 {
-    private readonly string _basePathOverride;
-    private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
+    private readonly string? _basePathOverride;
+    private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;
     private readonly ILogger<HeapDumper> _logger;
 
-    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, ILogger<HeapDumper> logger)
-        : this(options, logger, null)
+    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, ILogger<HeapDumper> logger)
+        : this(optionsMonitor, null, logger)
     {
     }
 
-    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, ILogger<HeapDumper> logger, string basePathOverride)
+    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, string? basePathOverride, ILogger<HeapDumper> logger)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(logger);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _logger = logger;
         _basePathOverride = basePathOverride;
     }
 
-    public string DumpHeapToFile(CancellationToken cancellationToken)
+    public string? DumpHeapToFile(CancellationToken cancellationToken)
     {
         string fileName = CreateFileName();
 
@@ -46,7 +46,7 @@ public sealed class HeapDumper
         {
             using var process = Process.GetCurrentProcess();
 
-            if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+            if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogInformation("Attempting to create a gcdump");
 
@@ -59,7 +59,7 @@ public sealed class HeapDumper
                 return null;
             }
 
-            if (!Enum.TryParse(_options.CurrentValue.HeapDumpType, out DumpType dumpType))
+            if (!Enum.TryParse(_optionsMonitor.CurrentValue.HeapDumpType, out DumpType dumpType))
             {
                 dumpType = DumpType.Full;
             }
@@ -78,7 +78,7 @@ public sealed class HeapDumper
 
     private string CreateFileName()
     {
-        if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+        if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
         {
             return $"gcdump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
         }

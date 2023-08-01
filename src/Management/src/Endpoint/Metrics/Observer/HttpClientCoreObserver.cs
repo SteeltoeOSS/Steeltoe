@@ -29,26 +29,31 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
     private readonly Histogram<double> _clientCountMeasure;
     private readonly ILogger _logger;
 
-    public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> options, ILoggerFactory loggerFactory)
+    public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILoggerFactory loggerFactory)
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
 
-        SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
+        string? egressIgnorePattern = optionsMonitor.CurrentValue.EgressIgnorePattern;
+
+        if (egressIgnorePattern != null)
+        {
+            SetPathMatcher(new Regex(egressIgnorePattern));
+        }
 
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.count");
         _logger = loggerFactory.CreateLogger<HttpClientCoreObserver>();
     }
 
-    public override void ProcessEvent(string eventName, object value)
+    public override void ProcessEvent(string eventName, object? value)
     {
         if (value == null)
         {
             return;
         }
 
-        Activity current = Activity.Current;
+        Activity? current = Activity.Current;
 
         if (current == null)
         {
@@ -87,7 +92,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
         HandleStopEvent(current, request, null, TaskStatus.Faulted);
     }
 
-    private void HandleStopEvent(Activity current, HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+    private void HandleStopEvent(Activity current, HttpRequestMessage request, HttpResponseMessage? response, TaskStatus taskStatus)
     {
         if (ShouldIgnoreRequest(request.RequestUri?.AbsolutePath))
         {
@@ -97,19 +102,19 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            ReadOnlySpan<KeyValuePair<string, object>> labels = GetLabels(request, response, taskStatus).AsReadonlySpan();
+            ReadOnlySpan<KeyValuePair<string, object?>> labels = GetLabels(request, response, taskStatus).AsReadonlySpan();
             _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels);
             _clientCountMeasure.Record(1, labels);
         }
     }
 
-    private IDictionary<string, object> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+    private IDictionary<string, object?> GetLabels(HttpRequestMessage request, HttpResponseMessage? response, TaskStatus taskStatus)
     {
         string uri = request.RequestUri!.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string statusCode = GetStatusCode(response, taskStatus);
         string clientName = request.RequestUri.GetComponents(UriComponents.HostAndPort, UriFormat.UriEscaped);
 
-        return new Dictionary<string, object>
+        return new Dictionary<string, object?>
         {
             { UriTagKey, uri },
             { StatusTagKey, statusCode },
@@ -118,7 +123,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
         };
     }
 
-    private string GetStatusCode(HttpResponseMessage response, TaskStatus taskStatus)
+    private string GetStatusCode(HttpResponseMessage? response, TaskStatus taskStatus)
     {
         if (response != null)
         {

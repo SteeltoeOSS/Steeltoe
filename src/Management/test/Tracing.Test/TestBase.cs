@@ -19,18 +19,18 @@ public class TestBase
 {
     protected IConfiguration GetConfiguration()
     {
-        return GetConfiguration(new Dictionary<string, string>());
+        return GetConfiguration(new Dictionary<string, string?>());
     }
 
-    protected IConfiguration GetConfiguration(Dictionary<string, string> moreSettings)
+    protected IConfiguration GetConfiguration(Dictionary<string, string?> moreSettings)
     {
-        return new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>(moreSettings)
+        return new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>(moreSettings)
         {
             { "management:tracing:name", "foobar" }
         }).Build();
     }
 
-    private object GetPrivateField(object baseObject, string fieldName)
+    private object? GetPrivateField(object baseObject, string fieldName)
     {
         return baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(baseObject);
     }
@@ -58,7 +58,7 @@ public class TestBase
         Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http", StringComparison.Ordinal));
 
         Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-        var composite = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
+        var composite = (CompositeTextMapPropagator)Propagators.DefaultTextMapPropagator;
         var propagators = GetPrivateField(composite, "propagators") as List<TextMapPropagator>;
         Assert.NotNull(propagators);
         Assert.Equal(2, propagators.Count);

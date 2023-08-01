@@ -10,10 +10,10 @@ public sealed class Request
 {
     public string Method { get; }
     public string Uri { get; }
-    public IDictionary<string, IList<string>> Headers { get; }
-    public string RemoteAddress { get; }
+    public IDictionary<string, IList<string?>> Headers { get; }
+    public string? RemoteAddress { get; }
 
-    public Request(string method, string uri, IDictionary<string, IList<string>> headers, string remoteAddress)
+    public Request(string method, string uri, IDictionary<string, IList<string?>> headers, string? remoteAddress)
     {
         ArgumentGuard.NotNull(method);
         ArgumentGuard.NotNull(uri);

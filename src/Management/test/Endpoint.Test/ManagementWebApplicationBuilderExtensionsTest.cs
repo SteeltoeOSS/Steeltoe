@@ -399,7 +399,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         return builder;
     }
 
-    private WebApplication GetTestWebAppWithSecureRouting(Action<WebApplicationBuilder> customizeBuilder = null)
+    private WebApplication GetTestWebAppWithSecureRouting(Action<WebApplicationBuilder>? customizeBuilder = null)
     {
         WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
         customizeBuilder?.Invoke(builder);

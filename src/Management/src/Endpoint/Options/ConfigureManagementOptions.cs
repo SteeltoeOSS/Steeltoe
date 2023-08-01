@@ -38,15 +38,12 @@ internal sealed class ConfigureManagementOptions : IConfigureOptions<ManagementO
             options.IsCloudFoundryEnabled = isEnabled;
         }
 
-        foreach (string converterTypeName in options.CustomJsonConverters ?? Array.Empty<string>())
+        foreach (string converterTypeName in options.CustomJsonConverters)
         {
-            var converterType = Type.GetType(converterTypeName);
+            var converterType = Type.GetType(converterTypeName, true)!;
+            var converterInstance = (JsonConverter)Activator.CreateInstance(converterType)!;
 
-            if (converterType != null)
-            {
-                var converterInstance = (JsonConverter)Activator.CreateInstance(converterType);
-                options.SerializerOptions.Converters.Add(converterInstance);
-            }
+            options.SerializerOptions.Converters.Add(converterInstance);
         }
 
         options.Path ??= DefaultPath;

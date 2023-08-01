@@ -8,15 +8,15 @@ namespace Steeltoe.Management;
 
 public abstract class EndpointOptions
 {
-    private string _path;
+    private string? _path;
 
     internal virtual bool DefaultEnabled { get; } = true;
 
     public virtual bool? Enabled { get; set; }
 
-    public virtual string Id { get; set; }
+    public virtual string? Id { get; set; }
 
-    public virtual string Path
+    public virtual string? Path
     {
         get
         {

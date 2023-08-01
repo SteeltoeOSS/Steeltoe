@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 public sealed class LoggerLevels
 {
     [JsonPropertyName("configuredLevel")]
-    public string ConfiguredLevel { get; }
+    public string? ConfiguredLevel { get; }
 
     [JsonPropertyName("effectiveLevel")]
     public string EffectiveLevel { get; }
@@ -36,7 +36,7 @@ public sealed class LoggerLevels
         };
     }
 
-    internal static LogLevel? StringToLogLevel(string level)
+    internal static LogLevel? StringToLogLevel(string? level)
     {
         return level switch
         {

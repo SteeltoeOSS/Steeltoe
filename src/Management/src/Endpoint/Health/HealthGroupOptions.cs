@@ -9,5 +9,5 @@ public sealed class HealthGroupOptions
     /// <summary>
     /// Gets or sets a comma-separated list of contributors or tags to include in this group.
     /// </summary>
-    public string Include { get; set; }
+    public string? Include { get; set; }
 }

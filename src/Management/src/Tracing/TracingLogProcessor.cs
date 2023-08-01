@@ -24,7 +24,7 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
     {
         ArgumentGuard.NotNull(inputLogMessage);
 
-        TelemetrySpan currentSpan = GetCurrentSpan();
+        TelemetrySpan? currentSpan = GetCurrentSpan();
 
         if (currentSpan != null)
         {
@@ -61,7 +61,7 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
         return inputLogMessage;
     }
 
-    private TelemetrySpan GetCurrentSpan()
+    private TelemetrySpan? GetCurrentSpan()
     {
         TelemetrySpan span = Tracer.CurrentSpan;
 

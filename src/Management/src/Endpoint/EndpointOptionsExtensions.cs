@@ -34,16 +34,12 @@ internal static class EndpointOptionsExtensions
 
         if (!string.IsNullOrEmpty(endpointOptions.Id) && managementOptions.Exposure != null)
         {
-            IList<string> exclude = managementOptions.Exposure.Exclude;
-
-            if (exclude != null && (exclude.Contains("*") || exclude.Contains(endpointOptions.Id)))
+            if (managementOptions.Exposure.Exclude.Contains("*") || managementOptions.Exposure.Exclude.Contains(endpointOptions.Id))
             {
                 return false;
             }
 
-            IList<string> include = managementOptions.Exposure.Include;
-
-            if (include != null && (include.Contains("*") || include.Contains(endpointOptions.Id)))
+            if (managementOptions.Exposure.Include.Contains("*") || managementOptions.Exposure.Include.Contains(endpointOptions.Id))
             {
                 return true;
             }
@@ -54,15 +50,14 @@ internal static class EndpointOptionsExtensions
         return true;
     }
 
-    public static string GetPathMatchPattern(this EndpointOptions endpointOptions, ManagementOptions managementOptions, string baseRequestPath)
+    public static string GetPathMatchPattern(this EndpointOptions endpointOptions, ManagementOptions managementOptions, string? baseRequestPath)
     {
         ArgumentGuard.NotNull(endpointOptions);
-        ArgumentGuard.NotNull(baseRequestPath);
         ArgumentGuard.NotNull(managementOptions);
 
-        string path = baseRequestPath;
+        string? path = baseRequestPath;
 
-        if (!path.EndsWith('/') && !string.IsNullOrEmpty(endpointOptions.Path))
+        if (path == null || (!path.EndsWith('/') && !string.IsNullOrEmpty(endpointOptions.Path)))
         {
             path += '/';
         }

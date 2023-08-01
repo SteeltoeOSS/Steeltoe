@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.Test.Mappings;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string> AppSettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
@@ -77,7 +77,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
-        string json = await reader.ReadLineAsync();
+        string? json = await reader.ReadLineAsync();
         const string expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"dispatcherServlet\":[]}}}}}";
         Assert.Equal(expected, json);
     }
@@ -85,7 +85,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task MappingsActuator_ReturnsExpectedData()
     {
-        var appSettings = new Dictionary<string, string>(AppSettings)
+        var appSettings = new Dictionary<string, string?>(AppSettings)
         {
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };

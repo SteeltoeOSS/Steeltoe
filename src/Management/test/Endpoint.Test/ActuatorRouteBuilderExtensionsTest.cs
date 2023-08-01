@@ -36,7 +36,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 
     private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction)
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };

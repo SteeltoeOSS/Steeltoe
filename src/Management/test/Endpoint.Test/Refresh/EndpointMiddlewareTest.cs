@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string> AppSettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
@@ -48,7 +48,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
-        string json = await reader.ReadLineAsync();
+        string? json = await reader.ReadLineAsync();
 
         const string expected =
             "[\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"management:endpoints:actuator\",\"management:endpoints:actuator:exposure\",\"management:endpoints:actuator:exposure:include\",\"management:endpoints:actuator:exposure:include:0\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\"]";
@@ -61,7 +61,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         using var scope = new EnvironmentVariableScope("ASPNETCORE_ENVIRONMENT", null);
 
-        var appSettings = new Dictionary<string, string>(AppSettings);
+        var appSettings = new Dictionary<string, string?>(AppSettings);
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(

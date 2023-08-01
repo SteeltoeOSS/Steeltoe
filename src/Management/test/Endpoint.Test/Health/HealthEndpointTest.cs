@@ -182,11 +182,7 @@ public sealed class HealthEndpointTest : BaseTest
         var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
         appAvailability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
 
-        var healthRequest = new HealthEndpointRequest
-        {
-            GroupName = "liVeness",
-            HasClaim = true
-        };
+        var healthRequest = new HealthEndpointRequest("liVeness", true);
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -218,11 +214,7 @@ public sealed class HealthEndpointTest : BaseTest
         var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
-        var healthRequest = new HealthEndpointRequest
-        {
-            GroupName = "readiness",
-            HasClaim = true
-        };
+        var healthRequest = new HealthEndpointRequest("readiness", true);
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -250,11 +242,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
-        var healthRequest = new HealthEndpointRequest
-        {
-            GroupName = "readiness",
-            HasClaim = true
-        };
+        var healthRequest = new HealthEndpointRequest("readiness", true);
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -285,11 +273,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
 
-        var healthRequest = new HealthEndpointRequest
-        {
-            GroupName = "iNvaLid",
-            HasClaim = true
-        };
+        var healthRequest = new HealthEndpointRequest("iNvaLid", true);
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -317,11 +301,7 @@ public sealed class HealthEndpointTest : BaseTest
         var handler = new HealthEndpointHandler(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
             NullLoggerFactory.Instance);
 
-        var healthRequest = new HealthEndpointRequest
-        {
-            GroupName = "msft",
-            HasClaim = true
-        };
+        var healthRequest = new HealthEndpointRequest("msft", true);
 
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -333,11 +313,7 @@ public sealed class HealthEndpointTest : BaseTest
 
     private static HealthEndpointRequest GetHealthRequest()
     {
-        return new HealthEndpointRequest
-        {
-            GroupName = string.Empty,
-            HasClaim = true
-        };
+        return new HealthEndpointRequest(string.Empty, true);
     }
 
     private IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions> ServiceProviderWithMicrosoftHealth()

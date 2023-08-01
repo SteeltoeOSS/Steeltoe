@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Info;
@@ -19,7 +18,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
@@ -36,8 +35,6 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         IInfoContributor extra = new TestInfoContributor();
         services.AddSingleton(extra);
-        ILogger<InfoEndpointHandler> logger = new TestLogger();
-        services.AddSingleton(logger);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         IEnumerable<IInfoContributor> contributors = serviceProvider.GetServices<IInfoContributor>();

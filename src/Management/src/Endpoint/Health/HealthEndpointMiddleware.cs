@@ -29,12 +29,10 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        var request = new HealthEndpointRequest
-        {
-            GroupName = GetRequestedHealthGroup(context.Request.Path),
-            HasClaim = GetHasClaim(context)
-        };
+        string groupName = GetRequestedHealthGroup(context.Request.Path);
+        bool hasClaim = GetHasClaim(context);
 
+        var request = new HealthEndpointRequest(groupName, hasClaim);
         return await EndpointHandler.InvokeAsync(request, context.RequestAborted);
     }
 
@@ -50,15 +48,15 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
             return requestComponents[^1];
         }
 
-        _logger?.LogWarning("Failed to find anything in the request from which to parse health group name.");
+        _logger.LogWarning("Failed to find anything in the request from which to parse health group name.");
 
         return string.Empty;
     }
 
     private bool GetHasClaim(HttpContext context)
     {
-        EndpointClaim claim = _endpointOptionsMonitor.CurrentValue.Claim;
-        return claim != null && context.User.HasClaim(claim.Type, claim.Value);
+        EndpointClaim? claim = _endpointOptionsMonitor.CurrentValue.Claim;
+        return claim is { Type: not null, Value: not null } && context.User.HasClaim(claim.Type, claim.Value);
     }
 
     protected override async Task WriteResponseAsync(HealthEndpointResponse result, HttpContext context, CancellationToken cancellationToken)

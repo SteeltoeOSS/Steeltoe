@@ -19,7 +19,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var services = new ServiceCollection();
         services.AddSingleton(HostingHelpers.GetHostingEnvironment());
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication"

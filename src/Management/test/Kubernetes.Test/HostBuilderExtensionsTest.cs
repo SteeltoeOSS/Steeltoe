@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Kubernetes.Test;
 
 public sealed class HostBuilderExtensionsTest
 {
-    private static readonly Dictionary<string, string> AppSettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         { "management:endpoints:actuator:exposure:include:0", "*" }
     };
@@ -116,7 +116,7 @@ public sealed class HostBuilderExtensionsTest
         await AssertActuatorResponsesAsync(testClient);
     }
 
-    private WebApplication GetTestWebAppWithSecureRouting(Action<WebApplicationBuilder> customizeBuilder = null)
+    private WebApplication GetTestWebAppWithSecureRouting(Action<WebApplicationBuilder>? customizeBuilder = null)
     {
         WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
         customizeBuilder?.Invoke(builder);

@@ -5,7 +5,7 @@
 namespace Steeltoe.Management.Endpoint.Trace;
 
 #pragma warning disable S4023 // Interfaces should not be empty
-public interface IHttpTraceEndpointHandler : IEndpointHandler<object, HttpTraceResult>
+public interface IHttpTraceEndpointHandler : IEndpointHandler<object?, HttpTraceResult>
 #pragma warning restore S4023 // Interfaces should not be empty
 {
 }

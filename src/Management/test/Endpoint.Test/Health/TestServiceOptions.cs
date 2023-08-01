@@ -25,12 +25,12 @@ internal sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOpt
     {
     }
 
-    public HealthCheckServiceOptions Get(string name)
+    public HealthCheckServiceOptions Get(string? name)
     {
         return CurrentValue;
     }
 
-    public IDisposable OnChange(Action<HealthCheckServiceOptions, string> listener)
+    public IDisposable OnChange(Action<HealthCheckServiceOptions, string?> listener)
     {
         return this;
     }

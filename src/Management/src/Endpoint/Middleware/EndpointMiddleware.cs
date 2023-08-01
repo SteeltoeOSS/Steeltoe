@@ -54,7 +54,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         return returnValue;
     }
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate? next)
     {
         ArgumentGuard.NotNull(context);
 
@@ -90,11 +90,6 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     protected JsonSerializerOptions GetSerializerOptions()
     {
         JsonSerializerOptions serializerOptions = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
-
-        serializerOptions ??= new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
 
         if (serializerOptions.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
         {

@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object, IDictionary<string, object>>
+internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object?, IDictionary<string, object>>
 {
     public InfoEndpointMiddleware(IInfoEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)

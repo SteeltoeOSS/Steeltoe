@@ -7,7 +7,7 @@ using Steeltoe.Common;
 using Steeltoe.Management.MetricCollectors.Metrics;
 using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 
-namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
+namespace Steeltoe.Management.MetricCollectors.Exporters;
 
 /// <summary>
 /// Exporter metrics to Steeltoe Format.

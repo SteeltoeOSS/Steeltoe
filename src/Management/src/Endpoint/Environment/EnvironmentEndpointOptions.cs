@@ -8,5 +8,5 @@ namespace Steeltoe.Management.Endpoint.Environment;
 
 public sealed class EnvironmentEndpointOptions : EndpointOptions
 {
-    public IList<string> KeysToSanitize { get; set; }
+    public IList<string> KeysToSanitize { get; set; } = new List<string>();
 }

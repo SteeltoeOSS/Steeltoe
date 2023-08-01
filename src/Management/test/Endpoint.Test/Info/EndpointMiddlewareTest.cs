@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Test.Info;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private readonly Dictionary<string, string> _appSettings = new()
+    private readonly Dictionary<string, string?> _appSettings = new()
     {
         ["management:endpoints:enabled"] = "false",
         ["management:endpoints:path"] = "/management",
@@ -81,7 +81,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         // Note: This test pulls in from git.properties and appsettings created
         // in the Startup class
-        Dictionary<string, string> settings = new()
+        var settings = new Dictionary<string, string?>
         {
             { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" }
         };

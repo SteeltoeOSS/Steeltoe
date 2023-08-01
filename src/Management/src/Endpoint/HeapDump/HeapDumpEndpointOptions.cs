@@ -11,5 +11,5 @@ public sealed class HeapDumpEndpointOptions : EndpointOptions
     // Default to disabled on Linux + Cloud Foundry until PTRACE is allowed
     internal override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
 
-    public string HeapDumpType { get; set; }
+    public string? HeapDumpType { get; set; }
 }

@@ -14,14 +14,14 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
 {
-    private readonly IOptionsMonitor<TraceEndpointOptions> _options;
+    private readonly IOptionsMonitor<TraceEndpointOptions> _optionsMonitor;
     private readonly ILogger<HttpTraceDiagnosticObserver> _logger;
     private readonly ConcurrentQueue<HttpTrace> _queue = new();
 
-    public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILoggerFactory loggerFactory)
-        : base(options, loggerFactory)
+    public HttpTraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
+        : base(optionsMonitor, loggerFactory)
     {
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _logger = loggerFactory.CreateLogger<HttpTraceDiagnosticObserver>();
     }
 
@@ -38,7 +38,7 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
         HttpTrace trace = MakeTraceV2(context, current.Duration);
         _queue.Enqueue(trace);
 
-        if (_queue.Count > _options.CurrentValue.Capacity && !_queue.TryDequeue(out _))
+        if (_queue.Count > _optionsMonitor.CurrentValue.Capacity && !_queue.TryDequeue(out _))
         {
             _logger.LogDebug("Stop - Dequeue failed");
         }
@@ -46,16 +46,29 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
 
     private HttpTrace MakeTraceV2(HttpContext context, TimeSpan duration)
     {
-        var request = new Request(context.Request.Method, GetRequestUri(context.Request), GetHeaders(context.Request.Headers), GetRemoteAddress(context));
-        var response = new Response(context.Response.StatusCode, GetHeaders(context.Response.Headers));
-        var principal = new Principal(GetUserPrincipal(context));
-        var session = new Session(GetSessionId(context));
-        return new HttpTrace(request, response, GetJavaTime(DateTime.Now.Ticks), principal, session, duration.Milliseconds);
+        string? remoteAddress = GetRemoteAddress(context);
+        string requestUri = GetRequestUri(context.Request);
+        Dictionary<string, IList<string?>> requestHeaders = GetHeaders(context.Request.Headers);
+
+        var request = new Request(context.Request.Method, requestUri, requestHeaders, remoteAddress);
+
+        Dictionary<string, IList<string?>> responseHeaders = GetHeaders(context.Response.Headers);
+        var response = new Response(context.Response.StatusCode, responseHeaders);
+
+        string? userName = GetUserPrincipal(context);
+        Principal? principal = userName == null ? null : new Principal(userName);
+
+        string? sessionId = GetSessionId(context);
+        Session? session = sessionId == null ? null : new Session(sessionId);
+
+        long timestamp = GetJavaTime(DateTime.Now.Ticks);
+
+        return new HttpTrace(request, response, timestamp, principal, session, duration.Milliseconds);
     }
 
-    private Dictionary<string, IList<string>> GetHeaders(IHeaderDictionary headers)
+    private Dictionary<string, IList<string?>> GetHeaders(IHeaderDictionary headers)
     {
-        var result = new Dictionary<string, IList<string>>();
+        var result = new Dictionary<string, IList<string?>>();
 
         foreach (KeyValuePair<string, StringValues> pair in headers)
         {

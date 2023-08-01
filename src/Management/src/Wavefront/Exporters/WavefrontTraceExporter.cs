@@ -30,11 +30,16 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
         _options = options;
 
         string token = string.Empty;
-        string uri = _options.Uri;
+        string? uri = _options.Uri;
 
-        if (_options.Uri.StartsWith("proxy://", StringComparison.Ordinal))
+        if (string.IsNullOrEmpty(uri))
         {
-            uri = $"http{_options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
+            throw new ArgumentException("management:metrics:export:wavefront:uri cannot be null or empty");
+        }
+
+        if (uri.StartsWith("proxy://", StringComparison.Ordinal))
+        {
+            uri = $"http{uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
         }
         else
         {
@@ -58,7 +63,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
         {
             try
             {
-                if (!activity.Tags.Any(pair => pair.Key == "http.url" && pair.Value != null && pair.Value.Contains(_options.Uri, StringComparison.Ordinal)))
+                if (!activity.Tags.Any(pair => pair.Key == "http.url" && pair.Value != null && pair.Value.Contains(_options.Uri!, StringComparison.Ordinal)))
                 {
                     _wavefrontSender.SendSpan(activity.OperationName, DateTimeUtils.UnixTimeMilliseconds(activity.StartTimeUtc), activity.Duration.Milliseconds,
                         _options.Source, Guid.Parse(activity.TraceId.ToString()), FromActivitySpanId(activity.SpanId), new List<Guid>
@@ -79,13 +84,13 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
         return ExportResult.Success;
     }
 
-    private IList<KeyValuePair<string, string>> GetTags(IEnumerable<KeyValuePair<string, string>> inputTags)
+    private IList<KeyValuePair<string, string?>> GetTags(IEnumerable<KeyValuePair<string, string?>> inputTags)
     {
-        List<KeyValuePair<string, string>> tags = inputTags.ToList();
+        List<KeyValuePair<string, string?>> tags = inputTags.ToList();
 
-        tags.Add(new KeyValuePair<string, string>("application", _options.Name.ToLowerInvariant()));
-        tags.Add(new KeyValuePair<string, string>("service", _options.Service.ToLowerInvariant()));
-        tags.Add(new KeyValuePair<string, string>("component", "wavefront-trace-exporter"));
+        tags.Add(new KeyValuePair<string, string?>("application", _options.Name.ToLowerInvariant()));
+        tags.Add(new KeyValuePair<string, string?>("service", _options.Service.ToLowerInvariant()));
+        tags.Add(new KeyValuePair<string, string?>("component", "wavefront-trace-exporter"));
 
         return tags;
     }

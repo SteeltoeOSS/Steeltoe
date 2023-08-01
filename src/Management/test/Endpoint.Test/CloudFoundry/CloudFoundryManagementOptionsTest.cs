@@ -12,7 +12,7 @@ public sealed class CloudFoundryManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:cloudfoundry:enabled"] = "false",
             ["management:endpoints:path"] = "/management"
@@ -26,7 +26,7 @@ public sealed class CloudFoundryManagementOptionsTest : BaseTest
     [Fact]
     public void Constructor_BindsConfigurationDefaultsCorrectly()
     {
-        var appsettings = new Dictionary<string, string>();
+        var appsettings = new Dictionary<string, string?>();
 
         ManagementOptions options = GetOptionsMonitorFromSettings<ManagementOptions>(appsettings).CurrentValue;
 

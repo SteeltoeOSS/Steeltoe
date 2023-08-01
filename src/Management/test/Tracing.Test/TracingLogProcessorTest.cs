@@ -16,7 +16,7 @@ public sealed class TracingLogProcessorTest
     [Fact]
     public void Process_NoCurrentSpan_DoesNothing()
     {
-        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+        using TracerProvider? openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
         var options = new TracingOptions(null, new ConfigurationBuilder().Build());
         var processor = new TracingLogProcessor(options);
 
@@ -28,7 +28,7 @@ public sealed class TracingLogProcessorTest
     [Fact]
     public void Process_CurrentSpan_ReturnsExpected()
     {
-        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+        using TracerProvider? openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
 
         IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>
         {
@@ -73,7 +73,7 @@ public sealed class TracingLogProcessorTest
         IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
         var options = new TracingOptions(new ApplicationInstanceInfo(configuration), configuration);
 
-        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+        using TracerProvider? openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
         Tracer tracer = TracerProvider.Default.GetTracer("tracername");
         TelemetrySpan span = tracer.StartActiveSpan("spanName");
         var processor = new TracingLogProcessor(options);

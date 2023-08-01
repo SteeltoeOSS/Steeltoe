@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 using Microsoft.Diagnostics.NETCore.Client;
@@ -35,15 +36,15 @@ public sealed class EventPipeThreadDumper
         IsNativeMethod = true
     };
 
-    private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _options;
+    private readonly IOptionsMonitor<ThreadDumpEndpointOptions> _optionsMonitor;
     private readonly ILogger<EventPipeThreadDumper> _logger;
 
-    public EventPipeThreadDumper(IOptionsMonitor<ThreadDumpEndpointOptions> options, ILogger<EventPipeThreadDumper> logger)
+    public EventPipeThreadDumper(IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor, ILogger<EventPipeThreadDumper> logger)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(logger);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _logger = logger;
     }
 
@@ -91,7 +92,7 @@ public sealed class EventPipeThreadDumper
     // Much of this code is from diagnostics/dotnet-stack
     private async Task DumpThreadsAsync(EventPipeSession session, List<ThreadInfo> results, CancellationToken cancellationToken)
     {
-        string traceFileName = null;
+        string? traceFileName = null;
 
         try
         {
@@ -99,10 +100,8 @@ public sealed class EventPipeThreadDumper
 
             if (!string.IsNullOrEmpty(traceFileName))
             {
-                using var symbolReader = new SymbolReader(TextWriter.Null)
-                {
-                    SymbolPath = System.Environment.CurrentDirectory
-                };
+                using var symbolReader = new SymbolReader(TextWriter.Null);
+                symbolReader.SymbolPath = System.Environment.CurrentDirectory;
 
                 using var eventLog = new TraceLog(traceFileName);
 
@@ -129,7 +128,7 @@ public sealed class EventPipeThreadDumper
                     string threadFrame = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
                     int threadId = int.Parse(threadFrame.Substring(template.Length, threadFrame.Length - (template.Length + 1)), CultureInfo.InvariantCulture);
 
-                    if (samplesForThread.TryGetValue(threadId, out List<StackSourceSample> samples))
+                    if (samplesForThread.TryGetValue(threadId, out List<StackSourceSample>? samples))
                     {
                         samples.Add(sample);
                     }
@@ -190,7 +189,7 @@ public sealed class EventPipeThreadDumper
 
     private State GetThreadState(IList<StackTraceElement> frames)
     {
-        if (IsThreadInNative(frames) && frames.Count > 1 && frames[1].MethodName.Contains("Wait", StringComparison.OrdinalIgnoreCase))
+        if (IsThreadInNative(frames) && frames.Count > 1 && frames[1].MethodName!.Contains("Wait", StringComparison.OrdinalIgnoreCase))
         {
             return State.Waiting;
         }
@@ -211,13 +210,9 @@ public sealed class EventPipeThreadDumper
         {
             StackSourceFrameIndex frameIndex = stackSource.GetFrameIndex(stackIndex);
             string frameName = stackSource.GetFrameName(frameIndex, false);
-            SourceLocation sourceLine = GetSourceLine(stackSource, frameIndex, symbolReader);
+            SourceLocation? sourceLine = GetSourceLine(stackSource, frameIndex, symbolReader);
             StackTraceElement stackElement = GetStackTraceElement(frameName, sourceLine);
-
-            if (stackElement != null)
-            {
-                result.Add(stackElement);
-            }
+            result.Add(stackElement);
 
             stackIndex = stackSource.GetCallerIndex(stackIndex);
         }
@@ -225,7 +220,7 @@ public sealed class EventPipeThreadDumper
         return result;
     }
 
-    private StackTraceElement GetStackTraceElement(string frameName, SourceLocation sourceLocation)
+    private StackTraceElement GetStackTraceElement(string frameName, SourceLocation? sourceLocation)
     {
         if (string.IsNullOrEmpty(frameName))
         {
@@ -244,10 +239,10 @@ public sealed class EventPipeThreadDumper
             ClassName = "Unknown"
         };
 
-        if (TryParseFrameName(frameName, out string assemblyName, out string className, out string methodName, out string parameters))
+        if (TryParseFrameName(frameName, out string? assemblyName, out string? className, out string? methodName, out string? parameters))
         {
             result.ClassName = $"{assemblyName}!{className}";
-            result.MethodName = methodName + parameters;
+            result.MethodName = $"{methodName}{parameters}";
         }
 
         if (sourceLocation != null)
@@ -263,7 +258,8 @@ public sealed class EventPipeThreadDumper
         return result;
     }
 
-    private bool TryParseFrameName(string frameName, out string assemblyName, out string className, out string methodName, out string parameters)
+    private bool TryParseFrameName(string frameName, [NotNullWhen(true)] out string? assemblyName, [NotNullWhen(true)] out string? className,
+        [NotNullWhen(true)] out string? methodName, [NotNullWhen(true)] out string? parameters)
     {
         assemblyName = null;
         className = null;
@@ -275,22 +271,19 @@ public sealed class EventPipeThreadDumper
             return false;
         }
 
-        string remaining = null;
+        string remaining = frameName;
 
-        if (!TryParseParameters(frameName, ref remaining, ref parameters))
+        if (!TryParseParameters(remaining, ref remaining, out parameters))
         {
             return false;
         }
 
-        if (!TryParseMethod(remaining, ref remaining, ref methodName))
+        if (!TryParseMethod(remaining, ref remaining, out methodName))
         {
             return false;
         }
 
-        if (!TryParseClassName(remaining, out remaining, out className))
-        {
-            return false;
-        }
+        ParseClassName(remaining, out remaining, out className);
 
         int extIndex = remaining.IndexOf('.');
         assemblyName = extIndex > 0 ? remaining.Substring(0, extIndex) : remaining;
@@ -298,7 +291,7 @@ public sealed class EventPipeThreadDumper
         return true;
     }
 
-    private bool TryParseClassName(string input, out string remaining, out string className)
+    private void ParseClassName(string input, out string remaining, out string className)
     {
         int classStartIndex = input.IndexOf('!');
 
@@ -312,11 +305,9 @@ public sealed class EventPipeThreadDumper
             remaining = input.Substring(0, classStartIndex);
             className = input.Substring(classStartIndex + 1);
         }
-
-        return true;
     }
 
-    private bool TryParseMethod(string input, ref string remaining, ref string methodName)
+    private bool TryParseMethod(string input, ref string remaining, [NotNullWhen(true)] out string? methodName)
     {
         int methodStartIndex = input.LastIndexOf('.');
 
@@ -327,10 +318,11 @@ public sealed class EventPipeThreadDumper
             return true;
         }
 
+        methodName = null;
         return false;
     }
 
-    private bool TryParseParameters(string input, ref string remaining, ref string parameters)
+    private bool TryParseParameters(string input, ref string remaining, [NotNullWhen(true)] out string? parameters)
     {
         int paramStartIndex = input.IndexOf('(');
 
@@ -341,11 +333,12 @@ public sealed class EventPipeThreadDumper
             return true;
         }
 
+        parameters = null;
         return false;
     }
 
     // Much of this code is from PerfView/TraceLog.cs
-    private SourceLocation GetSourceLine(TraceEventStackSource stackSource, StackSourceFrameIndex frameIndex, SymbolReader reader)
+    private SourceLocation? GetSourceLine(TraceEventStackSource stackSource, StackSourceFrameIndex frameIndex, SymbolReader reader)
     {
         TraceLog log = stackSource.TraceLog;
         uint codeAddress = (uint)frameIndex - (uint)StackSourceFrameIndex.Start;
@@ -387,7 +380,7 @@ public sealed class EventPipeThreadDumper
             ilOffset = 0;
         }
 
-        string pdbFileName = null;
+        string? pdbFileName = null;
 
         if (moduleFile.PdbSignature != Guid.Empty)
         {
@@ -397,7 +390,7 @@ public sealed class EventPipeThreadDumper
 
         if (pdbFileName == null)
         {
-            string simpleName = Path.GetFileNameWithoutExtension(moduleFile.FilePath)!;
+            string simpleName = Path.GetFileNameWithoutExtension(moduleFile.FilePath);
 
             if (simpleName.EndsWith(".il", StringComparison.Ordinal))
             {
@@ -438,14 +431,16 @@ public sealed class EventPipeThreadDumper
             await using (FileStream outputStream = File.OpenWrite(tempNetTraceFilename))
             {
                 Task copyTask = session.EventStream.CopyToAsync(outputStream, cancellationToken);
-                await Task.Delay(_options.CurrentValue.Duration, cancellationToken);
+                await Task.Delay(_optionsMonitor.CurrentValue.Duration, cancellationToken);
                 await session.StopAsync(cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
 
                 // check if rundown is taking more than 5 seconds and log
                 Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
                 Task completedTask = await Task.WhenAny(copyTask, timeoutTask);
 
-                if (completedTask == timeoutTask)
+                if (completedTask == timeoutTask && !cancellationToken.IsCancellationRequested)
                 {
                     _logger.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time");
                 }

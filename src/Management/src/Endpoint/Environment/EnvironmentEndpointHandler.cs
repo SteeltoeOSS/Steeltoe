@@ -36,7 +36,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         _logger = loggerFactory.CreateLogger<EnvironmentEndpointHandler>();
     }
 
-    public Task<EnvironmentResponse> InvokeAsync(object argument, CancellationToken cancellationToken)
+    public Task<EnvironmentResponse> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         IList<string> activeProfiles = new List<string>
         {
@@ -67,11 +67,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
             foreach (IConfigurationProvider provider in providers)
             {
                 PropertySourceDescriptor descriptor = GetPropertySourceDescriptor(provider);
-
-                if (descriptor != null)
-                {
-                    results.Add(descriptor);
-                }
+                results.Add(descriptor);
             }
         }
 
@@ -87,15 +83,15 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
 
         foreach (string key in GetFullKeyNames(provider, null, new HashSet<string>()))
         {
-            if (provider.TryGet(key, out string value))
+            if (provider.TryGet(key, out string? value))
             {
-                if (provider is IPlaceholderResolverProvider placeHolderProvider && !placeHolderProvider.ResolvedKeys.Contains(key))
+                if (provider is IPlaceholderResolverProvider placeholderProvider && !placeholderProvider.ResolvedKeys.Contains(key))
                 {
                     continue;
                 }
 
-                KeyValuePair<string, string> sanitized = _sanitizer.Sanitize(new KeyValuePair<string, string>(key, value));
-                properties.Add(sanitized.Key, new PropertyValueDescriptor(sanitized.Value));
+                string? sanitizedValue = _sanitizer.Sanitize(key, value);
+                properties.Add(key, new PropertyValueDescriptor(sanitizedValue));
             }
         }
 
@@ -109,7 +105,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         return provider is FileConfigurationProvider fileProvider ? $"{provider.GetType().Name}: [{fileProvider.Source.Path}]" : provider.GetType().Name;
     }
 
-    private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string rootKey, HashSet<string> initialKeys)
+    private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string? rootKey, HashSet<string> initialKeys)
     {
         foreach (string key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
         {

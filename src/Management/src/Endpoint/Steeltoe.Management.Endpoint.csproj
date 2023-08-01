@@ -2,9 +2,10 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Steeltoe management endpoints</Description>
-    <PackageTags>actuator;management;monitoring;Spring Cloud;</PackageTags>
+    <PackageTags>actuators;management;monitoring;Spring Cloud</PackageTags>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

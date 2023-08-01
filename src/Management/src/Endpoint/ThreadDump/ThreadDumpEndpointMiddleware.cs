@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object, IList<ThreadInfo>>
+internal sealed class ThreadDumpEndpointMiddleware : EndpointMiddleware<object?, IList<ThreadInfo>>
 {
     private readonly ILogger<ThreadDumpEndpointMiddleware> _logger;
 

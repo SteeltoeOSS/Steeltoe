@@ -22,18 +22,7 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.TryAddSingleton<IHostEnvironment>(provider =>
-        {
-            var service = provider.GetRequiredService<IWebHostEnvironment>();
-
-            return new GenericHostingEnvironment
-            {
-                EnvironmentName = service.EnvironmentName,
-                ApplicationName = service.ApplicationName,
-                ContentRootFileProvider = service.ContentRootFileProvider,
-                ContentRootPath = service.ContentRootPath
-            };
-        });
+        services.TryAddSingleton<IHostEnvironment>(provider => provider.GetRequiredService<IWebHostEnvironment>());
 
         services.AddCommonActuatorServices();
         services.AddEnvironmentActuatorServices();

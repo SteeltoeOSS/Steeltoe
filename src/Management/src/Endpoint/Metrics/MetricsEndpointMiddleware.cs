@@ -12,7 +12,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest, MetricsResponse>
+internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest?, MetricsResponse?>
 {
     private readonly ILogger<MetricsEndpointMiddleware> _logger;
 
@@ -23,7 +23,13 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
         _logger = loggerFactory.CreateLogger<MetricsEndpointMiddleware>();
     }
 
-    private MetricsRequest GetMetricsRequest(HttpContext context)
+    protected override async Task<MetricsResponse?> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    {
+        MetricsRequest? metricsRequest = GetMetricsRequest(context);
+        return await EndpointHandler.InvokeAsync(metricsRequest, cancellationToken);
+    }
+
+    private MetricsRequest? GetMetricsRequest(HttpContext context)
     {
         HttpRequest request = context.Request;
         _logger.LogDebug("Handling metrics for path: {path}", request.Path.Value);
@@ -43,51 +49,10 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
 
     internal string GetMetricName(HttpRequest request)
     {
-        string baseRequestPath = ManagementOptionsMonitor.CurrentValue.GetBaseRequestPath(request);
+        string? baseRequestPath = ManagementOptionsMonitor.CurrentValue.GetBaseRequestPath(request);
         string path = $"{baseRequestPath}/{EndpointHandler.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
 
         return GetMetricName(request, path);
-    }
-
-    internal IList<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
-    {
-        var results = new List<KeyValuePair<string, string>>();
-
-        if (query != null)
-        {
-            foreach (KeyValuePair<string, StringValues> parameter in query)
-            {
-                if (parameter.Key.Equals("tag", StringComparison.OrdinalIgnoreCase))
-                {
-                    foreach (string value in parameter.Value)
-                    {
-                        KeyValuePair<string, string>? pair = ParseTag(value);
-
-                        if (pair != null && !results.Contains(pair.Value))
-                        {
-                            results.Add(pair.Value);
-                        }
-                    }
-                }
-            }
-        }
-
-        return results;
-    }
-
-    internal KeyValuePair<string, string>? ParseTag(string kvp)
-    {
-        string[] segments = kvp.Split(new[]
-        {
-            ':'
-        }, 2);
-
-        if (segments.Length == 2)
-        {
-            return new KeyValuePair<string, string>(segments[0], segments[1]);
-        }
-
-        return null;
     }
 
     private string GetMetricName(HttpRequest request, string path)
@@ -100,17 +65,52 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
         return string.Empty;
     }
 
-    protected override async Task<MetricsResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    internal IList<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
     {
-        MetricsRequest metricsRequest = GetMetricsRequest(context);
-        return await EndpointHandler.InvokeAsync(metricsRequest, cancellationToken);
+        var results = new List<KeyValuePair<string, string>>();
+
+        foreach (KeyValuePair<string, StringValues> parameter in query)
+        {
+            if (parameter.Key.Equals("tag", StringComparison.OrdinalIgnoreCase))
+            {
+                foreach (string? value in parameter.Value)
+                {
+                    KeyValuePair<string, string>? pair = ParseTag(value);
+
+                    if (pair != null && !results.Contains(pair.Value))
+                    {
+                        results.Add(pair.Value);
+                    }
+                }
+            }
+        }
+
+        return results;
     }
 
-    protected override async Task WriteResponseAsync(MetricsResponse result, HttpContext context, CancellationToken cancellationToken)
+    internal KeyValuePair<string, string>? ParseTag(string? tag)
     {
-        MetricsRequest metricsRequest = GetMetricsRequest(context);
+        if (tag != null)
+        {
+            string[] segments = tag.Split(new[]
+            {
+                ':'
+            }, 2);
 
-        if (metricsRequest != null && result is null)
+            if (segments.Length == 2)
+            {
+                return new KeyValuePair<string, string>(segments[0], segments[1]);
+            }
+        }
+
+        return null;
+    }
+
+    protected override async Task WriteResponseAsync(MetricsResponse? result, HttpContext context, CancellationToken cancellationToken)
+    {
+        MetricsRequest? metricsRequest = GetMetricsRequest(context);
+
+        if (metricsRequest != null && result == null)
         {
             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }

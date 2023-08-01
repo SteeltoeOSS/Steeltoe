@@ -14,7 +14,7 @@ public sealed class SpringBootAdminClientOptions
     private const string Prefix = "spring:boot:admin:client";
     private const string UrlsKeyName = "URLS";
 
-    public string Url { get; set; }
+    public string? Url { get; set; }
 
     /// <summary>
     /// Gets or sets the name to use for this application when registering with SBA.
@@ -46,9 +46,7 @@ public sealed class SpringBootAdminClientOptions
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(appInfo);
 
-        IConfigurationSection section = configuration.GetSection(Prefix);
-
-        section?.Bind(this);
+        configuration.GetSection(Prefix).Bind(this);
 
         // Require base path to be supplied directly, in the configuration, or in the app instance info
         BasePath ??= GetBasePath(configuration) ?? appInfo.Uris?.FirstOrDefault() ??
@@ -57,14 +55,18 @@ public sealed class SpringBootAdminClientOptions
         ApplicationName ??= appInfo.GetApplicationNameInContext(SteeltoeComponent.Management);
     }
 
-    private string GetBasePath(IConfiguration configuration)
+    private string? GetBasePath(IConfiguration configuration)
     {
-        string urlString = configuration.GetValue<string>(UrlsKeyName);
-        string[] urls = urlString?.Split(';');
+        string? urlString = configuration.GetValue<string?>(UrlsKeyName);
 
-        if (urls?.Length > 0)
+        if (urlString != null)
         {
-            return urls[0];
+            string[] urls = urlString.Split(';');
+
+            if (urls.Length > 0)
+            {
+                return urls[0];
+            }
         }
 
         return null;

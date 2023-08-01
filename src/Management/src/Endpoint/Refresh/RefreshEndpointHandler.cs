@@ -28,7 +28,7 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
         _logger = loggerFactory.CreateLogger<RefreshEndpointHandler>();
     }
 
-    public Task<IList<string>> InvokeAsync(object argument, CancellationToken cancellationToken)
+    public Task<IList<string>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Refreshing Configuration");
 
@@ -41,7 +41,7 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
 
         if (_optionsMonitor.CurrentValue.ReturnConfiguration)
         {
-            foreach (KeyValuePair<string, string> kvp in _configuration.AsEnumerable())
+            foreach (KeyValuePair<string, string?> kvp in _configuration.AsEnumerable())
             {
                 keys.Add(kvp.Key);
             }

@@ -3,14 +3,23 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 public sealed class MediaTypeDescriptor
 {
     [JsonPropertyName("mediaType")]
-    public string MediaType { get; set; }
+    public string MediaType { get; }
 
     [JsonPropertyName("negated")]
-    public bool Negated { get; set; }
+    public bool Negated { get; }
+
+    public MediaTypeDescriptor(string mediaType, bool negated)
+    {
+        ArgumentGuard.NotNull(mediaType);
+
+        MediaType = mediaType;
+        Negated = negated;
+    }
 }

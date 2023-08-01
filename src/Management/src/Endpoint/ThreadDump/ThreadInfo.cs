@@ -17,31 +17,31 @@ public sealed class ThreadInfo
     public long BlockedTime { get; set; } = -1; // Not available
 
     [JsonPropertyName("lockedMonitors")]
-    public IList<MonitorInfo> LockedMonitors { get; } = new List<MonitorInfo>(); // Not available
+    public IList<object>? LockedMonitors { get; } // Not available
 
     [JsonPropertyName("lockedSynchronizers")]
-    public IList<LockInfo> LockedSynchronizers { get; } = new List<LockInfo>(); // Not available
+    public IList<object>? LockedSynchronizers { get; } // Not available
 
     [JsonPropertyName("lockInfo")]
-    public LockInfo LockInfo { get; set; }
+    public object? LockInfo { get; set; }
 
     [JsonPropertyName("lockName")]
-    public string LockName { get; set; }
+    public string? LockName { get; set; }
 
     [JsonPropertyName("lockOwnerId")]
     public long LockOwnerId { get; set; } = -1;
 
     [JsonPropertyName("lockOwnerName")]
-    public string LockOwnerName { get; set; }
+    public string? LockOwnerName { get; set; }
 
     [JsonPropertyName("stackTrace")]
-    public IList<StackTraceElement> StackTrace { get; set; }
+    public IList<StackTraceElement> StackTrace { get; set; } = new List<StackTraceElement>();
 
     [JsonPropertyName("threadId")]
     public long ThreadId { get; set; }
 
     [JsonPropertyName("threadName")]
-    public string ThreadName { get; set; }
+    public string? ThreadName { get; set; }
 
     [JsonPropertyName("threadState")]
     public State ThreadState { get; set; }

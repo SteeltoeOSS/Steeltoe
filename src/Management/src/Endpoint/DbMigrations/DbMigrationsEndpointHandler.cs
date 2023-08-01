@@ -14,20 +14,20 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 
 internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 {
-    private static readonly Type MigrationsExtensionsType =
+    private static readonly Type? MigrationsExtensionsType =
         Type.GetType("Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions,Microsoft.EntityFrameworkCore.Relational");
 
-    internal static readonly Type DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
+    internal static readonly Type? DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
 
-    internal static readonly MethodInfo GetDatabaseMethod = DbContextType?.GetProperty("Database", BindingFlags.Public | BindingFlags.Instance)?.GetMethod;
+    internal static readonly MethodInfo? GetDatabaseMethod = DbContextType?.GetProperty("Database", BindingFlags.Public | BindingFlags.Instance)?.GetMethod;
 
-    internal static readonly MethodInfo GetPendingMigrationsMethod =
+    internal static readonly MethodInfo? GetPendingMigrationsMethod =
         MigrationsExtensionsType?.GetMethod("GetPendingMigrations", BindingFlags.Static | BindingFlags.Public);
 
-    internal static readonly MethodInfo GetAppliedMigrationsMethod =
+    internal static readonly MethodInfo? GetAppliedMigrationsMethod =
         MigrationsExtensionsType?.GetMethod("GetAppliedMigrations", BindingFlags.Static | BindingFlags.Public);
 
-    internal static readonly MethodInfo GetMigrationsMethod = MigrationsExtensionsType?.GetMethod("GetMigrations", BindingFlags.Static | BindingFlags.Public);
+    internal static readonly MethodInfo? GetMigrationsMethod = MigrationsExtensionsType?.GetMethod("GetMigrations", BindingFlags.Static | BindingFlags.Public);
 
     private readonly IOptionsMonitor<DbMigrationsEndpointOptions> _optionsMonitor;
     private readonly IServiceProvider _serviceProvider;
@@ -56,7 +56,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
         _logger = loggerFactory.CreateLogger<DbMigrationsEndpointHandler>();
     }
 
-    public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object argument, CancellationToken cancellationToken)
+    public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         var result = new Dictionary<string, DbMigrationsDescriptor>();
 
@@ -86,7 +86,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
             foreach (Type contextType in knownDbContextTypes)
             {
-                object dbContext = scope.ServiceProvider.GetService(contextType);
+                object? dbContext = scope.ServiceProvider.GetService(contextType);
 
                 if (dbContext == null)
                 {
@@ -119,7 +119,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     internal class DatabaseMigrationScanner
     {
-        internal virtual Assembly ScanRootAssembly => Assembly.GetEntryAssembly();
+        internal virtual Assembly ScanRootAssembly => Assembly.GetEntryAssembly()!;
 
         internal virtual IEnumerable<string> GetPendingMigrations(object context)
         {
@@ -136,14 +136,19 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
             return GetMigrationsReflectively(context, GetMigrationsMethod);
         }
 
-        private IEnumerable<string> GetMigrationsReflectively(object dbContext, MethodInfo method)
+        private IEnumerable<string> GetMigrationsReflectively(object dbContext, MethodInfo? method)
         {
-            object dbFacade = GetDatabaseMethod.Invoke(dbContext, null);
+            if (GetDatabaseMethod == null || method == null)
+            {
+                return Array.Empty<string>();
+            }
+
+            object? dbFacade = GetDatabaseMethod.Invoke(dbContext, null);
 
             return (IEnumerable<string>)method.Invoke(null, new[]
             {
                 dbFacade
-            });
+            })!;
         }
     }
 }

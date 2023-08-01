@@ -12,7 +12,7 @@ internal sealed class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
 {
     public override HealthEndpointResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     public override void Write(Utf8JsonWriter writer, HealthEndpointResponse value, JsonSerializerOptions options)
@@ -20,29 +20,25 @@ internal sealed class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
         ArgumentGuard.NotNull(writer);
 
         writer.WriteStartObject();
+        writer.WriteString("status", value.Status.ToString());
 
-        if (value != null)
+        if (!string.IsNullOrEmpty(value.Description))
         {
-            writer.WriteString("status", value.Status.ToString());
+            writer.WriteString("description", value.Description);
+        }
 
-            if (!string.IsNullOrEmpty(value.Description))
+        if (value.Details != null && value.Details.Count > 0)
+        {
+            writer.WritePropertyName("components");
+            writer.WriteStartObject();
+
+            foreach (KeyValuePair<string, object> detail in value.Details)
             {
-                writer.WriteString("description", value.Description);
+                writer.WritePropertyName(detail.Key);
+                JsonSerializer.Serialize(writer, detail.Value, options);
             }
 
-            if (value.Details != null && value.Details.Count > 0)
-            {
-                writer.WritePropertyName("components");
-                writer.WriteStartObject();
-
-                foreach (KeyValuePair<string, object> detail in value.Details)
-                {
-                    writer.WritePropertyName(detail.Key);
-                    JsonSerializer.Serialize(writer, detail.Value, options);
-                }
-
-                writer.WriteEndObject();
-            }
+            writer.WriteEndObject();
         }
 
         writer.WriteEndObject();

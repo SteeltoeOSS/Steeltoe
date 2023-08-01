@@ -7,7 +7,6 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.MetricCollectors.Exporters;
-using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;
 using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 using Xunit;

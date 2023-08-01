@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private readonly Dictionary<string, string> _appSettings = new()
+    private readonly Dictionary<string, string?> _appSettings = new()
     {
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:info:enabled"] = "true",

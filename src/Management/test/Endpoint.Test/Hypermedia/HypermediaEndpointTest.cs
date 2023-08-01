@@ -76,7 +76,7 @@ public sealed class HypermediaEndpointTest : BaseTest
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(new Dictionary<string, string>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "management:endpoints:info:enabled", "false" }
             });
@@ -106,7 +106,7 @@ public sealed class HypermediaEndpointTest : BaseTest
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(new Dictionary<string, string>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "management:endpoints:actuator:enabled", "false" },
                 { "management:endpoints:info:enabled", "true" }

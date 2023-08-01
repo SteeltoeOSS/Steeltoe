@@ -364,8 +364,8 @@ public static class ManagementHostBuilderExtensions
     /// <remarks>
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
-    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
-        MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy)
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder>? configureEndpoints,
+        MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
         ArgumentGuard.NotNull(hostBuilder);
 
@@ -406,7 +406,7 @@ public static class ManagementHostBuilderExtensions
     /// <remarks>
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
-    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints,
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder>? configureEndpoints,
         MediaTypeVersion mediaTypeVersion)
     {
         return AddAllActuators(hostBuilder, configureEndpoints, mediaTypeVersion, null);
@@ -424,7 +424,7 @@ public static class ManagementHostBuilderExtensions
     /// <remarks>
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
-    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints)
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder>? configureEndpoints)
     {
         return AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
     }

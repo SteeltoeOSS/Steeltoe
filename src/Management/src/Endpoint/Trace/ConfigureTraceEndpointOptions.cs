@@ -22,12 +22,11 @@ internal sealed class ConfigureTraceEndpointOptions : IConfigureNamedOptions<Tra
         _configuration = configuration;
     }
 
-    public void Configure(string name, TraceEndpointOptions options)
+    public void Configure(string? name, TraceEndpointOptions options)
     {
-        ArgumentGuard.NotNull(name);
         ArgumentGuard.NotNull(options);
 
-        if (name == TraceEndpointOptionNames.V2.ToString() || name == string.Empty)
+        if (name == TraceEndpointOptionNames.V2.ToString() || string.IsNullOrEmpty(name))
         {
             Configure(options);
         }

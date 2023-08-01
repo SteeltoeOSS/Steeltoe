@@ -8,12 +8,10 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 public sealed class MetricsEndpointOptions : EndpointOptions
 {
-    public string IngressIgnorePattern { get; set; }
-    public string EgressIgnorePattern { get; set; }
     public int CacheDurationMilliseconds { get; set; } = 500;
     public int MaxTimeSeries { get; set; } = 100;
     public int MaxHistograms { get; set; } = 100;
-    public IList<string> IncludedMetrics { get; set; }
+    public IList<string> IncludedMetrics { get; set; } = new List<string>();
 
     public override bool RequiresExactMatch()
     {

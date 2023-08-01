@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Infrastructure;
@@ -16,8 +17,8 @@ internal sealed class TestContext : IDisposable
 {
     private readonly TestOutputLoggerProvider _loggerProvider;
     private readonly IServiceCollection _serviceCollection = new ServiceCollection();
-    private IServiceProvider _serviceProvider;
-    private IConfigurationRoot _configurationRoot;
+    private IServiceProvider? _serviceProvider;
+    private IConfigurationRoot? _configurationRoot;
 
     private IServiceProvider ServiceProvider
     {
@@ -43,12 +44,12 @@ internal sealed class TestContext : IDisposable
     /// <summary>
     /// Gets or sets a delegate that allows tests to configure <see cref="IServiceCollection" />.
     /// </summary>
-    public Action<IServiceCollection, IConfiguration> AdditionalServices { get; set; }
+    public Action<IServiceCollection, IConfiguration>? AdditionalServices { get; set; }
 
     /// <summary>
     /// Gets or sets a delegate that allows tests to manipulate configuration.
     /// </summary>
-    public Action<IConfigurationBuilder> AdditionalConfiguration { get; set; }
+    public Action<IConfigurationBuilder>? AdditionalConfiguration { get; set; }
 
     /// <summary>
     /// Gets the configuration root.
@@ -70,10 +71,13 @@ internal sealed class TestContext : IDisposable
 
     public TestContext(ITestOutputHelper output)
     {
+        ArgumentGuard.NotNull(output);
+
         _loggerProvider = new TestOutputLoggerProvider(output);
     }
 
     public T GetRequiredService<T>()
+        where T : notnull
     {
         return ServiceProvider.GetRequiredService<T>();
     }

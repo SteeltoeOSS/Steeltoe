@@ -48,7 +48,7 @@ public static class TracingBaseServiceCollectionExtensions
     /// <returns>
     /// <see cref="IServiceCollection" /> configured for distributed tracing.
     /// </returns>
-    public static IServiceCollection AddDistributedTracing(this IServiceCollection services, Action<TracerProviderBuilder> action)
+    public static IServiceCollection AddDistributedTracing(this IServiceCollection services, Action<TracerProviderBuilder>? action)
     {
         ArgumentGuard.NotNull(services);
 
@@ -87,7 +87,9 @@ public static class TracingBaseServiceCollectionExtensions
                     .GetApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
 
                 var tracingOptions = serviceProvider.GetRequiredService<ITracingOptions>();
-                ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Steeltoe.Management.Tracing.Setup");
+
+                ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger($"{typeof(TracingBaseServiceCollectionExtensions).Namespace}.Setup");
 
                 logger.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.",
                     exportToZipkin, exportToJaeger, exportToOpenTelemetryProtocol);

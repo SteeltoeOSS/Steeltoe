@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<object, Dictionary<string, DbMigrationsDescriptor>>
+internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<object?, Dictionary<string, DbMigrationsDescriptor>>
 {
     public DbMigrationsEndpointMiddleware(IDbMigrationsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)

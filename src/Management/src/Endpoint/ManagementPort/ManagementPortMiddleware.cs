@@ -13,10 +13,11 @@ namespace Steeltoe.Management.Endpoint.ManagementPort;
 internal sealed class ManagementPortMiddleware
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
-    private readonly RequestDelegate _next;
+    private readonly RequestDelegate? _next;
     private readonly ILogger<ManagementPortMiddleware> _logger;
 
-    public ManagementPortMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor, RequestDelegate next, ILogger<ManagementPortMiddleware> logger)
+    public ManagementPortMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor, RequestDelegate? next,
+        ILogger<ManagementPortMiddleware> logger)
     {
         ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(logger);
@@ -52,22 +53,16 @@ internal sealed class ManagementPortMiddleware
         }
     }
 
-    private Task ReturnErrorAsync(HttpContext context, string managementPort)
+    private Task ReturnErrorAsync(HttpContext context, string? managementPort)
     {
-        var errorResponse = new ErrorResponse
-        {
-            Error = "Not Found",
-            Message = "Path not found at port",
-            Path = context.Request.Path,
-            Status = StatusCodes.Status404NotFound
-        };
+        var errorResponse = new ErrorResponse(DateTime.UtcNow, StatusCodes.Status404NotFound, "Not Found", "Path not found at port", context.Request.Path);
 
         _logger.LogError("ManagementMiddleWare Error: Access denied on {port} since Management Port is set to {managementPort}", context.Request.Host.Port,
             managementPort);
 
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
-
         context.Response.StatusCode = StatusCodes.Status404NotFound;
+
         return context.Response.WriteAsJsonAsync(errorResponse);
     }
 }

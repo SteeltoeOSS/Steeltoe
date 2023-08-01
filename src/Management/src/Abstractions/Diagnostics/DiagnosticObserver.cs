@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Diagnostics;
 public abstract class DiagnosticObserver : IDiagnosticObserver
 {
     private readonly ILogger _logger;
-    private IDisposable _subscription;
+    private IDisposable? _subscription;
 
     public string ListenerName { get; }
     public string ObserverName { get; }
@@ -69,7 +69,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     {
     }
 
-    public virtual void OnNext(KeyValuePair<string, object> @event)
+    public virtual void OnNext(KeyValuePair<string, object?> @event)
     {
         try
         {
@@ -81,20 +81,20 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
         }
     }
 
-    public abstract void ProcessEvent(string eventName, object value);
+    public abstract void ProcessEvent(string eventName, object? value);
 
-    private protected static T GetPropertyOrDefault<T>(object instance, string name)
+    private protected static T? GetPropertyOrDefault<T>(object instance, string name)
     {
         ArgumentGuard.NotNull(instance);
         ArgumentGuard.NotNull(name);
 
-        PropertyInfo property = instance.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+        PropertyInfo? property = instance.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
 
         if (property == null)
         {
             return default;
         }
 
-        return (T)property.GetValue(instance);
+        return (T?)property.GetValue(instance);
     }
 }

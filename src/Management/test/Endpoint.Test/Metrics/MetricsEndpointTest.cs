@@ -45,8 +45,9 @@ public sealed class MetricsEndpointTest : BaseTest
                 Counter<double> memory = SteeltoeMetrics.Meter.CreateCounter<double>("gc.memory.used");
                 memory.Add(25);
 
-                MetricsResponse result = await handler.InvokeAsync(null, CancellationToken.None);
+                MetricsResponse? result = await handler.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
+                Assert.NotNull(result.Names);
                 Assert.NotEmpty(result.Names);
                 Assert.Contains("http.server.requests", result.Names);
                 Assert.Contains("gc.memory.used", result.Names);
@@ -73,11 +74,12 @@ public sealed class MetricsEndpointTest : BaseTest
             try
             {
                 var handler = testContext.GetRequiredService<IMetricsEndpointHandler>();
-                MetricsResponse result = await handler.InvokeAsync(null, CancellationToken.None);
+                MetricsResponse? result = await handler.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
 
                 Assert.IsType<MetricsResponse>(result);
                 MetricsResponse response = result;
+                Assert.NotNull(response.Names);
                 Assert.Empty(response.Names);
             }
             finally
@@ -108,7 +110,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.test5");
             long allKeysSum = 0;
 
-            var labels = new Dictionary<string, object>
+            var labels = new Dictionary<string, object?>
             {
                 { "a", "v1" },
                 { "b", "v1" },
@@ -121,9 +123,9 @@ public sealed class MetricsEndpointTest : BaseTest
                 testMeasure.Add(index, labels.AsReadonlySpan());
             }
 
-            List<KeyValuePair<string, string>> tags = labels.Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ToString())).ToList();
+            List<KeyValuePair<string, string>> tags = labels.Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value!.ToString()!)).ToList();
             var request = new MetricsRequest("test.test5", tags);
-            MetricsResponse response = await handler.InvokeAsync(request, CancellationToken.None);
+            MetricsResponse? response = await handler.InvokeAsync(request, CancellationToken.None);
             Assert.NotNull(response);
 
             Assert.Equal("test.test5", response.Name);
@@ -131,7 +133,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.NotNull(response.Measurements);
             Assert.Single(response.Measurements);
 
-            MetricSample sample = response.Measurements.SingleOrDefault(metricSample => metricSample.Statistic == MetricStatistic.Rate);
+            MetricSample? sample = response.Measurements.SingleOrDefault(metricSample => metricSample.Statistic == MetricStatistic.Rate);
             Assert.NotNull(sample);
             Assert.Equal(allKeysSum, sample.Value);
 
@@ -155,7 +157,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(new Dictionary<string, string>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["management:endpoints:metrics:includedmetrics:0"] = "AdditionalTestMeter:AdditionalInstrument"
             });
@@ -180,7 +182,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
             long allKeysSum = 0;
 
-            var labels = new Dictionary<string, object>
+            var labels = new Dictionary<string, object?>
             {
                 { "a", "v1" },
                 { "b", "v1" },
@@ -194,9 +196,9 @@ public sealed class MetricsEndpointTest : BaseTest
                 additionalInstrument.Add(index, labels.AsReadonlySpan());
             }
 
-            List<KeyValuePair<string, string>> tags = labels.Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ToString())).ToList();
+            List<KeyValuePair<string, string>> tags = labels.Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value!.ToString()!)).ToList();
             var request = new MetricsRequest("test.test5", tags);
-            MetricsResponse response = await handler.InvokeAsync(request, CancellationToken.None);
+            MetricsResponse? response = await handler.InvokeAsync(request, CancellationToken.None);
             Assert.NotNull(response);
 
             Assert.Equal("test.test5", response.Name);
@@ -204,7 +206,7 @@ public sealed class MetricsEndpointTest : BaseTest
             Assert.NotNull(response.Measurements);
             Assert.Single(response.Measurements);
 
-            MetricSample sample = response.Measurements.SingleOrDefault(metricSample => metricSample.Statistic == MetricStatistic.Rate);
+            MetricSample? sample = response.Measurements.SingleOrDefault(metricSample => metricSample.Statistic == MetricStatistic.Rate);
             Assert.NotNull(sample);
             Assert.Equal(allKeysSum, sample.Value);
 
@@ -276,14 +278,14 @@ public sealed class MetricsEndpointTest : BaseTest
             var handler = (MetricsEndpointHandler)testContext.GetRequiredService<IMetricsEndpointHandler>();
             Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test.test2");
 
-            var v1Tags = new Dictionary<string, object>
+            var v1Tags = new Dictionary<string, object?>
             {
                 { "a", "v1" },
                 { "b", "v1" },
                 { "c", "v1" }
             };
 
-            var v2Tags = new Dictionary<string, object>
+            var v2Tags = new Dictionary<string, object?>
             {
                 { "a", "v2" },
                 { "b", "v2" },
@@ -355,24 +357,24 @@ public sealed class MetricsEndpointTest : BaseTest
 
             Histogram<double> testMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("test.test1");
 
-            var context1 = new Dictionary<string, object>
+            var context1 = new Dictionary<string, object?>
             {
                 { "a", "v1" },
                 { "b", "v1" },
                 { "c", "v1" }
             };
 
-            var context2 = new Dictionary<string, object>
+            var context2 = new Dictionary<string, object?>
             {
                 { "a", "v1" }
             };
 
-            var context3 = new Dictionary<string, object>
+            var context3 = new Dictionary<string, object?>
             {
                 { "b", "v1" }
             };
 
-            var context4 = new Dictionary<string, object>
+            var context4 = new Dictionary<string, object?>
             {
                 { "c", "v1" }
             };
@@ -534,7 +536,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
             Counter<double> testMeasure = SteeltoeMetrics.Meter.CreateCounter<double>("test.total");
 
-            var labels = new Dictionary<string, object>
+            var labels = new Dictionary<string, object?>
             {
                 { "a", "v1" },
                 { "b", "v1" },
@@ -549,9 +551,9 @@ public sealed class MetricsEndpointTest : BaseTest
                 testMeasure.Add(index, labels.AsReadonlySpan());
             }
 
-            var request = new MetricsRequest("test.total", labels.Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value.ToString())).ToList());
+            var request = new MetricsRequest("test.total", labels.Select(pair => new KeyValuePair<string, string>(pair.Key, pair.Value!.ToString()!)).ToList());
 
-            MetricsResponse response = await handler.InvokeAsync(request, CancellationToken.None);
+            MetricsResponse? response = await handler.InvokeAsync(request, CancellationToken.None);
 
             Assert.NotNull(response);
 

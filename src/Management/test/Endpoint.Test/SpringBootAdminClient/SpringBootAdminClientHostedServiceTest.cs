@@ -22,7 +22,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
     {
         try
         {
-            var appSettings = new Dictionary<string, string>
+            var appSettings = new Dictionary<string, string?>
             {
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:health:path"] = "myhealth",
@@ -62,7 +62,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
     [Fact]
     public async Task SpringBootAdminClient_DoesNotThrow_WhenNoServerRunning()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:health:path"] = "myhealth",

@@ -22,7 +22,7 @@ public sealed class RefreshEndpointTest : BaseTest
     [Fact]
     public async Task Invoke_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",

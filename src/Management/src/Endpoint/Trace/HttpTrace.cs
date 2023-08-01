@@ -9,18 +9,16 @@ namespace Steeltoe.Management.Endpoint.Trace;
 public sealed class HttpTrace
 {
     public long Timestamp { get; }
-    public Principal Principal { get; }
-    public Session Session { get; }
+    public Principal? Principal { get; }
+    public Session? Session { get; }
     public Request Request { get; }
     public Response Response { get; }
     public long TimeTaken { get; }
 
-    public HttpTrace(Request request, Response response, long timestamp, Principal principal, Session session, double timeTaken)
+    public HttpTrace(Request request, Response response, long timestamp, Principal? principal, Session? session, double timeTaken)
     {
         ArgumentGuard.NotNull(request);
         ArgumentGuard.NotNull(response);
-        ArgumentGuard.NotNull(principal);
-        ArgumentGuard.NotNull(session);
 
         Request = request;
         Response = response;

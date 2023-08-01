@@ -18,11 +18,11 @@ internal sealed class EventCounterListener : EventListener
 {
     private const string EventSourceName = "System.Runtime";
     private const string EventName = "EventCounters";
-    private readonly IOptionsMonitor<MetricsObserverOptions> _options;
+    private readonly IOptionsMonitor<MetricsObserverOptions> _optionsMonitor;
     private readonly ILogger<EventCounterListener> _logger;
     private readonly bool _isInitialized;
 
-    private readonly Dictionary<string, string> _refreshInterval = new()
+    private readonly Dictionary<string, string?> _refreshInterval = new()
     {
         { "EventCounterIntervalSec", "1" }
     };
@@ -35,15 +35,15 @@ internal sealed class EventCounterListener : EventListener
 
     private readonly ConcurrentBag<EventSource> _eventSources = new();
 
-    public EventCounterListener(IOptionsMonitor<MetricsObserverOptions> options, ILogger<EventCounterListener> logger)
+    public EventCounterListener(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILogger<EventCounterListener> logger)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(logger);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _logger = logger;
 
-        if (options.CurrentValue.EventCounterEvents)
+        if (optionsMonitor.CurrentValue.EventCounterEvents)
         {
             _isInitialized = true;
             ProcessPreInitEventSources();
@@ -69,9 +69,12 @@ internal sealed class EventCounterListener : EventListener
         {
             if (string.Equals(eventData.EventName, EventName, StringComparison.OrdinalIgnoreCase) && eventData.Payload != null)
             {
-                foreach (IDictionary<string, object> payload in eventData.Payload)
+                foreach (IDictionary<string, object?>? payload in eventData.Payload)
                 {
-                    ExtractAndRecordMetric(eventData.EventSource.Name, payload);
+                    if (payload != null)
+                    {
+                        ExtractAndRecordMetric(eventData.EventSource.Name, payload);
+                    }
                 }
             }
         }
@@ -115,7 +118,7 @@ internal sealed class EventCounterListener : EventListener
                 throw new InvalidOperationException("Should not call enable events before initialization");
             }
 
-            if (_options?.CurrentValue?.EventCounterEvents != true)
+            if (_optionsMonitor.CurrentValue?.EventCounterEvents != true)
             {
                 return;
             }
@@ -128,26 +131,26 @@ internal sealed class EventCounterListener : EventListener
         }
     }
 
-    private void ExtractAndRecordMetric(string eventSourceName, IDictionary<string, object> eventPayload)
+    private void ExtractAndRecordMetric(string eventSourceName, IDictionary<string, object?> eventPayload)
     {
         string metricName = string.Empty;
         double? doubleValue = null;
         long? longValue = null;
         string counterName = string.Empty;
-        var labelSet = new List<KeyValuePair<string, object>>();
-        string counterDisplayUnit = null;
-        string counterDisplayName = null;
+        var labelSet = new List<KeyValuePair<string, object?>>();
+        string? counterDisplayUnit = null;
+        string? counterDisplayName = null;
 
-        foreach (KeyValuePair<string, object> payload in eventPayload)
+        foreach (KeyValuePair<string, object?> payload in eventPayload)
         {
             string key = payload.Key;
 
             switch (key)
             {
                 case var _ when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
-                    counterName = payload.Value.ToString();
-                    IList<string> includedMetrics = _options.CurrentValue.IncludedMetrics;
-                    IList<string> excludedMetrics = _options.CurrentValue.ExcludedMetrics;
+                    counterName = payload.Value?.ToString() ?? string.Empty;
+                    IList<string> includedMetrics = _optionsMonitor.CurrentValue.IncludedMetrics;
+                    IList<string> excludedMetrics = _optionsMonitor.CurrentValue.ExcludedMetrics;
 
                     if ((includedMetrics.Any() && !includedMetrics.Contains(counterName)) || excludedMetrics.Contains(counterName))
                     {
@@ -156,12 +159,12 @@ internal sealed class EventCounterListener : EventListener
 
                     break;
                 case var _ when key.Equals("DisplayName", StringComparison.OrdinalIgnoreCase):
-                    counterDisplayName = payload.Value.ToString();
-                    labelSet.Add(KeyValuePair.Create("DisplayName", (object)counterDisplayName));
+                    counterDisplayName = payload.Value?.ToString();
+                    labelSet.Add(KeyValuePair.Create("DisplayName", (object?)counterDisplayName));
                     break;
                 case var _ when key.Equals("DisplayUnits", StringComparison.OrdinalIgnoreCase):
-                    counterDisplayUnit = payload.Value.ToString();
-                    labelSet.Add(KeyValuePair.Create("DisplayUnits", (object)counterDisplayUnit));
+                    counterDisplayUnit = payload.Value?.ToString();
+                    labelSet.Add(KeyValuePair.Create("DisplayUnits", (object?)counterDisplayUnit));
                     break;
                 case var _ when key.Equals("Mean", StringComparison.OrdinalIgnoreCase):
                     doubleValue = Convert.ToDouble(payload.Value, CultureInfo.InvariantCulture);
@@ -176,7 +179,7 @@ internal sealed class EventCounterListener : EventListener
                     longValue = Convert.ToInt64(payload.Value, CultureInfo.InvariantCulture);
                     break;
                 case var _ when key.Equals("Metadata", StringComparison.OrdinalIgnoreCase):
-                    string metadata = payload.Value.ToString();
+                    string? metadata = payload.Value?.ToString();
 
                     if (!string.IsNullOrEmpty(metadata))
                     {
@@ -185,7 +188,7 @@ internal sealed class EventCounterListener : EventListener
                         foreach (string keyValuePairString in keyValuePairStrings)
                         {
                             string[] keyValuePair = keyValuePairString.Split(':');
-                            labelSet.Add(KeyValuePair.Create(keyValuePair[0], (object)keyValuePair[1]));
+                            labelSet.Add(KeyValuePair.Create(keyValuePair[0], (object?)keyValuePair[1]));
                         }
                     }
 
@@ -199,24 +202,24 @@ internal sealed class EventCounterListener : EventListener
         {
             _lastDoubleValue[metricName] = doubleValue.Value;
 
-            _doubleMeasureMetrics.GetOrAddEx(metricName,
+            _doubleMeasureMetrics.GetOrAdd(metricName,
                 name => SteeltoeMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveDouble(name, labelSet), counterDisplayUnit, counterDisplayName));
         }
         else if (longValue.HasValue)
         {
             _lastLongValue[metricName] = longValue.Value;
 
-            _longMeasureMetrics.GetOrAddEx(metricName,
+            _longMeasureMetrics.GetOrAdd(metricName,
                 name => SteeltoeMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveLong(name, labelSet), counterDisplayUnit, counterDisplayName));
         }
     }
 
-    private Measurement<double> ObserveDouble(string name, List<KeyValuePair<string, object>> labelSet)
+    private Measurement<double> ObserveDouble(string name, List<KeyValuePair<string, object?>> labelSet)
     {
         return new Measurement<double>(_lastDoubleValue[name], labelSet);
     }
 
-    private Measurement<long> ObserveLong(string name, List<KeyValuePair<string, object>> labelSet)
+    private Measurement<long> ObserveLong(string name, List<KeyValuePair<string, object?>> labelSet)
     {
         return new Measurement<long>(_lastLongValue[name], labelSet);
     }

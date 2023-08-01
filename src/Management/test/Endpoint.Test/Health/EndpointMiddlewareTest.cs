@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private readonly Dictionary<string, string> _appSettings = new()
+    private readonly Dictionary<string, string?> _appSettings = new()
     {
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -44,7 +44,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HealthActuator_ReturnsOnlyStatusWhenAuthorized()
     {
-        var settings = new Dictionary<string, string>(_appSettings)
+        var settings = new Dictionary<string, string?>(_appSettings)
         {
             { "management:endpoints:health:showdetails", "whenauthorized" }
         };
@@ -68,7 +68,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HealthActuator_ReturnsDetailsWhenAuthorized()
     {
-        var settings = new Dictionary<string, string>(_appSettings)
+        var settings = new Dictionary<string, string?>(_appSettings)
         {
             { "management:endpoints:health:showdetails", "whenauthorized" },
             { "management:endpoints:health:claim:type", "healthdetails" },
@@ -99,7 +99,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HealthActuator_ReturnsDetails()
     {
-        var settings = new Dictionary<string, string>(_appSettings);
+        var settings = new Dictionary<string, string?>(_appSettings);
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
@@ -122,9 +122,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HealthActuatorV3_ReturnsDetails()
     {
-        var settings = new Dictionary<string, string>(_appSettings)
+        var settings = new Dictionary<string, string?>(_appSettings)
         {
-            { "management:endpoints:customjsonconverters:0", typeof(HealthConverterV3).FullName }
+            { "management:endpoints:customjsonconverters:0", typeof(HealthConverterV3).FullName! }
         };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
@@ -151,7 +151,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HealthActuator_ReturnsMicrosoftHealthDetails()
     {
-        var settings = new Dictionary<string, string>(_appSettings);
+        var settings = new Dictionary<string, string?>(_appSettings);
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
@@ -173,7 +173,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task TestDI()
     {
-        var settings = new Dictionary<string, string>(_appSettings);
+        var settings = new Dictionary<string, string?>(_appSettings);
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
@@ -209,7 +209,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         }
 
         builder = new WebHostBuilder().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string>(_appSettings)
+            new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "down"
             })).UseStartup<Startup>();
@@ -225,7 +225,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         }
 
         builder = new WebHostBuilder().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string>(_appSettings)
+            new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "out"
             })).UseStartup<Startup>();
@@ -241,7 +241,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         }
 
         builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string>(_appSettings)
+            new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "unknown"
             }));
@@ -257,7 +257,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         }
 
         builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string>(_appSettings)
+            new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "defaultAggregator"
             }));
@@ -273,7 +273,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         }
 
         builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string>(_appSettings)
+            new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "down",
                 ["management:endpoints:UseStatusCodeFromResponse"] = "false"
@@ -294,7 +294,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     public async Task GetStatusCode_MicrosoftAggregator_ReturnsExpected()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
-            configuration.AddInMemoryCollection(new Dictionary<string, string>(_appSettings)
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "microsoftHealthAggregator"
             }));

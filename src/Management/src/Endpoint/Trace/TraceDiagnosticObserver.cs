@@ -22,16 +22,16 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
     private const string StopEventName = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    private readonly IOptionsMonitor<TraceEndpointOptions> _options;
+    private readonly IOptionsMonitor<TraceEndpointOptions> _optionsMonitor;
     private readonly ILogger<TraceDiagnosticObserver> _logger;
     internal ConcurrentQueue<TraceResult> Queue { get; } = new();
 
-    public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILoggerFactory loggerFactory)
+    public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _logger = loggerFactory.CreateLogger<TraceDiagnosticObserver>();
     }
 
@@ -40,14 +40,14 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         return new HttpTraceResultV1(Queue.ToList());
     }
 
-    public override void ProcessEvent(string eventName, object value)
+    public override void ProcessEvent(string eventName, object? value)
     {
         if (eventName != StopEventName)
         {
             return;
         }
 
-        Activity current = Activity.Current;
+        Activity? current = Activity.Current;
 
         if (current == null)
         {
@@ -59,7 +59,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
             return;
         }
 
-        HttpContext context = GetHttpContextPropertyValue(value);
+        HttpContext? context = GetHttpContextPropertyValue(value);
 
         if (context != null)
         {
@@ -75,7 +75,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         TraceResult trace = MakeTrace(context, current.Duration);
         Queue.Enqueue(trace);
 
-        if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
+        if (Queue.Count > _optionsMonitor.CurrentValue.Capacity && !Queue.TryDequeue(out _))
         {
             _logger.LogDebug("Stop - Dequeue failed");
         }
@@ -87,12 +87,13 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
-        TraceEndpointOptions options = _options.CurrentValue;
+        TraceEndpointOptions options = _optionsMonitor.CurrentValue;
+        string? pathInfo = GetPathInfo(request);
 
-        var details = new Dictionary<string, object>
+        var details = new Dictionary<string, object?>
         {
             { "method", request.Method },
-            { "path", GetPathInfo(request) }
+            { "path", pathInfo }
         };
 
         var headers = new Dictionary<string, object>();
@@ -110,7 +111,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
         if (options.AddPathInfo)
         {
-            details.Add("pathInfo", GetPathInfo(request));
+            details.Add("pathInfo", pathInfo);
         }
 
         if (options.AddUserPrincipal)
@@ -148,7 +149,8 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
             details.Add("timeTaken", GetTimeTaken(duration));
         }
 
-        return new TraceResult(GetJavaTime(DateTime.Now.Ticks), details);
+        long timestamp = GetJavaTime(DateTime.Now.Ticks);
+        return new TraceResult(timestamp, details);
     }
 
     internal long GetJavaTime(long ticks)
@@ -157,7 +159,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         return javaTicks / 10000;
     }
 
-    internal string GetSessionId(HttpContext context)
+    internal string? GetSessionId(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
 
@@ -171,11 +173,11 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
     }
 
-    internal Dictionary<string, string[]> GetRequestParameters(HttpRequest request)
+    internal Dictionary<string, IList<string?>> GetRequestParameters(HttpRequest request)
     {
         ArgumentGuard.NotNull(request);
 
-        var parameters = new Dictionary<string, string[]>();
+        var parameters = new Dictionary<string, IList<string?>>();
         IQueryCollection query = request.Query;
 
         foreach (KeyValuePair<string, StringValues> pair in query)
@@ -203,39 +205,39 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         return $"{request.Scheme}://{request.Host.Value}{request.Path.Value}";
     }
 
-    internal string GetPathInfo(HttpRequest request)
+    internal string? GetPathInfo(HttpRequest request)
     {
         ArgumentGuard.NotNull(request);
 
         return request.Path.Value;
     }
 
-    internal string GetUserPrincipal(HttpContext context)
+    internal string? GetUserPrincipal(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
 
         return context.User.Identity?.Name;
     }
 
-    internal string GetRemoteAddress(HttpContext context)
+    internal string? GetRemoteAddress(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
 
         return context.Connection.RemoteIpAddress?.ToString();
     }
 
-    internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
+    internal Dictionary<string, object?> GetHeaders(int status, IHeaderDictionary headers)
     {
         ArgumentGuard.NotNull(headers);
 
-        Dictionary<string, object> result = GetHeaders(headers);
+        Dictionary<string, object?> result = GetHeaders(headers);
         result.Add("status", status.ToString(CultureInfo.InvariantCulture));
         return result;
     }
 
-    private Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
+    private Dictionary<string, object?> GetHeaders(IHeaderDictionary headers)
     {
-        var result = new Dictionary<string, object>();
+        var result = new Dictionary<string, object?>();
 
         foreach (KeyValuePair<string, StringValues> pair in headers)
         {
@@ -248,11 +250,11 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         return result;
     }
 
-    private object GetHeaderValue(StringValues values)
+    private object? GetHeaderValue(StringValues values)
     {
-        var result = new List<string>();
+        var result = new List<string?>();
 
-        foreach (string value in values)
+        foreach (string? value in values)
         {
             result.Add(value);
         }
@@ -270,7 +272,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         return result;
     }
 
-    internal HttpContext GetHttpContextPropertyValue(object instance)
+    internal HttpContext? GetHttpContextPropertyValue(object instance)
     {
         return GetPropertyOrDefault<HttpContext>(instance, "HttpContext");
     }

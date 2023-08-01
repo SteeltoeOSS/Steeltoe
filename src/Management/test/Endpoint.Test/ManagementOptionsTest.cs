@@ -24,7 +24,7 @@ public sealed class ManagementOptionsTest : BaseTest
     [Fact]
     public void BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
@@ -42,12 +42,12 @@ public sealed class ManagementOptionsTest : BaseTest
     {
         var managementOptions = new ManagementOptions
         {
-            Exposure =
+            Exposure = new Exposure
             {
-                Exclude = new[]
+                Exclude = new List<string>
                 {
                     "*"
-                }.ToList()
+                }
             }
         };
 

@@ -58,7 +58,7 @@ internal sealed class HypermediaService
 
         _logger.LogTrace("Processing hypermedia for {ManagementOptions}", _managementOptionsMonitor.CurrentValue);
 
-        Link selfLink = null;
+        Link? selfLink = null;
 
         foreach (EndpointOptions endpointOptions in _endpointOptionsCollection)
         {

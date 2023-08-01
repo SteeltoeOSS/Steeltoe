@@ -10,7 +10,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Environment;
 
-internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<object, EnvironmentResponse>
+internal sealed class EnvironmentEndpointMiddleware : EndpointMiddleware<object?, EnvironmentResponse>
 {
     public EnvironmentEndpointMiddleware(IEnvironmentEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)

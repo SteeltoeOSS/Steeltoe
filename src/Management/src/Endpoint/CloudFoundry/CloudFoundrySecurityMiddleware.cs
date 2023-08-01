@@ -19,12 +19,12 @@ public sealed class CloudFoundrySecurityMiddleware
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
     private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
-    private readonly RequestDelegate _next;
+    private readonly RequestDelegate? _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
     private readonly SecurityUtils _securityUtils;
 
     public CloudFoundrySecurityMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection, RequestDelegate next,
+        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection, RequestDelegate? next,
         ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(managementOptionsMonitor);
@@ -70,7 +70,7 @@ public sealed class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            EndpointOptions targetEndpointOptions = FindTargetEndpoint(context.Request.Path);
+            EndpointOptions? targetEndpointOptions = FindTargetEndpoint(context.Request.Path);
 
             if (targetEndpointOptions == null)
             {
@@ -121,7 +121,7 @@ public sealed class CloudFoundrySecurityMiddleware
         return _securityUtils.GetPermissionsAsync(accessToken, context.RequestAborted);
     }
 
-    private EndpointOptions FindTargetEndpoint(PathString requestPath)
+    private EndpointOptions? FindTargetEndpoint(PathString requestPath)
     {
         foreach (EndpointOptions endpointOptions in _endpointOptionsCollection)
         {

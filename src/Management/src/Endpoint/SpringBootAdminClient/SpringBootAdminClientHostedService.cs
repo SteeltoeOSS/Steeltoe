@@ -21,10 +21,10 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
     private readonly HttpClient _httpClient;
     private readonly ILogger<SpringBootAdminClientHostedService> _logger;
 
-    internal static RegistrationResult RegistrationResult { get; set; }
+    internal static RegistrationResult? RegistrationResult { get; set; }
 
     public SpringBootAdminClientHostedService(SpringBootAdminClientOptions clientOptions, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<HealthEndpointOptions> healthOptionsMonitor, ILogger<SpringBootAdminClientHostedService> logger, HttpClient httpClient = null)
+        IOptionsMonitor<HealthEndpointOptions> healthOptionsMonitor, ILogger<SpringBootAdminClientHostedService> logger, HttpClient? httpClient = null)
     {
         ArgumentGuard.NotNull(clientOptions);
         ArgumentGuard.NotNull(managementOptionsMonitor);
@@ -43,24 +43,13 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         _logger.LogInformation("Registering with Spring Boot Admin Server at {url}", _clientOptions.Url);
 
         string basePath = _clientOptions.BasePath.TrimEnd('/');
-
-        var app = new Application
-        {
-            Name = _clientOptions.ApplicationName ?? "Steeltoe",
-            HealthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.Path}"),
-            ManagementUrl = new Uri($"{basePath}{_managementOptions.Path}"),
-            ServiceUrl = new Uri($"{basePath}/"),
-            Metadata = new Dictionary<string, object>
-            {
-                { "startup", DateTime.Now }
-            }
-        };
+        Application app = CreateApplication(basePath);
 
         Merge(app.Metadata, _clientOptions.Metadata);
 
         _httpClient.Timeout = TimeSpan.FromMilliseconds(_clientOptions.ConnectionTimeoutMs);
 
-        HttpResponseMessage response = null;
+        HttpResponseMessage? response = null;
 
         try
         {
@@ -82,9 +71,24 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
     }
 
+    private Application CreateApplication(string basePath)
+    {
+        string name = _clientOptions.ApplicationName;
+        var healthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.Path}");
+        var managementUrl = new Uri($"{basePath}{_managementOptions.Path}");
+        var serviceUrl = new Uri($"{basePath}/");
+
+        var metadata = new Dictionary<string, object>
+        {
+            { "startup", DateTime.Now }
+        };
+
+        return new Application(name, managementUrl, healthUrl, serviceUrl, metadata);
+    }
+
     private static void Merge<TKey, TValue>(IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)
     {
-        from?.ToList().ForEach(to.Add);
+        from.ToList().ForEach(to.Add);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

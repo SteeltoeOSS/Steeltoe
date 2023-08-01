@@ -23,7 +23,7 @@ public sealed class SpringBootAdminClientOptionsTest
     [Fact]
     public void ConstructorUsesAppInfo()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "application:Uris:0", "http://somehost" }
         };
@@ -40,7 +40,7 @@ public sealed class SpringBootAdminClientOptionsTest
     [Fact]
     public void Constructor_BindsConfiguration()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:health:path"] = "myhealth",
@@ -68,7 +68,7 @@ public sealed class SpringBootAdminClientOptionsTest
     [Fact]
     public void Constructor_BindsFallBack()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "spring:boot:admin:client:basepath", "http://somehost" }
         };

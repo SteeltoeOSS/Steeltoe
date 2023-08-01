@@ -51,10 +51,7 @@ public static class ServiceCollectionExtensions
         {
             services.PostConfigure((ManagementOptions managementOptions) =>
             {
-                JsonSerializerOptions serializerOptions = managementOptions.SerializerOptions ?? new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                };
+                JsonSerializerOptions serializerOptions = managementOptions.SerializerOptions;
 
                 if (!serializerOptions.Converters.Any(converter => converter is ThreadDumpV2Converter))
                 {

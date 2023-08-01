@@ -3,11 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 public sealed class RouteMappingDetails
 {
     [JsonPropertyName("requestMappingConditions")]
-    public RequestMappingConditions RequestMappingConditions { get; set; }
+    public RequestMappingConditions RequestMappingConditions { get; }
+
+    public RouteMappingDetails(RequestMappingConditions requestMappingConditions)
+    {
+        ArgumentGuard.NotNull(requestMappingConditions);
+
+        RequestMappingConditions = requestMappingConditions;
+    }
 }

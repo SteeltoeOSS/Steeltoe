@@ -44,7 +44,7 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
     public void AddDistributedTracing_ConfiguresSamplers()
     {
         // test AlwaysOn
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string>
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string?>
         {
             { "Management:Tracing:AlwaysSample", "true" }
         }));
@@ -57,7 +57,7 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
         Assert.NotNull(tracerProvider);
 
         // test AlwaysOff
-        services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string>
+        services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string?>
         {
             { "Management:Tracing:NeverSample", "true" }
         }));

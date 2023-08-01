@@ -10,13 +10,13 @@ namespace Steeltoe.Management.Endpoint;
 
 internal static class ManagementOptionsExtensions
 {
-    public static string GetBaseRequestPath(this ManagementOptions managementOptions, HttpRequest httpRequest)
+    public static string? GetBaseRequestPath(this ManagementOptions managementOptions, HttpRequest httpRequest)
     {
         ArgumentGuard.NotNull(managementOptions);
         ArgumentGuard.NotNull(httpRequest);
 
         return httpRequest.Path.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath)
             ? ConfigureManagementOptions.DefaultCloudFoundryPath
-            : $"{managementOptions.Path}";
+            : managementOptions.Path;
     }
 }

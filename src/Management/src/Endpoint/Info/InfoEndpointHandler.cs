@@ -28,7 +28,7 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
         _logger = loggerFactory.CreateLogger<InfoEndpointHandler>();
     }
 
-    public async Task<IDictionary<string, object>> InvokeAsync(object argument, CancellationToken cancellationToken)
+    public async Task<IDictionary<string, object>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         IInfoBuilder builder = new InfoBuilder();
 

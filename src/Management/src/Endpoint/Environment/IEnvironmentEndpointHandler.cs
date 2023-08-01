@@ -5,7 +5,7 @@
 namespace Steeltoe.Management.Endpoint.Environment;
 
 #pragma warning disable S4023 // Interfaces should not be empty
-public interface IEnvironmentEndpointHandler : IEndpointHandler<object, EnvironmentResponse>
+public interface IEnvironmentEndpointHandler : IEndpointHandler<object?, EnvironmentResponse>
 #pragma warning restore S4023 // Interfaces should not be empty
 {
 }

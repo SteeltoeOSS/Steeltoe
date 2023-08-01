@@ -20,15 +20,15 @@ public sealed class RouteMappingDescription
     public string Predicate { get; }
 
     [JsonPropertyName("details")]
-    public RouteMappingDetails Details { get; }
+    public RouteMappingDetails? Details { get; }
 
     public RouteMappingDescription(string routeHandler, AspNetCoreRouteDetails routeDetails)
     {
         ArgumentGuard.NotNull(routeHandler);
         ArgumentGuard.NotNull(routeDetails);
 
-        Predicate = CreatePredicateString(routeDetails);
         Handler = routeHandler;
+        Predicate = CreatePredicateString(routeDetails);
     }
 
     public RouteMappingDescription(MethodInfo routeHandlerMethod, AspNetCoreRouteDetails routeDetails)
@@ -36,7 +36,7 @@ public sealed class RouteMappingDescription
         ArgumentGuard.NotNull(routeHandlerMethod);
         ArgumentGuard.NotNull(routeDetails);
 
-        Handler = routeHandlerMethod.ToString();
+        Handler = routeHandlerMethod.ToString()!;
         Predicate = CreatePredicateString(routeDetails);
         Details = CreateMappingDetails(routeDetails);
     }
@@ -78,28 +78,19 @@ public sealed class RouteMappingDescription
 
     private RouteMappingDetails CreateMappingDetails(AspNetCoreRouteDetails routeDetails)
     {
-        return new RouteMappingDetails
+        List<MediaTypeDescriptor> consumes = routeDetails.Consumes.Select(consumes => new MediaTypeDescriptor(consumes, false)).ToList();
+        List<MediaTypeDescriptor> produces = routeDetails.Produces.Select(produces => new MediaTypeDescriptor(produces, false)).ToList();
+
+        var patterns = new List<string>
         {
-            RequestMappingConditions = new RequestMappingConditions
-            {
-                Consumes = routeDetails.Consumes.Select(consumes => new MediaTypeDescriptor
-                {
-                    MediaType = consumes
-                }).ToArray(),
-                Produces = routeDetails.Produces.Select(produces => new MediaTypeDescriptor
-                {
-                    MediaType = produces
-                }).ToArray(),
-                Methods = routeDetails.HttpMethods.ToArray(),
-                Patterns = new[]
-                {
-                    routeDetails.RouteTemplate
-                }
-            }
+            routeDetails.RouteTemplate
         };
+
+        var conditions = new RequestMappingConditions(consumes, produces, new List<string>(), routeDetails.HttpMethods.ToList(), patterns);
+        return new RouteMappingDetails(conditions);
     }
 
-    private static bool IsNullOrEmpty(ICollection<string> list)
+    private static bool IsNullOrEmpty(ICollection<string>? list)
     {
         if (list == null || list.Count == 0)
         {

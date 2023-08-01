@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Immutable;
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Builder;
@@ -24,10 +23,10 @@ public sealed class ManagementEndpointServedOnDifferentPort
     [Fact]
     public void AddAllActuators_WebApplication_MakeSureTheManagementPortIsSet()
     {
-        ImmutableDictionary<string, string> appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "management:endpoints:port", "9090" }
-        }.ToImmutableDictionary();
+        };
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.AddInMemoryCollection(appsettings);
@@ -49,10 +48,10 @@ public sealed class ManagementEndpointServedOnDifferentPort
     [Fact]
     public void AddAllActuators_WorksWithUseCloudHosting()
     {
-        ImmutableDictionary<string, string> appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "management:endpoints:port", "9090" }
-        }.ToImmutableDictionary();
+        };
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.AddInMemoryCollection(appsettings);
@@ -78,11 +77,11 @@ public sealed class ManagementEndpointServedOnDifferentPort
         using var scope1 = new EnvironmentVariableScope("ASPNETCORE_URLS", null);
         using var scope2 = new EnvironmentVariableScope("PORT", null);
 
-        ImmutableDictionary<string, string> appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "management:endpoints:port", "9090" },
             { "management:endpoints:sslenabled", "true" }
-        }.ToImmutableDictionary();
+        };
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.AddInMemoryCollection(appsettings);
@@ -105,11 +104,11 @@ public sealed class ManagementEndpointServedOnDifferentPort
     [Fact]
     public void AddAllActuators_GenericHost_MakeSureTheManagementPortIsSet()
     {
-        ImmutableDictionary<string, string> settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "management:endpoints:port", "9090" },
             { "management:endpoints:sslenabled", "true" }
-        }.ToImmutableDictionary();
+        };
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(settings)).ConfigureWebHost(
             webHostBuilder =>

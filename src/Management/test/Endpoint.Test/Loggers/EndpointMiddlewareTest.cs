@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string> AppSettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
@@ -89,7 +89,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_AcceptsPost_When_ManagementPath_Is_Slash()
     {
-        var appSettings = new Dictionary<string, string>(AppSettings)
+        var appSettings = new Dictionary<string, string?>(AppSettings)
         {
             ["management:endpoints:path"] = "/"
         };

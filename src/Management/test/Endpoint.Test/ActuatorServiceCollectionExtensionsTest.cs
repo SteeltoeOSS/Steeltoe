@@ -27,7 +27,7 @@ public sealed class ActuatorServiceCollectionExtensionsTest
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
         Assert.NotNull(options);
-        CorsPolicy policy = options.Value.GetPolicy("SteeltoeManagement");
+        CorsPolicy? policy = options.Value.GetPolicy("SteeltoeManagement");
         Assert.NotNull(policy);
         Assert.True(policy.IsOriginAllowed("*"));
         Assert.Contains(policy.Methods, method => method == "GET");
@@ -46,7 +46,7 @@ public sealed class ActuatorServiceCollectionExtensionsTest
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
         Assert.NotNull(options);
-        CorsPolicy policy = options.Value.GetPolicy("SteeltoeManagement");
+        CorsPolicy? policy = options.Value.GetPolicy("SteeltoeManagement");
         Assert.NotNull(policy);
         Assert.True(policy.IsOriginAllowed("http://google.com"));
         Assert.False(policy.IsOriginAllowed("http://bing.com"));

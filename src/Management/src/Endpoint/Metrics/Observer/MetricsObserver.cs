@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 internal abstract class MetricsObserver : DiagnosticObserver
 {
-    private Regex _pathMatcher;
+    private Regex? _pathMatcher;
 
     protected MetricsObserver(string observerName, string diagnosticName, ILoggerFactory loggerFactory)
         : base(observerName, diagnosticName, loggerFactory)
@@ -22,9 +22,7 @@ internal abstract class MetricsObserver : DiagnosticObserver
         _pathMatcher = value;
     }
 
-    public abstract override void ProcessEvent(string eventName, object value);
-
-    public bool ShouldIgnoreRequest(string path)
+    public bool ShouldIgnoreRequest(string? path)
     {
         if (string.IsNullOrEmpty(path))
         {

@@ -54,7 +54,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         }
         else
         {
-            SetLogLevel(request.Name, request.Level);
+            SetLogLevel(request.Name!, request.Level);
             result = new Dictionary<string, object>();
         }
 
@@ -83,7 +83,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
         return result;
     }
 
-    private void SetLogLevel(string name, string level)
+    private void SetLogLevel(string name, string? level)
     {
         LogLevel? logLevel = LoggerLevels.StringToLogLevel(level);
         _dynamicLoggerProvider.SetLogLevel(name, logLevel);

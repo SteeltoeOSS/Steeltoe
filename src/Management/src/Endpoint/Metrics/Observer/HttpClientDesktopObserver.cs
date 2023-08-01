@@ -30,26 +30,31 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
     private readonly Histogram<double> _clientCountMeasure;
     private readonly ILogger _logger;
 
-    public HttpClientDesktopObserver(IOptionsMonitor<MetricsObserverOptions> options, ILoggerFactory loggerFactory)
+    public HttpClientDesktopObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILoggerFactory loggerFactory)
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
 
-        SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
+        string? egressIgnorePattern = optionsMonitor.CurrentValue.EgressIgnorePattern;
+
+        if (egressIgnorePattern != null)
+        {
+            SetPathMatcher(new Regex(egressIgnorePattern));
+        }
 
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.desktop.client.request.count");
         _logger = loggerFactory.CreateLogger<HttpClientDesktopObserver>();
     }
 
-    public override void ProcessEvent(string eventName, object value)
+    public override void ProcessEvent(string eventName, object? value)
     {
         if (value == null)
         {
             return;
         }
 
-        Activity current = Activity.Current;
+        Activity? current = Activity.Current;
 
         if (current == null)
         {
@@ -98,19 +103,19 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            ReadOnlySpan<KeyValuePair<string, object>> labels = GetLabels(request, statusCode).AsReadonlySpan();
+            ReadOnlySpan<KeyValuePair<string, object?>> labels = GetLabels(request, statusCode).AsReadonlySpan();
             _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels);
             _clientCountMeasure.Record(1, labels);
         }
     }
 
-    private IDictionary<string, object> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
+    private IDictionary<string, object?> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
     {
         string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string status = ((int)statusCode).ToString(CultureInfo.InvariantCulture);
         string clientName = request.RequestUri.GetComponents(UriComponents.HostAndPort, UriFormat.UriEscaped);
 
-        return new Dictionary<string, object>
+        return new Dictionary<string, object?>
         {
             { UriTagKey, uri },
             { StatusTagKey, status },

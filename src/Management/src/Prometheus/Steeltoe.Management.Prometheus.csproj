@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Adds Prometheus support for Steeltoe management endpoints</Description>
+    <PackageTags>actuators;management;monitoring;distributed tracing;metrics;prometheus</PackageTags>
+    <IsPackable>true</IsPackable>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -20,5 +21,4 @@
     <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
     <ProjectReference Include="..\Endpoint\Steeltoe.Management.Endpoint.csproj" />
   </ItemGroup>
-
 </Project>

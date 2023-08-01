@@ -3,51 +3,45 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.RegularExpressions;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Environment;
 
 internal sealed class Sanitizer
 {
-    private readonly string[] _regexParts =
+    private readonly char[] _regexCharacters =
     {
-        "*",
-        "$",
-        "^",
-        "+"
+        '*',
+        '$',
+        '^',
+        '+'
     };
 
     private readonly List<Regex> _matchers = new();
 
-    internal Sanitizer(IEnumerable<string> keysToSanitize)
+    public Sanitizer(ICollection<string> keysToSanitize)
     {
+        ArgumentGuard.NotNull(keysToSanitize);
+
         foreach (string key in keysToSanitize)
         {
             string regexPattern = IsRegex(key) ? key : $".*{key}$";
-
             _matchers.Add(new Regex(regexPattern, RegexOptions.IgnoreCase));
         }
     }
 
-    internal KeyValuePair<string, string> Sanitize(KeyValuePair<string, string> kvp)
+    public string? Sanitize(string key, string? value)
     {
-        if (kvp.Value != null && _matchers.Any(regex => regex.IsMatch(kvp.Key)))
+        if (value != null && _matchers.Any(regex => regex.IsMatch(key)))
         {
-            return new KeyValuePair<string, string>(kvp.Key, "******");
+            return "******";
         }
 
-        return kvp;
+        return value;
     }
 
     private bool IsRegex(string value)
     {
-        foreach (string part in _regexParts)
-        {
-            if (value.Contains(part, StringComparison.Ordinal))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return value.IndexOfAny(_regexCharacters) != -1;
     }
 }

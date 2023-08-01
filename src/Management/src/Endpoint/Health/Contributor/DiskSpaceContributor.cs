@@ -14,7 +14,7 @@ internal sealed class DiskSpaceContributor : IHealthContributor
 
     public string Id => DefaultId;
 
-    public DiskSpaceContributor(DiskSpaceContributorOptions options = null)
+    public DiskSpaceContributor(DiskSpaceContributorOptions? options = null)
     {
         _options = options ?? new DiskSpaceContributorOptions();
     }

@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.MetricCollectors.Exporters;
-using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;
 using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 using Xunit;
@@ -116,7 +115,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
     {
-        Dictionary<string, string> appSettings = new()
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:actuator:exposure:include:0"] = "*"
         };
@@ -205,7 +204,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 
-    private HttpContext CreateRequest(string method, string path, string query)
+    private HttpContext CreateRequest(string method, string path, string? query)
     {
         HttpContext context = new DefaultHttpContext
         {
@@ -230,7 +229,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
     {
         Counter<double> counter = SteeltoeMetrics.Meter.CreateCounter<double>("test");
 
-        var labels = new Dictionary<string, object>
+        var labels = new Dictionary<string, object?>
         {
             { "a", "v1" },
             { "b", "v1" },
@@ -239,7 +238,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 
         for (int index = 0; index < 10; index++)
         {
-            counter.Add(index, new ReadOnlySpan<KeyValuePair<string, object>>(labels.ToArray()));
+            counter.Add(index, new ReadOnlySpan<KeyValuePair<string, object?>>(labels.ToArray()));
         }
     }
 }

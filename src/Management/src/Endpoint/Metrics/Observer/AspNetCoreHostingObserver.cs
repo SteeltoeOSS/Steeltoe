@@ -35,7 +35,13 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
     {
         ArgumentGuard.NotNull(optionsMonitor);
 
-        SetPathMatcher(new Regex(optionsMonitor.CurrentValue.IngressIgnorePattern));
+        string? ingressIgnorePattern = optionsMonitor.CurrentValue.IngressIgnorePattern;
+
+        if (ingressIgnorePattern != null)
+        {
+            SetPathMatcher(new Regex(ingressIgnorePattern));
+        }
+
         Meter meter = SteeltoeMetrics.Meter;
 
         _responseTime = meter.CreateHistogram<double>("http.server.requests.seconds", "s", "measures the duration of the inbound request in seconds");
@@ -43,14 +49,14 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
         _logger = loggerFactory.CreateLogger<AspNetCoreHostingObserver>();
     }
 
-    public override void ProcessEvent(string eventName, object value)
+    public override void ProcessEvent(string eventName, object? value)
     {
         if (value == null)
         {
             return;
         }
 
-        Activity current = Activity.Current;
+        Activity? current = Activity.Current;
 
         if (current == null)
         {
@@ -85,13 +91,13 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            ReadOnlySpan<KeyValuePair<string, object>> labels = GetLabelSets(context).AsReadonlySpan();
+            ReadOnlySpan<KeyValuePair<string, object?>> labels = GetLabelSets(context).AsReadonlySpan();
             _serverCount.Record(1, labels);
             _responseTime.Record(current.Duration.TotalSeconds, labels);
         }
     }
 
-    internal IDictionary<string, object> GetLabelSets(HttpContext context)
+    internal IDictionary<string, object?> GetLabelSets(HttpContext context)
     {
         ArgumentGuard.NotNull(context);
 
@@ -99,7 +105,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
         string statusCode = context.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
         string exception = GetException(context);
 
-        return new Dictionary<string, object>
+        return new Dictionary<string, object?>
         {
             { UriTagKey, uri },
             { StatusTagKey, statusCode },

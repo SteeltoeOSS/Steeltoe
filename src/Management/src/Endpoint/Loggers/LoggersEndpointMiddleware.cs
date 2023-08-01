@@ -26,14 +26,14 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
 
     protected override async Task<LoggersResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        LoggersRequest loggersRequest = await GetLoggersRequestAsync(context);
+        LoggersRequest? loggersRequest = await GetLoggersRequestAsync(context);
 
         return loggersRequest == null
             ? new LoggersResponse(new Dictionary<string, object>(), true)
             : await EndpointHandler.InvokeAsync(loggersRequest, cancellationToken);
     }
 
-    private async Task<LoggersRequest> GetLoggersRequestAsync(HttpContext context)
+    private async Task<LoggersRequest?> GetLoggersRequestAsync(HttpContext context)
     {
         HttpRequest request = context.Request;
 
@@ -41,9 +41,9 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
         {
             // POST - change a logger level
             _logger.LogDebug("Incoming path: {path}", request.Path.Value);
-            string baseRequestPath = ManagementOptionsMonitor.CurrentValue.GetBaseRequestPath(context.Request);
+            string? baseRequestPath = ManagementOptionsMonitor.CurrentValue.GetBaseRequestPath(context.Request);
 
-            string path = EndpointHandler.Options.Path;
+            string? path = EndpointHandler.Options.Path;
 
             if (baseRequestPath != null)
             {
@@ -57,7 +57,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
 
                 Dictionary<string, string> change = await DeserializeRequestAsync(request.Body);
 
-                change.TryGetValue("configuredLevel", out string level);
+                change.TryGetValue("configuredLevel", out string? level);
 
                 _logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
 
@@ -81,7 +81,12 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
     {
         try
         {
-            return await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
+            var dictionary = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(stream);
+
+            if (dictionary != null)
+            {
+                return dictionary;
+            }
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {

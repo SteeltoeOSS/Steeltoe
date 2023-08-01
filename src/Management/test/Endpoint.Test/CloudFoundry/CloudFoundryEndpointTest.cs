@@ -77,7 +77,7 @@ public sealed class CloudFoundryEndpointTest : BaseTest
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(new Dictionary<string, string>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "management:endpoints:enabled", "true" }
             });
@@ -107,7 +107,7 @@ public sealed class CloudFoundryEndpointTest : BaseTest
 
         testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(new Dictionary<string, string>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "management:cloudfoundry:enabled", "false" },
                 { "management:endpoints:info:enabled", "true" }

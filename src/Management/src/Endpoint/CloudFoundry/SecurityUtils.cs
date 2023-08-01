@@ -28,9 +28,9 @@ internal sealed class SecurityUtils
     private readonly CloudFoundryEndpointOptions _options;
 
     private readonly ILogger _logger;
-    private HttpClient _httpClient;
+    private HttpClient? _httpClient;
 
-    public SecurityUtils(CloudFoundryEndpointOptions options, ILogger logger, HttpClient httpClient = null)
+    public SecurityUtils(CloudFoundryEndpointOptions options, ILogger logger, HttpClient? httpClient = null)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(logger);
@@ -101,10 +101,10 @@ internal sealed class SecurityUtils
 
             var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
-            if (result.TryGetValue(ReadSensitiveData, out JsonElement perm))
+            if (result != null && result.TryGetValue(ReadSensitiveData, out JsonElement permissionElement))
             {
-                bool boolResult = JsonSerializer.Deserialize<bool>(perm.GetRawText());
-                permissions = boolResult ? Permissions.Full : Permissions.Restricted;
+                bool enabled = JsonSerializer.Deserialize<bool>(permissionElement.GetRawText());
+                permissions = enabled ? Permissions.Full : Permissions.Restricted;
             }
         }
         catch (Exception exception) when (exception is not OperationCanceledException)

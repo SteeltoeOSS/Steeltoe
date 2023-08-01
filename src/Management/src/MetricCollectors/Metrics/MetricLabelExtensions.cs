@@ -8,10 +8,10 @@ namespace Steeltoe.Management.MetricCollectors.Metrics;
 
 internal static class MetricLabelExtensions
 {
-    public static ReadOnlySpan<KeyValuePair<string, object>> AsReadonlySpan(this IDictionary<string, object> keyValuePairs)
+    public static ReadOnlySpan<KeyValuePair<string, object?>> AsReadonlySpan(this IDictionary<string, object?> keyValuePairs)
     {
         ArgumentGuard.NotNull(keyValuePairs);
 
-        return new ReadOnlySpan<KeyValuePair<string, object>>(keyValuePairs.ToArray());
+        return new ReadOnlySpan<KeyValuePair<string, object?>>(keyValuePairs.ToArray());
     }
 }

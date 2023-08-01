@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
@@ -13,6 +14,8 @@ public sealed class RouteMappingsResponse
 
     public RouteMappingsResponse(ContextMappings contextMappings)
     {
+        ArgumentGuard.NotNull(contextMappings);
+
         // At this point, .NET will only ever have one application => "application"
         ContextMappings = new Dictionary<string, ContextMappings>
         {

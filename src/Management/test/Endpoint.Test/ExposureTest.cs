@@ -18,13 +18,13 @@ public sealed class ExposureTest
 
         Assert.Contains("health", exposure.Include);
         Assert.Contains("info", exposure.Include);
-        Assert.Null(exposure.Exclude);
+        Assert.Empty(exposure.Exclude);
     }
 
     [Fact]
     public void ExposureBindsToSteeltoeSettings()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:actuator:exposure:include:0"] = "httptrace",
             ["management:endpoints:actuator:exposure:include:1"] = "dbmigrations",
@@ -45,7 +45,7 @@ public sealed class ExposureTest
     [Fact]
     public void ExposureBindsToSpringSettings()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:web:exposure:include"] = "heapdump,env",
             ["management:endpoints:web:exposure:exclude"] = "dbmigrations,info"
@@ -64,7 +64,7 @@ public sealed class ExposureTest
     [Fact]
     public void ExposureDoesNotThrowOnInvalidSpringSettings()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:web:exposure:include"] = "heapdump;env"
         };
@@ -74,6 +74,6 @@ public sealed class ExposureTest
         var exposure = new Exposure(configurationRoot);
 
         Assert.Contains("heapdump;env", exposure.Include);
-        Assert.Null(exposure.Exclude);
+        Assert.Empty(exposure.Exclude);
     }
 }

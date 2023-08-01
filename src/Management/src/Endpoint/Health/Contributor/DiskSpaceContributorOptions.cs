@@ -25,9 +25,7 @@ public sealed class DiskSpaceContributorOptions
     {
         ArgumentGuard.NotNull(configuration);
 
-        IConfigurationSection section = configuration.GetSection(ManagementInfoPrefix);
-
-        section?.Bind(this);
+        configuration.GetSection(ManagementInfoPrefix).Bind(this);
 
         if (string.IsNullOrEmpty(Path))
         {

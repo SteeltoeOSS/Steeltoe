@@ -79,7 +79,7 @@ public sealed class KubernetesInfoContributorTest
         info.Should().ContainKey("inside").WhoseValue.As<bool>().Should().BeFalse();
     }
 
-    private static IKubernetes CreateKubernetesMock(V1Pod pod)
+    private static IKubernetes CreateKubernetesMock(V1Pod? pod)
     {
         var response = new HttpOperationResponse<V1PodList>
         {

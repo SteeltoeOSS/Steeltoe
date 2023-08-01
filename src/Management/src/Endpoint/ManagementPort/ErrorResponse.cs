@@ -9,17 +9,26 @@ namespace Steeltoe.Management.Endpoint.ManagementPort;
 internal sealed class ErrorResponse
 {
     [JsonPropertyName("timestamp")]
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    public DateTime Timestamp { get; }
 
     [JsonPropertyName("status")]
-    public int Status { get; set; }
+    public int Status { get; }
 
     [JsonPropertyName("error")]
-    public string Error { get; set; }
+    public string Error { get; }
 
     [JsonPropertyName("message")]
-    public string Message { get; set; }
+    public string Message { get; }
 
     [JsonPropertyName("path")]
-    public string Path { get; set; }
+    public string Path { get; }
+
+    public ErrorResponse(DateTime timestamp, int status, string error, string message, string path)
+    {
+        Timestamp = timestamp;
+        Status = status;
+        Error = error;
+        Message = message;
+        Path = path;
+    }
 }

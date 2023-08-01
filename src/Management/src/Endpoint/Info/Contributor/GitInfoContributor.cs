@@ -13,27 +13,28 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor;
 internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContributor
 {
     private const string GitSettingsPrefix = "git";
-    private const string GitPropertiesFile = "git.properties";
+    private const string GitPropertiesFileName = "git.properties";
 
     private static readonly List<string> DatetimeInputKeys = new()
     {
         "time"
     };
 
-    private readonly string _propFile;
+    private readonly string _propertiesPath;
     private readonly ILogger _logger;
 
     public GitInfoContributor(ILogger<GitInfoContributor> logger)
-        : this($"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}{GitPropertiesFile}", logger)
+        : this($"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}{GitPropertiesFileName}", logger)
     {
     }
 
-    public GitInfoContributor(string propFile, ILogger<GitInfoContributor> logger)
+    private GitInfoContributor(string propertiesPath, ILogger<GitInfoContributor> logger)
+        : base(null)
     {
-        ArgumentGuard.NotNull(propFile);
+        ArgumentGuard.NotNull(propertiesPath);
         ArgumentGuard.NotNull(logger);
 
-        _propFile = propFile;
+        _propertiesPath = propertiesPath;
         _logger = logger;
     }
 
@@ -41,11 +42,11 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
     {
         ArgumentGuard.NotNull(builder);
 
-        Configuration = await ReadGitPropertiesAsync(_propFile, cancellationToken);
+        Configuration = await ReadGitPropertiesAsync(_propertiesPath, cancellationToken);
         Contribute(builder, GitSettingsPrefix, true);
     }
 
-    public async Task<IConfiguration> ReadGitPropertiesAsync(string propertiesPath, CancellationToken cancellationToken)
+    public async Task<IConfiguration?> ReadGitPropertiesAsync(string propertiesPath, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(propertiesPath);
 
@@ -55,7 +56,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
 
             if (lines.Length > 0)
             {
-                var dictionary = new Dictionary<string, string>();
+                var dictionary = new Dictionary<string, string?>();
 
                 foreach (string line in lines)
                 {

@@ -48,10 +48,7 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
 
         context = GetHttpRequestMessage();
 
-        var exceptionHandlerFeature = new ExceptionHandlerFeature
-        {
-            Error = new Exception()
-        };
+        var exceptionHandlerFeature = new ExceptionHandlerFeature(new Exception());
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
         exception = observer.GetException(context);
@@ -66,20 +63,17 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
 
         HttpContext context = GetHttpRequestMessage();
 
-        var exceptionHandlerFeature = new ExceptionHandlerFeature
-        {
-            Error = new Exception()
-        };
+        var exceptionHandlerFeature = new ExceptionHandlerFeature(new Exception());
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
         context.Response.StatusCode = 404;
 
-        List<KeyValuePair<string, object>> tagContext = observer.GetLabelSets(context).ToList();
+        List<KeyValuePair<string, object?>> tagContext = observer.GetLabelSets(context).ToList();
 
-        Assert.Contains(KeyValuePair.Create("exception", (object)"Exception"), tagContext);
-        Assert.Contains(KeyValuePair.Create("uri", (object)"/foobar"), tagContext);
-        Assert.Contains(KeyValuePair.Create("status", (object)"404"), tagContext);
-        Assert.Contains(KeyValuePair.Create("method", (object)"GET"), tagContext);
+        Assert.Contains(KeyValuePair.Create("exception", (object?)"Exception"), tagContext);
+        Assert.Contains(KeyValuePair.Create("uri", (object?)"/foobar"), tagContext);
+        Assert.Contains(KeyValuePair.Create("status", (object?)"404"), tagContext);
+        Assert.Contains(KeyValuePair.Create("method", (object?)"GET"), tagContext);
     }
 
     private HttpContext GetHttpRequestMessage(string method = "GET", string path = "/foobar")
@@ -102,6 +96,11 @@ public sealed class AspNetCoreHostingObserverTest : BaseTest
 
     private sealed class ExceptionHandlerFeature : IExceptionHandlerFeature
     {
-        public Exception Error { get; set; }
+        public Exception Error { get; }
+
+        public ExceptionHandlerFeature(Exception error)
+        {
+            Error = error;
+        }
     }
 }

@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
+using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
@@ -29,12 +29,12 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         _logger = loggerFactory.CreateLogger<MetricsEndpointHandler>();
     }
 
-    public Task<MetricsResponse> InvokeAsync(MetricsRequest request, CancellationToken cancellationToken)
+    public Task<MetricsResponse?> InvokeAsync(MetricsRequest? request, CancellationToken cancellationToken)
     {
         (MetricsCollection<IList<MetricSample>> measurements, MetricsCollection<IList<MetricTag>> availableTags) = GetMetrics();
 
         var metricNames = new HashSet<string>(measurements.Keys);
-        MetricsResponse response;
+        MetricsResponse? response;
 
         if (request == null)
         {
@@ -64,10 +64,10 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         IList<MetricSample> filtered = measurements.GetOrAdd(metricName, new List<MetricSample>());
         var sampleList = new List<MetricSample>();
 
-        if (tags != null && tags.Any())
+        if (tags.Any())
         {
             filtered = filtered.Where(sample =>
-                tags.All(rt => sample.Tags != null && sample.Tags.Any(sampleTag => rt.Key == sampleTag.Key && rt.Value == sampleTag.Value))).ToList();
+                tags.All(tag => sample.Tags != null && sample.Tags.Any(sampleTag => tag.Key == sampleTag.Key && tag.Value == sampleTag.Value))).ToList();
         }
 
         static MetricSample SumAggregator(MetricSample current, MetricSample next)
