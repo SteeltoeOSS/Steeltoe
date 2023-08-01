@@ -1,10 +1,13 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+#pragma warning disable
+// Steeltoe: Copy of version in System.Diagnostics.Metrics (see README.md for details).
+
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 
-namespace System.Diagnostics.Metrics
+namespace Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics
 {
     internal abstract class Aggregator
     {
@@ -30,12 +33,25 @@ namespace System.Diagnostics.Metrics
 
     internal sealed class HistogramStatistics : IAggregationStatistics
     {
-        internal HistogramStatistics(QuantileValue[] quantiles)
+        // Steeltoe-Start: Track sum and max.
+        //internal HistogramStatistics(QuantileValue[] quantiles)
+        internal HistogramStatistics(QuantileValue[] quantiles, double sum, double max)
+        // Steeltoe-End: Track sum and max.
         {
             Quantiles = quantiles;
+
+            // Steeltoe-Start: Track sum and max.
+            HistogramSum = sum;
+            HistogramMax = max;
+            // Steeltoe-End: Track sum and max.
         }
 
         public QuantileValue[] Quantiles { get; }
+
+        // Steeltoe-Start: Track sum and max.
+        public double HistogramSum { get; }
+        public double HistogramMax { get; }
+        // Steeltoe-End: Track sum and max.
     }
 
     internal sealed class LabeledAggregationStatistics

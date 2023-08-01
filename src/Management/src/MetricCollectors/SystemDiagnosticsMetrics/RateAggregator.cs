@@ -1,7 +1,10 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+#pragma warning disable
+// Steeltoe: Copy of version in System.Diagnostics.Metrics (see README.md for details).
+
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace System.Diagnostics.Metrics
+namespace Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics
 {
     internal sealed class RateSumAggregator : Aggregator
     {

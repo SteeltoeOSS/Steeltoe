@@ -8,10 +8,10 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.MetricCollectors.Aggregations;
 using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;
+using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
@@ -127,7 +127,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
         var exporter = new SteeltoeExporter(_scraperOptions);
 
-        GetTestMetrics(exporter);
+        using AggregationManager aggregationManager = GetTestMetrics(exporter);
 
         var handler = new MetricsEndpointHandler(endpointOptionsMonitor, exporter, NullLoggerFactory.Instance);
 
@@ -152,7 +152,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
 
         var handler = new MetricsEndpointHandler(endpointOptionsMonitor, exporter, NullLoggerFactory.Instance);
 
-        GetTestMetrics(exporter);
+        using AggregationManager aggregationManager = GetTestMetrics(exporter);
         var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar", null);
@@ -168,8 +168,8 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
-        AggregationManager aggManager = GetTestMetrics(exporter);
-        aggManager.Start();
+        using AggregationManager aggregationManager = GetTestMetrics(exporter);
+        aggregationManager.Start();
         var handler = new MetricsEndpointHandler(endpointOptionsMonitor, exporter, NullLoggerFactory.Instance);
 
         var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);

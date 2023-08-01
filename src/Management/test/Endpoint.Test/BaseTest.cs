@@ -9,9 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.MetricCollectors.Aggregations;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;
+using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -46,7 +46,11 @@ public abstract class BaseTest : IDisposable
 
     internal AggregationManager GetTestMetrics(SteeltoeExporter steeltoeExporter)
     {
-        var aggregator = new AggregationManager(100, 100, steeltoeExporter.AddMetrics, _ =>
+        var aggregationManager = new AggregationManager(100, 100, steeltoeExporter.AddMetrics, (_, _) =>
+        {
+        }, (_, _) =>
+        {
+        }, _ =>
         {
         }, _ =>
         {
@@ -54,17 +58,17 @@ public abstract class BaseTest : IDisposable
         {
         }, () =>
         {
-        }, () =>
+        }, exception => throw exception, () =>
         {
         }, () =>
         {
         }, exception => throw exception);
 
-        aggregator.Include(SteeltoeMetrics.InstrumentationName);
+        aggregationManager.Include(SteeltoeMetrics.InstrumentationName);
 
-        steeltoeExporter.SetCollect(aggregator.Collect);
+        steeltoeExporter.SetCollect(aggregationManager.Collect);
 
-        return aggregator;
+        return aggregationManager;
     }
 
     protected static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions, TConfigureOptions>()

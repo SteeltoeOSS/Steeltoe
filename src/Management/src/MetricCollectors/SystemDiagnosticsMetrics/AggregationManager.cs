@@ -1,19 +1,27 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+#pragma warning disable
+// Steeltoe: Copy of version in System.Diagnostics.Metrics (see README.md for details).
+
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Metrics;
 using System.Runtime.Versioning;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace System.Diagnostics.Metrics
+namespace Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics
 {
     [UnsupportedOSPlatform("browser")]
     [SecuritySafeCritical]
     internal sealed class AggregationManager
+        // Steeltoe-Start: Add IDisposable, so we can dispose from tests.
+        : IDisposable
+        // Steeltoe-End: Add IDisposable, so we can dispose from tests.
     {
         public const double MinCollectionTimeSecs = 0.1;
         private static readonly QuantileAggregation s_defaultHistogramConfig = new QuantileAggregation(new double[] { 0.50, 0.95, 0.99 });
@@ -131,6 +139,10 @@ namespace System.Diagnostics.Metrics
 
         public void Start()
         {
+            // Steeltoe-Start: Commented out the code block below.
+            // Because Steeltoe calls Start() only once at startup and always calls the Collect method for each ASP.NET request or
+            // from the hosted service. Therefore we don't need a background thread to collect.
+            /*
             // if already started or already stopped we can't be started again
             Debug.Assert(_collectThread == null && !_cts.IsCancellationRequested);
             Debug.Assert(_collectionPeriod.TotalSeconds >= MinCollectionTimeSecs);
@@ -143,6 +155,8 @@ namespace System.Diagnostics.Metrics
             _collectThread.IsBackground = true;
             _collectThread.Name = "MetricsEventSource CollectWorker";
             _collectThread.Start();
+            */
+            // Steeltoe-End: Commented out the code block below.
 
             _listener.Start();
             _initialInstrumentEnumerationComplete();

@@ -13,12 +13,12 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 {
     private readonly IOptionsMonitor<MetricsEndpointOptions> _optionsMonitor;
-    private readonly ISteeltoeExporter _exporter;
+    private readonly SteeltoeExporter _exporter;
     private readonly ILogger<MetricsEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public MetricsEndpointHandler(IOptionsMonitor<MetricsEndpointOptions> optionsMonitor, ISteeltoeExporter exporter, ILoggerFactory loggerFactory)
+    public MetricsEndpointHandler(IOptionsMonitor<MetricsEndpointOptions> optionsMonitor, SteeltoeExporter exporter, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(exporter);

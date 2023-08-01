@@ -1,9 +1,13 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+#pragma warning disable
+// Steeltoe: Copy of version in System.Diagnostics.Metrics (see README.md for details).
+
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
-namespace System.Diagnostics.Metrics
+namespace Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics
 {
     internal sealed class QuantileAggregation
     {
@@ -51,6 +55,11 @@ namespace System.Diagnostics.Metrics
         private readonly int _mantissaMask;
         private readonly int _mantissaShift;
 
+        // Steeltoe-Start: Track sum and max.
+        private double _sum;
+        private double _max;
+        // Steeltoe-End: Track sum and max.
+
         private struct Bucket
         {
             public Bucket(double value, int count)
@@ -81,19 +90,39 @@ namespace System.Diagnostics.Metrics
         {
             int[]?[] counters;
             int count;
+
+            // Steeltoe-Start: Track sum and max.
+            double sum;
+            double max;
+            // Steeltoe-End: Track sum and max.
+
             lock (this)
             {
                 counters = _counters;
                 count = _count;
+
+                // Steeltoe-Start: Track sum and max.
+                sum = _sum;
+                max = _max;
+                // Steeltoe-End: Track sum and max.
+
                 _counters = new int[ExponentArraySize][];
                 _count = 0;
+
+                // Steeltoe-Start: Track sum and max.
+                _sum = 0;
+                _max = 0;
+                // Steeltoe-End: Track sum and max.
             }
 
             QuantileValue[] quantiles = new QuantileValue[_config.Quantiles.Length];
             int nextQuantileIndex = 0;
             if (nextQuantileIndex == _config.Quantiles.Length)
             {
-                return new HistogramStatistics(quantiles);
+                // Steeltoe-Start: Track sum and max.
+                //return new HistogramStatistics(quantiles);
+                return new HistogramStatistics(quantiles, sum, max);
+                // Steeltoe-End: Track sum and max.
             }
 
             // Reduce the count if there are any NaN or +/-Infinity values that were logged
@@ -116,14 +145,21 @@ namespace System.Diagnostics.Metrics
                     nextQuantileIndex++;
                     if (nextQuantileIndex == _config.Quantiles.Length)
                     {
-                        return new HistogramStatistics(quantiles);
+                        // Steeltoe-Start: Track sum and max.
+                        //return new HistogramStatistics(quantiles);
+                        return new HistogramStatistics(quantiles, sum, max);
+                        // Steeltoe-End: Track sum and max.
                     }
                     target = QuantileToRank(_config.Quantiles[nextQuantileIndex], count);
                 }
             }
 
             Debug.Assert(count == 0);
-            return new HistogramStatistics(Array.Empty<QuantileValue>());
+
+            // Steeltoe-Start: Track sum and max.
+            //return new HistogramStatistics(Array.Empty<QuantileValue>());
+            return new HistogramStatistics(Array.Empty<QuantileValue>(), sum, max);
+            // Steeltoe-End: Track sum and max.
         }
 
         private static int GetInvalidCount(int[]?[] counters)
@@ -194,6 +230,11 @@ namespace System.Diagnostics.Metrics
         {
             lock (this)
             {
+                // Steeltoe-Start: Track sum and max.
+                _sum += measurement;
+                _max = Math.Max(_max, measurement);
+                // Steeltoe-End: Track sum and max.
+
                 // This is relying on the bit representation of IEEE 754 to decompose
                 // the double. The sign bit + exponent bits land in exponent, the
                 // remainder lands in mantissa.

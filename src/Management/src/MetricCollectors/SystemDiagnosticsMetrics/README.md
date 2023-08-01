@@ -9,6 +9,11 @@ This was done because Steeltoe needs access (and a few small changes) to interna
 
 There is a baseline commit that contains an exact copy of the code files. All changes in this repo will be separate commits on top of that.
 
+All warnings are turned off using `#pragma warning disable` at the top of each file and the namespaces are adjusted to Steeltoe.
+This directory is excluded from Resharper code analysis and formatting.
+
+Aside from the above, any code changes from the baseline are wrapped in `Steeltoe-Start`/`Steeltoe-End` comment blocks.
+
 ## License from dotnet/runtime
 
 The MIT License (MIT)

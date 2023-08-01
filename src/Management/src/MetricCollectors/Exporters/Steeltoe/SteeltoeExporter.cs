@@ -4,15 +4,15 @@
 
 using System.Diagnostics.Metrics;
 using Steeltoe.Common;
-using Steeltoe.Management.MetricCollectors.Aggregations;
 using Steeltoe.Management.MetricCollectors.Metrics;
+using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 
 namespace Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 /// <summary>
 /// Exporter metrics to Steeltoe Format.
 /// </summary>
-internal sealed class SteeltoeExporter : ISteeltoeExporter
+internal sealed class SteeltoeExporter
 {
     // ReSharper disable once CollectionNeverUpdated.Local
     private readonly MetricsCollection<IList<MetricSample>> _metricSamples = new();

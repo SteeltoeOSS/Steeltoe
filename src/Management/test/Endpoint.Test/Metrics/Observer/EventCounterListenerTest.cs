@@ -6,10 +6,10 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
-using Steeltoe.Management.MetricCollectors.Aggregations;
 using Steeltoe.Management.MetricCollectors.Exporters;
 using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 using Steeltoe.Management.MetricCollectors.Metrics;
+using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics.Observer;
@@ -57,7 +57,7 @@ public sealed class EventCounterListenerTest : BaseTest
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_exporterOptions);
-        AggregationManager aggregationManager = GetTestMetrics(exporter);
+        using AggregationManager aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);
 
@@ -94,7 +94,7 @@ public sealed class EventCounterListenerTest : BaseTest
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
         var exporter = new SteeltoeExporter(_exporterOptions);
-        AggregationManager aggregationManager = GetTestMetrics(exporter);
+        using AggregationManager aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);
 
@@ -135,7 +135,7 @@ public sealed class EventCounterListenerTest : BaseTest
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
         var exporter = new SteeltoeExporter(_exporterOptions);
-        AggregationManager aggregationManager = GetTestMetrics(exporter);
+        using AggregationManager aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);
 

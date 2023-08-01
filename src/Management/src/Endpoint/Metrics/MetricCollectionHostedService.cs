@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
-using Steeltoe.Management.MetricCollectors.Aggregations;
+using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
