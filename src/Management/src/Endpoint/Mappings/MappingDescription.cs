@@ -43,17 +43,29 @@ public class MappingDescription
 
     private RouteMappingDetails CreateMappingDetails(IRouteDetails routeDetails)
     {
-        
-        return new RouteMappingDetails()
+        return new RouteMappingDetails
         {
             RequestMappingConditions = new RequestMappingConditions
             {
-                Consumes = routeDetails.Consumes.Select(consumes => new MediaTypeDescriptor() { MediaType = consumes }).ToList(),
-                Produces = routeDetails.Produces.Select(produces => new MediaTypeDescriptor() { MediaType = produces }).ToList(),
+                Consumes = routeDetails.Consumes.Select(consumes => new MediaTypeDescriptor
+                {
+                    MediaType = consumes
+                }).ToList(),
+                Produces = routeDetails.Produces.Select(produces => new MediaTypeDescriptor
+                {
+                    MediaType = produces
+                }).ToList(),
                 Methods = routeDetails.HttpMethods.ToList(),
-                Patterns = new[] { routeDetails.RouteTemplate },
-                Params = new string[] {}, // does not apply for .NET
-                Headers = new string[] {}, // Cannot infer here for .NET 
+                Patterns = new[]
+                {
+                    routeDetails.RouteTemplate
+                },
+                Params = new string[]
+                {
+                }, // does not apply for .NET
+                Headers = new string[]
+                {
+                } // Cannot infer here for .NET 
             }
         };
     }
