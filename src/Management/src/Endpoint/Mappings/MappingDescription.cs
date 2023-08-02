@@ -60,8 +60,8 @@ public class MappingDescription
                 {
                     routeDetails.RouteTemplate
                 },
-                Params = new List<string> (), // Does not apply for .NET
-                Headers = new List<string> (), // Cannot infer here for .NET 
+                Params = new List<string>(), // Does not apply for .NET
+                Headers = new List<string>() // Cannot infer here for .NET 
             }
         };
     }
