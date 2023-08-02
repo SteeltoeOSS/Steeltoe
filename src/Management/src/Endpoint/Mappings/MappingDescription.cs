@@ -56,16 +56,12 @@ public class MappingDescription
                     MediaType = produces
                 }).ToList(),
                 Methods = routeDetails.HttpMethods.ToList(),
-                Patterns = new[]
+                Patterns = new List<string>
                 {
                     routeDetails.RouteTemplate
                 },
-                Params = new string[]
-                {
-                }, // does not apply for .NET
-                Headers = new string[]
-                {
-                } // Cannot infer here for .NET 
+                Params = new List<string> (), // Does not apply for .NET
+                Headers = new List<string> (), // Cannot infer here for .NET 
             }
         };
     }
