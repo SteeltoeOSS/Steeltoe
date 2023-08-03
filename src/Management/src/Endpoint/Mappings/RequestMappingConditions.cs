@@ -23,4 +23,7 @@ public class RequestMappingConditions
 
     [JsonPropertyName("patterns")]
     public IList<string> Patterns { get; set; }
+
+    [JsonPropertyName("params")]
+    public IList<string> Params { get; set; }
 }

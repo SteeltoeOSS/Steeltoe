@@ -50,16 +50,18 @@ public class MappingDescription
                 Consumes = routeDetails.Consumes.Select(consumes => new MediaTypeDescriptor
                 {
                     MediaType = consumes
-                }).ToArray(),
+                }).ToList(),
                 Produces = routeDetails.Produces.Select(produces => new MediaTypeDescriptor
                 {
                     MediaType = produces
-                }).ToArray(),
-                Methods = routeDetails.HttpMethods.ToArray(),
-                Patterns = new[]
+                }).ToList(),
+                Methods = routeDetails.HttpMethods.ToList(),
+                Patterns = new List<string>
                 {
                     routeDetails.RouteTemplate
-                }
+                },
+                Params = new List<string>(), // Does not apply for .NET
+                Headers = new List<string>() // Cannot infer here for .NET 
             }
         };
     }
