@@ -39,7 +39,7 @@ public sealed class ApplicationMappingsTest : BaseTest
             "application/json"
         };
 
-        var routeDetails = new AspNetCoreRouteDetails(httpMethods, "/Home/Index", contentTypes, contentTypes);
+        var routeDetails = new AspNetCoreRouteDetails("/Home/Index", httpMethods, contentTypes, contentTypes, Array.Empty<string>(), Array.Empty<string>());
 
         var mappingDescriptions = new List<RouteMappingDescription>
         {

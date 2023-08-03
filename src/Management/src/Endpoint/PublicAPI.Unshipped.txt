@@ -324,9 +324,11 @@ Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.ReturnConfiguration.
 Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.ReturnConfiguration.set -> void
 Steeltoe.Management.Endpoint.Refresh.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails
-Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.AspNetCoreRouteDetails(System.Collections.Generic.IList<string!>! httpMethods, string! routeTemplate, System.Collections.Generic.IList<string!>! produces, System.Collections.Generic.IList<string!>! consumes) -> void
+Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.AspNetCoreRouteDetails(string! routeTemplate, System.Collections.Generic.IList<string!>! httpMethods, System.Collections.Generic.IList<string!>! consumes, System.Collections.Generic.IList<string!>! produces, System.Collections.Generic.IList<string!>! headers, System.Collections.Generic.IList<string!>! params) -> void
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.Consumes.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.Headers.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.HttpMethods.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.Params.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.Produces.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.RouteMappings.AspNetCoreRouteDetails.RouteTemplate.get -> string!
 Steeltoe.Management.Endpoint.RouteMappings.ContextMappings
@@ -343,9 +345,10 @@ Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions
 Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Consumes.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor!>!
 Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Headers.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Methods.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Params.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Patterns.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Produces.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor!>!
-Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.RequestMappingConditions(System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor!>! consumes, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor!>! produces, System.Collections.Generic.IList<string!>! headers, System.Collections.Generic.IList<string!>! methods, System.Collections.Generic.IList<string!>! patterns) -> void
+Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.RequestMappingConditions(System.Collections.Generic.IList<string!>! patterns, System.Collections.Generic.IList<string!>! methods, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor!>! consumes, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor!>! produces, System.Collections.Generic.IList<string!>! headers, System.Collections.Generic.IList<string!>! params) -> void
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.Details.get -> Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDetails?
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.Handler.get -> string!

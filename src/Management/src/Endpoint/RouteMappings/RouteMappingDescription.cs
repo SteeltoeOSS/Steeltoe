@@ -78,15 +78,21 @@ public sealed class RouteMappingDescription
 
     private RouteMappingDetails CreateMappingDetails(AspNetCoreRouteDetails routeDetails)
     {
-        List<MediaTypeDescriptor> consumes = routeDetails.Consumes.Select(consumes => new MediaTypeDescriptor(consumes, false)).ToList();
-        List<MediaTypeDescriptor> produces = routeDetails.Produces.Select(produces => new MediaTypeDescriptor(produces, false)).ToList();
-
         var patterns = new List<string>
         {
             routeDetails.RouteTemplate
         };
 
-        var conditions = new RequestMappingConditions(consumes, produces, new List<string>(), routeDetails.HttpMethods.ToList(), patterns);
+        List<MediaTypeDescriptor> consumes = routeDetails.Consumes.Select(consumes => new MediaTypeDescriptor(consumes, false)).ToList();
+        List<MediaTypeDescriptor> produces = routeDetails.Produces.Select(produces => new MediaTypeDescriptor(produces, false)).ToList();
+
+        // Cannot infer for .NET
+        var headers = new List<string>();
+
+        // Does not apply for .NET
+        var @params = new List<string>();
+
+        var conditions = new RequestMappingConditions(patterns, routeDetails.HttpMethods.ToList(), consumes, produces, headers, @params);
         return new RouteMappingDetails(conditions);
     }
 

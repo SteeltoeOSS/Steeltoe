@@ -107,8 +107,6 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
 
     private AspNetCoreRouteDetails GetRouteDetails(ApiDescription description)
     {
-        IList<string> httpMethods = GetHttpMethods(description);
-
         string routeTemplate;
 
         if (description.ActionDescriptor.AttributeRouteInfo?.Template != null)
@@ -121,45 +119,30 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             routeTemplate = $"/{descriptor.ControllerName}/{descriptor.ActionName}";
         }
 
-        var produces = new List<string>();
+        IList<string> httpMethods = GetHttpMethods(description);
 
-        foreach (ApiResponseType responseType in description.SupportedResponseTypes)
-        {
-            foreach (ApiResponseFormat format in responseType.ApiResponseFormats)
-            {
-                produces.Add(format.MediaType);
-            }
-        }
-
-        var consumes = new List<string>();
-
-        foreach (ApiRequestFormat format in description.SupportedRequestFormats)
-        {
-            consumes.Add(format.MediaType);
-        }
+        List<string> consumes = description.SupportedRequestFormats.Select(format => format.MediaType).ToList();
 
         if (description.ActionDescriptor.ActionConstraints != null)
         {
             foreach (ConsumesAttribute consumesAttribute in description.ActionDescriptor.ActionConstraints.OfType<ConsumesAttribute>())
             {
-                if (consumesAttribute.ContentTypes.Count > 0)
-                {
-                    consumes.AddRange(consumesAttribute.ContentTypes);
-                }
+                consumes.AddRange(consumesAttribute.ContentTypes);
             }
         }
 
-        return new AspNetCoreRouteDetails(httpMethods, routeTemplate, produces, consumes);
+        var produces = new List<string>();
+
+        foreach (ApiResponseType responseType in description.SupportedResponseTypes)
+        {
+            produces.AddRange(responseType.ApiResponseFormats.Select(format => format.MediaType));
+        }
+
+        return new AspNetCoreRouteDetails(routeTemplate, httpMethods, consumes, produces, new List<string>(), new List<string>());
     }
 
     private AspNetCoreRouteDetails GetRouteDetails(ActionDescriptor actionDescriptor)
     {
-        List<string> httpMethods = actionDescriptor.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ??
-            new List<string>
-            {
-                RouteMappingDescription.AllHttpMethods
-            };
-
         string routeTemplate;
 
         if (actionDescriptor.AttributeRouteInfo?.Template != null)
@@ -172,37 +155,37 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
             routeTemplate = $"/{controllerDescriptor.ControllerName}/{controllerDescriptor.ActionName}";
         }
 
-        var produces = new List<string>();
-
-        foreach (ProducesAttribute attribute in actionDescriptor.FilterDescriptors.Where(descriptor => descriptor.Filter is ProducesAttribute)
-            .Select(descriptor => (ProducesAttribute)descriptor.Filter))
-        {
-            foreach (string format in attribute.ContentTypes)
+        List<string> httpMethods = actionDescriptor.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ??
+            new List<string>
             {
-                produces.Add(format);
-            }
-        }
+                RouteMappingDescription.AllHttpMethods
+            };
 
         var consumes = new List<string>();
 
         foreach (ConsumesAttribute attribute in actionDescriptor.FilterDescriptors.Where(descriptor => descriptor.Filter is ConsumesAttribute)
             .Select(descriptor => (ConsumesAttribute)descriptor.Filter))
         {
-            foreach (string format in attribute.ContentTypes)
-            {
-                consumes.Add(format);
-            }
+            consumes.AddRange(attribute.ContentTypes);
         }
 
-        return new AspNetCoreRouteDetails(httpMethods, routeTemplate, produces, consumes);
+        var produces = new List<string>();
+
+        foreach (ProducesAttribute attribute in actionDescriptor.FilterDescriptors.Where(descriptor => descriptor.Filter is ProducesAttribute)
+            .Select(descriptor => (ProducesAttribute)descriptor.Filter))
+        {
+            produces.AddRange(attribute.ContentTypes);
+        }
+
+        return new AspNetCoreRouteDetails(routeTemplate, httpMethods, consumes, produces, new List<string>(), new List<string>());
     }
 
     private AspNetCoreRouteDetails GetRouteDetails(Route route)
     {
-        IList<string> httpMethods = GetHttpMethods(route);
         string routeRouteTemplate = route.RouteTemplate ?? string.Empty;
+        IList<string> httpMethods = GetHttpMethods(route);
 
-        return new AspNetCoreRouteDetails(httpMethods, routeRouteTemplate, new List<string>(), new List<string>());
+        return new AspNetCoreRouteDetails(routeRouteTemplate, httpMethods, new List<string>(), new List<string>(), new List<string>(), new List<string>());
     }
 
     private void AddRouteMappingsDescriptions(IDictionary<string, IList<RouteMappingDescription>> dictionary)

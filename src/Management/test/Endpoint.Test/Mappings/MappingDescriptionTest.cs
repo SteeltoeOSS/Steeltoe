@@ -22,7 +22,7 @@ public sealed class MappingDescriptionTest : BaseTest
             "application/json"
         };
 
-        var routeDetails = new AspNetCoreRouteDetails(httpMethods, "/Home/Index", contentTypes, contentTypes);
+        var routeDetails = new AspNetCoreRouteDetails("/Home/Index", httpMethods, contentTypes, contentTypes, Array.Empty<string>(), Array.Empty<string>());
 
         var mapDesc = new RouteMappingDescription("foobar", routeDetails);
 
@@ -44,7 +44,7 @@ public sealed class MappingDescriptionTest : BaseTest
             "application/json"
         };
 
-        var routeDetails = new AspNetCoreRouteDetails(httpMethods, "/Home/Index", contentTypes, contentTypes);
+        var routeDetails = new AspNetCoreRouteDetails("/Home/Index", httpMethods, contentTypes, contentTypes, Array.Empty<string>(), Array.Empty<string>());
 
         var mapDesc = new RouteMappingDescription("foobar", routeDetails);
 

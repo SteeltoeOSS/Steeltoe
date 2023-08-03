@@ -9,6 +9,12 @@ namespace Steeltoe.Management.Endpoint.RouteMappings;
 
 public sealed class RequestMappingConditions
 {
+    [JsonPropertyName("patterns")]
+    public IList<string> Patterns { get; }
+
+    [JsonPropertyName("methods")]
+    public IList<string> Methods { get; }
+
     [JsonPropertyName("consumes")]
     public IList<MediaTypeDescriptor> Consumes { get; }
 
@@ -18,25 +24,24 @@ public sealed class RequestMappingConditions
     [JsonPropertyName("headers")]
     public IList<string> Headers { get; }
 
-    [JsonPropertyName("methods")]
-    public IList<string> Methods { get; }
+    [JsonPropertyName("params")]
+    public IList<string> Params { get; }
 
-    [JsonPropertyName("patterns")]
-    public IList<string> Patterns { get; }
-
-    public RequestMappingConditions(IList<MediaTypeDescriptor> consumes, IList<MediaTypeDescriptor> produces, IList<string> headers, IList<string> methods,
-        IList<string> patterns)
+    public RequestMappingConditions(IList<string> patterns, IList<string> methods, IList<MediaTypeDescriptor> consumes, IList<MediaTypeDescriptor> produces,
+        IList<string> headers, IList<string> @params)
     {
+        ArgumentGuard.NotNull(patterns);
+        ArgumentGuard.NotNull(methods);
         ArgumentGuard.NotNull(consumes);
         ArgumentGuard.NotNull(produces);
         ArgumentGuard.NotNull(headers);
-        ArgumentGuard.NotNull(methods);
-        ArgumentGuard.NotNull(patterns);
+        ArgumentGuard.NotNull(@params);
 
+        Patterns = patterns;
+        Methods = methods;
         Consumes = consumes;
         Produces = produces;
         Headers = headers;
-        Methods = methods;
-        Patterns = patterns;
+        Params = @params;
     }
 }
