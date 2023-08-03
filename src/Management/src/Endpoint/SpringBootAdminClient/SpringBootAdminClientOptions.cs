@@ -50,7 +50,7 @@ public sealed class SpringBootAdminClientOptions
 
         // Require base path to be supplied directly, in the configuration, or in the app instance info
         BasePath ??= GetBasePath(configuration) ?? appInfo.Uris?.FirstOrDefault() ??
-            throw new NullReferenceException($"Please set {Prefix}:BasePath in order to register with Spring Boot Admin");
+            throw new InvalidOperationException($"Please set {Prefix}:BasePath in order to register with Spring Boot Admin");
 
         ApplicationName ??= appInfo.GetApplicationNameInContext(SteeltoeComponent.Management);
     }

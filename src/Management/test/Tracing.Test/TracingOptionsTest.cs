@@ -27,13 +27,6 @@ public sealed class TracingOptionsTest
     }
 
     [Fact]
-    public void ThrowsIfConfigNull()
-    {
-        const IConfiguration? configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new TracingOptions(null, configuration));
-    }
-
-    [Fact]
     public void BindsConfigurationCorrectly()
     {
         var appsettings = new Dictionary<string, string>

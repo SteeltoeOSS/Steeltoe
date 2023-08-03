@@ -14,7 +14,7 @@ public sealed class SpringBootAdminClientOptionsTest
     [Fact]
     public void ConstructorFailsWithoutBaseAppUrl()
     {
-        var exception = Assert.Throws<NullReferenceException>(() =>
+        var exception = Assert.Throws<InvalidOperationException>(() =>
             new SpringBootAdminClientOptions(new ConfigurationBuilder().Build(), new ApplicationInstanceInfo()));
 
         Assert.Contains(":BasePath in order to register with Spring Boot Admin", exception.Message, StringComparison.Ordinal);
