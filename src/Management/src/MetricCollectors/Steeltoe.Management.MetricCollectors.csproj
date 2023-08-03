@@ -6,7 +6,7 @@
     <IsPackable>true</IsPackable>
     <Nullable>enable</Nullable>
     <!-- The compiler constants below are required for the copied code in SystemDiagnosticsMetrics -->
-    <DefineConstants>$(DefineConstants);MEMORYMARSHAL_SUPPORT;OS_ISBROWSER_SUPPORT;ALLOW_PARTIALLY_TRUSTED_CALLERS</DefineConstants>
+    <DefineConstants>$(DefineConstants);MEMORYMARSHAL_SUPPORT</DefineConstants>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
