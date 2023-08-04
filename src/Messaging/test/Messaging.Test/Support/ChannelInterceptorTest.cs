@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Messaging.Support;
 using Xunit;
@@ -135,7 +136,8 @@ public class ChannelInterceptorTest
 
     internal sealed class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
     {
-        public AfterCompletionWithSendExceptionChannel()
+        public AfterCompletionWithSendExceptionChannel() :
+            base(NullLoggerFactory.Instance)
         {
             Writer = new AfterCompletionWithSendExceptionChannelWriter(this);
         }
@@ -148,8 +150,8 @@ public class ChannelInterceptorTest
 
     internal sealed class AfterCompletionWithSendExceptionChannelWriter : AbstractMessageChannelWriter
     {
-        public AfterCompletionWithSendExceptionChannelWriter(AbstractMessageChannel channel, ILogger logger = null)
-            : base(channel, logger)
+        public AfterCompletionWithSendExceptionChannelWriter(AbstractMessageChannel channel)
+            : base(channel, NullLoggerFactory.Instance)
         {
         }
     }
@@ -157,6 +159,7 @@ public class ChannelInterceptorTest
     internal sealed class PostSendInterceptorMessageWasNotSentChannel : AbstractMessageChannel
     {
         public PostSendInterceptorMessageWasNotSentChannel()
+            :base(NullLoggerFactory.Instance)
         {
             Writer = new PostSendInterceptorMessageWasNotSentChannelWriter(this);
         }
@@ -169,8 +172,8 @@ public class ChannelInterceptorTest
 
     internal sealed class PostSendInterceptorMessageWasNotSentChannelWriter : AbstractMessageChannelWriter
     {
-        public PostSendInterceptorMessageWasNotSentChannelWriter(AbstractMessageChannel channel, ILogger logger = null)
-            : base(channel, logger)
+        public PostSendInterceptorMessageWasNotSentChannelWriter(AbstractMessageChannel channel)
+            : base(channel, NullLoggerFactory.Instance)
         {
         }
     }

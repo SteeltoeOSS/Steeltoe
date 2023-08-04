@@ -33,7 +33,7 @@ public class MessageRequestReplyTemplateTest
         IMessage<string> responseMessage = Message.Create("response");
         _template.DefaultSendDestination = "home";
         _template.ReceiveMessage = responseMessage;
-        IMessage actual = await _template.SendAndReceiveAsync(requestMessage);
+        IMessage actual = await _template.SendAndReceiveAsync(requestMessage, default);
 
         Assert.Equal("home", _template.Destination);
         Assert.Same(requestMessage, _template.RequestMessage);
@@ -57,7 +57,7 @@ public class MessageRequestReplyTemplateTest
     [Fact]
     public async Task SendAndReceiveAsyncMissingDestination()
     {
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _template.SendAndReceiveAsync(Message.Create("request")));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _template.SendAndReceiveAsync(Message.Create("request"), default));
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class MessageRequestReplyTemplateTest
         IMessage<string> requestMessage = Message.Create("request");
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        IMessage actual = await _template.SendAndReceiveAsync("somewhere", requestMessage);
+        IMessage actual = await _template.SendAndReceiveAsync("somewhere", requestMessage, default);
         Assert.Equal("somewhere", _template.Destination);
         Assert.Same(requestMessage, _template.RequestMessage);
         Assert.Same(responseMessage, actual);
@@ -97,7 +97,7 @@ public class MessageRequestReplyTemplateTest
         _template.DefaultSendDestination = "home";
         _template.ReceiveMessage = responseMessage;
 
-        string response = await _template.ConvertSendAndReceiveAsync<string>("request");
+        string response = await _template.ConvertSendAndReceiveAsync<string>("request", default);
         Assert.Equal("home", _template.Destination);
         Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
@@ -121,7 +121,7 @@ public class MessageRequestReplyTemplateTest
     {
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        string response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request");
+        string response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request", default);
         Assert.Equal("somewhere", _template.Destination);
         Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
@@ -143,7 +143,7 @@ public class MessageRequestReplyTemplateTest
     {
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        string response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request", _headers);
+        string response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request", _headers, default);
         Assert.Equal("somewhere", _template.Destination);
         Assert.Equal("value", _template.RequestMessage.Headers["key"]);
         Assert.Same("request", _template.RequestMessage.Payload);
@@ -155,7 +155,7 @@ public class MessageRequestReplyTemplateTest
     {
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        string response = _template.ConvertSendAndReceive<string>("somewhere", "request", _headers);
+        string response = _template.ConvertSendAndReceive<string>("somewhere", "request", _headers, default);
         Assert.Equal("somewhere", _template.Destination);
         Assert.Equal("value", _template.RequestMessage.Headers["key"]);
         Assert.Same("request", _template.RequestMessage.Payload);
@@ -168,7 +168,7 @@ public class MessageRequestReplyTemplateTest
         IMessage<string> responseMessage = Message.Create("response");
         _template.DefaultSendDestination = "home";
         _template.ReceiveMessage = responseMessage;
-        string response = await _template.ConvertSendAndReceiveAsync<string>((object)"request", _postProcessor);
+        string response = await _template.ConvertSendAndReceiveAsync<string>((object)"request", _postProcessor, default);
 
         Assert.Equal("home", _template.Destination);
         Assert.Same("request", _template.RequestMessage.Payload);
@@ -195,7 +195,7 @@ public class MessageRequestReplyTemplateTest
     {
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        string response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request", _postProcessor);
+        string response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request", _postProcessor, default);
         Assert.Equal("somewhere", _template.Destination);
         Assert.Same("request", _template.RequestMessage.Payload);
         Assert.Same("response", response);
@@ -219,7 +219,7 @@ public class MessageRequestReplyTemplateTest
     {
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        string response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request", _headers, _postProcessor);
+        string response = await _template.ConvertSendAndReceiveAsync<string>("somewhere", "request", _headers, _postProcessor, default);
         Assert.Equal("somewhere", _template.Destination);
         Assert.Equal("value", _template.RequestMessage.Headers["key"]);
         Assert.Same("request", _template.RequestMessage.Payload);
@@ -259,7 +259,7 @@ public class MessageRequestReplyTemplateTest
             return Task.FromResult(ReceiveMessage);
         }
 
-        protected override Task<IMessage> DoSendAndReceiveAsync(string destination, IMessage requestMessage, CancellationToken cancellationToken = default)
+        protected override Task<IMessage> DoSendAndReceiveAsync(string destination, IMessage requestMessage, CancellationToken cancellationToken)
         {
             Destination = destination;
             RequestMessage = requestMessage;

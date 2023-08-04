@@ -4,6 +4,7 @@
 
 using System.Reflection;
 using System.Text;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
@@ -19,7 +20,7 @@ public class ErrorHandlerTests
     [Fact]
     public void TestFatalErrorsAreRejected()
     {
-        var handler = new ConditionalRejectingErrorHandler();
+        var handler = new ConditionalRejectingErrorHandler(NullLoggerFactory.Instance);
 
         handler.HandleError(new ListenerExecutionFailedException("intended", new InvalidOperationException(),
             Message.Create(Encoding.UTF8.GetBytes(string.Empty))));
@@ -59,7 +60,7 @@ public class ErrorHandlerTests
 
     private void DoTest(Exception cause)
     {
-        var handler = new ConditionalRejectingErrorHandler();
+        var handler = new ConditionalRejectingErrorHandler(NullLoggerFactory.Instance);
         handler.HandleError(new ListenerExecutionFailedException("test", cause, Message.Create(Array.Empty<byte>())));
     }
 }

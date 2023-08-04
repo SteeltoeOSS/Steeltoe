@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
@@ -33,7 +34,7 @@ public class MessageListenerAdapterTest
         };
 
         _messageProperties = new MessageHeaders(headers);
-        _adapter = new MessageListenerAdapter(null);
+        _adapter = new MessageListenerAdapter(null, NullLoggerFactory.Instance);
     }
 
     [Fact]
@@ -66,7 +67,7 @@ public class MessageListenerAdapterTest
     {
         var called = new AtomicBoolean(false);
         var delegate2 = new TestDelegate2(called);
-        _adapter = new MessageListenerAdapter(null, delegate2, nameof(TestDelegate2.MyPojoMessageMethod));
+        _adapter = new MessageListenerAdapter(null, delegate2, nameof(TestDelegate2.MyPojoMessageMethod), NullLoggerFactory.Instance);
         byte[] bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         _adapter.OnMessage(Message.Create(bytes, _messageProperties), null);
         Assert.True(called.Value);
@@ -148,7 +149,7 @@ public class MessageListenerAdapterTest
         var called = new CountdownEvent(1);
         var @delegate = new TestAsyncDelegate();
 
-        _adapter = new MessageListenerAdapter(null, @delegate, nameof(TestAsyncDelegate.MyPojoMessageMethodAsync))
+        _adapter = new MessageListenerAdapter(null, @delegate, nameof(TestAsyncDelegate.MyPojoMessageMethodAsync), NullLoggerFactory.Instance)
         {
             ContainerAckMode = AcknowledgeMode.Manual,
             ResponseExchange = "default"
@@ -291,8 +292,8 @@ public class MessageListenerAdapterTest
 
     private sealed class ExtendedListenerAdapter : MessageListenerAdapter
     {
-        public ExtendedListenerAdapter(IApplicationContext context, ILogger logger = null)
-            : base(context, logger)
+        public ExtendedListenerAdapter(IApplicationContext context, ILoggerFactory loggerFactory = null)
+            : base(context, loggerFactory)
         {
         }
 

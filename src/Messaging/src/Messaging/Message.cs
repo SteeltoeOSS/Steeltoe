@@ -31,7 +31,18 @@ public static class Message
         return (IMessage<T>)Create(payload, new MessageHeaders(headers, null, null), typeof(T));
     }
 
-    public static IMessage Create(object payload, Type messageType = null)
+    public static IMessage Create(object payload)
+    {
+        Type genParamType = GetGenericParamType(payload, null);
+        Type typeToCreate = typeof(Message<>).MakeGenericType(genParamType);
+
+        return (IMessage)Activator.CreateInstance(typeToCreate, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new[]
+        {
+            payload
+        }, null, null);
+    }
+
+    public static IMessage Create(object payload, Type messageType)
     {
         Type genParamType = GetGenericParamType(payload, messageType);
         Type typeToCreate = typeof(Message<>).MakeGenericType(genParamType);
@@ -42,7 +53,7 @@ public static class Message
         }, null, null);
     }
 
-    public static IMessage Create(object payload, IMessageHeaders headers, Type messageType = null)
+    public static IMessage Create(object payload, IMessageHeaders headers, Type messageType)
     {
         Type genParamType = GetGenericParamType(payload, messageType);
         Type typeToCreate = typeof(Message<>).MakeGenericType(genParamType);
@@ -54,7 +65,7 @@ public static class Message
         }, null, null);
     }
 
-    public static IMessage Create(object payload, IDictionary<string, object> headers, Type messageType = null)
+    public static IMessage Create(object payload, IDictionary<string, object> headers, Type messageType)
     {
         Type genParamType = GetGenericParamType(payload, messageType);
         Type typeToCreate = typeof(Message<>).MakeGenericType(genParamType);

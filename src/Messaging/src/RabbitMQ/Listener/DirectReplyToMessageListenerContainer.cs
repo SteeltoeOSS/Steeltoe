@@ -38,18 +38,23 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
         set => base.MessageListener = new ChannelAwareMessageListener(this, value);
     }
 
-    public DirectReplyToMessageListenerContainer(string name = null, ILoggerFactory loggerFactory = null)
+    public DirectReplyToMessageListenerContainer(string name, ILoggerFactory loggerFactory)
         : this(null, null, name, loggerFactory)
     {
     }
 
-    public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, string name = null, ILoggerFactory loggerFactory = null)
+    public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, string name, ILoggerFactory loggerFactory)
         : this(applicationContext, null, name, loggerFactory)
     {
     }
+    public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory)
 
-    public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null,
-        ILoggerFactory loggerFactory = null)
+      : this(applicationContext, null, null, new LoggerFactory())
+    {
+
+    }
+    public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name,
+        ILoggerFactory loggerFactory)
         : base(applicationContext, connectionFactory, name, loggerFactory)
     {
         base.SetQueueNames(Address.AmqRabbitMQReplyTo);

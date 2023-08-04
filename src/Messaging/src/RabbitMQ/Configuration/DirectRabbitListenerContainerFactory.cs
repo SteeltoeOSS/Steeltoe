@@ -23,20 +23,26 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
 
     public int? AckTimeout { get; set; }
 
-    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
+#pragma warning disable RS0016 // Add public types and members to the declared API
+    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory)
+#pragma warning restore RS0016 // Add public types and members to the declared API
         : base(applicationContext, loggerFactory)
     {
     }
 
+#pragma warning disable RS0016 // Add public types and members to the declared API
     public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory,
-        ILoggerFactory loggerFactory = null)
+#pragma warning restore RS0016 // Add public types and members to the declared API
+        ILoggerFactory loggerFactory)
         : base(applicationContext, connectionFactory, loggerFactory)
     {
     }
 
     [ActivatorUtilitiesConstructor]
+#pragma warning disable RS0016 // Add public types and members to the declared API
     public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor,
-        IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+#pragma warning restore RS0016 // Add public types and members to the declared API
+        IConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
         : base(applicationContext, optionsMonitor, connectionFactory, loggerFactory)
     {
         Configure(Options);

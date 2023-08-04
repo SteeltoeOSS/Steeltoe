@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
@@ -44,7 +45,7 @@ public class RabbitListenerAttributeProcessorTest
         Assert.NotNull(methodEndpoint.Instance);
         Assert.NotNull(methodEndpoint.Method);
 
-        var listenerContainer = new DirectMessageListenerContainer(context);
+        var listenerContainer = new DirectMessageListenerContainer(context, null, NullLoggerFactory.Instance);
         methodEndpoint.SetupListenerContainer(listenerContainer);
         Assert.NotNull(listenerContainer.MessageListener);
         Assert.True(container.IsStarted);
@@ -88,7 +89,7 @@ public class RabbitListenerAttributeProcessorTest
         Assert.Contains("testQueue", methodEndpoint.QueueNames);
         Assert.Contains("secondQueue", methodEndpoint.QueueNames);
 
-        var listenerContainer = new DirectMessageListenerContainer(context);
+        var listenerContainer = new DirectMessageListenerContainer(context, null, NullLoggerFactory.Instance);
         methodEndpoint.SetupListenerContainer(listenerContainer);
         Assert.NotNull(listenerContainer.MessageListener);
         Assert.True(container.IsStarted);

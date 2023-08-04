@@ -66,9 +66,9 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     public virtual IReplyPostProcessor ReplyPostProcessor { get; set; }
 
-    protected AbstractMessageListenerAdapter(IApplicationContext context, ILogger logger = null)
+    protected AbstractMessageListenerAdapter(IApplicationContext context, ILoggerFactory loggerFactory)
     {
-        Logger = logger;
+        Logger = loggerFactory.CreateLogger<AbstractMessageListenerAdapter>();
         MessageConverter = new SimpleMessageConverter();
         ApplicationContext = context;
     }

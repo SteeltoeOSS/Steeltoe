@@ -21,7 +21,7 @@ public interface IMessageReceivingOperations<TDestination>
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<IMessage> ReceiveAsync(CancellationToken cancellationToken = default);
+    Task<IMessage> ReceiveAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Receive a message from the given destination.
@@ -35,7 +35,7 @@ public interface IMessageReceivingOperations<TDestination>
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<IMessage> ReceiveAsync(TDestination destination, CancellationToken cancellationToken = default);
+    Task<IMessage> ReceiveAsync(TDestination destination, CancellationToken cancellationToken);
 
     /// <summary>
     /// Receive a message from a default destination and convert its payload to the specified target type.
@@ -49,7 +49,7 @@ public interface IMessageReceivingOperations<TDestination>
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<T> ReceiveAndConvertAsync<T>(CancellationToken cancellationToken = default);
+    Task<T> ReceiveAndConvertAsync<T>(CancellationToken cancellationToken);
 
     /// <summary>
     /// Receive a message from the given destination and convert its payload to the specified target type.
@@ -66,7 +66,7 @@ public interface IMessageReceivingOperations<TDestination>
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<T> ReceiveAndConvertAsync<T>(TDestination destination, CancellationToken cancellationToken = default);
+    Task<T> ReceiveAndConvertAsync<T>(TDestination destination, CancellationToken cancellationToken);
 
     /// <summary>
     /// Receive a message from a default destination.

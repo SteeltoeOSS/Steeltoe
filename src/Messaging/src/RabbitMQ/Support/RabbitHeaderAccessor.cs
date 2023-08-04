@@ -270,12 +270,12 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
         return null;
     }
 
-    public static RabbitHeaderAccessor GetMutableAccessor(IMessage message)
+    public new static RabbitHeaderAccessor GetMutableAccessor(IMessage message)
     {
         return GetMutableAccessor(message.Headers);
     }
 
-    public static RabbitHeaderAccessor GetMutableAccessor(IMessageHeaders headers)
+    public new static RabbitHeaderAccessor GetMutableAccessor(IMessageHeaders headers)
     {
         RabbitHeaderAccessor messageHeaderAccessor = null;
 

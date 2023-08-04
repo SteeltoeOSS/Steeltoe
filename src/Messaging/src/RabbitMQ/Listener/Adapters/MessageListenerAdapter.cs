@@ -24,22 +24,32 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
 
     public object Instance { get; set; }
 
-    public MessageListenerAdapter(IApplicationContext context, ILogger logger = null)
-        : base(context, logger)
+    public MessageListenerAdapter(IApplicationContext context)
+        :this(context, new LoggerFactory())
+    {
+
+    }
+
+    public MessageListenerAdapter(IApplicationContext context, ILoggerFactory loggerFactory)
+        : base(context, loggerFactory)
     {
         Instance = this;
     }
+    public MessageListenerAdapter(IApplicationContext context, object @delegate)
+        : this( context, @delegate, new LoggerFactory())
+    {
 
-    public MessageListenerAdapter(IApplicationContext context, object @delegate, ILogger logger = null)
-        : base(context, logger)
+    }
+    public MessageListenerAdapter(IApplicationContext context, object @delegate, ILoggerFactory loggerFactory)
+        : base(context, loggerFactory)
     {
         ArgumentGuard.NotNull(@delegate);
 
         Instance = @delegate;
     }
 
-    public MessageListenerAdapter(IApplicationContext context, object @delegate, ISmartMessageConverter messageConverter, ILogger logger = null)
-        : base(context, logger)
+    public MessageListenerAdapter(IApplicationContext context, object @delegate, ISmartMessageConverter messageConverter, ILoggerFactory loggerFactory)
+        : base(context, loggerFactory)
     {
         ArgumentGuard.NotNull(@delegate);
 
@@ -47,8 +57,8 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
         MessageConverter = messageConverter;
     }
 
-    public MessageListenerAdapter(IApplicationContext context, object @delegate, string defaultListenerMethod, ILogger logger = null)
-        : this(context, @delegate, logger)
+    public MessageListenerAdapter(IApplicationContext context, object @delegate, string defaultListenerMethod, ILoggerFactory loggerFactory)
+        : this(context, @delegate, loggerFactory)
     {
         DefaultListenerMethod = defaultListenerMethod;
     }

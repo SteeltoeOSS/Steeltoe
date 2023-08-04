@@ -13,7 +13,9 @@ public class DefaultExceptionStrategy : IFatalExceptionStrategy
 {
     private readonly ILogger _logger;
 
-    public DefaultExceptionStrategy(ILogger logger = null)
+#pragma warning disable RS0016 // Add public types and members to the declared API
+    public DefaultExceptionStrategy(ILogger logger)
+#pragma warning restore RS0016 // Add public types and members to the declared API
     {
         _logger = logger;
     }

@@ -101,7 +101,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
     public virtual IChannelListener ChannelListener => _channelListener;
 
-    protected AbstractConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
+    protected AbstractConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory)
         : this(rabbitConnectionFactory, null, loggerFactory)
     {
     }

@@ -42,7 +42,7 @@ public class DestinationResolvingMessagingTemplateTest
     public async Task SendAsync()
     {
         IMessage<string> message = Message.Create("payload");
-        await _template.SendAsync("myChannel", message);
+        await _template.SendAsync("myChannel", message, default);
 
         Assert.Same(_myChannel, _template.MessageChannel);
         Assert.Same(message, _template.Message);
@@ -62,7 +62,7 @@ public class DestinationResolvingMessagingTemplateTest
     public Task SendAsyncNoDestinationResolver()
     {
         var template = new TestDestinationResolvingMessagingTemplate();
-        return Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAsync("myChannel", Message.Create("payload")));
+        return Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAsync("myChannel", Message.Create("payload"), default));
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class DestinationResolvingMessagingTemplateTest
     [Fact]
     public async Task ConvertAndSendAsyncPayload()
     {
-        await _template.ConvertAndSendAsync("myChannel", "payload");
+        await _template.ConvertAndSendAsync("myChannel", "payload", default);
 
         Assert.Same(_myChannel, _template.MessageChannel);
         Assert.NotNull(_template.Message);
@@ -95,7 +95,7 @@ public class DestinationResolvingMessagingTemplateTest
     [Fact]
     public async Task ConvertAndSendAsyncPayloadAndHeaders()
     {
-        await _template.ConvertAndSendAsync("myChannel", "payload", _headers);
+        await _template.ConvertAndSendAsync("myChannel", "payload", _headers, default);
         Assert.Same(_myChannel, _template.MessageChannel);
         Assert.NotNull(_template.Message);
         Assert.Equal("value", _template.Message.Headers["key"]);
@@ -115,7 +115,7 @@ public class DestinationResolvingMessagingTemplateTest
     [Fact]
     public async Task ConvertAndSendAsyncPayloadWithPostProcessor()
     {
-        await _template.ConvertAndSendAsync("myChannel", "payload", _postProcessor);
+        await _template.ConvertAndSendAsync("myChannel", "payload", _postProcessor, default);
 
         Assert.Same(_myChannel, _template.MessageChannel);
         Assert.NotNull(_template.Message);
@@ -141,7 +141,7 @@ public class DestinationResolvingMessagingTemplateTest
     [Fact]
     public async Task ConvertAndSendAsyncPayloadAndHeadersWithPostProcessor()
     {
-        await _template.ConvertAndSendAsync("myChannel", "payload", _headers, _postProcessor);
+        await _template.ConvertAndSendAsync("myChannel", "payload", _headers, _postProcessor, default);
 
         Assert.Same(_myChannel, _template.MessageChannel);
         Assert.NotNull(_template.Message);
@@ -171,7 +171,7 @@ public class DestinationResolvingMessagingTemplateTest
     {
         IMessage<string> expected = Message.Create("payload");
         _template.ReceiveMessage = expected;
-        IMessage actual = await _template.ReceiveAsync("myChannel");
+        IMessage actual = await _template.ReceiveAsync("myChannel", default);
 
         Assert.Same(expected, actual);
         Assert.Same(_myChannel, _template.MessageChannel);
@@ -193,7 +193,7 @@ public class DestinationResolvingMessagingTemplateTest
     {
         IMessage<string> expected = Message.Create("payload");
         _template.ReceiveMessage = expected;
-        string payload = await _template.ReceiveAndConvertAsync<string>("myChannel");
+        string payload = await _template.ReceiveAndConvertAsync<string>("myChannel", default);
 
         Assert.Equal("payload", payload);
         Assert.Same(_myChannel, _template.MessageChannel);
@@ -216,7 +216,7 @@ public class DestinationResolvingMessagingTemplateTest
         IMessage<string> requestMessage = Message.Create("request");
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        IMessage actual = await _template.SendAndReceiveAsync("myChannel", requestMessage);
+        IMessage actual = await _template.SendAndReceiveAsync("myChannel", requestMessage, default);
 
         Assert.Equal(requestMessage, _template.Message);
         Assert.Same(responseMessage, actual);
@@ -241,7 +241,7 @@ public class DestinationResolvingMessagingTemplateTest
     {
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        string actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request");
+        string actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request", default);
 
         Assert.Equal("request", _template.Message.Payload);
         Assert.Same("response", actual);
@@ -265,7 +265,7 @@ public class DestinationResolvingMessagingTemplateTest
     {
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        string actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request", _headers);
+        string actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request", _headers, default);
 
         Assert.Equal("value", _template.Message.Headers["key"]);
         Assert.Equal("request", _template.Message.Payload);
@@ -291,7 +291,7 @@ public class DestinationResolvingMessagingTemplateTest
     {
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        string actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request", _postProcessor);
+        string actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request", _postProcessor, default);
 
         Assert.Equal("request", _template.Message.Payload);
         Assert.Equal("request", _postProcessor.Message.Payload);
@@ -317,7 +317,7 @@ public class DestinationResolvingMessagingTemplateTest
     {
         IMessage<string> responseMessage = Message.Create("response");
         _template.ReceiveMessage = responseMessage;
-        string actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request", _headers, _postProcessor);
+        string actual = await _template.ConvertSendAndReceiveAsync<string>("myChannel", "request", _headers, _postProcessor, default);
 
         Assert.Equal("value", _template.Message.Headers["key"]);
         Assert.Equal("request", _template.Message.Payload);
@@ -366,7 +366,7 @@ public class DestinationResolvingMessagingTemplateTest
             return Task.FromResult(ReceiveMessage);
         }
 
-        protected override Task<IMessage> DoSendAndReceiveAsync(IMessageChannel channel, IMessage requestMessage, CancellationToken cancellationToken = default)
+        protected override Task<IMessage> DoSendAndReceiveAsync(IMessageChannel channel, IMessage requestMessage, CancellationToken cancellationToken)
         {
             Message = requestMessage;
             MessageChannel = channel;

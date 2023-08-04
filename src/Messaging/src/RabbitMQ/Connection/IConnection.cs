@@ -32,7 +32,15 @@ public interface IConnection : IDisposable
     /// <returns>
     /// the new channel.
     /// </returns>
-    RC.IModel CreateChannel(bool transactional = false);
+    RC.IModel CreateChannel(bool transactional);
+
+    /// <summary>
+    /// Create a new channel, using an internally allocated channel number.
+    /// </summary>
+    /// <returns>
+    /// the new channel.
+    /// </returns>
+    RC.IModel CreateChannel();
 
     /// <summary>
     /// Close the connection.

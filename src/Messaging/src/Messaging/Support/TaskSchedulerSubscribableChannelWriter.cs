@@ -10,8 +10,8 @@ public class TaskSchedulerSubscribableChannelWriter : AbstractMessageChannelWrit
 {
     public virtual TaskSchedulerSubscribableChannel Channel => (TaskSchedulerSubscribableChannel)channel;
 
-    public TaskSchedulerSubscribableChannelWriter(TaskSchedulerSubscribableChannel channel, ILogger logger = null)
-        : base(channel, logger)
+    public TaskSchedulerSubscribableChannelWriter(TaskSchedulerSubscribableChannel channel, ILoggerFactory loggerFactory)
+        : base(channel, loggerFactory)
     {
     }
 

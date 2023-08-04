@@ -1725,11 +1725,12 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             Delegate.Close();
         }
 
-        public RC.IModel CreateChannel(bool transactional = false)
+        public RC.IModel CreateChannel(bool transactional)
         {
             RC.IModel chan = Delegate.CreateChannel(transactional);
             return new MockChannel(chan);
         }
+        public RC.IModel CreateChannel() => CreateChannel(false);
 
         public void Dispose()
         {

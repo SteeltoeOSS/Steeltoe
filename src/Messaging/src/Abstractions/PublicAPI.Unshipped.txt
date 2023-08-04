@@ -1,0 +1,245 @@
+﻿Steeltoe.Messaging.Converter.IContentTypeResolver
+Steeltoe.Messaging.Converter.IContentTypeResolver.Resolve(Steeltoe.Messaging.IMessageHeaders headers) -> Steeltoe.Common.Util.MimeType
+Steeltoe.Messaging.Converter.IMessageConverter
+Steeltoe.Messaging.Converter.IMessageConverter.FromMessage(Steeltoe.Messaging.IMessage message, System.Type targetType) -> object
+Steeltoe.Messaging.Converter.IMessageConverter.FromMessage<T>(Steeltoe.Messaging.IMessage message) -> T
+Steeltoe.Messaging.Converter.IMessageConverter.ToMessage(object payload, Steeltoe.Messaging.IMessageHeaders headers) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Converter.IMessageConverterFactory
+Steeltoe.Messaging.Converter.IMessageConverterFactory.AllRegistered.get -> System.Collections.Generic.IList<Steeltoe.Messaging.Converter.IMessageConverter>
+Steeltoe.Messaging.Converter.IMessageConverterFactory.GetMessageConverterForType(Steeltoe.Common.Util.MimeType mimeType) -> Steeltoe.Messaging.Converter.IMessageConverter
+Steeltoe.Messaging.Converter.IMessageConverterFactory.MessageConverterForAllRegistered.get -> Steeltoe.Messaging.Converter.ISmartMessageConverter
+Steeltoe.Messaging.Converter.ISmartMessageConverter
+Steeltoe.Messaging.Converter.ISmartMessageConverter.FromMessage(Steeltoe.Messaging.IMessage message, System.Type targetType, object conversionHint) -> object
+Steeltoe.Messaging.Converter.ISmartMessageConverter.FromMessage<T>(Steeltoe.Messaging.IMessage message, object conversionHint) -> T
+Steeltoe.Messaging.Converter.ISmartMessageConverter.ToMessage(object payload, Steeltoe.Messaging.IMessageHeaders headers, object conversionHint) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Converter.ITypeMapper
+Steeltoe.Messaging.Converter.ITypeMapper.DefaultType.get -> System.Type
+Steeltoe.Messaging.Converter.ITypeMapper.DefaultType.set -> void
+Steeltoe.Messaging.Converter.ITypeMapper.FromType(System.Type type, Steeltoe.Messaging.IMessageHeaders headers) -> void
+Steeltoe.Messaging.Converter.ITypeMapper.GetInferredType(Steeltoe.Messaging.IMessageHeaders headers) -> System.Type
+Steeltoe.Messaging.Converter.ITypeMapper.Precedence.get -> Steeltoe.Messaging.Converter.TypePrecedence
+Steeltoe.Messaging.Converter.ITypeMapper.Precedence.set -> void
+Steeltoe.Messaging.Converter.ITypeMapper.ToType(Steeltoe.Messaging.IMessageHeaders headers) -> System.Type
+Steeltoe.Messaging.Converter.TypePrecedence
+Steeltoe.Messaging.Converter.TypePrecedence.Inferred = 0 -> Steeltoe.Messaging.Converter.TypePrecedence
+Steeltoe.Messaging.Converter.TypePrecedence.TypeId = 1 -> Steeltoe.Messaging.Converter.TypePrecedence
+Steeltoe.Messaging.Core.IDestinationResolver
+Steeltoe.Messaging.Core.IDestinationResolver.ResolveDestination(string name) -> object
+Steeltoe.Messaging.Core.IDestinationResolver<T>
+Steeltoe.Messaging.Core.IDestinationResolver<T>.ResolveDestination(string name) -> T
+Steeltoe.Messaging.Core.IDestinationResolvingMessageReceivingOperations<TDestination>
+Steeltoe.Messaging.Core.IDestinationResolvingMessageReceivingOperations<TDestination>.Receive(string destinationName) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Core.IDestinationResolvingMessageReceivingOperations<TDestination>.ReceiveAndConvert<T>(string destinationName) -> T
+Steeltoe.Messaging.Core.IDestinationResolvingMessageReceivingOperations<TDestination>.ReceiveAndConvertAsync<T>(string destinationName, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IDestinationResolvingMessageReceivingOperations<TDestination>.ReceiveAsync(string destinationName, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>.ConvertSendAndReceive<T>(string destinationName, object request) -> T
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>.ConvertSendAndReceive<T>(string destinationName, object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor) -> T
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>.ConvertSendAndReceive<T>(string destinationName, object request, System.Collections.Generic.IDictionary<string, object> headers) -> T
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>.ConvertSendAndReceive<T>(string destinationName, object request, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor) -> T
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>.ConvertSendAndReceiveAsync<T>(string destinationName, object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>.ConvertSendAndReceiveAsync<T>(string destinationName, object request, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>.ConvertSendAndReceiveAsync<T>(string destinationName, object request, System.Collections.Generic.IDictionary<string, object> headers, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>.ConvertSendAndReceiveAsync<T>(string destinationName, object request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>.SendAndReceive(string destinationName, Steeltoe.Messaging.IMessage requestMessage) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Core.IDestinationResolvingMessageRequestReplyOperations<TDestination>.SendAndReceiveAsync(string destinationName, Steeltoe.Messaging.IMessage requestMessage, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>.ConvertAndSend(string destinationName, object payload) -> void
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>.ConvertAndSend(string destinationName, object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> void
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>.ConvertAndSend(string destinationName, object payload, System.Collections.Generic.IDictionary<string, object> headers) -> void
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>.ConvertAndSend(string destinationName, object payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> void
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>.ConvertAndSendAsync(string destinationName, object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>.ConvertAndSendAsync(string destinationName, object payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>.ConvertAndSendAsync(string destinationName, object payload, System.Collections.Generic.IDictionary<string, object> headers, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>.ConvertAndSendAsync(string destinationName, object payload, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>.Send(string destinationName, Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.Core.IDestinationResolvingMessageSendingOperations<TDestination>.SendAsync(string destinationName, Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessagePostProcessor
+Steeltoe.Messaging.Core.IMessagePostProcessor.PostProcessMessage(Steeltoe.Messaging.IMessage message) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Core.IMessageReceivingOperations<TDestination>
+Steeltoe.Messaging.Core.IMessageReceivingOperations<TDestination>.Receive() -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Core.IMessageReceivingOperations<TDestination>.Receive(TDestination destination) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Core.IMessageReceivingOperations<TDestination>.ReceiveAndConvert<T>() -> T
+Steeltoe.Messaging.Core.IMessageReceivingOperations<TDestination>.ReceiveAndConvert<T>(TDestination destination) -> T
+Steeltoe.Messaging.Core.IMessageReceivingOperations<TDestination>.ReceiveAndConvertAsync<T>(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IMessageReceivingOperations<TDestination>.ReceiveAndConvertAsync<T>(TDestination destination, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IMessageReceivingOperations<TDestination>.ReceiveAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+Steeltoe.Messaging.Core.IMessageReceivingOperations<TDestination>.ReceiveAsync(TDestination destination, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceive<T>(object request) -> T
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceive<T>(object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor) -> T
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceive<T>(TDestination destination, object request) -> T
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceive<T>(TDestination destination, object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor) -> T
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceive<T>(TDestination destination, object request, System.Collections.Generic.IDictionary<string, object> headers) -> T
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceive<T>(TDestination destination, object request, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor) -> T
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceiveAsync<T>(object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceiveAsync<T>(object request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceiveAsync<T>(TDestination destination, object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceiveAsync<T>(TDestination destination, object request, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceiveAsync<T>(TDestination destination, object request, System.Collections.Generic.IDictionary<string, object> headers, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.ConvertSendAndReceiveAsync<T>(TDestination destination, object request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.SendAndReceive(Steeltoe.Messaging.IMessage requestMessage) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.SendAndReceive(TDestination destination, Steeltoe.Messaging.IMessage requestMessage) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.SendAndReceiveAsync(Steeltoe.Messaging.IMessage requestMessage, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+Steeltoe.Messaging.Core.IMessageRequestReplyOperations<TDestination>.SendAndReceiveAsync(TDestination destination, Steeltoe.Messaging.IMessage requestMessage, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSend(object payload) -> void
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSend(object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> void
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSend(TDestination destination, object payload) -> void
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSend(TDestination destination, object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> void
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSend(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers) -> void
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSend(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> void
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(object payload) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(object payload, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(TDestination destination, object payload) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.Send(Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.Send(TDestination destination, Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.SendAsync(Steeltoe.Messaging.IMessage message) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.SendAsync(Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.SendAsync(TDestination destination, Steeltoe.Messaging.IMessage message) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.IMessageSendingOperations<TDestination>.SendAsync(TDestination destination, Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Handler.Attributes.DestinationVariableAttribute
+Steeltoe.Messaging.Handler.Attributes.DestinationVariableAttribute.DestinationVariableAttribute(string name = null) -> void
+Steeltoe.Messaging.Handler.Attributes.DestinationVariableAttribute.Name.get -> string
+Steeltoe.Messaging.Handler.Attributes.DestinationVariableAttribute.Name.set -> void
+Steeltoe.Messaging.Handler.Attributes.HeaderAttribute
+Steeltoe.Messaging.Handler.Attributes.HeaderAttribute.DefaultValue.get -> string
+Steeltoe.Messaging.Handler.Attributes.HeaderAttribute.DefaultValue.set -> void
+Steeltoe.Messaging.Handler.Attributes.HeaderAttribute.HeaderAttribute(string name = null, string defaultValue = null, bool required = true) -> void
+Steeltoe.Messaging.Handler.Attributes.HeaderAttribute.Name.get -> string
+Steeltoe.Messaging.Handler.Attributes.HeaderAttribute.Name.set -> void
+Steeltoe.Messaging.Handler.Attributes.HeaderAttribute.Required.get -> bool
+Steeltoe.Messaging.Handler.Attributes.HeaderAttribute.Required.set -> void
+Steeltoe.Messaging.Handler.Attributes.HeadersAttribute
+Steeltoe.Messaging.Handler.Attributes.HeadersAttribute.HeadersAttribute() -> void
+Steeltoe.Messaging.Handler.Attributes.MessageExceptionHandlerAttribute
+Steeltoe.Messaging.Handler.Attributes.MessageExceptionHandlerAttribute.Exceptions.get -> System.Type[]
+Steeltoe.Messaging.Handler.Attributes.MessageExceptionHandlerAttribute.MessageExceptionHandlerAttribute(params System.Type[] exceptions) -> void
+Steeltoe.Messaging.Handler.Attributes.PayloadAttribute
+Steeltoe.Messaging.Handler.Attributes.PayloadAttribute.Expression.get -> string
+Steeltoe.Messaging.Handler.Attributes.PayloadAttribute.Expression.set -> void
+Steeltoe.Messaging.Handler.Attributes.PayloadAttribute.PayloadAttribute() -> void
+Steeltoe.Messaging.Handler.Attributes.PayloadAttribute.PayloadAttribute(string expression, bool required = true) -> void
+Steeltoe.Messaging.Handler.Attributes.PayloadAttribute.Required.get -> bool
+Steeltoe.Messaging.Handler.Attributes.PayloadAttribute.Required.set -> void
+Steeltoe.Messaging.Handler.Attributes.SendToAttribute
+Steeltoe.Messaging.Handler.Attributes.SendToAttribute.Destinations.get -> string[]
+Steeltoe.Messaging.Handler.Attributes.SendToAttribute.SendToAttribute(params string[] destinations) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.IMessageHandlerMethodFactory
+Steeltoe.Messaging.Handler.Attributes.Support.IMessageHandlerMethodFactory.CreateInvocableHandlerMethod(object instance, System.Reflection.MethodInfo method) -> Steeltoe.Messaging.Handler.Invocation.IInvocableHandlerMethod
+Steeltoe.Messaging.Handler.Attributes.Support.IMessageHandlerMethodFactory.Initialize() -> void
+Steeltoe.Messaging.Handler.IMessageCondition
+Steeltoe.Messaging.Handler.IMessageCondition<T>
+Steeltoe.Messaging.Handler.IMessageCondition<T>.Combine(T other) -> T
+Steeltoe.Messaging.Handler.IMessageCondition<T>.CompareTo(T other, Steeltoe.Messaging.IMessage message) -> int
+Steeltoe.Messaging.Handler.IMessageCondition<T>.GetMatchingCondition(Steeltoe.Messaging.IMessage message) -> T
+Steeltoe.Messaging.Handler.Invocation.IAsyncHandlerMethodReturnValueHandler
+Steeltoe.Messaging.Handler.Invocation.IAsyncHandlerMethodReturnValueHandler.IsAsyncReturnValue(object returnValue, System.Reflection.ParameterInfo parameterInfo) -> bool
+Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver
+Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver.ResolveArgument(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> object
+Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver.SupportsParameter(System.Reflection.ParameterInfo parameter) -> bool
+Steeltoe.Messaging.Handler.Invocation.IHandlerMethodReturnValueHandler
+Steeltoe.Messaging.Handler.Invocation.IHandlerMethodReturnValueHandler.HandleReturnValue(object returnValue, System.Reflection.ParameterInfo returnType, Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.Handler.Invocation.IHandlerMethodReturnValueHandler.SupportsReturnType(System.Reflection.ParameterInfo returnType) -> bool
+Steeltoe.Messaging.Handler.Invocation.IInvocableHandlerMethod
+Steeltoe.Messaging.Handler.Invocation.IInvocableHandlerMethod.Handler.get -> object
+Steeltoe.Messaging.Handler.Invocation.IInvocableHandlerMethod.Invoke(Steeltoe.Messaging.IMessage requestMessage, params object[] args) -> object
+Steeltoe.Messaging.Handler.Invocation.IInvocableHandlerMethod.IsVoid.get -> bool
+Steeltoe.Messaging.Handler.Invocation.IInvocableHandlerMethod.Method.get -> System.Reflection.MethodInfo
+Steeltoe.Messaging.Handler.Invocation.IInvocableHandlerMethod.ShortLogMessage.get -> string
+Steeltoe.Messaging.IAsyncMessageHandler
+Steeltoe.Messaging.IAsyncMessageHandler.HandleMessageAsync(Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.IMessage.Headers.get -> Steeltoe.Messaging.IMessageHeaders
+Steeltoe.Messaging.IMessage.Payload.get -> object
+Steeltoe.Messaging.IMessage<T>
+Steeltoe.Messaging.IMessage<T>.Payload.get -> T
+Steeltoe.Messaging.IMessageChannel
+Steeltoe.Messaging.IMessageChannel.Send(Steeltoe.Messaging.IMessage message) -> bool
+Steeltoe.Messaging.IMessageChannel.Send(Steeltoe.Messaging.IMessage message, int timeout) -> bool
+Steeltoe.Messaging.IMessageChannel.SendAsync(Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<bool>
+Steeltoe.Messaging.IMessageHandler
+Steeltoe.Messaging.IMessageHandler.HandleMessage(Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.IMessageHeaders
+Steeltoe.Messaging.IMessageHeaders.Count.get -> int
+Steeltoe.Messaging.IMessageHeaders.ErrorChannel.get -> object
+Steeltoe.Messaging.IMessageHeaders.Get<T>(string key) -> T
+Steeltoe.Messaging.IMessageHeaders.GetEnumerator() -> System.Collections.Generic.IEnumerator<System.Collections.Generic.KeyValuePair<string, object>>
+Steeltoe.Messaging.IMessageHeaders.Id.get -> string
+Steeltoe.Messaging.IMessageHeaders.Keys.get -> System.Collections.Generic.ICollection<string>
+Steeltoe.Messaging.IMessageHeaders.ReplyChannel.get -> object
+Steeltoe.Messaging.IMessageHeaders.Timestamp.get -> long?
+Steeltoe.Messaging.IMessageHeaders.Values.get -> System.Collections.Generic.ICollection<object>
+Steeltoe.Messaging.IPollableChannel
+Steeltoe.Messaging.IPollableChannel.Receive() -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.IPollableChannel.Receive(int timeout) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.IPollableChannel.ReceiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Steeltoe.Messaging.IMessage>
+Steeltoe.Messaging.ISubscribableChannel
+Steeltoe.Messaging.ISubscribableChannel.Subscribe(Steeltoe.Messaging.IMessageHandler handler) -> bool
+Steeltoe.Messaging.ISubscribableChannel.Unsubscribe(Steeltoe.Messaging.IMessageHandler handler) -> bool
+Steeltoe.Messaging.Support.IChannelInterceptor
+Steeltoe.Messaging.Support.IChannelInterceptor.AfterReceiveCompletion(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, System.Exception exception) -> void
+Steeltoe.Messaging.Support.IChannelInterceptor.AfterSendCompletion(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, bool sent, System.Exception exception) -> void
+Steeltoe.Messaging.Support.IChannelInterceptor.PostReceive(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Support.IChannelInterceptor.PostSend(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, bool sent) -> void
+Steeltoe.Messaging.Support.IChannelInterceptor.PreReceive(Steeltoe.Messaging.IMessageChannel channel) -> bool
+Steeltoe.Messaging.Support.IChannelInterceptor.PreSend(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Support.IHeaderMapper<T>
+Steeltoe.Messaging.Support.IHeaderMapper<T>.FromHeaders(Steeltoe.Messaging.IMessageHeaders headers, T target) -> void
+Steeltoe.Messaging.Support.IHeaderMapper<T>.ToHeaders(T source) -> Steeltoe.Messaging.IMessageHeaders
+Steeltoe.Messaging.Support.IInterceptableChannel
+Steeltoe.Messaging.Support.IInterceptableChannel.AddInterceptor(int index, Steeltoe.Messaging.Support.IChannelInterceptor interceptor) -> void
+Steeltoe.Messaging.Support.IInterceptableChannel.AddInterceptor(Steeltoe.Messaging.Support.IChannelInterceptor interceptor) -> void
+Steeltoe.Messaging.Support.IInterceptableChannel.GetInterceptors() -> System.Collections.Generic.List<Steeltoe.Messaging.Support.IChannelInterceptor>
+Steeltoe.Messaging.Support.IInterceptableChannel.RemoveInterceptor(int index) -> Steeltoe.Messaging.Support.IChannelInterceptor
+Steeltoe.Messaging.Support.IInterceptableChannel.RemoveInterceptor(Steeltoe.Messaging.Support.IChannelInterceptor interceptor) -> bool
+Steeltoe.Messaging.Support.IInterceptableChannel.SetInterceptors(System.Collections.Generic.List<Steeltoe.Messaging.Support.IChannelInterceptor> interceptors) -> void
+Steeltoe.Messaging.Support.IMessageHandlingRunnable
+Steeltoe.Messaging.Support.IMessageHandlingRunnable.Message.get -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Support.IMessageHandlingRunnable.MessageHandler.get -> Steeltoe.Messaging.IMessageHandler
+Steeltoe.Messaging.Support.IMessageHeaderAccessor
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ContentType.get -> string
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ContentType.set -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.CopyHeaders(System.Collections.Generic.IDictionary<string, object> headersToCopy) -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.CopyHeadersIfAbsent(System.Collections.Generic.IDictionary<string, object> headersToCopy) -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.EnableTimestamp.get -> bool
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.EnableTimestamp.set -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ErrorChannel.get -> object
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ErrorChannel.set -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ErrorChannelName.get -> string
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ErrorChannelName.set -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.GetHeader(string headerName) -> object
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.Id.get -> string
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.IdGenerator.get -> Steeltoe.Common.Util.IIdGenerator
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.IdGenerator.set -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.IsModified.get -> bool
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.IsModified.set -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.IsMutable.get -> bool
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.LeaveMutable.get -> bool
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.LeaveMutable.set -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.MessageHeaders.get -> Steeltoe.Messaging.IMessageHeaders
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.RemoveHeader(string headerName) -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.RemoveHeaders(params string[] headerPatterns) -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ReplyChannel.get -> object
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ReplyChannel.set -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ReplyChannelName.get -> string
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ReplyChannelName.set -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.SetHeader(string name, object value) -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.SetHeaderIfAbsent(string name, object value) -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.SetImmutable() -> void
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.Timestamp.get -> long?
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ToDictionary() -> System.Collections.Generic.IDictionary<string, object>
+Steeltoe.Messaging.Support.IMessageHeaderAccessor.ToMessageHeaders() -> Steeltoe.Messaging.IMessageHeaders
+Steeltoe.Messaging.Support.IMessageHeaderInitializer
+Steeltoe.Messaging.Support.IMessageHeaderInitializer.InitHeaders(Steeltoe.Messaging.Support.IMessageHeaderAccessor headerAccessor) -> void
+Steeltoe.Messaging.Support.ITaskSchedulerChannelInterceptor
+Steeltoe.Messaging.Support.ITaskSchedulerChannelInterceptor.AfterMessageHandled(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, Steeltoe.Messaging.IMessageHandler handler, System.Exception exception) -> void
+Steeltoe.Messaging.Support.ITaskSchedulerChannelInterceptor.BeforeHandled(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, Steeltoe.Messaging.IMessageHandler handler) -> Steeltoe.Messaging.IMessage

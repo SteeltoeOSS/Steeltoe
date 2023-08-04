@@ -196,13 +196,20 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         return (T)GetMutableAccessor(messageHeaders, typeof(T));
     }
+    public static MessageHeaderAccessor GetMutableAccessor(IMessage message)
+    {
+        return GetMutableAccessor(message.Headers, null);
+    }
 
-    public static MessageHeaderAccessor GetMutableAccessor(IMessage message, Type accessorType = null)
+    public static MessageHeaderAccessor GetMutableAccessor(IMessage message, Type accessorType)
     {
         return GetMutableAccessor(message.Headers, accessorType);
     }
-
-    public static MessageHeaderAccessor GetMutableAccessor(IMessageHeaders headers, Type accessorType = null)
+    public static MessageHeaderAccessor GetMutableAccessor(IMessageHeaders headers)
+    {
+        return GetMutableAccessor(headers, null);
+    }
+    public static MessageHeaderAccessor GetMutableAccessor(IMessageHeaders headers, Type accessorType)
     {
         MessageHeaderAccessor messageHeaderAccessor = null;
 

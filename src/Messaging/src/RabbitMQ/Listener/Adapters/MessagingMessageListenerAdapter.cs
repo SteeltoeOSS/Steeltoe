@@ -34,25 +34,25 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 
     public HandlerAdapter HandlerAdapter { get; set; }
 
-    public MessagingMessageListenerAdapter(IApplicationContext context, ILogger logger = null)
-        : this(context, null, null, logger)
+    public MessagingMessageListenerAdapter(IApplicationContext context, ILoggerFactory loggerFactory)
+        : this(context, null, null, loggerFactory)
     {
     }
 
-    public MessagingMessageListenerAdapter(IApplicationContext context, object instance, MethodInfo method, ILogger logger = null)
-        : this(context, instance, method, false, null, logger)
+    public MessagingMessageListenerAdapter(IApplicationContext context, object instance, MethodInfo method, ILoggerFactory loggerFactory)
+        : this(context, instance, method, false, null, loggerFactory)
     {
     }
 
     public MessagingMessageListenerAdapter(IApplicationContext context, object instance, MethodInfo method, bool returnExceptions,
-        IRabbitListenerErrorHandler errorHandler, ILogger logger = null)
-        : this(context, instance, method, returnExceptions, errorHandler, false, logger)
+        IRabbitListenerErrorHandler errorHandler, ILoggerFactory loggerFactory)
+        : this(context, instance, method, returnExceptions, errorHandler, false, loggerFactory)
     {
     }
 
     protected MessagingMessageListenerAdapter(IApplicationContext context, object instance, MethodInfo method, bool returnExceptions,
-        IRabbitListenerErrorHandler errorHandler, bool batch, ILogger logger = null)
-        : base(context, logger)
+        IRabbitListenerErrorHandler errorHandler, bool batch, ILoggerFactory loggerFactory)
+        : base(context, loggerFactory)
     {
         Instance = instance;
         Method = method;

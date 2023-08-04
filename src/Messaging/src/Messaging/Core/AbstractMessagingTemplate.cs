@@ -7,36 +7,36 @@ namespace Steeltoe.Messaging.Core;
 public abstract class AbstractMessagingTemplate<TDestination> : AbstractMessageReceivingTemplate<TDestination>, IMessageRequestReplyOperations<TDestination>
     where TDestination : class
 {
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(object request, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(object request, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(RequiredDefaultSendDestination, request, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(destination, request, (IDictionary<string, object>)null, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IDictionary<string, object> headers,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(destination, request, headers, null, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(object request, IMessagePostProcessor requestPostProcessor,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(RequiredDefaultSendDestination, request, requestPostProcessor, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IMessagePostProcessor requestPostProcessor,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(destination, request, null, requestPostProcessor, cancellationToken);
     }
 
     public virtual async Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IDictionary<string, object> headers,
-        IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
+        IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken)
     {
         IMessage requestMessage = DoConvert(request, headers, requestPostProcessor);
         IMessage replyMessage = await SendAndReceiveAsync(destination, requestMessage);
@@ -49,12 +49,17 @@ public abstract class AbstractMessagingTemplate<TDestination> : AbstractMessageR
         return default;
     }
 
-    public virtual Task<IMessage> SendAndReceiveAsync(IMessage requestMessage, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> SendAndReceiveAsync(IMessage requestMessage, CancellationToken cancellationToken)
     {
         return SendAndReceiveAsync(RequiredDefaultSendDestination, requestMessage, cancellationToken);
     }
 
-    public virtual Task<IMessage> SendAndReceiveAsync(TDestination destination, IMessage requestMessage, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> SendAndReceiveAsync(TDestination destination, IMessage requestMessage)
+    {
+        return DoSendAndReceiveAsync(destination, requestMessage, default);
+    }
+
+    public virtual Task<IMessage> SendAndReceiveAsync(TDestination destination, IMessage requestMessage, CancellationToken cancellationToken)
     {
         return DoSendAndReceiveAsync(destination, requestMessage, cancellationToken);
     }
@@ -110,5 +115,5 @@ public abstract class AbstractMessagingTemplate<TDestination> : AbstractMessageR
 
     protected abstract IMessage DoSendAndReceive(TDestination destination, IMessage requestMessage);
 
-    protected abstract Task<IMessage> DoSendAndReceiveAsync(TDestination destination, IMessage requestMessage, CancellationToken cancellationToken = default);
+    protected abstract Task<IMessage> DoSendAndReceiveAsync(TDestination destination, IMessage requestMessage, CancellationToken cancellationToken);
 }

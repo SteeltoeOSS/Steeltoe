@@ -18,12 +18,12 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     public virtual string ServiceName { get; set; }
 
-    public ILogger Logger { get; set; }
+    private readonly ILogger _logger;
 
-    protected AbstractMessageChannel(ILogger logger = null)
+    protected AbstractMessageChannel(ILoggerFactory loggerFactory)
     {
         ServiceName = $"{GetType().Name}@{GetHashCode()}";
-        Logger = logger;
+        _logger = loggerFactory.CreateLogger<AbstractMessageChannel>();
     }
 
     public virtual void SetInterceptors(List<IChannelInterceptor> interceptors)
@@ -202,7 +202,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 if (resolvedMessage == null)
                 {
                     string name = interceptor.GetType().Name;
-                    _channel.Logger?.LogDebug("{name} returned null from PreSend, i.e. precluding the send.", name);
+                    _channel._logger?.LogDebug("{name} returned null from PreSend, i.e. precluding the send.", name);
                     TriggerAfterSendCompletion(messageToUse, channel, false, null);
                     return null;
                 }
@@ -244,7 +244,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 }
                 catch (Exception ex2)
                 {
-                    _channel.Logger?.LogError(ex2, "Exception from afterSendCompletion in {interceptor} ", interceptor);
+                    _channel._logger?.LogError(ex2, "Exception from afterSendCompletion in {interceptor} ", interceptor);
                 }
             }
         }
@@ -309,7 +309,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 }
                 catch (Exception ex2)
                 {
-                    _channel.Logger?.LogError(ex2, "Exception from afterReceiveCompletion in: {interceptor} ", interceptor);
+                    _channel._logger?.LogError(ex2, "Exception from afterReceiveCompletion in: {interceptor} ", interceptor);
                 }
             }
         }

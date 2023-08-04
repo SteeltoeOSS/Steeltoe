@@ -168,7 +168,7 @@ public class EnableRabbitReturnTypesTest
 
         services.AddSingleton(effectiveConfiguration);
         services.AddRabbitHostingServices();
-        services.AddRabbitMessageConverter<JsonMessageConverter>();
+        services.AddRabbitMessageConverter<JsonMessageConverter>(null);
         services.AddRabbitMessageHandlerMethodFactory();
         services.AddRabbitListenerEndpointRegistry();
         services.AddRabbitListenerEndpointRegistrar();

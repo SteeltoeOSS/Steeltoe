@@ -76,19 +76,41 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     public virtual long AckTimeout { get; set; } = DefaultAckTimeout;
 
     public virtual long LastRestartAttempt { get; private set; }
+    public DirectMessageListenerContainer()
+        :this(null, null, null, new LoggerFactory())
+    {
 
-    public DirectMessageListenerContainer(string name = null, ILoggerFactory loggerFactory = null)
+    }
+    public DirectMessageListenerContainer(string name, ILoggerFactory loggerFactory)
         : this(null, null, name, loggerFactory)
     {
     }
+    public DirectMessageListenerContainer(IApplicationContext applicationContext)
+      : this(applicationContext, null, null, new LoggerFactory())
+    {
+    }
+    public DirectMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory)
+        :this(applicationContext, connectionFactory, null, new LoggerFactory())
+    {
 
-    public DirectMessageListenerContainer(IApplicationContext applicationContext, string name = null, ILoggerFactory loggerFactory = null)
+    }
+    public DirectMessageListenerContainer(IApplicationContext applicationContext, string name)
+        :this(applicationContext, null, name, new LoggerFactory())
+    {
+
+    }
+    public DirectMessageListenerContainer(IApplicationContext applicationContext, string name, ILoggerFactory loggerFactory)
         : this(applicationContext, null, name, loggerFactory)
     {
     }
+    public DirectMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name)
+        :this(applicationContext, connectionFactory, name, new LoggerFactory())
+    {
 
-    public DirectMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null,
-        ILoggerFactory loggerFactory = null)
+    }
+
+    public DirectMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name,
+        ILoggerFactory loggerFactory)
         : base(applicationContext, connectionFactory, name, loggerFactory)
     {
         MissingQueuesFatal = false;
@@ -337,7 +359,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
             if (checkAdmin == null)
             {
-                checkAdmin = new RabbitAdmin(ApplicationContext, ConnectionFactory, LoggerFactory?.CreateLogger<RabbitAdmin>());
+                checkAdmin = new RabbitAdmin(ApplicationContext, ConnectionFactory, LoggerFactory);
                 RabbitAdmin = checkAdmin;
             }
 
@@ -912,7 +934,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
         public bool TargetChanged => _targetChannel != null && !_targetChannel.Equals(((IChannelProxy)Model).TargetChannel);
 
-        public SimpleConsumer(DirectMessageListenerContainer container, IConnection connection, RC.IModel channel, string queue, ILogger logger = null)
+        public SimpleConsumer(DirectMessageListenerContainer container, IConnection connection, RC.IModel channel, string queue, ILogger logger)
             : base(channel)
         {
             _container = container;
@@ -1052,7 +1074,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             TransactionTemplate.Execute<object>(_ =>
             {
                 RabbitResourceHolder resourceHolder = ConnectionFactoryUtils.BindResourceToTransaction(
-                    new RabbitResourceHolder(Model, false, _container.LoggerFactory?.CreateLogger<RabbitResourceHolder>()), ConnectionFactory, true);
+                    new RabbitResourceHolder(Model, false, _container.LoggerFactory), ConnectionFactory, true);
 
                 if (resourceHolder != null)
                 {

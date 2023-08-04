@@ -59,27 +59,35 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     public bool RetryDisabled { get; set; }
 
     [ActivatorUtilitiesConstructor]
-    public RabbitAdmin(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILogger logger = null)
+    public RabbitAdmin(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(connectionFactory);
 
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<RabbitAdmin>();
         ApplicationContext = applicationContext;
         ConnectionFactory = connectionFactory;
-        RabbitTemplate = new RabbitTemplate(connectionFactory, logger);
+        RabbitTemplate = new RabbitTemplate(connectionFactory, loggerFactory);
         DoInitialize();
     }
-
-    public RabbitAdmin(IConnectionFactory connectionFactory, ILogger logger = null)
-        : this(null, connectionFactory, logger)
+    [ActivatorUtilitiesConstructor]
+    public RabbitAdmin(IApplicationContext applicationContext, IConnectionFactory connectionFactory)
+        : this(applicationContext, connectionFactory, new LoggerFactory())
+    { }
+    public RabbitAdmin(IConnectionFactory connectionFactory)
+       : this(null, connectionFactory, new LoggerFactory())
     {
     }
 
-    public RabbitAdmin(RabbitTemplate template, ILogger logger = null)
+    public RabbitAdmin(IConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
+        : this(null, connectionFactory, loggerFactory)
+    {
+    }
+
+    public RabbitAdmin(RabbitTemplate template, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(template);
 
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<RabbitAdmin>();
         RabbitTemplate = template;
 
         ConnectionFactory = template.ConnectionFactory ??
@@ -87,7 +95,10 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
         DoInitialize();
     }
-
+    public RabbitAdmin(RabbitTemplate template) :
+        this(template, new LoggerFactory())
+    {
+    }
     public void DeclareBinding(IBinding binding)
     {
         try

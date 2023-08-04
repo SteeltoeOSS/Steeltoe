@@ -19,39 +19,40 @@ public class BatchingRabbitTemplate : RabbitTemplate
     private Task _scheduledTask;
 
     public BatchingRabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter,
-        IBatchingStrategy batchingStrategy, ILogger logger = null)
-        : base(optionsMonitor, connectionFactory, messageConverter, logger)
+        IBatchingStrategy batchingStrategy, ILoggerFactory loggerFactory)
+        : base(optionsMonitor, connectionFactory, messageConverter, loggerFactory)
     {
         _batchingStrategy = batchingStrategy;
     }
 
     public BatchingRabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter,
-        IBatchingStrategy batchingStrategy, ILogger logger = null)
-        : base(options, connectionFactory, messageConverter, logger)
+        IBatchingStrategy batchingStrategy, ILoggerFactory loggerFactory)
+        : base(options, connectionFactory, messageConverter, loggerFactory)
     {
         _batchingStrategy = batchingStrategy;
     }
 
     public BatchingRabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, IBatchingStrategy batchingStrategy,
-        ILogger logger = null)
-        : base(optionsMonitor, connectionFactory, logger)
+        ILoggerFactory loggerFactory)
+        : base(optionsMonitor, connectionFactory, loggerFactory)
     {
         _batchingStrategy = batchingStrategy;
     }
 
-    public BatchingRabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, IBatchingStrategy batchingStrategy, ILogger logger = null)
-        : base(options, connectionFactory, logger)
+    public BatchingRabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, IBatchingStrategy batchingStrategy, ILoggerFactory loggerFactory)
+        : base(options, connectionFactory, loggerFactory)
     {
         _batchingStrategy = batchingStrategy;
     }
 
     public BatchingRabbitTemplate(IConnectionFactory connectionFactory, IBatchingStrategy batchingStrategy)
-        : base(connectionFactory)
+        : base(connectionFactory, new LoggerFactory())
     {
         _batchingStrategy = batchingStrategy;
     }
 
     public BatchingRabbitTemplate(IBatchingStrategy batchingStrategy)
+        : base(new LoggerFactory())
     {
         _batchingStrategy = batchingStrategy;
     }

@@ -75,11 +75,11 @@ public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
         if (BatchListener)
         {
             return new BatchMessagingMessageListenerAdapter(ApplicationContext, Instance, Method, ReturnExceptions, ErrorHandler, BatchingStrategy,
-                LoggerFactory?.CreateLogger(typeof(BatchMessagingMessageListenerAdapter)));
+                LoggerFactory);
         }
 
         return new MessagingMessageListenerAdapter(ApplicationContext, Instance, Method, ReturnExceptions, ErrorHandler,
-            LoggerFactory?.CreateLogger(typeof(MessagingMessageListenerAdapter)));
+            LoggerFactory);
     }
 
     protected override StringBuilder GetEndpointDescription()

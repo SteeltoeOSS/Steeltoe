@@ -30,9 +30,9 @@ public interface IRabbitTemplate : IServiceNameAware
 
     void Send(string exchange, string routingKey, IMessage message, CorrelationData correlationData);
 
-    Task SendAsync(string exchange, string routingKey, IMessage message, CancellationToken cancellationToken = default);
+    Task SendAsync(string exchange, string routingKey, IMessage message, CancellationToken cancellationToken);
 
-    Task SendAsync(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default);
+    Task SendAsync(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken);
 
     void ConvertAndSend(string exchange, string routingKey, object message, CorrelationData correlationData);
 

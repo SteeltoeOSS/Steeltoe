@@ -68,10 +68,10 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
         set => _throwExceptionOnLateReply = value;
     }
 
-    public MessageChannelTemplate(ILogger logger = null)
+    public MessageChannelTemplate(ILoggerFactory loggerFactory)
         : base(null)
     {
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<MessageChannelTemplate>();
     }
 
     public MessageChannelTemplate(IApplicationContext context, ILogger logger = null)
@@ -215,7 +215,7 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
         return message;
     }
 
-    protected override Task<IMessage> DoSendAndReceiveAsync(IMessageChannel destination, IMessage requestMessage, CancellationToken cancellationToken = default)
+    protected override Task<IMessage> DoSendAndReceiveAsync(IMessageChannel destination, IMessage requestMessage, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(destination);
 

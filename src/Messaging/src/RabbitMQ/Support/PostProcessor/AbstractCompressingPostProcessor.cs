@@ -21,14 +21,14 @@ public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, 
 
     public int Order { get; set; }
 
-    protected AbstractCompressingPostProcessor(ILogger logger = null)
-        : this(true, logger)
+    protected AbstractCompressingPostProcessor(ILoggerFactory loggerFactory)
+        : this(true, loggerFactory)
     {
     }
 
-    protected AbstractCompressingPostProcessor(bool autoDecompress, ILogger logger = null)
+    protected AbstractCompressingPostProcessor(bool autoDecompress, ILoggerFactory loggerFactory)
     {
-        Logger = logger;
+        Logger = loggerFactory.CreateLogger<AbstractCompressingPostProcessor>();
         AutoDecompress = autoDecompress;
     }
 

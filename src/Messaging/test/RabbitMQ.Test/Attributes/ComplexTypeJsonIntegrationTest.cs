@@ -81,12 +81,12 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonInteg
         RabbitTemplate template = _provider.GetRabbitTemplate();
         IMessagePostProcessor pp = new EmptyPostProcessor();
         object message = "foo";
-        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(message, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(message, pp, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(TestQueue, message, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(TestQueue, message, pp, null, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(string.Empty, TestQueue, message, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(string.Empty, TestQueue, message, pp, typeof(Foo<Bar<Baz, Qux>>)));
+        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(message, typeof(Foo<Bar<Baz, Qux>>), default));
+        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(message, pp, typeof(Foo<Bar<Baz, Qux>>), default));
+        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(TestQueue, message, typeof(Foo<Bar<Baz, Qux>>), default));
+        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(TestQueue, message, pp, null, typeof(Foo<Bar<Baz, Qux>>), default));
+        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(string.Empty, TestQueue, message, typeof(Foo<Bar<Baz, Qux>>), default));
+        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(string.Empty, TestQueue, message, pp, typeof(Foo<Bar<Baz, Qux>>), default));
     }
 
     public static Foo<Bar<Baz, Qux>> MakeAFoo()

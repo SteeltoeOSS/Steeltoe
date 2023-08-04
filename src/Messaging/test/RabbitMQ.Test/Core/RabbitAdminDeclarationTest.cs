@@ -489,7 +489,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
                 IApplicationContext context = p.GetApplicationContext();
                 var cf1 = context.GetService<IConnectionFactory>("cf1");
 
-                var admin = new RabbitAdmin(context, cf1, p.GetService<ILogger<RabbitAdmin>>())
+                var admin = new RabbitAdmin(context, cf1, p.GetService<ILoggerFactory>())
                 {
                     ServiceName = "admin1"
                 };
@@ -508,7 +508,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
                 IApplicationContext context = p.GetApplicationContext();
                 var cf2 = context.GetService<IConnectionFactory>("cf2");
 
-                var admin = new RabbitAdmin(context, cf2, p.GetService<ILogger<RabbitAdmin>>())
+                var admin = new RabbitAdmin(context, cf2, p.GetService<ILoggerFactory>())
                 {
                     ServiceName = "admin2"
                 };
@@ -527,7 +527,7 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
                 IApplicationContext context = p.GetApplicationContext();
                 var cf3 = context.GetService<IConnectionFactory>("cf3");
 
-                var admin = new RabbitAdmin(context, cf3, p.GetService<ILogger<RabbitAdmin>>())
+                var admin = new RabbitAdmin(context, cf3, p.GetService<ILoggerFactory>())
                 {
                     ExplicitDeclarationsOnly = true,
                     ServiceName = "admin3"

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Support;
@@ -19,7 +20,7 @@ public class GenericMessagingTemplateTest
     {
         MessageChannel = new StubMessageChannel();
 
-        Template = new MessageChannelTemplate
+        Template = new MessageChannelTemplate(NullLoggerFactory.Instance)
         {
             DefaultSendDestination = MessageChannel,
             DestinationResolver = new TestDestinationResolver(this)
@@ -119,7 +120,7 @@ public class GenericMessagingTemplateTest
     [Fact]
     public void SendAndReceive()
     {
-        var channel = new TaskSchedulerSubscribableChannel(TaskScheduler.Default);
+        var channel = new TaskSchedulerSubscribableChannel(TaskScheduler.Default, NullLoggerFactory.Instance);
         channel.Subscribe(new SendAndReceiveTestHandler());
 
         string actual = Template.ConvertSendAndReceive<string>(channel, "request");
@@ -129,10 +130,10 @@ public class GenericMessagingTemplateTest
     [Fact]
     public async Task SendAndReceiveAsync()
     {
-        var channel = new TaskSchedulerSubscribableChannel(TaskScheduler.Default);
+        var channel = new TaskSchedulerSubscribableChannel(TaskScheduler.Default, NullLoggerFactory.Instance);
         channel.Subscribe(new SendAndReceiveTestHandler());
 
-        string actual = await Template.ConvertSendAndReceiveAsync<string>(channel, "request");
+        string actual = await Template.ConvertSendAndReceiveAsync<string>(channel, "request", default);
         Assert.Equal("response", actual);
     }
 
@@ -181,7 +182,7 @@ public class GenericMessagingTemplateTest
                 Task.Run(() => handler.HandleMessage(m), t);
             }).Returns(new ValueTask<bool>(true));
 
-        string result = await Template.ConvertSendAndReceiveAsync<string>(channel, "request");
+        string result = await Template.ConvertSendAndReceiveAsync<string>(channel, "request", default);
         Assert.Null(result);
         Assert.True(latch.Wait(10000));
         Assert.Null(handler.Failure);

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
@@ -191,8 +192,8 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbi
 
         public CustomStartupFixture()
         {
-            _adminCf = new CachingConnectionFactory("localhost");
-            _admin = new RabbitAdmin(_adminCf);
+            _adminCf = new CachingConnectionFactory("localhost", NullLoggerFactory.Instance);
+            _admin = new RabbitAdmin(_adminCf, NullLoggerFactory.Instance);
 
             foreach (string q in Queues)
             {

@@ -187,13 +187,13 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
     public IPublisherCallbackChannelFactory PublisherCallbackChannelFactory { get; set; }
 
-    public CachingConnectionFactory(ILoggerFactory loggerFactory = null)
+    public CachingConnectionFactory(ILoggerFactory loggerFactory)
         : this(null, -1, loggerFactory)
     {
     }
 
     [ActivatorUtilitiesConstructor]
-    public CachingConnectionFactory(IOptionsMonitor<RabbitOptions> optionsMonitor, ILoggerFactory loggerFactory = null)
+    public CachingConnectionFactory(IOptionsMonitor<RabbitOptions> optionsMonitor, ILoggerFactory loggerFactory)
         : base(NewRabbitConnectionFactory(), loggerFactory)
     {
         _optionsMonitor = optionsMonitor;
@@ -206,17 +206,22 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         ServiceName = DefaultServiceName;
     }
 
-    public CachingConnectionFactory(string hostname, ILoggerFactory loggerFactory = null)
+    public CachingConnectionFactory(string hostname)
+       : this(hostname, -1, new LoggerFactory())
+    {
+    }
+
+    public CachingConnectionFactory(string hostname, ILoggerFactory loggerFactory)
         : this(hostname, -1, loggerFactory)
     {
     }
 
-    public CachingConnectionFactory(int port, ILoggerFactory loggerFactory = null)
+    public CachingConnectionFactory(int port, ILoggerFactory loggerFactory)
         : this(null, port, loggerFactory)
     {
     }
 
-    public CachingConnectionFactory(string hostNameArg, int port, ILoggerFactory loggerFactory = null)
+    public CachingConnectionFactory(string hostNameArg, int port, ILoggerFactory loggerFactory)
         : base(NewRabbitConnectionFactory(), loggerFactory)
     {
         string hostname = hostNameArg;
@@ -235,7 +240,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         ServiceName = DefaultServiceName;
     }
 
-    public CachingConnectionFactory(string hostNameArg, int port, RC.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+    public CachingConnectionFactory(string hostNameArg, int port, RC.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
         : base(connectionFactory, loggerFactory)
     {
         string hostname = hostNameArg;
@@ -254,12 +259,12 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         ServiceName = DefaultServiceName;
     }
 
-    public CachingConnectionFactory(Uri uri, ILoggerFactory loggerFactory = null)
+    public CachingConnectionFactory(Uri uri, ILoggerFactory loggerFactory)
         : this(uri, CachingMode.Channel, loggerFactory)
     {
     }
 
-    public CachingConnectionFactory(Uri uri, CachingMode cachingMode = CachingMode.Channel, ILoggerFactory loggerFactory = null)
+    public CachingConnectionFactory(Uri uri, CachingMode cachingMode, ILoggerFactory loggerFactory)
         : base(NewRabbitConnectionFactory(), loggerFactory)
     {
         Connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
@@ -271,13 +276,20 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         ServiceName = DefaultServiceName;
     }
 
-    protected internal CachingConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
+    protected internal CachingConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory)
         : this(rabbitConnectionFactory, false, CachingMode.Channel, loggerFactory)
     {
     }
-
+    protected internal CachingConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory)
+     : this(rabbitConnectionFactory, false, CachingMode.Channel, new LoggerFactory())
+    {
+    }
     protected internal CachingConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, bool isPublisherFactory,
-        CachingMode cachingMode = CachingMode.Channel, ILoggerFactory loggerFactory = null)
+       CachingMode cachingMode)
+        : this(rabbitConnectionFactory, isPublisherFactory, cachingMode, new LoggerFactory())
+    { }
+    protected internal CachingConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, bool isPublisherFactory,
+        CachingMode cachingMode, ILoggerFactory loggerFactory)
         : base(rabbitConnectionFactory, loggerFactory)
     {
         CacheMode = cachingMode;
@@ -2451,9 +2463,13 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             _logger = logger;
         }
 
-        public RC.IModel CreateChannel(bool transactional = false)
+        public RC.IModel CreateChannel(bool transactional)
         {
             return _factory.GetChannel(this, transactional);
+        }
+        public RC.IModel CreateChannel()
+        {
+            return CreateChannel(false);
         }
 
         public RC.IModel CreateBareChannel(bool transactional)
@@ -2566,6 +2582,8 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
             return n;
         }
+
+       
     }
 
     private sealed class DefaultChannelCloseLogger : IConditionalExceptionLogger

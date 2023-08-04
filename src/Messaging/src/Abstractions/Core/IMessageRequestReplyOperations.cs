@@ -24,7 +24,7 @@ public interface IMessageRequestReplyOperations<TDestination>
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<IMessage> SendAndReceiveAsync(IMessage requestMessage, CancellationToken cancellationToken = default);
+    Task<IMessage> SendAndReceiveAsync(IMessage requestMessage, CancellationToken cancellationToken);
 
     /// <summary>
     /// Send a request message and receive the reply from the given destination.
@@ -41,7 +41,7 @@ public interface IMessageRequestReplyOperations<TDestination>
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<IMessage> SendAndReceiveAsync(TDestination destination, IMessage requestMessage, CancellationToken cancellationToken = default);
+    Task<IMessage> SendAndReceiveAsync(TDestination destination, IMessage requestMessage, CancellationToken cancellationToken);
 
     /// <summary>
     /// Convert the given request object to serialized form, possibly using a message converter, send it as a message to a default destination, receive the
@@ -59,7 +59,7 @@ public interface IMessageRequestReplyOperations<TDestination>
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<T> ConvertSendAndReceiveAsync<T>(object request, CancellationToken cancellationToken = default);
+    Task<T> ConvertSendAndReceiveAsync<T>(object request, CancellationToken cancellationToken);
 
     /// <summary>
     /// Convert the given request object to serialized form, possibly using a message converter, send it as a message to a specified destination, receive the
@@ -80,7 +80,7 @@ public interface IMessageRequestReplyOperations<TDestination>
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, CancellationToken cancellationToken = default);
+    Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, CancellationToken cancellationToken);
 
     /// <summary>
     /// Convert the given request object to serialized form, possibly using a message converter, send it as a message to a specified destination with the
@@ -105,7 +105,7 @@ public interface IMessageRequestReplyOperations<TDestination>
     /// a task to signal completion.
     /// </returns>
     Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IDictionary<string, object> headers,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Convert the given request object to serialized form, possibly using a message converter, send it as a message to a default destination after applying
@@ -126,7 +126,7 @@ public interface IMessageRequestReplyOperations<TDestination>
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<T> ConvertSendAndReceiveAsync<T>(object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default);
+    Task<T> ConvertSendAndReceiveAsync<T>(object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken);
 
     /// <summary>
     /// Convert the given request object to serialized form, possibly using a message converter, send it as a message to the specified destination after
@@ -151,7 +151,7 @@ public interface IMessageRequestReplyOperations<TDestination>
     /// a task to signal completion.
     /// </returns>
     Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IMessagePostProcessor requestPostProcessor,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Convert the given request object to serialized form, possibly using a message converter, send it as a message to the specified destination after
@@ -179,7 +179,7 @@ public interface IMessageRequestReplyOperations<TDestination>
     /// a task to signal completion.
     /// </returns>
     Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IDictionary<string, object> headers,
-        IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default);
+        IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken);
 
     /// <summary>
     /// Send a request message and receive the reply from a default destination.

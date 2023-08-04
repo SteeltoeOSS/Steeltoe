@@ -137,8 +137,11 @@ public class MessageHeaders : IMessageHeaders
         }
         set => throw new InvalidOperationException();
     }
-
-    public MessageHeaders(IDictionary<string, object> headers = null)
+    public MessageHeaders()
+       : this(null, null, null)
+    {
+    }
+    public MessageHeaders(IDictionary<string, object> headers)
         : this(headers, null, null)
     {
     }

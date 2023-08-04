@@ -163,7 +163,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
             Target = target;
         }
 
-        public RC.IModel CreateChannel(bool transactional = false)
+        public RC.IModel CreateChannel(bool transactional)
         {
             if (!IsOpen)
             {
@@ -182,7 +182,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
             _factory.ChannelListener.OnCreate(channel, transactional);
             return channel;
         }
-
+        public RC.IModel CreateChannel() => CreateChannel(false);
         public void AddBlockedListener(IBlockedListener listener)
         {
             Target.AddBlockedListener(listener);

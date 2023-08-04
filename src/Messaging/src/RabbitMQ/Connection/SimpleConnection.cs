@@ -32,7 +32,7 @@ public class SimpleConnection : IConnection, RC.NetworkConnection
         _closeTimeout = closeTimeout;
     }
 
-    public RC.IModel CreateChannel(bool transactional = false)
+    public RC.IModel CreateChannel(bool transactional)
     {
         try
         {
@@ -55,7 +55,7 @@ public class SimpleConnection : IConnection, RC.NetworkConnection
             throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
         }
     }
-
+    public RC.IModel CreateChannel() => CreateChannel(false);
     public void Close()
     {
         try
@@ -99,4 +99,6 @@ public class SimpleConnection : IConnection, RC.NetworkConnection
         Connection.ConnectionUnblocked -= listener.HandleUnblocked;
         return true;
     }
+
+  
 }

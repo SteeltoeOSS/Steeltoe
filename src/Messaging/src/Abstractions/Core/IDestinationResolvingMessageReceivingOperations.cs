@@ -24,7 +24,7 @@ public interface IDestinationResolvingMessageReceivingOperations<TDestination> :
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<IMessage> ReceiveAsync(string destinationName, CancellationToken cancellationToken = default);
+    Task<IMessage> ReceiveAsync(string destinationName, CancellationToken cancellationToken);
 
     /// <summary>
     /// Resolve the given destination, receive a message from it, convert the payload to the specified target type.
@@ -41,7 +41,7 @@ public interface IDestinationResolvingMessageReceivingOperations<TDestination> :
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task<T> ReceiveAndConvertAsync<T>(string destinationName, CancellationToken cancellationToken = default);
+    Task<T> ReceiveAndConvertAsync<T>(string destinationName, CancellationToken cancellationToken);
 
     /// <summary>
     /// Resolve the given destination and receive a message from it.

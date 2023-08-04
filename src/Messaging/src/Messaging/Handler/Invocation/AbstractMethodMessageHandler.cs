@@ -21,6 +21,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     private readonly Dictionary<T, HandlerMethod> _handlerMethods = new(64);
     private readonly Dictionary<string, List<T>> _destinationLookup = new(64);
     private readonly ConcurrentDictionary<Type, AbstractExceptionHandlerMethodResolver> _exceptionHandlerCache = new();
+    private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
 
     protected HandlerMethodArgumentResolverComposite MethodArgumentResolvers
@@ -128,10 +129,11 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
 
     public virtual IDictionary<T, HandlerMethod> HandlerMethods => new Dictionary<T, HandlerMethod>(_handlerMethods);
 
-    protected AbstractMethodMessageHandler(ILogger logger = null)
+    protected AbstractMethodMessageHandler(ILoggerFactory loggerFactory)
     {
         ServiceName = $"{GetType().Name}@{GetHashCode()}";
-        _logger = logger;
+        _loggerFactory = loggerFactory;
+        _logger = loggerFactory.CreateLogger(GetType().Name);
     }
 
     public virtual void HandleMessage(IMessage message)
@@ -320,7 +322,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
     {
         handlerMethod = handlerMethod.CreateWithResolvedBean();
 
-        var invocable = new InvocableHandlerMethod(handlerMethod, _logger)
+        var invocable = new InvocableHandlerMethod(handlerMethod, _loggerFactory)
         {
             MessageMethodArgumentResolvers = MethodArgumentResolvers
         };

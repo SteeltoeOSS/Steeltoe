@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Impl;
@@ -200,59 +201,68 @@ public class RabbitTemplate
 
     [ActivatorUtilitiesConstructor]
     public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter,
-        ILogger logger = null)
+        ILoggerFactory loggerFactory)
     {
         OptionsMonitor = optionsMonitor;
         ConnectionFactory = connectionFactory;
         MessageConverter = messageConverter ?? new SimpleMessageConverter();
-        Logger = logger;
+        Logger = loggerFactory.CreateLogger<RabbitTemplate>();
         Configure(Options);
     }
 
-    public RabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
+    public RabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILoggerFactory loggerFactory )
     {
         _options = options;
         ConnectionFactory = connectionFactory;
         MessageConverter = messageConverter ?? new SimpleMessageConverter();
-        Logger = logger;
+        Logger = loggerFactory.CreateLogger<RabbitTemplate>();
         Configure(Options);
     }
 
-    public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILogger logger = null)
+    public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
     {
         OptionsMonitor = optionsMonitor;
         ConnectionFactory = connectionFactory;
         MessageConverter = new SimpleMessageConverter();
-        Logger = logger;
+        Logger = loggerFactory.CreateLogger<RabbitTemplate>();
         Configure(Options);
     }
 
-    public RabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ILogger logger = null)
+    public RabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
     {
         _options = options;
         ConnectionFactory = connectionFactory;
         MessageConverter = new SimpleMessageConverter();
-        Logger = logger;
+        Logger = loggerFactory.CreateLogger<RabbitTemplate>();
         Configure(Options);
     }
 
-    public RabbitTemplate(IConnectionFactory connectionFactory, ILogger logger = null)
+    public RabbitTemplate(IConnectionFactory connectionFactory)
+        :this(connectionFactory, new LoggerFactory()) { }
+
+    public RabbitTemplate(IConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
     {
         ConnectionFactory = connectionFactory;
         MessageConverter = new SimpleMessageConverter();
         DefaultSendDestination = $"{string.Empty}/{string.Empty}";
         DefaultReceiveDestination = null;
-        Logger = logger;
+        Logger = loggerFactory.CreateLogger<RabbitTemplate>();
     }
 
-    public RabbitTemplate(ILogger logger = null)
+    public RabbitTemplate(ILoggerFactory loggerFactory)
     {
         MessageConverter = new SimpleMessageConverter();
         DefaultSendDestination = $"{string.Empty}/{string.Empty}";
         DefaultReceiveDestination = null;
-        Logger = logger;
+        Logger = loggerFactory.CreateLogger<RabbitTemplate>();
     }
-
+    public RabbitTemplate()
+    {
+        MessageConverter = new SimpleMessageConverter();
+        DefaultSendDestination = $"{string.Empty}/{string.Empty}";
+        DefaultReceiveDestination = null;
+        Logger = new LoggerFactory().CreateLogger<RabbitTemplate>();
+    }
     public virtual void SetBeforePublishPostProcessors(params IMessagePostProcessor[] beforePublishPostProcessors)
     {
         ArgumentGuard.NotNull(beforePublishPostProcessors);
@@ -474,18 +484,18 @@ public class RabbitTemplate
         }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
     }
 
-    public virtual Task SendAsync(string routingKey, IMessage message, CancellationToken cancellationToken = default)
+    public virtual Task SendAsync(string routingKey, IMessage message, CancellationToken cancellationToken)
     {
         return SendAsync(GetDefaultExchange(), routingKey, message, cancellationToken);
     }
 
-    public virtual Task SendAsync(string exchange, string routingKey, IMessage message, CancellationToken cancellationToken = default)
+    public virtual Task SendAsync(string exchange, string routingKey, IMessage message, CancellationToken cancellationToken)
     {
         return SendAsync(exchange, routingKey, message, null, cancellationToken);
     }
 
     public virtual Task SendAsync(string exchange, string routingKey, IMessage message, CorrelationData correlationData,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         bool mandatory = (ReturnCallback != null || (correlationData != null && !string.IsNullOrEmpty(correlationData.Id))) &&
             MandatoryExpression.GetValue<bool>(EvaluationContext, message);
@@ -555,58 +565,58 @@ public class RabbitTemplate
         Send(exchange, routingKey, messageToSend, correlationData);
     }
 
-    public virtual Task ConvertAndSendAsync(object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken )
     {
         return ConvertAndSendAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, cancellationToken);
     }
 
     public virtual Task ConvertAndSendAsync(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken )
     {
         return ConvertAndSendAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(string routingKey, object message, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(string routingKey, object message, CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, null, null, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(string routingKey, object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(string routingKey, object message, CorrelationData correlationData, CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, null, correlationData, cancellationToken);
     }
 
     public virtual Task ConvertAndSendAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, cancellationToken);
     }
 
     public virtual Task ConvertAndSendAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(exchange, routingKey, message, null, null, cancellationToken);
     }
 
     public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, CorrelationData correlationData,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(exchange, routingKey, message, null, correlationData, cancellationToken);
     }
 
     public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(exchange, routingKey, message, messagePostProcessor, null, cancellationToken);
     }
 
     public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
-        CorrelationData correlationData, CancellationToken cancellationToken = default)
+        CorrelationData correlationData, CancellationToken cancellationToken)
     {
         IMessage messageToSend = ConvertMessageIfNecessary(message);
 
@@ -618,17 +628,17 @@ public class RabbitTemplate
         return SendAsync(exchange, routingKey, messageToSend, correlationData, cancellationToken);
     }
 
-    public virtual Task<IMessage> ReceiveAsync(string queueName, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> ReceiveAsync(string queueName, CancellationToken cancellationToken)
     {
         return Task.Run(() => DoReceive(queueName, ReceiveTimeout, cancellationToken), cancellationToken);
     }
 
-    public virtual Task<IMessage> ReceiveAsync(int timeoutMillis, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> ReceiveAsync(int timeoutMillis, CancellationToken cancellationToken)
     {
         return Task.Run(() => DoReceive(GetRequiredQueue(), timeoutMillis, cancellationToken), cancellationToken);
     }
 
-    public virtual Task<IMessage> ReceiveAsync(string queueName, int timeoutMillis, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> ReceiveAsync(string queueName, int timeoutMillis, CancellationToken cancellationToken)
     {
         return Task.Run(() => DoReceive(queueName, timeoutMillis, cancellationToken), cancellationToken);
     }
@@ -688,37 +698,37 @@ public class RabbitTemplate
         return DoReceiveAndConvert(queueName, timeoutInMilliseconds, type);
     }
 
-    public virtual Task<T> ReceiveAndConvertAsync<T>(int timeoutMillis, CancellationToken cancellationToken = default)
+    public virtual Task<T> ReceiveAndConvertAsync<T>(int timeoutMillis, CancellationToken cancellationToken)
     {
         return ReceiveAndConvertAsync<T>(GetRequiredQueue(), timeoutMillis, cancellationToken);
     }
 
-    public virtual Task<T> ReceiveAndConvertAsync<T>(string queueName, CancellationToken cancellationToken = default)
+    public virtual Task<T> ReceiveAndConvertAsync<T>(string queueName, CancellationToken cancellationToken)
     {
         return ReceiveAndConvertAsync<T>(queueName, ReceiveTimeout, cancellationToken);
     }
 
-    public virtual Task<T> ReceiveAndConvertAsync<T>(string queueName, int timeoutMillis, CancellationToken cancellationToken = default)
+    public virtual Task<T> ReceiveAndConvertAsync<T>(string queueName, int timeoutMillis, CancellationToken cancellationToken)
     {
         return Task.Run(() => (T)DoReceiveAndConvert(queueName, timeoutMillis, typeof(T), cancellationToken));
     }
 
-    public virtual Task<object> ReceiveAndConvertAsync(Type type, CancellationToken cancellation = default)
+    public virtual Task<object> ReceiveAndConvertAsync(Type type, CancellationToken cancellation)
     {
         return ReceiveAndConvertAsync(GetRequiredQueue(), ReceiveTimeout, type, cancellation);
     }
 
-    public virtual Task<object> ReceiveAndConvertAsync(string queueName, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ReceiveAndConvertAsync(string queueName, Type type, CancellationToken cancellationToken)
     {
         return ReceiveAndConvertAsync(queueName, ReceiveTimeout, type, cancellationToken);
     }
 
-    public virtual Task<object> ReceiveAndConvertAsync(int timeoutMillis, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ReceiveAndConvertAsync(int timeoutMillis, Type type, CancellationToken cancellationToken)
     {
         return ReceiveAndConvertAsync(GetRequiredQueue(), timeoutMillis, type, cancellationToken);
     }
 
-    public virtual Task<object> ReceiveAndConvertAsync(string queueName, int timeoutMillis, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ReceiveAndConvertAsync(string queueName, int timeoutMillis, Type type, CancellationToken cancellationToken)
     {
         return Task.Run(() => DoReceiveAndConvert(queueName, timeoutMillis, type, cancellationToken));
     }
@@ -779,29 +789,29 @@ public class RabbitTemplate
         return DoSendAndReceive(exchange, routingKey, message, correlationData, default);
     }
 
-    public virtual Task<IMessage> SendAndReceiveAsync(IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> SendAndReceiveAsync(IMessage message, CorrelationData correlationData, CancellationToken cancellationToken)
     {
         return SendAndReceiveAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, correlationData, cancellationToken);
     }
 
-    public virtual Task<IMessage> SendAndReceiveAsync(string routingKey, IMessage message, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> SendAndReceiveAsync(string routingKey, IMessage message, CancellationToken cancellationToken)
     {
         return SendAndReceiveAsync(GetDefaultExchange(), routingKey, message, null, cancellationToken);
     }
 
     public virtual Task<IMessage> SendAndReceiveAsync(string routingKey, IMessage message, CorrelationData correlationData,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return SendAndReceiveAsync(GetDefaultExchange(), routingKey, message, null, cancellationToken);
     }
 
-    public virtual Task<IMessage> SendAndReceiveAsync(string exchange, string routingKey, IMessage message, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> SendAndReceiveAsync(string exchange, string routingKey, IMessage message, CancellationToken cancellationToken)
     {
         return SendAndReceiveAsync(exchange, routingKey, message, null, cancellationToken);
     }
 
     public virtual Task<IMessage> SendAndReceiveAsync(string exchange, string routingKey, IMessage message, CorrelationData correlationData,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return Task.Run(() => DoSendAndReceive(exchange, routingKey, message, correlationData, cancellationToken), cancellationToken);
     }
@@ -862,65 +872,65 @@ public class RabbitTemplate
         return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T));
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(object message, CorrelationData correlationData, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(object message, IMessagePostProcessor messagePostProcessor,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, null, null, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, CorrelationData correlationData,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, null, correlationData, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor,
-        CorrelationData correlationData, CancellationToken cancellationToken = default)
+        CorrelationData correlationData, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(exchange, routingKey, message, null, null, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, CorrelationData correlationData,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(exchange, routingKey, message, null, correlationData, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsync<T>(exchange, routingKey, message, messagePostProcessor, null, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
-        CorrelationData correlationData, CancellationToken cancellationToken = default)
+        CorrelationData correlationData, CancellationToken cancellationToken)
     {
         return Task.Run(() => (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T)),
             cancellationToken);
@@ -996,74 +1006,74 @@ public class RabbitTemplate
 
         return value is Exception exception && ThrowReceivedExceptions ? throw exception : value;
     }
-
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, Type type, CancellationToken cancellationToken = default)
+  
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, Type type, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, null, type, cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, CorrelationData correlationData, Type type,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData, type, cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, IMessagePostProcessor messagePostProcessor, Type type,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, type, cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData,
-        Type type, CancellationToken cancellationToken = default)
+        Type type, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, type,
             cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, Type type, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, null, null, type, cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, CorrelationData correlationData, Type type,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, null, correlationData, type, cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, Type type,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, type, cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor,
-        CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+        CorrelationData correlationData, Type type, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, type, cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, Type type,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(exchange, routingKey, message, null, null, type, cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, CorrelationData correlationData, Type type,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(exchange, routingKey, message, null, correlationData, type, cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
-        Type type, CancellationToken cancellationToken = default)
+        Type type, CancellationToken cancellationToken)
     {
         return ConvertSendAndReceiveAsTypeAsync(exchange, routingKey, message, messagePostProcessor, null, type, cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
-        CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+        CorrelationData correlationData, Type type, CancellationToken cancellationToken)
     {
         return Task.Run(() =>
         {
@@ -1202,7 +1212,7 @@ public class RabbitTemplate
 
             try
             {
-                channel = connection.CreateChannel();
+                channel = connection.CreateChannel(false);
 
                 if (channel == null)
                 {
@@ -1464,7 +1474,7 @@ public class RabbitTemplate
     }
 
     protected override Task<IMessage> DoSendAndReceiveAsync(RabbitDestination destination, IMessage requestMessage,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return SendAndReceiveAsync(destination.ExchangeName, destination.RoutingKey, requestMessage, cancellationToken);
     }
@@ -1514,7 +1524,7 @@ public class RabbitTemplate
     }
 
     protected virtual IMessage DoSendAndReceiveWithDirect(string exchange, string routingKey, IMessage message, CorrelationData correlationData,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         IConnectionFactory connectionFactory = ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message);
 
@@ -1529,7 +1539,7 @@ public class RabbitTemplate
             {
                 if (!DirectReplyToContainers.TryGetValue(connectionFactory, out container))
                 {
-                    container = new DirectReplyToMessageListenerContainer(null, connectionFactory);
+                    container = new DirectReplyToMessageListenerContainer(null, connectionFactory, null, new LoggerFactory());
                     container.MessageListener = this;
                     container.ServiceName = $"{ServiceName}#{Interlocked.Increment(ref _containerInstance)}";
 
@@ -2419,7 +2429,7 @@ public class RabbitTemplate
 
                 try
                 {
-                    channel = connection.CreateChannel();
+                    channel = connection.CreateChannel(false);
 
                     if (channel == null)
                     {

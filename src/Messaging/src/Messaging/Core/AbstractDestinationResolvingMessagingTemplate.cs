@@ -30,76 +30,76 @@ public abstract class AbstractDestinationResolvingMessagingTemplate<TDestination
         ApplicationContext = context;
     }
 
-    public virtual Task ConvertAndSendAsync(string destinationName, object payload, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(string destinationName, object payload, CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(destinationName, payload, null, null, cancellationToken);
     }
 
     public virtual Task ConvertAndSendAsync(string destinationName, object payload, IDictionary<string, object> headers,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(destinationName, payload, headers, null, cancellationToken);
     }
 
     public virtual Task ConvertAndSendAsync(string destinationName, object payload, IMessagePostProcessor postProcessor,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(destinationName, payload, null, postProcessor, cancellationToken);
     }
 
     public virtual Task ConvertAndSendAsync(string destinationName, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         TDestination destination = ResolveDestination(destinationName);
         return ConvertAndSendAsync(destination, payload, headers, postProcessor, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, CancellationToken cancellationToken)
     {
         TDestination destination = ResolveDestination(destinationName);
         return ConvertSendAndReceiveAsync<T>(destination, request, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IDictionary<string, object> headers,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         TDestination destination = ResolveDestination(destinationName);
         return ConvertSendAndReceiveAsync<T>(destination, request, headers, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IMessagePostProcessor requestPostProcessor,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         TDestination destination = ResolveDestination(destinationName);
         return ConvertSendAndReceiveAsync<T>(destination, request, requestPostProcessor, cancellationToken);
     }
 
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IDictionary<string, object> headers,
-        IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
+        IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken)
     {
         TDestination destination = ResolveDestination(destinationName);
         return ConvertSendAndReceiveAsync<T>(destination, request, headers, requestPostProcessor, cancellationToken);
     }
 
-    public virtual Task<IMessage> ReceiveAsync(string destinationName, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> ReceiveAsync(string destinationName, CancellationToken cancellationToken)
     {
         TDestination destination = ResolveDestination(destinationName);
         return ReceiveAsync(destination, cancellationToken);
     }
 
-    public virtual Task<T> ReceiveAndConvertAsync<T>(string destinationName, CancellationToken cancellationToken = default)
+    public virtual Task<T> ReceiveAndConvertAsync<T>(string destinationName, CancellationToken cancellationToken)
     {
         TDestination destination = ResolveDestination(destinationName);
         return ReceiveAndConvertAsync<T>(destination, cancellationToken);
     }
 
-    public virtual Task SendAsync(string destinationName, IMessage message, CancellationToken cancellationToken = default)
+    public virtual Task SendAsync(string destinationName, IMessage message, CancellationToken cancellationToken)
     {
         TDestination destination = ResolveDestination(destinationName);
         return SendAsync(destination, message, cancellationToken);
     }
 
-    public virtual Task<IMessage> SendAndReceiveAsync(string destinationName, IMessage requestMessage, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> SendAndReceiveAsync(string destinationName, IMessage requestMessage, CancellationToken cancellationToken)
     {
         TDestination destination = ResolveDestination(destinationName);
         return SendAndReceiveAsync(destination, requestMessage, cancellationToken);

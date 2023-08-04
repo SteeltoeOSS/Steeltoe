@@ -17,13 +17,13 @@ public class MultiMethodRabbitListenerEndpoint : MethodRabbitListenerEndpoint
     public MethodInfo DefaultMethod { get; }
 
     public MultiMethodRabbitListenerEndpoint(IApplicationContext applicationContext, List<MethodInfo> methods, object instance,
-        ILoggerFactory loggerFactory = null)
+        ILoggerFactory loggerFactory)
         : this(applicationContext, methods, null, instance, loggerFactory)
     {
     }
 
     public MultiMethodRabbitListenerEndpoint(IApplicationContext applicationContext, List<MethodInfo> methods, MethodInfo defaultMethod, object instance,
-        ILoggerFactory loggerFactory = null)
+        ILoggerFactory loggerFactory)
         : base(applicationContext, null, instance, loggerFactory)
     {
         Methods = methods;

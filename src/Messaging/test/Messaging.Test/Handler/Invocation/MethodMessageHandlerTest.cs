@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler;
@@ -153,6 +155,10 @@ public class MethodMessageHandlerTest
     internal sealed class TestMethodMessageHandler : AbstractMethodMessageHandler<string>
     {
         private readonly IPathMatcher _pathMatcher = new AntPathMatcher();
+
+        public TestMethodMessageHandler() : base(NullLoggerFactory.Instance)
+        {
+        }
 
         public void RegisterHandler(object handler)
         {

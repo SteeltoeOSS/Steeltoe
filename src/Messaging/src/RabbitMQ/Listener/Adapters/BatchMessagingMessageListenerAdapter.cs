@@ -19,8 +19,8 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
     private IBatchingStrategy BatchingStrategy { get; }
 
     public BatchMessagingMessageListenerAdapter(IApplicationContext context, object bean, MethodInfo method, bool returnExceptions,
-        IRabbitListenerErrorHandler errorHandler, IBatchingStrategy batchingStrategy, ILogger logger = null)
-        : base(context, bean, method, returnExceptions, errorHandler, true, logger)
+        IRabbitListenerErrorHandler errorHandler, IBatchingStrategy batchingStrategy, ILoggerFactory loggerFactory)
+        : base(context, bean, method, returnExceptions, errorHandler, true, loggerFactory)
     {
         BatchingStrategy = batchingStrategy ?? new SimpleBatchingStrategy(0, 0, 0L);
     }

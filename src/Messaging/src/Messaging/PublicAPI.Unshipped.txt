@@ -1,0 +1,833 @@
+abstract Steeltoe.Messaging.Converter.AbstractMessageConverter.ServiceName.get -> string
+abstract Steeltoe.Messaging.Converter.AbstractMessageConverter.ServiceName.set -> void
+abstract Steeltoe.Messaging.Converter.AbstractMessageConverter.Supports(System.Type type) -> bool
+abstract Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.DoReceive(TDestination destination) -> Steeltoe.Messaging.IMessage
+abstract Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.DoReceiveAsync(TDestination destination, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+abstract Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.DoSend(TDestination destination, Steeltoe.Messaging.IMessage message) -> void
+abstract Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.DoSendAsync(TDestination destination, Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+abstract Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.DoSendAndReceive(TDestination destination, Steeltoe.Messaging.IMessage requestMessage) -> Steeltoe.Messaging.IMessage
+abstract Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.DoSendAndReceiveAsync(TDestination destination, Steeltoe.Messaging.IMessage requestMessage, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+abstract Steeltoe.Messaging.Handler.AbstractMessageCondition<T>.Combine(T other) -> T
+abstract Steeltoe.Messaging.Handler.AbstractMessageCondition<T>.CompareTo(T other, Steeltoe.Messaging.IMessage message) -> int
+abstract Steeltoe.Messaging.Handler.AbstractMessageCondition<T>.GetContent() -> System.Collections.IList
+abstract Steeltoe.Messaging.Handler.AbstractMessageCondition<T>.GetMatchingCondition(Steeltoe.Messaging.IMessage message) -> T
+abstract Steeltoe.Messaging.Handler.AbstractMessageCondition<T>.GetToStringInfix() -> string
+abstract Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.CreateNamedValueInfo(System.Reflection.ParameterInfo parameter) -> Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.NamedValueInfo
+abstract Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.HandleMissingValue(string name, System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> void
+abstract Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.ResolveArgumentInternal(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message, string name) -> object
+abstract Steeltoe.Messaging.Handler.Invocation.AbstractAsyncReturnValueHandler.SupportsReturnType(System.Reflection.ParameterInfo returnType) -> bool
+abstract Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.CreateExceptionHandlerMethodResolverFor(System.Type beanType) -> Steeltoe.Messaging.Handler.Invocation.AbstractExceptionHandlerMethodResolver
+abstract Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.GetDestination(Steeltoe.Messaging.IMessage message) -> string
+abstract Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.GetDirectLookupDestinations(T mapping) -> System.Collections.Generic.ISet<string>
+abstract Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.GetMappingComparer(Steeltoe.Messaging.IMessage message) -> System.Collections.Generic.IComparer<T>
+abstract Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.GetMappingForMethod(System.Reflection.MethodInfo method, System.Type handlerType) -> T
+abstract Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.GetMatchingMapping(T mapping, Steeltoe.Messaging.IMessage message) -> T
+abstract Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.InitArgumentResolvers() -> System.Collections.Generic.IList<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver>
+abstract Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.InitReturnValueHandlers() -> System.Collections.Generic.IList<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodReturnValueHandler>
+abstract Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.FromHeaders(Steeltoe.Messaging.IMessageHeaders headers, T target) -> void
+abstract Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.ToHeaders(T source) -> Steeltoe.Messaging.IMessageHeaders
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.CopyHeaders(System.Collections.Generic.IDictionary<string, object> headersToCopy) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.CopyHeadersIfAbsent(System.Collections.Generic.IDictionary<string, object> headersToCopy) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.RemoveHeader(string headerName) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.RemoveHeaders(params string[] headerPatterns) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.SetErrorChannel(Steeltoe.Messaging.IMessageChannel errorChannel) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.SetErrorChannelName(string errorChannelName) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.SetHeader(string headerName, object headerValue) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.SetHeaderIfAbsent(string headerName, object headerValue) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.SetHeaders(Steeltoe.Messaging.Support.MessageHeaderAccessor accessor) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.SetReplyChannel(Steeltoe.Messaging.IMessageChannel replyChannel) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageBuilder.SetReplyChannelName(string replyChannelName) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+abstract Steeltoe.Messaging.Support.AbstractMessageChannel.DoSendInternal(Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> bool
+const Steeltoe.Messaging.Converter.AbstractTypeMapper.DefaultClassIdFieldName = "__TypeId__" -> string
+const Steeltoe.Messaging.Converter.AbstractTypeMapper.DefaultContentClassIdFieldName = "__ContentTypeId__" -> string
+const Steeltoe.Messaging.Converter.AbstractTypeMapper.DefaultKeyClassIdFieldName = "__KeyTypeId__" -> string
+const Steeltoe.Messaging.Converter.ByteArrayMessageConverter.DefaultServiceName = "ByteArrayMessageConverter" -> string
+const Steeltoe.Messaging.Converter.CompositeMessageConverter.DefaultServiceName = "CompositeMessageConverter" -> string
+const Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.DefaultServiceName = "NewtonJsonMessageConverter" -> string
+const Steeltoe.Messaging.Converter.SimpleMessageConverter.DefaultServiceName = "SimpleMessageConverter" -> string
+const Steeltoe.Messaging.Converter.StringMessageConverter.DefaultServiceName = "StringMessageConverter" -> string
+const Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConversionHintHeader = "conversionHint" -> string
+const Steeltoe.Messaging.Core.MessageChannelTemplate.DefaultReceiveTimeoutHeader = "receiveTimeout" -> string
+const Steeltoe.Messaging.Core.MessageChannelTemplate.DefaultSendTimeoutHeader = "sendTimeout" -> string
+const Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.DefaultServiceName = "DefaultMessageHandlerMethodFactory" -> string
+const Steeltoe.Messaging.Handler.Attributes.Support.DestinationVariableMethodArgumentResolver.DestinationTemplateVariablesHeader = "DestinationVariableMethodArgumentResolver.templateVariables" -> string
+const Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition.LookupDestinationHeader = "lookupDestination" -> string
+const Steeltoe.Messaging.MessageHeaders.ContentType = "contentType" -> string
+const Steeltoe.Messaging.MessageHeaders.ContentTypeBytes = "application/octet-stream" -> string
+const Steeltoe.Messaging.MessageHeaders.ContentTypeDotNetSerializedObject = "application/x-dotnet-serialized-object" -> string
+const Steeltoe.Messaging.MessageHeaders.ContentTypeId = "__ContentTypeId__" -> string
+const Steeltoe.Messaging.MessageHeaders.ContentTypeJavaSerializedObject = "application/x-java-serialized-object" -> string
+const Steeltoe.Messaging.MessageHeaders.ContentTypeJson = "application/json" -> string
+const Steeltoe.Messaging.MessageHeaders.ContentTypeJsonAlt = "text/x-json" -> string
+const Steeltoe.Messaging.MessageHeaders.ContentTypeTextPlain = "text/plain" -> string
+const Steeltoe.Messaging.MessageHeaders.ContentTypeXml = "application/xml" -> string
+const Steeltoe.Messaging.MessageHeaders.ErrorChannelName = "errorChannel" -> string
+const Steeltoe.Messaging.MessageHeaders.IdName = "id" -> string
+const Steeltoe.Messaging.MessageHeaders.InferredArgumentType = "internal_InferredArgumentType" -> string
+const Steeltoe.Messaging.MessageHeaders.Internal = "internal_" -> string
+const Steeltoe.Messaging.MessageHeaders.KeyTypeId = "__KeyTypeId__" -> string
+const Steeltoe.Messaging.MessageHeaders.ReplyChannelName = "replyChannel" -> string
+const Steeltoe.Messaging.MessageHeaders.TimestampName = "timestamp" -> string
+const Steeltoe.Messaging.MessageHeaders.TypeId = "__TypeId__" -> string
+const Steeltoe.Messaging.Support.AbstractMessageChannel.IndefiniteTimeout = -1 -> int
+const Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.NativeHeaders = "nativeHeaders" -> string
+override Steeltoe.Messaging.Converter.ByteArrayMessageConverter.ConvertFromInternal(Steeltoe.Messaging.IMessage message, System.Type targetClass, object conversionHint) -> object
+override Steeltoe.Messaging.Converter.ByteArrayMessageConverter.ConvertToInternal(object payload, Steeltoe.Messaging.IMessageHeaders headers, object conversionHint) -> object
+override Steeltoe.Messaging.Converter.ByteArrayMessageConverter.ServiceName.get -> string
+override Steeltoe.Messaging.Converter.ByteArrayMessageConverter.ServiceName.set -> void
+override Steeltoe.Messaging.Converter.ByteArrayMessageConverter.Supports(System.Type type) -> bool
+override Steeltoe.Messaging.Converter.CompositeMessageConverter.ToString() -> string
+override Steeltoe.Messaging.Converter.DefaultContentTypeResolver.ToString() -> string
+override Steeltoe.Messaging.Converter.GenericMessageConverter.FromMessage(Steeltoe.Messaging.IMessage message, System.Type targetType) -> object
+override Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.CanConvertFrom(Steeltoe.Messaging.IMessage message, System.Type targetClass) -> bool
+override Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.CanConvertTo(object payload, Steeltoe.Messaging.IMessageHeaders headers = null) -> bool
+override Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.ConvertFromInternal(Steeltoe.Messaging.IMessage message, System.Type targetClass, object conversionHint) -> object
+override Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.ConvertToInternal(object payload, Steeltoe.Messaging.IMessageHeaders headers, object conversionHint) -> object
+override Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.ServiceName.get -> string
+override Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.ServiceName.set -> void
+override Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.Supports(System.Type type) -> bool
+override Steeltoe.Messaging.Converter.StringMessageConverter.ConvertFromInternal(Steeltoe.Messaging.IMessage message, System.Type targetClass, object conversionHint) -> object
+override Steeltoe.Messaging.Converter.StringMessageConverter.ConvertToInternal(object payload, Steeltoe.Messaging.IMessageHeaders headers, object conversionHint) -> object
+override Steeltoe.Messaging.Converter.StringMessageConverter.ServiceName.get -> string
+override Steeltoe.Messaging.Converter.StringMessageConverter.ServiceName.set -> void
+override Steeltoe.Messaging.Converter.StringMessageConverter.Supports(System.Type type) -> bool
+override Steeltoe.Messaging.Core.MessageChannelTemplate.DoReceive(Steeltoe.Messaging.IMessageChannel destination) -> Steeltoe.Messaging.IMessage
+override Steeltoe.Messaging.Core.MessageChannelTemplate.DoReceiveAsync(Steeltoe.Messaging.IMessageChannel destination, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+override Steeltoe.Messaging.Core.MessageChannelTemplate.DoSend(Steeltoe.Messaging.IMessageChannel destination, Steeltoe.Messaging.IMessage message) -> void
+override Steeltoe.Messaging.Core.MessageChannelTemplate.DoSendAndReceive(Steeltoe.Messaging.IMessageChannel destination, Steeltoe.Messaging.IMessage requestMessage) -> Steeltoe.Messaging.IMessage
+override Steeltoe.Messaging.Core.MessageChannelTemplate.DoSendAndReceiveAsync(Steeltoe.Messaging.IMessageChannel destination, Steeltoe.Messaging.IMessage requestMessage, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+override Steeltoe.Messaging.Core.MessageChannelTemplate.DoSendAsync(Steeltoe.Messaging.IMessageChannel destination, Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+override Steeltoe.Messaging.Handler.AbstractMessageCondition<T>.Equals(object obj) -> bool
+override Steeltoe.Messaging.Handler.AbstractMessageCondition<T>.GetHashCode() -> int
+override Steeltoe.Messaging.Handler.AbstractMessageCondition<T>.ToString() -> string
+override Steeltoe.Messaging.Handler.Attributes.Support.DestinationVariableMethodArgumentResolver.CreateNamedValueInfo(System.Reflection.ParameterInfo parameter) -> Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.NamedValueInfo
+override Steeltoe.Messaging.Handler.Attributes.Support.DestinationVariableMethodArgumentResolver.HandleMissingValue(string name, System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> void
+override Steeltoe.Messaging.Handler.Attributes.Support.DestinationVariableMethodArgumentResolver.ResolveArgumentInternal(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message, string name) -> object
+override Steeltoe.Messaging.Handler.Attributes.Support.DestinationVariableMethodArgumentResolver.SupportsParameter(System.Reflection.ParameterInfo parameter) -> bool
+override Steeltoe.Messaging.Handler.Attributes.Support.HeaderMethodArgumentResolver.CreateNamedValueInfo(System.Reflection.ParameterInfo parameter) -> Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.NamedValueInfo
+override Steeltoe.Messaging.Handler.Attributes.Support.HeaderMethodArgumentResolver.HandleMissingValue(string name, System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> void
+override Steeltoe.Messaging.Handler.Attributes.Support.HeaderMethodArgumentResolver.ResolveArgumentInternal(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message, string name) -> object
+override Steeltoe.Messaging.Handler.Attributes.Support.HeaderMethodArgumentResolver.SupportsParameter(System.Reflection.ParameterInfo parameter) -> bool
+override Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition.Combine(Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition other) -> Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition
+override Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition.CompareTo(Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition other, Steeltoe.Messaging.IMessage message) -> int
+override Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition.GetContent() -> System.Collections.IList
+override Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition.GetMatchingCondition(Steeltoe.Messaging.IMessage message) -> Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition
+override Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition.GetToStringInfix() -> string
+override Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.Match.ToString() -> string
+override Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.ToString() -> string
+override Steeltoe.Messaging.Message<TPayload>.Equals(object obj) -> bool
+override Steeltoe.Messaging.Message<TPayload>.GetHashCode() -> int
+override Steeltoe.Messaging.Message<TPayload>.ToString() -> string
+override Steeltoe.Messaging.MessageHeaders.Equals(object obj) -> bool
+override Steeltoe.Messaging.MessageHeaders.GetHashCode() -> int
+override Steeltoe.Messaging.MessageHeaders.ToString() -> string
+override Steeltoe.Messaging.MessagingException.ToString() -> string
+override Steeltoe.Messaging.Support.AbstractMessageChannel.ToString() -> string
+override Steeltoe.Messaging.Support.AbstractMessageChannelWriter.TryComplete(System.Exception error = null) -> bool
+override Steeltoe.Messaging.Support.AbstractMessageChannelWriter.TryWrite(Steeltoe.Messaging.IMessage message) -> bool
+override Steeltoe.Messaging.Support.AbstractMessageChannelWriter.WaitToWriteAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<bool>
+override Steeltoe.Messaging.Support.AbstractMessageChannelWriter.WriteAsync(Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
+override Steeltoe.Messaging.Support.ErrorMessage.ToString() -> string
+override Steeltoe.Messaging.Support.ImmutableMessageChannelInterceptor.PreSend(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel) -> Steeltoe.Messaging.IMessage
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.CopyHeaders(System.Collections.Generic.IDictionary<string, object> headersToCopy) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.CopyHeadersIfAbsent(System.Collections.Generic.IDictionary<string, object> headersToCopy) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.RemoveHeader(string headerName) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.RemoveHeaders(params string[] headerPatterns) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.SetErrorChannel(Steeltoe.Messaging.IMessageChannel errorChannel) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.SetErrorChannelName(string errorChannelName) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.SetHeader(string headerName, object headerValue) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.SetHeaderIfAbsent(string headerName, object headerValue) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.SetHeaders(Steeltoe.Messaging.Support.MessageHeaderAccessor accessor) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.SetReplyChannel(Steeltoe.Messaging.IMessageChannel replyChannel) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageBuilder<TPayload>.SetReplyChannelName(string replyChannelName) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+override Steeltoe.Messaging.Support.MessageHeaderAccessor.ToString() -> string
+override Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.SetImmutable() -> void
+override Steeltoe.Messaging.Support.NotSupportedChannelReader.Completion.get -> System.Threading.Tasks.Task
+override Steeltoe.Messaging.Support.NotSupportedChannelReader.ReadAllAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IAsyncEnumerable<Steeltoe.Messaging.IMessage>
+override Steeltoe.Messaging.Support.NotSupportedChannelReader.ReadAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Steeltoe.Messaging.IMessage>
+override Steeltoe.Messaging.Support.NotSupportedChannelReader.TryRead(out Steeltoe.Messaging.IMessage item) -> bool
+override Steeltoe.Messaging.Support.NotSupportedChannelReader.WaitToReadAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<bool>
+override Steeltoe.Messaging.Support.NotSupportedChannelWriter.TryComplete(System.Exception error = null) -> bool
+override Steeltoe.Messaging.Support.NotSupportedChannelWriter.TryWrite(Steeltoe.Messaging.IMessage item) -> bool
+override Steeltoe.Messaging.Support.NotSupportedChannelWriter.WaitToWriteAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<bool>
+override Steeltoe.Messaging.Support.NotSupportedChannelWriter.WriteAsync(Steeltoe.Messaging.IMessage item, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
+override Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel.AddInterceptor(int index, Steeltoe.Messaging.Support.IChannelInterceptor interceptor) -> void
+override Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel.AddInterceptor(Steeltoe.Messaging.Support.IChannelInterceptor interceptor) -> void
+override Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel.DoSendInternal(Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> bool
+override Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel.SetInterceptors(System.Collections.Generic.List<Steeltoe.Messaging.Support.IChannelInterceptor> interceptors) -> void
+override Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannelWriter.TryComplete(System.Exception error = null) -> bool
+override Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannelWriter.TryWrite(Steeltoe.Messaging.IMessage message) -> bool
+override Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannelWriter.WaitToWriteAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<bool>
+readonly Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.NamedValueInfo.DefaultValue -> string
+readonly Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.NamedValueInfo.Name -> string
+readonly Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.NamedValueInfo.Required -> bool
+readonly Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.ArgumentResolvers -> Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite
+readonly Steeltoe.Messaging.Handler.Attributes.Support.MessageMethodArgumentResolver.Converter -> Steeltoe.Messaging.Converter.IMessageConverter
+readonly Steeltoe.Messaging.Handler.Attributes.Support.PayloadMethodArgumentResolver.Converter -> Steeltoe.Messaging.Converter.IMessageConverter
+readonly Steeltoe.Messaging.Handler.Attributes.Support.PayloadMethodArgumentResolver.UseDefaultResolution -> bool
+readonly Steeltoe.Messaging.Handler.HandlerMethod.InnerArgCount -> int
+readonly Steeltoe.Messaging.Handler.HandlerMethod.InnerHandler -> object
+readonly Steeltoe.Messaging.Handler.HandlerMethod.InnerInvoker -> Steeltoe.Messaging.Handler.HandlerMethod.Invoker
+readonly Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.Match.HandlerMethod -> Steeltoe.Messaging.Handler.HandlerMethod
+readonly Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.Match.Mapping -> T
+readonly Steeltoe.Messaging.Message<TPayload>.InnerHeaders -> Steeltoe.Messaging.IMessageHeaders
+readonly Steeltoe.Messaging.Message<TPayload>.InnerPayload -> TPayload
+readonly Steeltoe.Messaging.MessageHeaders.Headers -> System.Collections.Generic.IDictionary<string, object>
+readonly Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.Logger -> Microsoft.Extensions.Logging.ILogger
+readonly Steeltoe.Messaging.Support.AbstractMessageBuilder.OriginalMessage -> Steeltoe.Messaging.IMessage
+readonly Steeltoe.Messaging.Support.AbstractMessageBuilder.Payload -> object
+static readonly Steeltoe.Messaging.MessageHeaders.IdValueNone -> string
+static readonly Steeltoe.Messaging.Support.MessageHeaderAccessor.DefaultCharset -> System.Text.Encoding
+static Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.GetIMessageGenericType(System.Type type) -> System.Type
+static Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.GetJsonEncoding(Steeltoe.Common.Util.MimeType contentType) -> System.Text.Encoding
+static Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.GetTargetType(System.Type targetClass, object conversionHint) -> System.Type
+static Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.IsIMessageGenericType(System.Type type) -> bool
+static Steeltoe.Messaging.Handler.HandlerMethod.FindProvidedArgument(System.Reflection.ParameterInfo parameter, params object[] providedArgs) -> object
+static Steeltoe.Messaging.Handler.HandlerMethod.FormatArgumentError(System.Reflection.ParameterInfo param, string message) -> string
+static Steeltoe.Messaging.Handler.Invocation.AbstractExceptionHandlerMethodResolver.GetExceptionsFromMethodSignature(System.Reflection.MethodInfo method) -> System.Collections.Generic.List<System.Type>
+static Steeltoe.Messaging.Message.Create(object payload) -> Steeltoe.Messaging.IMessage
+static Steeltoe.Messaging.Message.Create(object payload, Steeltoe.Messaging.IMessageHeaders headers, System.Type messageType) -> Steeltoe.Messaging.IMessage
+static Steeltoe.Messaging.Message.Create(object payload, System.Collections.Generic.IDictionary<string, object> headers, System.Type messageType) -> Steeltoe.Messaging.IMessage
+static Steeltoe.Messaging.Message.Create(object payload, System.Type messageType) -> Steeltoe.Messaging.IMessage
+static Steeltoe.Messaging.Message.Create<T>(T payload) -> Steeltoe.Messaging.IMessage<T>
+static Steeltoe.Messaging.Message.Create<T>(T payload, Steeltoe.Messaging.IMessageHeaders headers) -> Steeltoe.Messaging.IMessage<T>
+static Steeltoe.Messaging.Message.Create<T>(T payload, System.Collections.Generic.IDictionary<string, object> headers) -> Steeltoe.Messaging.IMessage<T>
+static Steeltoe.Messaging.MessageHeaders.From(Steeltoe.Messaging.MessageHeaders other) -> Steeltoe.Messaging.MessageHeaders
+static Steeltoe.Messaging.Support.MessageBuilder.CreateMessage(object payload, Steeltoe.Messaging.IMessageHeaders messageHeaders, System.Type payloadType = null) -> Steeltoe.Messaging.IMessage
+static Steeltoe.Messaging.Support.MessageBuilder.CreateMessage<TPayload>(TPayload payload, Steeltoe.Messaging.IMessageHeaders messageHeaders) -> Steeltoe.Messaging.IMessage<TPayload>
+static Steeltoe.Messaging.Support.MessageBuilder.FromMessage(Steeltoe.Messaging.IMessage message, System.Type payloadType = null) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+static Steeltoe.Messaging.Support.MessageBuilder.FromMessage<TPayload>(Steeltoe.Messaging.IMessage<TPayload> message) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+static Steeltoe.Messaging.Support.MessageBuilder.GetGenericParamType(object payload, System.Type messagePayloadType) -> System.Type
+static Steeltoe.Messaging.Support.MessageBuilder.GetGenericParamType(Steeltoe.Messaging.IMessage target, System.Type messagePayloadType) -> System.Type
+static Steeltoe.Messaging.Support.MessageBuilder.WithPayload(object payload, System.Type payloadType = null) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+static Steeltoe.Messaging.Support.MessageBuilder.WithPayload<TPayload>(TPayload payload) -> Steeltoe.Messaging.Support.AbstractMessageBuilder
+static Steeltoe.Messaging.Support.MessageHeaderAccessor.GetAccessor(Steeltoe.Messaging.IMessage message, System.Type accessorType) -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+static Steeltoe.Messaging.Support.MessageHeaderAccessor.GetAccessor(Steeltoe.Messaging.IMessageHeaders messageHeaders, System.Type accessorType) -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+static Steeltoe.Messaging.Support.MessageHeaderAccessor.GetAccessor<T>(Steeltoe.Messaging.IMessage message) -> T
+static Steeltoe.Messaging.Support.MessageHeaderAccessor.GetAccessor<T>(Steeltoe.Messaging.IMessageHeaders messageHeaders) -> T
+static Steeltoe.Messaging.Support.MessageHeaderAccessor.GetMutableAccessor(Steeltoe.Messaging.IMessage message) -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+static Steeltoe.Messaging.Support.MessageHeaderAccessor.GetMutableAccessor(Steeltoe.Messaging.IMessage message, System.Type accessorType) -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+static Steeltoe.Messaging.Support.MessageHeaderAccessor.GetMutableAccessor(Steeltoe.Messaging.IMessageHeaders headers) -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+static Steeltoe.Messaging.Support.MessageHeaderAccessor.GetMutableAccessor(Steeltoe.Messaging.IMessageHeaders headers, System.Type accessorType) -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+static Steeltoe.Messaging.Support.MessageHeaderAccessor.GetMutableAccessor<T>(Steeltoe.Messaging.IMessage message) -> T
+static Steeltoe.Messaging.Support.MessageHeaderAccessor.GetMutableAccessor<T>(Steeltoe.Messaging.IMessageHeaders messageHeaders) -> T
+static Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.GetFirstNativeHeader(string headerName, System.Collections.Generic.IDictionary<string, object> headers) -> string
+Steeltoe.Messaging.AbstractMessage
+Steeltoe.Messaging.AbstractMessage.AbstractMessage() -> void
+Steeltoe.Messaging.Converter.AbstractMessageConverter
+Steeltoe.Messaging.Converter.AbstractMessageConverter.AbstractMessageConverter(Steeltoe.Common.Util.MimeType supportedMimeType) -> void
+Steeltoe.Messaging.Converter.AbstractMessageConverter.AbstractMessageConverter(System.Collections.Generic.ICollection<Steeltoe.Common.Util.MimeType> supportedMimeTypes) -> void
+Steeltoe.Messaging.Converter.AbstractTypeMapper
+Steeltoe.Messaging.Converter.AbstractTypeMapper.AbstractTypeMapper() -> void
+Steeltoe.Messaging.Converter.AbstractTypeMapper.ClassIdFieldName.get -> string
+Steeltoe.Messaging.Converter.AbstractTypeMapper.ContentClassIdFieldName.get -> string
+Steeltoe.Messaging.Converter.AbstractTypeMapper.FromInferredTypeHeader(Steeltoe.Messaging.IMessageHeaders headers) -> System.Type
+Steeltoe.Messaging.Converter.AbstractTypeMapper.IdClassMapping.get -> System.Collections.Generic.Dictionary<string, System.Type>
+Steeltoe.Messaging.Converter.AbstractTypeMapper.KeyClassIdFieldName.get -> string
+Steeltoe.Messaging.Converter.AbstractTypeMapper.SetIdClassMapping(System.Collections.Generic.Dictionary<string, System.Type> mapping) -> void
+Steeltoe.Messaging.Converter.ByteArrayMessageConverter
+Steeltoe.Messaging.Converter.ByteArrayMessageConverter.ByteArrayMessageConverter() -> void
+Steeltoe.Messaging.Converter.CompositeMessageConverter
+Steeltoe.Messaging.Converter.CompositeMessageConverter.CompositeMessageConverter(System.Collections.Generic.ICollection<Steeltoe.Messaging.Converter.IMessageConverter> converters) -> void
+Steeltoe.Messaging.Converter.CompositeMessageConverter.Converters.get -> System.Collections.Generic.List<Steeltoe.Messaging.Converter.IMessageConverter>
+Steeltoe.Messaging.Converter.CompositeMessageConverter.FromMessage(Steeltoe.Messaging.IMessage message, System.Type targetType) -> object
+Steeltoe.Messaging.Converter.CompositeMessageConverter.FromMessage(Steeltoe.Messaging.IMessage message, System.Type targetType, object conversionHint) -> object
+Steeltoe.Messaging.Converter.CompositeMessageConverter.FromMessage<T>(Steeltoe.Messaging.IMessage message) -> T
+Steeltoe.Messaging.Converter.CompositeMessageConverter.FromMessage<T>(Steeltoe.Messaging.IMessage message, object conversionHint) -> T
+Steeltoe.Messaging.Converter.CompositeMessageConverter.ServiceName.get -> string
+Steeltoe.Messaging.Converter.CompositeMessageConverter.ServiceName.set -> void
+Steeltoe.Messaging.Converter.CompositeMessageConverter.ToMessage(object payload, Steeltoe.Messaging.IMessageHeaders headers) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Converter.CompositeMessageConverter.ToMessage(object payload, Steeltoe.Messaging.IMessageHeaders headers, object conversionHint) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Converter.DefaultContentTypeResolver
+Steeltoe.Messaging.Converter.DefaultContentTypeResolver.DefaultContentTypeResolver() -> void
+Steeltoe.Messaging.Converter.DefaultContentTypeResolver.DefaultMimeType.get -> Steeltoe.Common.Util.MimeType
+Steeltoe.Messaging.Converter.DefaultContentTypeResolver.DefaultMimeType.set -> void
+Steeltoe.Messaging.Converter.DefaultContentTypeResolver.Resolve(Steeltoe.Messaging.IMessageHeaders headers) -> Steeltoe.Common.Util.MimeType
+Steeltoe.Messaging.Converter.DefaultTypeMapper
+Steeltoe.Messaging.Converter.DefaultTypeMapper.DefaultType.get -> System.Type
+Steeltoe.Messaging.Converter.DefaultTypeMapper.DefaultType.set -> void
+Steeltoe.Messaging.Converter.DefaultTypeMapper.DefaultTypeMapper() -> void
+Steeltoe.Messaging.Converter.DefaultTypeMapper.FromType(System.Type type, Steeltoe.Messaging.IMessageHeaders headers) -> void
+Steeltoe.Messaging.Converter.DefaultTypeMapper.GetInferredType(Steeltoe.Messaging.IMessageHeaders headers) -> System.Type
+Steeltoe.Messaging.Converter.DefaultTypeMapper.Precedence.get -> Steeltoe.Messaging.Converter.TypePrecedence
+Steeltoe.Messaging.Converter.DefaultTypeMapper.Precedence.set -> void
+Steeltoe.Messaging.Converter.DefaultTypeMapper.ToType(Steeltoe.Messaging.IMessageHeaders headers) -> System.Type
+Steeltoe.Messaging.Converter.GenericMessageConverter
+Steeltoe.Messaging.Converter.GenericMessageConverter.GenericMessageConverter() -> void
+Steeltoe.Messaging.Converter.GenericMessageConverter.GenericMessageConverter(Steeltoe.Common.Converter.IConversionService conversionService) -> void
+Steeltoe.Messaging.Converter.MessageConversionException
+Steeltoe.Messaging.Converter.MessageConversionException.MessageConversionException(Steeltoe.Messaging.IMessage failedMessage, string message) -> void
+Steeltoe.Messaging.Converter.MessageConversionException.MessageConversionException(Steeltoe.Messaging.IMessage failedMessage, string message, System.Exception innerException) -> void
+Steeltoe.Messaging.Converter.MessageConversionException.MessageConversionException(string message) -> void
+Steeltoe.Messaging.Converter.MessageConversionException.MessageConversionException(string message, System.Exception innerException) -> void
+Steeltoe.Messaging.Converter.NewtonJsonMessageConverter
+Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.NewtonJsonMessageConverter() -> void
+Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.NewtonJsonMessageConverter(params Steeltoe.Common.Util.MimeType[] supportedMimeTypes) -> void
+Steeltoe.Messaging.Converter.NewtonJsonMessageConverter.Settings.get -> Newtonsoft.Json.JsonSerializerSettings
+Steeltoe.Messaging.Converter.SimpleMessageConverter
+Steeltoe.Messaging.Converter.SimpleMessageConverter.ServiceName.get -> string
+Steeltoe.Messaging.Converter.SimpleMessageConverter.ServiceName.set -> void
+Steeltoe.Messaging.Converter.SimpleMessageConverter.SimpleMessageConverter() -> void
+Steeltoe.Messaging.Converter.StringMessageConverter
+Steeltoe.Messaging.Converter.StringMessageConverter.StringMessageConverter() -> void
+Steeltoe.Messaging.Converter.StringMessageConverter.StringMessageConverter(System.Text.Encoding defaultCharset) -> void
+Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>
+Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.AbstractDestinationResolvingMessagingTemplate(Steeltoe.Common.Contexts.IApplicationContext context) -> void
+Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.DestinationResolver.get -> Steeltoe.Messaging.Core.IDestinationResolver<TDestination>
+Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.DestinationResolver.set -> void
+Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ResolveDestination(string destinationName) -> TDestination
+Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>
+Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.AbstractMessageReceivingTemplate() -> void
+Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>
+Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.AbstractMessageSendingTemplate() -> void
+Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(object payload) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(TDestination destination, object payload) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.SendAsync(Steeltoe.Messaging.IMessage message) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.SendAsync(TDestination destination, Steeltoe.Messaging.IMessage message) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>
+Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.AbstractMessagingTemplate() -> void
+Steeltoe.Messaging.Core.CachingDestinationResolverProxy<TDestination>
+Steeltoe.Messaging.Core.CachingDestinationResolverProxy<TDestination>.CachingDestinationResolverProxy(Steeltoe.Messaging.Core.IDestinationResolver<TDestination> targetDestinationResolver) -> void
+Steeltoe.Messaging.Core.CachingDestinationResolverProxy<TDestination>.ResolveDestination(string name) -> TDestination
+Steeltoe.Messaging.Core.DefaultMessageChannelDestinationResolver
+Steeltoe.Messaging.Core.DefaultMessageChannelDestinationResolver.Context.get -> Steeltoe.Common.Contexts.IApplicationContext
+Steeltoe.Messaging.Core.DefaultMessageChannelDestinationResolver.DefaultMessageChannelDestinationResolver(Steeltoe.Common.Contexts.IApplicationContext context) -> void
+Steeltoe.Messaging.Core.DestinationResolutionException
+Steeltoe.Messaging.Core.DestinationResolutionException.DestinationResolutionException(string message) -> void
+Steeltoe.Messaging.Core.DestinationResolutionException.DestinationResolutionException(string message, System.Exception innerException) -> void
+Steeltoe.Messaging.Core.MessageChannelTemplate
+Steeltoe.Messaging.Core.MessageChannelTemplate.DoReceive(Steeltoe.Messaging.IMessageChannel channel, int timeout) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Core.MessageChannelTemplate.DoReceiveAsync(Steeltoe.Messaging.IMessageChannel channel, int timeout, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+Steeltoe.Messaging.Core.MessageChannelTemplate.DoReceiveInternalAsync(Steeltoe.Messaging.IMessageChannel channel, int timeout, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+Steeltoe.Messaging.Core.MessageChannelTemplate.DoSend(Steeltoe.Messaging.IMessageChannel channel, Steeltoe.Messaging.IMessage message, int timeout) -> void
+Steeltoe.Messaging.Core.MessageChannelTemplate.DoSendAndReceiveInternalAsync(Steeltoe.Messaging.IMessageChannel channel, Steeltoe.Messaging.IMessage requestMessage, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+Steeltoe.Messaging.Core.MessageChannelTemplate.DoSendAsync(Steeltoe.Messaging.IMessageChannel channel, Steeltoe.Messaging.IMessage message, int timeout, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.MessageChannelTemplate.DoSendInternalAsync(Steeltoe.Messaging.IMessageChannel channel, Steeltoe.Messaging.IMessage message, int timeout, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task
+Steeltoe.Messaging.Core.MessageChannelTemplate.MessageChannelTemplate(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Messaging.Core.MessageChannelTemplate.MessageChannelTemplate(Steeltoe.Common.Contexts.IApplicationContext context, Microsoft.Extensions.Logging.ILogger logger = null) -> void
+Steeltoe.Messaging.Handler.AbstractMessageCondition<T>
+Steeltoe.Messaging.Handler.AbstractMessageCondition<T>.AbstractMessageCondition() -> void
+Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver
+Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.AbstractNamedValueMethodArgumentResolver(Steeltoe.Common.Converter.IConversionService conversionService, Steeltoe.Common.Contexts.IApplicationContext context) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.NamedValueInfo
+Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.NamedValueInfo.NamedValueInfo(string name, bool required, string defaultValue = null) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.AttributeExceptionHandlerMethodResolver
+Steeltoe.Messaging.Handler.Attributes.Support.AttributeExceptionHandlerMethodResolver.AttributeExceptionHandlerMethodResolver(System.Type handlerType) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory
+Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.DefaultMessageHandlerMethodFactory() -> void
+Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.DefaultMessageHandlerMethodFactory(Steeltoe.Common.Contexts.IApplicationContext context) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.DefaultMessageHandlerMethodFactory(Steeltoe.Common.Converter.IConversionService conversionService) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.DefaultMessageHandlerMethodFactory(Steeltoe.Common.Converter.IConversionService conversionService, Steeltoe.Common.Contexts.IApplicationContext context) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.DefaultMessageHandlerMethodFactory(Steeltoe.Common.Converter.IConversionService conversionService, Steeltoe.Messaging.Converter.IMessageConverter converter) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.DefaultMessageHandlerMethodFactory(Steeltoe.Common.Converter.IConversionService conversionService, Steeltoe.Messaging.Converter.IMessageConverter converter, Steeltoe.Common.Contexts.IApplicationContext context) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.DefaultMessageHandlerMethodFactory(Steeltoe.Common.Converter.IConversionService conversionService, Steeltoe.Messaging.Converter.IMessageConverter converter, System.Collections.Generic.List<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver> resolvers, Steeltoe.Common.Contexts.IApplicationContext context = null) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.InitArgumentResolvers() -> System.Collections.Generic.List<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver>
+Steeltoe.Messaging.Handler.Attributes.Support.DestinationVariableMethodArgumentResolver
+Steeltoe.Messaging.Handler.Attributes.Support.DestinationVariableMethodArgumentResolver.DestinationVariableMethodArgumentResolver(Steeltoe.Common.Converter.IConversionService conversionService) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.DestinationVariableMethodArgumentResolver.DestinationVariableNamedValueInfo
+Steeltoe.Messaging.Handler.Attributes.Support.DestinationVariableMethodArgumentResolver.DestinationVariableNamedValueInfo.DestinationVariableNamedValueInfo(Steeltoe.Messaging.Handler.Attributes.DestinationVariableAttribute annotation) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.HeaderMethodArgumentResolver
+Steeltoe.Messaging.Handler.Attributes.Support.HeaderMethodArgumentResolver.HeaderMethodArgumentResolver(Steeltoe.Common.Converter.IConversionService conversionService, Steeltoe.Common.Contexts.IApplicationContext context = null) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.HeadersMethodArgumentResolver
+Steeltoe.Messaging.Handler.Attributes.Support.HeadersMethodArgumentResolver.HeadersMethodArgumentResolver() -> void
+Steeltoe.Messaging.Handler.Attributes.Support.HeadersMethodArgumentResolver.ResolveArgument(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> object
+Steeltoe.Messaging.Handler.Attributes.Support.HeadersMethodArgumentResolver.SupportsParameter(System.Reflection.ParameterInfo parameter) -> bool
+Steeltoe.Messaging.Handler.Attributes.Support.MessageMethodArgumentResolver
+Steeltoe.Messaging.Handler.Attributes.Support.MessageMethodArgumentResolver.MessageMethodArgumentResolver() -> void
+Steeltoe.Messaging.Handler.Attributes.Support.MessageMethodArgumentResolver.MessageMethodArgumentResolver(Steeltoe.Messaging.Converter.IMessageConverter converter) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.MethodArgumentNotValidException
+Steeltoe.Messaging.Handler.Attributes.Support.MethodArgumentNotValidException.MethodArgumentNotValidException(Steeltoe.Messaging.IMessage failedMessage, System.Reflection.ParameterInfo parameter) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.MethodArgumentNotValidException.MethodArgumentNotValidException(Steeltoe.Messaging.IMessage failedMessage, System.Reflection.ParameterInfo parameter, string message) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.MethodArgumentTypeMismatchException
+Steeltoe.Messaging.Handler.Attributes.Support.MethodArgumentTypeMismatchException.MethodArgumentTypeMismatchException(Steeltoe.Messaging.IMessage failedMessage, System.Reflection.ParameterInfo parameter, string message) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.PayloadArgumentResolver
+Steeltoe.Messaging.Handler.Attributes.Support.PayloadArgumentResolver.PayloadArgumentResolver(Steeltoe.Messaging.Converter.IMessageConverter messageConverter) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.PayloadArgumentResolver.PayloadArgumentResolver(Steeltoe.Messaging.Converter.IMessageConverter messageConverter, bool useDefaultResolution) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.PayloadArgumentResolver.ResolveArgument(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> object
+Steeltoe.Messaging.Handler.Attributes.Support.PayloadArgumentResolver.SupportsParameter(System.Reflection.ParameterInfo parameter) -> bool
+Steeltoe.Messaging.Handler.Attributes.Support.PayloadMethodArgumentResolver
+Steeltoe.Messaging.Handler.Attributes.Support.PayloadMethodArgumentResolver.PayloadMethodArgumentResolver(Steeltoe.Messaging.Converter.IMessageConverter messageConverter) -> void
+Steeltoe.Messaging.Handler.Attributes.Support.PayloadMethodArgumentResolver.PayloadMethodArgumentResolver(Steeltoe.Messaging.Converter.IMessageConverter messageConverter, bool useDefaultResolution) -> void
+Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition
+Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition.DestinationPatternsMessageCondition(params string[] patterns) -> void
+Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition.DestinationPatternsMessageCondition(string[] patterns, Steeltoe.Common.Util.IPathMatcher matcher) -> void
+Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition.DestinationPatternsMessageCondition(string[] patterns, Steeltoe.Common.Util.IRouteMatcher routeMatcher) -> void
+Steeltoe.Messaging.Handler.DestinationPatternsMessageCondition.Patterns.get -> System.Collections.Generic.ISet<string>
+Steeltoe.Messaging.Handler.HandlerMethod
+Steeltoe.Messaging.Handler.HandlerMethod.ArgCount.get -> int
+Steeltoe.Messaging.Handler.HandlerMethod.Handler.get -> object
+Steeltoe.Messaging.Handler.HandlerMethod.HandlerInvoker.get -> Steeltoe.Messaging.Handler.HandlerMethod.Invoker
+Steeltoe.Messaging.Handler.HandlerMethod.HandlerMethod(object handler, string handlerMethodName, params System.Type[] parameterTypes) -> void
+Steeltoe.Messaging.Handler.HandlerMethod.HandlerMethod(object handler, System.Reflection.MethodInfo handlerMethod) -> void
+Steeltoe.Messaging.Handler.HandlerMethod.HandlerMethod(Steeltoe.Messaging.Handler.HandlerMethod handlerMethod) -> void
+Steeltoe.Messaging.Handler.HandlerMethod.HandlerType.get -> System.Type
+Steeltoe.Messaging.Handler.HandlerMethod.Invoker
+Steeltoe.Messaging.Handler.HandlerMethod.Method.get -> System.Reflection.MethodInfo
+Steeltoe.Messaging.Handler.HandlerMethod.ResolvedFromHandlerMethod.get -> Steeltoe.Messaging.Handler.HandlerMethod
+Steeltoe.Messaging.Handler.Invocation.AbstractAsyncReturnValueHandler
+Steeltoe.Messaging.Handler.Invocation.AbstractAsyncReturnValueHandler.AbstractAsyncReturnValueHandler() -> void
+Steeltoe.Messaging.Handler.Invocation.AbstractAsyncReturnValueHandler.HandleReturnValue(object returnValue, System.Reflection.ParameterInfo returnType, Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.Handler.Invocation.AbstractExceptionHandlerMethodResolver
+Steeltoe.Messaging.Handler.Invocation.AbstractExceptionHandlerMethodResolver.AbstractExceptionHandlerMethodResolver(System.Collections.Generic.IDictionary<System.Type, System.Reflection.MethodInfo> mappedMethods) -> void
+Steeltoe.Messaging.Handler.Invocation.AbstractExceptionHandlerMethodResolver.HasExceptionMappings.get -> bool
+Steeltoe.Messaging.Handler.Invocation.AbstractExceptionHandlerMethodResolver.ResolveMethod(System.Exception exception) -> System.Reflection.MethodInfo
+Steeltoe.Messaging.Handler.Invocation.AbstractExceptionHandlerMethodResolver.ResolveMethodByExceptionType(System.Type exceptionType) -> System.Reflection.MethodInfo
+Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>
+Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.AbstractMethodMessageHandler(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.DetectHandlerMethods(object handler) -> void
+Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.Match
+Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.Match.Match(T mapping, Steeltoe.Messaging.Handler.HandlerMethod handlerMethod) -> void
+Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.MatchComparer
+Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.MatchComparer.Compare(Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.Match x, Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.Match y) -> int
+Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.MatchComparer.MatchComparer(System.Collections.Generic.IComparer<T> comparator) -> void
+Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.MethodArgumentResolvers.get -> Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite
+Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.MethodReturnValueHandlers.get -> Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite.AddResolver(Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver argumentResolver) -> Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite.AddResolvers(params Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver[] resolvers) -> Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite.AddResolvers(System.Collections.Generic.IList<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver> resolvers) -> Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite.Clear() -> void
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite.Count.get -> int
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite.HandlerMethodArgumentResolverComposite() -> void
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite.ResolveArgument(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> object
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite.Resolvers.get -> System.Collections.Generic.List<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver>
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite.SupportsParameter(System.Reflection.ParameterInfo parameter) -> bool
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite.AddHandler(Steeltoe.Messaging.Handler.Invocation.IHandlerMethodReturnValueHandler returnValueHandler) -> Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite.AddHandlers(System.Collections.Generic.IList<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodReturnValueHandler> handlers) -> Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite.Clear() -> void
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite.HandleReturnValue(object returnValue, System.Reflection.ParameterInfo returnType, Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite.HandlerMethodReturnValueHandlerComposite() -> void
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite.IsAsyncReturnValue(object returnValue, System.Reflection.ParameterInfo parameterInfo) -> bool
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite.ReturnValueHandlers.get -> System.Collections.Generic.IList<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodReturnValueHandler>
+Steeltoe.Messaging.Handler.Invocation.HandlerMethodReturnValueHandlerComposite.SupportsReturnType(System.Reflection.ParameterInfo returnType) -> bool
+Steeltoe.Messaging.Handler.Invocation.InvocableHandlerMethod
+Steeltoe.Messaging.Handler.Invocation.InvocableHandlerMethod.InvocableHandlerMethod(object bean, string methodName, params System.Type[] parameterTypes) -> void
+Steeltoe.Messaging.Handler.Invocation.InvocableHandlerMethod.InvocableHandlerMethod(object bean, System.Reflection.MethodInfo method) -> void
+Steeltoe.Messaging.Handler.Invocation.InvocableHandlerMethod.InvocableHandlerMethod(Steeltoe.Messaging.Handler.HandlerMethod handlerMethod, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Messaging.Handler.Invocation.InvocableHandlerMethod.MessageMethodArgumentResolvers.get -> Steeltoe.Messaging.Handler.Invocation.HandlerMethodArgumentResolverComposite
+Steeltoe.Messaging.Handler.Invocation.InvocableHandlerMethod.MessageMethodArgumentResolvers.set -> void
+Steeltoe.Messaging.Handler.Invocation.MethodArgumentResolutionException
+Steeltoe.Messaging.Handler.Invocation.MethodArgumentResolutionException.MethodArgumentResolutionException(Steeltoe.Messaging.IMessage failedMessage, System.Reflection.ParameterInfo parameter) -> void
+Steeltoe.Messaging.Handler.Invocation.MethodArgumentResolutionException.MethodArgumentResolutionException(Steeltoe.Messaging.IMessage failedMessage, System.Reflection.ParameterInfo parameter, string message) -> void
+Steeltoe.Messaging.Handler.Invocation.MethodArgumentResolutionException.Parameter.get -> System.Reflection.ParameterInfo
+Steeltoe.Messaging.Message
+Steeltoe.Messaging.Message<TPayload>
+Steeltoe.Messaging.Message<TPayload>.Headers.get -> Steeltoe.Messaging.IMessageHeaders
+Steeltoe.Messaging.Message<TPayload>.Message(TPayload payload) -> void
+Steeltoe.Messaging.Message<TPayload>.Message(TPayload payload, Steeltoe.Messaging.IMessageHeaders headers) -> void
+Steeltoe.Messaging.Message<TPayload>.Message(TPayload payload, System.Collections.Generic.IDictionary<string, object> headers) -> void
+Steeltoe.Messaging.Message<TPayload>.Payload.get -> TPayload
+Steeltoe.Messaging.MessageDeliveryException
+Steeltoe.Messaging.MessageDeliveryException.MessageDeliveryException(Steeltoe.Messaging.IMessage failedMessage) -> void
+Steeltoe.Messaging.MessageDeliveryException.MessageDeliveryException(Steeltoe.Messaging.IMessage failedMessage, string message) -> void
+Steeltoe.Messaging.MessageDeliveryException.MessageDeliveryException(Steeltoe.Messaging.IMessage failedMessage, string message, System.Exception innerException) -> void
+Steeltoe.Messaging.MessageDeliveryException.MessageDeliveryException(Steeltoe.Messaging.IMessage failedMessage, System.Exception innerException) -> void
+Steeltoe.Messaging.MessageDeliveryException.MessageDeliveryException(string message) -> void
+Steeltoe.Messaging.MessageHandlingException
+Steeltoe.Messaging.MessageHandlingException.MessageHandlingException(Steeltoe.Messaging.IMessage failedMessage) -> void
+Steeltoe.Messaging.MessageHandlingException.MessageHandlingException(Steeltoe.Messaging.IMessage failedMessage, string message) -> void
+Steeltoe.Messaging.MessageHandlingException.MessageHandlingException(Steeltoe.Messaging.IMessage failedMessage, string message, System.Exception innerException) -> void
+Steeltoe.Messaging.MessageHandlingException.MessageHandlingException(Steeltoe.Messaging.IMessage failedMessage, System.Exception innerException) -> void
+Steeltoe.Messaging.MessageHeaders
+Steeltoe.Messaging.MessageHeaders.MessageHeaders() -> void
+Steeltoe.Messaging.MessageHeaders.MessageHeaders(Steeltoe.Messaging.MessageHeaders other) -> void
+Steeltoe.Messaging.MessageHeaders.MessageHeaders(System.Collections.Generic.IDictionary<string, object> headers) -> void
+Steeltoe.Messaging.MessageHeaders.MessageHeaders(System.Collections.Generic.IDictionary<string, object> headers, string id, long? timestamp) -> void
+Steeltoe.Messaging.MessageHeaders.UpdateHeaders(string id, long? timestamp) -> void
+Steeltoe.Messaging.MessagingException
+Steeltoe.Messaging.MessagingException.FailedMessage.get -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.MessagingException.MessagingException(Steeltoe.Messaging.IMessage failedMessage) -> void
+Steeltoe.Messaging.MessagingException.MessagingException(Steeltoe.Messaging.IMessage failedMessage, string message) -> void
+Steeltoe.Messaging.MessagingException.MessagingException(Steeltoe.Messaging.IMessage failedMessage, string message, System.Exception innerException) -> void
+Steeltoe.Messaging.MessagingException.MessagingException(Steeltoe.Messaging.IMessage failedMessage, System.Exception innerException) -> void
+Steeltoe.Messaging.MessagingException.MessagingException(string message) -> void
+Steeltoe.Messaging.MessagingException.MessagingException(string message, System.Exception innerException) -> void
+Steeltoe.Messaging.Support.AbstractChannelInterceptor
+Steeltoe.Messaging.Support.AbstractChannelInterceptor.AbstractChannelInterceptor() -> void
+Steeltoe.Messaging.Support.AbstractChannelInterceptor.AbstractChannelInterceptor(int order) -> void
+Steeltoe.Messaging.Support.AbstractHeaderMapper<T>
+Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.AbstractHeaderMapper(Microsoft.Extensions.Logging.ILogger logger = null) -> void
+Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.InboundPrefix.get -> string
+Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.InboundPrefix.set -> void
+Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.OutboundPrefix.get -> string
+Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.OutboundPrefix.set -> void
+Steeltoe.Messaging.Support.AbstractMessageBuilder
+Steeltoe.Messaging.Support.AbstractMessageBuilder.AbstractMessageBuilder() -> void
+Steeltoe.Messaging.Support.AbstractMessageBuilder.AbstractMessageBuilder(object payload, Steeltoe.Messaging.Support.MessageHeaderAccessor accessor) -> void
+Steeltoe.Messaging.Support.AbstractMessageBuilder.AbstractMessageBuilder(Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.Support.AbstractMessageBuilder.AbstractMessageBuilder(Steeltoe.Messaging.Support.MessageHeaderAccessor accessor) -> void
+Steeltoe.Messaging.Support.AbstractMessageBuilder.headerAccessor -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+Steeltoe.Messaging.Support.AbstractMessageChannel
+Steeltoe.Messaging.Support.AbstractMessageChannel.AbstractMessageChannel(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Messaging.Support.AbstractMessageChannel.ChannelInterceptorChain
+Steeltoe.Messaging.Support.AbstractMessageChannel.ChannelInterceptorChain.ApplyPostReceive(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Support.AbstractMessageChannel.ChannelInterceptorChain.ApplyPostSend(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, bool sent) -> void
+Steeltoe.Messaging.Support.AbstractMessageChannel.ChannelInterceptorChain.ApplyPreReceive(Steeltoe.Messaging.IMessageChannel channel) -> bool
+Steeltoe.Messaging.Support.AbstractMessageChannel.ChannelInterceptorChain.ApplyPreSend(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel) -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Support.AbstractMessageChannel.ChannelInterceptorChain.ChannelInterceptorChain(Steeltoe.Messaging.Support.AbstractMessageChannel channel) -> void
+Steeltoe.Messaging.Support.AbstractMessageChannel.ChannelInterceptorChain.TriggerAfterReceiveCompletion(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, System.Exception ex) -> void
+Steeltoe.Messaging.Support.AbstractMessageChannel.ChannelInterceptorChain.TriggerAfterSendCompletion(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, bool sent, System.Exception ex) -> void
+Steeltoe.Messaging.Support.AbstractMessageChannelWriter
+Steeltoe.Messaging.Support.AbstractMessageChannelWriter.AbstractMessageChannelWriter(Steeltoe.Messaging.Support.AbstractMessageChannel channel, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Messaging.Support.AbstractMessageChannelWriter.channel -> Steeltoe.Messaging.Support.AbstractMessageChannel
+Steeltoe.Messaging.Support.AbstractMessageChannelWriter.logger -> Microsoft.Extensions.Logging.ILogger
+Steeltoe.Messaging.Support.AbstractSubscribableChannel
+Steeltoe.Messaging.Support.AbstractSubscribableChannel.AbstractSubscribableChannel(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Messaging.Support.AbstractTaskSchedulerChannelInterceptor
+Steeltoe.Messaging.Support.AbstractTaskSchedulerChannelInterceptor.AbstractTaskSchedulerChannelInterceptor() -> void
+Steeltoe.Messaging.Support.ErrorMessage
+Steeltoe.Messaging.Support.ErrorMessage.ErrorMessage(System.Exception payload) -> void
+Steeltoe.Messaging.Support.ErrorMessage.ErrorMessage(System.Exception payload, Steeltoe.Messaging.IMessage originalMessage) -> void
+Steeltoe.Messaging.Support.ErrorMessage.ErrorMessage(System.Exception payload, Steeltoe.Messaging.IMessageHeaders headers) -> void
+Steeltoe.Messaging.Support.ErrorMessage.ErrorMessage(System.Exception payload, Steeltoe.Messaging.IMessageHeaders headers, Steeltoe.Messaging.IMessage originalMessage) -> void
+Steeltoe.Messaging.Support.ErrorMessage.ErrorMessage(System.Exception payload, System.Collections.Generic.IDictionary<string, object> headers) -> void
+Steeltoe.Messaging.Support.ErrorMessage.ErrorMessage(System.Exception payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.IMessage originalMessage) -> void
+Steeltoe.Messaging.Support.ErrorMessage.OriginalMessage.get -> Steeltoe.Messaging.IMessage
+Steeltoe.Messaging.Support.IdTimestampMessageHeaderInitializer
+Steeltoe.Messaging.Support.IdTimestampMessageHeaderInitializer.EnableTimestamp.get -> bool
+Steeltoe.Messaging.Support.IdTimestampMessageHeaderInitializer.EnableTimestamp.set -> void
+Steeltoe.Messaging.Support.IdTimestampMessageHeaderInitializer.IdGenerator.get -> Steeltoe.Common.Util.IIdGenerator
+Steeltoe.Messaging.Support.IdTimestampMessageHeaderInitializer.IdGenerator.set -> void
+Steeltoe.Messaging.Support.IdTimestampMessageHeaderInitializer.IdTimestampMessageHeaderInitializer() -> void
+Steeltoe.Messaging.Support.IdTimestampMessageHeaderInitializer.InitHeaders(Steeltoe.Messaging.Support.IMessageHeaderAccessor headerAccessor) -> void
+Steeltoe.Messaging.Support.IdTimestampMessageHeaderInitializer.SetDisableIdGeneration() -> void
+Steeltoe.Messaging.Support.ImmutableMessageChannelInterceptor
+Steeltoe.Messaging.Support.ImmutableMessageChannelInterceptor.ImmutableMessageChannelInterceptor() -> void
+Steeltoe.Messaging.Support.ImmutableMessageChannelInterceptor.ImmutableMessageChannelInterceptor(int order) -> void
+Steeltoe.Messaging.Support.MessageBuilder
+Steeltoe.Messaging.Support.MessageBuilder<TPayload>
+Steeltoe.Messaging.Support.MessageBuilder<TPayload>.Build() -> Steeltoe.Messaging.IMessage<TPayload>
+Steeltoe.Messaging.Support.MessageBuilder<TPayload>.MessageBuilder() -> void
+Steeltoe.Messaging.Support.MessageBuilder<TPayload>.MessageBuilder(Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.Support.MessageBuilder<TPayload>.MessageBuilder(Steeltoe.Messaging.IMessage<TPayload> message) -> void
+Steeltoe.Messaging.Support.MessageBuilder<TPayload>.MessageBuilder(Steeltoe.Messaging.Support.MessageHeaderAccessor accessor) -> void
+Steeltoe.Messaging.Support.MessageBuilder<TPayload>.MessageBuilder(TPayload payload, Steeltoe.Messaging.Support.MessageHeaderAccessor accessor) -> void
+Steeltoe.Messaging.Support.MessageHeaderAccessor
+Steeltoe.Messaging.Support.MessageHeaderAccessor.AccessorMessageHeaders
+Steeltoe.Messaging.Support.MessageHeaderAccessor.AccessorMessageHeaders.accessor -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+Steeltoe.Messaging.Support.MessageHeaderAccessor.AccessorMessageHeaders.AccessorMessageHeaders(Steeltoe.Messaging.Support.MessageHeaderAccessor accessor, Steeltoe.Messaging.MessageHeaders other) -> void
+Steeltoe.Messaging.Support.MessageHeaderAccessor.AccessorMessageHeaders.AccessorMessageHeaders(Steeltoe.Messaging.Support.MessageHeaderAccessor accessor, System.Collections.Generic.IDictionary<string, object> headers) -> void
+Steeltoe.Messaging.Support.MessageHeaderAccessor.AccessorMessageHeaders.RawHeaders.get -> System.Collections.Generic.IDictionary<string, object>
+Steeltoe.Messaging.Support.MessageHeaderAccessor.headers -> Steeltoe.Messaging.Support.MessageHeaderAccessor.AccessorMessageHeaders
+Steeltoe.Messaging.Support.MessageHeaderAccessor.MessageHeaderAccessor() -> void
+Steeltoe.Messaging.Support.MessageHeaderAccessor.MessageHeaderAccessor(Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.Support.MessageHeaderAccessor.MessageHeaderAccessor(Steeltoe.Messaging.MessageHeaders headers) -> void
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.AddNativeHeader(string name, string value) -> void
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.AddNativeHeaders(System.Collections.Generic.IDictionary<string, System.Collections.Generic.List<string>> headers) -> void
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.ContainsNativeHeader(string headerName) -> bool
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.GetFirstNativeHeader(string headerName) -> string
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.GetNativeHeader(string headerName) -> System.Collections.Generic.List<string>
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.NativeMessageHeaderAccessor() -> void
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.NativeMessageHeaderAccessor(Steeltoe.Messaging.IMessage message) -> void
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.NativeMessageHeaderAccessor(System.Collections.Generic.IDictionary<string, System.Collections.Generic.List<string>> nativeHeaders) -> void
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.RemoveNativeHeader(string name) -> System.Collections.Generic.List<string>
+Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.SetNativeHeader(string name, string value) -> void
+Steeltoe.Messaging.Support.NotSupportedChannelReader
+Steeltoe.Messaging.Support.NotSupportedChannelReader.NotSupportedChannelReader() -> void
+Steeltoe.Messaging.Support.NotSupportedChannelWriter
+Steeltoe.Messaging.Support.NotSupportedChannelWriter.NotSupportedChannelWriter() -> void
+Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel
+Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel.Factory.get -> System.Threading.Tasks.TaskFactory
+Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel.Scheduler.get -> System.Threading.Tasks.TaskScheduler
+Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel.schedulerInterceptors -> System.Collections.Generic.List<Steeltoe.Messaging.Support.ITaskSchedulerChannelInterceptor>
+Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel.TaskSchedulerSubscribableChannel() -> void
+Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel.TaskSchedulerSubscribableChannel(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel.TaskSchedulerSubscribableChannel(System.Threading.Tasks.TaskScheduler scheduler, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannelWriter
+Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannelWriter.TaskSchedulerSubscribableChannelWriter(Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel channel, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> void
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.CanConvertFrom(Steeltoe.Messaging.IMessage message, System.Type targetClass) -> bool
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.CanConvertTo(object payload, Steeltoe.Messaging.IMessageHeaders headers = null) -> bool
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.ContentTypeResolver.get -> Steeltoe.Messaging.Converter.IContentTypeResolver
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.ContentTypeResolver.set -> void
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.ConvertFromInternal(Steeltoe.Messaging.IMessage message, System.Type targetClass, object conversionHint) -> object
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.ConvertToInternal(object payload, Steeltoe.Messaging.IMessageHeaders headers, object conversionHint) -> object
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.FromMessage(Steeltoe.Messaging.IMessage message, System.Type targetType) -> object
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.FromMessage(Steeltoe.Messaging.IMessage message, System.Type targetType, object conversionHint) -> object
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.FromMessage<T>(Steeltoe.Messaging.IMessage message) -> T
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.FromMessage<T>(Steeltoe.Messaging.IMessage message, object conversionHint) -> T
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.GetDefaultContentType(object payload) -> Steeltoe.Common.Util.MimeType
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.GetMimeType(Steeltoe.Messaging.IMessageHeaders headers) -> Steeltoe.Common.Util.MimeType
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.SerializedPayloadClass.get -> System.Type
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.SerializedPayloadClass.set -> void
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.StrictContentTypeMatch.get -> bool
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.StrictContentTypeMatch.set -> void
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.SupportedMimeTypes.get -> System.Collections.Generic.ICollection<Steeltoe.Common.Util.MimeType>
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.SupportsMimeType(Steeltoe.Messaging.IMessageHeaders headers) -> bool
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.ToMessage(object payload, Steeltoe.Messaging.IMessageHeaders headers) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Converter.AbstractMessageConverter.ToMessage(object payload, Steeltoe.Messaging.IMessageHeaders headers, object conversionHint) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Converter.AbstractTypeMapper.AddHeader(Steeltoe.Messaging.IMessageHeaders headers, string headerName, System.Type type) -> void
+virtual Steeltoe.Messaging.Converter.AbstractTypeMapper.GetClassName(System.Type type) -> string
+virtual Steeltoe.Messaging.Converter.AbstractTypeMapper.GetContentType(System.Type type) -> System.Type
+virtual Steeltoe.Messaging.Converter.AbstractTypeMapper.GetKeyType(System.Type type) -> System.Type
+virtual Steeltoe.Messaging.Converter.AbstractTypeMapper.HasInferredTypeHeader(Steeltoe.Messaging.IMessageHeaders headers) -> bool
+virtual Steeltoe.Messaging.Converter.AbstractTypeMapper.IsContainerType(System.Type type) -> bool
+virtual Steeltoe.Messaging.Converter.AbstractTypeMapper.RetrieveHeader(Steeltoe.Messaging.IMessageHeaders headers, string headerName) -> string
+virtual Steeltoe.Messaging.Converter.AbstractTypeMapper.RetrieveHeaderAsString(Steeltoe.Messaging.IMessageHeaders headers, string headerName) -> string
+virtual Steeltoe.Messaging.Converter.SimpleMessageConverter.FromMessage(Steeltoe.Messaging.IMessage message, System.Type targetType) -> object
+virtual Steeltoe.Messaging.Converter.SimpleMessageConverter.FromMessage<T>(Steeltoe.Messaging.IMessage message) -> T
+virtual Steeltoe.Messaging.Converter.SimpleMessageConverter.ToMessage(object payload, Steeltoe.Messaging.IMessageHeaders headers) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ApplicationContext.get -> Steeltoe.Common.Contexts.IApplicationContext
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertAndSend(string destinationName, object payload) -> void
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertAndSend(string destinationName, object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> void
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertAndSend(string destinationName, object payload, System.Collections.Generic.IDictionary<string, object> headers) -> void
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertAndSend(string destinationName, object payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> void
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertAndSendAsync(string destinationName, object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertAndSendAsync(string destinationName, object payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertAndSendAsync(string destinationName, object payload, System.Collections.Generic.IDictionary<string, object> headers, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertAndSendAsync(string destinationName, object payload, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertSendAndReceive<T>(string destinationName, object request) -> T
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertSendAndReceive<T>(string destinationName, object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor) -> T
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertSendAndReceive<T>(string destinationName, object request, System.Collections.Generic.IDictionary<string, object> headers) -> T
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertSendAndReceive<T>(string destinationName, object request, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor) -> T
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertSendAndReceiveAsync<T>(string destinationName, object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertSendAndReceiveAsync<T>(string destinationName, object request, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertSendAndReceiveAsync<T>(string destinationName, object request, System.Collections.Generic.IDictionary<string, object> headers, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ConvertSendAndReceiveAsync<T>(string destinationName, object request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.Receive(string destinationName) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ReceiveAndConvert<T>(string destinationName) -> T
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ReceiveAndConvertAsync<T>(string destinationName, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.ReceiveAsync(string destinationName, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.Send(string destinationName, Steeltoe.Messaging.IMessage message) -> void
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.SendAndReceive(string destinationName, Steeltoe.Messaging.IMessage requestMessage) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.SendAndReceiveAsync(string destinationName, Steeltoe.Messaging.IMessage requestMessage, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+virtual Steeltoe.Messaging.Core.AbstractDestinationResolvingMessagingTemplate<TDestination>.SendAsync(string destinationName, Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.DefaultReceiveDestination.get -> TDestination
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.DefaultReceiveDestination.set -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.DoConvert<T>(Steeltoe.Messaging.IMessage message) -> T
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.Receive() -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.Receive(TDestination destination) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.ReceiveAndConvert<T>() -> T
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.ReceiveAndConvert<T>(TDestination destination) -> T
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.ReceiveAndConvertAsync<T>(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.ReceiveAndConvertAsync<T>(TDestination destination) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.ReceiveAndConvertAsync<T>(TDestination destination, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.ReceiveAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.ReceiveAsync(TDestination destination, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.RequiredDefaultReceiveDestination.get -> TDestination
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.ThrowReceivedExceptions.get -> bool
+virtual Steeltoe.Messaging.Core.AbstractMessageReceivingTemplate<TDestination>.ThrowReceivedExceptions.set -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSend(object payload) -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSend(object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSend(TDestination destination, object payload) -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSend(TDestination destination, object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSend(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers) -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSend(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(object payload, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, System.Collections.Generic.IDictionary<string, object> headers, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ConvertAndSendAsync(TDestination destination, object payload, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.DefaultSendDestination.get -> TDestination
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.DefaultSendDestination.set -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.DoConvert(object payload, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor postProcessor) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.MessageConverter.get -> Steeltoe.Messaging.Converter.IMessageConverter
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.MessageConverter.set -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.ProcessHeadersToSend(System.Collections.Generic.IDictionary<string, object> headers) -> System.Collections.Generic.IDictionary<string, object>
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.RequiredDefaultSendDestination.get -> TDestination
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.Send(Steeltoe.Messaging.IMessage message) -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.Send(TDestination destination, Steeltoe.Messaging.IMessage message) -> void
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.SendAsync(Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractMessageSendingTemplate<TDestination>.SendAsync(TDestination destination, Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceive<T>(object request) -> T
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceive<T>(object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor) -> T
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceive<T>(TDestination destination, object request) -> T
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceive<T>(TDestination destination, object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor) -> T
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceive<T>(TDestination destination, object request, System.Collections.Generic.IDictionary<string, object> headers) -> T
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceive<T>(TDestination destination, object request, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor) -> T
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceiveAsync<T>(object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceiveAsync<T>(object request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceiveAsync<T>(TDestination destination, object request, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceiveAsync<T>(TDestination destination, object request, System.Collections.Generic.IDictionary<string, object> headers, Steeltoe.Messaging.Core.IMessagePostProcessor requestPostProcessor, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceiveAsync<T>(TDestination destination, object request, System.Collections.Generic.IDictionary<string, object> headers, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.ConvertSendAndReceiveAsync<T>(TDestination destination, object request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<T>
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.SendAndReceive(Steeltoe.Messaging.IMessage requestMessage) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.SendAndReceive(TDestination destination, Steeltoe.Messaging.IMessage requestMessage) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.SendAndReceiveAsync(Steeltoe.Messaging.IMessage requestMessage, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.SendAndReceiveAsync(TDestination destination, Steeltoe.Messaging.IMessage requestMessage) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+virtual Steeltoe.Messaging.Core.AbstractMessagingTemplate<TDestination>.SendAndReceiveAsync(TDestination destination, Steeltoe.Messaging.IMessage requestMessage, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Messaging.IMessage>
+virtual Steeltoe.Messaging.Core.DefaultMessageChannelDestinationResolver.ResolveDestination(string name) -> Steeltoe.Messaging.IMessageChannel
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.ProcessMessageBeforeSend(Steeltoe.Messaging.IMessage message) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.ReceiveTimeout.get -> int
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.ReceiveTimeout.set -> void
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.ReceiveTimeoutHeader.get -> string
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.ReceiveTimeoutHeader.set -> void
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.SendTimeout.get -> int
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.SendTimeout.set -> void
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.SendTimeoutHeader.get -> string
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.SendTimeoutHeader.set -> void
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.ThrowExceptionOnLateReply.get -> bool
+virtual Steeltoe.Messaging.Core.MessageChannelTemplate.ThrowExceptionOnLateReply.set -> void
+virtual Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.HandleResolvedValue(object arg, string name, System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> void
+virtual Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.ResolveArgument(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> object
+virtual Steeltoe.Messaging.Handler.Attributes.Support.AbstractNamedValueMethodArgumentResolver.SupportsParameter(System.Reflection.ParameterInfo parameter) -> bool
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.ApplicationContext.get -> Steeltoe.Common.Contexts.IApplicationContext
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.ApplicationContext.set -> void
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.ConversionService.get -> Steeltoe.Common.Converter.IConversionService
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.ConversionService.set -> void
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.CreateInvocableHandlerMethod(object instance, System.Reflection.MethodInfo method) -> Steeltoe.Messaging.Handler.Invocation.IInvocableHandlerMethod
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.CustomArgumentResolvers.get -> System.Collections.Generic.List<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver>
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.CustomArgumentResolvers.set -> void
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.Initialize() -> void
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.MessageConverter.get -> Steeltoe.Messaging.Converter.IMessageConverter
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.MessageConverter.set -> void
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.ServiceName.get -> string
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.ServiceName.set -> void
+virtual Steeltoe.Messaging.Handler.Attributes.Support.DefaultMessageHandlerMethodFactory.SetArgumentResolvers(System.Collections.Generic.List<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver> argumentResolvers) -> void
+virtual Steeltoe.Messaging.Handler.Attributes.Support.MessageMethodArgumentResolver.GetPayloadType(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> System.Type
+virtual Steeltoe.Messaging.Handler.Attributes.Support.MessageMethodArgumentResolver.IsEmptyPayload(object payload) -> bool
+virtual Steeltoe.Messaging.Handler.Attributes.Support.MessageMethodArgumentResolver.ResolveArgument(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> object
+virtual Steeltoe.Messaging.Handler.Attributes.Support.MessageMethodArgumentResolver.SupportsParameter(System.Reflection.ParameterInfo parameter) -> bool
+virtual Steeltoe.Messaging.Handler.Attributes.Support.PayloadArgumentResolver.IsEmptyPayload(object payload) -> bool
+virtual Steeltoe.Messaging.Handler.Attributes.Support.PayloadMethodArgumentResolver.IsEmptyPayload(object payload) -> bool
+virtual Steeltoe.Messaging.Handler.Attributes.Support.PayloadMethodArgumentResolver.ResolveArgument(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> object
+virtual Steeltoe.Messaging.Handler.Attributes.Support.PayloadMethodArgumentResolver.ResolveTargetClass(System.Reflection.ParameterInfo parameter, Steeltoe.Messaging.IMessage message) -> System.Type
+virtual Steeltoe.Messaging.Handler.Attributes.Support.PayloadMethodArgumentResolver.SupportsParameter(System.Reflection.ParameterInfo parameter) -> bool
+virtual Steeltoe.Messaging.Handler.Attributes.Support.PayloadMethodArgumentResolver.Validate(Steeltoe.Messaging.IMessage message, System.Reflection.ParameterInfo parameter, object target) -> void
+virtual Steeltoe.Messaging.Handler.HandlerMethod.AssertTargetBean(System.Reflection.MethodInfo method, object targetBean, object[] args) -> void
+virtual Steeltoe.Messaging.Handler.HandlerMethod.CreateWithResolvedBean() -> Steeltoe.Messaging.Handler.HandlerMethod
+virtual Steeltoe.Messaging.Handler.HandlerMethod.FormatInvokeError(string text, object[] args) -> string
+virtual Steeltoe.Messaging.Handler.HandlerMethod.IsVoid.get -> bool
+virtual Steeltoe.Messaging.Handler.HandlerMethod.MethodParameters.get -> System.Reflection.ParameterInfo[]
+virtual Steeltoe.Messaging.Handler.HandlerMethod.ReturnType.get -> System.Reflection.ParameterInfo
+virtual Steeltoe.Messaging.Handler.HandlerMethod.ShortLogMessage.get -> string
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractAsyncReturnValueHandler.IsAsyncReturnValue(object returnValue, System.Reflection.ParameterInfo parameterInfo) -> bool
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.ArgumentResolvers.get -> System.Collections.Generic.IList<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver>
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.ArgumentResolvers.set -> void
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.CreateHandlerMethod(object handler, System.Reflection.MethodInfo method) -> Steeltoe.Messaging.Handler.HandlerMethod
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.CustomArgumentResolvers.get -> System.Collections.Generic.IList<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodArgumentResolver>
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.CustomArgumentResolvers.set -> void
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.CustomReturnValueHandlers.get -> System.Collections.Generic.IList<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodReturnValueHandler>
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.CustomReturnValueHandlers.set -> void
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.DestinationPrefixes.get -> System.Collections.Generic.IList<string>
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.DestinationPrefixes.set -> void
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.GetExceptionHandlerMethod(Steeltoe.Messaging.Handler.HandlerMethod handlerMethod, System.Exception exception) -> Steeltoe.Messaging.Handler.Invocation.InvocableHandlerMethod
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.GetLookupDestination(string destination) -> string
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.HandleMatch(T mapping, Steeltoe.Messaging.Handler.HandlerMethod handlerMethod, string lookupDestination, Steeltoe.Messaging.IMessage message) -> void
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.HandleMessage(Steeltoe.Messaging.IMessage message) -> void
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.HandleMessageInternal(Steeltoe.Messaging.IMessage message, string lookupDestination) -> void
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.HandleNoMatchAsync(System.Collections.Generic.ICollection<T> ts, string lookupDestination, Steeltoe.Messaging.IMessage message) -> System.Threading.Tasks.Task
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.HandlerMethods.get -> System.Collections.Generic.IDictionary<T, Steeltoe.Messaging.Handler.HandlerMethod>
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.ProcessHandlerMethodException(Steeltoe.Messaging.Handler.HandlerMethod handlerMethod, System.Exception exception, Steeltoe.Messaging.IMessage message) -> void
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.RegisterHandlerMethod(object handler, System.Reflection.MethodInfo method, T mapping) -> void
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.ReturnValueHandlers.get -> System.Collections.Generic.IList<Steeltoe.Messaging.Handler.Invocation.IHandlerMethodReturnValueHandler>
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.ReturnValueHandlers.set -> void
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.ServiceName.get -> string
+virtual Steeltoe.Messaging.Handler.Invocation.AbstractMethodMessageHandler<T>.ServiceName.set -> void
+virtual Steeltoe.Messaging.Handler.Invocation.InvocableHandlerMethod.DoInvoke(params object[] args) -> object
+virtual Steeltoe.Messaging.Handler.Invocation.InvocableHandlerMethod.GetMethodArgumentValues(Steeltoe.Messaging.IMessage message, params object[] providedArgs) -> object[]
+virtual Steeltoe.Messaging.Handler.Invocation.InvocableHandlerMethod.Invoke(Steeltoe.Messaging.IMessage requestMessage, params object[] args) -> object
+virtual Steeltoe.Messaging.MessageHeaders.Add(object key, object value) -> void
+virtual Steeltoe.Messaging.MessageHeaders.Add(string key, object value) -> void
+virtual Steeltoe.Messaging.MessageHeaders.Add(System.Collections.Generic.KeyValuePair<string, object> item) -> void
+virtual Steeltoe.Messaging.MessageHeaders.Clear() -> void
+virtual Steeltoe.Messaging.MessageHeaders.Contains(object key) -> bool
+virtual Steeltoe.Messaging.MessageHeaders.Contains(System.Collections.Generic.KeyValuePair<string, object> item) -> bool
+virtual Steeltoe.Messaging.MessageHeaders.ContainsKey(string key) -> bool
+virtual Steeltoe.Messaging.MessageHeaders.CopyTo(System.Array array, int index) -> void
+virtual Steeltoe.Messaging.MessageHeaders.CopyTo(System.Collections.Generic.KeyValuePair<string, object>[] array, int arrayIndex) -> void
+virtual Steeltoe.Messaging.MessageHeaders.Count.get -> int
+virtual Steeltoe.Messaging.MessageHeaders.ErrorChannel.get -> object
+virtual Steeltoe.Messaging.MessageHeaders.Get<T>(string key) -> T
+virtual Steeltoe.Messaging.MessageHeaders.GetEnumerator() -> System.Collections.Generic.IEnumerator<System.Collections.Generic.KeyValuePair<string, object>>
+virtual Steeltoe.Messaging.MessageHeaders.Id.get -> string
+virtual Steeltoe.Messaging.MessageHeaders.IsFixedSize.get -> bool
+virtual Steeltoe.Messaging.MessageHeaders.IsReadOnly.get -> bool
+virtual Steeltoe.Messaging.MessageHeaders.IsSynchronized.get -> bool
+virtual Steeltoe.Messaging.MessageHeaders.Keys.get -> System.Collections.Generic.ICollection<string>
+virtual Steeltoe.Messaging.MessageHeaders.RawHeaders.get -> System.Collections.Generic.IDictionary<string, object>
+virtual Steeltoe.Messaging.MessageHeaders.Remove(object key) -> void
+virtual Steeltoe.Messaging.MessageHeaders.Remove(string key) -> bool
+virtual Steeltoe.Messaging.MessageHeaders.Remove(System.Collections.Generic.KeyValuePair<string, object> item) -> bool
+virtual Steeltoe.Messaging.MessageHeaders.ReplyChannel.get -> object
+virtual Steeltoe.Messaging.MessageHeaders.SyncRoot.get -> object
+virtual Steeltoe.Messaging.MessageHeaders.this[object key].get -> object
+virtual Steeltoe.Messaging.MessageHeaders.this[object key].set -> void
+virtual Steeltoe.Messaging.MessageHeaders.this[string key].get -> object
+virtual Steeltoe.Messaging.MessageHeaders.this[string key].set -> void
+virtual Steeltoe.Messaging.MessageHeaders.Timestamp.get -> long?
+virtual Steeltoe.Messaging.MessageHeaders.TryGetValue(string key, out object value) -> bool
+virtual Steeltoe.Messaging.MessageHeaders.Values.get -> System.Collections.Generic.ICollection<object>
+virtual Steeltoe.Messaging.Support.AbstractChannelInterceptor.AfterReceiveCompletion(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, System.Exception exception) -> void
+virtual Steeltoe.Messaging.Support.AbstractChannelInterceptor.AfterSendCompletion(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, bool sent, System.Exception exception) -> void
+virtual Steeltoe.Messaging.Support.AbstractChannelInterceptor.PostReceive(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Support.AbstractChannelInterceptor.PostSend(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, bool sent) -> void
+virtual Steeltoe.Messaging.Support.AbstractChannelInterceptor.PreReceive(Steeltoe.Messaging.IMessageChannel channel) -> bool
+virtual Steeltoe.Messaging.Support.AbstractChannelInterceptor.PreSend(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.FromHeaderName(string headerName) -> string
+virtual Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.GetHeaderIfAvailable<TValue>(System.Collections.Generic.IDictionary<string, object> headers, string name) -> TValue
+virtual Steeltoe.Messaging.Support.AbstractHeaderMapper<T>.ToHeaderName(string propertyName) -> string
+virtual Steeltoe.Messaging.Support.AbstractMessageBuilder.Build() -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.AddInterceptor(int index, Steeltoe.Messaging.Support.IChannelInterceptor interceptor) -> void
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.AddInterceptor(Steeltoe.Messaging.Support.IChannelInterceptor interceptor) -> void
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.DoSend(Steeltoe.Messaging.IMessage message, int timeout) -> bool
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.DoSend(Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken) -> bool
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.GetInterceptors() -> System.Collections.Generic.List<Steeltoe.Messaging.Support.IChannelInterceptor>
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.RemoveInterceptor(int index) -> Steeltoe.Messaging.Support.IChannelInterceptor
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.RemoveInterceptor(Steeltoe.Messaging.Support.IChannelInterceptor interceptor) -> bool
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.Send(Steeltoe.Messaging.IMessage message) -> bool
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.Send(Steeltoe.Messaging.IMessage message, int timeout) -> bool
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.SendAsync(Steeltoe.Messaging.IMessage message, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<bool>
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.ServiceName.get -> string
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.ServiceName.set -> void
+virtual Steeltoe.Messaging.Support.AbstractMessageChannel.SetInterceptors(System.Collections.Generic.List<Steeltoe.Messaging.Support.IChannelInterceptor> interceptors) -> void
+virtual Steeltoe.Messaging.Support.AbstractSubscribableChannel.HasSubscription(Steeltoe.Messaging.IMessageHandler handler) -> bool
+virtual Steeltoe.Messaging.Support.AbstractSubscribableChannel.Subscribe(Steeltoe.Messaging.IMessageHandler handler) -> bool
+virtual Steeltoe.Messaging.Support.AbstractSubscribableChannel.SubscriberCount.get -> int
+virtual Steeltoe.Messaging.Support.AbstractSubscribableChannel.Subscribers.get -> System.Collections.Generic.ISet<Steeltoe.Messaging.IMessageHandler>
+virtual Steeltoe.Messaging.Support.AbstractSubscribableChannel.Unsubscribe(Steeltoe.Messaging.IMessageHandler handler) -> bool
+virtual Steeltoe.Messaging.Support.AbstractTaskSchedulerChannelInterceptor.AfterMessageHandled(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, Steeltoe.Messaging.IMessageHandler handler, System.Exception exception) -> void
+virtual Steeltoe.Messaging.Support.AbstractTaskSchedulerChannelInterceptor.BeforeHandled(Steeltoe.Messaging.IMessage message, Steeltoe.Messaging.IMessageChannel channel, Steeltoe.Messaging.IMessageHandler handler) -> Steeltoe.Messaging.IMessage
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.AccessorMessageHeaders.Accessor.get -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.AccessorMessageHeaders.IsMutable.get -> bool
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.AccessorMessageHeaders.SetImmutable() -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ContentType.get -> string
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ContentType.set -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.CopyHeaders(System.Collections.Generic.IDictionary<string, object> headersToCopy) -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.CopyHeadersIfAbsent(System.Collections.Generic.IDictionary<string, object> headersToCopy) -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.CreateMutableAccessor(Steeltoe.Messaging.IMessage message) -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.CreateMutableAccessor(Steeltoe.Messaging.IMessageHeaders messageHeaders) -> Steeltoe.Messaging.Support.MessageHeaderAccessor
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.EnableTimestamp.get -> bool
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.EnableTimestamp.set -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ErrorChannel.get -> object
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ErrorChannel.set -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ErrorChannelName.get -> string
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ErrorChannelName.set -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.GetDetailedLogMessage(object payload) -> string
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.GetDetailedPayloadLogMessage(object payload) -> string
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.GetHeader(string headerName) -> object
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.GetShortLogMessage(object payload) -> string
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.GetShortPayloadLogMessage(object payload) -> string
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.Id.get -> string
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.IdGenerator.get -> Steeltoe.Common.Util.IIdGenerator
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.IdGenerator.set -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.IsModified.get -> bool
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.IsModified.set -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.IsMutable.get -> bool
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.IsReadableContentType() -> bool
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.IsReadOnly(string headerName) -> bool
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.LeaveMutable.get -> bool
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.LeaveMutable.set -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.MessageHeaders.get -> Steeltoe.Messaging.IMessageHeaders
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.RemoveHeader(string headerName) -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.RemoveHeaders(params string[] headerPatterns) -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ReplyChannel.get -> object
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ReplyChannel.set -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ReplyChannelName.get -> string
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ReplyChannelName.set -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.SetHeader(string name, object value) -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.SetHeaderIfAbsent(string name, object value) -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.SetImmutable() -> void
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.Timestamp.get -> long?
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ToDictionary() -> System.Collections.Generic.IDictionary<string, object>
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.ToMessageHeaders() -> Steeltoe.Messaging.IMessageHeaders
+virtual Steeltoe.Messaging.Support.MessageHeaderAccessor.VerifyType(string headerName, object headerValue) -> void
+virtual Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.GetNativeHeaders() -> System.Collections.Generic.IDictionary<string, System.Collections.Generic.List<string>>
+virtual Steeltoe.Messaging.Support.NativeMessageHeaderAccessor.ToNativeHeaderDictionary() -> System.Collections.Generic.IDictionary<string, System.Collections.Generic.List<string>>
+virtual Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannelWriter.Channel.get -> Steeltoe.Messaging.Support.TaskSchedulerSubscribableChannel

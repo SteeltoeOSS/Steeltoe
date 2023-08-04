@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.RetryPolly;
@@ -50,7 +51,7 @@ public class RabbitAdminTest : AbstractTest
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
 
-        var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory)
+        var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory, NullLoggerFactory.Instance)
         {
             AutoStartup = true
         };
@@ -73,7 +74,7 @@ public class RabbitAdminTest : AbstractTest
         ServiceProvider provider = serviceCollection.BuildServiceProvider();
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
-        var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory);
+        var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory, NullLoggerFactory.Instance);
         string queueName = $"test.properties.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
 
         try
@@ -136,15 +137,17 @@ public class RabbitAdminTest : AbstractTest
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
 
         var logs = new List<string>();
-        var mockLogger = new Mock<ILogger>();
+        var mockLogger = new Mock<ILogger<RabbitAdmin>>();
 
         mockLogger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(),
             (Func<It.IsAnyType, Exception, string>)It.IsAny<object>())).Callback(new InvocationAction(invocation =>
         {
             logs.Add(invocation.Arguments[2].ToString());
         }));
+        var mockLoggerFactory = new Mock<ILoggerFactory>();
+        mockLoggerFactory.Setup(l => l.CreateLogger<RabbitAdmin>()).Returns(mockLogger.Object);
 
-        var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory, mockLogger.Object);
+        var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory, mockLoggerFactory.Object);
 
         try
         {

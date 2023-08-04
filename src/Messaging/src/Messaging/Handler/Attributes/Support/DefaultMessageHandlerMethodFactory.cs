@@ -26,18 +26,34 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
 
     public virtual IApplicationContext ApplicationContext { get; set; }
 
-    public DefaultMessageHandlerMethodFactory(IApplicationContext context = null)
-        : this(null, null, null, context)
+    public DefaultMessageHandlerMethodFactory()
+       : this(null, null, null, null)
     {
     }
 
-    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IApplicationContext context = null)
+    public DefaultMessageHandlerMethodFactory(IApplicationContext context)
+        : this(null, null, null, context)
+    {
+    }
+    public DefaultMessageHandlerMethodFactory(IConversionService conversionService)
+       : this(conversionService, null, null, null)
+    {
+        ConversionService = conversionService;
+    }
+    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IApplicationContext context)
         : this(conversionService, null, null, context)
     {
         ConversionService = conversionService;
     }
 
-    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, IApplicationContext context = null)
+    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter)
+    : this(conversionService, converter, null, null)
+    {
+        ConversionService = conversionService;
+        MessageConverter = converter;
+    }
+
+    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, IApplicationContext context)
         : this(conversionService, converter, null, context)
     {
         ConversionService = conversionService;

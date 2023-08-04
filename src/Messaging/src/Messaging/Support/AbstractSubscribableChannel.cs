@@ -12,6 +12,7 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
     internal HashSet<IMessageHandler> Handlers = new();
 
     public virtual int SubscriberCount => Handlers.Count;
+    internal ILogger Logger { get; }
 
     public virtual ISet<IMessageHandler> Subscribers
     {
@@ -24,9 +25,10 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
         }
     }
 
-    protected AbstractSubscribableChannel(ILogger logger = null)
-        : base(logger)
+    protected AbstractSubscribableChannel(ILoggerFactory loggerFactory)
+        : base(loggerFactory)
     {
+        Logger = loggerFactory.CreateLogger<AbstractSubscribableChannel>();
     }
 
     public virtual bool HasSubscription(IMessageHandler handler)

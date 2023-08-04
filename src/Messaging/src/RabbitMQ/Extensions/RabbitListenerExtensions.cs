@@ -30,9 +30,14 @@ public static class RabbitListenerExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitListeners<T>(this IServiceCollection services, IConfiguration configuration = null)
+    public static IServiceCollection AddRabbitListeners<T>(this IServiceCollection services, IConfiguration configuration)
         where T : class
     {
         return services.AddRabbitListeners(configuration, typeof(T));
+    }
+    public static IServiceCollection AddRabbitListeners<T>(this IServiceCollection services)
+       where T : class
+    {
+        return services.AddRabbitListeners(null, typeof(T));
     }
 }

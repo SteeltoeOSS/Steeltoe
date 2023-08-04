@@ -37,17 +37,17 @@ public class RepublishMessageRecoverer : IMessageRecoverer
 
     public int FrameMaxHeadroom { get; set; } = DefaultFrameMaxHeadroom;
 
-    public RepublishMessageRecoverer(RabbitTemplate errorTemplate, ILogger logger = null)
+    public RepublishMessageRecoverer(RabbitTemplate errorTemplate, ILogger logger)
         : this(errorTemplate, null, null, logger)
     {
     }
 
-    public RepublishMessageRecoverer(RabbitTemplate errorTemplate, string errorExchange, ILogger logger = null)
+    public RepublishMessageRecoverer(RabbitTemplate errorTemplate, string errorExchange, ILogger logger)
         : this(errorTemplate, errorExchange, null, logger)
     {
     }
 
-    public RepublishMessageRecoverer(RabbitTemplate errorTemplate, string errorExchange, string errorRoutingKey, ILogger logger = null)
+    public RepublishMessageRecoverer(RabbitTemplate errorTemplate, string errorExchange, string errorRoutingKey, ILogger logger)
     {
         ArgumentGuard.NotNull(errorTemplate);
 

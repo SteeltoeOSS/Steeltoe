@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Threading;
 using Steeltoe.Messaging.Converter;
 
 namespace Steeltoe.Messaging.Core;
@@ -17,33 +18,53 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
 
     public virtual IMessageConverter MessageConverter { get; set; } = new SimpleMessageConverter();
 
-    public virtual Task ConvertAndSendAsync(object payload, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(object payload, CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(payload, null, cancellationToken);
     }
+    public Task ConvertAndSendAsync(object payload)
+    {
+        return ConvertAndSendAsync(payload, null, default);
+    }
 
-    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(destination, payload, (IDictionary<string, object>)null, cancellationToken);
     }
+    public Task ConvertAndSendAsync(TDestination destination, object payload)
+    {
+        return ConvertAndSendAsync(destination, payload, (IDictionary<string, object>)null, default(CancellationToken));
+    }
 
     public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(destination, payload, headers, null, cancellationToken);
     }
-
-    public virtual Task ConvertAndSendAsync(object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
+    public Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers)
     {
-        return ConvertAndSendAsync(RequiredDefaultSendDestination, payload, postProcessor, cancellationToken);
+        return ConvertAndSendAsync(destination, payload, headers, null, default);
     }
-
-    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IMessagePostProcessor postProcessor,
-        CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken)
+    {
+        return ConvertAndSendAsync(RequiredDefaultSendDestination, payload, postProcessor);
+    }
+    public Task ConvertAndSendAsync(object payload, IMessagePostProcessor postProcessor)
+    {
+        return ConvertAndSendAsync(RequiredDefaultSendDestination, payload, postProcessor);
+    }
+    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IMessagePostProcessor postProcessor)
+    {
+        return ConvertAndSendAsync(destination, payload, null, postProcessor, default);
+    }
+    public Task ConvertAndSendAsync(TDestination destination, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken)
     {
         return ConvertAndSendAsync(destination, payload, null, postProcessor, cancellationToken);
     }
-
+    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor)
+    {
+       return ConvertAndSendAsync(destination, payload, headers, postProcessor, default);
+    }
     public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor,
         CancellationToken cancellationToken = default)
     {
@@ -51,14 +72,21 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
         return SendAsync(destination, message, cancellationToken);
     }
 
-    public virtual Task SendAsync(IMessage message, CancellationToken cancellationToken = default)
+    public virtual Task SendAsync(IMessage message, CancellationToken cancellationToken)
     {
         return SendAsync(RequiredDefaultSendDestination, message, cancellationToken);
     }
-
-    public virtual Task SendAsync(TDestination destination, IMessage message, CancellationToken cancellationToken = default)
+    public Task SendAsync(IMessage message)
+    {
+        return SendAsync(RequiredDefaultSendDestination, message, default);
+    }
+    public virtual Task SendAsync(TDestination destination, IMessage message, CancellationToken cancellationToken )
     {
         return DoSendAsync(destination, message, cancellationToken);
+    }
+    public Task SendAsync(TDestination destination, IMessage message)
+    {
+        return DoSendAsync(destination, message, default);
     }
 
     public virtual void ConvertAndSend(object payload)
@@ -156,4 +184,6 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
     {
         return headers;
     }
+
+ 
 }

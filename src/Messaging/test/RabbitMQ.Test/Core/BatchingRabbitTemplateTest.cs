@@ -6,8 +6,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO.Compression;
 using System.Text;
+using Castle.Core.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Util;
@@ -33,8 +36,8 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
     public BatchingRabbitTemplateTest(ITestOutputHelper testOutputHelper)
     {
-        _connectionFactory = new CachingConnectionFactory("localhost");
-        var admin = new RabbitAdmin(_connectionFactory);
+        _connectionFactory = new CachingConnectionFactory("localhost", NullLoggerFactory.Instance);
+        var admin = new RabbitAdmin(_connectionFactory, NullLoggerFactory.Instance);
         admin.DeclareQueue(new Queue(Route));
         _testOutputHelper = testOutputHelper;
     }
@@ -718,6 +721,10 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
     private sealed class TestConditionalRejectingErrorHandler : ConditionalRejectingErrorHandler
     {
+        public TestConditionalRejectingErrorHandler() : base(NullLoggerFactory.Instance)
+        {
+        }
+
         public bool HandleErrorCalled { get; private set; }
 
         public override bool HandleError(Exception exception)

@@ -541,7 +541,7 @@ public class BlockingQueueConsumer
 
                     try
                     {
-                        channelForCheck = ConnectionFactory.CreateConnection().CreateChannel();
+                        channelForCheck = ConnectionFactory.CreateConnection().CreateChannel(false);
                         channelForCheck.QueueDeclarePassive(queueToCheck);
                         Logger?.LogInformation("Queue '{queue}' is now available", queueToCheck);
                     }

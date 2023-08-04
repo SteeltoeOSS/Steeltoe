@@ -307,7 +307,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
 
     protected MessagingMessageListenerAdapter CreateMultiInstance(MethodInfo m1, MethodInfo m2, bool returnExceptions)
     {
-        var adapter = new MessagingMessageListenerAdapter(null, null, null, returnExceptions, null);
+        var adapter = new MessagingMessageListenerAdapter(null, null, null, returnExceptions, null, null);
 
         var methods = new List<IInvocableHandlerMethod>
         {
@@ -322,7 +322,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
 
     protected MessagingMessageListenerAdapter CreateInstance(MethodInfo m, bool returnExceptions)
     {
-        var adapter = new MessagingMessageListenerAdapter(null, null, m, returnExceptions, null)
+        var adapter = new MessagingMessageListenerAdapter(null, null, m, returnExceptions, null, null)
         {
             HandlerAdapter = new HandlerAdapter(_factory.CreateInvocableHandlerMethod(_sample, m))
         };
@@ -338,7 +338,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
 
     protected BatchMessagingMessageListenerAdapter CreateBatchInstance(MethodInfo m)
     {
-        var adapter = new BatchMessagingMessageListenerAdapter(null, null, m, false, null, null)
+        var adapter = new BatchMessagingMessageListenerAdapter(null, null, m, false, null, null, null)
         {
             HandlerAdapter = new HandlerAdapter(_factory.CreateInvocableHandlerMethod(_sample, m))
         };

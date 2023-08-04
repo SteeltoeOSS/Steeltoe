@@ -27,7 +27,7 @@ public interface IDestinationResolvingMessageSendingOperations<TDestination> : I
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task SendAsync(string destinationName, IMessage message, CancellationToken cancellationToken = default);
+    Task SendAsync(string destinationName, IMessage message, CancellationToken cancellationToken);
 
     /// <summary>
     /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a message converter, wrap it as a
@@ -45,7 +45,7 @@ public interface IDestinationResolvingMessageSendingOperations<TDestination> : I
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task ConvertAndSendAsync(string destinationName, object payload, CancellationToken cancellationToken = default);
+    Task ConvertAndSendAsync(string destinationName, object payload, CancellationToken cancellationToken);
 
     /// <summary>
     /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a message converter, wrap it as a
@@ -66,7 +66,7 @@ public interface IDestinationResolvingMessageSendingOperations<TDestination> : I
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task ConvertAndSendAsync(string destinationName, object payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default);
+    Task ConvertAndSendAsync(string destinationName, object payload, IDictionary<string, object> headers, CancellationToken cancellationToken);
 
     /// <summary>
     /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a message converter, wrap it as a
@@ -87,7 +87,7 @@ public interface IDestinationResolvingMessageSendingOperations<TDestination> : I
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task ConvertAndSendAsync(string destinationName, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
+    Task ConvertAndSendAsync(string destinationName, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken);
 
     /// <summary>
     /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a message converter, wrap it as a
@@ -112,7 +112,7 @@ public interface IDestinationResolvingMessageSendingOperations<TDestination> : I
     /// a task to signal completion.
     /// </returns>
     Task ConvertAndSendAsync(string destinationName, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Resolve the given destination name to a destination and send a message to it.

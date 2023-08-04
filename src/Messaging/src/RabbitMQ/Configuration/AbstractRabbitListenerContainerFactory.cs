@@ -107,14 +107,14 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
 
     public bool PossibleAuthenticationFailureFatal { get; set; } = true;
 
-    protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
+    protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory)
     {
         ApplicationContext = applicationContext;
         LoggerFactory = loggerFactory;
     }
 
     protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory,
-        ILoggerFactory loggerFactory = null)
+        ILoggerFactory loggerFactory )
     {
         ApplicationContext = applicationContext;
         LoggerFactory = loggerFactory;

@@ -15,10 +15,10 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
 
     public HandlerMethodArgumentResolverComposite MessageMethodArgumentResolvers { get; set; } = new();
 
-    public InvocableHandlerMethod(HandlerMethod handlerMethod, ILogger logger = null)
+    public InvocableHandlerMethod(HandlerMethod handlerMethod, ILoggerFactory loggerFactory)
         : base(handlerMethod)
     {
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<InvocableHandlerMethod>();
     }
 
     public InvocableHandlerMethod(object bean, MethodInfo method)

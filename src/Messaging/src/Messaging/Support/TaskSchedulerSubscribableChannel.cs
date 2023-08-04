@@ -15,13 +15,17 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 
     protected TaskFactory Factory { get; }
 
-    public TaskSchedulerSubscribableChannel(ILogger logger = null)
-        : this(null, logger)
+    public TaskSchedulerSubscribableChannel()
+       : this(null, new LoggerFactory())
+    {
+    }
+    public TaskSchedulerSubscribableChannel(ILoggerFactory loggerFactory)
+        : this(null, loggerFactory)
     {
     }
 
-    public TaskSchedulerSubscribableChannel(TaskScheduler scheduler, ILogger logger = null)
-        : base(logger)
+    public TaskSchedulerSubscribableChannel(TaskScheduler scheduler, ILoggerFactory loggerFactory)
+        : base(loggerFactory)
     {
         Scheduler = scheduler;
 
@@ -30,7 +34,7 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
             Factory = new TaskFactory(Scheduler);
         }
 
-        Writer = new TaskSchedulerSubscribableChannelWriter(this, logger);
+        Writer = new TaskSchedulerSubscribableChannelWriter(this, loggerFactory);
         Reader = new NotSupportedChannelReader();
     }
 

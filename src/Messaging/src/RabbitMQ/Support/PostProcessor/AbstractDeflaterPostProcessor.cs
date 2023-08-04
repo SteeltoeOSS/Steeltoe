@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.IO.Compression;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 
@@ -11,11 +13,12 @@ public abstract class AbstractDeflaterPostProcessor : AbstractCompressingPostPro
     public virtual CompressionLevel Level { get; set; } = CompressionLevel.Fastest;
 
     protected AbstractDeflaterPostProcessor()
+        : base(new LoggerFactory())
     {
     }
 
     protected AbstractDeflaterPostProcessor(bool autoDecompress)
-        : base(autoDecompress)
+        : base(autoDecompress, new LoggerFactory())
     {
     }
 }

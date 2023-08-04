@@ -13,12 +13,12 @@ public abstract class AbstractMessageChannelWriter : ChannelWriter<IMessage>
     protected AbstractMessageChannel channel;
     protected ILogger logger;
 
-    protected AbstractMessageChannelWriter(AbstractMessageChannel channel, ILogger logger = null)
+    protected AbstractMessageChannelWriter(AbstractMessageChannel channel, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(channel);
 
         this.channel = channel;
-        this.logger = logger;
+        this.logger = loggerFactory.CreateLogger<AbstractMessageChannelWriter>();
     }
 
     public override bool TryComplete(Exception error = null)

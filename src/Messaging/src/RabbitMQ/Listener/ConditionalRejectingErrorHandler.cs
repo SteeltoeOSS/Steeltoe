@@ -22,11 +22,15 @@ public class ConditionalRejectingErrorHandler : IErrorHandler
     public virtual bool RejectManual { get; set; } = true;
 
     public string ServiceName { get; set; } = DefaultServiceName;
-
-    public ConditionalRejectingErrorHandler(ILogger logger = null)
+    public ConditionalRejectingErrorHandler()
+        :this(new LoggerFactory())
     {
-        _logger = logger;
-        _exceptionStrategy = new DefaultExceptionStrategy(logger);
+
+    }
+    public ConditionalRejectingErrorHandler(ILoggerFactory loggerFactory)
+    {
+        _logger = loggerFactory.CreateLogger<ConditionalRejectingErrorHandler>();
+        _exceptionStrategy = new DefaultExceptionStrategy(loggerFactory.CreateLogger<DefaultExceptionStrategy>());
     }
 
     public ConditionalRejectingErrorHandler(IFatalExceptionStrategy exceptionStrategy, ILogger logger = null)

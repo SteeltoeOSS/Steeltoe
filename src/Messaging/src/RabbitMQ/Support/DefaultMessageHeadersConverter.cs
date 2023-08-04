@@ -16,12 +16,16 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
     private const int DefaultLongStringLimit = 1024;
     private readonly ILogger _logger;
 
-    public DefaultMessageHeadersConverter(ILogger logger = null)
+    public DefaultMessageHeadersConverter(ILoggerFactory loggerFactory)
         : this(DefaultLongStringLimit, false)
     {
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<DefaultMessageHeadersConverter>();
     }
-
+    public DefaultMessageHeadersConverter()
+       : this(DefaultLongStringLimit, false)
+    {
+        _logger = new LoggerFactory().CreateLogger<DefaultMessageHeadersConverter>();   
+    }
     public DefaultMessageHeadersConverter(int longStringLimit)
         : this(longStringLimit, false)
     {

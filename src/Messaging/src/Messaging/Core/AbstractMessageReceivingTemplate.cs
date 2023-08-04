@@ -26,22 +26,22 @@ public abstract class AbstractMessageReceivingTemplate<TDestination> : AbstractM
 
     public virtual bool ThrowReceivedExceptions { get; set; }
 
-    public virtual Task<IMessage> ReceiveAsync(CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> ReceiveAsync(CancellationToken cancellationToken)
     {
         return DoReceiveAsync(RequiredDefaultReceiveDestination, cancellationToken);
     }
 
-    public virtual Task<IMessage> ReceiveAsync(TDestination destination, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> ReceiveAsync(TDestination destination, CancellationToken cancellationToken)
     {
         return DoReceiveAsync(destination, cancellationToken);
     }
 
-    public virtual Task<T> ReceiveAndConvertAsync<T>(CancellationToken cancellationToken = default)
+    public virtual Task<T> ReceiveAndConvertAsync<T>(CancellationToken cancellationToken)
     {
         return ReceiveAndConvertAsync<T>(RequiredDefaultReceiveDestination);
     }
 
-    public virtual async Task<T> ReceiveAndConvertAsync<T>(TDestination destination, CancellationToken cancellationToken = default)
+    public virtual async Task<T> ReceiveAndConvertAsync<T>(TDestination destination, CancellationToken cancellationToken)
     {
         IMessage message = await DoReceiveAsync(destination, cancellationToken);
 
@@ -52,7 +52,17 @@ public abstract class AbstractMessageReceivingTemplate<TDestination> : AbstractM
 
         return default;
     }
+    public virtual async Task<T> ReceiveAndConvertAsync<T>(TDestination destination)
+    {
+        IMessage message = await DoReceiveAsync(destination, default);
 
+        if (message != null)
+        {
+            return DoConvert<T>(message);
+        }
+
+        return default;
+    }
     public virtual IMessage Receive()
     {
         return DoReceive(RequiredDefaultReceiveDestination);

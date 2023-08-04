@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Transaction;
@@ -26,18 +27,30 @@ public class RabbitResourceHolder : ResourceHolderSupport
     public bool ReleaseAfterCompletion { get; }
 
     public bool RequeueOnRollback { get; set; } = true;
-
-    public RabbitResourceHolder(ILogger logger = null)
+    public RabbitResourceHolder()
+        : this(null, true, new LoggerFactory())
     {
-        _logger = logger;
-        ReleaseAfterCompletion = true;
+       
     }
 
-    public RabbitResourceHolder(RC.IModel channel, bool releaseAfterCompletion, ILogger logger = null)
+    public RabbitResourceHolder(ILoggerFactory loggerFactory)
+        :this(null, true, loggerFactory)
     {
-        AddChannel(channel);
+    
+    }
+    public RabbitResourceHolder(RC.IModel channel, bool releaseAfterCompletion)
+        : this (channel, releaseAfterCompletion, new LoggerFactory())
+    {
+
+    }
+    public RabbitResourceHolder(RC.IModel channel, bool releaseAfterCompletion, ILoggerFactory loggerFactory)
+    {
+        _logger = loggerFactory.CreateLogger<RabbitResourceHolder>();
         ReleaseAfterCompletion = releaseAfterCompletion;
-        _logger = logger;
+        if (channel != null)
+        {
+            AddChannel(channel);
+        }
     }
 
     public void AddConnection(IConnection connection)

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Messaging.Support;
 using Xunit;
@@ -72,7 +73,7 @@ public class TaskSchedulerSubscribableChannelWriterTest
         Handler = mock.Object;
         var interceptor = new BeforeHandleInterceptor();
         var scheduler = new TestScheduler();
-        var testChannel = new TaskSchedulerSubscribableChannel(scheduler);
+        var testChannel = new TaskSchedulerSubscribableChannel(scheduler, NullLoggerFactory.Instance);
         testChannel.AddInterceptor(interceptor);
         testChannel.Subscribe(Handler);
         await testChannel.Writer.WriteAsync(Message);

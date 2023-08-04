@@ -194,8 +194,8 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
 
     private sealed class TestAdmin : RabbitAdmin
     {
-        public TestAdmin(IConnectionFactory connectionFactory, ILogger logger = null)
-            : base(connectionFactory, logger)
+        public TestAdmin(IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+            : base(connectionFactory, loggerFactory)
         {
         }
     }

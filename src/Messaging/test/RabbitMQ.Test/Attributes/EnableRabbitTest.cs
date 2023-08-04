@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
@@ -558,7 +559,7 @@ public class EnableRabbitTest
 
             services.AddSingleton(mockConnectionFactory.Object);
             services.AddSingleton<IRabbitListenerConfigurer, RabbitCustomConfig>();
-            services.AddRabbitListenerEndpointRegistry<CustomRabbitListenerEndpointRegistry>();
+            services.AddRabbitListenerEndpointRegistry<CustomRabbitListenerEndpointRegistry>(null);
             services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("rabbitListenerContainerFactory");
             services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("customFactory");
             services.AddRabbitAdmin();
@@ -647,6 +648,10 @@ public class EnableRabbitTest
 
     public class TestDirectMessageListenerContainer : DirectMessageListenerContainer
     {
+        public TestDirectMessageListenerContainer() : base(null, NullLoggerFactory.Instance)
+        {
+        }
+
         public override void Shutdown()
         {
             throw new Exception("Exception in Shutdown()");

@@ -24,7 +24,7 @@ public class MessageReceivingTemplateTest
         IMessage expected = Message.Create("payload");
         _template.DefaultReceiveDestination = "home";
         _template.ReceiveMessage = expected;
-        IMessage actual = await _template.ReceiveAsync();
+        IMessage actual = await _template.ReceiveAsync(default(CancellationToken));
 
         Assert.Equal("home", _template.Destination);
         Assert.Same(expected, actual);
@@ -45,7 +45,7 @@ public class MessageReceivingTemplateTest
     [Fact]
     public async Task ReceiveAsyncMissingDefaultDestination()
     {
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _template.ReceiveAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _template.ReceiveAsync(default));
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class MessageReceivingTemplateTest
     {
         IMessage expected = Message.Create("payload");
         _template.ReceiveMessage = expected;
-        IMessage actual = await _template.ReceiveAsync("somewhere");
+        IMessage actual = await _template.ReceiveAsync("somewhere", default);
 
         Assert.Equal("somewhere", _template.Destination);
         Assert.Same(expected, actual);
@@ -82,7 +82,7 @@ public class MessageReceivingTemplateTest
         IMessage expected = Message.Create("payload");
         _template.DefaultReceiveDestination = "home";
         _template.ReceiveMessage = expected;
-        string payload = await _template.ReceiveAndConvertAsync<string>();
+        string payload = await _template.ReceiveAndConvertAsync<string>(default(CancellationToken));
         Assert.Equal("home", _template.Destination);
         Assert.Same("payload", payload);
     }
@@ -167,7 +167,7 @@ public class MessageReceivingTemplateTest
 
         try
         {
-            await _template.ReceiveAndConvertAsync<StringWriter>();
+            await _template.ReceiveAndConvertAsync<StringWriter>(default(CancellationToken));
         }
         catch (MessageConversionException ex)
         {
@@ -193,7 +193,7 @@ public class MessageReceivingTemplateTest
             return Task.FromResult(ReceiveMessage);
         }
 
-        protected override Task<IMessage> DoSendAndReceiveAsync(string destination, IMessage requestMessage, CancellationToken cancellationToken = default)
+        protected override Task<IMessage> DoSendAndReceiveAsync(string destination, IMessage requestMessage, CancellationToken cancellationToken)
         {
             Destination = destination;
             return Task.FromResult((IMessage)null);

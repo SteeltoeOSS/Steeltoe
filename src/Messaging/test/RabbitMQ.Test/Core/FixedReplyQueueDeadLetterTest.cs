@@ -236,7 +236,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLe
                 var container = new DirectMessageListenerContainer(context, factory, "serviceListenerContainer", logFactory);
                 container.SetQueues(queue);
                 var pojoListener = p.GetService<PojoListener>();
-                container.MessageListener = new MessageListenerAdapter(context, pojoListener, p.GetService<ILogger<MessageListenerAdapter>>());
+                container.MessageListener = new MessageListenerAdapter(context, pojoListener, p.GetService<ILoggerFactory>());
                 return container;
             });
 
@@ -250,7 +250,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLe
                 var container = new DirectMessageListenerContainer(context, factory, "dlListenerContainer", logFactory);
                 container.SetQueues(q);
                 var deadListener = p.GetService<DeadListener>();
-                container.MessageListener = new MessageListenerAdapter(context, deadListener, p.GetService<ILogger<MessageListenerAdapter>>());
+                container.MessageListener = new MessageListenerAdapter(context, deadListener, p.GetService<ILoggerFactory>());
                 return container;
             });
 

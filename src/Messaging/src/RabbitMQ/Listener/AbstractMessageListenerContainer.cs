@@ -156,8 +156,8 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         Logger = LoggerFactory?.CreateLogger(GetType());
         ApplicationContext = applicationContext;
         ConnectionFactory = connectionFactory;
-        ErrorHandler = new ConditionalRejectingErrorHandler(Logger);
-        MessageHeadersConverter = new DefaultMessageHeadersConverter(Logger);
+        ErrorHandler = new ConditionalRejectingErrorHandler(loggerFactory);
+        MessageHeadersConverter = new DefaultMessageHeadersConverter(LoggerFactory);
         ExclusiveConsumerExceptionLogger = new DefaultExclusiveConsumerLogger();
         BatchingStrategy = new SimpleBatchingStrategy(0, 0, 0L);
         TransactionAttribute = new DefaultTransactionAttribute();
@@ -574,7 +574,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
             if (bindChannel)
             {
-                var resourceHolder = new RabbitResourceHolder(channel, false, LoggerFactory?.CreateLogger<RabbitResourceHolder>())
+                var resourceHolder = new RabbitResourceHolder(channel, false, LoggerFactory)
                 {
                     SynchronizedWithTransaction = true
                 };
@@ -615,7 +615,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
             if (bindChannel)
             {
-                var resourceHolder = new RabbitResourceHolder(channel, false, LoggerFactory?.CreateLogger<RabbitResourceHolder>())
+                var resourceHolder = new RabbitResourceHolder(channel, false, LoggerFactory)
                 {
                     SynchronizedWithTransaction = true
                 };
@@ -749,7 +749,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             // if locally transacted, bind the current channel to make it available to RabbitTemplate
             if (IsChannelLocallyTransacted)
             {
-                var localResourceHolder = new RabbitResourceHolder(channelToUse, false, LoggerFactory?.CreateLogger<RabbitResourceHolder>())
+                var localResourceHolder = new RabbitResourceHolder(channelToUse, false, LoggerFactory)
                 {
                     SynchronizedWithTransaction = true
                 };

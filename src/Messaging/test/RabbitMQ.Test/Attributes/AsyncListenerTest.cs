@@ -41,7 +41,7 @@ public class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
         string reply = template.ConvertSendAndReceive<string>(queue1.QueueName, "foo");
         Assert.Equal("FOO", reply);
 
-        string reply2 = await template.ConvertSendAndReceiveAsync<string>(queue1.QueueName, "foo");
+        string reply2 = await template.ConvertSendAndReceiveAsync<string>(queue1.QueueName, "foo", default);
         Assert.Equal("FOO", reply2);
         var pp = template.AfterReceivePostProcessors[0] as TemplateAfterReceivePostProcessor;
         Assert.Equal("System.String", pp.TypeId);
@@ -102,7 +102,7 @@ public class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
         RabbitTemplate template = _provider.GetRabbitTemplate();
         IApplicationContext context = _provider.GetApplicationContext();
         var queueAsyncErrorHandler = context.GetService<IQueue>("queueAsyncErrorHandler");
-        string reply = await template.ConvertSendAndReceiveAsync<string>(queueAsyncErrorHandler.QueueName, "foo");
+        string reply = await template.ConvertSendAndReceiveAsync<string>(queueAsyncErrorHandler.QueueName, "foo", default);
         Assert.Equal($"{nameof(CustomListenerErrorHandler)} handled/processed", reply);
     }
 
