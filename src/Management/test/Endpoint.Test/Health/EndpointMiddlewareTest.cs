@@ -151,7 +151,10 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HealthActuator_ReturnsMicrosoftHealthDetails()
     {
-        var settings = new Dictionary<string, string?>(_appSettings);
+        var settings = new Dictionary<string, string?>(_appSettings)
+        {
+            ["HealthCheckType"] = "microsoftHealthAggregator"
+        };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
@@ -168,6 +171,33 @@ public sealed class EndpointMiddlewareTest : BaseTest
         Assert.True(health.ContainsKey("status"));
         Assert.True(health.ContainsKey("details"));
         Assert.Contains("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
+        Assert.Contains("test-registration", health["details"].ToString(), StringComparison.Ordinal);
+        Assert.Contains("test-tag-2", json, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task HealthActuator_ReturnsNoDiskSpaceDetailsWhenDisabled()
+    {
+        var settings = new Dictionary<string, string?>(_appSettings)
+        {
+            ["management:endpoints:health:diskspace:enabled"] = "false"
+        };
+
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
+
+        using var server = new TestServer(builder);
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
+        Assert.NotNull(json);
+
+        var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+        Assert.NotNull(health);
+        Assert.True(health.ContainsKey("status"));
+        Assert.True(health.ContainsKey("details"));
+        Assert.DoesNotContain("diskSpace", health["details"].ToString(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -254,6 +284,22 @@ public sealed class EndpointMiddlewareTest : BaseTest
             string unknownJson = await unknownResult.Content.ReadAsStringAsync();
             Assert.NotNull(unknownJson);
             Assert.Contains("\"status\":\"UNKNOWN\"", unknownJson, StringComparison.Ordinal);
+        }
+
+        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
+            new Dictionary<string, string?>(_appSettings)
+            {
+                ["HealthCheckType"] = "disabled"
+            }));
+
+        using (var server = new TestServer(builder))
+        {
+            HttpClient client = server.CreateClient();
+            HttpResponseMessage unknownResult = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/health"));
+            Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
+            string disabledJson = await unknownResult.Content.ReadAsStringAsync();
+            Assert.NotNull(disabledJson);
+            Assert.Contains("\"status\":\"UNKNOWN\"", disabledJson, StringComparison.Ordinal);
         }
 
         builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(

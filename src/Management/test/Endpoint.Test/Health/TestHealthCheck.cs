@@ -10,6 +10,12 @@ internal sealed class TestHealthCheck : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(new HealthCheckResult(HealthStatus.Healthy));
+        var data = new Dictionary<string, object>
+        {
+            ["tags"] = context.Registration.Tags
+        };
+
+        var result = new HealthCheckResult(HealthStatus.Healthy, data: data);
+        return Task.FromResult(result);
     }
 }

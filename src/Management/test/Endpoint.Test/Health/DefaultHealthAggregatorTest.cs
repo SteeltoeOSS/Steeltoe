@@ -23,6 +23,21 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
     }
 
     [Fact]
+    public void Aggregate_DisabledContributorOnly_ReturnsExpectedHealth()
+    {
+        var contributors = new List<IHealthContributor>
+        {
+            new DisabledContributor()
+        };
+
+        var aggregator = new DefaultHealthAggregator();
+        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
+        Assert.NotNull(result);
+        Assert.Equal(HealthStatus.Unknown, result.Status);
+        Assert.NotNull(result.Details);
+    }
+
+    [Fact]
     public void Aggregate_SingleContributor_ReturnsExpectedHealth()
     {
         var contributors = new List<IHealthContributor>
@@ -45,7 +60,8 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
             new DownContributor(),
             new UpContributor(),
             new OutOfServiceContributor(),
-            new UnknownContributor()
+            new UnknownContributor(),
+            new DisabledContributor()
         };
 
         var aggregator = new DefaultHealthAggregator();

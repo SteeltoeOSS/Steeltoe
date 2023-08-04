@@ -9,6 +9,7 @@ using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
+using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
@@ -87,7 +88,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     public void AddHealthContributors_AddsServices()
     {
         var services = new ServiceCollection();
-        services.AddHealthContributors(typeof(TestContributor));
+        services.AddHealthContributors(typeof(HealthTestContributor));
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);

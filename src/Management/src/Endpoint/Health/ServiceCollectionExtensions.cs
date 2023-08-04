@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Health;
@@ -28,6 +29,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
+        services.ConfigureOptions<ConfigureDiskSpaceContributorOptions>();
         services.TryAddScoped<IHealthEndpointHandler, HealthEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointMiddleware, HealthEndpointMiddleware>());
         services.AddScoped<HealthEndpointMiddleware>();

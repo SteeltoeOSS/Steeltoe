@@ -7,17 +7,18 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-internal sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
+internal sealed class TestHealthCheckServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
 {
     public HealthCheckServiceOptions CurrentValue { get; }
 
-    public TestServiceOptions()
+    public TestHealthCheckServiceOptions()
     {
         CurrentValue = new HealthCheckServiceOptions();
 
-        CurrentValue.Registrations.Add(new HealthCheckRegistration("test", _ => new TestHealthCheck(), HealthStatus.Unhealthy, new[]
+        CurrentValue.Registrations.Add(new HealthCheckRegistration("test-registration", _ => new TestHealthCheck(), HealthStatus.Unhealthy, new[]
         {
-            "tags"
+            "test-tag-1",
+            "test-tag-2"
         }.ToList()));
     }
 

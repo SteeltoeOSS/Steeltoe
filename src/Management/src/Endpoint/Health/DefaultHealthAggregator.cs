@@ -26,7 +26,7 @@ internal class DefaultHealthAggregator : IHealthAggregator
         Parallel.ForEach(contributors, contributor =>
         {
             string contributorId = GetKey(keyList, contributor.Id);
-            HealthCheckResult healthCheckResult;
+            HealthCheckResult? healthCheckResult;
 
             try
             {
@@ -37,7 +37,10 @@ internal class DefaultHealthAggregator : IHealthAggregator
                 healthCheckResult = new HealthCheckResult();
             }
 
-            healthChecks.TryAdd(contributorId, healthCheckResult);
+            if (healthCheckResult != null)
+            {
+                healthChecks.TryAdd(contributorId, healthCheckResult);
+            }
         });
 
         return AddChecksSetStatus(aggregatorResult, healthChecks);

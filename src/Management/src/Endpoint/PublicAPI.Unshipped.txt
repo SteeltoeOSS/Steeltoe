@@ -183,8 +183,9 @@ Steeltoe.Management.Endpoint.Exposure.Include.get -> System.Collections.Generic.
 Steeltoe.Management.Endpoint.Exposure.Include.set -> void
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.DiskSpaceContributorOptions() -> void
-Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.DiskSpaceContributorOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration) -> void
-Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.Path.get -> string!
+Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.Enabled.get -> bool
+Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.Enabled.set -> void
+Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.Path.get -> string?
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.Path.set -> void
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.Threshold.get -> long
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.Threshold.set -> void

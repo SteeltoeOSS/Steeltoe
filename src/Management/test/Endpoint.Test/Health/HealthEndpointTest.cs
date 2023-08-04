@@ -56,9 +56,9 @@ public sealed class HealthEndpointTest : BaseTest
 
         var contributors = new List<IHealthContributor>
         {
-            new TestContributors.TestContributor("h1"),
-            new TestContributors.TestContributor("h2"),
-            new TestContributors.TestContributor("h3")
+            new HealthTestContributor("h1"),
+            new HealthTestContributor("h2"),
+            new HealthTestContributor("h3")
         };
 
         testContext.AdditionalServices = (services, _) =>
@@ -72,9 +72,8 @@ public sealed class HealthEndpointTest : BaseTest
         HealthEndpointRequest healthRequest = GetHealthRequest();
         await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        foreach (IHealthContributor contributor in contributors)
+        foreach (HealthTestContributor testContributor in contributors.Cast<HealthTestContributor>())
         {
-            var testContributor = (TestContributors.TestContributor)contributor;
             Assert.True(testContributor.Called);
         }
     }
@@ -86,9 +85,9 @@ public sealed class HealthEndpointTest : BaseTest
 
         var contributors = new List<IHealthContributor>
         {
-            new TestContributors.TestContributor("h1"),
-            new TestContributors.TestContributor("h2"),
-            new TestContributors.TestContributor("h3")
+            new HealthTestContributor("h1"),
+            new HealthTestContributor("h2", true),
+            new HealthTestContributor("h3", true)
         };
 
         testContext.AdditionalServices = (services, _) =>
@@ -103,10 +102,8 @@ public sealed class HealthEndpointTest : BaseTest
         HealthEndpointRequest healthRequest = GetHealthRequest();
         HealthEndpointResponse info = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
-        foreach (IHealthContributor contributor in contributors)
+        foreach (HealthTestContributor testContributor in contributors.Cast<HealthTestContributor>())
         {
-            var testContributor = (TestContributors.TestContributor)contributor;
-
             if (testContributor.Throws)
             {
                 Assert.False(testContributor.Called);
@@ -127,7 +124,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         var contributors = new List<IHealthContributor>
         {
-            new DiskSpaceContributor()
+            new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>())
         };
 
         testContext.AdditionalServices = (services, _) =>
@@ -168,7 +165,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         var contributors = new List<IHealthContributor>
         {
-            new DiskSpaceContributor(),
+            new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
             new LivenessHealthContributor(appAvailability)
         };
 
@@ -200,6 +197,7 @@ public sealed class HealthEndpointTest : BaseTest
         var contributors = new List<IHealthContributor>
         {
             new UnknownContributor(),
+            new DisabledContributor(),
             new UpContributor(),
             new ReadinessHealthContributor(appAvailability)
         };
@@ -231,6 +229,7 @@ public sealed class HealthEndpointTest : BaseTest
         var contributors = new List<IHealthContributor>
         {
             new UnknownContributor(),
+            new DisabledContributor(),
             new UpContributor(),
             new ReadinessHealthContributor(appAvailability)
         };
@@ -258,9 +257,10 @@ public sealed class HealthEndpointTest : BaseTest
 
         var contributors = new List<IHealthContributor>
         {
-            new DiskSpaceContributor(),
+            new DiskSpaceContributor(GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>()),
             new OutOfServiceContributor(),
             new UnknownContributor(),
+            new DisabledContributor(),
             new UpContributor()
         };
 
@@ -295,6 +295,7 @@ public sealed class HealthEndpointTest : BaseTest
         var contributors = new List<IHealthContributor>
         {
             new UnknownContributor(),
+            new DisabledContributor(),
             new UpContributor()
         };
 

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Xunit;
 
@@ -23,16 +22,14 @@ public sealed class DiskSpaceContributorOptionsTest : BaseTest
     {
         var appsettings = new Dictionary<string, string?>
         {
-            ["management:endpoints:health:enabled"] = "true",
+            ["management:endpoints:health:diskspace:enabled"] = "true",
             ["management:endpoints:health:diskspace:path"] = "foobar",
             ["management:endpoints:health:diskspace:threshold"] = "5"
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appsettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        var options = GetOptionsFromSettings<DiskSpaceContributorOptions>(appsettings);
 
-        var options = new DiskSpaceContributorOptions(configurationRoot);
+        Assert.True(options.Enabled);
         Assert.Equal("foobar", options.Path);
         Assert.Equal(5, options.Threshold);
     }
