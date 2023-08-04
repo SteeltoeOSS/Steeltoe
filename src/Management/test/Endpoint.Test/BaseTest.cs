@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.MetricCollectors.Exporters;
@@ -109,6 +110,7 @@ public abstract class BaseTest : IDisposable
 
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton<IApplicationInstanceInfo>(new ApplicationInstanceInfo(configurationRoot, string.Empty));
         services.ConfigureOptions(configureOptionsType);
 
         ServiceProvider provider = services.BuildServiceProvider();

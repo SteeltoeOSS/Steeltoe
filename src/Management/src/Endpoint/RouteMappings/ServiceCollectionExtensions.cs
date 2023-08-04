@@ -27,12 +27,11 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.ConfigureOptions<ConfigureRouteMappingsEndpointOptions>();
+        services.ConfigureEndpointOptions<RouteMappingsEndpointOptions, ConfigureRouteMappingsEndpointOptions>();
         services.TryAddSingleton<IRouteMappingsEndpointHandler, RouteMappingsEndpointHandler>();
         services.AddSingleton<RouteMappingsEndpointMiddleware>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, RouteMappingsEndpointMiddleware>());
 
-        services.ConfigureEndpointOptions<RouteMappingsEndpointOptions, ConfigureRouteMappingsEndpointOptions>();
         return services;
     }
 }

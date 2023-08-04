@@ -23,7 +23,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
     internal static RegistrationResult? RegistrationResult { get; set; }
 
-    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions clientOptions, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+    public SpringBootAdminClientHostedService(IOptions<SpringBootAdminClientOptions> clientOptions, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         IOptionsMonitor<HealthEndpointOptions> healthOptionsMonitor, ILogger<SpringBootAdminClientHostedService> logger, HttpClient? httpClient = null)
     {
         ArgumentGuard.NotNull(clientOptions);
@@ -31,10 +31,10 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         ArgumentGuard.NotNull(healthOptionsMonitor);
         ArgumentGuard.NotNull(logger);
 
-        _clientOptions = clientOptions;
+        _clientOptions = clientOptions.Value;
         _managementOptions = managementOptionsMonitor.CurrentValue;
         _healthOptions = healthOptionsMonitor.CurrentValue;
-        _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_clientOptions.ValidateCertificates, _clientOptions.ConnectionTimeoutMs);
+        _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(clientOptions.Value.ValidateCertificates, clientOptions.Value.ConnectionTimeoutMs);
         _logger = logger;
     }
 
@@ -42,8 +42,13 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
     {
         _logger.LogInformation("Registering with Spring Boot Admin Server at {url}", _clientOptions.Url);
 
+        if (_clientOptions.BasePath == null || _clientOptions.ApplicationName == null)
+        {
+            throw new InvalidOperationException("BasePath and ApplicationName must be provided in options.");
+        }
+
         string basePath = _clientOptions.BasePath.TrimEnd('/');
-        Application app = CreateApplication(basePath);
+        Application app = CreateApplication(basePath, _clientOptions.ApplicationName);
 
         Merge(app.Metadata, _clientOptions.Metadata);
 
@@ -71,9 +76,8 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
     }
 
-    private Application CreateApplication(string basePath)
+    private Application CreateApplication(string basePath, string applicationName)
     {
-        string name = _clientOptions.ApplicationName;
         var healthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.Path}");
         var managementUrl = new Uri($"{basePath}{_managementOptions.Path}");
         var serviceUrl = new Uri($"{basePath}/");
@@ -83,7 +87,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
             { "startup", DateTime.Now }
         };
 
-        return new Application(name, managementUrl, healthUrl, serviceUrl, metadata);
+        return new Application(applicationName, managementUrl, healthUrl, serviceUrl, metadata);
     }
 
     private static void Merge<TKey, TValue>(IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)

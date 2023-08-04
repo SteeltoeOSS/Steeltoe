@@ -2,22 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public sealed class SpringBootAdminClientOptionsTest
+public sealed class SpringBootAdminClientOptionsTest : BaseTest
 {
     [Fact]
     public void ConstructorFailsWithoutBaseAppUrl()
     {
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-            new SpringBootAdminClientOptions(new ConfigurationBuilder().Build(), new ApplicationInstanceInfo()));
+        var appsettings = new Dictionary<string, string?>();
 
-        Assert.Contains(":BasePath in order to register with Spring Boot Admin", exception.Message, StringComparison.Ordinal);
+        var exception = Assert.Throws<InvalidOperationException>(() => GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings));
+
+        Assert.Equal("Please set spring:boot:admin:client:BasePath in order to register with Spring Boot Admin", exception.Message);
     }
 
     [Fact]
@@ -25,13 +24,10 @@ public sealed class SpringBootAdminClientOptionsTest
     {
         var appsettings = new Dictionary<string, string?>
         {
-            { "application:Uris:0", "http://somehost" }
+            ["application:Uris:0"] = "http://somehost"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        var appInfo = new ApplicationInstanceInfo(configurationRoot, string.Empty);
-
-        var options = new SpringBootAdminClientOptions(configurationRoot, appInfo);
+        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings);
 
         Assert.NotNull(options);
         Assert.Equal("http://somehost", options.BasePath);
@@ -52,9 +48,7 @@ public sealed class SpringBootAdminClientOptionsTest
             ["ApplicationName"] = "OtherApplicationName"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-
-        var options = new SpringBootAdminClientOptions(configurationRoot, new ApplicationInstanceInfo(configurationRoot));
+        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings);
 
         Assert.NotNull(options);
         Assert.Equal("MySteeltoeApplication", options.ApplicationName);
@@ -70,14 +64,13 @@ public sealed class SpringBootAdminClientOptionsTest
     {
         var appsettings = new Dictionary<string, string?>
         {
-            { "spring:boot:admin:client:basepath", "http://somehost" }
+            ["spring:boot:admin:client:basepath"] = "http://somehost"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-
-        var options = new SpringBootAdminClientOptions(configurationRoot, new ApplicationInstanceInfo(configurationRoot));
+        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings);
 
         Assert.NotNull(options);
+        Assert.NotNull(options.ApplicationName);
         Assert.NotEmpty(options.ApplicationName);
     }
 }

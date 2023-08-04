@@ -376,15 +376,15 @@ Steeltoe.Management.Endpoint.Security.EndpointClaim.Value.get -> string?
 Steeltoe.Management.Endpoint.Security.EndpointClaim.Value.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions
-Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ApplicationName.get -> string!
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ApplicationName.get -> string?
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ApplicationName.set -> void
-Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BasePath.get -> string!
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BasePath.get -> string?
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.BasePath.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ConnectionTimeoutMs.get -> int
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ConnectionTimeoutMs.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Metadata.get -> System.Collections.Generic.IDictionary<string!, object!>!
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Metadata.set -> void
-Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.SpringBootAdminClientOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration, Steeltoe.Common.IApplicationInstanceInfo! appInfo) -> void
+Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.SpringBootAdminClientOptions() -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Url.get -> string?
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Url.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.get -> bool

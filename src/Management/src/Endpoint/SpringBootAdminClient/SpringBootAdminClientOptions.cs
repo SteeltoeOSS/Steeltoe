@@ -2,29 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
-
 #pragma warning disable S4004 // Collection properties should be readonly
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
 public sealed class SpringBootAdminClientOptions
 {
-    private const string Prefix = "spring:boot:admin:client";
-    private const string UrlsKeyName = "URLS";
-
     public string? Url { get; set; }
 
     /// <summary>
     /// Gets or sets the name to use for this application when registering with SBA.
     /// </summary>
-    public string ApplicationName { get; set; }
+    public string? ApplicationName { get; set; }
 
     /// <summary>
     /// Gets or sets the base path SBA should use for interacting with your application.
     /// </summary>
-    public string BasePath { get; set; }
+    public string? BasePath { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether SBA certificates should be validated.
@@ -40,35 +34,4 @@ public sealed class SpringBootAdminClientOptions
     /// Gets or sets metadata to use when registering with SBA.
     /// </summary>
     public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
-
-    public SpringBootAdminClientOptions(IConfiguration configuration, IApplicationInstanceInfo appInfo)
-    {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(appInfo);
-
-        configuration.GetSection(Prefix).Bind(this);
-
-        // Require base path to be supplied directly, in the configuration, or in the app instance info
-        BasePath ??= GetBasePath(configuration) ?? appInfo.Uris?.FirstOrDefault() ??
-            throw new InvalidOperationException($"Please set {Prefix}:BasePath in order to register with Spring Boot Admin");
-
-        ApplicationName ??= appInfo.GetApplicationNameInContext(SteeltoeComponent.Management);
-    }
-
-    private string? GetBasePath(IConfiguration configuration)
-    {
-        string? urlString = configuration.GetValue<string?>(UrlsKeyName);
-
-        if (urlString != null)
-        {
-            string[] urls = urlString.Split(';');
-
-            if (urls.Length > 0)
-            {
-                return urls[0];
-            }
-        }
-
-        return null;
-    }
 }

@@ -3,11 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
@@ -31,9 +29,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
                 ["spring:application:name"] = "MySteeltoeApplication"
             };
 
-            IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var instanceInfo = new ApplicationInstanceInfo(configurationRoot);
-            var clientOptions = new SpringBootAdminClientOptions(configurationRoot, instanceInfo);
+            var clientOptions = new OptionsWrapper<SpringBootAdminClientOptions>(GetOptionsFromSettings<SpringBootAdminClientOptions>(appSettings));
             IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings);
             IOptionsMonitor<HealthEndpointOptions> healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
             var httpMessageHandler = new MockHttpMessageHandler();
@@ -71,9 +67,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
             ["spring:application:name"] = "MySteeltoeApplication"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var instanceInfo = new ApplicationInstanceInfo(configurationRoot);
-        var clientOptions = new SpringBootAdminClientOptions(configurationRoot, instanceInfo);
+        var clientOptions = new OptionsWrapper<SpringBootAdminClientOptions>(GetOptionsFromSettings<SpringBootAdminClientOptions>(appSettings));
         IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings);
         IOptionsMonitor<HealthEndpointOptions> healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions>(appSettings);
         var httpMessageHandler = new MockHttpMessageHandler();
