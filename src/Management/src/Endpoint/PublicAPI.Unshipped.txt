@@ -177,8 +177,6 @@ Steeltoe.Management.Endpoint.Exposure
 Steeltoe.Management.Endpoint.Exposure.Exclude.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Exposure.Exclude.set -> void
 Steeltoe.Management.Endpoint.Exposure.Exposure() -> void
-Steeltoe.Management.Endpoint.Exposure.Exposure(bool allowAll) -> void
-Steeltoe.Management.Endpoint.Exposure.Exposure(Microsoft.Extensions.Configuration.IConfiguration! configuration) -> void
 Steeltoe.Management.Endpoint.Exposure.Include.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Exposure.Include.set -> void
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions

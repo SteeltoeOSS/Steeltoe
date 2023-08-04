@@ -48,6 +48,55 @@ internal sealed class ConfigureManagementOptions : IConfigureOptions<ManagementO
 
         options.Path ??= DefaultPath;
 
-        options.Exposure = new Exposure(_configuration);
+        options.Exposure ??= new Exposure();
+
+        var configureExposure = new ConfigureExposure(_configuration);
+        configureExposure.Configure(options.Exposure);
+    }
+
+    private sealed class ConfigureExposure
+    {
+        private const string Prefix = "management:endpoints:actuator:exposure";
+        private const string SecondChancePrefix = "management:endpoints:web:exposure";
+
+        private static readonly List<string> DefaultIncludes = new()
+        {
+            "health",
+            "info"
+        };
+
+        private readonly IConfiguration _configuration;
+
+        public ConfigureExposure(IConfiguration configuration)
+        {
+            ArgumentGuard.NotNull(configuration);
+
+            _configuration = configuration;
+        }
+
+        public void Configure(Exposure options)
+        {
+            ArgumentGuard.NotNull(options);
+
+            _configuration.GetSection(Prefix).Bind(options);
+
+            IConfigurationSection secondSection = _configuration.GetSection(SecondChancePrefix);
+
+            if (secondSection.Exists())
+            {
+                options.Include = GetListFromConfigurationCsvString(secondSection, "include") ?? new List<string>();
+                options.Exclude = GetListFromConfigurationCsvString(secondSection, "exclude") ?? new List<string>();
+            }
+
+            if (options.Include.Count == 0 && options.Exclude.Count == 0)
+            {
+                options.Include = DefaultIncludes;
+            }
+        }
+
+        private static List<string>? GetListFromConfigurationCsvString(IConfigurationSection section, string key)
+        {
+            return section.GetValue<string?>(key)?.Split(',').ToList();
+        }
     }
 }

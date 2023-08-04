@@ -2,23 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public sealed class ExposureTest
+public sealed class ExposureTest : BaseTest
 {
     [Fact]
     public void ExposureReturnsDefaults()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        var options = GetOptionsFromSettings<ManagementOptions>();
 
-        var exposure = new Exposure(configurationRoot);
-
-        Assert.Contains("health", exposure.Include);
-        Assert.Contains("info", exposure.Include);
-        Assert.Empty(exposure.Exclude);
+        Assert.NotNull(options.Exposure);
+        Assert.Contains("health", options.Exposure.Include);
+        Assert.Contains("info", options.Exposure.Include);
+        Assert.Empty(options.Exposure.Exclude);
     }
 
     [Fact]
@@ -32,14 +31,13 @@ public sealed class ExposureTest
             ["management:endpoints:actuator:exposure:exclude:1"] = "env"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
 
-        var exposure = new Exposure(configurationRoot);
-
-        Assert.Contains("httptrace", exposure.Include);
-        Assert.Contains("dbmigrations", exposure.Include);
-        Assert.Contains("trace", exposure.Exclude);
-        Assert.Contains("env", exposure.Exclude);
+        Assert.NotNull(options.Exposure);
+        Assert.Contains("httptrace", options.Exposure.Include);
+        Assert.Contains("dbmigrations", options.Exposure.Include);
+        Assert.Contains("trace", options.Exposure.Exclude);
+        Assert.Contains("env", options.Exposure.Exclude);
     }
 
     [Fact]
@@ -51,14 +49,13 @@ public sealed class ExposureTest
             ["management:endpoints:web:exposure:exclude"] = "dbmigrations,info"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
 
-        var exposure = new Exposure(configurationRoot);
-
-        Assert.Contains("heapdump", exposure.Include);
-        Assert.Contains("env", exposure.Include);
-        Assert.Contains("dbmigrations", exposure.Exclude);
-        Assert.Contains("info", exposure.Exclude);
+        Assert.NotNull(options.Exposure);
+        Assert.Contains("heapdump", options.Exposure.Include);
+        Assert.Contains("env", options.Exposure.Include);
+        Assert.Contains("dbmigrations", options.Exposure.Exclude);
+        Assert.Contains("info", options.Exposure.Exclude);
     }
 
     [Fact]
@@ -69,11 +66,10 @@ public sealed class ExposureTest
             ["management:endpoints:web:exposure:include"] = "heapdump;env"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var options = GetOptionsFromSettings<ManagementOptions>(appSettings);
 
-        var exposure = new Exposure(configurationRoot);
-
-        Assert.Contains("heapdump;env", exposure.Include);
-        Assert.Empty(exposure.Exclude);
+        Assert.NotNull(options.Exposure);
+        Assert.Contains("heapdump;env", options.Exposure.Include);
+        Assert.Empty(options.Exposure.Exclude);
     }
 }

@@ -22,7 +22,7 @@ public sealed class ManagementOptions
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public Exposure? Exposure { get; set; } = new();
+    public Exposure? Exposure { get; set; }
 
     /// <summary>
     /// Gets or sets a list of
