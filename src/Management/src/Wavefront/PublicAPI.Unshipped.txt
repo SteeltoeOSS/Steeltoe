@@ -14,7 +14,7 @@ Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.Service.get 
 Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.Service.set -> void
 Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.Source.get -> string?
 Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.Source.set -> void
-Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.WavefrontApplicationOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration) -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.WavefrontApplicationOptions() -> void
 Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions
 Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.ApiToken.get -> string?
 Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.ApiToken.set -> void
@@ -22,14 +22,17 @@ Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.BatchSize.get -
 Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.BatchSize.set -> void
 Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.MaxQueueSize.get -> int
 Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.MaxQueueSize.set -> void
-Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Name.get -> string!
-Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Service.get -> string!
-Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Source.get -> string!
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Name.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Name.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Service.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Service.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Source.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Source.set -> void
 Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Step.get -> int
 Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Step.set -> void
 Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Uri.get -> string?
 Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Uri.set -> void
-Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.WavefrontExporterOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration) -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.WavefrontExporterOptions() -> void
 Steeltoe.Management.Wavefront.Exporters.WavefrontMetricsExporter
 Steeltoe.Management.Wavefront.Exporters.WavefrontMetricsExporter.WavefrontMetricsExporter(Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions! options, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Wavefront.Exporters.WavefrontMetricsExporter!>! logger) -> void
 Steeltoe.Management.Wavefront.Exporters.WavefrontTraceExporter

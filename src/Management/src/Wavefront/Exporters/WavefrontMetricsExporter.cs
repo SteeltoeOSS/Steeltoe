@@ -117,8 +117,15 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
     {
         IDictionary<string, string?> tags = inputTags.AsDictionary();
 
-        tags.Add("application", Options.Name.ToLowerInvariant());
-        tags.Add("service", Options.Service.ToLowerInvariant());
+        if (Options.Name != null)
+        {
+            tags.Add("application", Options.Name.ToLowerInvariant());
+        }
+
+        if (Options.Service != null)
+        {
+            tags.Add("service", Options.Service.ToLowerInvariant());
+        }
 
         tags.Add("component", "wavefront-metrics-exporter");
         return tags;

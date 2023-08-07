@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Exporter;
@@ -138,6 +139,7 @@ public static class TracingBaseServiceCollectionExtensions
                 AddOpenTelemetryProtocolExporter(builder);
             }
 
+            services.ConfigureOptions<ConfigureWavefrontExporterOptions>();
             AddWavefrontExporter(builder);
 
             action?.Invoke(builder);
@@ -204,16 +206,15 @@ public static class TracingBaseServiceCollectionExtensions
     {
         var deferredTracerProviderBuilder = (IDeferredTracerProviderBuilder)builder;
 
-        deferredTracerProviderBuilder.Configure(delegate(IServiceProvider sp, TracerProviderBuilder innerBuilder)
+        deferredTracerProviderBuilder.Configure((serviceProvider, innerBuilder) =>
         {
-            var configuration = sp.GetRequiredService<IConfiguration>();
-            var wavefrontOptions = new WavefrontExporterOptions(configuration);
+            var wavefrontOptions = serviceProvider.GetRequiredService<IOptions<WavefrontExporterOptions>>();
 
             // Only add if wavefront is configured
-            if (!string.IsNullOrEmpty(wavefrontOptions.Uri))
+            if (!string.IsNullOrEmpty(wavefrontOptions.Value.Uri))
             {
-                var logger = sp.GetRequiredService<ILogger<WavefrontTraceExporter>>();
-                innerBuilder.AddWavefrontTraceExporter(wavefrontOptions, logger);
+                var logger = serviceProvider.GetRequiredService<ILogger<WavefrontTraceExporter>>();
+                innerBuilder.AddWavefrontTraceExporter(wavefrontOptions.Value, logger);
             }
         });
     }

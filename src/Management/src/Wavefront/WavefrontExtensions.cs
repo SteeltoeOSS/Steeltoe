@@ -4,11 +4,11 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
@@ -38,6 +38,7 @@ public static class WavefrontExtensions
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticsService>());
 
+        services.ConfigureOptions<ConfigureWavefrontExporterOptions>();
         services.AddMetricsObservers();
 
         services.AddOpenTelemetry().WithMetrics(builder =>
@@ -99,11 +100,11 @@ public static class WavefrontExtensions
     {
         ArgumentGuard.NotNull(builder);
 
-        return builder.AddReader(sp =>
+        return builder.AddReader(serviceProvider =>
         {
-            var logger = sp.GetRequiredService<ILogger<WavefrontMetricsExporter>>();
-            var configuration = sp.GetRequiredService<IConfiguration>();
-            var wavefrontExporter = new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
+            var logger = serviceProvider.GetRequiredService<ILogger<WavefrontMetricsExporter>>();
+            var options = serviceProvider.GetRequiredService<IOptions<WavefrontExporterOptions>>();
+            var wavefrontExporter = new WavefrontMetricsExporter(options.Value, logger);
 
             var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step)
             {
