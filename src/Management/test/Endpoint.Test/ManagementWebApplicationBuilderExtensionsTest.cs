@@ -23,6 +23,7 @@ using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
@@ -213,7 +214,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         host.UseRouting();
         await host.StartAsync();
 
-        Assert.Single(host.Services.GetServices<RouteMappings.RouteMappings>());
+        Assert.Single(host.Services.GetServices<RouterMappings>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/mappings", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

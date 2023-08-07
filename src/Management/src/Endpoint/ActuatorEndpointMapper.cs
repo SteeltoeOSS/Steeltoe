@@ -38,34 +38,55 @@ internal sealed class ActuatorEndpointMapper
         ArgumentGuard.NotNull(endpointRouteBuilder);
         ArgumentGuard.NotNull(conventionBuilder);
 
+        InnerMap(middleware => endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middleware.GetType()).Build(),
+            (middleware, requestPath, pipeline) =>
+            {
+                IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(requestPath, middleware.EndpointOptions.AllowedVerbs, pipeline);
+                conventionBuilder.Add(builder);
+            });
+    }
+
+    public void Map(IRouteBuilder routeBuilder)
+    {
+        ArgumentGuard.NotNull(routeBuilder);
+
+        InnerMap(middleware => routeBuilder.ApplicationBuilder.UseMiddleware(middleware.GetType()).Build(), (middleware, requestPath, pipeline) =>
+        {
+            foreach (string verb in middleware.EndpointOptions.AllowedVerbs)
+            {
+                routeBuilder.MapVerb(verb, requestPath, pipeline);
+            }
+        });
+    }
+
+    private void InnerMap(Func<IEndpointMiddleware, RequestDelegate> createPipeline, Action<IEndpointMiddleware, string, RequestDelegate> applyMapping)
+    {
         var collection = new HashSet<string>();
 
         // Map Default configured context
         IEnumerable<IEndpointMiddleware> middlewares = _middlewares.Where(middleware => middleware is not CloudFoundryEndpointMiddleware);
-        MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, _managementOptionsMonitor.CurrentValue.Path, middlewares);
+        MapEndpoints(collection, _managementOptionsMonitor.CurrentValue.Path, middlewares, createPipeline, applyMapping);
 
         // Map Cloudfoundry context
         if (Platform.IsCloudFoundry)
         {
             IEnumerable<IEndpointMiddleware> cloudFoundryMiddlewares = _middlewares.Where(middleware => middleware is not ActuatorHypermediaEndpointMiddleware);
-            MapEndpoints(endpointRouteBuilder, conventionBuilder, collection, ConfigureManagementOptions.DefaultCloudFoundryPath, cloudFoundryMiddlewares);
+            MapEndpoints(collection, ConfigureManagementOptions.DefaultCloudFoundryPath, cloudFoundryMiddlewares, createPipeline, applyMapping);
         }
     }
 
-    private void MapEndpoints(IEndpointRouteBuilder endpointRouteBuilder, ActuatorConventionBuilder conventionBuilder, HashSet<string> collection,
-        string? baseRequestPath, IEnumerable<IEndpointMiddleware> middlewares)
+    private void MapEndpoints(HashSet<string> collection, string? baseRequestPath, IEnumerable<IEndpointMiddleware> middlewares,
+        Func<IEndpointMiddleware, RequestDelegate> createPipeline, Action<IEndpointMiddleware, string, RequestDelegate> applyMapping)
     {
         foreach (IEndpointMiddleware middleware in middlewares)
         {
-            Type middlewareType = middleware.GetType();
-            RequestDelegate pipeline = endpointRouteBuilder.CreateApplicationBuilder().UseMiddleware(middlewareType).Build();
+            RequestDelegate pipeline = createPipeline(middleware);
             EndpointOptions endpointOptions = middleware.EndpointOptions;
             string requestPath = endpointOptions.GetPathMatchPattern(_managementOptionsMonitor.CurrentValue, baseRequestPath);
 
             if (collection.Add(requestPath))
             {
-                IEndpointConventionBuilder builder = endpointRouteBuilder.MapMethods(requestPath, endpointOptions.AllowedVerbs, pipeline);
-                conventionBuilder.Add(builder);
+                applyMapping(middleware, requestPath, pipeline);
             }
             else
             {

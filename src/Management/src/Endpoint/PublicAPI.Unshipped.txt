@@ -11,7 +11,8 @@ override Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions.RequiresExa
 override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
 override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.set -> void
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! builder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
-static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! endpoints, Steeltoe.Management.Endpoint.ActuatorConventionBuilder? conventionBuilder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
+static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! routeBuilder, Steeltoe.Management.Endpoint.ActuatorConventionBuilder? conventionBuilder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
+static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IRouteBuilder! builder) -> Microsoft.AspNetCore.Routing.IRouteBuilder!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -110,6 +111,7 @@ static Steeltoe.Management.Endpoint.Metrics.ServiceCollectionExtensions.AddSteel
 static Steeltoe.Management.Endpoint.Refresh.EndpointServiceCollectionExtensions.AddRefreshActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
 static Steeltoe.Management.Endpoint.Refresh.ServiceCollectionExtensions.AddRefreshActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.RouteMappings.EndpointServiceCollectionExtensions.AddMappingsActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+static Steeltoe.Management.Endpoint.RouteMappings.RouteBuilderExtensions.AddRoutesToMappingsActuator(this Microsoft.AspNetCore.Routing.IRouteBuilder! builder) -> Microsoft.AspNetCore.Routing.IRouteBuilder!
 static Steeltoe.Management.Endpoint.RouteMappings.ServiceCollectionExtensions.AddMappingsActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.SpringBootAdminClient.ServiceCollectionExtensions.AddSpringBootAdminClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ThreadDump.EndpointServiceCollectionExtensions.AddThreadDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
@@ -348,6 +350,7 @@ Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Params.get -
 Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Patterns.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.Produces.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor!>!
 Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions.RequestMappingConditions(System.Collections.Generic.IList<string!>! patterns, System.Collections.Generic.IList<string!>! methods, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor!>! consumes, System.Collections.Generic.IList<Steeltoe.Management.Endpoint.RouteMappings.MediaTypeDescriptor!>! produces, System.Collections.Generic.IList<string!>! headers, System.Collections.Generic.IList<string!>! params) -> void
+Steeltoe.Management.Endpoint.RouteMappings.RouteBuilderExtensions
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.Details.get -> Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDetails?
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.Handler.get -> string!
@@ -357,14 +360,14 @@ Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDescription.RouteMappingD
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDetails
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDetails.RequestMappingConditions.get -> Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions!
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingDetails.RouteMappingDetails(Steeltoe.Management.Endpoint.RouteMappings.RequestMappingConditions! requestMappingConditions) -> void
-Steeltoe.Management.Endpoint.RouteMappings.RouteMappings
-Steeltoe.Management.Endpoint.RouteMappings.RouteMappings.RouteMappings() -> void
-Steeltoe.Management.Endpoint.RouteMappings.RouteMappings.Routers.get -> System.Collections.Generic.IList<Microsoft.AspNetCore.Routing.IRouter!>!
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingsEndpointOptions
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingsEndpointOptions.RouteMappingsEndpointOptions() -> void
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingsResponse
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingsResponse.ContextMappings.get -> System.Collections.Generic.IDictionary<string!, Steeltoe.Management.Endpoint.RouteMappings.ContextMappings!>!
 Steeltoe.Management.Endpoint.RouteMappings.RouteMappingsResponse.RouteMappingsResponse(Steeltoe.Management.Endpoint.RouteMappings.ContextMappings! contextMappings) -> void
+Steeltoe.Management.Endpoint.RouteMappings.RouterMappings
+Steeltoe.Management.Endpoint.RouteMappings.RouterMappings.RouterMappings() -> void
+Steeltoe.Management.Endpoint.RouteMappings.RouterMappings.Routers.get -> System.Collections.Generic.IList<Microsoft.AspNetCore.Routing.IRouter!>!
 Steeltoe.Management.Endpoint.RouteMappings.ServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Security.EndpointClaim
 Steeltoe.Management.Endpoint.Security.EndpointClaim.EndpointClaim() -> void

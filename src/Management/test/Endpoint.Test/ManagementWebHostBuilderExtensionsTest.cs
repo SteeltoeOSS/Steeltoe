@@ -24,6 +24,7 @@ using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
@@ -364,10 +365,10 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
         });
 
         using IWebHost host = hostBuilder.AddMappingsActuator().Build();
-        IEnumerable<RouteMappings.RouteMappings> handlers = host.Services.GetServices<RouteMappings.RouteMappings>();
+        IEnumerable<RouterMappings> mappings = host.Services.GetServices<RouterMappings>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
-        Assert.Single(handlers);
+        Assert.Single(mappings);
         Assert.NotNull(filter);
         Assert.IsType<AllActuatorsStartupFilter>(filter);
     }

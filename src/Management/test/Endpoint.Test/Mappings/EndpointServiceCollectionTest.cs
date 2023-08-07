@@ -36,7 +36,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<RouteMappingsEndpointOptions>>();
         Assert.Equal("mappings", options.CurrentValue.Id);
 
-        var routeMappings = serviceProvider.GetService<RouteMappings.RouteMappings>();
-        Assert.NotNull(routeMappings);
+        var routerMappings = serviceProvider.GetService<RouterMappings>();
+        Assert.NotNull(routerMappings);
     }
 }

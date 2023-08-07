@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Text;
+using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.RouteMappings;
@@ -57,7 +59,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        var routeMappings = new RouteMappings.RouteMappings();
+        var routerMappings = new RouterMappings();
         var mockActionDescriptorCollectionProvider = new Mock<IActionDescriptorCollectionProvider>();
 
         mockActionDescriptorCollectionProvider.Setup(provider => provider.ActionDescriptors)
@@ -69,7 +71,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         };
 
         var handler = new RouteMappingsEndpointHandler(endpointOptionsMonitor, mockActionDescriptorCollectionProvider.Object, mockApiDescriptionProviders,
-            routeMappings, NullLoggerFactory.Instance);
+            routerMappings, NullLoggerFactory.Instance);
 
         var middleware = new RouteMappingsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
@@ -83,7 +85,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task MappingsActuator_ReturnsExpectedData()
+    public async Task MappingsActuator_EndpointRouting_ReturnsExpectedData()
     {
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
@@ -113,6 +115,97 @@ public sealed class EndpointMiddlewareTest : BaseTest
             "{\"mediaType\":\"text/json\",\"negated\":false}],\"headers\":[],\"params\":[]}}}]}}}}}";
 
         Assert.Equal(expected, json);
+    }
+
+    [Fact]
+    public async Task MappingsActuator_ConventionalRouting_ReturnsExpectedData()
+    {
+        var appSettings = new Dictionary<string, string?>(AppSettings)
+        {
+            { "management:endpoints:actuator:exposure:include:0", "*" },
+            { "TestUsesEndpointRouting", "False" }
+        };
+
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
+                (webHostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
+
+        using var server = new TestServer(builder);
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/mappings"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
+
+        json.Should().BeJson($@"{{
+  ""contexts"": {{
+    ""application"": {{
+      ""mappings"": {{
+        ""dispatcherServlets"": {{
+          ""{typeof(HomeController).FullName}"": [
+            {{
+              ""handler"": ""{typeof(Person).FullName} Index()"",
+              ""predicate"": ""{{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json],consumes=[text/plain || application/json || text/json]}}"",
+              ""details"": {{
+                ""requestMappingConditions"": {{
+                  ""patterns"": [
+                    ""/Home/Index""
+                  ],
+                  ""methods"": [
+                    ""GET""
+                  ],
+                  ""consumes"": [
+                    {{
+                      ""mediaType"": ""text/plain"",
+                      ""negated"": false
+                    }},
+                    {{
+                      ""mediaType"": ""application/json"",
+                      ""negated"": false
+                    }},
+                    {{
+                      ""mediaType"": ""text/json"",
+                      ""negated"": false
+                    }}
+                  ],
+                  ""produces"": [
+                    {{
+                      ""mediaType"": ""text/plain"",
+                      ""negated"": false
+                    }},
+                    {{
+                      ""mediaType"": ""application/json"",
+                      ""negated"": false
+                    }},
+                    {{
+                      ""mediaType"": ""text/json"",
+                      ""negated"": false
+                    }}
+                  ],
+                  ""headers"": [],
+                  ""params"": []
+                }}
+              }}
+            }}
+          ],
+          ""CoreRouteHandler"": [
+            {{
+              ""handler"": ""CoreRouteHandler"",
+              ""predicate"": ""{{[{{controller=Home}}/{{action=Index}}/{{id?}}],methods=[GET || PUT || POST || DELETE || HEAD || OPTIONS]}}""
+            }},
+            {{
+              ""handler"": ""CoreRouteHandler"",
+              ""predicate"": ""{{[/actuator/mappings],methods=[Get]}}""
+            }}
+          ]
+        }}
+      }}
+    }}
+  }}
+}}");
     }
 
     private HttpContext CreateRequest(string method, string path)

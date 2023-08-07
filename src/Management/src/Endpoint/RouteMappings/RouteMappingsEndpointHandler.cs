@@ -21,25 +21,25 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
     private readonly IOptionsMonitor<RouteMappingsEndpointOptions> _optionsMonitor;
     private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
     private readonly IList<IApiDescriptionProvider> _apiDescriptionProviders;
-    private readonly RouteMappings _routeMappings;
+    private readonly RouterMappings _routerMappings;
     private readonly ILogger<RouteMappingsEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
     public RouteMappingsEndpointHandler(IOptionsMonitor<RouteMappingsEndpointOptions> optionsMonitor,
         IActionDescriptorCollectionProvider actionDescriptorCollectionProvider, IEnumerable<IApiDescriptionProvider> apiDescriptionProviders,
-        RouteMappings routeMappings, ILoggerFactory loggerFactory)
+        RouterMappings routerMappings, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(actionDescriptorCollectionProvider);
         ArgumentGuard.NotNull(apiDescriptionProviders);
-        ArgumentGuard.NotNull(routeMappings);
+        ArgumentGuard.NotNull(routerMappings);
         ArgumentGuard.NotNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
         _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
         _apiDescriptionProviders = apiDescriptionProviders.ToList();
-        _routeMappings = routeMappings;
+        _routerMappings = routerMappings;
         _logger = loggerFactory.CreateLogger<RouteMappingsEndpointHandler>();
     }
 
@@ -190,7 +190,7 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
 
     private void AddRouteMappingsDescriptions(IDictionary<string, IList<RouteMappingDescription>> dictionary)
     {
-        foreach (IRouter router in _routeMappings.Routers)
+        foreach (IRouter router in _routerMappings.Routers)
         {
             if (router is Route route)
             {
