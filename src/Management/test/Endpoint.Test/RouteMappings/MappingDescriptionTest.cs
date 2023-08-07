@@ -5,7 +5,7 @@
 using Steeltoe.Management.Endpoint.RouteMappings;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Mappings;
+namespace Steeltoe.Management.Endpoint.Test.RouteMappings;
 
 public sealed class MappingDescriptionTest : BaseTest
 {

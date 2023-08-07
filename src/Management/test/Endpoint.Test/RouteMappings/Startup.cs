@@ -9,7 +9,7 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.RouteMappings;
 
-namespace Steeltoe.Management.Endpoint.Test.Mappings;
+namespace Steeltoe.Management.Endpoint.Test.RouteMappings;
 
 public sealed class Startup
 {

@@ -22,7 +22,7 @@ using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.RouteMappings;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Mappings;
+namespace Steeltoe.Management.Endpoint.Test.RouteMappings;
 
 public sealed class EndpointMiddlewareTest : BaseTest
 {
