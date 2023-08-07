@@ -10,9 +10,9 @@ using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 namespace Steeltoe.Management.MetricCollectors.Exporters;
 
 /// <summary>
-/// Exporter metrics to Steeltoe Format.
+/// Exports metrics to Steeltoe Format.
 /// </summary>
-internal sealed class SteeltoeExporter
+public sealed class SteeltoeExporter
 {
     // ReSharper disable once CollectionNeverUpdated.Local
     private readonly MetricsCollection<IList<MetricSample>> _metricSamples = new();
@@ -40,6 +40,8 @@ internal sealed class SteeltoeExporter
 
     public void SetCollect(Action collect)
     {
+        ArgumentGuard.NotNull(collect);
+
         _collect = collect;
     }
 
@@ -47,7 +49,7 @@ internal sealed class SteeltoeExporter
     {
         if (_collect == null)
         {
-            throw new InvalidOperationException("Collect should not be null");
+            throw new InvalidOperationException("Call SetCollect() first.");
         }
 
         lock (_collectionLock)
@@ -56,7 +58,7 @@ internal sealed class SteeltoeExporter
             {
                 _metricSamples.Clear();
                 _availableTags.Clear();
-                _collect(); // Calls aggregation Manager.Collect
+                _collect(); // Calls AggregationManager.Collect
                 _lastCollectionSamples = new MetricsCollection<IList<MetricSample>>(_metricSamples);
                 _lastAvailableTags = new MetricsCollection<IList<MetricTag>>(_availableTags);
                 _lastCollection = DateTime.Now;
@@ -66,7 +68,7 @@ internal sealed class SteeltoeExporter
         return (_lastCollectionSamples, _lastAvailableTags);
     }
 
-    public void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
+    internal void AddMetrics(Instrument instrument, LabeledAggregationStatistics stats)
     {
         ArgumentGuard.NotNull(instrument);
         ArgumentGuard.NotNull(stats);

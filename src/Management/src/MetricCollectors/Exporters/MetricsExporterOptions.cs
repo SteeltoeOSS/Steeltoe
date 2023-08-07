@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#pragma warning disable S4004 // Collection properties should be readonly
+
 namespace Steeltoe.Management.MetricCollectors.Exporters;
 
-internal sealed class MetricsExporterOptions
+public sealed class MetricsExporterOptions
 {
     public int CacheDurationMilliseconds { get; set; }
     public int MaxTimeSeries { get; set; }
     public int MaxHistograms { get; set; }
-    public IList<string>? IncludedMetrics { get; set; }
+    public IList<string> IncludedMetrics { get; set; } = new List<string>();
 }
