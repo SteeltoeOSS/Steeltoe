@@ -8,9 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.TestResources;
-using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
@@ -534,29 +533,27 @@ public class RabbitServiceExtensionsTest
     [Fact]
     public void ConfigureRabbitOptions_OverrideAddressWithServiceInfo()
     {
-        const string usernamePrefix = "spring:rabbitmq:username";
-        const string passwordPrefix = "spring:rabbitmq:password";
-        var services = new ServiceCollection();
-
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
-
         var appsettings = new Dictionary<string, string>
         {
-            [usernamePrefix] = "fakeusername",
-            [passwordPrefix] = "CHANGEME"
+            ["spring:rabbitmq:username"] = "fakeusername",
+            ["spring:rabbitmq:password"] = "CHANGEME"
         };
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        configurationBuilder.AddCloudFoundry();
+        configurationBuilder.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(GetCloudFoundryRabbitMqConfiguration()));
+        configurationBuilder.ConfigureRabbitMQ();
+
         IConfigurationRoot configuration = configurationBuilder.Build();
 
-        services.AddRabbitMQConnection(configuration);
+        var services = new ServiceCollection();
+        services.AddRabbitMQ(configuration);
+        services.AddRabbitConnectionFactory();
         services.ConfigureRabbitOptions(configuration);
 
-        ServiceProvider provider = services.BuildServiceProvider();
-        RabbitOptions rabbitOptions = provider.GetRequiredService<IOptions<RabbitOptions>>().Value;
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+        RabbitOptions rabbitOptions = serviceProvider.GetRequiredService<IOptions<RabbitOptions>>().Value;
 
         Assert.Equal("Dd6O1BPXUHdrmzbP", rabbitOptions.Username);
         Assert.Equal("7E1LxXnlH2hhlPVt", rabbitOptions.Password);
@@ -567,23 +564,24 @@ public class RabbitServiceExtensionsTest
     [Fact]
     public void AddRabbitConnectionFactory_AddRabbitConnector()
     {
-        var services = new ServiceCollection();
-
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
-
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddCloudFoundry();
+        configurationBuilder.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(GetCloudFoundryRabbitMqConfiguration()));
+        configurationBuilder.ConfigureRabbitMQ();
+
         IConfigurationRoot configuration = configurationBuilder.Build();
 
-        services.AddRabbitMQConnection(configuration);
+        var services = new ServiceCollection();
+        services.AddRabbitMQ(configuration);
         services.AddRabbitConnectionFactory();
 
-        ServiceProvider provider = services.BuildServiceProvider();
-        var rabbitConnectionFactory = provider.GetRequiredService<IConnectionFactory>();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+        var rabbitConnectionFactory = serviceProvider.GetRequiredService<IConnectionFactory>();
 
         Assert.Equal("192.168.0.90", rabbitConnectionFactory.Host);
         Assert.Equal(3306, rabbitConnectionFactory.Port);
+        Assert.Equal("Dd6O1BPXUHdrmzbP", rabbitConnectionFactory.Username);
+        Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", rabbitConnectionFactory.VirtualHost);
     }
 
     private static string GetCloudFoundryRabbitMqConfiguration()
@@ -592,16 +590,20 @@ public class RabbitServiceExtensionsTest
         {
             ""p-rabbitmq"": [{
                 ""credentials"": {
-                    ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                    ""protocols"": {
+                        ""amqp"": {
+                            ""host"": ""192.168.0.90"",
+                            ""password"": ""7E1LxXnlH2hhlPVt"",
+                            ""port"": 3306,
+                            ""username"": ""Dd6O1BPXUHdrmzbP"",
+                            ""vhost"": ""cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                      }
+                  },
+                  ""ssl"": false,
                 },
-                ""syslog_drain_url"": null,
-                ""label"": ""p-rabbitmq"",
-                ""provider"": null,
-                ""plan"": ""standard"",
                 ""name"": ""myRabbitMQService1"",
                 ""tags"": [
-                    ""rabbitmq"",
-                    ""amqp""
+                    ""rabbitmq""
                 ]
             }]
         }";

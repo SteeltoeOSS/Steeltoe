@@ -44,7 +44,12 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
         {
             try
             {
-                results.Add(contributor.Health());
+                HealthCheckResult result = contributor.Health();
+
+                if (result != null)
+                {
+                    results.Add(result);
+                }
             }
             catch (Exception e)
             {

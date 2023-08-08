@@ -40,11 +40,7 @@ public static class TestHelpers
         { "spring:cloud:config:enabled", "false" },
         { "eureka:client:serviceUrl", "http://127.0.0.1" },
         { "eureka:client:enabled", "false" },
-        { "mysql:client:ConnectionTimeout", "1" },
-        { "postgres:client:timeout", "1" },
-        { "redis:client:abortOnConnectFail", "false" },
-        { "redis:client:connectTimeout", "1" },
-        { "sqlserver:credentials:timeout", "1" }
+        { "management:endpoints:actuator:exposure:include:0", "*" }
     }.ToImmutableDictionary();
 
     public static readonly ImmutableDictionary<string, string> WavefrontConfiguration = new Dictionary<string, string>
@@ -53,25 +49,6 @@ public static class TestHelpers
     }.ToImmutableDictionary();
 
     public static string EntryAssemblyName => Assembly.GetEntryAssembly().GetName().Name;
-
-    public static Stream StringToStream(string str)
-    {
-        var memStream = new MemoryStream();
-        var textWriter = new StreamWriter(memStream);
-        textWriter.Write(str);
-        textWriter.Flush();
-        memStream.Seek(0, SeekOrigin.Begin);
-
-        return memStream;
-    }
-
-    public static string StreamToString(Stream stream)
-    {
-        stream.Seek(0, SeekOrigin.Begin);
-        var reader = new StreamReader(stream);
-
-        return reader.ReadToEnd();
-    }
 
     public static IConfiguration GetConfigurationFromDictionary(IDictionary<string, string> collection)
     {
@@ -90,6 +67,7 @@ public static class TestHelpers
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder(args);
         webAppBuilder.Configuration.AddInMemoryCollection(FastTestsConfiguration);
         webAppBuilder.WebHost.UseTestServer();
+        webAppBuilder.Services.AddActionDescriptorCollectionProvider();
         return webAppBuilder;
     }
 }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Configuration.SpringBoot.Test;
@@ -20,7 +21,7 @@ public sealed class SpringBootConfigurationBuilderExtensionsTest
     [Fact]
     public void AddSpringBootEnv_AddKeys()
     {
-        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
+        using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootFromEnvironmentVariable();
         IConfigurationRoot configurationRoot = builder.Build();

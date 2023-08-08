@@ -6,7 +6,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Task;
 
-public class DelegatingTask : IApplicationTask
+internal sealed class DelegatingTask : IApplicationTask
 {
     private readonly Action _run;
 
@@ -14,6 +14,9 @@ public class DelegatingTask : IApplicationTask
 
     public DelegatingTask(string name, Action run)
     {
+        ArgumentGuard.NotNull(name);
+        ArgumentGuard.NotNull(run);
+
         _run = run;
         Name = name;
     }

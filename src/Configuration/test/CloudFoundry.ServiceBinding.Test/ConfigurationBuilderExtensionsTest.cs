@@ -4,6 +4,7 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
@@ -42,19 +43,19 @@ public sealed class ConfigurationBuilderExtensionsTest
         var builder = new ConfigurationBuilder();
         var reader = new StringServiceBindingsReader(string.Empty);
 
-        Action action1 = () => ((ConfigurationBuilder)null).AddCloudFoundryServiceBindings();
+        Action action1 = () => ((ConfigurationBuilder)null!).AddCloudFoundryServiceBindings();
         action1.Should().ThrowExactly<ArgumentNullException>().WithParameterName("builder");
 
-        Action action2 = () => builder.AddCloudFoundryServiceBindings((Predicate<string>)null);
+        Action action2 = () => builder.AddCloudFoundryServiceBindings((Predicate<string>)null!);
         action2.Should().ThrowExactly<ArgumentNullException>().WithParameterName("ignoreKeyPredicate");
 
-        Action action3 = () => builder.AddCloudFoundryServiceBindings((IServiceBindingsReader)null);
+        Action action3 = () => builder.AddCloudFoundryServiceBindings((IServiceBindingsReader)null!);
         action3.Should().ThrowExactly<ArgumentNullException>().WithParameterName("serviceBindingsReader");
 
-        Action action4 = () => builder.AddCloudFoundryServiceBindings(null, reader);
+        Action action4 = () => builder.AddCloudFoundryServiceBindings(null!, reader);
         action4.Should().ThrowExactly<ArgumentNullException>().WithParameterName("ignoreKeyPredicate");
 
-        Action action5 = () => builder.AddCloudFoundryServiceBindings(_ => false, null);
+        Action action5 = () => builder.AddCloudFoundryServiceBindings(_ => false, null!);
         action5.Should().ThrowExactly<ArgumentNullException>().WithParameterName("serviceBindingsReader");
     }
 
@@ -65,33 +66,28 @@ public sealed class ConfigurationBuilderExtensionsTest
         builder.AddCloudFoundryServiceBindings();
 
         builder.Sources.Should().HaveCount(1);
-        ServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<ServiceBindingConfigurationSource>().Subject;
-        source.RegisteredProcessors.Should().NotBeEmpty();
+        CloudFoundryServiceBindingConfigurationSource source = builder.Sources[0].Should().BeOfType<CloudFoundryServiceBindingConfigurationSource>().Subject;
+        source.PostProcessors.Should().NotBeEmpty();
     }
 
     [Fact]
     public void AddCloudFoundryServiceBindings_EnvironmentVariableSet_LoadsServiceBindings()
     {
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", VcapServicesJson);
+        using var scope = new EnvironmentVariableScope("VCAP_SERVICES", VcapServicesJson);
 
-        try
-        {
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundryServiceBindings();
-            IConfigurationRoot configurationRoot = builder.Build();
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundryServiceBindings();
+        IConfigurationRoot configurationRoot = builder.Build();
 
-            configurationRoot.GetValue<string>("vcap:services:elephantsql:0:name").Should().Be("elephantsql-c6c60");
-            configurationRoot.GetValue<string>("vcap:services:sendgrid:0:name").Should().Be("mysendgrid");
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-        }
+        configurationRoot.GetValue<string>("vcap:services:elephantsql:0:name").Should().Be("elephantsql-c6c60");
+        configurationRoot.GetValue<string>("vcap:services:sendgrid:0:name").Should().Be("mysendgrid");
     }
 
     [Fact]
     public void AddCloudFoundryServiceBindings_EnvironmentVariableNotSet_DoesNotThrow()
     {
+        using var scope = new EnvironmentVariableScope("VCAP_SERVICES", null);
+
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundryServiceBindings();
 

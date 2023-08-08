@@ -19,7 +19,7 @@ public class XunitLogger : ILogger
 
     public IDisposable BeginScope<TState>(TState state)
     {
-        throw new NotImplementedException();
+        return EmptyDisposable.Instance;
     }
 
     public bool IsEnabled(LogLevel logLevel)

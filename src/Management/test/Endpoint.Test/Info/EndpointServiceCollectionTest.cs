@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Info;
@@ -12,14 +11,14 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddInfoActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
@@ -36,8 +35,6 @@ public class EndpointServiceCollectionTest : BaseTest
 
         IInfoContributor extra = new TestInfoContributor();
         services.AddSingleton(extra);
-        ILogger<InfoEndpoint> logger = new TestLogger();
-        services.AddSingleton(logger);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         IEnumerable<IInfoContributor> contributors = serviceProvider.GetServices<IInfoContributor>();
@@ -45,12 +42,9 @@ public class EndpointServiceCollectionTest : BaseTest
         Assert.NotNull(contributors);
         List<IInfoContributor> listOfContributors = contributors.ToList();
         Assert.Equal(4, listOfContributors.Count);
+        Assert.Contains(listOfContributors, item => item is GitInfoContributor or AppSettingsInfoContributor or BuildInfoContributor or TestInfoContributor);
 
-        Assert.Contains(contributors,
-            item => item.GetType() == typeof(GitInfoContributor) || item.GetType() == typeof(AppSettingsInfoContributor) ||
-                item.GetType() == typeof(BuildInfoContributor) || item is TestInfoContributor);
-
-        var ep = serviceProvider.GetService<IInfoEndpoint>();
-        Assert.NotNull(ep);
+        var handler = serviceProvider.GetService<IInfoEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

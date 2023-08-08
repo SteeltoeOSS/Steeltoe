@@ -17,5 +17,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
     <ProjectReference Include="..\..\src\ConfigServer\Steeltoe.Configuration.ConfigServer.csproj" />
+    <ProjectReference Include="..\..\src\Encryption\Steeltoe.Configuration.Encryption.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="server.jks">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

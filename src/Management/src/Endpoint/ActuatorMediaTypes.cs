@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
+
 namespace Steeltoe.Management.Endpoint;
 
-public static class ActuatorMediaTypes
+internal static class ActuatorMediaTypes
 {
     public const string V1Json = "application/vnd.spring-boot.actuator.v1+json";
     public const string V2Json = "application/vnd.spring-boot.actuator.v2+json";
@@ -12,12 +14,14 @@ public static class ActuatorMediaTypes
     public const string AppJson = "application/json";
     public const string Any = "*/*";
 
-    public static string GetContentHeaders(List<string> acceptHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
+    internal static string GetContentHeaders(IList<string> acceptHeaders, MediaTypeVersion version)
     {
+        ArgumentGuard.NotNull(acceptHeaders);
+
         string contentHeader = AppJson;
         string versionContentHeader = GetContentTypeHeaderForVersion(version);
 
-        if (acceptHeaders != null && acceptHeaders.Any(x => x == Any || x == versionContentHeader))
+        if (acceptHeaders.Any(header => header == Any || header == versionContentHeader))
         {
             contentHeader = versionContentHeader;
         }

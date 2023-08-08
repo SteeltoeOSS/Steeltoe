@@ -3,17 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Test.Security;
 
-public class SecureStartup : Startup
+public sealed class SecureStartup : Startup
 {
-    public SecureStartup(IConfiguration configuration)
-        : base(configuration)
-    {
-    }
-
     public override void Configure(IApplicationBuilder app)
     {
         app.UseMiddleware<SetsUserInContextForTestsMiddleware>();

@@ -4,52 +4,51 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthConverter : JsonConverter<HealthEndpointResponse>
+internal sealed class HealthConverter : JsonConverter<HealthEndpointResponse>
 {
     public override HealthEndpointResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     public override void Write(Utf8JsonWriter writer, HealthEndpointResponse value, JsonSerializerOptions options)
     {
+        ArgumentGuard.NotNull(writer);
+
         writer.WriteStartObject();
+        writer.WriteString("status", value.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
 
-        if (value is HealthEndpointResponse health)
+        if (!string.IsNullOrEmpty(value.Description))
         {
-            writer.WriteString("status", health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            writer.WriteString("description", value.Description);
+        }
 
-            if (!string.IsNullOrEmpty(health.Description))
+        if (value.Details != null && value.Details.Count > 0)
+        {
+            writer.WritePropertyName("details");
+            writer.WriteStartObject();
+
+            foreach (KeyValuePair<string, object> detail in value.Details)
             {
-                writer.WriteString("description", health.Description);
-            }
+                writer.WritePropertyName(detail.Key);
 
-            if (health.Details != null && health.Details.Count > 0)
-            {
-                writer.WritePropertyName("details");
-                writer.WriteStartObject();
-
-                foreach (KeyValuePair<string, object> detail in health.Details)
+                if (detail.Value is HealthCheckResult detailValue)
                 {
-                    writer.WritePropertyName(detail.Key);
-
-                    if (detail.Value is HealthCheckResult detailValue)
-                    {
-                        JsonSerializer.Serialize(writer, detailValue.Details, options);
-                    }
-                    else
-                    {
-                        JsonSerializer.Serialize(writer, detail.Value, options);
-                    }
+                    JsonSerializer.Serialize(writer, detailValue.Details, options);
                 }
-
-                writer.WriteEndObject();
+                else
+                {
+                    JsonSerializer.Serialize(writer, detail.Value, options);
+                }
             }
+
+            writer.WriteEndObject();
         }
 
         writer.WriteEndObject();

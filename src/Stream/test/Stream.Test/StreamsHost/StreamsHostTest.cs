@@ -5,8 +5,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.TestResources;
-using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Xunit;
 
@@ -38,9 +38,16 @@ public class StreamsHostTest
     [Fact]
     public void HostConfiguresRabbitOptions()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
-        using IHost host = StreamHost.StreamHost.CreateDefaultBuilder<SampleSink>().ConfigureAppConfiguration(c => c.AddCloudFoundry()).Start();
+        IHostBuilder builder = StreamHost.StreamHost.CreateDefaultBuilder<SampleSink>();
+
+        builder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(GetCloudFoundryRabbitMqConfiguration()));
+            configurationBuilder.ConfigureRabbitMQ();
+        });
+
+        using IHost host = builder.Start();
+
         var rabbitOptionsMonitor = host.Services.GetService<IOptionsMonitor<RabbitOptions>>();
         Assert.NotNull(rabbitOptionsMonitor);
         RabbitOptions rabbitOptions = rabbitOptionsMonitor.CurrentValue;
@@ -57,16 +64,20 @@ public class StreamsHostTest
         {
             ""p-rabbitmq"": [{
                 ""credentials"": {
-                    ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                    ""protocols"": {
+                        ""amqp"": {
+                            ""host"": ""192.168.0.90"",
+                            ""password"": ""7E1LxXnlH2hhlPVt"",
+                            ""port"": 3306,
+                            ""username"": ""Dd6O1BPXUHdrmzbP"",
+                            ""vhost"": ""cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                      }
+                  },
+                  ""ssl"": false,
                 },
-                ""syslog_drain_url"": null,
-                ""label"": ""p-rabbitmq"",
-                ""provider"": null,
-                ""plan"": ""standard"",
                 ""name"": ""myRabbitMQService1"",
                 ""tags"": [
-                    ""rabbitmq"",
-                    ""amqp""
+                    ""rabbitmq""
                 ]
             }]
         }";

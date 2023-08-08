@@ -4,9 +4,9 @@
 
 using System.Net;
 
-namespace Steeltoe.Connector.Services;
+namespace Steeltoe.Connectors.Services;
 
-public class UriInfo
+internal sealed class UriInfo
 {
     private readonly char[] _questionMark =
     {

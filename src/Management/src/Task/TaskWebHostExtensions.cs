@@ -64,13 +64,15 @@ public static class TaskWebHostExtensions
     private static bool FindAndRunTask(IServiceProvider services)
     {
         var configuration = services.GetRequiredService<IConfiguration>();
-        string taskName = configuration.GetValue<string>("runtask");
-        IServiceProvider scope = services.CreateScope().ServiceProvider;
+        string? taskName = configuration.GetValue<string?>("runtask");
 
         if (taskName != null)
         {
-            IApplicationTask task = scope.GetServices<IApplicationTask>()
-                .FirstOrDefault(x => string.Equals(x.Name, taskName, StringComparison.OrdinalIgnoreCase));
+            using IServiceScope scope = services.CreateScope();
+            IServiceProvider provider = scope.ServiceProvider;
+
+            IApplicationTask? task = provider.GetServices<IApplicationTask>()
+                .FirstOrDefault(applicationTask => string.Equals(applicationTask.Name, taskName, StringComparison.OrdinalIgnoreCase));
 
             if (task != null)
             {
@@ -78,7 +80,8 @@ public static class TaskWebHostExtensions
             }
             else
             {
-                ILogger logger = scope.GetService<ILoggerFactory>().CreateLogger("CloudFoundryTasks");
+                var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+                ILogger logger = loggerFactory.CreateLogger($"{typeof(TaskWebHostExtensions).Namespace}.CloudFoundryTasks");
                 logger.LogError($"No task with name {taskName} is found registered in service container");
             }
 

@@ -7,15 +7,15 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
-public class RefreshEndpointOptionsTest : BaseTest
+public sealed class RefreshEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<RefreshEndpointOptions>();
-        Assert.Null(opts.Enabled);
-        Assert.Equal("refresh", opts.Id);
-        Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
-        Assert.True(opts.ReturnConfiguration);
+        var options = GetOptionsFromSettings<RefreshEndpointOptions>();
+        Assert.Null(options.Enabled);
+        Assert.Equal("refresh", options.Id);
+        Assert.Equal(Permissions.Restricted, options.RequiredPermissions);
+        Assert.True(options.ReturnConfiguration);
     }
 }

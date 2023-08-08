@@ -6,65 +6,63 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.ManagementPort;
 
-public class ManagementPortMiddleware
+internal sealed class ManagementPortMiddleware
 {
-    private readonly RequestDelegate _next;
-    private readonly IOptionsMonitor<ManagementEndpointOptions> _managementOptions;
+    private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
+    private readonly RequestDelegate? _next;
     private readonly ILogger<ManagementPortMiddleware> _logger;
 
-    public ManagementPortMiddleware(RequestDelegate next, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
+    public ManagementPortMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor, RequestDelegate? next,
         ILogger<ManagementPortMiddleware> logger)
     {
+        ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(logger);
 
+        _managementOptionsMonitor = managementOptionsMonitor;
         _next = next;
-        _managementOptions = managementOptions;
         _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        ManagementEndpointOptions mgmtOptions = _managementOptions.Get(ActuatorContext.Name);
-        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, mgmtOptions.Path);
+        ArgumentGuard.NotNull(context);
 
-        string contextPath = mgmtOptions.Path;
-        bool isManagementPath = context.Request.Path.ToString().StartsWith(contextPath, StringComparison.OrdinalIgnoreCase);
+        ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
+        _logger.LogDebug("InvokeAsync({requestPath}), optionsPath: {optionsPath}", context.Request.Path.Value, managementOptions.Path);
 
-        bool allowRequest = string.IsNullOrEmpty(mgmtOptions.Port);
-        allowRequest = allowRequest || (context.Request.Host.Port.ToString() == mgmtOptions.Port && isManagementPath);
-        allowRequest = allowRequest || (context.Request.Host.Port.ToString() != mgmtOptions.Port && !isManagementPath);
+        bool isManagementPath = context.Request.Path.StartsWithSegments(managementOptions.Path);
+
+        bool allowRequest = string.IsNullOrEmpty(managementOptions.Port);
+        allowRequest = allowRequest || (context.Request.Host.Port.ToString() == managementOptions.Port && isManagementPath);
+        allowRequest = allowRequest || (context.Request.Host.Port.ToString() != managementOptions.Port && !isManagementPath);
 
         if (!allowRequest)
         {
-            await ReturnErrorAsync(context, mgmtOptions.Port);
+            await ReturnErrorAsync(context, managementOptions.Port);
         }
         else
         {
-            await _next(context);
+            if (_next != null)
+            {
+                await _next(context);
+            }
         }
     }
 
-    private Task ReturnErrorAsync(HttpContext context, string managementPort)
+    private Task ReturnErrorAsync(HttpContext context, string? managementPort)
     {
-        var errorResponse = new ErrorResponse
-        {
-            Error = "Not Found",
-            Message = "Path not found at port",
-            Path = context.Request.Path,
-            Status = StatusCodes.Status404NotFound
-        };
+        var errorResponse = new ErrorResponse(DateTime.UtcNow, StatusCodes.Status404NotFound, "Not Found", "Path not found at port", context.Request.Path);
 
         _logger.LogError("ManagementMiddleWare Error: Access denied on {port} since Management Port is set to {managementPort}", context.Request.Host.Port,
             managementPort);
 
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
-
         context.Response.StatusCode = StatusCodes.Status404NotFound;
+
         return context.Response.WriteAsJsonAsync(errorResponse);
     }
 }

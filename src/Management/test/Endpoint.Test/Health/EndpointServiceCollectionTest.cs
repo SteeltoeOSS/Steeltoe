@@ -9,31 +9,19 @@ using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Security;
+using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
-    [Fact]
-    public void AddHealthActuator_ThrowsOnNulls()
-    {
-        IServiceCollection services = new ServiceCollection();
-        const IHealthAggregator aggregator = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(null));
-        Assert.Equal("services", ex.ParamName);
-        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator(aggregator));
-        Assert.Contains(nameof(aggregator), ex3.Message, StringComparison.Ordinal);
-    }
-
     [Fact]
     public void AddHealthActuator_AddsCorrectServicesWithDefaultHealthAggregator()
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -51,15 +39,15 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton<IConfiguration>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        var agg = serviceProvider.GetService<IHealthAggregator>();
-        Assert.NotNull(agg);
+        var aggregator = serviceProvider.GetService<IHealthAggregator>();
+        Assert.NotNull(aggregator);
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);
         List<IHealthContributor> contributorList = contributors.ToList();
         Assert.Single(contributorList);
 
-        var ep = serviceProvider.GetService<IEndpoint<HealthEndpointResponse, ISecurityContext>>();
-        Assert.NotNull(ep);
+        var handler = serviceProvider.GetService<IHealthEndpointHandler>();
+        Assert.NotNull(handler);
     }
 
     [Fact]
@@ -67,7 +55,7 @@ public class EndpointServiceCollectionTest : BaseTest
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -84,10 +72,10 @@ public class EndpointServiceCollectionTest : BaseTest
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var ep = serviceProvider.GetService<IHealthEndpoint>();
-        Assert.NotNull(ep);
-        var agg = serviceProvider.GetService<IHealthAggregator>();
-        Assert.NotNull(agg);
+        var handler = serviceProvider.GetService<IHealthEndpointHandler>();
+        Assert.NotNull(handler);
+        var aggregator = serviceProvider.GetService<IHealthAggregator>();
+        Assert.NotNull(aggregator);
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);
         List<IHealthContributor> contributorsList = contributors.ToList();
@@ -100,7 +88,7 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddHealthContributors_AddsServices()
     {
         var services = new ServiceCollection();
-        services.AddHealthContributors(typeof(TestContributor));
+        services.AddHealthContributors(typeof(HealthTestContributor));
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);

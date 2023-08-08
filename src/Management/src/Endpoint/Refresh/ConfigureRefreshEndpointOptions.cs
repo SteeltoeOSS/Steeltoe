@@ -7,7 +7,7 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-public class ConfigureRefreshEndpointOptions : ConfigureEndpointOptions<RefreshEndpointOptions>
+internal sealed class ConfigureRefreshEndpointOptions : ConfigureEndpointOptions<RefreshEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:refresh";
 

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable S4004 // Collection properties should be readonly
 // ReSharper disable InconsistentNaming
 

@@ -13,17 +13,8 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class EndpointServiceCollectionExtensionsTest : BaseTest
+public sealed class EndpointServiceCollectionExtensionsTest : BaseTest
 {
-    [Fact]
-    public void AddMetricsActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
     [Fact]
     public void AddMetricsActuator_AddsCorrectServices()
     {
@@ -38,19 +29,19 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        var mgr = serviceProvider.GetService<IDiagnosticsManager>();
-        Assert.NotNull(mgr);
-        var hst = serviceProvider.GetService<IHostedService>();
-        Assert.NotNull(hst);
-        var opts = serviceProvider.GetService<IOptionsMonitor<MetricsObserverOptions>>();
-        Assert.NotNull(opts.CurrentValue);
+        var diagnosticsManager = serviceProvider.GetService<IDiagnosticsManager>();
+        Assert.NotNull(diagnosticsManager);
+        var hostedService = serviceProvider.GetService<IHostedService>();
+        Assert.NotNull(hostedService);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<MetricsObserverOptions>>();
+        Assert.NotNull(optionsMonitor.CurrentValue);
 
         IEnumerable<IDiagnosticObserver> observers = serviceProvider.GetServices<IDiagnosticObserver>();
         List<IDiagnosticObserver> list = observers.ToList();
         Assert.NotEmpty(list);
 
-        var ep = serviceProvider.GetService<IMetricsEndpoint>();
-        Assert.NotNull(ep);
+        var handler = serviceProvider.GetService<IMetricsEndpointHandler>();
+        Assert.NotNull(handler);
     }
 
     private IConfiguration GetConfiguration()

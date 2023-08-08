@@ -8,9 +8,7 @@ namespace Steeltoe.Management.Endpoint.Test.Trace;
 
 internal sealed class MyIdentity : IIdentity
 {
-    public string Name { get; } = "MyTestName";
-
-    public string AuthenticationType { get; } = "MyTestAuthType";
-
-    public bool IsAuthenticated { get; } = true;
+    public string Name => "MyTestName";
+    public string AuthenticationType => "MyTestAuthType";
+    public bool IsAuthenticated => true;
 }

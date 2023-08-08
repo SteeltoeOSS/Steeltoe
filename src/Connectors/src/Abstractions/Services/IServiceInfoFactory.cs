@@ -4,9 +4,9 @@
 
 using Steeltoe.Configuration;
 
-namespace Steeltoe.Connector.Services;
+namespace Steeltoe.Connectors.Services;
 
-public interface IServiceInfoFactory
+internal interface IServiceInfoFactory
 {
     /// <summary>
     /// Check if this factory can create <see cref="IServiceInfo" /> from the given binding.

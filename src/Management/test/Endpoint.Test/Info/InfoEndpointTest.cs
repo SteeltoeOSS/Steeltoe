@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-public class InfoEndpointTest : BaseTest
+public sealed class InfoEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -21,86 +21,80 @@ public class InfoEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_NoContributors_ReturnsExpectedInfo()
+    public async Task Invoke_NoContributors_ReturnsExpectedInfo()
     {
-        using var tc = new TestContext(_output);
-        var contributors = new List<IInfoContributor>();
+        using var testContext = new TestContext(_output);
+        testContext.AdditionalServices = (services, _) => services.AddInfoActuatorServices();
 
-        tc.AdditionalServices = (services, configuration) =>
-        {
-            services.AddInfoActuatorServices();
-            services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
-        };
+        var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        var ep = tc.GetService<IInfoEndpoint>();
-
-        Dictionary<string, object> info = ep.Invoke();
+        IDictionary<string, object> info = await handler.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(info);
         Assert.Empty(info);
     }
 
     [Fact]
-    public void Invoke_CallsAllContributors()
+    public async Task Invoke_CallsAllContributors()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
         var contributors = new List<IInfoContributor>
         {
-            new TestContrib(),
-            new TestContrib(),
-            new TestContrib()
+            new TestContributor(),
+            new TestContributor(),
+            new TestContributor()
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpoint>();
+        var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        ep.Invoke();
+        await handler.InvokeAsync(null, CancellationToken.None);
 
-        foreach (IInfoContributor contrib in contributors)
+        foreach (IInfoContributor contributor in contributors)
         {
-            var tcc = (TestContrib)contrib;
-            Assert.True(tcc.Called);
+            var testContributor = (TestContributor)contributor;
+            Assert.True(testContributor.Called);
         }
     }
 
     [Fact]
-    public void Invoke_HandlesExceptions()
+    public async Task Invoke_HandlesExceptions()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
         var contributors = new List<IInfoContributor>
         {
-            new TestContrib(),
-            new TestContrib(true),
-            new TestContrib()
+            new TestContributor(),
+            new TestContributor(true),
+            new TestContributor()
         };
 
-        tc.AdditionalServices = (services, configuration) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddInfoActuatorServices();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
-        var ep = tc.GetService<IInfoEndpoint>();
+        var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
-        ep.Invoke();
+        await handler.InvokeAsync(null, CancellationToken.None);
 
-        foreach (IInfoContributor contrib in contributors)
+        foreach (IInfoContributor contributor in contributors)
         {
-            var tcc = (TestContrib)contrib;
+            var testContributor = (TestContributor)contributor;
 
-            if (tcc.Throws)
+            if (testContributor.Throws)
             {
-                Assert.False(tcc.Called);
+                Assert.False(testContributor.Called);
             }
             else
             {
-                Assert.True(tcc.Called);
+                Assert.True(testContributor.Called);
             }
         }
     }

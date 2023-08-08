@@ -7,20 +7,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.ThreadDump;
-using Steeltoe.Management.Endpoint.Trace;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ActuatorRouteBuilderExtensionsTest
+public sealed class ActuatorRouteBuilderExtensionsTest
 {
     [Fact]
     public async Task MapTestAuthSuccess()
@@ -38,21 +36,24 @@ public class ActuatorRouteBuilderExtensionsTest
 
     private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction)
     {
-        return new HostBuilder().AddDynamicLogging().ConfigureServices((context, s) =>
+        var appSettings = new Dictionary<string, string?>
         {
-            s.AddTraceActuator(MediaTypeVersion.V1);
-            s.AddThreadDumpActuator(MediaTypeVersion.V1);
-            s.AddCloudFoundryActuator();
-            s.AddAllActuators();
-            s.AddRouting();
+            { "management:endpoints:actuator:exposure:include:0", "*" }
+        };
 
-            s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+        return new HostBuilder().AddDynamicLogging().ConfigureServices((_, services) =>
+        {
+            services.AddAllActuators();
+            services.AddRouting();
+            services.AddActionDescriptorCollectionProvider();
+
+            services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.AuthenticationScheme, _ =>
                 {
                 });
 
-            s.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
-            s.AddServerSideBlazor();
+            services.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
+            services.AddServerSideBlazor();
         }).ConfigureWebHost(builder =>
         {
             builder.Configure(app => app.UseRouting().UseAuthentication().UseAuthorization().UseEndpoints(endpoints =>
@@ -60,13 +61,7 @@ public class ActuatorRouteBuilderExtensionsTest
                 endpoints.MapAllActuators().RequireAuthorization("TestAuth");
                 endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
             })).UseTestServer();
-        });
-    }
-
-    private static ManagementEndpointOptions GetManagementContext(IServiceProvider services)
-    {
-        var mgmtOptions = services.GetService<IOptionsMonitor<ManagementEndpointOptions>>();
-        return mgmtOptions.Get(ActuatorContext.Name);
+        }).ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
     }
 
     private async Task ActAndAssertAsync(IHostBuilder hostBuilder, bool expectedSuccess)
@@ -74,15 +69,24 @@ public class ActuatorRouteBuilderExtensionsTest
         using IHost host = await hostBuilder.StartAsync();
         using TestServer server = host.GetTestServer();
 
-        IEnumerable<IEndpointOptions> optionsCollection = host.Services.GetServices<IEndpointOptions>();
+        IEnumerable<EndpointOptions> optionsCollection = host.Services.GetServices<EndpointOptions>();
 
-        foreach (IEndpointOptions options in optionsCollection)
+        foreach (EndpointOptions options in optionsCollection)
         {
-            string path = options.GetContextPath(GetManagementContext(host.Services));
-
+            ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
+            string path = options.GetPathMatchPattern(managementOptions, managementOptions.Path);
+            path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
             Assert.NotNull(path);
+            HttpResponseMessage response;
 
-            HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
+            if (options.AllowedVerbs.Contains("Get"))
+            {
+                response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
+            }
+            else
+            {
+                response = await server.CreateClient().PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null);
+            }
 
             Assert.True(expectedSuccess == response.IsSuccessStatusCode,
                 $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {options}");

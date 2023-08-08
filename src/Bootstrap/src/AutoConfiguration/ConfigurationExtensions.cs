@@ -14,7 +14,11 @@ internal static class ConfigurationExtensions
     {
         ArgumentGuard.NotNull(configuration);
 
-        var options = new WavefrontExporterOptions(configuration);
+        var options = new WavefrontExporterOptions();
+
+        var configurer = new ConfigureWavefrontExporterOptions(configuration);
+        configurer.Configure(options);
+
         return !string.IsNullOrEmpty(options.Uri);
     }
 }

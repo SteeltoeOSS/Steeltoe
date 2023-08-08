@@ -4,8 +4,10 @@
 
 namespace Steeltoe.Management.Prometheus;
 
-public class PrometheusEndpointOptions : EndpointOptionsBase
+public sealed class PrometheusEndpointOptions : EndpointOptions
 {
-    public long ScrapeResponseCacheDurationMilliseconds { get; set; }
-    public override bool ExactMatch => false;
+    public override bool RequiresExactMatch()
+    {
+        return false;
+    }
 }

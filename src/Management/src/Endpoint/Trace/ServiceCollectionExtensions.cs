@@ -29,24 +29,19 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddTraceActuatorServices(this IServiceCollection services, MediaTypeVersion version)
     {
         ArgumentGuard.NotNull(services);
+
         services.ConfigureEndpointOptions<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
+        services.AddSingleton<HttpTraceEndpointHandler>();
 
-        switch (version)
+        services.TryAddSingleton<IHttpTraceEndpointHandler>(provider =>
         {
-            case MediaTypeVersion.V1:
-                services.TryAddSingleton<ITraceEndpoint, TraceEndpoint>();
+            var handler = provider.GetRequiredService<HttpTraceEndpointHandler>();
+            handler.Version = version;
+            return handler;
+        });
 
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, TraceEndpointMiddleware>());
-                services.AddSingleton<TraceEndpointMiddleware>();
-                break;
-            default:
-
-                services.TryAddSingleton<IHttpTraceEndpoint, HttpTraceEndpoint>();
-
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, HttpTraceEndpointMiddleware>());
-                services.AddSingleton<HttpTraceEndpointMiddleware>();
-                break;
-        }
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, HttpTraceEndpointMiddleware>());
+        services.AddSingleton<HttpTraceEndpointMiddleware>();
 
         return services;
     }

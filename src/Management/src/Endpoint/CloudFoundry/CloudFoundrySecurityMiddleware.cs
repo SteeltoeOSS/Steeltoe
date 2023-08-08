@@ -3,47 +3,57 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class CloudFoundrySecurityMiddleware
+public sealed class CloudFoundrySecurityMiddleware
 {
-    private readonly RequestDelegate _next;
+    private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
+    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
+    private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
+    private readonly RequestDelegate? _next;
     private readonly ILogger<CloudFoundrySecurityMiddleware> _logger;
-    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _options;
+    private readonly SecurityUtils _securityUtils;
 
-    private readonly ManagementEndpointOptions _managementOptions;
-
-    private readonly SecurityUtils _base;
-
-    public CloudFoundrySecurityMiddleware(RequestDelegate next, IOptionsMonitor<CloudFoundryEndpointOptions> options,
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger)
+    public CloudFoundrySecurityMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection, RequestDelegate? next,
+        ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(managementOptionsMonitor);
+        ArgumentGuard.NotNull(endpointOptionsMonitor);
+        ArgumentGuard.NotNull(endpointOptionsCollection);
+        ArgumentGuard.NotNull(loggerFactory);
+
+        _managementOptionsMonitor = managementOptionsMonitor;
+        _endpointOptionsMonitor = endpointOptionsMonitor;
+
+        _endpointOptionsCollection = endpointOptionsCollection
+            .Where(options => options is not HypermediaEndpointOptions && options is not CloudFoundryEndpointOptions).ToList();
 
         _next = next;
-        _logger = logger;
-        _options = options;
-        _managementOptions = managementOptions.Get(CFContext.Name);
-
-        _base = new SecurityUtils(options.CurrentValue, managementOptions.Get(CFContext.Name), logger);
+        _logger = loggerFactory.CreateLogger<CloudFoundrySecurityMiddleware>();
+        _securityUtils = new SecurityUtils(endpointOptionsMonitor.CurrentValue, loggerFactory.CreateLogger<SecurityUtils>());
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        CloudFoundryEndpointOptions cfOptions = _options.CurrentValue;
-        CloudFoundryEndpointOptions endpointOptions = _options.CurrentValue;
-        _logger.LogDebug("InvokeAsync({requestPath}), contextPath: {contextPath}", context.Request.Path.Value, _managementOptions.Path);
+        ArgumentGuard.NotNull(context);
 
-        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptions) && _base.IsCloudFoundryRequest(context.Request.Path))
+        _logger.LogDebug("InvokeAsync({requestPath})", context.Request.Path.Value);
+        CloudFoundryEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
+
+        if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) &&
+            SecurityUtils.IsCloudFoundryRequest(context.Request.Path))
         {
-            if (string.IsNullOrEmpty(cfOptions.ApplicationId))
+            if (string.IsNullOrEmpty(endpointOptions.ApplicationId))
             {
                 _logger.LogCritical(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
@@ -53,40 +63,41 @@ public class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            if (string.IsNullOrEmpty(cfOptions.CloudFoundryApi))
+            if (string.IsNullOrEmpty(endpointOptions.CloudFoundryApi))
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityUtils.CloudfoundryApiMissingMessage));
 
                 return;
             }
 
-            IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
+            EndpointOptions? targetEndpointOptions = FindTargetEndpoint(context.Request.Path);
 
-            if (target == null)
+            if (targetEndpointOptions == null)
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityUtils.EndpointNotConfiguredMessage));
 
                 return;
             }
 
-            SecurityResult sr = await GetPermissionsAsync(context);
+            SecurityResult givenPermissions = await GetPermissionsAsync(context);
 
-            if (sr.Code != HttpStatusCode.OK)
+            if (givenPermissions.Code != HttpStatusCode.OK)
             {
-                await ReturnErrorAsync(context, sr);
+                await ReturnErrorAsync(context, givenPermissions);
                 return;
             }
 
-            Permissions permissions = sr.Permissions;
-
-            if (!target.IsAccessAllowed(permissions))
+            if (targetEndpointOptions.RequiredPermissions > givenPermissions.Permissions)
             {
                 await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, SecurityUtils.AccessDeniedMessage));
                 return;
             }
         }
 
-        await _next(context);
+        if (_next != null)
+        {
+            await _next(context);
+        }
     }
 
     internal string GetAccessToken(HttpRequest request)
@@ -101,67 +112,64 @@ public class CloudFoundrySecurityMiddleware
             }
         }
 
-        return null;
+        return string.Empty;
     }
 
     internal Task<SecurityResult> GetPermissionsAsync(HttpContext context)
     {
-        string token = GetAccessToken(context.Request);
-        return _base.GetPermissionsAsync(token);
+        string accessToken = GetAccessToken(context.Request);
+        return _securityUtils.GetPermissionsAsync(accessToken, context.RequestAborted);
     }
 
-    private IEndpointOptions FindTargetEndpoint(PathString path)
+    private EndpointOptions? FindTargetEndpoint(PathString requestPath)
     {
-        List<IEndpointOptions> configEndpoints;
-
-        configEndpoints = _managementOptions.EndpointOptions;
-
-        foreach (IEndpointOptions ep in configEndpoints)
+        foreach (EndpointOptions endpointOptions in _endpointOptionsCollection)
         {
-            string contextPath = _managementOptions.Path;
+            string basePath = ConfigureManagementOptions.DefaultCloudFoundryPath;
 
-            if (!contextPath.EndsWith('/') && !string.IsNullOrEmpty(ep.Path))
+            if (!string.IsNullOrEmpty(endpointOptions.Path))
             {
-                contextPath += '/';
+                basePath += '/';
             }
 
-            string fullPath = contextPath + ep.Path;
-
-            if (ep is CloudFoundryEndpointOptions)
+            if (endpointOptions is CloudFoundryEndpointOptions)
             {
-                if (path.Value.Equals(contextPath, StringComparison.OrdinalIgnoreCase))
+                if (requestPath.Equals(basePath))
                 {
-                    return ep;
+                    return endpointOptions;
                 }
             }
-            else if (path.StartsWithSegments(new PathString(fullPath)))
+            else
             {
-                return ep;
+                if (requestPath.StartsWithSegments(basePath + endpointOptions.Path))
+                {
+                    return endpointOptions;
+                }
             }
         }
 
         return null;
     }
 
-    private Task ReturnErrorAsync(HttpContext context, SecurityResult error)
+    private async Task ReturnErrorAsync(HttpContext context, SecurityResult error)
     {
         LogError(context, error);
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
 
         // allowing override of 400-level errors is more likely to cause confusion than to be useful
-        if (_managementOptions.UseStatusCodeFromResponse || (int)error.Code < 500)
+        if (_managementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse || (int)error.Code < 500)
         {
             context.Response.StatusCode = (int)error.Code;
         }
 
-        return context.Response.WriteAsync(_base.Serialize(error));
+        await JsonSerializer.SerializeAsync(context.Response.Body, error, cancellationToken: context.RequestAborted);
     }
 
     private void LogError(HttpContext context, SecurityResult error)
     {
         _logger.LogError("Actuator Security Error: {code} - {message}", error.Code, error.Message);
 
-        if (_logger != null && _logger.IsEnabled(LogLevel.Trace))
+        if (_logger.IsEnabled(LogLevel.Trace))
         {
             foreach (KeyValuePair<string, StringValues> header in context.Request.Headers)
             {

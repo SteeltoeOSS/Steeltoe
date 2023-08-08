@@ -10,17 +10,31 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ContentNegotiation;
 
-public static class ContentNegotiationExtensions
+internal static class ContentNegotiationExtensions
 {
-    public static void HandleContentNegotiation(this HttpContext context, ILogger logger)
+    internal static void HandleContentNegotiation(this HttpContext context, ILogger logger)
     {
-        context.Response.Headers.SetContentType(context.Request.Headers, logger);
-    }
-
-    public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
-    {
+        ArgumentGuard.NotNull(context);
         ArgumentGuard.NotNull(logger);
 
+        SetContentType(context.Response.Headers, context.Request.Headers, logger);
+    }
+
+    private static void SetContentType(IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger,
+        MediaTypeVersion version = MediaTypeVersion.V2)
+    {
+        var headers = new RequestHeaders(requestHeaders);
+        List<string> acceptMediaTypes = headers.Accept.Select(header => header.MediaType.Value!).ToList();
+
+        string contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
+
+        responseHeaders.Add("Content-Type", contentType);
+
+        LogContentType(logger, requestHeaders, contentType);
+    }
+
+    private static void LogContentType(ILogger logger, IHeaderDictionary requestHeaders, string contentType)
+    {
         logger.LogTrace("setting contentType to {type}", contentType);
         bool? logTrace = logger.IsEnabled(LogLevel.Trace);
 
@@ -31,18 +45,5 @@ public static class ContentNegotiationExtensions
                 logger.LogTrace("Header: {key} - {value}", header.Key, header.Value);
             }
         }
-    }
-
-    public static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger,
-        MediaTypeVersion version = MediaTypeVersion.V2)
-    {
-        var headers = new RequestHeaders(requestHeaders);
-        List<string> acceptMediaTypes = headers.Accept?.Select(x => x.MediaType.Value).ToList();
-
-        string contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
-
-        responseHeaders.Add("Content-Type", contentType);
-
-        logger.LogContentType(requestHeaders, contentType);
     }
 }

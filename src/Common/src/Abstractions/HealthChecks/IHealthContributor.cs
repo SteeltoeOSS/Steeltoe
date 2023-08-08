@@ -18,7 +18,7 @@ public interface IHealthContributor
     /// Check the health of a resource.
     /// </summary>
     /// <returns>
-    /// The result of checking the health of a resource.
+    /// The result of checking the health of a resource, or <c>null</c> if this health check is currently disabled.
     /// </returns>
     HealthCheckResult Health();
 }

@@ -3,27 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class TraceStartup
+public sealed class TraceStartup
 {
-    public IConfiguration Configuration { get; }
-
-    public TraceStartup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
         services.AddHypermediaActuator();
-        services.AddTraceActuator(Configuration);
+        services.AddTraceActuator();
     }
 
     public void Configure(IApplicationBuilder app)

@@ -13,13 +13,13 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class AspNetCoreHostingObserverTest : BaseTest
+public sealed class AspNetCoreHostingObserverTest : BaseTest
 {
     [Fact]
     public void ShouldIgnore_ReturnsExpected()
     {
         IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
+        var observer = new AspNetCoreHostingObserver(options, NullLoggerFactory.Instance);
 
         Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/info"));
         Assert.True(observer.ShouldIgnoreRequest("/cloudfoundryapplication/health"));
@@ -40,7 +40,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void GetException_ReturnsExpected()
     {
         IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
+        var observer = new AspNetCoreHostingObserver(options, NullLoggerFactory.Instance);
 
         HttpContext context = GetHttpRequestMessage();
         string exception = observer.GetException(context);
@@ -48,10 +48,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
 
         context = GetHttpRequestMessage();
 
-        var exceptionHandlerFeature = new ExceptionHandlerFeature
-        {
-            Error = new Exception()
-        };
+        var exceptionHandlerFeature = new ExceptionHandlerFeature(new Exception());
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
         exception = observer.GetException(context);
@@ -62,32 +59,24 @@ public class AspNetCoreHostingObserverTest : BaseTest
     public void GetLabelSets_ReturnsExpected()
     {
         IOptionsMonitor<MetricsObserverOptions> options = GetOptionsMonitorFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
-        var observer = new AspNetCoreHostingObserver(options, NullLogger<AspNetCoreHostingObserver>.Instance);
+        var observer = new AspNetCoreHostingObserver(options, NullLoggerFactory.Instance);
 
         HttpContext context = GetHttpRequestMessage();
 
-        var exceptionHandlerFeature = new ExceptionHandlerFeature
-        {
-            Error = new Exception()
-        };
+        var exceptionHandlerFeature = new ExceptionHandlerFeature(new Exception());
 
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
         context.Response.StatusCode = 404;
 
-        List<KeyValuePair<string, object>> tagContext = observer.GetLabelSets(context).ToList();
+        List<KeyValuePair<string, object?>> tagContext = observer.GetLabelSets(context).ToList();
 
-        Assert.Contains(KeyValuePair.Create("exception", (object)"Exception"), tagContext);
-        Assert.Contains(KeyValuePair.Create("uri", (object)"/foobar"), tagContext);
-        Assert.Contains(KeyValuePair.Create("status", (object)"404"), tagContext);
-        Assert.Contains(KeyValuePair.Create("method", (object)"GET"), tagContext);
+        Assert.Contains(KeyValuePair.Create("exception", (object?)"Exception"), tagContext);
+        Assert.Contains(KeyValuePair.Create("uri", (object?)"/foobar"), tagContext);
+        Assert.Contains(KeyValuePair.Create("status", (object?)"404"), tagContext);
+        Assert.Contains(KeyValuePair.Create("method", (object?)"GET"), tagContext);
     }
 
-    private HttpContext GetHttpRequestMessage()
-    {
-        return GetHttpRequestMessage("GET", "/foobar");
-    }
-
-    private HttpContext GetHttpRequestMessage(string method, string path)
+    private HttpContext GetHttpRequestMessage(string method = "GET", string path = "/foobar")
     {
         HttpContext context = new DefaultHttpContext
         {
@@ -98,7 +87,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
         context.Response.Body = new MemoryStream();
 
         context.Request.Method = method;
-        context.Request.Path = new PathString(path);
+        context.Request.Path = path;
         context.Request.Scheme = "http";
 
         context.Request.Host = new HostString("localhost", 5555);
@@ -107,6 +96,11 @@ public class AspNetCoreHostingObserverTest : BaseTest
 
     private sealed class ExceptionHandlerFeature : IExceptionHandlerFeature
     {
-        public Exception Error { get; set; }
+        public Exception Error { get; }
+
+        public ExceptionHandlerFeature(Exception error)
+        {
+            Error = error;
+        }
     }
 }

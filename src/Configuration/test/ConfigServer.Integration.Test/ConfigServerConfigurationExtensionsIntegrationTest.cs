@@ -153,8 +153,8 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", vcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
 
         const string appSettings = @"
                 {
@@ -179,20 +179,12 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                 configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
             });
 
-        try
-        {
-            // Act and Assert (TestServer expects Spring Cloud Config Server to be running @ localhost:8888)
-            using var server = new TestServer(builder);
-            using HttpClient client = server.CreateClient();
-            string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
+        // Act and Assert (TestServer expects Spring Cloud Config Server to be running @ localhost:8888)
+        using var server = new TestServer(builder);
+        using HttpClient client = server.CreateClient();
+        string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
 
-            Assert.Equal("spam" + "from foo development" + "Spring Cloud Samples" + "https://github.com/spring-cloud-samples", result);
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-        }
+        Assert.Equal("spam" + "from foo development" + "Spring Cloud Samples" + "https://github.com/spring-cloud-samples", result);
     }
 
     [Fact(Skip = "Requires matching PCF environment with SCCS provisioned")]
@@ -243,8 +235,8 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                     ]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", vcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
 
         const string appSettings = @"
                 {
@@ -269,20 +261,12 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
                 configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
             });
 
-        try
-        {
-            // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
-            using var server = new TestServer(builder);
-            using HttpClient client = server.CreateClient();
-            string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
+        // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
+        using var server = new TestServer(builder);
+        using HttpClient client = server.CreateClient();
+        string result = await client.GetStringAsync(new Uri("http://localhost/Home/VerifyAsInjectedOptions"));
 
-            Assert.Equal("spam" + "barcelona" + "Spring Cloud Samples" + "https://github.com/spring-cloud-samples", result);
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-        }
+        Assert.Equal("spam" + "barcelona" + "Spring Cloud Samples" + "https://github.com/spring-cloud-samples", result);
     }
 
     [Fact(Skip = "Config Server image needs to be enhanced to support discovery-first")]

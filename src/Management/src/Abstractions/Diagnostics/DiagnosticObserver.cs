@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 
@@ -10,23 +11,21 @@ namespace Steeltoe.Management.Diagnostics;
 
 public abstract class DiagnosticObserver : IDiagnosticObserver
 {
-    protected ILogger Logger { get; }
-
-    protected IDisposable Subscription { get; set; }
+    private readonly ILogger _logger;
+    private IDisposable? _subscription;
 
     public string ListenerName { get; }
-
     public string ObserverName { get; }
 
-    protected DiagnosticObserver(string name, string listenerName, ILogger logger)
+    protected DiagnosticObserver(string name, string listenerName, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNullOrEmpty(name);
         ArgumentGuard.NotNullOrEmpty(listenerName);
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
 
         ObserverName = name;
         ListenerName = listenerName;
-        Logger = logger;
+        _logger = loggerFactory.CreateLogger<DiagnosticObserver>();
     }
 
     public void Dispose()
@@ -39,24 +38,26 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     {
         if (disposing)
         {
-            Subscription?.Dispose();
-            Subscription = null;
+            _subscription?.Dispose();
+            _subscription = null;
 
-            Logger.LogInformation("DiagnosticObserver {observer} Disposed", ObserverName);
+            _logger.LogInformation("DiagnosticObserver {observer} Disposed", ObserverName);
         }
     }
 
     public void Subscribe(DiagnosticListener listener)
     {
+        ArgumentGuard.NotNull(listener);
+
         if (ListenerName == listener.Name)
         {
-            if (Subscription != null)
+            if (_subscription != null)
             {
                 Dispose();
             }
 
-            Subscription = listener.Subscribe(this);
-            Logger.LogInformation("DiagnosticObserver {observer} Subscribed to {listener}", ObserverName, listener.Name);
+            _subscription = listener.Subscribe(this);
+            _logger.LogInformation("DiagnosticObserver {observer} Subscribed to {listener}", ObserverName, listener.Name);
         }
     }
 
@@ -68,17 +69,32 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     {
     }
 
-    public virtual void OnNext(KeyValuePair<string, object> @event)
+    public virtual void OnNext(KeyValuePair<string, object?> @event)
     {
         try
         {
             ProcessEvent(@event.Key, @event.Value);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Logger.LogError(e, "ProcessEvent exception: {Id}", @event.Key);
+            _logger.LogError(exception, "Failed to process event {Id}", @event.Key);
         }
     }
 
-    public abstract void ProcessEvent(string eventName, object value);
+    public abstract void ProcessEvent(string eventName, object? value);
+
+    private protected static T? GetPropertyOrDefault<T>(object instance, string name)
+    {
+        ArgumentGuard.NotNull(instance);
+        ArgumentGuard.NotNull(name);
+
+        PropertyInfo? property = instance.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+
+        if (property == null)
+        {
+            return default;
+        }
+
+        return (T?)property.GetValue(instance);
+    }
 }

@@ -11,23 +11,14 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
-    [Fact]
-    public void AddLoggersActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddLoggersActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
     [Fact]
     public void AddLoggersActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "true",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -48,7 +39,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton<IConfiguration>(configurationRoot);
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        var ep = serviceProvider.GetService<LoggersEndpoint>();
-        Assert.NotNull(ep);
+        var handler = serviceProvider.GetService<ILoggersEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

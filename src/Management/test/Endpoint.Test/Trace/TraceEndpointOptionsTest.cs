@@ -8,31 +8,31 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 
-public class TraceEndpointOptionsTest : BaseTest
+public sealed class TraceEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<TraceEndpointOptions>();
-        Assert.Null(opts.Enabled);
-        Assert.Equal("httptrace", opts.Id);
-        Assert.Equal(100, opts.Capacity);
-        Assert.True(opts.AddTimeTaken);
-        Assert.True(opts.AddRequestHeaders);
-        Assert.True(opts.AddResponseHeaders);
-        Assert.False(opts.AddPathInfo);
-        Assert.False(opts.AddUserPrincipal);
-        Assert.False(opts.AddParameters);
-        Assert.False(opts.AddQueryString);
-        Assert.False(opts.AddAuthType);
-        Assert.False(opts.AddRemoteAddress);
-        Assert.False(opts.AddSessionId);
+        var options = GetOptionsFromSettings<TraceEndpointOptions>();
+        Assert.Null(options.Enabled);
+        Assert.Equal("httptrace", options.Id);
+        Assert.Equal(100, options.Capacity);
+        Assert.True(options.AddTimeTaken);
+        Assert.True(options.AddRequestHeaders);
+        Assert.True(options.AddResponseHeaders);
+        Assert.False(options.AddPathInfo);
+        Assert.False(options.AddUserPrincipal);
+        Assert.False(options.AddParameters);
+        Assert.False(options.AddQueryString);
+        Assert.False(options.AddAuthType);
+        Assert.False(options.AddRemoteAddress);
+        Assert.False(options.AddSessionId);
     }
 
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -53,27 +53,30 @@ public class TraceEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        TraceEndpointOptions opts = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>(appsettings).Get(string.Empty);
-        CloudFoundryEndpointOptions cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
+        TraceEndpointOptions endpointOptions =
+            GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>(appsettings).Get(string.Empty);
 
-        Assert.True(cloudOpts.Enabled);
-        Assert.Equal(string.Empty, cloudOpts.Id);
-        Assert.Equal(string.Empty, cloudOpts.Path);
-        Assert.True(cloudOpts.ValidateCertificates);
+        CloudFoundryEndpointOptions cloudFoundryEndpointOptions =
+            GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
 
-        Assert.True(opts.Enabled);
-        Assert.Equal("httptrace", opts.Id);
-        Assert.Equal("httptrace", opts.Path);
-        Assert.Equal(1000, opts.Capacity);
-        Assert.False(opts.AddTimeTaken);
-        Assert.False(opts.AddRequestHeaders);
-        Assert.False(opts.AddResponseHeaders);
-        Assert.True(opts.AddPathInfo);
-        Assert.True(opts.AddUserPrincipal);
-        Assert.True(opts.AddParameters);
-        Assert.True(opts.AddQueryString);
-        Assert.True(opts.AddAuthType);
-        Assert.True(opts.AddRemoteAddress);
-        Assert.True(opts.AddSessionId);
+        Assert.True(cloudFoundryEndpointOptions.Enabled);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Path);
+        Assert.True(cloudFoundryEndpointOptions.ValidateCertificates);
+
+        Assert.True(endpointOptions.Enabled);
+        Assert.Equal("httptrace", endpointOptions.Id);
+        Assert.Equal("httptrace", endpointOptions.Path);
+        Assert.Equal(1000, endpointOptions.Capacity);
+        Assert.False(endpointOptions.AddTimeTaken);
+        Assert.False(endpointOptions.AddRequestHeaders);
+        Assert.False(endpointOptions.AddResponseHeaders);
+        Assert.True(endpointOptions.AddPathInfo);
+        Assert.True(endpointOptions.AddUserPrincipal);
+        Assert.True(endpointOptions.AddParameters);
+        Assert.True(endpointOptions.AddQueryString);
+        Assert.True(endpointOptions.AddAuthType);
+        Assert.True(endpointOptions.AddRemoteAddress);
+        Assert.True(endpointOptions.AddSessionId);
     }
 }

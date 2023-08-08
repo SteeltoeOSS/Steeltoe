@@ -4,42 +4,41 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
+internal sealed class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
 {
     public override HealthEndpointResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     public override void Write(Utf8JsonWriter writer, HealthEndpointResponse value, JsonSerializerOptions options)
     {
+        ArgumentGuard.NotNull(writer);
+
         writer.WriteStartObject();
+        writer.WriteString("status", value.Status.ToString());
 
-        if (value is { } health)
+        if (!string.IsNullOrEmpty(value.Description))
         {
-            writer.WriteString("status", health.Status.ToString());
+            writer.WriteString("description", value.Description);
+        }
 
-            if (!string.IsNullOrEmpty(health.Description))
+        if (value.Details != null && value.Details.Count > 0)
+        {
+            writer.WritePropertyName("components");
+            writer.WriteStartObject();
+
+            foreach (KeyValuePair<string, object> detail in value.Details)
             {
-                writer.WriteString("description", health.Description);
+                writer.WritePropertyName(detail.Key);
+                JsonSerializer.Serialize(writer, detail.Value, options);
             }
 
-            if (health.Details != null && health.Details.Count > 0)
-            {
-                writer.WritePropertyName("components");
-                writer.WriteStartObject();
-
-                foreach (KeyValuePair<string, object> detail in health.Details)
-                {
-                    writer.WritePropertyName(detail.Key);
-                    JsonSerializer.Serialize(writer, detail.Value, options);
-                }
-
-                writer.WriteEndObject();
-            }
+            writer.WriteEndObject();
         }
 
         writer.WriteEndObject();

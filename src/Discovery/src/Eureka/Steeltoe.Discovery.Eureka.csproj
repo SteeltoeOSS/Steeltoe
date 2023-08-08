@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\src\Abstractions\Steeltoe.Connector.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\Abstractions\Steeltoe.Connectors.Abstractions.csproj" />
     <ProjectReference Include="..\Client\Steeltoe.Discovery.Client.csproj" />
   </ItemGroup>
 </Project>

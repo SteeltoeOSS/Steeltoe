@@ -15,7 +15,7 @@ using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Connector;
+using Steeltoe.Connectors.CloudFoundry;
 using Steeltoe.Discovery.Client.SimpleClients;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;

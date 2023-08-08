@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.TestResources;
 
-public class TestOptionsMonitor<T> : IOptionsMonitor<T>
+public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
 {
     public T CurrentValue { get; }
 
@@ -22,6 +22,6 @@ public class TestOptionsMonitor<T> : IOptionsMonitor<T>
 
     public IDisposable OnChange(Action<T, string> listener)
     {
-        throw new NotImplementedException();
+        return EmptyDisposable.Instance;
     }
 }

@@ -6,7 +6,7 @@ namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
 internal sealed class EnvironmentServiceBindingsReader : IServiceBindingsReader
 {
-    public string GetServiceBindingsJson()
+    public string? GetServiceBindingsJson()
     {
         return Environment.GetEnvironmentVariable("VCAP_SERVICES");
     }

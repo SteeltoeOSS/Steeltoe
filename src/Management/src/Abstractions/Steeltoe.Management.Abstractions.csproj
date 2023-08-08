@@ -3,8 +3,9 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Management</RootNamespace>
     <Description>Abstractions for application management and monitoring</Description>
-    <PackageTags></PackageTags>
+    <PackageTags>management;monitoring</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

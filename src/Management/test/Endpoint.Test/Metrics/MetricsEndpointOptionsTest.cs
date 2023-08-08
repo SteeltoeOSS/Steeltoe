@@ -7,20 +7,20 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class MetricsEndpointOptionsTest : BaseTest
+public sealed class MetricsEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<MetricsEndpointOptions>();
-        Assert.Null(opts.Enabled);
-        Assert.Equal("metrics", opts.Id);
+        var options = GetOptionsFromSettings<MetricsEndpointOptions>();
+        Assert.Null(options.Enabled);
+        Assert.Equal("metrics", options.Id);
     }
 
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
@@ -28,8 +28,8 @@ public class MetricsEndpointOptionsTest : BaseTest
             ["management:endpoints:metrics:id"] = "metricsmanagement"
         };
 
-        MetricsEndpointOptions opts = GetOptionsFromSettings<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>(appsettings);
-        Assert.False(opts.Enabled);
-        Assert.Equal("metricsmanagement", opts.Id);
+        MetricsEndpointOptions options = GetOptionsFromSettings<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>(appsettings);
+        Assert.False(options.Enabled);
+        Assert.Equal("metricsmanagement", options.Id);
     }
 }

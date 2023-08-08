@@ -11,18 +11,15 @@ namespace Steeltoe.Management.Wavefront.Exporters;
 
 public static class WavefrontTraceExtensions
 {
-    public static TracerProviderBuilder AddWavefrontTraceExporter(this TracerProviderBuilder builder, IWavefrontExporterOptions options,
+    public static TracerProviderBuilder AddWavefrontTraceExporter(this TracerProviderBuilder builder, WavefrontExporterOptions options,
         ILogger<WavefrontTraceExporter> logger)
     {
+        ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
 
-        if (options is not WavefrontExporterOptions exporterOptions)
-        {
-            throw new ArgumentException($"Options must be convertible to {nameof(WavefrontExporterOptions)}.", nameof(options));
-        }
+        var exporter = new WavefrontTraceExporter(options, logger);
 
-        var exporter = new WavefrontTraceExporter(exporterOptions, logger);
-
-        return builder.AddProcessor(new BatchActivityExportProcessor(exporter, exporterOptions.MaxQueueSize, exporterOptions.Step));
+        return builder.AddProcessor(new BatchActivityExportProcessor(exporter, options.MaxQueueSize, options.Step));
     }
 }

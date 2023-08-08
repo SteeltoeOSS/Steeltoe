@@ -10,102 +10,110 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.MetricCollectors;
-using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public class HttpClientCoreObserver : MetricsObserver
+internal sealed class HttpClientCoreObserver : MetricsObserver
 {
     private const string StatusTagKey = "status";
     private const string UriTagKey = "uri";
     private const string MethodTagKey = "method";
     private const string ClientTagKey = "clientName";
-    internal const string DiagnosticName = "HttpHandlerDiagnosticListener";
-    internal const string DefaultObserverName = "HttpClientCoreObserver";
+    private const string DiagnosticName = "HttpHandlerDiagnosticListener";
+    private const string DefaultObserverName = "HttpClientCoreObserver";
 
-    internal const string StopEvent = "System.Net.Http.HttpRequestOut.Stop";
-    internal const string ExceptionEvent = "System.Net.Http.Exception";
+    private const string StopEventName = "System.Net.Http.HttpRequestOut.Stop";
+    private const string ExceptionEvent = "System.Net.Http.Exception";
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
+    private readonly ILogger _logger;
 
-    public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> options, ILogger<HttpClientCoreObserver> logger)
-        : base(DefaultObserverName, DiagnosticName, logger)
+    public HttpClientCoreObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILoggerFactory loggerFactory)
+        : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
-        SetPathMatcher(new Regex(options.CurrentValue.EgressIgnorePattern));
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        string? egressIgnorePattern = optionsMonitor.CurrentValue.EgressIgnorePattern;
+
+        if (egressIgnorePattern != null)
+        {
+            SetPathMatcher(new Regex(egressIgnorePattern));
+        }
+
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.count");
+        _logger = loggerFactory.CreateLogger<HttpClientCoreObserver>();
     }
 
-    public override void ProcessEvent(string eventName, object value)
+    public override void ProcessEvent(string eventName, object? value)
     {
         if (value == null)
         {
             return;
         }
 
-        Activity current = Activity.Current;
+        Activity? current = Activity.Current;
 
         if (current == null)
         {
             return;
         }
 
-        var request = DiagnosticHelpers.GetProperty<HttpRequestMessage>(value, "Request");
+        var request = GetPropertyOrDefault<HttpRequestMessage>(value, "Request");
 
         if (request == null)
         {
             return;
         }
 
-        if (eventName == StopEvent)
+        if (eventName == StopEventName)
         {
-            Logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-            var response = DiagnosticHelpers.GetProperty<HttpResponseMessage>(value, "Response");
-            var requestStatus = DiagnosticHelpers.GetProperty<TaskStatus>(value, "RequestTaskStatus");
+            var response = GetPropertyOrDefault<HttpResponseMessage>(value, "Response");
+            var requestStatus = GetPropertyOrDefault<TaskStatus>(value, "RequestTaskStatus");
             HandleStopEvent(current, request, response, requestStatus);
 
-            Logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
         else if (eventName == ExceptionEvent)
         {
-            Logger.LogTrace("HandleExceptionEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleExceptionEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
             HandleExceptionEvent(current, request);
 
-            Logger.LogTrace("HandleExceptionEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleExceptionEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
         }
     }
 
-    protected internal void HandleExceptionEvent(Activity current, HttpRequestMessage request)
+    private void HandleExceptionEvent(Activity current, HttpRequestMessage request)
     {
         HandleStopEvent(current, request, null, TaskStatus.Faulted);
     }
 
-    protected internal void HandleStopEvent(Activity current, HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+    private void HandleStopEvent(Activity current, HttpRequestMessage request, HttpResponseMessage? response, TaskStatus taskStatus)
     {
-        if (ShouldIgnoreRequest(request.RequestUri.AbsolutePath))
+        if (ShouldIgnoreRequest(request.RequestUri?.AbsolutePath))
         {
-            Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri.AbsolutePath));
+            _logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri?.AbsolutePath));
             return;
         }
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            IEnumerable<KeyValuePair<string, object>> labels = GetLabels(request, response, taskStatus);
-            _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels.AsReadonlySpan());
-            _clientCountMeasure.Record(1, labels.AsReadonlySpan());
+            ReadOnlySpan<KeyValuePair<string, object?>> labels = GetLabels(request, response, taskStatus).AsReadonlySpan();
+            _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels);
+            _clientCountMeasure.Record(1, labels);
         }
     }
 
-    protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
+    private IDictionary<string, object?> GetLabels(HttpRequestMessage request, HttpResponseMessage? response, TaskStatus taskStatus)
     {
-        string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
+        string uri = request.RequestUri!.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
         string statusCode = GetStatusCode(response, taskStatus);
         string clientName = request.RequestUri.GetComponents(UriComponents.HostAndPort, UriFormat.UriEscaped);
 
-        return new Dictionary<string, object>
+        return new Dictionary<string, object?>
         {
             { UriTagKey, uri },
             { StatusTagKey, statusCode },
@@ -114,12 +122,12 @@ public class HttpClientCoreObserver : MetricsObserver
         };
     }
 
-    protected internal string GetStatusCode(HttpResponseMessage response, TaskStatus taskStatus)
+    private string GetStatusCode(HttpResponseMessage? response, TaskStatus taskStatus)
     {
         if (response != null)
         {
-            int val = (int)response.StatusCode;
-            return val.ToString(CultureInfo.InvariantCulture);
+            int value = (int)response.StatusCode;
+            return value.ToString(CultureInfo.InvariantCulture);
         }
 
         if (taskStatus == TaskStatus.Faulted)

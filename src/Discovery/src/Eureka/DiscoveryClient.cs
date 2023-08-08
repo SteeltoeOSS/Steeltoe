@@ -637,7 +637,6 @@ public class DiscoveryClient : IEurekaClient
     }
 
     // both of these should fire and forget on execution but log failures
-#pragma warning disable S3168 // "async" methods should not return "void"
     private async void HeartBeatTask()
     {
         if (shutdown > 0)
@@ -667,5 +666,4 @@ public class DiscoveryClient : IEurekaClient
             logger.LogError("CacheRefresh failed");
         }
     }
-#pragma warning restore S3168 // "async" methods should not return "void"
 }

@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 using Steeltoe.Management.Endpoint;
@@ -19,27 +19,14 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// <see cref="IServiceCollection" />.
     /// </param>
-    /// <param name="podUtilities">
-    /// Bring your own <see cref="IPodUtilities" />. Defaults to <see cref="StandardPodUtilities" />.
-    /// </param>
-    public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services, IPodUtilities podUtilities = null)
+    public static IServiceCollection AddKubernetesInfoContributor(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
 
-        if (!services.Any(srv => srv.ServiceType.IsAssignableFrom(typeof(IPodUtilities))))
-        {
-            if (podUtilities == null)
-            {
-                services.AddKubernetesClient();
-                services.AddSingleton<IPodUtilities, StandardPodUtilities>();
-            }
-            else
-            {
-                services.Add(new ServiceDescriptor(typeof(IPodUtilities), podUtilities));
-            }
-        }
-
+        services.AddKubernetesClient();
+        services.TryAddSingleton<PodUtilities>();
         services.AddSingleton<IInfoContributor, KubernetesInfoContributor>();
+
         return services;
     }
 
@@ -49,22 +36,13 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// <see cref="IServiceCollection" />.
     /// </param>
-    /// <param name="configuration">
-    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided.
-    /// </param>
-    /// <param name="podUtilities">
-    /// Bring your own <see cref="IPodUtilities" />. Defaults to <see cref="StandardPodUtilities" />.
-    /// </param>
-    /// <param name="version">
-    /// Set response type version.
-    /// </param>
-    public static IServiceCollection AddKubernetesActuators(this IServiceCollection services, IConfiguration configuration = null,
-        IPodUtilities podUtilities = null, MediaTypeVersion version = MediaTypeVersion.V2)
+    public static IServiceCollection AddKubernetesActuators(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddKubernetesInfoContributor(podUtilities);
-        services.AddAllActuators(version);
+        services.AddKubernetesInfoContributor();
+        services.AddAllActuators();
+
         return services;
     }
 }

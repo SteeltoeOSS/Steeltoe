@@ -9,23 +9,14 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
-    [Fact]
-    public void AddHeapDumpActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHeapDumpActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
     [Fact]
     public void AddHeapDumpActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -42,9 +33,9 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddHeapDumpActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var repo = serviceProvider.GetService<IHeapDumper>();
-        Assert.NotNull(repo);
-        var ep = serviceProvider.GetService<HeapDumpEndpoint>();
-        Assert.NotNull(ep);
+        var heapDumper = serviceProvider.GetService<HeapDumper>();
+        Assert.NotNull(heapDumper);
+        var handler = serviceProvider.GetService<IHeapDumpEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

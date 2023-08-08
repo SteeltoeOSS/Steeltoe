@@ -2,54 +2,41 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public class SpringBootAdminClientOptionsTest
+public sealed class SpringBootAdminClientOptionsTest : BaseTest
 {
-    [Fact]
-    public void Constructor_ThrowsOnNulls()
-    {
-        var ex1 = Assert.Throws<ArgumentNullException>(() => new SpringBootAdminClientOptions(null, new ApplicationInstanceInfo()));
-        Assert.Equal("configuration", ex1.ParamName);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => new SpringBootAdminClientOptions(new ConfigurationBuilder().Build(), null));
-        Assert.Equal("appInfo", ex2.ParamName);
-    }
-
     [Fact]
     public void ConstructorFailsWithoutBaseAppUrl()
     {
-        var ex = Assert.Throws<NullReferenceException>(() =>
-            new SpringBootAdminClientOptions(new ConfigurationBuilder().Build(), new ApplicationInstanceInfo()));
+        var appsettings = new Dictionary<string, string?>();
 
-        Assert.Contains(":BasePath in order to register with Spring Boot Admin", ex.Message, StringComparison.Ordinal);
+        var exception = Assert.Throws<InvalidOperationException>(() => GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings));
+
+        Assert.Equal("Please set spring:boot:admin:client:BasePath in order to register with Spring Boot Admin", exception.Message);
     }
 
     [Fact]
     public void ConstructorUsesAppInfo()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
-            { "application:Uris:0", "http://somehost" }
+            ["application:Uris:0"] = "http://somehost"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        var appInfo = new ApplicationInstanceInfo(configurationRoot, string.Empty);
+        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings);
 
-        var opts = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-
-        Assert.NotNull(opts);
-        Assert.Equal("http://somehost", opts.BasePath);
+        Assert.NotNull(options);
+        Assert.Equal("http://somehost", options.BasePath);
     }
 
     [Fact]
     public void Constructor_BindsConfiguration()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:health:path"] = "myhealth",
@@ -61,32 +48,29 @@ public class SpringBootAdminClientOptionsTest
             ["ApplicationName"] = "OtherApplicationName"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings);
 
-        var opts = new SpringBootAdminClientOptions(configurationRoot, new ApplicationInstanceInfo(configurationRoot));
+        Assert.NotNull(options);
+        Assert.Equal("MySteeltoeApplication", options.ApplicationName);
+        Assert.Equal("http://localhost:8080", options.BasePath);
+        Assert.Equal("http://springbootadmin:9090", options.Url);
 
-        Assert.NotNull(opts);
-        Assert.Equal("MySteeltoeApplication", opts.ApplicationName);
-        Assert.Equal("http://localhost:8080", opts.BasePath);
-        Assert.Equal("http://springbootadmin:9090", opts.Url);
-
-        Assert.Contains(new KeyValuePair<string, object>("user.name", "userName"), opts.Metadata);
-        Assert.Contains(new KeyValuePair<string, object>("user.password", "userPassword"), opts.Metadata);
+        Assert.Contains(new KeyValuePair<string, object>("user.name", "userName"), options.Metadata);
+        Assert.Contains(new KeyValuePair<string, object>("user.password", "userPassword"), options.Metadata);
     }
 
     [Fact]
     public void Constructor_BindsFallBack()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
-            { "spring:boot:admin:client:basepath", "http://somehost" }
+            ["spring:boot:admin:client:basepath"] = "http://somehost"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        var options = GetOptionsFromSettings<SpringBootAdminClientOptions>(appsettings);
 
-        var opts = new SpringBootAdminClientOptions(configurationRoot, new ApplicationInstanceInfo(configurationRoot));
-
-        Assert.NotNull(opts);
-        Assert.NotEmpty(opts.ApplicationName);
+        Assert.NotNull(options);
+        Assert.NotNull(options.ApplicationName);
+        Assert.NotEmpty(options.ApplicationName);
     }
 }

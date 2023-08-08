@@ -4,4 +4,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Connector.EntityFrameworkCore.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connectors.EntityFrameworkCore.Test")]

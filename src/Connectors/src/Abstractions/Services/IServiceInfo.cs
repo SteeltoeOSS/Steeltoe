@@ -4,7 +4,7 @@
 
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.Services;
+namespace Steeltoe.Connectors.Services;
 
 public interface IServiceInfo
 {

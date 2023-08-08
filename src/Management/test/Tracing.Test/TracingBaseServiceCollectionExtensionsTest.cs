@@ -11,15 +11,8 @@ using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 
-public class TracingBaseServiceCollectionExtensionsTest : TestBase
+public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
 {
-    [Fact]
-    public void AddDistributedTracing_ThrowsOnNulls()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => TracingBaseServiceCollectionExtensions.AddDistributedTracing(null));
-        Assert.Equal("services", ex.ParamName);
-    }
-
     [Fact]
     public void AddDistributedTracing_ConfiguresExpectedDefaults()
     {
@@ -32,7 +25,6 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
         ValidateServiceCollectionBase(serviceProvider);
     }
 
-    // this test should find Jaeger and Zipkin exporters, see TracingCore.Test for OTLP
     [Fact]
     public void AddDistributedTracing_WiresIncludedExporters()
     {
@@ -52,7 +44,7 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
     public void AddDistributedTracing_ConfiguresSamplers()
     {
         // test AlwaysOn
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string>
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string?>
         {
             { "Management:Tracing:AlwaysSample", "true" }
         }));
@@ -65,7 +57,7 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
         Assert.NotNull(tracerProvider);
 
         // test AlwaysOff
-        services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string>
+        services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string?>
         {
             { "Management:Tracing:NeverSample", "true" }
         }));

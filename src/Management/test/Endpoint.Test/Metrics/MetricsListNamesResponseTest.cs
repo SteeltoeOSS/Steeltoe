@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class MetricsListNamesResponseTest : BaseTest
+public sealed class MetricsListNamesResponseTest : BaseTest
 {
     [Fact]
     public void Constructor_SetsValues()
@@ -18,9 +18,9 @@ public class MetricsListNamesResponseTest : BaseTest
             "bar.foo"
         };
 
-        var resp = new MetricsListNamesResponse(names);
-        Assert.NotNull(resp.Names);
-        Assert.Same(names, resp.Names);
+        var response = new MetricsResponse(names);
+        Assert.NotNull(response.Names);
+        Assert.Same(names, response.Names);
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public class MetricsListNamesResponseTest : BaseTest
             "bar.foo"
         };
 
-        var resp = new MetricsListNamesResponse(names);
-        string result = Serialize(resp);
+        var response = new MetricsResponse(names);
+        string result = Serialize(response);
         Assert.Equal("{\"names\":[\"foo.bar\",\"bar.foo\"]}", result);
     }
 }

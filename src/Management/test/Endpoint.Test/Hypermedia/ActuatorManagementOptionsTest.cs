@@ -2,73 +2,73 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
-public class ActuatorManagementOptionsTest : BaseTest
+public sealed class ActuatorManagementOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
-        Assert.Equal("/actuator", opts.Path);
-        Assert.Contains("health", opts.Exposure.Include);
-        Assert.Contains("info", opts.Exposure.Include);
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+        Assert.Equal("/actuator", managementOptions.Path);
+        Assert.NotNull(managementOptions.Exposure);
+        Assert.Contains("health", managementOptions.Exposure.Include);
+        Assert.Contains("info", managementOptions.Exposure.Include);
     }
 
     [Fact]
     public void Constructor_InitializesWithDefaultsOnCF()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
-        ManagementEndpointOptions opts = GetOptionsMonitorFromSettings<ManagementEndpointOptions>().Get(ActuatorContext.Name);
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "something");
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
-        Assert.Equal("/actuator", opts.Path);
-        Assert.Contains("health", opts.Exposure.Include);
-        Assert.Contains("info", opts.Exposure.Include);
-
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Assert.Equal("/actuator", managementOptions.Path);
+        Assert.NotNull(managementOptions.Exposure);
+        Assert.Contains("health", managementOptions.Exposure.Include);
+        Assert.Contains("info", managementOptions.Exposure.Include);
     }
 
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management"
         };
 
-        var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
+        var options = GetOptionsFromSettings<ManagementOptions>(appsettings);
 
-        Assert.Equal("/management", opts.Path);
-        Assert.False(opts.Enabled);
+        Assert.Equal("/management", options.Path);
+        Assert.False(options.Enabled);
 
-        Assert.Contains("health", opts.Exposure.Include);
-        Assert.Contains("info", opts.Exposure.Include);
+        Assert.NotNull(options.Exposure);
+        Assert.Contains("health", options.Exposure.Include);
+        Assert.Contains("info", options.Exposure.Include);
     }
 
     [Fact]
     public void Constructor_BindsConfigurationCorrectly_OnCF()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management"
         };
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "something");
 
-        var opts = GetOptionsFromSettings<ManagementEndpointOptions>(appsettings);
+        var options = GetOptionsFromSettings<ManagementOptions>(appsettings);
 
-        Assert.Equal("/management", opts.Path);
-        Assert.False(opts.Enabled);
+        Assert.Equal("/management", options.Path);
+        Assert.False(options.Enabled);
 
-        Assert.Contains("health", opts.Exposure.Include);
-        Assert.Contains("info", opts.Exposure.Include);
-
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Assert.NotNull(options.Exposure);
+        Assert.Contains("health", options.Exposure.Include);
+        Assert.Contains("info", options.Exposure.Include);
     }
 }

@@ -9,9 +9,9 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-public class AppSettingsInfoContributorTest : BaseTest
+public sealed class AppSettingsInfoContributorTest : BaseTest
 {
-    private readonly Dictionary<string, string> _appSettings = new()
+    private readonly Dictionary<string, string?> _appSettings = new()
     {
         ["info:application:name"] = "foobar",
         ["info:application:version"] = "1.0.0",
@@ -26,8 +26,8 @@ public class AppSettingsInfoContributorTest : BaseTest
     {
         var contributor = new AppSettingsInfoContributor(null);
         var builder = new InfoBuilder();
-        contributor.Contribute(builder);
-        Dictionary<string, object> result = builder.Build();
+        contributor.ContributeAsync(builder, CancellationToken.None);
+        IDictionary<string, object> result = builder.Build();
         Assert.NotNull(result);
         Assert.Empty(result);
     }
@@ -40,7 +40,7 @@ public class AppSettingsInfoContributorTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(configurationRoot);
 
-        Assert.Throws<ArgumentNullException>(() => settings.Contribute(null));
+        Assert.ThrowsAsync<ArgumentNullException>(() => settings.ContributeAsync(null!, CancellationToken.None));
     }
 
     [Fact]
@@ -54,9 +54,9 @@ public class AppSettingsInfoContributorTest : BaseTest
         var settings = new AppSettingsInfoContributor(configurationRoot);
 
         var builder = new InfoBuilder();
-        settings.Contribute(builder);
+        settings.ContributeAsync(builder, CancellationToken.None);
 
-        Dictionary<string, object> info = builder.Build();
+        IDictionary<string, object> info = builder.Build();
         Assert.NotNull(info);
         Assert.Equal(2, info.Count);
         Assert.True(info.ContainsKey("application"));
