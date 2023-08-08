@@ -5,22 +5,27 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-internal class ConfigureHealthEndpointOptions : IConfigureOptions<HealthEndpointOptions>
+internal sealed class ConfigureHealthEndpointOptions : IConfigureOptions<HealthEndpointOptions>
 {
     private const string HealthOptionsPrefix = "management:endpoints:health";
     private readonly IConfiguration _configuration;
 
     public ConfigureHealthEndpointOptions(IConfiguration configuration)
     {
+        ArgumentGuard.NotNull(configuration);
+
         _configuration = configuration;
     }
 
     public void Configure(HealthEndpointOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         _configuration.GetSection(HealthOptionsPrefix).Bind(options);
 
         options.Id ??= "health";
@@ -39,20 +44,14 @@ internal class ConfigureHealthEndpointOptions : IConfigureOptions<HealthEndpoint
             };
         }
 
-        if (!options.Groups.ContainsKey("liveness"))
+        options.Groups.TryAdd("liveness", new HealthGroupOptions
         {
-            options.Groups.Add("liveness", new HealthGroupOptions
-            {
-                Include = "liveness"
-            });
-        }
+            Include = "liveness"
+        });
 
-        if (!options.Groups.ContainsKey("readiness"))
+        options.Groups.TryAdd("readiness", new HealthGroupOptions
         {
-            options.Groups.Add("readiness", new HealthGroupOptions
-            {
-                Include = "readiness"
-            });
-        }
+            Include = "readiness"
+        });
     }
 }

@@ -9,18 +9,18 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -28,34 +28,40 @@ public static class ActuatorServiceCollectionExtensions
 {
     public static void AddCommonActuatorServices(this IServiceCollection services)
     {
-        if (Platform.IsCloudFoundry)
-        {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IContextName, CFContext>());
-        }
+        ArgumentGuard.NotNull(services);
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IContextName, ActuatorContext>());
         services.TryAddScoped<ActuatorEndpointMapper>();
-
-        services.ConfigureOptions<ConfigureManagementEndpointOptions>();
+        services.ConfigureOptions<ConfigureManagementOptions>();
     }
 
     public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
-        where TOptions : class, IEndpointOptions
+        where TOptions : EndpointOptions
         where TConfigureOptions : class
     {
+        ArgumentGuard.NotNull(services);
+
         services.ConfigureOptions<TConfigureOptions>();
 
         services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<IEndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+            ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
 
-    public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy)
+    public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
         services.AddAllActuators(MediaTypeVersion.V2, buildCorsPolicy);
     }
 
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version = MediaTypeVersion.V2,
-        Action<CorsPolicyBuilder> buildCorsPolicy = null)
+    public static IServiceCollection AddAllActuators(this IServiceCollection services)
+    {
+        return AddAllActuators(services, MediaTypeVersion.V2);
+    }
+
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version)
+    {
+        return AddAllActuators(services, version, null);
+    }
+
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
         ArgumentGuard.NotNull(services);
 
@@ -73,7 +79,7 @@ public static class ActuatorServiceCollectionExtensions
         services.AddHeapDumpActuator();
 
         services.AddDbMigrationsActuator();
-        services.AddEnvActuator();
+        services.AddEnvironmentActuator();
         services.AddInfoActuator();
         services.AddHealthActuator();
         services.AddLoggersActuator();
@@ -84,9 +90,11 @@ public static class ActuatorServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+    private static void AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy = null)
     {
-        return services.AddCors(setup =>
+        ArgumentGuard.NotNull(services);
+
+        services.AddCors(setup =>
         {
             setup.AddPolicy("SteeltoeManagement", policy =>
             {

@@ -20,7 +20,7 @@ public static class EndpointServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticsService>());
 
         services.AddCommonActuatorServices();
         services.AddMetricsActuatorServices();
@@ -30,6 +30,8 @@ public static class EndpointServiceCollectionExtensions
 
     public static void AddMetricsObservers(this IServiceCollection services)
     {
+        ArgumentGuard.NotNull(services);
+
         services.ConfigureOptions<ConfigureMetricsObserverOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());

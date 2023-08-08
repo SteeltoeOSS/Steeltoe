@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Task.Test;
 
-public class PassException : Exception
+public sealed class PassException : Exception
 {
 }

@@ -6,4 +6,5 @@ namespace Steeltoe.Management.Diagnostics;
 
 public interface IRuntimeDiagnosticSource
 {
+    public void AddInstrumentation();
 }

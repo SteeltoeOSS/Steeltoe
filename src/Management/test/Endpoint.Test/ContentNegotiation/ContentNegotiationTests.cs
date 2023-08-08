@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Xunit;
-using static Steeltoe.Management.Endpoint.Test.ContentNegotiation.TestStartupExtensions;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class ContentNegotiationTests
+public sealed class ContentNegotiationTests
 {
-    private static readonly Dictionary<string, string> AppSettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["management:endpoints:actuator:exposure:include:0"] = "*"
     };
@@ -27,53 +27,53 @@ public class ContentNegotiationTests
             {
                 new
                 {
-                    epName = EndpointNames.Hypermedia,
-                    epPath = "http://localhost/actuator"
+                    Name = EndpointName.Hypermedia,
+                    Path = "http://localhost/actuator"
                 },
                 new
                 {
-                    epName = EndpointNames.Cloudfoundry,
-                    epPath = "http://localhost/cloudfoundryapplication"
+                    Name = EndpointName.Cloudfoundry,
+                    Path = "http://localhost/cloudfoundryapplication"
                 },
                 new
                 {
-                    epName = EndpointNames.Info,
-                    epPath = "http://localhost/actuator/info"
+                    Name = EndpointName.Info,
+                    Path = "http://localhost/actuator/info"
                 },
                 new
                 {
-                    epName = EndpointNames.Metrics,
-                    epPath = "http://localhost/actuator/metrics"
+                    Name = EndpointName.Metrics,
+                    Path = "http://localhost/actuator/metrics"
                 },
                 new
                 {
-                    epName = EndpointNames.Loggers,
-                    epPath = "http://localhost/actuator/loggers"
+                    Name = EndpointName.Loggers,
+                    Path = "http://localhost/actuator/loggers"
                 },
                 new
                 {
-                    epName = EndpointNames.Health,
-                    epPath = "http://localhost/actuator/health"
+                    Name = EndpointName.Health,
+                    Path = "http://localhost/actuator/health"
                 },
                 new
                 {
-                    epName = EndpointNames.Trace,
-                    epPath = "http://localhost/actuator/httptrace"
+                    Name = EndpointName.Trace,
+                    Path = "http://localhost/actuator/httptrace"
                 },
                 new
                 {
-                    epName = EndpointNames.Env,
-                    epPath = "http://localhost/actuator/env"
+                    Name = EndpointName.Environment,
+                    Path = "http://localhost/actuator/env"
                 },
                 new
                 {
-                    epName = EndpointNames.Mappings,
-                    epPath = "http://localhost/actuator/mappings"
+                    Name = EndpointName.Mappings,
+                    Path = "http://localhost/actuator/mappings"
                 },
                 new
                 {
-                    epName = EndpointNames.Refresh,
-                    epPath = "http://localhost/actuator/refresh"
+                    Name = EndpointName.Refresh,
+                    Path = "http://localhost/actuator/refresh"
                 }
             };
 
@@ -82,75 +82,75 @@ public class ContentNegotiationTests
                 new
                 {
                     version = MediaTypeVersion.V2,
-                    accepts = new[]
+                    Accepts = new[]
                     {
                         ActuatorMediaTypes.AppJson
                     },
-                    contentType = ActuatorMediaTypes.AppJson,
+                    ContentType = ActuatorMediaTypes.AppJson,
                     name = "AcceptAppJson_ReturnsAppJson"
                 },
                 new
                 {
                     version = MediaTypeVersion.V2,
-                    accepts = new[]
+                    Accepts = new[]
                     {
                         "foo"
                     },
-                    contentType = ActuatorMediaTypes.AppJson,
+                    ContentType = ActuatorMediaTypes.AppJson,
                     name = "AcceptInvalid_ReturnsAppJson"
                 },
                 new
                 {
                     version = MediaTypeVersion.V2,
-                    accepts = new[]
+                    Accepts = new[]
                     {
                         ActuatorMediaTypes.V1Json
                     },
-                    contentType = ActuatorMediaTypes.AppJson,
+                    ContentType = ActuatorMediaTypes.AppJson,
                     name = "AcceptV1_ReturnsAppJson_WhenV2Configured"
                 },
                 new
                 {
                     version = MediaTypeVersion.V2,
-                    accepts = new[]
+                    Accepts = new[]
                     {
                         ActuatorMediaTypes.V2Json
                     },
-                    contentType = ActuatorMediaTypes.V2Json,
+                    ContentType = ActuatorMediaTypes.V2Json,
                     name = "AcceptV2_ReturnsV2_WhenV2Configured"
                 },
                 new
                 {
                     version = MediaTypeVersion.V2,
-                    accepts = new[]
+                    Accepts = new[]
                     {
                         ActuatorMediaTypes.Any
                     },
-                    contentType = ActuatorMediaTypes.V2Json,
+                    ContentType = ActuatorMediaTypes.V2Json,
                     name = "AcceptANY_ReturnsV2_WhenV2Configured"
                 },
                 new
                 {
                     version = MediaTypeVersion.V2,
-                    accepts = new[]
+                    Accepts = new[]
                     {
                         ActuatorMediaTypes.AppJson,
                         ActuatorMediaTypes.V1Json,
                         ActuatorMediaTypes.V2Json
                     },
-                    contentType = ActuatorMediaTypes.V2Json,
+                    ContentType = ActuatorMediaTypes.V2Json,
                     name = "AcceptAllPossibleAscOrdered_ReturnsV2_WhenV2Configured"
                 },
                 new
                 {
                     version = MediaTypeVersion.V2,
-                    accepts = new[]
+                    Accepts = new[]
                     {
                         ActuatorMediaTypes.V2Json,
                         ActuatorMediaTypes.V1Json,
                         ActuatorMediaTypes.AppJson
                     },
-                    contentType = ActuatorMediaTypes.V2Json,
+                    ContentType = ActuatorMediaTypes.V2Json,
                     name = "AcceptAllPossibleDescOrdered_ReturnsV2_WhenV2Configured"
                 }
             };
@@ -161,10 +161,10 @@ public class ContentNegotiationTests
                 {
                     yield return new object[]
                     {
-                        endpoint.epName,
-                        endpoint.epPath,
-                        negotiation.accepts,
-                        negotiation.contentType
+                        endpoint.Name,
+                        endpoint.Path,
+                        negotiation.Accepts,
+                        negotiation.ContentType
                     };
                 }
             }
@@ -173,41 +173,41 @@ public class ContentNegotiationTests
 
     [Theory]
     [MemberData(nameof(EndpointMiddlewareContentNegotiationTestCases))]
-    public async Task EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
+    public async Task EndpointMiddleware_ContentNegotiation(EndpointName endpointName, string endpointPath, string[] accepts, string contentType)
     {
-        try
+        string name = endpointName == EndpointName.Cloudfoundry ? "VCAP_APPLICATION" : "unused";
+        using var scope = new EnvironmentVariableScope(name, "some"); // Allow routing to /cloudfoundryapplication
+
+        // arrange a server and client
+        IWebHostBuilder builder = new WebHostBuilder().UseStartupForEndpoint(endpointName)
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
+                (webHostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webHostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
+
+        using var server = new TestServer(builder);
+        HttpClient client = server.CreateClient();
+
+        foreach (string accept in accepts)
         {
-            if (epName == EndpointNames.Cloudfoundry)
-            {
-                Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue"); // Allow routing to /cloudfoundryapplication
-            }
-
-            // arrange a server and client
-            IWebHostBuilder builder = new WebHostBuilder().StartupByEpName(epName)
-                .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
-                    (webHostContext, loggingBuilder) =>
-                    {
-                        loggingBuilder.AddConfiguration(webHostContext.Configuration);
-                        loggingBuilder.AddDynamicConsole();
-                    });
-
-            using var server = new TestServer(builder);
-            HttpClient client = server.CreateClient();
-
-            foreach (string accept in accepts)
-            {
-                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
-            }
-
-            // send the request
-            HttpResponseMessage result = await client.GetAsync(new Uri(epPath));
-
-            IEnumerable<string> contentHeaders = result.Content.Headers.GetValues("Content-Type");
-            Assert.Contains(contentHeaders, header => header.StartsWith(contentType, StringComparison.Ordinal));
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
         }
-        finally
+
+        // send the request
+        HttpResponseMessage response;
+
+        if (endpointName == EndpointName.Refresh)
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            response = await client.PostAsync(new Uri(endpointPath), null);
         }
+        else
+        {
+            response = await client.GetAsync(new Uri(endpointPath));
+        }
+
+        IEnumerable<string> contentHeaders = response.Content.Headers.GetValues("Content-Type");
+        Assert.Contains(contentHeaders, header => header.StartsWith(contentType, StringComparison.Ordinal));
     }
 }

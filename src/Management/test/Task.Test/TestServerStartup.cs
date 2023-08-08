@@ -3,20 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Management.Task.Test;
 
-public class TestServerStartup
+public sealed class TestServerStartup
 {
-    public IConfiguration Configuration { get; }
-
-    public TestServerStartup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddTask("test", _ => throw new PassException());

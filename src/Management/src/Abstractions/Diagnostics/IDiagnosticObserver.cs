@@ -6,13 +6,9 @@ using System.Diagnostics;
 
 namespace Steeltoe.Management.Diagnostics;
 
-public interface IDiagnosticObserver : IObserver<KeyValuePair<string, object>>, IDisposable
+public interface IDiagnosticObserver : IObserver<KeyValuePair<string, object?>>, IDisposable
 {
     string ObserverName { get; }
 
-    string ListenerName { get; }
-
     void Subscribe(DiagnosticListener listener);
-
-    void ProcessEvent(string eventName, object value);
 }

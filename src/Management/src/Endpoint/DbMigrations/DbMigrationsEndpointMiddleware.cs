@@ -5,36 +5,22 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
-public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
+internal sealed class DbMigrationsEndpointMiddleware : EndpointMiddleware<object?, Dictionary<string, DbMigrationsDescriptor>>
 {
-    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<DbMigrationsEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public DbMigrationsEndpointMiddleware(IDbMigrationsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<Dictionary<string, DbMigrationsDescriptor>> InvokeEndpointHandlerAsync(HttpContext context,
+        CancellationToken cancellationToken)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
-        {
-            return HandleEntityFrameworkRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    protected internal Task HandleEntityFrameworkRequestAsync(HttpContext context)
-    {
-        string serialInfo = HandleRequest();
-        logger.LogDebug("Returning: {info}", serialInfo);
-
-        context.HandleContentNegotiation(logger);
-        return context.Response.WriteAsync(serialInfo);
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 }

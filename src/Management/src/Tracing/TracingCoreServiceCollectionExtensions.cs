@@ -38,7 +38,7 @@ public static class TracingCoreServiceCollectionExtensions
     /// <returns>
     /// <see cref="IServiceCollection" /> configured for distributed tracing.
     /// </returns>
-    public static IServiceCollection AddDistributedTracingAspNetCore(this IServiceCollection services, Action<TracerProviderBuilder> action)
+    public static IServiceCollection AddDistributedTracingAspNetCore(this IServiceCollection services, Action<TracerProviderBuilder>? action)
     {
         ArgumentGuard.NotNull(services);
 

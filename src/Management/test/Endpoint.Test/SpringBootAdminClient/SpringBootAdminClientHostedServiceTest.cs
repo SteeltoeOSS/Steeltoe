@@ -3,11 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
@@ -15,14 +13,14 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public class SpringBootAdminClientHostedServiceTest : BaseTest
+public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
 {
     [Fact]
     public async Task SpringBootAdminClient_RegistersAndDeletes()
     {
         try
         {
-            var appSettings = new Dictionary<string, string>
+            var appSettings = new Dictionary<string, string?>
             {
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:health:path"] = "myhealth",
@@ -31,10 +29,8 @@ public class SpringBootAdminClientHostedServiceTest : BaseTest
                 ["spring:application:name"] = "MySteeltoeApplication"
             };
 
-            IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var appInfo = new ApplicationInstanceInfo(configurationRoot);
-            var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-            IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
+            var clientOptions = new OptionsWrapper<SpringBootAdminClientOptions>(GetOptionsFromSettings<SpringBootAdminClientOptions>(appSettings));
+            IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings);
             IOptionsMonitor<HealthEndpointOptions> healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
             var httpMessageHandler = new MockHttpMessageHandler();
             httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", "{\"Id\":\"1234567\"}");
@@ -44,7 +40,7 @@ public class SpringBootAdminClientHostedServiceTest : BaseTest
 
             Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
 
-            var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions,
+            var service = new SpringBootAdminClientHostedService(clientOptions, managementOptions, healthOptions,
                 NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
 
             await service.StartAsync(default);
@@ -62,7 +58,7 @@ public class SpringBootAdminClientHostedServiceTest : BaseTest
     [Fact]
     public async Task SpringBootAdminClient_DoesNotThrow_WhenNoServerRunning()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:health:path"] = "myhealth",
@@ -71,10 +67,8 @@ public class SpringBootAdminClientHostedServiceTest : BaseTest
             ["spring:application:name"] = "MySteeltoeApplication"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var appInfo = new ApplicationInstanceInfo(configurationRoot);
-        var sbaOptions = new SpringBootAdminClientOptions(configurationRoot, appInfo);
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>(appSettings);
+        var clientOptions = new OptionsWrapper<SpringBootAdminClientOptions>(GetOptionsFromSettings<SpringBootAdminClientOptions>(appSettings));
+        IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings);
         IOptionsMonitor<HealthEndpointOptions> healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions>(appSettings);
         var httpMessageHandler = new MockHttpMessageHandler();
 
@@ -83,7 +77,7 @@ public class SpringBootAdminClientHostedServiceTest : BaseTest
 
         Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
 
-        var service = new SpringBootAdminClientHostedService(sbaOptions, managementOptions, healthOptions,
+        var service = new SpringBootAdminClientHostedService(clientOptions, managementOptions, healthOptions,
             NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
 
         await service.StartAsync(default);

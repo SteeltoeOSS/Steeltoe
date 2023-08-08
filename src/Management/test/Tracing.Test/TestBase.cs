@@ -17,41 +17,29 @@ namespace Steeltoe.Management.Tracing.Test;
 
 public class TestBase
 {
-    public virtual TracingOptions GetOptions()
+    protected IConfiguration GetConfiguration()
     {
-        var opts = new TracingOptions(null, GetConfiguration());
-        return opts;
+        return GetConfiguration(new Dictionary<string, string?>());
     }
 
-    public virtual IConfiguration GetConfiguration()
+    protected IConfiguration GetConfiguration(Dictionary<string, string?> moreSettings)
     {
-        return GetConfiguration(new Dictionary<string, string>());
-    }
-
-    public virtual IConfiguration GetConfiguration(Dictionary<string, string> moreSettings)
-    {
-        return new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>(moreSettings)
+        return new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>(moreSettings)
         {
             { "management:tracing:name", "foobar" }
         }).Build();
     }
 
-    protected TelemetrySpan GetCurrentSpan(Tracer tracer)
+    private object? GetPrivateField(object baseObject, string fieldName)
     {
-        TelemetrySpan span = Tracer.CurrentSpan;
-        return span.Context.IsValid ? span : null;
-    }
-
-    protected object GetPrivateField(object baseObject, string fieldName)
-    {
-        return baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(baseObject);
+        return baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(baseObject);
     }
 
     protected void ValidateServiceCollectionCommon(ServiceProvider serviceProvider)
     {
         // confirm Steeltoe types were registered
         Assert.NotNull(serviceProvider.GetService<ITracingOptions>());
-        Assert.IsType<TracingLogProcessor>(serviceProvider.GetService<IDynamicMessageProcessor>());
+        Assert.IsType<TracingLogProcessor>(serviceProvider.GetRequiredService<IDynamicMessageProcessor>());
 
         // confirm OpenTelemetry types were registered
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
@@ -63,24 +51,25 @@ public class TestBase
     protected void ValidateServiceCollectionBase(ServiceProvider serviceProvider)
     {
         // confirm instrumentation(s) were added as expected
-        var tracerProvider = serviceProvider.GetService<TracerProvider>();
+        var tracerProvider = serviceProvider.GetRequiredService<TracerProvider>();
         var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
         Assert.NotNull(instrumentations);
         Assert.Single(instrumentations);
         Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http", StringComparison.Ordinal));
 
         Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-        var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
-        var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
-        Assert.Equal(2, props.Count);
+        var composite = (CompositeTextMapPropagator)Propagators.DefaultTextMapPropagator;
+        var propagators = GetPrivateField(composite, "propagators") as List<TextMapPropagator>;
+        Assert.NotNull(propagators);
+        Assert.Equal(2, propagators.Count);
 
-        Assert.Contains(props, p => p is B3Propagator);
-        Assert.Contains(props, p => p is BaggagePropagator);
+        Assert.Contains(propagators, propagator => propagator is B3Propagator);
+        Assert.Contains(propagators, propagator => propagator is BaggagePropagator);
     }
 
     protected void ValidateServiceContainerCore(ServiceProvider serviceProvider)
     {
-        var tracerProvider = serviceProvider.GetService<TracerProvider>();
+        var tracerProvider = serviceProvider.GetRequiredService<TracerProvider>();
 
         // confirm instrumentation(s) were added as expected
         var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;

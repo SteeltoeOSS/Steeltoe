@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 
-public class TracingCoreHostBuilderExtensionsTest : TestBase
+public sealed class TracingCoreHostBuilderExtensionsTest : TestBase
 {
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()

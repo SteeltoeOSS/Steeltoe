@@ -11,23 +11,14 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
-    [Fact]
-    public void AddTraceActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddTraceActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
     [Fact]
     public void AddTraceActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -37,19 +28,18 @@ public class EndpointServiceCollectionTest : BaseTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        var listener = new DiagnosticListener("Test");
+        using var listener = new DiagnosticListener("Test");
 
         services.AddLogging();
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton(listener);
 
-        services.AddTraceActuator(configurationRoot);
+        services.AddTraceActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<TraceEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<IHttpTraceEndpoint>();
-        Assert.NotNull(ep);
-        listener.Dispose();
+        var handler = serviceProvider.GetService<IHttpTraceEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

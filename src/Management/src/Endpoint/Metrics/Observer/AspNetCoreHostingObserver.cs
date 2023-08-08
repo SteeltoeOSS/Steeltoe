@@ -10,13 +10,12 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.MetricCollectors;
-using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-public class AspNetCoreHostingObserver : MetricsObserver
+internal sealed class AspNetCoreHostingObserver : MetricsObserver
 {
     private const string DefaultObserverName = "AspNetCoreHostingObserver";
     private const string DiagnosticName = "Microsoft.AspNetCore";
@@ -24,87 +23,101 @@ public class AspNetCoreHostingObserver : MetricsObserver
     private const string ExceptionTagKey = "exception";
     private const string MethodTagKey = "method";
     private const string UriTagKey = "uri";
-    internal const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
+    private const string StopEventName = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
+    private readonly ILogger _logger;
 
-    public AspNetCoreHostingObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILogger<AspNetCoreHostingObserver> logger)
-        : base(DefaultObserverName, DiagnosticName, logger)
+    public AspNetCoreHostingObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILoggerFactory loggerFactory)
+        : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
-        SetPathMatcher(new Regex(optionsMonitor.CurrentValue.IngressIgnorePattern));
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        string? ingressIgnorePattern = optionsMonitor.CurrentValue.IngressIgnorePattern;
+
+        if (ingressIgnorePattern != null)
+        {
+            SetPathMatcher(new Regex(ingressIgnorePattern));
+        }
+
         Meter meter = SteeltoeMetrics.Meter;
 
         _responseTime = meter.CreateHistogram<double>("http.server.requests.seconds", "s", "measures the duration of the inbound request in seconds");
         _serverCount = meter.CreateHistogram<double>("http.server.requests.count", "total", "number of requests");
+        _logger = loggerFactory.CreateLogger<AspNetCoreHostingObserver>();
     }
 
-    public override void ProcessEvent(string eventName, object value)
+    public override void ProcessEvent(string eventName, object? value)
     {
         if (value == null)
         {
             return;
         }
 
-        Activity current = Activity.Current;
+        Activity? current = Activity.Current;
 
         if (current == null)
         {
             return;
         }
 
-        if (eventName == StopEvent)
+        if (eventName == StopEventName)
         {
-            Logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-            var context = DiagnosticHelpers.GetProperty<HttpContext>(value, "HttpContext");
+            var context = GetPropertyOrDefault<HttpContext>(value, "HttpContext");
 
             if (context != null)
             {
                 HandleStopEvent(current, context);
             }
 
-            Logger.LogTrace("HandleStopEvent finish {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finish {thread}", Thread.CurrentThread.ManagedThreadId);
         }
     }
 
-    protected internal void HandleStopEvent(Activity current, HttpContext arg)
+    private void HandleStopEvent(Activity current, HttpContext context)
     {
-        if (ShouldIgnoreRequest(arg.Request.Path))
+        ArgumentGuard.NotNull(current);
+        ArgumentGuard.NotNull(context);
+
+        if (ShouldIgnoreRequest(context.Request.Path))
         {
-            Logger.LogDebug("HandleStopEvent: Ignoring path: {path}", arg.Request.Path);
+            _logger.LogDebug("HandleStopEvent: Ignoring path: {path}", context.Request.Path);
             return;
         }
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            IEnumerable<KeyValuePair<string, object>> labelSets = GetLabelSets(arg);
-
-            _serverCount.Record(1, labelSets.AsReadonlySpan());
-            _responseTime.Record(current.Duration.TotalSeconds, labelSets.AsReadonlySpan());
+            ReadOnlySpan<KeyValuePair<string, object?>> labels = GetLabelSets(context).AsReadonlySpan();
+            _serverCount.Record(1, labels);
+            _responseTime.Record(current.Duration.TotalSeconds, labels);
         }
     }
 
-    protected internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
+    internal IDictionary<string, object?> GetLabelSets(HttpContext context)
     {
-        string uri = arg.Request.Path.ToString();
-        string statusCode = arg.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
-        string exception = GetException(arg);
+        ArgumentGuard.NotNull(context);
 
-        return new Dictionary<string, object>
+        string uri = context.Request.Path.ToString();
+        string statusCode = context.Response.StatusCode.ToString(CultureInfo.InvariantCulture);
+        string exception = GetException(context);
+
+        return new Dictionary<string, object?>
         {
             { UriTagKey, uri },
             { StatusTagKey, statusCode },
             { ExceptionTagKey, exception },
-            { MethodTagKey, arg.Request.Method }
+            { MethodTagKey, context.Request.Method }
         };
     }
 
-    protected internal string GetException(HttpContext arg)
+    internal string GetException(HttpContext context)
     {
-        var exception = arg.Features.Get<IExceptionHandlerFeature>();
+        var exception = context.Features.Get<IExceptionHandlerFeature>();
 
-        if (exception != null && exception.Error != null)
+        if (exception != null)
         {
             return exception.Error.GetType().Name;
         }

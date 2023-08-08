@@ -5,52 +5,67 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>
+internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRequest, HealthEndpointResponse>
 {
-    public HealthEndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, IHealthEndpoint endpoint,
-        ILogger<HealthEndpointMiddleware> logger)
-        : base(managementOptions, logger)
+    private readonly IOptionsMonitor<HealthEndpointOptions> _endpointOptionsMonitor;
+    private readonly ILogger<HealthEndpointMiddleware> _logger;
+
+    public HealthEndpointMiddleware(IHealthEndpointHandler endpointHandler, IOptionsMonitor<HealthEndpointOptions> endpointOptionsMonitor,
+        IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
-        Endpoint = endpoint;
+        ArgumentGuard.NotNull(endpointOptionsMonitor);
+
+        _endpointOptionsMonitor = endpointOptionsMonitor;
+        _logger = loggerFactory.CreateLogger<HealthEndpointMiddleware>();
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
+        string groupName = GetRequestedHealthGroup(context.Request.Path);
+        bool hasClaim = GetHasClaim(context);
+
+        var request = new HealthEndpointRequest(groupName, hasClaim);
+        return await EndpointHandler.InvokeAsync(request, context.RequestAborted);
+    }
+
+    /// <summary>
+    /// Returns the last segment of the HTTP request path, which is expected to be the name of a configured health group.
+    /// </summary>
+    private string GetRequestedHealthGroup(PathString requestPath)
+    {
+        string[] requestComponents = requestPath.Value?.Split('/') ?? Array.Empty<string>();
+
+        if (requestComponents.Length > 0)
         {
-            return HandleHealthRequestAsync(context);
+            return requestComponents[^1];
         }
 
-        return Task.CompletedTask;
+        _logger.LogWarning("Failed to find anything in the request from which to parse health group name.");
+
+        return string.Empty;
     }
 
-    protected internal Task HandleHealthRequestAsync(HttpContext context)
+    private bool GetHasClaim(HttpContext context)
     {
-        string serialInfo = DoRequest(context);
-        logger.LogDebug("Returning: {info}", serialInfo);
-
-        context.HandleContentNegotiation(logger);
-        return context.Response.WriteAsync(serialInfo);
+        EndpointClaim? claim = _endpointOptionsMonitor.CurrentValue.Claim;
+        return claim is { Type: not null, Value: not null } && context.User.HasClaim(claim.Type, claim.Value);
     }
 
-    protected internal string DoRequest(HttpContext context)
+    protected override async Task WriteResponseAsync(HealthEndpointResponse result, HttpContext context, CancellationToken cancellationToken)
     {
-        HealthEndpointResponse result = ((HealthEndpointCore)Endpoint).Invoke(new CoreSecurityContext(context));
-
-        ManagementEndpointOptions currentOptions = managementOptions.CurrentValue;
-
-        if (currentOptions.UseStatusCodeFromResponse)
+        if (ManagementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse)
         {
-            context.Response.StatusCode = ((HealthEndpointCore)Endpoint).GetStatusCode(result);
+            context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
         }
 
-        return Serialize(result);
+        await base.WriteResponseAsync(result, context, cancellationToken);
     }
 }

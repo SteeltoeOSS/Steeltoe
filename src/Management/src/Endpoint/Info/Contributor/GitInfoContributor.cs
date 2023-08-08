@@ -10,47 +10,53 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
-public class GitInfoContributor : AbstractConfigurationContributor, IInfoContributor
+internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContributor
 {
     private const string GitSettingsPrefix = "git";
-    private const string GitPropertiesFile = "git.properties";
+    private const string GitPropertiesFileName = "git.properties";
 
     private static readonly List<string> DatetimeInputKeys = new()
     {
         "time"
     };
 
-    private readonly string _propFile;
+    private readonly string _propertiesPath;
     private readonly ILogger _logger;
 
     public GitInfoContributor(ILogger<GitInfoContributor> logger)
-        : this(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + GitPropertiesFile, logger)
+        : this($"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}{GitPropertiesFileName}", logger)
     {
     }
 
-    public GitInfoContributor(string propFile, ILogger<GitInfoContributor> logger)
+    private GitInfoContributor(string propertiesPath, ILogger<GitInfoContributor> logger)
+        : base(null)
     {
+        ArgumentGuard.NotNull(propertiesPath);
         ArgumentGuard.NotNull(logger);
 
-        _propFile = propFile;
+        _propertiesPath = propertiesPath;
         _logger = logger;
     }
 
-    public virtual void Contribute(IInfoBuilder builder)
+    public async Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
-        configuration = ReadGitProperties(_propFile);
+        ArgumentGuard.NotNull(builder);
+
+        Configuration = await ReadGitPropertiesAsync(_propertiesPath, cancellationToken);
         Contribute(builder, GitSettingsPrefix, true);
     }
 
-    public virtual IConfiguration ReadGitProperties(string propFile)
+    public async Task<IConfiguration?> ReadGitPropertiesAsync(string propertiesPath, CancellationToken cancellationToken)
     {
-        if (File.Exists(propFile))
-        {
-            string[] lines = File.ReadAllLines(propFile);
+        ArgumentGuard.NotNull(propertiesPath);
 
-            if (lines != null && lines.Length > 0)
+        if (File.Exists(propertiesPath))
+        {
+            string[] lines = await File.ReadAllLinesAsync(propertiesPath, cancellationToken);
+
+            if (lines.Length > 0)
             {
-                var dict = new Dictionary<string, string>();
+                var dictionary = new Dictionary<string, string?>();
 
                 foreach (string line in lines)
                 {
@@ -59,34 +65,37 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
                         continue;
                     }
 
-                    string[] keyVal = line.Split('=');
+                    string[] keyValuePair = line.Split('=');
 
-                    if (keyVal == null || keyVal.Length != 2)
+                    if (keyValuePair.Length != 2)
                     {
                         continue;
                     }
 
-                    string key = keyVal[0].Trim().Replace('.', ':');
-                    string val = keyVal[1].Replace("\\:", ":", StringComparison.Ordinal);
+                    string key = keyValuePair[0].Trim().Replace('.', ':');
+                    string value = keyValuePair[1].Replace("\\:", ":", StringComparison.Ordinal);
 
-                    dict[key] = val;
+                    dictionary[key] = value;
                 }
 
                 var builder = new ConfigurationBuilder();
-                builder.AddInMemoryCollection(dict);
+                builder.AddInMemoryCollection(dictionary);
                 return builder.Build();
             }
         }
         else
         {
-            _logger.LogWarning("Unable to locate GitInfo at {GitInfoLocation}", propFile);
+            _logger.LogWarning("Unable to locate GitInfo at {GitInfoLocation}", propertiesPath);
         }
 
         return null;
     }
 
-    protected override void AddKeyValue(Dictionary<string, object> dict, string key, string value)
+    protected override void AddKeyValue(IDictionary<string, object> dictionary, string key, string value)
     {
+        ArgumentGuard.NotNull(dictionary);
+        ArgumentGuard.NotNull(key);
+
         object valueToInsert = value;
 
         if (DatetimeInputKeys.Contains(key))
@@ -95,6 +104,6 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
             valueToInsert = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
         }
 
-        dict[key] = valueToInsert;
+        dictionary[key] = valueToInsert;
     }
 }

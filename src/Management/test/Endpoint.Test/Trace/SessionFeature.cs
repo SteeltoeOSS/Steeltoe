@@ -10,4 +10,9 @@ namespace Steeltoe.Management.Endpoint.Test.Trace;
 internal sealed class SessionFeature : ISessionFeature
 {
     public ISession Session { get; set; }
+
+    public SessionFeature(ISession session)
+    {
+        Session = session;
+    }
 }

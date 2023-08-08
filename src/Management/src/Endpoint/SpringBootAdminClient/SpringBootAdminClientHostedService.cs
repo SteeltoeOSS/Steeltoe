@@ -9,75 +9,90 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
 internal sealed class SpringBootAdminClientHostedService : IHostedService
 {
-    private readonly SpringBootAdminClientOptions _options;
-    private readonly ManagementEndpointOptions _managementOptions;
+    private readonly SpringBootAdminClientOptions _clientOptions;
+    private readonly ManagementOptions _managementOptions;
     private readonly HealthEndpointOptions _healthOptions;
     private readonly HttpClient _httpClient;
     private readonly ILogger<SpringBootAdminClientHostedService> _logger;
 
-    internal static RegistrationResult RegistrationResult { get; set; }
+    internal static RegistrationResult? RegistrationResult { get; set; }
 
-    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        IOptionsMonitor<HealthEndpointOptions> healthOptions, ILogger<SpringBootAdminClientHostedService> logger, HttpClient httpClient = null)
+    public SpringBootAdminClientHostedService(IOptions<SpringBootAdminClientOptions> clientOptions, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        IOptionsMonitor<HealthEndpointOptions> healthOptionsMonitor, ILogger<SpringBootAdminClientHostedService> logger, HttpClient? httpClient = null)
     {
+        ArgumentGuard.NotNull(clientOptions);
+        ArgumentGuard.NotNull(managementOptionsMonitor);
+        ArgumentGuard.NotNull(healthOptionsMonitor);
         ArgumentGuard.NotNull(logger);
 
-        _options = options;
-        _managementOptions = managementOptions.Get(ActuatorContext.Name);
-        _healthOptions = healthOptions.CurrentValue;
-        _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMs);
+        _clientOptions = clientOptions.Value;
+        _managementOptions = managementOptionsMonitor.CurrentValue;
+        _healthOptions = healthOptionsMonitor.CurrentValue;
+        _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(clientOptions.Value.ValidateCertificates, clientOptions.Value.ConnectionTimeoutMs);
         _logger = logger;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Registering with Spring Boot Admin Server at {url}", _options.Url);
+        _logger.LogInformation("Registering with Spring Boot Admin Server at {url}", _clientOptions.Url);
 
-        string basePath = _options.BasePath.TrimEnd('/');
-
-        var app = new Application
+        if (_clientOptions.BasePath == null || _clientOptions.ApplicationName == null)
         {
-            Name = _options.ApplicationName ?? "Steeltoe",
-            HealthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.Path}"),
-            ManagementUrl = new Uri($"{basePath}{_managementOptions.Path}"),
-            ServiceUrl = new Uri($"{basePath}/"),
-            Metadata = new Dictionary<string, object>
-            {
-                { "startup", DateTime.Now }
-            }
-        };
+            throw new InvalidOperationException("BasePath and ApplicationName must be provided in options.");
+        }
 
-        app.Metadata.Merge(_options.Metadata);
+        string basePath = _clientOptions.BasePath.TrimEnd('/');
+        Application app = CreateApplication(basePath, _clientOptions.ApplicationName);
 
-        _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMs);
+        Merge(app.Metadata, _clientOptions.Metadata);
 
-        HttpResponseMessage result = null;
+        _httpClient.Timeout = TimeSpan.FromMilliseconds(_clientOptions.ConnectionTimeoutMs);
+
+        HttpResponseMessage? response = null;
 
         try
         {
-            result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app, cancellationToken);
+            response = await _httpClient.PostAsJsonAsync($"{_clientOptions.Url}/instances", app, cancellationToken);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             _logger.LogError(exception, "Error connecting to SpringBootAdmin: {Message}", exception.Message);
         }
 
-        if (result is { IsSuccessStatusCode: true })
+        if (response is { IsSuccessStatusCode: true })
         {
-            RegistrationResult = await result.Content.ReadFromJsonAsync<RegistrationResult>();
+            RegistrationResult = await response.Content.ReadFromJsonAsync<RegistrationResult>(cancellationToken: cancellationToken);
         }
         else
         {
-            string errorResponse = result != null ? await result.Content.ReadAsStringAsync() : string.Empty;
-            _logger.LogError("Error registering with SpringBootAdmin: {Message} \n {Response} ", result?.ToString(), errorResponse);
+            string errorResponse = response != null ? await response.Content.ReadAsStringAsync(cancellationToken) : string.Empty;
+            _logger.LogError("Error registering with SpringBootAdmin: {Message} \n {Response} ", response?.ToString(), errorResponse);
         }
+    }
+
+    private Application CreateApplication(string basePath, string applicationName)
+    {
+        var healthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.Path}");
+        var managementUrl = new Uri($"{basePath}{_managementOptions.Path}");
+        var serviceUrl = new Uri($"{basePath}/");
+
+        var metadata = new Dictionary<string, object>
+        {
+            { "startup", DateTime.Now }
+        };
+
+        return new Application(applicationName, managementUrl, healthUrl, serviceUrl, metadata);
+    }
+
+    private static void Merge<TKey, TValue>(IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)
+    {
+        from.ToList().ForEach(to.Add);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
@@ -87,7 +102,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
             return;
         }
 
-        var requestUri = new Uri($"{_options.Url}/instances/{RegistrationResult.Id}");
-        await _httpClient.DeleteAsync(requestUri);
+        var requestUri = new Uri($"{_clientOptions.Url}/instances/{RegistrationResult.Id}");
+        await _httpClient.DeleteAsync(requestUri, cancellationToken);
     }
 }

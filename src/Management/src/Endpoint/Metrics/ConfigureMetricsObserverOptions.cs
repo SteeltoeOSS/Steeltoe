@@ -4,13 +4,14 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal class ConfigureMetricsObserverOptions : IConfigureOptions<MetricsObserverOptions>
+internal sealed class ConfigureMetricsObserverOptions : IConfigureOptions<MetricsObserverOptions>
 {
-    internal const string ManagementMetricsPrefix = "management:metrics:observer";
+    private const string ManagementMetricsPrefix = "management:metrics:observer";
 
     internal const string DefaultIngressIgnorePattern =
         "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";
@@ -20,11 +21,15 @@ internal class ConfigureMetricsObserverOptions : IConfigureOptions<MetricsObserv
 
     public ConfigureMetricsObserverOptions(IConfiguration configuration)
     {
+        ArgumentGuard.NotNull(configuration);
+
         _configuration = configuration;
     }
 
     public void Configure(MetricsObserverOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         _configuration.GetSection(ManagementMetricsPrefix).Bind(options);
 
         if (string.IsNullOrEmpty(options.IngressIgnorePattern))

@@ -16,7 +16,6 @@ using Xunit;
 // ReSharper disable InconsistentNaming
 #pragma warning disable S100 // Methods and properties should be named in PascalCase
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
-#pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable SA1401 // Fields should be private
 
 namespace Steeltoe.Common.Expression.Test.Spring;

@@ -7,20 +7,20 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-public class InfoEndpointOptionsTest : BaseTest
+public sealed class InfoEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<InfoEndpointOptions>();
-        Assert.Null(opts.Enabled);
-        Assert.Equal("info", opts.Id);
+        var options = GetOptionsFromSettings<InfoEndpointOptions>();
+        Assert.Null(options.Enabled);
+        Assert.Equal("info", options.Id);
     }
 
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
@@ -28,8 +28,8 @@ public class InfoEndpointOptionsTest : BaseTest
             ["management:endpoints:info:id"] = "infomanagement"
         };
 
-        InfoEndpointOptions opts = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
-        Assert.False(opts.Enabled);
-        Assert.Equal("infomanagement", opts.Id);
+        InfoEndpointOptions options = GetOptionsFromSettings<InfoEndpointOptions, ConfigureInfoEndpointOptions>(appsettings);
+        Assert.False(options.Enabled);
+        Assert.Equal("infomanagement", options.Id);
     }
 }

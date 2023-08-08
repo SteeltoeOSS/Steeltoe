@@ -10,27 +10,20 @@ using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 
-public class TracingOptionsTest
+public sealed class TracingOptionsTest
 {
     [Fact]
     public void InitializedWithDefaults()
     {
         IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>());
-        var opts = new TracingOptions(new ApplicationInstanceInfo(configuration), configuration);
+        var options = new TracingOptions(new ApplicationInstanceInfo(configuration), configuration);
 
-        Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, opts.Name);
-        Assert.Equal(TracingOptions.DefaultIngressIgnorePattern, opts.IngressIgnorePattern);
-        Assert.False(opts.AlwaysSample);
-        Assert.False(opts.NeverSample);
-        Assert.False(opts.UseShortTraceIds);
-        Assert.Equal(TracingOptions.DefaultEgressIgnorePattern, opts.EgressIgnorePattern);
-    }
-
-    [Fact]
-    public void ThrowsIfConfigNull()
-    {
-        const IConfiguration configuration = null;
-        Assert.Throws<ArgumentNullException>(() => new TracingOptions(null, configuration));
+        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name, options.Name);
+        Assert.Equal(TracingOptions.DefaultIngressIgnorePattern, options.IngressIgnorePattern);
+        Assert.False(options.AlwaysSample);
+        Assert.False(options.NeverSample);
+        Assert.False(options.UseShortTraceIds);
+        Assert.Equal(TracingOptions.DefaultEgressIgnorePattern, options.EgressIgnorePattern);
     }
 
     [Fact]
@@ -47,55 +40,55 @@ public class TracingOptionsTest
         };
 
         IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        var opts = new TracingOptions(new ApplicationInstanceInfo(configuration), configuration);
+        var options = new TracingOptions(new ApplicationInstanceInfo(configuration), configuration);
 
-        Assert.Equal("foobar", opts.Name);
-        Assert.Equal("pattern", opts.IngressIgnorePattern);
-        Assert.True(opts.AlwaysSample);
-        Assert.True(opts.NeverSample);
-        Assert.True(opts.UseShortTraceIds);
-        Assert.Equal("pattern", opts.EgressIgnorePattern);
+        Assert.Equal("foobar", options.Name);
+        Assert.Equal("pattern", options.IngressIgnorePattern);
+        Assert.True(options.AlwaysSample);
+        Assert.True(options.NeverSample);
+        Assert.True(options.UseShortTraceIds);
+        Assert.Equal("pattern", options.EgressIgnorePattern);
     }
 
     [Fact]
     public void ApplicationName_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string>();
+        var appsettings = new Dictionary<string, string?>();
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appsettings);
         IConfigurationRoot configurationRoot = builder.Build();
         var appInstanceInfo = new ApplicationInstanceInfo(configurationRoot);
 
         // Uses Assembly name as default
-        var opts = new TracingOptions(appInstanceInfo, configurationRoot);
-        Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, opts.Name);
+        var options = new TracingOptions(appInstanceInfo, configurationRoot);
+        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name, options.Name);
 
         // Finds Spring app name
         appsettings.Add("spring:application:name", "SpringApplicationName");
         configurationRoot = builder.Build();
         appInstanceInfo = new ApplicationInstanceInfo(configurationRoot);
-        opts = new TracingOptions(appInstanceInfo, configurationRoot);
-        Assert.Equal("SpringApplicationName", opts.Name);
+        options = new TracingOptions(appInstanceInfo, configurationRoot);
+        Assert.Equal("SpringApplicationName", options.Name);
 
         // Platform app name overrides spring name
         appsettings.Add("application:name", "PlatformName");
         configurationRoot = builder.Build();
         appInstanceInfo = new ApplicationInstanceInfo(configurationRoot);
-        opts = new TracingOptions(appInstanceInfo, configurationRoot);
-        Assert.Equal("PlatformName", opts.Name);
+        options = new TracingOptions(appInstanceInfo, configurationRoot);
+        Assert.Equal("PlatformName", options.Name);
 
         // Finds and uses management name
         appsettings.Add("management:name", "ManagementName");
         configurationRoot = builder.Build();
         appInstanceInfo = new ApplicationInstanceInfo(configurationRoot);
-        opts = new TracingOptions(appInstanceInfo, configurationRoot);
-        Assert.Equal("ManagementName", opts.Name);
+        options = new TracingOptions(appInstanceInfo, configurationRoot);
+        Assert.Equal("ManagementName", options.Name);
 
         // management:tracing name beats all else
         appsettings.Add("management:tracing:name", "ManagementTracingName");
         configurationRoot = builder.Build();
         appInstanceInfo = new ApplicationInstanceInfo(configurationRoot);
-        opts = new TracingOptions(appInstanceInfo, configurationRoot);
-        Assert.Equal("ManagementTracingName", opts.Name);
+        options = new TracingOptions(appInstanceInfo, configurationRoot);
+        Assert.Equal("ManagementTracingName", options.Name);
     }
 }

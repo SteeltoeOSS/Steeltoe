@@ -7,14 +7,14 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class MetricsRequestTest : BaseTest
+public sealed class MetricsRequestTest : BaseTest
 {
     [Fact]
     public void Constructor_SetsValues()
     {
         var tags = new List<KeyValuePair<string, string>>();
-        var req = new MetricsRequest("foo.bar", tags);
-        Assert.Equal("foo.bar", req.MetricName);
-        Assert.Same(tags, req.Tags);
+        var request = new MetricsRequest("foo.bar", tags);
+        Assert.Equal("foo.bar", request.MetricName);
+        Assert.Same(tags, request.Tags);
     }
 }

@@ -4,46 +4,118 @@
 
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+using Steeltoe.Common.Util;
+using MicrosoftHealthCheckResult = Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult;
+using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
+using SteeltoeHealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+using SteeltoeHealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
+internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
 {
-    public HealthCheckResult Aggregate(IList<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations,
-        IServiceProvider serviceProvider)
+    public SteeltoeHealthCheckResult Aggregate(ICollection<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations,
+        IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        // get results from DefaultHealthAggregator first
-        HealthCheckResult aggregatorResult = Aggregate(contributors);
+        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(healthCheckRegistrations);
+        ArgumentGuard.NotNull(serviceProvider);
 
-        // if there aren't any MSFT interfaced health checks, return now
-        if (healthCheckRegistrations == null)
+        // get results from DefaultHealthAggregator first
+        SteeltoeHealthCheckResult aggregatorResult = Aggregate(contributors, cancellationToken);
+
+        // if there aren't any Microsoft health checks, return now
+        if (healthCheckRegistrations.Count == 0)
         {
             return aggregatorResult;
         }
 
-        var healthChecks = new ConcurrentDictionary<string, HealthCheckResult>();
-        var keyList = new ConcurrentBag<string>(contributors.Select(x => x.Id));
+        ConcurrentDictionary<string, SteeltoeHealthCheckResult> healthChecks =
+            AggregateMicrosoftHealthChecks(contributors, healthCheckRegistrations, serviceProvider, cancellationToken);
+
+        return AddChecksSetStatus(aggregatorResult, healthChecks);
+    }
+
+    private static ConcurrentDictionary<string, SteeltoeHealthCheckResult> AggregateMicrosoftHealthChecks(IEnumerable<IHealthContributor> contributors,
+        IEnumerable<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    {
+        var healthChecks = new ConcurrentDictionary<string, SteeltoeHealthCheckResult>();
+        var keys = new ConcurrentBag<string>(contributors.Select(contributor => contributor.Id));
 
         // run all HealthCheckRegistration checks in parallel
         Parallel.ForEach(healthCheckRegistrations, registration =>
         {
-            string contributorName = GetKey(keyList, registration.Name);
-            HealthCheckResult healthCheckResult = null;
+            string contributorName = GetKey(keys, registration.Name);
+            SteeltoeHealthCheckResult healthCheckResult;
 
             try
             {
-                healthCheckResult = registration.HealthCheckAsync(serviceProvider).GetAwaiter().GetResult();
+                healthCheckResult = RunMicrosoftHealthCheckAsync(serviceProvider, registration, cancellationToken).GetAwaiter().GetResult();
             }
             catch (Exception)
             {
-                healthCheckResult = new HealthCheckResult();
+                healthCheckResult = new SteeltoeHealthCheckResult();
             }
 
             healthChecks.TryAdd(contributorName, healthCheckResult);
         });
 
-        return AddChecksSetStatus(aggregatorResult, healthChecks);
+        return healthChecks;
+    }
+
+    private static async Task<SteeltoeHealthCheckResult> RunMicrosoftHealthCheckAsync(IServiceProvider serviceProvider, HealthCheckRegistration registration,
+        CancellationToken cancellationToken)
+    {
+        var context = new HealthCheckContext
+        {
+            Registration = registration
+        };
+
+        var healthCheckResult = new SteeltoeHealthCheckResult();
+
+        try
+        {
+            IHealthCheck check = registration.Factory(serviceProvider);
+            MicrosoftHealthCheckResult result = await check.CheckHealthAsync(context, cancellationToken);
+
+            SteeltoeHealthStatus status = ToHealthStatus(result.Status);
+            healthCheckResult.Status = status; // Only used for aggregate, doesn't get reported
+            healthCheckResult.Description = result.Description;
+
+            healthCheckResult.Details = new Dictionary<string, object>(result.Data)
+            {
+                { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) }
+            };
+
+            if (result.Description != null)
+            {
+                healthCheckResult.Details.Add("description", result.Description);
+            }
+
+            if (result.Exception != null && !string.IsNullOrEmpty(result.Exception.Message))
+            {
+                healthCheckResult.Details.Add("error", result.Exception.Message);
+            }
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            // Catch all exceptions so that a status can always be returned
+            healthCheckResult.Details.Add("exception", exception.Message);
+        }
+
+        return healthCheckResult;
+    }
+
+    private static SteeltoeHealthStatus ToHealthStatus(MicrosoftHealthStatus status)
+    {
+        return status switch
+        {
+            MicrosoftHealthStatus.Healthy => SteeltoeHealthStatus.Up,
+            MicrosoftHealthStatus.Degraded => SteeltoeHealthStatus.Warning,
+            MicrosoftHealthStatus.Unhealthy => SteeltoeHealthStatus.Down,
+            _ => SteeltoeHealthStatus.Unknown
+        };
     }
 }

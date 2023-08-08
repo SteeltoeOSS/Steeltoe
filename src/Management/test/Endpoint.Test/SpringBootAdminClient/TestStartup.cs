@@ -3,28 +3,20 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 
-public class TestStartup
+public sealed class TestStartup
 {
-    public IConfiguration Configuration { get; set; }
-
-    public TestStartup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddSingleton(new MyMiddleware());
+        services.TryAddSingleton(new TestMiddleware());
     }
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseMiddleware<MyMiddleware>();
+        app.UseMiddleware<TestMiddleware>();
     }
 }

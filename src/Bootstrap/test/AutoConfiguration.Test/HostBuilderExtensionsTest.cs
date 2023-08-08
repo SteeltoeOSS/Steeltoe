@@ -47,7 +47,7 @@ using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Wavefront.Exporters;
 using Xunit;
 
@@ -56,7 +56,7 @@ namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
 public sealed class HostBuilderExtensionsTest
 {
     private readonly Action<IWebHostBuilder> _testServerWithRouting = builder =>
-        builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+        builder.UseTestServer().ConfigureServices(s => s.AddRouting().AddActionDescriptorCollectionProvider()).Configure(a => a.UseRouting());
 
     [Fact]
     public void ConfigServerConfiguration_IsAutowired()
@@ -303,8 +303,8 @@ public sealed class HostBuilderExtensionsTest
         IHostBuilder hostBuilder = new HostBuilder();
 
         IHost host = hostBuilder.AddSteeltoe(exclusions).Build();
-        IEnumerable<IActuatorEndpoint> managementEndpoints = host.Services.GetServices<IActuatorEndpoint>();
-        Assert.Single(managementEndpoints);
+        IEnumerable<IActuatorEndpointHandler> handlers = host.Services.GetServices<IActuatorEndpointHandler>();
+        Assert.Single(handlers);
 
         var filter = host.Services.GetRequiredService<IStartupFilter>();
         Assert.IsType<AllActuatorsStartupFilter>(filter);

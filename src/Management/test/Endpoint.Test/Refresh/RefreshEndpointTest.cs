@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
@@ -12,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
-public class RefreshEndpointTest : BaseTest
+public sealed class RefreshEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -22,22 +20,9 @@ public class RefreshEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsIfNulls()
+    public async Task Invoke_ReturnsExpected()
     {
-        const IConfigurationRoot configuration = null;
-
-        IOptionsMonitor<RefreshEndpointOptions> options1 = null;
-
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options1, configuration, NullLogger<RefreshEndpoint>.Instance));
-        IOptionsMonitor<RefreshEndpointOptions> options = GetOptionsMonitorFromSettings<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
-
-        Assert.Throws<ArgumentNullException>(() => new RefreshEndpoint(options, configuration, NullLogger<RefreshEndpoint>.Instance));
-    }
-
-    [Fact]
-    public void DoInvoke_ReturnsExpected()
-    {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -47,20 +32,20 @@ public class RefreshEndpointTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddRefreshActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
-        var ep = tc.GetService<IRefreshEndpoint>();
-        IList<string> result = ep.Invoke();
+        var handler = testContext.GetRequiredService<IRefreshEndpointHandler>();
+        IList<string> result = await handler.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
 
         Assert.Contains("management:endpoints:loggers:enabled", result);

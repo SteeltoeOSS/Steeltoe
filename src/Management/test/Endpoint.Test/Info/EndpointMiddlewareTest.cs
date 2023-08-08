@@ -5,24 +5,17 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Info;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private readonly Dictionary<string, string> _appSettings = new()
+    private readonly Dictionary<string, string?> _appSettings = new()
     {
         ["management:endpoints:enabled"] = "false",
         ["management:endpoints:path"] = "/management",
@@ -40,27 +33,6 @@ public class EndpointMiddlewareTest : BaseTest
     };
 
     [Fact]
-    public async Task HandleInfoRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<InfoEndpointOptions> opts = GetOptionsMonitorFromSettings<InfoEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-
-        var contributors = new List<IInfoContributor>
-        {
-            new GitInfoContributor(NullLogger<GitInfoContributor>.Instance)
-        };
-
-        var ep = new TestInfoEndpoint(opts, contributors, NullLogger<InfoEndpoint>.Instance);
-        var middle = new InfoEndpointMiddleware(ep, managementOptions, NullLogger<InfoEndpointMiddleware>.Instance);
-        HttpContext context = CreateRequest("GET", "/loggers");
-        await middle.HandleInfoRequestAsync(context);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{}", json);
-    }
-
-    [Fact]
     public async Task InfoActuator_ReturnsExpectedData()
     {
         // Note: This test pulls in from git.properties and appsettings created
@@ -71,25 +43,25 @@ public class EndpointMiddlewareTest : BaseTest
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
 
-        var dict = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/infomanagement",
+        var dictionary = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/infomanagement",
             GetSerializerOptions());
 
-        Assert.NotNull(dict);
+        Assert.NotNull(dictionary);
 
-        Assert.Equal(6, dict.Count);
-        Assert.True(dict.ContainsKey("application"));
-        Assert.True(dict.ContainsKey("NET"));
-        Assert.True(dict.ContainsKey("git"));
+        Assert.Equal(6, dictionary.Count);
+        Assert.True(dictionary.ContainsKey("application"));
+        Assert.True(dictionary.ContainsKey("NET"));
+        Assert.True(dictionary.ContainsKey("git"));
 
-        Dictionary<string, JsonElement> appNode = dict["application"];
+        Dictionary<string, JsonElement> appNode = dictionary["application"];
         Assert.NotNull(appNode);
         Assert.Equal("foobar", appNode["name"].ToString());
 
-        Dictionary<string, JsonElement> netNode = dict["NET"];
+        Dictionary<string, JsonElement> netNode = dictionary["NET"];
         Assert.NotNull(netNode);
         Assert.Equal("Core", netNode["type"].ToString());
 
-        Dictionary<string, JsonElement> gitNode = dict["git"];
+        Dictionary<string, JsonElement> gitNode = dictionary["git"];
         Assert.NotNull(gitNode);
         Assert.True(gitNode.ContainsKey("build"));
         Assert.True(gitNode.ContainsKey("branch"));
@@ -109,7 +81,7 @@ public class EndpointMiddlewareTest : BaseTest
     {
         // Note: This test pulls in from git.properties and appsettings created
         // in the Startup class
-        Dictionary<string, string> settings = new()
+        var settings = new Dictionary<string, string?>
         {
             { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" }
         };
@@ -130,28 +102,16 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<InfoEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        var endpointOptions = GetOptionsFromSettings<InfoEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/info", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/info", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
-        Assert.Single(options.AllowedVerbs);
-        Assert.Contains("Get", options.AllowedVerbs);
-    }
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/info", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
 
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
+        Assert.Equal("/cloudfoundryapplication/info",
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
 
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
+        Assert.Single(endpointOptions.AllowedVerbs);
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 }

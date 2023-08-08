@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info.Contributor;
 
-public class BuildInfoContributorTest
+public sealed class BuildInfoContributorTest
 {
     [Fact]
     public void BuildAddsVersionInfo()
@@ -16,8 +16,8 @@ public class BuildInfoContributorTest
         var contributor = new BuildInfoContributor();
         var builder = new InfoBuilder();
 
-        contributor.Contribute(builder);
-        Dictionary<string, object> results = builder.Build();
+        contributor.ContributeAsync(builder, CancellationToken.None);
+        IDictionary<string, object> results = builder.Build();
 
         Assert.True(results.ContainsKey("applicationVersionInfo"));
         Assert.NotNull(results["applicationVersionInfo"]);

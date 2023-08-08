@@ -2,40 +2,49 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor;
 
-public class DiskSpaceContributor : IHealthContributor
+internal sealed class DiskSpaceContributor : IHealthContributor
 {
-    private const string DefaultId = "diskSpace";
-    private readonly DiskSpaceContributorOptions _options;
+    private readonly IOptionsMonitor<DiskSpaceContributorOptions> _optionsMonitor;
 
-    public string Id { get; } = DefaultId;
+    public string Id => "diskSpace";
 
-    public DiskSpaceContributor(DiskSpaceContributorOptions options = null)
+    public DiskSpaceContributor(IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor)
     {
-        _options = options ?? new DiskSpaceContributorOptions();
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        _optionsMonitor = optionsMonitor;
     }
 
-    public HealthCheckResult Health()
+    public HealthCheckResult? Health()
     {
-        var result = new HealthCheckResult();
+        DiskSpaceContributorOptions options = _optionsMonitor.CurrentValue;
 
-        string fullPath = Path.GetFullPath(_options.Path);
+        if (!options.Enabled || options.Path == null)
+        {
+            return null;
+        }
+
+        var result = new HealthCheckResult();
+        string fullPath = Path.GetFullPath(options.Path);
         var dirInfo = new DirectoryInfo(fullPath);
 
         if (dirInfo.Exists)
         {
             string rootName = dirInfo.Root.Name;
-            var d = new DriveInfo(rootName);
-            long freeSpace = d.TotalFreeSpace;
-            result.Status = freeSpace >= _options.Threshold ? HealthStatus.Up : HealthStatus.Down;
+            var driveInfo = new DriveInfo(rootName);
+            long freeSpace = driveInfo.TotalFreeSpace;
+            result.Status = freeSpace >= options.Threshold ? HealthStatus.Up : HealthStatus.Down;
 
-            result.Details.Add("total", d.TotalSize);
+            result.Details.Add("total", driveInfo.TotalSize);
             result.Details.Add("free", freeSpace);
-            result.Details.Add("threshold", _options.Threshold);
+            result.Details.Add("threshold", options.Threshold);
             result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         }
 

@@ -2,16 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.MetricCollectors;
-using Steeltoe.Management.MetricCollectors.Exporters;
-using Steeltoe.Management.MetricCollectors.Exporters.Steeltoe;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -34,13 +31,13 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.ConfigureEndpointOptions<MetricsEndpointOptions, ConfigureMetricsEndpointOptions>();
-        services.TryAddSingleton<IMetricsEndpoint, MetricsEndpoint>();
+        services.TryAddSingleton<IMetricsEndpointHandler, MetricsEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, MetricsEndpointMiddleware>());
         services.TryAddSingleton<MetricsEndpointMiddleware>();
 
-        services.TryAddSingleton<IExporterOptions>(provider =>
+        services.TryAddSingleton(provider =>
         {
-            MetricsEndpointOptions options = provider.GetService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
+            MetricsEndpointOptions options = provider.GetRequiredService<IOptionsMonitor<MetricsEndpointOptions>>().CurrentValue;
 
             return new MetricsExporterOptions
             {
@@ -53,8 +50,8 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton(provider =>
         {
-            var exporterOptions = provider.GetService<IExporterOptions>();
-            return new SteeltoeExporter(exporterOptions);
+            var exporterOptions = provider.GetRequiredService<MetricsExporterOptions>();
+            return new MetricsExporter(exporterOptions);
         });
 
         services.AddSteeltoeCollector();
@@ -64,31 +61,36 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddSteeltoeCollector(this IServiceCollection services)
     {
+        ArgumentGuard.NotNull(services);
+
         return services.AddSingleton(provider =>
         {
-            var steeltoeExporter = provider.GetService<SteeltoeExporter>();
-            var exporterOptions = provider.GetService<IExporterOptions>();
-            var logger = provider.GetService<ILogger<SteeltoeExporter>>();
+            var exporter = provider.GetRequiredService<MetricsExporter>();
 
-            var aggregationManager = new AggregationManager(exporterOptions.MaxTimeSeries, exporterOptions.MaxHistograms, steeltoeExporter.AddMetrics,
+            var exporterOptions = provider.GetRequiredService<MetricsExporterOptions>();
+            var logger = provider.GetRequiredService<ILogger<MetricsExporter>>();
+
+            var aggregationManager = new AggregationManager(exporterOptions.MaxTimeSeries, exporterOptions.MaxHistograms, exporter.AddMetrics,
+                (intervalStartTime, nextIntervalStartTime) => logger.LogTrace($"Begin collection from {intervalStartTime} to {nextIntervalStartTime}"),
+                (intervalStartTime, nextIntervalStartTime) => logger.LogTrace($"End collection from {intervalStartTime} to {nextIntervalStartTime}"),
                 instrument => logger.LogTrace($"Begin measurements from {instrument.Name} for {instrument.Meter.Name}"),
                 instrument => logger.LogTrace($"End measurements from {instrument.Name} for {instrument.Meter.Name}"),
                 instrument => logger.LogTrace($"Instrument {instrument.Name} published for {instrument.Meter.Name}"),
-                () => logger.LogTrace("Steeltoe metrics collector started."),
-                () => logger.LogWarning($"Cannnot collect any more time series because the configured limit of {exporterOptions.MaxTimeSeries} was reached"),
-                () => logger.LogWarning($"Cannnot collect any more Histograms because the configured limit of {exporterOptions.MaxHistograms} was reached"),
-                ex => logger.LogError(ex, "An error occured while collecting Observable Instruments "));
+                () => logger.LogTrace("Steeltoe metrics collector started."), exception => logger.LogError(exception, "An error occurred while collecting"),
+                () => logger.LogWarning($"Cannot collect any more time series because the configured limit of {exporterOptions.MaxTimeSeries} was reached"),
+                () => logger.LogWarning($"Cannot collect any more Histograms because the configured limit of {exporterOptions.MaxHistograms} was reached"),
+                exception => logger.LogError(exception, "An error occurred while collecting observable instruments"));
 
-            steeltoeExporter.Collect = aggregationManager.Collect;
+            exporter.SetCollect(aggregationManager.Collect);
             aggregationManager.Include(SteeltoeMetrics.InstrumentationName); // Default to Steeltoe Metrics
 
             if (exporterOptions.IncludedMetrics != null)
             {
                 foreach (string filter in exporterOptions.IncludedMetrics)
                 {
-                    string[] filterParts = filter?.Split(":");
+                    string[] filterParts = filter.Split(":");
 
-                    if (filterParts != null && filterParts.Length == 2)
+                    if (filterParts.Length == 2)
                     {
                         string meter = filterParts[0];
                         string instrument = filterParts[1];

@@ -11,24 +11,14 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
-    [Fact]
-    public void AddEntityFrameworkActuator_ThrowsOnNulls()
-    {
-        const ServiceCollection nullServices = null;
-
-        Action action1 = () => nullServices.AddDbMigrationsActuator();
-
-        action1.Should().ThrowExactly<ArgumentNullException>().Where(exception => exception.ParamName == "services");
-    }
-
     [Fact]
     public void AddEntityFrameworkActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication"
@@ -43,9 +33,9 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddDbMigrationsActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetService<IOptionsMonitor<DbMigrationsEndpointOptions>>();
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<DbMigrationsEndpointOptions>>();
         options.CurrentValue.Id.Should().Be("dbmigrations");
-        var ep = serviceProvider.GetService<IDbMigrationsEndpoint>();
-        ep.Should().NotBeNull();
+        var handler = serviceProvider.GetService<IDbMigrationsEndpointHandler>();
+        handler.Should().NotBeNull();
     }
 }

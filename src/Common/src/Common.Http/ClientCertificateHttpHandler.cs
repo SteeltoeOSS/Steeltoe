@@ -8,7 +8,7 @@ using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common.Http;
 
-public class ClientCertificateHttpHandler : HttpClientHandler
+public sealed class ClientCertificateHttpHandler : HttpClientHandler
 {
     private readonly SemaphoreSlim _lock = new(1);
     private readonly IOptionsMonitor<CertificateOptions> _certificateOptions;

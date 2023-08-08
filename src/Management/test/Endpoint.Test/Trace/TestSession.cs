@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
@@ -10,10 +11,8 @@ internal sealed class TestSession : ISession
 {
     private readonly Dictionary<string, byte[]> _store = new(StringComparer.OrdinalIgnoreCase);
 
-    public bool IsAvailable { get; } = true;
-
-    public string Id { get; set; } = "TestSessionId";
-
+    public bool IsAvailable => true;
+    public string Id => "TestSessionId";
     public IEnumerable<string> Keys => _store.Keys;
 
     public void Clear()
@@ -21,24 +20,14 @@ internal sealed class TestSession : ISession
         _store.Clear();
     }
 
-    public Task CommitAsync()
-    {
-        return Task.FromResult(0);
-    }
-
     public Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        return CommitAsync();
-    }
-
-    public Task LoadAsync()
-    {
-        return Task.FromResult(0);
+        return Task.CompletedTask;
     }
 
     public Task LoadAsync(CancellationToken cancellationToken = default)
     {
-        return LoadAsync();
+        return Task.CompletedTask;
     }
 
     public void Remove(string key)
@@ -51,7 +40,7 @@ internal sealed class TestSession : ISession
         _store[key] = value;
     }
 
-    public bool TryGetValue(string key, out byte[] value)
+    public bool TryGetValue(string key, [NotNullWhen(true)] out byte[]? value)
     {
         return _store.TryGetValue(key, out value);
     }

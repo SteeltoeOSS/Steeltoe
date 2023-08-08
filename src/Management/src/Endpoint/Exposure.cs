@@ -2,65 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
+#pragma warning disable S4004 // Collection properties should be readonly
 
 namespace Steeltoe.Management.Endpoint;
 
-public class Exposure
+public sealed class Exposure
 {
-    private const string ExposurePrefix = "management:endpoints:actuator:exposure";
-    private const string ExposureSecondChancePrefix = "management:endpoints:web:exposure";
-
-    private static readonly List<string> DefaultInclude = new()
-    {
-        "health",
-        "info"
-    };
-
-    public List<string> Include { get; set; }
-
-    public List<string> Exclude { get; set; }
-
-    public Exposure()
-    {
-        Include = DefaultInclude;
-    }
-
-    public Exposure(bool allowAll)
-    {
-        Include = allowAll
-            ? new List<string>
-            {
-                "*"
-            }
-            : DefaultInclude;
-    }
-
-    public Exposure(IConfiguration configuration)
-    {
-        IConfigurationSection section = configuration.GetSection(ExposurePrefix);
-
-        if (section != null)
-        {
-            section.Bind(this);
-        }
-
-        IConfigurationSection secondSection = configuration.GetSection(ExposureSecondChancePrefix);
-
-        if (secondSection.Exists())
-        {
-            Include = GetListFromConfigCsvString(secondSection, "include");
-            Exclude = GetListFromConfigCsvString(secondSection, "exclude");
-        }
-
-        if (Include == null && Exclude == null)
-        {
-            Include = DefaultInclude;
-        }
-    }
-
-    private List<string> GetListFromConfigCsvString(IConfigurationSection configSection, string key)
-    {
-        return configSection.GetValue<string>(key)?.Split(',').ToList();
-    }
+    public IList<string> Include { get; set; } = new List<string>();
+    public IList<string> Exclude { get; set; } = new List<string>();
 }

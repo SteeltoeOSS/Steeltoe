@@ -2,9 +2,12 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Steeltoe management endpoints</Description>
-    <PackageTags>actuator;management;monitoring;Spring Cloud;</PackageTags>
+    <PackageTags>actuators;management;monitoring;Spring Cloud</PackageTags>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
+    <!-- The compiler constants below are required for the copied code in SystemDiagnosticsMetrics -->
+    <DefineConstants>$(DefineConstants);MEMORYMARSHAL_SUPPORT</DefineConstants>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -33,7 +36,6 @@
     <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Logging.DynamicLogger.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
-    <ProjectReference Include="..\MetricCollectors\Steeltoe.Management.MetricCollectors.csproj" />
   </ItemGroup>
 
 </Project>

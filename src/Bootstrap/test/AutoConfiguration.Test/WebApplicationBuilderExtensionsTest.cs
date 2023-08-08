@@ -47,7 +47,7 @@ using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Wavefront.Exporters;
 using Xunit;
 
@@ -224,8 +224,8 @@ public sealed class WebApplicationBuilderExtensionsTest
         webApp.UseRouting();
         await webApp.StartAsync();
 
-        IEnumerable<IActuatorEndpoint> managementEndpoints = webApp.Services.GetServices<IActuatorEndpoint>();
-        Assert.Single(managementEndpoints);
+        IEnumerable<IActuatorEndpointHandler> handlers = webApp.Services.GetServices<IActuatorEndpointHandler>();
+        Assert.Single(handlers);
 
         _ = webApp.Services.GetRequiredService<IStartupFilter>();
 
@@ -239,8 +239,8 @@ public sealed class WebApplicationBuilderExtensionsTest
         webApp.UseRouting();
         await webApp.StartAsync();
 
-        IEnumerable<IActuatorEndpoint> managementEndpoints = webApp.Services.GetServices<IActuatorEndpoint>();
-        Assert.Single(managementEndpoints);
+        IEnumerable<IActuatorEndpointHandler> handlers = webApp.Services.GetServices<IActuatorEndpointHandler>();
+        Assert.Single(handlers);
 
         var filter = webApp.Services.GetRequiredService<IStartupFilter>();
         Assert.IsType<AllActuatorsStartupFilter>(filter);
@@ -286,6 +286,7 @@ public sealed class WebApplicationBuilderExtensionsTest
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
         webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
         webAppBuilder.AddSteeltoe(SteeltoeAssemblyNames.All.Except(assemblyNamesToInclude));
+        webAppBuilder.Services.AddActionDescriptorCollectionProvider();
         webAppBuilder.WebHost.UseTestServer();
         return webAppBuilder.Build();
     }

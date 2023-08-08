@@ -5,7 +5,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
@@ -13,16 +15,18 @@ using Steeltoe.Management.Endpoint.ManagementPort;
 
 namespace Steeltoe.Management.Endpoint;
 
-public class AllActuatorsStartupFilter : IStartupFilter
+public sealed class AllActuatorsStartupFilter : IStartupFilter
 {
     private readonly ActuatorConventionBuilder _conventionBuilder;
 
     public AllActuatorsStartupFilter(ActuatorConventionBuilder conventionBuilder)
     {
+        ArgumentGuard.NotNull(conventionBuilder);
+
         _conventionBuilder = conventionBuilder;
     }
 
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder>? next)
     {
         return app =>
         {
@@ -37,12 +41,20 @@ public class AllActuatorsStartupFilter : IStartupFilter
             }
 
             app.UseMiddleware<ManagementPortMiddleware>();
-            next(app);
 
-            app.UseEndpoints(endpoints =>
+            next?.Invoke(app);
+
+            var mvcOptions = app.ApplicationServices.GetService<IOptions<MvcOptions>>();
+            bool isEndpointRoutingEnabled = mvcOptions?.Value.EnableEndpointRouting ?? true;
+
+            if (isEndpointRoutingEnabled)
             {
-                endpoints.MapAllActuators(_conventionBuilder);
-            });
+                app.UseEndpoints(endpoints => endpoints.MapAllActuators(_conventionBuilder));
+            }
+            else
+            {
+                app.UseMvc(routeBuilder => routeBuilder.MapAllActuators());
+            }
 
             app.ApplicationServices.InitializeAvailability();
         };

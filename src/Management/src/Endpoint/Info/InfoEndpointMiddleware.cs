@@ -5,37 +5,21 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Info;
 
-public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, object>>
+internal sealed class InfoEndpointMiddleware : EndpointMiddleware<object?, IDictionary<string, object>>
 {
-    public InfoEndpointMiddleware(IInfoEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger<InfoEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public InfoEndpointMiddleware(IInfoEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<IDictionary<string, object>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        logger.LogDebug("Info middleware InvokeAsync({path})", context.Request.Path.Value);
-
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
-        {
-            return HandleInfoRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    protected internal Task HandleInfoRequestAsync(HttpContext context)
-    {
-        string serialInfo = HandleRequest();
-        logger.LogDebug("Returning: {info}", serialInfo);
-
-        context.HandleContentNegotiation(logger);
-        return context.Response.WriteAsync(serialInfo);
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 }

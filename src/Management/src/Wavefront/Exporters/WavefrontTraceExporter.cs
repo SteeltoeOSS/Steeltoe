@@ -9,41 +9,42 @@ using Steeltoe.Common;
 using Wavefront.SDK.CSharp.Common;
 using Wavefront.SDK.CSharp.DirectIngestion;
 
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+
 namespace Steeltoe.Management.Wavefront.Exporters;
 
 /// <summary>
 /// Exporter to send spans and traces to Wavefront from OpenTelemetry.
 /// </summary>
-public class WavefrontTraceExporter : BaseExporter<Activity>
+public sealed class WavefrontTraceExporter : BaseExporter<Activity>
 {
     private readonly ILogger<WavefrontTraceExporter> _logger;
     private readonly WavefrontDirectIngestionClient _wavefrontSender;
     private readonly WavefrontExporterOptions _options;
 
-    public WavefrontTraceExporter(IWavefrontExporterOptions options, ILogger<WavefrontTraceExporter> logger)
+    public WavefrontTraceExporter(WavefrontExporterOptions options, ILogger<WavefrontTraceExporter> logger)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(logger);
 
-        if (options is not WavefrontExporterOptions exporterOptions)
-        {
-            throw new ArgumentException($"Options must be convertible to {nameof(WavefrontExporterOptions)}.", nameof(options));
-        }
-
-        _options = exporterOptions;
+        _options = options;
 
         string token = string.Empty;
-        string uri = _options.Uri;
+        string? uri = _options.Uri;
 
-        if (_options.Uri.StartsWith("proxy://", StringComparison.Ordinal))
+        if (string.IsNullOrEmpty(uri))
         {
-            uri = $"http{_options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
+            throw new ArgumentException("management:metrics:export:wavefront:uri cannot be null or empty");
+        }
+
+        if (uri.StartsWith("proxy://", StringComparison.Ordinal))
+        {
+            uri = $"http{uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
         }
         else
         {
             // Token is required for Direct Ingestion
-            token = _options.ApiToken ??
-                throw new ArgumentException($"{nameof(exporterOptions.ApiToken)} in {nameof(options)} must be provided.", nameof(options));
+            token = _options.ApiToken ?? throw new ArgumentException($"{nameof(options.ApiToken)} in {nameof(options)} must be provided.", nameof(options));
         }
 
         int flushInterval = Math.Max(_options.Step / 1000, 1); // Minimum of 1 second
@@ -62,7 +63,7 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
         {
             try
             {
-                if (activity.Tags.Any(t => t.Key == "http.url" && !t.Value.Contains(_options.Uri, StringComparison.Ordinal)))
+                if (!activity.Tags.Any(pair => pair.Key == "http.url" && pair.Value != null && pair.Value.Contains(_options.Uri!, StringComparison.Ordinal)))
                 {
                     _wavefrontSender.SendSpan(activity.OperationName, DateTimeUtils.UnixTimeMilliseconds(activity.StartTimeUtc), activity.Duration.Milliseconds,
                         _options.Source, Guid.Parse(activity.TraceId.ToString()), FromActivitySpanId(activity.SpanId), new List<Guid>
@@ -73,9 +74,9 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
                     spanCount++;
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                _logger.LogError(ex, "Error sending metrics to wavefront: {message}", ex.Message);
+                _logger.LogError(exception, "Error sending metrics to wavefront");
             }
         }
 
@@ -83,14 +84,22 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
         return ExportResult.Success;
     }
 
-    private IList<KeyValuePair<string, string>> GetTags(IEnumerable<KeyValuePair<string, string>> inputTags)
+    private IList<KeyValuePair<string, string?>> GetTags(IEnumerable<KeyValuePair<string, string?>> inputTags)
     {
-        List<KeyValuePair<string, string>> tags = inputTags.ToList();
+        List<KeyValuePair<string, string?>> tags = inputTags.ToList();
 
-        tags.Add(new KeyValuePair<string, string>("application", _options.Name.ToLowerInvariant()));
-        tags.Add(new KeyValuePair<string, string>("service", _options.Service.ToLowerInvariant()));
+        if (_options.Name != null)
+        {
+            tags.Add(new KeyValuePair<string, string?>("application", _options.Name.ToLowerInvariant()));
+        }
 
-        tags.Add(new KeyValuePair<string, string>("component", "wavefront-trace-exporter"));
+        if (_options.Service != null)
+        {
+            tags.Add(new KeyValuePair<string, string?>("service", _options.Service.ToLowerInvariant()));
+        }
+
+        tags.Add(new KeyValuePair<string, string?>("component", "wavefront-trace-exporter"));
+
         return tags;
     }
 

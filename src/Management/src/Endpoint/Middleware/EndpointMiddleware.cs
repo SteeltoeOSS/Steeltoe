@@ -2,127 +2,115 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
-public abstract class EndpointMiddleware<TResult> : IEndpointMiddleware
+public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddleware
 {
-    protected ILogger logger;
-    protected IOptionsMonitor<ManagementEndpointOptions> managementOptions;
+    private readonly ILogger _logger;
 
-    public IEndpoint<TResult> Endpoint { get; set; }
+    protected IOptionsMonitor<ManagementOptions> ManagementOptionsMonitor { get; }
+    protected IEndpointHandler<TArgument, TResult> EndpointHandler { get; }
 
-    public virtual IEndpointOptions EndpointOptions => Endpoint.Options;
+    public EndpointOptions EndpointOptions => EndpointHandler.Options;
 
-    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
+    protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(logger);
-        this.logger = logger;
-        this.managementOptions = managementOptions;
+        ArgumentGuard.NotNull(endpointHandler);
+        ArgumentGuard.NotNull(managementOptionsMonitor);
+        ArgumentGuard.NotNull(loggerFactory);
+
+        EndpointHandler = endpointHandler;
+        ManagementOptionsMonitor = managementOptionsMonitor;
+        _logger = loggerFactory.CreateLogger<EndpointMiddleware<TArgument, TResult>>();
     }
 
-    protected EndpointMiddleware(IEndpoint<TResult> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
-        : this(managementOptions, logger)
+    public virtual bool ShouldInvoke(PathString requestPath)
     {
-        ArgumentGuard.NotNull(endpoint);
-        ArgumentGuard.NotNull(logger);
-        Endpoint = endpoint;
+        ArgumentGuard.NotNull(requestPath);
+
+        ManagementOptions managementOptions = ManagementOptionsMonitor.CurrentValue;
+        bool isEnabled = EndpointOptions.IsEnabled(managementOptions);
+        bool isExposed = EndpointOptions.IsExposed(managementOptions);
+
+        bool isCloudFoundryEndpoint = requestPath.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath);
+        bool returnValue = isCloudFoundryEndpoint ? managementOptions.IsCloudFoundryEnabled && isEnabled : isEnabled && isExposed;
+
+        _logger.LogDebug($"Returned {returnValue} for endpointHandler: {EndpointOptions.Id}, requestPath: {requestPath}, isEnabled: {isEnabled}, " +
+            $"isExposed: {isExposed}, isCloudFoundryEndpoint: {isCloudFoundryEndpoint}, isCloudFoundryEnabled: {managementOptions.IsCloudFoundryEnabled}");
+
+        return returnValue;
     }
 
-    public virtual string HandleRequest()
+    public async Task InvokeAsync(HttpContext context, RequestDelegate? next)
     {
-        TResult result = Endpoint.Invoke();
-        return Serialize(result);
-    }
+        ArgumentGuard.NotNull(context);
 
-    public virtual string Serialize(TResult result)
-    {
-        try
+        if (ShouldInvoke(context.Request.Path))
         {
-            JsonSerializerOptions serializerOptions = managementOptions.CurrentValue.SerializerOptions;
-            JsonSerializerOptions options = GetSerializerOptions(serializerOptions);
-
-            return JsonSerializer.Serialize(result, options);
+            TResult result = await InvokeEndpointHandlerAsync(context, context.RequestAborted);
+            await WriteResponseAsync(result, context, context.RequestAborted);
         }
-        catch (Exception e) when (e is ArgumentException or ArgumentNullException or NotSupportedException)
+        else
         {
-            logger.LogError(e, "Error serializing {MiddlewareResponse}", result);
+            // Terminal middleware
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
-
-        return string.Empty;
     }
 
-    internal static JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
+    protected abstract Task<TResult> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken);
+
+    protected virtual async Task WriteResponseAsync(TResult result, HttpContext context, CancellationToken cancellationToken)
     {
-        serializerOptions ??= new JsonSerializerOptions
+        ArgumentGuard.NotNull(context);
+
+        context.HandleContentNegotiation(_logger);
+
+        if (Equals(result, null))
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
+            return;
+        }
+
+        JsonSerializerOptions options = GetSerializerOptions();
+        await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
+    }
+
+    protected JsonSerializerOptions GetSerializerOptions()
+    {
+        JsonSerializerOptions serializerOptions = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
 
         if (serializerOptions.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
         {
             serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         }
 
-        if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
+        if (!serializerOptions.Converters.Any(converter => converter is JsonStringEnumConverter))
         {
             serializerOptions.Converters.Add(new JsonStringEnumConverter());
         }
 
-        if (serializerOptions.Converters?.Any(c => c is HealthConverter or HealthConverterV3) != true)
+        if (!serializerOptions.Converters.Any(converter => converter is HealthConverter or HealthConverterV3))
         {
             serializerOptions.Converters.Add(new HealthConverter());
         }
 
-        if (serializerOptions.Converters?.Any(c => c is MetricsResponseConverter) != true)
+        if (!serializerOptions.Converters.Any(converter => converter is HttpTraceResultConverter))
         {
-            serializerOptions.Converters.Add(new MetricsResponseConverter());
+            serializerOptions.Converters.Add(new HttpTraceResultConverter());
         }
 
         return serializerOptions;
     }
-
-    public abstract Task InvokeAsync(HttpContext context, RequestDelegate next);
-}
-
-public interface IEndpointMiddleware : IMiddleware
-{
-    public IEndpointOptions EndpointOptions { get; }
-}
-
-public abstract class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
-{
-    public new IEndpoint<TResult, TRequest> Endpoint { get; set; }
-
-    public override IEndpointOptions EndpointOptions => Endpoint.Options;
-
-    protected EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
-        : base(managementOptions, logger)
-    {
-        ArgumentGuard.NotNull(endpoint);
-
-        Endpoint = endpoint;
-    }
-
-    protected EndpointMiddleware(IOptionsMonitor<ManagementEndpointOptions> managementOptions, ILogger logger)
-        : base(managementOptions, logger)
-    {
-    }
-
-    public virtual string HandleRequest(TRequest arg)
-    {
-        TResult result = Endpoint.Invoke(arg);
-        return Serialize(result);
-    }
-
-    public abstract override Task InvokeAsync(HttpContext context, RequestDelegate next);
 }
