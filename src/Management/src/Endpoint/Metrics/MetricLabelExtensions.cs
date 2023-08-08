@@ -4,7 +4,7 @@
 
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.MetricCollectors.Metrics;
+namespace Steeltoe.Management.Endpoint.Metrics;
 
 internal static class MetricLabelExtensions
 {

@@ -9,8 +9,8 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Prometheus;
 

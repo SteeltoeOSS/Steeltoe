@@ -5,20 +5,18 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Management.MetricCollectors.Exporters;
-using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
 internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
 {
     private readonly IOptionsMonitor<MetricsEndpointOptions> _optionsMonitor;
-    private readonly SteeltoeExporter _exporter;
+    private readonly MetricsExporter _exporter;
     private readonly ILogger<MetricsEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public MetricsEndpointHandler(IOptionsMonitor<MetricsEndpointOptions> optionsMonitor, SteeltoeExporter exporter, ILoggerFactory loggerFactory)
+    public MetricsEndpointHandler(IOptionsMonitor<MetricsEndpointOptions> optionsMonitor, MetricsExporter exporter, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(exporter);

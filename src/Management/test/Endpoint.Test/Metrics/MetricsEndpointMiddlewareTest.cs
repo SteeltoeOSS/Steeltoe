@@ -7,10 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.MetricCollectors.Exporters;
-using Steeltoe.Management.MetricCollectors.Metrics;
-using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
@@ -28,7 +26,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new MetricsExporter(_scraperOptions), NullLoggerFactory.Instance);
 
         var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
@@ -44,7 +42,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new MetricsExporter(_scraperOptions), NullLoggerFactory.Instance);
 
         var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
@@ -78,7 +76,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new MetricsExporter(_scraperOptions), NullLoggerFactory.Instance);
 
         var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
@@ -98,7 +96,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new SteeltoeExporter(_scraperOptions), NullLoggerFactory.Instance);
+        var handler = new MetricsEndpointHandler(endpointOptionsMonitor, new MetricsExporter(_scraperOptions), NullLoggerFactory.Instance);
 
         var middleware = new MetricsEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
 
@@ -124,7 +122,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings);
 
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
-        var exporter = new SteeltoeExporter(_scraperOptions);
+        var exporter = new MetricsExporter(_scraperOptions);
 
         using AggregationManager aggregationManager = GetTestMetrics(exporter);
 
@@ -147,7 +145,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var exporter = new SteeltoeExporter(_scraperOptions);
+        var exporter = new MetricsExporter(_scraperOptions);
 
         var handler = new MetricsEndpointHandler(endpointOptionsMonitor, exporter, NullLoggerFactory.Instance);
 
@@ -166,7 +164,7 @@ public sealed class MetricsEndpointMiddlewareTest : BaseTest
         IOptionsMonitor<MetricsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<MetricsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var exporter = new SteeltoeExporter(_scraperOptions);
+        var exporter = new MetricsExporter(_scraperOptions);
         using AggregationManager aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         var handler = new MetricsEndpointHandler(endpointOptionsMonitor, exporter, NullLoggerFactory.Instance);

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Security;
 
-namespace Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics
+namespace Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics
 {
     internal abstract class InstrumentState
     {

@@ -14,7 +14,7 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics
+namespace Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics
 {
     [UnsupportedOSPlatform("browser")]
     [SecuritySafeCritical]

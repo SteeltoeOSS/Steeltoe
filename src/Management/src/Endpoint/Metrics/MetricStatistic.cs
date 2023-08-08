@@ -7,7 +7,7 @@
 using System.Text.Json.Serialization;
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.Management.MetricCollectors.Metrics;
+namespace Steeltoe.Management.Endpoint.Metrics;
 
 [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]
 public enum MetricStatistic

@@ -11,7 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics
+namespace Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics
 {
     /// <summary>
     /// AggregatorStore is a high performance map from an unordered list of labels (KeyValuePairs) to an instance of TAggregator

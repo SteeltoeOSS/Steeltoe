@@ -4,7 +4,6 @@
 
 using System.Text.Json.Serialization;
 using Steeltoe.Common;
-using Steeltoe.Management.MetricCollectors.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 

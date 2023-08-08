@@ -7,7 +7,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics
+namespace Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics
 {
     internal sealed class QuantileAggregation
     {

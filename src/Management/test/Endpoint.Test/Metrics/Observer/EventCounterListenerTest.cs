@@ -5,10 +5,9 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
+using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
-using Steeltoe.Management.MetricCollectors.Exporters;
-using Steeltoe.Management.MetricCollectors.Metrics;
-using Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics;
+using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics.Observer;
@@ -55,7 +54,7 @@ public sealed class EventCounterListenerTest : BaseTest
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-        var exporter = new SteeltoeExporter(_exporterOptions);
+        var exporter = new MetricsExporter(_exporterOptions);
         using AggregationManager aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);
@@ -92,7 +91,7 @@ public sealed class EventCounterListenerTest : BaseTest
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
-        var exporter = new SteeltoeExporter(_exporterOptions);
+        var exporter = new MetricsExporter(_exporterOptions);
         using AggregationManager aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);
@@ -133,7 +132,7 @@ public sealed class EventCounterListenerTest : BaseTest
 
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
-        var exporter = new SteeltoeExporter(_exporterOptions);
+        var exporter = new MetricsExporter(_exporterOptions);
         using AggregationManager aggregationManager = GetTestMetrics(exporter);
         aggregationManager.Start();
         await Task.Delay(2000);

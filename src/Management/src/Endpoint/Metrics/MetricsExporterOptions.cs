@@ -4,9 +4,9 @@
 
 #pragma warning disable S4004 // Collection properties should be readonly
 
-namespace Steeltoe.Management.MetricCollectors.Exporters;
+namespace Steeltoe.Management.Endpoint.Metrics;
 
-public sealed class MetricsExporterOptions
+internal sealed class MetricsExporterOptions
 {
     public int CacheDurationMilliseconds { get; set; }
     public int MaxTimeSeries { get; set; }

@@ -7,7 +7,7 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace Steeltoe.Management.MetricCollectors.SystemDiagnosticsMetrics
+namespace Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics
 {
     internal interface IObjectSequence
     {

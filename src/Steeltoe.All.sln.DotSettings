@@ -15,8 +15,10 @@ Steeltoe.Common.ArgumentGuard.NotNull($EXPR$);</s:String>
 	<s:Int64 x:Key="/Default/CodeEditing/NullCheckPatterns/PatternTypeNamesToPriority/=JetBrains_002EReSharper_002EFeature_002EServices_002ECSharp_002ENullChecking_002ETraceAssertPattern/@EntryIndexedValue">50</s:Int64>
 	<s:Boolean x:Key="/Default/CodeInspection/CodeAnnotations/PropagateAnnotations/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=557AFE26_002DB89D_002D497D_002D92B6_002D8268D04396E5_002Fd_003AHeapDump_002Fd_003ADotNetHeapDump/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=557AFE26_002DB89D_002D497D_002D92B6_002D8268D04396E5_002Fd_003AMetrics_002Fd_003ASystemDiagnosticsMetrics/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7207D047_002D2F02_002D4946_002D9A3D_002D16928E62F37B_002Fd_003ASystemDiagnosticsMetrics/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=557AFE26_002DB89D_002D497D_002D92B6_002D8268D04396E5_002Fd_003AHeapDump_002Fd_003ADotNetHeapDump/@EntryIndexedValue">557AFE26-B89D-497D-92B6-8268D04396E5/d:HeapDump/d:DotNetHeapDump</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=557AFE26_002DB89D_002D497D_002D92B6_002D8268D04396E5_002Fd_003AMetrics_002Fd_003ASystemDiagnosticsMetrics/@EntryIndexedValue">557AFE26-B89D-497D-92B6-8268D04396E5/d:Metrics/d:SystemDiagnosticsMetrics</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=7207D047_002D2F02_002D4946_002D9A3D_002D16928E62F37B_002Fd_003ASystemDiagnosticsMetrics/@EntryIndexedValue">7207D047-2F02-4946-9A3D-16928E62F37B/d:SystemDiagnosticsMetrics</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/AnalysisEnabled/@EntryValue">SOLUTION</s:String>
 	<s:Boolean x:Key="/Default/CodeInspection/Highlighting/IdentifierHighlightingEnabled/@EntryValue">True</s:Boolean>
