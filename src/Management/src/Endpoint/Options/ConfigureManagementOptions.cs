@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
@@ -38,6 +40,20 @@ internal sealed class ConfigureManagementOptions : IConfigureOptions<ManagementO
             options.IsCloudFoundryEnabled = isEnabled;
         }
 
+        ConfigureSerializerOptions(options);
+
+        options.Path ??= DefaultPath;
+
+        options.Exposure ??= new Exposure();
+
+        var configureExposure = new ConfigureExposure(_configuration);
+        configureExposure.Configure(options.Exposure);
+    }
+
+    private static void ConfigureSerializerOptions(ManagementOptions options)
+    {
+        options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+
         foreach (string converterTypeName in options.CustomJsonConverters)
         {
             var converterType = Type.GetType(converterTypeName, true)!;
@@ -46,12 +62,20 @@ internal sealed class ConfigureManagementOptions : IConfigureOptions<ManagementO
             options.SerializerOptions.Converters.Add(converterInstance);
         }
 
-        options.Path ??= DefaultPath;
+        if (!options.SerializerOptions.Converters.Any(converter => converter is JsonStringEnumConverter))
+        {
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        }
 
-        options.Exposure ??= new Exposure();
+        if (!options.SerializerOptions.Converters.Any(converter => converter is HealthConverter or HealthConverterV3))
+        {
+            options.SerializerOptions.Converters.Add(new HealthConverter());
+        }
 
-        var configureExposure = new ConfigureExposure(_configuration);
-        configureExposure.Configure(options.Exposure);
+        if (!options.SerializerOptions.Converters.Any(converter => converter is HttpTraceResultConverter))
+        {
+            options.SerializerOptions.Converters.Add(new HttpTraceResultConverter());
+        }
     }
 
     private sealed class ConfigureExposure

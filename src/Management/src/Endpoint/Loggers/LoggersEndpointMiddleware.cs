@@ -105,7 +105,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
         else
         {
             context.HandleContentNegotiation(_logger);
-            JsonSerializerOptions options = GetSerializerOptions();
+            JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
             await JsonSerializer.SerializeAsync(context.Response.Body, result.Data, options, cancellationToken);
         }
     }

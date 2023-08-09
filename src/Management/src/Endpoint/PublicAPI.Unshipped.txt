@@ -313,7 +313,6 @@ Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointHandler.get -> Steeltoe.Management.IEndpointHandler<TArgument, TResult>!
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointMiddleware(Steeltoe.Management.IEndpointHandler<TArgument, TResult>! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointOptions.get -> Steeltoe.Management.EndpointOptions!
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.GetSerializerOptions() -> System.Text.Json.JsonSerializerOptions!
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext! context, Microsoft.AspNetCore.Http.RequestDelegate? next) -> System.Threading.Tasks.Task!
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ManagementOptionsMonitor.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions!>!
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware

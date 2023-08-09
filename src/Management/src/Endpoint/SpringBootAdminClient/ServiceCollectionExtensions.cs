@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Options;
@@ -25,7 +27,12 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.RegisterDefaultApplicationInstanceInfo();
-        services.ConfigureOptions<ConfigureManagementOptions>();
+
+        // Workaround for services.ConfigureOptions<ConfigureManagementOptions>() registering multiple times,
+        // see https://github.com/dotnet/runtime/issues/42358.
+        services.AddOptions();
+        services.TryAddTransient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>();
+
         services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
         services.ConfigureOptions<ConfigureSpringBootAdminClientOptions>();
 
