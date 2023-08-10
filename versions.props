@@ -33,7 +33,7 @@
     <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
     <EFCoreTestVersion>7.0.*</EFCoreTestVersion>
-    <NerdbankGitVersioningVersion>3.5.*</NerdbankGitVersioningVersion>
+    <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>6.5.*</RabbitClientTestVersion>
 
