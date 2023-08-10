@@ -23,6 +23,19 @@ jobs:
       version: 6.0.x
       includePreviewVersions: true
   - task: DotNetCoreCLI@2
+    displayName: Install Nerdbank.GitVersioning tool
+    condition: eq('${{parameters.OS}}', 'macOS')
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install --global nbgv
+  - task: PowerShell@2
+    displayName: Set package version
+    inputs:
+      targetType: 'inline'
+      script: |
+        nbgv cloud
+  - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
       command: restore
