@@ -23,6 +23,12 @@ jobs:
       projects: src/Steeltoe.All.sln
       feedsToUse: config
       nugetConfigPath: nuget.config
+  - task: PowerShell@2
+    displayName: Set package version
+    inputs:
+      targetType: 'inline'
+      script: |
+        nbgv cloud
   - task: SonarCloudPrepare@1
     displayName: Prepare analysis on SonarCloud
     inputs:
