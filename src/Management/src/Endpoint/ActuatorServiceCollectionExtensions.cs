@@ -31,7 +31,11 @@ public static class ActuatorServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.TryAddScoped<ActuatorEndpointMapper>();
-        services.ConfigureOptions<ConfigureManagementOptions>();
+
+        // Workaround for services.ConfigureOptions<ConfigureManagementOptions>() registering multiple times,
+        // see https://github.com/dotnet/runtime/issues/42358.
+        services.AddOptions();
+        services.TryAddTransient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>();
     }
 
     public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)

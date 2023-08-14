@@ -4,15 +4,12 @@
 
 using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
-using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
@@ -83,34 +80,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
             return;
         }
 
-        JsonSerializerOptions options = GetSerializerOptions();
+        JsonSerializerOptions options = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
         await JsonSerializer.SerializeAsync(context.Response.Body, result, options, cancellationToken);
-    }
-
-    protected JsonSerializerOptions GetSerializerOptions()
-    {
-        JsonSerializerOptions serializerOptions = ManagementOptionsMonitor.CurrentValue.SerializerOptions;
-
-        if (serializerOptions.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
-        {
-            serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        }
-
-        if (!serializerOptions.Converters.Any(converter => converter is JsonStringEnumConverter))
-        {
-            serializerOptions.Converters.Add(new JsonStringEnumConverter());
-        }
-
-        if (!serializerOptions.Converters.Any(converter => converter is HealthConverter or HealthConverterV3))
-        {
-            serializerOptions.Converters.Add(new HealthConverter());
-        }
-
-        if (!serializerOptions.Converters.Any(converter => converter is HttpTraceResultConverter))
-        {
-            serializerOptions.Converters.Add(new HttpTraceResultConverter());
-        }
-
-        return serializerOptions;
     }
 }
