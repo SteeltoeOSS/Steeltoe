@@ -10,9 +10,21 @@ jobs:
     DOTNET_NOLOGO: true
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  strategy:
+    matrix:
+      linux:
+        imageName: 'ubuntu-latest'
+      mac:
+        imageName: 'macOS-latest'
+      windows:
+        imageName: 'windows-latest'
   pool:
-    vmImage: windows-latest
+    vmImage: $(imageName)
   steps:
+  - task: UseDotNet@2
+    displayName: Install .NET 6
+    inputs:
+      version: 6.0.x
   - checkout: self
     persistCredentials: true
     fetchDepth: 0
@@ -23,11 +35,11 @@ jobs:
       script: |
         dotnet tool restore
   - task: PowerShell@2
-    displayName: Restore packages
+    displayName: Build
     inputs:
       targetType: 'inline'
       script: |
-        dotnet restore src
+        dotnet build src -c Release
   - task: PowerShell@2
     displayName: Verify code style
     inputs:
