@@ -9,7 +9,7 @@ namespace Steeltoe.Common;
 public static class Platform
 {
     public const string VcapApplication = "VCAP_APPLICATION";
-    public const string KubernetesHost = "KUBERNETES_SERVICE_HOST";
+    public const string KubernetesHost =   "KUBERNETES_SERVICE_HOST";
 
     public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
