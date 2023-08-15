@@ -7,11 +7,11 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using RC = RabbitMQ.Client;
+using SteeltoeMethodInvoker = Steeltoe.Common.Util.MethodInvoker;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
@@ -152,7 +152,7 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
     {
         try
         {
-            var methodInvoker = new MethodInvoker();
+            var methodInvoker = new SteeltoeMethodInvoker();
             methodInvoker.SetTargetObject(Instance);
             methodInvoker.TargetMethod = methodName;
             methodInvoker.SetArguments(arguments);
