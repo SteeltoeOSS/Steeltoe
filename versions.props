@@ -73,5 +73,6 @@
     <EFCoreVersion>6.0.*</EFCoreVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
     <AspNetCoreVersion>6.0.*</AspNetCoreVersion>
+    <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
   </PropertyGroup>
 </Project>
