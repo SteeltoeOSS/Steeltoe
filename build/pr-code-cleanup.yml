@@ -7,7 +7,7 @@ jobs:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
   pool:
-    vmImage: windows-latest
+    vmImage: ubuntu-latest
   steps:
   - task: PowerShell@2
     displayName: Validate preconditions
@@ -20,6 +20,12 @@ jobs:
   - checkout: self
     fetchDepth: 0
     persistCredentials: true
+  - task: PowerShell@2
+    displayName: Set package version
+    inputs:
+      targetType: 'inline'
+      script: |
+        nbgv cloud
   - task: PowerShell@2
     displayName: Checkout PR branch
     inputs:

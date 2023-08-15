@@ -11,7 +11,7 @@ trigger:
 jobs:
 - job: Steeltoe_Package
   pool:
-    vmImage: windows-latest
+    vmImage: ubuntu-latest
   variables:
     DOTNET_NOLOGO: true
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -19,35 +19,33 @@ jobs:
   steps:
   - checkout: self
     fetchDepth: 0
-  - task: DotNetCoreCLI@2
-    displayName: Install Nerdbank.GitVersioning tool
-    inputs:
-      command: custom
-      custom: tool
-      arguments: install --tool-path . nbgv
   - task: PowerShell@2
-    displayName: Set PackageVersion variable
+    displayName: Set package version
     env:
-      PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
     inputs:
       targetType: 'inline'
       script: |
-        .\nbgv cloud
-
         if ($env:PackageVersionOverride) {
-            $env:PackageVersion = $env:PackageVersionOverride
-        }
-        else {
-          $version = .\nbgv.exe get-version -f json | ConvertFrom-Json
-          $env:PackageVersion = $version.NuGetPackageVersion
+            Write-Host "Overriding package version with: $env:PackageVersionOverride"
+            Write-Warning "Always provide a 4-segment version (such as 1.2.3.0 or 1.2.3.0-rc1), to prevent an increment in patch number."
+            Write-Warning "The commit hash may still be added to the version, depending on the source branch or PR being built."
+            nbgv set-version $env:PackageVersionOverride
+
+            Write-Host "Contents of version.json after update:"
+            get-content version.json
+
+            git config --global user.email "cibuild@steeltoe.io"
+            git config --global user.name "steeltoe-cibuild"
+            git commit --allow-empty -m "Activating version override by locally committing changes to version.json."
         }
 
-        Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
+        nbgv cloud
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
       command: restore
+      verbosityRestore: Minimal
       projects: src/Steeltoe.All.sln
       feedsToUse: config
       nugetConfigPath: nuget.config
@@ -56,17 +54,15 @@ jobs:
     inputs:
       command: build
       projects: src/Steeltoe.All.sln
-      arguments: --no-restore -c Release -v n
+      arguments: --no-restore -c Release -v minimal
   - task: DotNetCoreCLI@2
     displayName: dotnet pack
     inputs:
       command: pack
-      feedsToUse: select
+      verbosityPack: Minimal
       packagesToPack: src/Steeltoe.All.sln
       configuration: Release
       packDirectory: $(Build.ArtifactStagingDirectory)/packages
-      versioningScheme: byEnvVar
-      versionEnvVar: PackageVersion
       nobuild: true
   - task: PowerShell@2
     condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
