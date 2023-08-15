@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Configuration provider for reading Spring Boot style configuration</Description>
     <PackageTags>configuration;springboot</PackageTags>
     <IsPackable>true</IsPackable>
