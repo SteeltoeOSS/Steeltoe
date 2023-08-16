@@ -5,6 +5,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connectors.CloudFoundry;
@@ -15,12 +16,6 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public class EurekaPostConfigurerTest
 {
-    public EurekaPostConfigurerTest()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-    }
-
     [Fact]
     public void UpdateConfiguration_WithInstDefaults_UpdatesCorrectly()
     {
@@ -255,11 +250,10 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfigurationComplainsAboutDefaultWhenWontWork()
     {
-        Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
+        using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
 
         var exception = Assert.Throws<InvalidOperationException>(() => EurekaPostConfigurer.UpdateConfiguration(null, new EurekaClientOptions()));
         Assert.Contains(EurekaClientConfiguration.DefaultServerServiceUrl, exception.Message, StringComparison.Ordinal);
-        Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);
     }
 
     [Fact]
@@ -389,10 +383,10 @@ public class EurekaPostConfigurerTest
                     }
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
-        Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
-        Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", vcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
+        using var indexScope = new EnvironmentVariableScope("CF_INSTANCE_INDEX", "1");
+        using var guidScope = new EnvironmentVariableScope("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
@@ -598,10 +592,11 @@ public class EurekaPostConfigurerTest
                     }
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
-        Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
-        Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", vcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
+        using var indexScope = new EnvironmentVariableScope("CF_INSTANCE_INDEX", "1");
+        using var guidScope = new EnvironmentVariableScope("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
+
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path);
@@ -807,10 +802,11 @@ public class EurekaPostConfigurerTest
                     }
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
-        Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
-        Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", vcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
+        using var indexScope = new EnvironmentVariableScope("CF_INSTANCE_INDEX", "1");
+        using var guidScope = new EnvironmentVariableScope("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
+
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path);
@@ -923,10 +919,11 @@ public class EurekaPostConfigurerTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
-        Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
-        Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", vcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
+        using var indexScope = new EnvironmentVariableScope("CF_INSTANCE_INDEX", "1");
+        using var guidScope = new EnvironmentVariableScope("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
+
         using var sandbox = new Sandbox();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCloudFoundry().Build();
         EurekaServiceInfo si = configurationRoot.GetServiceInfos<EurekaServiceInfo>().First();
@@ -974,11 +971,9 @@ public class EurekaPostConfigurerTest
             Enabled = false
         };
 
-        Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
+        using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
 
         Exception ex = Record.Exception(() => EurekaPostConfigurer.UpdateConfiguration(null, clientOptions));
         Assert.Null(ex);
-
-        Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);
     }
 }

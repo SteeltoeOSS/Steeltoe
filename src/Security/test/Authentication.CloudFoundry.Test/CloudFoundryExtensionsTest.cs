@@ -6,6 +6,7 @@ using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Xunit;
 
@@ -94,22 +95,18 @@ public class CloudFoundryExtensionsTest
     [Fact]
     public async Task AddCloudFoundryOAuthAuthentication_AddsIntoPipeline_UsesSSOInfo()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", VcapServices);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", VcapServices);
 
         IWebHostBuilder builder = GetHostBuilder<TestServerStartup>();
 
-        using (var server = new TestServer(builder))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
-            Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-            string location = result.Headers.Location.ToString();
-            Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location, StringComparison.Ordinal);
-        }
+        using var server = new TestServer(builder);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
+        Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
+        string location = result.Headers.Location.ToString();
+        Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -125,8 +122,8 @@ public class CloudFoundryExtensionsTest
     [Fact]
     public async Task AddCloudFoundryOpenId_AddsIntoPipeline()
     {
-        Environment.SetEnvironmentVariable("openIdConfigResponse", OpenIdConfigResponse);
-        Environment.SetEnvironmentVariable("jwksResponse", JwksResponse);
+        using var configScope = new EnvironmentVariableScope("openIdConfigResponse", OpenIdConfigResponse);
+        using var jwksScope = new EnvironmentVariableScope("jwksResponse", JwksResponse);
 
         IWebHostBuilder builder = GetHostBuilder<TestServerOpenIdStartup>(new Dictionary<string, string>
         {
@@ -144,27 +141,23 @@ public class CloudFoundryExtensionsTest
     [Fact]
     public async Task AddCloudFoundryOpenId_AddsIntoPipeline_UsesSSOInfo()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", VcapServices);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", VcapServices);
 
-        Environment.SetEnvironmentVariable("openIdConfigResponse",
+        using var configScope = new EnvironmentVariableScope("openIdConfigResponse",
             OpenIdConfigResponse.Replace("default_oauthserviceurl", "login.system.testcloud.com", StringComparison.Ordinal));
 
-        Environment.SetEnvironmentVariable("jwksResponse", JwksResponse);
+        using var jwksScope = new EnvironmentVariableScope("jwksResponse", JwksResponse);
 
         IWebHostBuilder builder = GetHostBuilder<TestServerOpenIdStartup>();
 
-        using (var server = new TestServer(builder))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
-            Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-            string location = result.Headers.Location.ToString();
-            Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location, StringComparison.Ordinal);
-        }
+        using var server = new TestServer(builder);
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
+        Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
+        string location = result.Headers.Location.ToString();
+        Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location, StringComparison.Ordinal);
     }
 
     private IWebHostBuilder GetHostBuilder<T>(Dictionary<string, string> appsettings = null)
