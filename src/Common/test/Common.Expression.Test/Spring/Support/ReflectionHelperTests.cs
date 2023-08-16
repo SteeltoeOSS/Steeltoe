@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring.Support;
 
-public class ReflectionHelperTests : AbstractExpressionTests
+public sealed class ReflectionHelperTests : AbstractExpressionTests
 {
     [Fact]
     public void TestUtilities()
@@ -709,15 +709,15 @@ public class ReflectionHelperTests : AbstractExpressionTests
     {
     }
 
-    public class Sub : Super
+    public sealed class Sub : Super
     {
     }
 
-    public class Unconvertable
+    public sealed class Unconvertable
     {
     }
 
-    public class Tester
+    public sealed class Tester
     {
         public string Property { get; set; }
 

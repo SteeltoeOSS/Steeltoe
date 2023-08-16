@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Channel;
 
-public class DispatcherHasNoSubscribersTest
+public sealed class DispatcherHasNoSubscribersTest
 {
     [Fact]
     public void OneChannel()

@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class Inventor
+public sealed class Inventor
 {
     private PlaceOfBirth _placeOfBirth;
     public List<int> ListOfInteger { get; set; } = new();
@@ -200,7 +200,7 @@ public class Inventor
         return strings.Length + i;
     }
 
-    public class TestException : Exception
+    public sealed class TestException : Exception
     {
     }
 #pragma warning disable SA1401 // Fields should be private

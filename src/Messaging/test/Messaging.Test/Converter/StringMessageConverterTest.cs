@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Converter;
 
-public class StringMessageConverterTest
+public sealed class StringMessageConverterTest
 {
     [Fact]
     public void FromByteArrayMessage()

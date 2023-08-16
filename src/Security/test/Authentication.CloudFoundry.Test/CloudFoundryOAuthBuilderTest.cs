@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryOAuthBuilderTest
+public sealed class CloudFoundryOAuthBuilderTest
 {
     [Fact]
     public async Task ShouldKeepDefaultServiceUrlsIfAuthDomainNotPresent()

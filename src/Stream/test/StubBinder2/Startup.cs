@@ -12,7 +12,7 @@ using Steeltoe.Stream.StubBinder2;
 
 namespace Steeltoe.Stream.StubBinder2;
 
-public class Startup
+public sealed class Startup
 {
     public IConfiguration Configuration { get; }
 

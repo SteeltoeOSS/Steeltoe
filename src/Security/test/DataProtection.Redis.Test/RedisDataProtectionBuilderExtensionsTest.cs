@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Security.DataProtection.Redis.Test;
 
-public class RedisDataProtectionBuilderExtensionsTest
+public sealed class RedisDataProtectionBuilderExtensionsTest
 {
     [Fact]
     public void PersistKeysToRedis_ThrowsForNulls()

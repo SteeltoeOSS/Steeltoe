@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Discovery.Client.Test;
 
-public class TestApplicationLifetime : IHostApplicationLifetime
+public sealed class TestApplicationLifetime : IHostApplicationLifetime
 {
     public CancellationToken ApplicationStarted => throw new NotImplementedException();
 

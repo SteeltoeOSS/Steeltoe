@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Stream.Binder.RabbitMQ.Test;
 
-public class Poco
+public sealed class Poco
 {
     // ReSharper disable once InconsistentNaming
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter

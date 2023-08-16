@@ -7,7 +7,7 @@ using Steeltoe.Messaging;
 
 namespace Steeltoe.Stream.TestBinder;
 
-public class OutputDestination : AbstractDestination
+public sealed class OutputDestination : AbstractDestination
 {
     private BlockingCollection<IMessage> _messages;
 

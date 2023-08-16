@@ -18,7 +18,7 @@ using Steeltoe.Stream.Configuration;
 
 namespace Steeltoe.Stream.Binder.RabbitMQ.Test;
 
-public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessageChannelBinder>
+public sealed class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessageChannelBinder>
 {
     private static IApplicationContext _applicationContext;
     private readonly RabbitAdmin _rabbitAdmin;

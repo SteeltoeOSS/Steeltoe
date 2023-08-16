@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class IndexingTests
+public sealed class IndexingTests
 {
     [field: FieldAnnotation]
     public object Property { get; set; }
@@ -394,7 +394,7 @@ public class IndexingTests
         Assert.Equal("apple", expression.GetValue(this, typeof(string)));
     }
 
-    public class MapAccessor : IPropertyAccessor
+    public sealed class MapAccessor : IPropertyAccessor
     {
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
@@ -426,7 +426,7 @@ public class IndexingTests
     }
 
     [AttributeUsage(AttributeTargets.Field)]
-    public class FieldAnnotationAttribute : Attribute
+    public sealed class FieldAnnotationAttribute : Attribute
     {
     }
 }

@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.StreamsHost;
 
-public class StreamsHostTest
+public sealed class StreamsHostTest
 {
     [Fact]
     public void HostCanBeStarted()

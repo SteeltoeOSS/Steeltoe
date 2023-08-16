@@ -9,7 +9,7 @@ using Steeltoe.Messaging.Converter;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class FooBarMessageConverter : AbstractMessageConverter
+public sealed class FooBarMessageConverter : AbstractMessageConverter
 {
     public const string DefaultServiceName = nameof(FooBarMessageConverter);
 

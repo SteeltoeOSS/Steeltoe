@@ -20,7 +20,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.Mtls.Test;
 
-public class ClientCertificateAuthenticationTests
+public sealed class ClientCertificateAuthenticationTests
 {
     private readonly CertificateAuthenticationEvents _successfulValidationEvents = new()
     {

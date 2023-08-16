@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Converter;
 
-public class DefaultContentTypeResolverTest
+public sealed class DefaultContentTypeResolverTest
 {
     [Fact]
     public void Resolve()

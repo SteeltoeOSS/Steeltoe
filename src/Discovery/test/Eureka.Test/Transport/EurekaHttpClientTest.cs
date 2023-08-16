@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.Transport;
 
-public class EurekaHttpClientTest : AbstractBaseTest
+public sealed class EurekaHttpClientTest : AbstractBaseTest
 {
     [Fact]
     public void Constructor_Throws_IfConfigNull()

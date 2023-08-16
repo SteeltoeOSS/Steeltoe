@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Contexts;
 
-public class DictionaryAccessorTests
+public sealed class DictionaryAccessorTests
 {
     [Fact]
     public void MapAccessorCompilable()
@@ -65,7 +65,7 @@ public class DictionaryAccessorTests
         return map2;
     }
 
-    public class MapGetter
+    public sealed class MapGetter
     {
         private readonly Dictionary<string, object> _map = new();
 

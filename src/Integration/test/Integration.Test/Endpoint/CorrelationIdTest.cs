@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Endpoint;
 
-public class CorrelationIdTest
+public sealed class CorrelationIdTest
 {
     private readonly IServiceProvider _provider;
 

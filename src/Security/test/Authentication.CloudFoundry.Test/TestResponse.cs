@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class TestResponse : IHttpResponseFeature
+public sealed class TestResponse : IHttpResponseFeature
 {
     public Stream Body
     {

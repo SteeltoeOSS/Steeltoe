@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test;
 
-public class ConsulDiscoveryClientExtensionTest
+public sealed class ConsulDiscoveryClientExtensionTest
 {
     [Fact]
     public void ClientEnabledByDefault()

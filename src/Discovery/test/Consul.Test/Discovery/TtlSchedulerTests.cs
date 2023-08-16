@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
-public class TtlSchedulerTests
+public sealed class TtlSchedulerTests
 {
     [Fact]
     public void Add_Throws_Invalid_InstanceId()

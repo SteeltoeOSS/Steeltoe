@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Availability;
 
-public class LivenessHealthContributorTest
+public sealed class LivenessHealthContributorTest
 {
     private readonly ApplicationAvailability _availability = new();
 

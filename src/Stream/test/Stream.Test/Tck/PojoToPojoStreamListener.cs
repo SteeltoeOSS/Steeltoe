@@ -8,7 +8,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class PojoToPojoStreamListener
+public sealed class PojoToPojoStreamListener
 {
     [StreamListener(ISink.InputName)]
     [SendTo(ISource.OutputName)]

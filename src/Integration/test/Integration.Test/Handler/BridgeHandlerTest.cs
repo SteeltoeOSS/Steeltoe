@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Handler;
 
-public class BridgeHandlerTest
+public sealed class BridgeHandlerTest
 {
     private readonly BridgeHandler _handler;
     private readonly IServiceProvider _provider;

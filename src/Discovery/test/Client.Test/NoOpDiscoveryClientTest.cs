@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
 
-public class NoOpDiscoveryClientTest
+public sealed class NoOpDiscoveryClientTest
 {
     [Fact]
     public void NoOpDiscoveryClient_LooksForOtherClients()

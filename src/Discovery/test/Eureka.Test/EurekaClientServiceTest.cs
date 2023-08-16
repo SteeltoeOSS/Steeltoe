@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaClientServiceTest
+public sealed class EurekaClientServiceTest
 {
     [Fact]
     public void ConfigureClientOptions_ConfiguresCorrectly()

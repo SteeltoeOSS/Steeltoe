@@ -8,7 +8,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class StringToMapStreamListener
+public sealed class StringToMapStreamListener
 {
     [StreamListener(ISink.InputName)]
     [SendTo(ISource.OutputName)]

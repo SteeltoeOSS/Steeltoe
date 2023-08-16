@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Support;
 
-public class RabbitHeaderAccessorTest
+public sealed class RabbitHeaderAccessorTest
 {
     [Fact]
     public void NewEmptyHeaders()

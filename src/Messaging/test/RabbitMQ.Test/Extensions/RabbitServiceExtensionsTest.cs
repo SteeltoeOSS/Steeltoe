@@ -22,7 +22,7 @@ using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.Sim
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Extensions;
 
-public class RabbitServiceExtensionsTest
+public sealed class RabbitServiceExtensionsTest
 {
     [Fact]
     public void AddRabbitTemplate_DefaultName()

@@ -10,7 +10,7 @@ using Steeltoe.Stream.Provisioning;
 
 namespace Steeltoe.Stream.TestBinder;
 
-public class TestChannelBinderProvisioner : IProvisioningProvider
+public sealed class TestChannelBinderProvisioner : IProvisioningProvider
 {
     private readonly Dictionary<string, ISubscribableChannel> _provisionedDestinations = new();
     private readonly IApplicationContext _context;

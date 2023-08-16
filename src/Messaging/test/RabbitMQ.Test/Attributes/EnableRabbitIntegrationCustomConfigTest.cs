@@ -28,7 +28,7 @@ using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.Sim
 namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbitIntegrationCustomConfigTest.CustomStartupFixture>
+public sealed class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbitIntegrationCustomConfigTest.CustomStartupFixture>
 {
     private readonly ServiceProvider _provider;
     private readonly CustomStartupFixture _fixture;
@@ -117,7 +117,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbi
         Assert.Equal("\"Message`1Dictionary`2\"", Encoding.UTF8.GetString(returned13));
     }
 
-    public class AfterReceivePostProcessors : IMessagePostProcessor
+    public sealed class AfterReceivePostProcessors : IMessagePostProcessor
     {
         public List<string> Headers { get; }
 
@@ -141,7 +141,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbi
         }
     }
 
-    public class MessagePostProcessor : IMessagePostProcessor
+    public sealed class MessagePostProcessor : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
@@ -267,7 +267,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbi
             return services;
         }
 
-        public class MyRabbitListenerConfigurer : IRabbitListenerConfigurer
+        public sealed class MyRabbitListenerConfigurer : IRabbitListenerConfigurer
         {
             private readonly IApplicationContext _context;
 
@@ -284,7 +284,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbi
         }
     }
 
-    public class Foo2Service
+    public sealed class Foo2Service
     {
         public object Bean { get; set; }
 
@@ -376,12 +376,12 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbi
         }
     }
 
-    public class Foo1
+    public sealed class Foo1
     {
         public string Bar { get; set; }
     }
 
-    public class Foo2
+    public sealed class Foo2
     {
         public string Bar { get; set; }
 
@@ -391,7 +391,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbi
         }
     }
 
-    public class Foo1ToFoo2Converter : AbstractGenericConverter
+    public sealed class Foo1ToFoo2Converter : AbstractGenericConverter
     {
         public Foo1ToFoo2Converter()
             : base(new HashSet<(Type, Type)>
@@ -417,7 +417,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<EnableRabbi
         }
     }
 
-    public class AddSomeHeadersPostProcessor : IMessagePostProcessor
+    public sealed class AddSomeHeadersPostProcessor : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring.Standard;
 
-public class PropertiesConversionSpelTests
+public sealed class PropertiesConversionSpelTests
 {
     private static readonly SpelExpressionParser Parser = new();
 
@@ -83,7 +83,7 @@ public class PropertiesConversionSpelTests
         Assert.Equal("123", result);
     }
 
-    public class TestBean
+    public sealed class TestBean
     {
         public string Foo(IDictionary props)
         {
@@ -91,7 +91,7 @@ public class PropertiesConversionSpelTests
         }
     }
 
-    public class CustomMap : Dictionary<string, object>
+    public sealed class CustomMap : Dictionary<string, object>
     {
     }
 }

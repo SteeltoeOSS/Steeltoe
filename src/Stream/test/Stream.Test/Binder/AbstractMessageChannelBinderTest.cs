@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class AbstractMessageChannelBinderTest : AbstractTest
+public sealed class AbstractMessageChannelBinderTest : AbstractTest
 {
     private readonly IServiceProvider _serviceProvider;
 

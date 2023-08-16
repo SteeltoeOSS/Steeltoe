@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Http.Test.LoadBalancer;
 
-public class LoadBalancerDelegatingHandlerTest
+public sealed class LoadBalancerDelegatingHandlerTest
 {
     [Fact]
     public void Throws_If_LoadBalancerNull()

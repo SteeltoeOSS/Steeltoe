@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
-public class AttributeExceptionHandlerMethodResolverTest
+public sealed class AttributeExceptionHandlerMethodResolverTest
 {
     private AttributeExceptionHandlerMethodResolver _resolver = new(typeof(ExceptionController));
 

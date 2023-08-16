@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class PlaceOfBirth
+public sealed class PlaceOfBirth
 {
     public string Country { get; set; }
 

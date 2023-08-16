@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryTokenKeyResolverTest
+public sealed class CloudFoundryTokenKeyResolverTest
 {
     [Fact]
     public void Constructor_ThrowsIfOptionsNull()

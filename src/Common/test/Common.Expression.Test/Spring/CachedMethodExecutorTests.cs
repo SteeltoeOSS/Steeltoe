@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class CachedMethodExecutorTests
+public sealed class CachedMethodExecutorTests
 {
     private readonly IExpressionParser _parser = new SpelExpressionParser();
     private readonly StandardEvaluationContext _context = new(new RootObject());
@@ -50,7 +50,7 @@ public class CachedMethodExecutorTests
         }
     }
 
-    public class RootObject : BaseObject
+    public sealed class RootObject : BaseObject
     {
         public string Echo(int value)
         {

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
-public class ConsulRetryOptionsTest
+public sealed class ConsulRetryOptionsTest
 {
     [Fact]
     public void Constructor_InitializesDefaults()

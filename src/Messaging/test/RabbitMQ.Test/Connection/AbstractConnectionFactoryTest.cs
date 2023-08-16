@@ -108,7 +108,7 @@ public abstract class AbstractConnectionFactoryTest
 
     protected abstract AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory connectionFactory);
 
-    protected class IncrementConnectionListener : IConnectionListener
+    protected sealed class IncrementConnectionListener : IConnectionListener
     {
         private int _called;
 

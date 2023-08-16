@@ -16,7 +16,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
-public class BlockingQueueConsumerTest
+public sealed class BlockingQueueConsumerTest
 {
     [Fact]
     public void TestRequeue()

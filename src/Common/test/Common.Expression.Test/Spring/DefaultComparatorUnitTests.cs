@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class DefaultComparatorUnitTests
+public sealed class DefaultComparatorUnitTests
 {
     [Fact]
     public void TestPrimitives()

@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Logging.DynamicLogger.Test;
 
-public class DynamicLoggerHostBuilderExtensionsTest
+public sealed class DynamicLoggerHostBuilderExtensionsTest
 {
     [Fact]
     public void AddDynamicLogging_IHostBuilder_AddsDynamicLogging()

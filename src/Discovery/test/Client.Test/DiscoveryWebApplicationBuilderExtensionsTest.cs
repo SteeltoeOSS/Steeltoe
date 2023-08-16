@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
 
-public class DiscoveryWebApplicationBuilderExtensionsTest
+public sealed class DiscoveryWebApplicationBuilderExtensionsTest
 {
     private static readonly Dictionary<string, string> EurekaSettings = new()
     {

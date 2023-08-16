@@ -6,7 +6,7 @@ using Steeltoe.Messaging;
 
 namespace Steeltoe.Stream.TestBinder;
 
-public class InputDestination : AbstractDestination
+public sealed class InputDestination : AbstractDestination
 {
     public void Send(IMessage<byte[]> message)
     {

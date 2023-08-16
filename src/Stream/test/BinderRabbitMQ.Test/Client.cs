@@ -8,7 +8,7 @@ using EnqBinding = EasyNetQ.Management.Client.Model.Binding;
 
 namespace Steeltoe.Stream.Binder.RabbitMQ.Test;
 
-public class Client : ManagementClient
+public sealed class Client : ManagementClient
 {
     internal Client(string hostUrl = "http://localhost", string username = "guest", string password = "guest")
         : base(hostUrl, username, password)

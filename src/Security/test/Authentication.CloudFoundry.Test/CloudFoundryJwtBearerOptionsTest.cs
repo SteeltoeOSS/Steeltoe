@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryJwtBearerOptionsTest
+public sealed class CloudFoundryJwtBearerOptionsTest
 {
     private const string DefaultJwtTokenUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}{CloudFoundryDefaults.JwtTokenUri}";
 

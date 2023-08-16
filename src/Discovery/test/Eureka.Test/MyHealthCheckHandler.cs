@@ -6,7 +6,7 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class MyHealthCheckHandler : IHealthCheckHandler
+public sealed class MyHealthCheckHandler : IHealthCheckHandler
 {
     private readonly InstanceStatus _status;
 

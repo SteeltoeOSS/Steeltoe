@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Endpoint;
 
-public class MessageProducerSupportEndpointTest
+public sealed class MessageProducerSupportEndpointTest
 {
     private readonly ServiceCollection _services;
 

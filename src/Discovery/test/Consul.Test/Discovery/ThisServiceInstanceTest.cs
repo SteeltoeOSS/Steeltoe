@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
-public class ThisServiceInstanceTest
+public sealed class ThisServiceInstanceTest
 {
     [Fact]
     public void Constructor_Initializes()

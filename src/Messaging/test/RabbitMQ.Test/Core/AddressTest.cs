@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
-public class AddressTest
+public sealed class AddressTest
 {
     [Fact]
     public void ToStringCheck()

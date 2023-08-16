@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Converter;
 
-public class MessageConverterTest
+public sealed class MessageConverterTest
 {
     [Fact]
     public void SupportsTargetClass()

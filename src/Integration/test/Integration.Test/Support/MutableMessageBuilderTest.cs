@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Support;
 
-public class MutableMessageBuilderTest
+public sealed class MutableMessageBuilderTest
 {
     [Fact]
     public void Mutable()

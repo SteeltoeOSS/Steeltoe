@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Support;
 
-public class NativeMessageHeaderAccessorTest
+public sealed class NativeMessageHeaderAccessorTest
 {
     [Fact]
     public void CreateFromNativeHeaderMap()

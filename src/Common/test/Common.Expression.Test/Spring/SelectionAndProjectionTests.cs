@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class SelectionAndProjectionTests
+public sealed class SelectionAndProjectionTests
 {
     [Fact]
     public void SelectionWithList()
@@ -249,7 +249,7 @@ public class SelectionAndProjectionTests
         Assert.Equal(7, array[2]);
     }
 
-    public class ListTestBean
+    public sealed class ListTestBean
     {
         public List<int> Integers { get; } = new();
 
@@ -262,7 +262,7 @@ public class SelectionAndProjectionTests
         }
     }
 
-    public class SetTestBean
+    public sealed class SetTestBean
     {
         public ISet<int> Integers { get; } = new HashSet<int>();
 
@@ -275,7 +275,7 @@ public class SelectionAndProjectionTests
         }
     }
 
-    public class EnumerableTestBean
+    public sealed class EnumerableTestBean
     {
         private readonly ISet<int> _integers = new HashSet<int>();
 
@@ -290,7 +290,7 @@ public class SelectionAndProjectionTests
         }
     }
 
-    public class ArrayTestBean
+    public sealed class ArrayTestBean
     {
         public int[] Integers { get; } = new int[10];
 
@@ -303,7 +303,7 @@ public class SelectionAndProjectionTests
         }
     }
 
-    public class MapTestBean
+    public sealed class MapTestBean
     {
         public Dictionary<string, string> Colors { get; } = new();
 
@@ -317,7 +317,7 @@ public class SelectionAndProjectionTests
         }
     }
 
-    public class IntegerTestBean
+    public sealed class IntegerTestBean
     {
         public IntegerWrapper Wrapper { get; }
 
@@ -381,7 +381,7 @@ public class SelectionAndProjectionTests
         }
     }
 
-    public class IntegerWrapper
+    public sealed class IntegerWrapper
     {
         private readonly int? _int;
         private readonly float? _float;

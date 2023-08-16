@@ -21,7 +21,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class RabbitListenerAttributeProcessorTest
+public sealed class RabbitListenerAttributeProcessorTest
 {
     [Fact]
     public async Task SimpleMessageListener()
@@ -293,7 +293,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class TestTarget
+    public sealed class TestTarget
     {
         [DeclareExchange(Name = "test", Type = ExchangeType.Direct)]
         [DeclareExchange(Name = "test", Type = ExchangeType.Topic)]
@@ -305,7 +305,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class SimpleMessageListenerTestBean
+    public sealed class SimpleMessageListenerTestBean
     {
         [RabbitListener("testQueue")]
         public void HandleIt(string body)
@@ -313,7 +313,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class SimpleMessageListenerWithMixedAnnotationsTestBean
+    public sealed class SimpleMessageListenerWithMixedAnnotationsTestBean
     {
         [RabbitListener("testQueue", "${rabbit.myQueue}")]
         public void HandleIt(string body)
@@ -321,7 +321,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class MultipleQueueNamesTestBean
+    public sealed class MultipleQueueNamesTestBean
     {
         [RabbitListener("metaTestQueue", "metaTestQueue2")]
         public void HandleIt(string body)
@@ -329,7 +329,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class MultipleQueuesTestBean
+    public sealed class MultipleQueuesTestBean
     {
         [RabbitListener("#{@queue1}", "#{@queue2}")]
         public void HandleIt(string body)
@@ -337,7 +337,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class MixedQueuesAndQueueNamesTestBean
+    public sealed class MixedQueuesAndQueueNamesTestBean
     {
         [RabbitListener("metaTestQueue2", "#{@queue1}")]
         public void HandleIt(string body)
@@ -345,7 +345,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class PropertyPlaceholderResolvingToQueueTestBean
+    public sealed class PropertyPlaceholderResolvingToQueueTestBean
     {
         [RabbitListener("${rabbit:myQueue}", "#{@queue2}")]
         public void HandleIt(string body)
@@ -353,7 +353,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class InvalidValueInAnnotationTestBean
+    public sealed class InvalidValueInAnnotationTestBean
     {
         [RabbitListener("#{@testFactory}")]
         public void HandleIt(string body)

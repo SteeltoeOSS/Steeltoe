@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Util;
 
-public class DefaultIdGeneratorTest
+public sealed class DefaultIdGeneratorTest
 {
     [Fact]
     public void TestGenerateId()

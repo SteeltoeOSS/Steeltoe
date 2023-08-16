@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Common.TestResources;
 
-public class XunitLogger : ILogger
+public sealed class XunitLogger : ILogger
 {
     private readonly ITestOutputHelper _output;
 

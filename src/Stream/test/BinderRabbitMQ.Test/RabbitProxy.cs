@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Stream.Binder.RabbitMQ.Test;
 
-public class RabbitProxy
+public sealed class RabbitProxy
 {
     private readonly ILogger<RabbitProxy> _logger;
     private readonly TcpListener _listener;

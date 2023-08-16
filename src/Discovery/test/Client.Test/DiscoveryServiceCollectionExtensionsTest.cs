@@ -13,6 +13,7 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connectors.CloudFoundry;
@@ -28,7 +29,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
 
-public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
+public sealed class DiscoveryServiceCollectionExtensionsTest
 {
     private static readonly Dictionary<string, string> FastEureka = new()
     {
@@ -222,8 +223,8 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
 
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", env1);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", env2);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -565,8 +566,8 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
 
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", env1);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", env2);
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddCloudFoundry().Build());
 
@@ -808,11 +809,5 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         }
 
         return handler;
-    }
-
-    public void Dispose()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
     }
 }

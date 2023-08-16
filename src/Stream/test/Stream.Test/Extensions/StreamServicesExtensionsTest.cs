@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Extensions;
 
-public class StreamServicesExtensionsTest
+public sealed class StreamServicesExtensionsTest
 {
     [Fact]
     public void AddStreamConfiguration_AddsServices()

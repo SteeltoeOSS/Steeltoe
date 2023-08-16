@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaHealthCheckHandlerTest
+public sealed class EurekaHealthCheckHandlerTest
 {
     [Fact]
     public void MapToInstanceStatus_ReturnsExpected()
@@ -115,7 +115,7 @@ public class EurekaHealthCheckHandlerTest
         Assert.Equal(HealthStatus.Unknown, handler.AggregateStatus(results));
     }
 
-    public class TestContributor : IHealthContributor
+    public sealed class TestContributor : IHealthContributor
     {
         public string Id => "TestContrib";
 

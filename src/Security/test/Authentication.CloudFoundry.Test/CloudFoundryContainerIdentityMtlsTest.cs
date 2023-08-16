@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertificatesFixture>
+public sealed class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertificatesFixture>
 {
     private readonly ClientCertificatesFixture _fixture;
 

@@ -38,7 +38,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegrationTest.StartupFixture>
+public sealed class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegrationTest.StartupFixture>
 {
     private readonly IApplicationContext _context;
     private readonly IServiceProvider _provider;
@@ -616,7 +616,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         Assert.Equal(AcknowledgeMode.Manual, container2.AcknowledgeMode);
     }
 
-    public class TestHeadersExchangeMpp1 : IMessagePostProcessor
+    public sealed class TestHeadersExchangeMpp1 : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
@@ -635,7 +635,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class TestHeadersExchangeMpp2 : IMessagePostProcessor
+    public sealed class TestHeadersExchangeMpp2 : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
@@ -977,7 +977,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
     }
 
     [DeclareExchange(Name = "test.metaFanout", AutoDelete = "True", Type = ExchangeType.FanOut)]
-    public class FanOutListener
+    public sealed class FanOutListener
     {
         public CountdownEvent Latch { get; } = new(2);
 
@@ -998,7 +998,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class MyService
+    public sealed class MyService
     {
         private readonly IApplicationContext _context;
 
@@ -1321,7 +1321,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         string TestAnnotationInheritance(string foo);
     }
 
-    public class MyServiceInterfaceImpl : IMyServiceInterface
+    public sealed class MyServiceInterfaceImpl : IMyServiceInterface
     {
         public string TestAnnotationInheritance(string foo)
         {
@@ -1344,7 +1344,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         string Baz([Payload] Baz baz, [Header(RabbitMessageHeaders.ReceivedRoutingKey)] string rk);
     }
 
-    public class TxClassLevel : ITxClassLevel
+    public sealed class TxClassLevel : ITxClassLevel
     {
         public string Foo(Bar bar)
         {
@@ -1357,7 +1357,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class JsonObject
+    public sealed class JsonObject
     {
         public string Bar { get; set; }
 
@@ -1381,24 +1381,24 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         public string Field { get; set; }
     }
 
-    public class Bar : Foo
+    public sealed class Bar : Foo
     {
     }
 
-    public class Baz : Foo
+    public sealed class Baz : Foo
     {
     }
 
-    public class Qux : Foo
+    public sealed class Qux : Foo
     {
     }
 
-    public class Foo1
+    public sealed class Foo1
     {
         public string Bar { get; set; }
     }
 
-    public class Foo2
+    public sealed class Foo2
     {
         public string Bar { get; set; }
 
@@ -1412,7 +1412,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
     [DeclareExchange(Name = "multi.exch", AutoDelete = "True")]
     [DeclareQueueBinding(Name = "multi.exch.multi.listener", ExchangeName = "multi.exch", QueueName = "#{@multiListenerAnon}", RoutingKey = "multi.rk")]
     [RabbitListener(Binding = "multi.exch.multi.listener", ErrorHandler = "upcaseAndRepeatErrorHandler", ContainerFactory = "jsonListenerContainerFactory")]
-    public class MultiListenerService
+    public sealed class MultiListenerService
     {
         public object Bean { get; private set; }
 
@@ -1458,7 +1458,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         string TestAnnotationInheritance(string foo);
     }
 
-    public class MyServiceInterfaceImpl2 : IMyServiceInterface2
+    public sealed class MyServiceInterfaceImpl2 : IMyServiceInterface2
     {
         public string TestAnnotationInheritance(string foo)
         {
@@ -1472,7 +1472,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         RoutingKey = "multi.json.rk")]
     [RabbitListener(Id = "multi", Binding = "multi.exch.multi.json.listener", ErrorHandler = "alwaysBARHandler",
         ContainerFactory = "jsonListenerContainerFactory", ReturnExceptions = "True")]
-    public class MultiListenerJsonService
+    public sealed class MultiListenerJsonService
     {
         [RabbitHandler]
         [SendTo("sendTo.replies.spel")]
@@ -1494,7 +1494,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class DefaultReplyRecoveryCallback : IRecoveryCallback
+    public sealed class DefaultReplyRecoveryCallback : IRecoveryCallback
     {
         public object Recover(IRetryContext context)
         {
@@ -1502,7 +1502,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class ConditionalRejectingErrorHandler1 : ConditionalRejectingErrorHandler
+    public sealed class ConditionalRejectingErrorHandler1 : ConditionalRejectingErrorHandler
     {
         public CountdownEvent ErrorHandlerLatch { get; }
 
@@ -1534,7 +1534,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class AlwaysBarListenerErrorHandler : IRabbitListenerErrorHandler
+    public sealed class AlwaysBarListenerErrorHandler : IRabbitListenerErrorHandler
     {
         public string ServiceName { get; set; } = nameof(AlwaysBarListenerErrorHandler);
 
@@ -1544,7 +1544,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class UpperCaseAndRepeatListenerErrorHandler : IRabbitListenerErrorHandler
+    public sealed class UpperCaseAndRepeatListenerErrorHandler : IRabbitListenerErrorHandler
     {
         public string ServiceName { get; set; } = nameof(UpperCaseAndRepeatListenerErrorHandler);
 
@@ -1556,7 +1556,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class ThrowANewExceptionErrorHandler : IRabbitListenerErrorHandler
+    public sealed class ThrowANewExceptionErrorHandler : IRabbitListenerErrorHandler
     {
         public string ServiceName { get; set; } = "throwANewException";
 
@@ -1574,7 +1574,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class ConsumerTagStrategy : IConsumerTagStrategy
+    public sealed class ConsumerTagStrategy : IConsumerTagStrategy
     {
         private int _increment;
 
@@ -1588,7 +1588,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class MultiListenerMessagePostProcessor : IMessagePostProcessor
+    public sealed class MultiListenerMessagePostProcessor : IMessagePostProcessor
     {
         public List<string> ServiceMethodHeaders { get; }
 
@@ -1612,7 +1612,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class AddSomeHeadersPostProcessor : IMessagePostProcessor
+    public sealed class AddSomeHeadersPostProcessor : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
@@ -1633,7 +1633,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitIntegration
         }
     }
 
-    public class TestManualContainerListener : IMessageListener
+    public sealed class TestManualContainerListener : IMessageListener
     {
         public CountdownEvent ManualContainerLatch { get; set; }
 

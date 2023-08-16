@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Security.Test;
 
-public class PemConfigureCertificateOptionsTest
+public sealed class PemConfigureCertificateOptionsTest
 {
     [Fact]
     public void AddPemFiles_ReadsFiles_CreatesCertificate()

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Kubernetes.Test;
 
-public class KubernetesDiscoveryClientExtensionTest
+public sealed class KubernetesDiscoveryClientExtensionTest
 {
     [Fact]
     public void ClientEnabledByDefault()

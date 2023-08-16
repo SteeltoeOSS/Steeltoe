@@ -12,7 +12,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class StringMessageToStringMessageServiceActivator
+public sealed class StringMessageToStringMessageServiceActivator
 {
     [ServiceActivator(InputChannel = ISink.InputName, OutputChannel = ISource.OutputName)]
     public IMessage<string> Echo(IMessage<string> value)

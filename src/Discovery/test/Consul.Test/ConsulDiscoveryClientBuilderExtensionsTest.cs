@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test;
 
-public class ConsulDiscoveryClientBuilderExtensionsTest
+public sealed class ConsulDiscoveryClientBuilderExtensionsTest
 {
     private readonly Dictionary<string, string> _appsettings = new()
     {

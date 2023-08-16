@@ -7,7 +7,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class TypelessPayloadConfigurationServiceActivator
+public sealed class TypelessPayloadConfigurationServiceActivator
 {
     [ServiceActivator(InputChannel = ISink.InputName, OutputChannel = ISource.OutputName)]
     public object Echo(object value)

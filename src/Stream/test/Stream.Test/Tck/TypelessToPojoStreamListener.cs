@@ -10,7 +10,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class TypelessToPojoStreamListener
+public sealed class TypelessToPojoStreamListener
 {
     [StreamListener(ISink.InputName)]
     [SendTo(ISource.OutputName)]

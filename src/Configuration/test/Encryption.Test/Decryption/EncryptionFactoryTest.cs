@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Encryption.Test.Decryption;
 
-public class EncryptionFactoryTest
+public sealed class EncryptionFactoryTest
 {
     [Fact]
     public void Create_WhenDisabled_CreateNoopDecrytor()

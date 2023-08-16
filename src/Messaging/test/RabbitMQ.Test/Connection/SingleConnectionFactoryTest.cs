@@ -10,7 +10,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
-public class SingleConnectionFactoryTest : AbstractConnectionFactoryTest
+public sealed class SingleConnectionFactoryTest : AbstractConnectionFactoryTest
 {
     [Fact]
     public void TestWithChannelListener()

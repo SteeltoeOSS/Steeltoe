@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test;
 
-public class SecurityUtilitiesTest
+public sealed class SecurityUtilitiesTest
 {
     [Fact]
     public void SanitizeInput_ReturnsNullAndEmptyUnchanged()

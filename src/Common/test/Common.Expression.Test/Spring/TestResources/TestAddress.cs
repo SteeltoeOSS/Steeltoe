@@ -6,7 +6,7 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class TestAddress
+public sealed class TestAddress
 {
     public string Street { get; set; }
 

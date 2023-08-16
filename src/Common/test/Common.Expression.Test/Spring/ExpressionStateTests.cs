@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class ExpressionStateTests : AbstractExpressionTests
+public sealed class ExpressionStateTests : AbstractExpressionTests
 {
     [Fact]
     public void TestConstruction()

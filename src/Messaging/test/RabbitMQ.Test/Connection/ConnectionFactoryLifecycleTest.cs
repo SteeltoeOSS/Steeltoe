@@ -18,7 +18,7 @@ using IConnection = RabbitMQ.Client.IConnection;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 [Trait("Category", "Integration")]
-public class ConnectionFactoryLifecycleTest : AbstractTest
+public sealed class ConnectionFactoryLifecycleTest : AbstractTest
 {
     [Fact]
     public async Task TestConnectionFactoryAvailableDuringStop()
@@ -76,7 +76,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         Assert.True(unblockedConnectionLatch.Wait(TimeSpan.FromSeconds(10)));
     }
 
-    public class TestBlockedListener : IBlockedListener
+    public sealed class TestBlockedListener : IBlockedListener
     {
         private readonly CountdownEvent _blockedConnectionLatch;
         private readonly CountdownEvent _unblockedConnectionLatch;
@@ -98,7 +98,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         }
     }
 
-    public class MyLifecycle : ISmartLifecycle
+    public sealed class MyLifecycle : ISmartLifecycle
     {
         private readonly RabbitAdmin _admin;
         private readonly IQueue _queue = new AnonymousQueue();

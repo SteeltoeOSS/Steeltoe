@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class TestPerson
+public sealed class TestPerson
 {
     public string Name { get; set; }
 

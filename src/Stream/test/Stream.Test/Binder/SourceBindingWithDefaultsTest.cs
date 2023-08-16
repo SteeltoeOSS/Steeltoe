@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class SourceBindingWithDefaultsTest : AbstractTest
+public sealed class SourceBindingWithDefaultsTest : AbstractTest
 {
     [Fact]
     public async Task TestSourceOutputChannelBound()

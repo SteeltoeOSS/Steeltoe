@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Kubernetes.Test;
 
-public class KubernetesApplicationOptionsTest
+public sealed class KubernetesApplicationOptionsTest
 {
     [Fact]
     public void ConstructorBindsValuesFromConfig()

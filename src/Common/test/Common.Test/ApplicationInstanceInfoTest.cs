@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test;
 
-public class ApplicationInstanceInfoTest
+public sealed class ApplicationInstanceInfoTest
 {
     [Fact]
     public void ConstructorSetsDefaults()

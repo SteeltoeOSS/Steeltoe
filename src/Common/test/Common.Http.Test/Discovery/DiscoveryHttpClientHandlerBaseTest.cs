@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Http.Test.Discovery;
 
-public class DiscoveryHttpClientHandlerBaseTest
+public sealed class DiscoveryHttpClientHandlerBaseTest
 {
     [Fact]
     public void Constructor_ThrowsIfClientNull()

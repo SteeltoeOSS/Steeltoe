@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaDiscoveryClientBuilderExtensionsTest
+public sealed class EurekaDiscoveryClientBuilderExtensionsTest
 {
     [Fact]
     public void ApplyServicesNoExceptionWithoutManagementOptions()
@@ -109,8 +109,8 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
 
         var appSettings = new Dictionary<string, string>
         {

@@ -11,7 +11,7 @@ using IConnection = Steeltoe.Messaging.RabbitMQ.Connection.IConnection;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
 [Trait("Category", "Integration")]
-public class CachePropertiesTest
+public sealed class CachePropertiesTest
 {
     [Fact]
     public void TestChannelCache()

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Core;
 
-public class GenericMessagingTemplateTest
+public sealed class GenericMessagingTemplateTest
 {
     internal MessageChannelTemplate Template { get; }
 

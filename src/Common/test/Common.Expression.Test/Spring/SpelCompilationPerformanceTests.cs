@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class SpelCompilationPerformanceTests : AbstractExpressionTests
+public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 {
     private const bool NoisyTests = true;
 
@@ -886,7 +886,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.True(SpelCompiler.Compile(expression));
     }
 
-    public class HW
+    public sealed class HW
     {
         public string Hello()
         {
@@ -894,7 +894,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    public class Payload
+    public sealed class Payload
     {
         public Two[] DR { get; } =
         {
@@ -902,27 +902,27 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         };
     }
 
-    public class Two
+    public sealed class Two
     {
         public Three DRFixedSection { get; } = new();
     }
 
-    public class Three
+    public sealed class Three
     {
         public double Duration { get; set; } = 0.4d;
     }
 
-    public class NumberHolder
+    public sealed class NumberHolder
     {
         public int Payload { get; } = 36;
     }
 
-    public class Greeter
+    public sealed class Greeter
     {
         public string World => "world";
     }
 
-    public class TestClass2
+    public sealed class TestClass2
     {
         public string Name { get; } = "Santa";
 
@@ -931,7 +931,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         public Foo Foo => new();
     }
 
-    public class Foo
+    public sealed class Foo
     {
         public Bar Bar { get; } = new();
 
@@ -943,7 +943,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         }
     }
 
-    public class Bar
+    public sealed class Bar
     {
         public string Boo { get; } = "oranges";
     }

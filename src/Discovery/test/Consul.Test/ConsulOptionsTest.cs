@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test;
 
-public class ConsulOptionsTest
+public sealed class ConsulOptionsTest
 {
     [Fact]
     public void Constructor_InitializesDefaults()

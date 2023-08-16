@@ -13,7 +13,7 @@ using Steeltoe.Stream.MockBinder;
 
 namespace Steeltoe.Stream.MockBinder;
 
-public class Startup
+public sealed class Startup
 {
     public IConfiguration Configuration { get; }
 

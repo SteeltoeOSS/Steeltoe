@@ -575,7 +575,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         return messageConverterConfigurer;
     }
 
-    protected class TestMessageHandler : IMessageHandler
+    protected sealed class TestMessageHandler : IMessageHandler
     {
         public Action<IMessage> OnHandleMessage { get; set; }
 
@@ -591,11 +591,11 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         }
     }
 
-    public class Station
+    public sealed class Station
     {
         public List<Readings> ReadingsList { get; } = new();
 
-        public class Readings
+        public sealed class Readings
         {
             public string StationId { get; set; }
 

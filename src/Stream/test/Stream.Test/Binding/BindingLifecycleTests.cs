@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binding;
 
-public class BindingLifecycleTests
+public sealed class BindingLifecycleTests
 {
     [Fact]
     public async Task TestInputBindingLifecycle()

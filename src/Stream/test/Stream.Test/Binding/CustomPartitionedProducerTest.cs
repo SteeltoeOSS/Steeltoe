@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binding;
 
-public class CustomPartitionedProducerTest : AbstractTest
+public sealed class CustomPartitionedProducerTest : AbstractTest
 {
     [Fact]
     public async Task TestCustomPartitionedProducerByName()

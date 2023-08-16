@@ -12,7 +12,7 @@ using HeadersDictionary = System.Collections.Generic.IDictionary<string, object>
 
 namespace Steeltoe.Messaging.Test.Core;
 
-public class MessageSendingTemplateTest
+public sealed class MessageSendingTemplateTest
 {
     private readonly TestMessageSendingTemplate _template;
 

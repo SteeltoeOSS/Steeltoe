@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryJwtBearerConfigurerTest
+public sealed class CloudFoundryJwtBearerConfigurerTest
 {
     [Fact]
     public void Configure_NoServiceInfo_ReturnsExpected()

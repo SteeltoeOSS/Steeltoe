@@ -7,7 +7,7 @@ using Steeltoe.Stream.Binder;
 
 namespace Steeltoe.Stream.Test.Partitioning;
 
-public class CustomPartitionKeyExtractorClass : IPartitionKeyExtractorStrategy
+public sealed class CustomPartitionKeyExtractorClass : IPartitionKeyExtractorStrategy
 {
     public string ServiceName { get; set; }
 

@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Channel;
 
-public class DispatchingChannelErrorHandlingTest
+public sealed class DispatchingChannelErrorHandlingTest
 {
     private readonly CountdownEvent _latch = new(1);
 
@@ -136,7 +136,7 @@ public class DispatchingChannelErrorHandlingTest
         }
     }
 
-    public class TestTimedOutException : Exception
+    public sealed class TestTimedOutException : Exception
     {
         public TestTimedOutException()
             : base("timed out while waiting for latch")

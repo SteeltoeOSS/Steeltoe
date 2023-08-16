@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Configuration;
 
-public class ArgumentResolversTest
+public sealed class ArgumentResolversTest
 {
     [Fact]
     public void TestSmartPayloadArgumentResolver()

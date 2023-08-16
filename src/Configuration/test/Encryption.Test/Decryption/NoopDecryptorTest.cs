@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Encryption.Test.Decryption;
 
-public class NoopDecryptorTest
+public sealed class NoopDecryptorTest
 {
     [Fact]
     public void TestNoopEncryptor_ReturnsInput()

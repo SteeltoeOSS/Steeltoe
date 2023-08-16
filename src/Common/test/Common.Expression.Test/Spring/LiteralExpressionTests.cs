@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class LiteralExpressionTests
+public sealed class LiteralExpressionTests
 {
     [Fact]
     public void TestGetValue()
@@ -51,7 +51,7 @@ public class LiteralExpressionTests
         Assert.Equal(typeof(string), lEx.GetValueType(new StandardEvaluationContext(), new Rooty()));
     }
 
-    public class Rooty
+    public sealed class Rooty
     {
     }
 }

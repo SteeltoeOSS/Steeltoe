@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Configuration;
 
-internal class RabbitListenerContainerTestFactory : IRabbitListenerContainerFactory<MessageListenerTestContainer>
+internal sealed class RabbitListenerContainerTestFactory : IRabbitListenerContainerFactory<MessageListenerTestContainer>
 {
     private static int _counter = 1;
 

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Util;
 
-public class AttributeAccessorTest
+public sealed class AttributeAccessorTest
 {
     private const string Name = "foo";
 

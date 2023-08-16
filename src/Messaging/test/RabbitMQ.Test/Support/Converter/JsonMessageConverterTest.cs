@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Support.Converter;
 
-public class JsonMessageConverterTest
+public sealed class JsonMessageConverterTest
 {
     private readonly JsonMessageConverter _converter;
     private readonly JsonMessageConverter _jsonConverterWithDefaultType;
@@ -279,7 +279,7 @@ public class JsonMessageConverterTest
         Assert.Same(foo, bytes);
     }
 
-    public class Foo
+    public sealed class Foo
     {
         public string Name { get; set; } = "foo";
 
@@ -313,7 +313,7 @@ public class JsonMessageConverterTest
         }
     }
 
-    public class Bar
+    public sealed class Bar
     {
         public string Name { get; set; } = "bar";
 

@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class InputOutputBindingOrderTest : AbstractTest
+public sealed class InputOutputBindingOrderTest : AbstractTest
 {
     [Fact]
     public async Task TestInputOutputBindingOrder()
@@ -38,7 +38,7 @@ public class InputOutputBindingOrderTest : AbstractTest
         Assert.True(lifecycle.IsRunning);
     }
 
-    public class SomeLifecycle : ISmartLifecycle
+    public sealed class SomeLifecycle : ISmartLifecycle
     {
         public bool IsRunning { get; private set; }
 

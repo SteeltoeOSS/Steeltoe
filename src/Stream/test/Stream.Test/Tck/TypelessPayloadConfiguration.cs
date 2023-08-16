@@ -8,7 +8,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class TypelessPayloadConfiguration
+public sealed class TypelessPayloadConfiguration
 {
     [StreamListener(ISink.InputName)]
     [SendTo(ISource.OutputName)]

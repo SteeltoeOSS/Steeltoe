@@ -7,7 +7,7 @@ using Steeltoe.Stream.Binder;
 
 namespace Steeltoe.Stream.Test.Partitioning;
 
-public class CustomPartitionSelectorClassTwo : IPartitionSelectorStrategy
+public sealed class CustomPartitionSelectorClassTwo : IPartitionSelectorStrategy
 {
     public string ServiceName { get; set; }
 

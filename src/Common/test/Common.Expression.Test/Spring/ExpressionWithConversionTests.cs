@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class ExpressionWithConversionTests : AbstractExpressionTests
+public sealed class ExpressionWithConversionTests : AbstractExpressionTests
 {
     private static readonly List<string> ListOfString = new();
     private static readonly List<int> ListOfInteger = new();
@@ -135,7 +135,7 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
         Assert.Equal("baz", baz.Value);
     }
 
-    public class TestTarget
+    public sealed class TestTarget
     {
         public int Sum(ICollection<int> numbers)
         {
@@ -150,7 +150,7 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
         }
     }
 
-    public class TypeConvertorUsingConversionService : ITypeConverter
+    public sealed class TypeConvertorUsingConversionService : ITypeConverter
     {
         public IConversionService ConversionService { get; set; } = new DefaultConversionService();
 
@@ -165,7 +165,7 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
         }
     }
 
-    public class Foo
+    public sealed class Foo
     {
         public string Value { get; }
 

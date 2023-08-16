@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestData;
 
-public class PersonInOtherPackage
+public sealed class PersonInOtherPackage
 {
     public int Age { get; set; }
 

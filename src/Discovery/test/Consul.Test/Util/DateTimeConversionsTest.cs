@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Util;
 
-public class DateTimeConversionsTest
+public sealed class DateTimeConversionsTest
 {
     [Fact]
     public void ToTimeSpan_ReturnsExpected()

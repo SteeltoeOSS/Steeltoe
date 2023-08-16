@@ -13,7 +13,7 @@ using Xunit.Sdk;
 
 namespace Steeltoe.Stream.Binder.RabbitMQ.Test.Configuration;
 
-public class RabbitBindingsOptionsTest
+public sealed class RabbitBindingsOptionsTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -281,7 +281,7 @@ public class RabbitBindingsOptionsTest
             }
         }
 
-        public class OptionEqualsException : EqualException
+        public sealed class OptionEqualsException : EqualException
         {
             public override string Message => $"{UserMessage} {base.Message}";
 

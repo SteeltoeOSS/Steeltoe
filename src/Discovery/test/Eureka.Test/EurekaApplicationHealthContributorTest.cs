@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaApplicationHealthContributorTest
+public sealed class EurekaApplicationHealthContributorTest
 {
     [Fact]
     public void GetApplicationsFromConfig_ReturnsExpected()

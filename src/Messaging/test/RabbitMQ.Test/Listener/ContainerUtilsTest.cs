@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
-public class ContainerUtilsTest
+public sealed class ContainerUtilsTest
 {
     [Fact]
     public void TestMustRequeue()

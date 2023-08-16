@@ -9,7 +9,7 @@ using static Steeltoe.Messaging.Test.Support.TaskSchedulerSubscribableChannelTes
 
 namespace Steeltoe.Messaging.Test.Support;
 
-public class TaskSchedulerSubscribableChannelWriterTest
+public sealed class TaskSchedulerSubscribableChannelWriterTest
 {
     internal TaskSchedulerSubscribableChannel Channel { get; }
     internal object Payload { get; }

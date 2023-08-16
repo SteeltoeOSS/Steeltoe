@@ -12,7 +12,7 @@ using Xunit;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 [Trait("Category", "Integration")]
-public class DlqExpiryTests : IClassFixture<DlqStartupFixture>
+public sealed class DlqExpiryTests : IClassFixture<DlqStartupFixture>
 {
     private readonly DlqStartupFixture _fixture;
     private readonly ServiceProvider _provider;

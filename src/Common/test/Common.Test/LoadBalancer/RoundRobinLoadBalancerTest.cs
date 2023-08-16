@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.LoadBalancer;
 
-public class RoundRobinLoadBalancerTest
+public sealed class RoundRobinLoadBalancerTest
 {
     [Fact]
     public void Throws_If_IServiceInstanceProviderNotProvided()

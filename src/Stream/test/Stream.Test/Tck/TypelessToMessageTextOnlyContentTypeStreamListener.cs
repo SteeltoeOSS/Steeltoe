@@ -11,7 +11,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class TypelessToMessageTextOnlyContentTypeStreamListener
+public sealed class TypelessToMessageTextOnlyContentTypeStreamListener
 {
     [StreamListener(ISink.InputName)]
     [SendTo(ISource.OutputName)]

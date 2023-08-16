@@ -12,7 +12,7 @@ using static Steeltoe.Integration.Test.Channel.DirectChannelTest;
 
 namespace Steeltoe.Integration.Test.Channel;
 
-public class DirectChannelWriterTest
+public sealed class DirectChannelWriterTest
 {
     private readonly ServiceCollection _services;
 

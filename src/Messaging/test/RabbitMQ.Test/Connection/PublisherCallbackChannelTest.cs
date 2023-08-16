@@ -10,7 +10,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
-public class PublisherCallbackChannelTest
+public sealed class PublisherCallbackChannelTest
 {
     [Fact]
     public void ShutdownWhileCreate()

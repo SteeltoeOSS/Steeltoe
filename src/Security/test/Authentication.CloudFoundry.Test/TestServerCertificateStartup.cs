@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class TestServerCertificateStartup
+public sealed class TestServerCertificateStartup
 {
     public static CloudFoundryJwtBearerOptions CloudFoundryOptions { get; set; }
 

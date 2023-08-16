@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binding;
 
-public class BindableProxyGeneratorTest
+public sealed class BindableProxyGeneratorTest
 {
     [Fact]
     public void GenerateProxy_ThrowsOnNulls()

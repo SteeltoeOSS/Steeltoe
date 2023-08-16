@@ -6,6 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
-public class MockDbContext : DbContext
+public sealed class MockDbContext : DbContext
 {
 }

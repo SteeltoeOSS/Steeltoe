@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class TemplateExpressionParsingTests : AbstractExpressionTests
+public sealed class TemplateExpressionParsingTests : AbstractExpressionTests
 {
     internal static readonly IParserContext DefaultTemplateParserContextSingleton = new DefaultTemplateParserContext();
     internal static readonly IParserContext HashDelimitedParserContextSingleton = new HashDelimitedParserContext();
@@ -184,7 +184,7 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
         Assert.True(tpc.IsTemplate);
     }
 
-    public class DefaultTemplateParserContext : IParserContext
+    public sealed class DefaultTemplateParserContext : IParserContext
     {
         public bool IsTemplate => true;
 
@@ -193,7 +193,7 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
         public string ExpressionSuffix => "}";
     }
 
-    public class HashDelimitedParserContext : IParserContext
+    public sealed class HashDelimitedParserContext : IParserContext
     {
         public bool IsTemplate => true;
 
@@ -202,7 +202,7 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
         public string ExpressionSuffix => "}";
     }
 
-    public class Rooty
+    public sealed class Rooty
     {
     }
 }

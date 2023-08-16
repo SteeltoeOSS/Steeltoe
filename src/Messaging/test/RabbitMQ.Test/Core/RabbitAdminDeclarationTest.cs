@@ -18,7 +18,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
-public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTest.RabbitAdminDeclarationTestStartupFixture>
+public sealed class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTest.RabbitAdminDeclarationTestStartupFixture>
 {
     private readonly RabbitAdminDeclarationTestStartupFixture _fixture;
 

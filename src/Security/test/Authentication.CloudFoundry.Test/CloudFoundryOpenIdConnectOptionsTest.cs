@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryOpenIdConnectOptionsTest
+public sealed class CloudFoundryOpenIdConnectOptionsTest
 {
     [Fact]
     public void DefaultConstructor_SetsDefaultOptions()

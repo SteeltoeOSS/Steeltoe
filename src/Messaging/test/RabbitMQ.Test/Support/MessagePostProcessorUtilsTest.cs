@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Support;
 
-public class MessagePostProcessorUtilsTest
+public sealed class MessagePostProcessorUtilsTest
 {
     [Fact]
     public void TestOrderIng()

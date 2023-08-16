@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Http.Test;
 
-public class HttpClientHelperTest
+public sealed class HttpClientHelperTest
 {
     [Fact]
     public void GetHttpClient_SetsTimeout()

@@ -25,7 +25,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class EnableRabbitTest
+public sealed class EnableRabbitTest
 {
     [Fact]
     public async Task SampleConfiguration()
@@ -375,7 +375,7 @@ public class EnableRabbitTest
             return container;
         }
 
-        public class Listener
+        public sealed class Listener
         {
             [RabbitListener("foo")]
             public void Handle(string foo)
@@ -519,7 +519,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class RabbitCustomConfig : IRabbitListenerConfigurer
+    public sealed class RabbitCustomConfig : IRabbitListenerConfigurer
     {
         private readonly IRabbitListenerEndpointRegistry _registry;
         private readonly IApplicationContext _context;
@@ -587,7 +587,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class RabbitCustomContainerFactoryConfig : IRabbitListenerConfigurer
+    public sealed class RabbitCustomContainerFactoryConfig : IRabbitListenerConfigurer
     {
         private readonly IApplicationContext _context;
 
@@ -645,7 +645,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class TestDirectMessageListenerContainer : DirectMessageListenerContainer
+    public sealed class TestDirectMessageListenerContainer : DirectMessageListenerContainer
     {
         public override void Shutdown()
         {
@@ -653,7 +653,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class SampleBean
+    public sealed class SampleBean
     {
         [RabbitListener("nyQueue")]
         public void DefaultHandle(string foo)
@@ -666,7 +666,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class FullBean
+    public sealed class FullBean
     {
         [RabbitListener("queue1", "queue2", Id = "listener1", ContainerFactory = "simpleFactory", Exclusive = true, Priority = "34", Admin = "rabbitAdmin")]
         public void FullHandle(string msg)
@@ -674,7 +674,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class FullConfigurableBean
+    public sealed class FullConfigurableBean
     {
         [RabbitListener("${rabbit:listener:queue}", "queue2", Id = "${rabbit:listener:id}", ContainerFactory = "${rabbit:listener:containerFactory}",
             Exclusive = true, Priority = "${rabbit: listener:priority}", Admin = "${rabbit:listener:admin}")]
@@ -683,7 +683,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class CustomBean
+    public sealed class CustomBean
     {
         [RabbitListener("myQueue", Id = "listenerId", ContainerFactory = "customFactory")]
         public void CustomHandle(string msg)
@@ -691,7 +691,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class DefaultBean
+    public sealed class DefaultBean
     {
         [RabbitListener("myQueue")]
         public void HandleIt(string msg)
@@ -699,7 +699,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class InvalidPriorityBean
+    public sealed class InvalidPriorityBean
     {
         [RabbitListener("myQueue", Priority = "NotANumber")]
         public void CustomHandle(string msg)
@@ -707,7 +707,7 @@ public class EnableRabbitTest
         }
     }
 
-    public class RabbitListenersBean
+    public sealed class RabbitListenersBean
     {
         [RabbitListener("myQueue", Id = "first")]
         [RabbitListener("anotherQueue", Id = "second")]
@@ -718,7 +718,7 @@ public class EnableRabbitTest
 
     [RabbitListener("class1", Id = "third")]
     [RabbitListener("class2", Id = "fourth")]
-    public class ClassLevelListenersBean
+    public sealed class ClassLevelListenersBean
     {
         [RabbitHandler]
         public void RepeatableHandle(string msg)

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binding;
 
-public class InvalidBindingConfigurationTest : AbstractTest
+public sealed class InvalidBindingConfigurationTest : AbstractTest
 {
     [Fact]
     public void TestDuplicateBindingConfig()
