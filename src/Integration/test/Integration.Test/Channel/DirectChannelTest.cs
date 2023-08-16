@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Channel;
 
-public class DirectChannelTest
+public sealed class DirectChannelTest
 {
     private readonly IServiceProvider _provider;
 

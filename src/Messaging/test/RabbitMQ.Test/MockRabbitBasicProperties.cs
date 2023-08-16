@@ -6,7 +6,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test;
 
-public class MockRabbitBasicProperties : RC.IBasicProperties
+public sealed class MockRabbitBasicProperties : RC.IBasicProperties
 {
     int RC.IContentHeader.ProtocolClassId => 0;
 

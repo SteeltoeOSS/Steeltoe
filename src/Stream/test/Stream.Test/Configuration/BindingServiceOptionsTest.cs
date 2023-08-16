@@ -9,7 +9,7 @@ using BinderOptions = Steeltoe.Stream.Configuration.BinderOptions;
 
 namespace Steeltoe.Stream.Test.Configuration;
 
-public class BindingServiceOptionsTest
+public sealed class BindingServiceOptionsTest
 {
     [Fact]
     public void Initialize_ConfiguresOptionsCorrectly()

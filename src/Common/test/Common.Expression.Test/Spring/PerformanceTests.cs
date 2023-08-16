@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class PerformanceTests
+public sealed class PerformanceTests
 {
     private const int Iterations = 10000;
     private static readonly bool IsDebug = bool.Parse(bool.FalseString);

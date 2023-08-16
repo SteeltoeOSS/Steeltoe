@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaDiscoveryClientBuilderExtensionsTest
+public sealed class EurekaDiscoveryClientBuilderExtensionsTest
 {
     [Fact]
     public void ApplyServicesNoExceptionWithoutManagementOptions()

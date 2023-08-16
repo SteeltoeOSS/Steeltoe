@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryTokenValidatorTest
+public sealed class CloudFoundryTokenValidatorTest
 {
     [Fact]
     public void ValidateIssuer_ValidatesCorrectly()

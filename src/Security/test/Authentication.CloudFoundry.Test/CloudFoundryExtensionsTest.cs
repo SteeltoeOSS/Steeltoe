@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryExtensionsTest
+public sealed class CloudFoundryExtensionsTest
 {
     private const string VcapApplication = @"
             {

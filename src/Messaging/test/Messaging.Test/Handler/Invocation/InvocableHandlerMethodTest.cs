@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Messaging.Test.Handler.Invocation;
 
-public class InvocableHandlerMethodTest
+public sealed class InvocableHandlerMethodTest
 {
     private readonly ITestOutputHelper _outputHelper;
     private HandlerMethodArgumentResolverComposite _resolvers;

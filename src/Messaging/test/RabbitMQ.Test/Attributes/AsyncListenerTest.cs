@@ -21,7 +21,7 @@ using Xunit;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
+public sealed class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
 {
     private readonly ServiceProvider _provider;
     private readonly StartupFixture _fixture;
@@ -196,7 +196,7 @@ public class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
         }
     }
 
-    public class Listener
+    public sealed class Listener
     {
         public AtomicBoolean FooFirst { get; set; } = new(true);
 
@@ -292,7 +292,7 @@ public class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
         }
     }
 
-    public class TemplateAfterReceivePostProcessor : IMessagePostProcessor
+    public sealed class TemplateAfterReceivePostProcessor : IMessagePostProcessor
     {
         public object TypeId { get; set; }
 
@@ -313,7 +313,7 @@ public class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupFixture>
         }
     }
 
-    public class CustomListenerErrorHandler : IRabbitListenerErrorHandler
+    public sealed class CustomListenerErrorHandler : IRabbitListenerErrorHandler
     {
         public string ServiceName { get; set; } = nameof(CustomListenerErrorHandler);
 

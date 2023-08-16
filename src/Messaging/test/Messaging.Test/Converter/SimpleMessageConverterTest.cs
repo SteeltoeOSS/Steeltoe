@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Converter;
 
-public class SimpleMessageConverterTest
+public sealed class SimpleMessageConverterTest
 {
     [Fact]
     public void ToMessageWithPayloadAndHeaders()

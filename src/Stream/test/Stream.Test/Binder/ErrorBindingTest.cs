@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class ErrorBindingTest : AbstractTest
+public sealed class ErrorBindingTest : AbstractTest
 {
     [Fact]
     public async Task TestErrorChannelNotBoundByDefault()
@@ -100,7 +100,7 @@ public class ErrorBindingTest : AbstractTest
         Assert.Equal(3, errorConfig.Counter);
     }
 
-    public class ErrorConfigurationDefault
+    public sealed class ErrorConfigurationDefault
     {
         public int Counter { get; private set; }
 
@@ -112,7 +112,7 @@ public class ErrorBindingTest : AbstractTest
         }
     }
 
-    public class ErrorConfigurationWithCustomErrorHandler
+    public sealed class ErrorConfigurationWithCustomErrorHandler
     {
         public int Counter { get; private set; }
 

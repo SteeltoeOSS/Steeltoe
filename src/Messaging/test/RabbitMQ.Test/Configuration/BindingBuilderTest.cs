@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Configuration;
 
-public class BindingBuilderTest
+public sealed class BindingBuilderTest
 {
     private readonly IQueue _queue;
 

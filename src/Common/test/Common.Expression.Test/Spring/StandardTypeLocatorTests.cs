@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class StandardTypeLocatorTests
+public sealed class StandardTypeLocatorTests
 {
     [Fact]
     public void TestImports()

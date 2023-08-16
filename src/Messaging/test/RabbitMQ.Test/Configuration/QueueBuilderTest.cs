@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Configuration;
 
-public class QueueBuilderTest
+public sealed class QueueBuilderTest
 {
     [Fact]
     public void BuildsDurableQueue()

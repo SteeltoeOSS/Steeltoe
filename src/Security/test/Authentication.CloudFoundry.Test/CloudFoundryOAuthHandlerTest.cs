@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryOAuthHandlerTest
+public sealed class CloudFoundryOAuthHandlerTest
 {
     [Fact]
     public async Task ExchangeCodeAsync_SendsTokenRequest_ReturnsValidTokenInfo()

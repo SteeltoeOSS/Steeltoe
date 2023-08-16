@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
-public class RabbitDestinationTest
+public sealed class RabbitDestinationTest
 {
     [Fact]
     public void TestConvertRabbitDestinationToString()

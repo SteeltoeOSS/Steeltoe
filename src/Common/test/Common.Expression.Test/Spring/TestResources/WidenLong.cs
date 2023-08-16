@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class WidenLong
+public sealed class WidenLong
 {
     public long L { get; }
 

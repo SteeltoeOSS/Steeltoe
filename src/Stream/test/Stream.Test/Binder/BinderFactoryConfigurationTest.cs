@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class BinderFactoryConfigurationTest : AbstractTest
+public sealed class BinderFactoryConfigurationTest : AbstractTest
 {
     [Fact]
     public void LoadBinderTypeRegistryWithOneBinder()

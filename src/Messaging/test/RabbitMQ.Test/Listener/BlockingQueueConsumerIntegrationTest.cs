@@ -16,7 +16,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 [Trait("Category", "Integration")]
-public class BlockingQueueConsumerIntegrationTest
+public sealed class BlockingQueueConsumerIntegrationTest
 {
     public const string Queue1Name = "test.queue1.BlockingQueueConsumerIntegrationTests";
     public const string Queue2Name = "test.queue2.BlockingQueueConsumerIntegrationTests";
@@ -102,7 +102,7 @@ public class BlockingQueueConsumerIntegrationTest
         }
     }
 
-    public class TagStrategy : IConsumerTagStrategy
+    public sealed class TagStrategy : IConsumerTagStrategy
     {
         public string ServiceName { get; set; } = nameof(TagStrategy);
 

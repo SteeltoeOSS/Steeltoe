@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Util;
 
-public class AntPathMatcherTest
+public sealed class AntPathMatcherTest
 {
     private static readonly Random Rng = new();
     private readonly AntPathMatcher _pathMatcher = new();

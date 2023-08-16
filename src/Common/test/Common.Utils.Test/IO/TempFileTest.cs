@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Utils.Test.IO;
 
-public class TempFileTest
+public sealed class TempFileTest
 {
     [Fact]
     public void TempFileRemovesItself()

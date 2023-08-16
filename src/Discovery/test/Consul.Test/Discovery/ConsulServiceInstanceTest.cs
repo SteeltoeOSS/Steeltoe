@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
-public class ConsulServiceInstanceTest
+public sealed class ConsulServiceInstanceTest
 {
     [Fact]
     public void Constructor_Initializes()

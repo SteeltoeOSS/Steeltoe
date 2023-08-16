@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.RabbitMQ.Test.Outbound;
 
-public class OutboundEndpointTest
+public sealed class OutboundEndpointTest
 {
     [Fact]
     public void TestDelay()
@@ -66,7 +66,7 @@ public class OutboundEndpointTest
         Assert.Equal(23, rabbitTemplate.SendAndReceiveMessage.Headers.Delay().Value);
     }
 
-    public class TestRabbitTemplate : RabbitTemplate
+    public sealed class TestRabbitTemplate : RabbitTemplate
     {
         public IMessage SendMessage { get; set; }
 

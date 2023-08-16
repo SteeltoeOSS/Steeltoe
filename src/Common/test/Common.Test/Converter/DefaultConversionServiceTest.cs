@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Converter;
 
-public class DefaultConversionServiceTest
+public sealed class DefaultConversionServiceTest
 {
     // Static so only one is created for this battery of tests.. ensures internal cache is filled by all of the tests
     private static readonly DefaultConversionService ConversionService = new();

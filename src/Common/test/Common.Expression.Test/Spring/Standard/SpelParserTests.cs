@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring.Standard;
 
-public class SpelParserTests
+public sealed class SpelParserTests
 {
     [Fact]
     public void TheMostBasic()

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Core;
 
-public class MessageRequestReplyTemplateTest
+public sealed class MessageRequestReplyTemplateTest
 {
     private readonly TestMessagingTemplate _template;
 

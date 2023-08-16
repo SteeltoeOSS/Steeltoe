@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Hosting.Test;
 
-public class HostBuilderExtensionsTest
+public sealed class HostBuilderExtensionsTest
 {
     [Fact]
     public void UseCloudHosting_Web_ThrowsIfHostBuilderNull()

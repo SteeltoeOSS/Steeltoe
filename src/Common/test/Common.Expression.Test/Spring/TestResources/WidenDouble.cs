@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class WidenDouble
+public sealed class WidenDouble
 {
     public double D { get; }
 

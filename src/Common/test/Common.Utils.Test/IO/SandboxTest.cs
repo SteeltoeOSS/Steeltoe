@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Utils.Test.IO;
 
-public class SandboxTest
+public sealed class SandboxTest
 {
     [Fact]
     public void DefaultSandboxShouldUseDefaultPrefix()

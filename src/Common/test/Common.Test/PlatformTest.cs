@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test;
 
-public class PlatformTest
+public sealed class PlatformTest
 {
     [Fact]
     public void IsCloudFoundry_ReturnsExpected()

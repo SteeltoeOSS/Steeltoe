@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class ServiceCollectionExtensionsTest
+public sealed class ServiceCollectionExtensionsTest
 {
     [Fact]
     public void AddCloudFoundryCertificateAuth_ChecksNulls()

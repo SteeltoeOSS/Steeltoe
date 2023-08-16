@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
-public class ConsulHeartbeatOptionsTest
+public sealed class ConsulHeartbeatOptionsTest
 {
     [Fact]
     public void Constructor_InitializesDefaults()

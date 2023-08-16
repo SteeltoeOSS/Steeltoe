@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Handler;
 
-public class CollectionAndArrayTest
+public sealed class CollectionAndArrayTest
 {
     private readonly TestAbstractReplyProducingMessageHandler _handler;
     private readonly IServiceProvider _provider;

@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class TestServerStartup
+public sealed class TestServerStartup
 {
     public IConfiguration Configuration { get; }
 

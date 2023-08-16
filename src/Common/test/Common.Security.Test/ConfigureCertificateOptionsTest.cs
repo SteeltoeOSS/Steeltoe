@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Security.Test;
 
-public class ConfigureCertificateOptionsTest
+public sealed class ConfigureCertificateOptionsTest
 {
     [Fact]
     public void ConfigureCertificateOptions_ThrowsOnNull()

@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class EvaluationTests : AbstractExpressionTests
+public sealed class EvaluationTests : AbstractExpressionTests
 {
     private static readonly bool IsDebug = bool.Parse(bool.FalseString);
 
@@ -1356,7 +1356,7 @@ public class EvaluationTests : AbstractExpressionTests
         Assert.Equal(messageCode, ex.MessageCode);
     }
 
-    public class MyServiceResolver : IServiceResolver
+    public sealed class MyServiceResolver : IServiceResolver
     {
         public object Resolve(IEvaluationContext context, string serviceName)
         {
@@ -1369,7 +1369,7 @@ public class EvaluationTests : AbstractExpressionTests
         }
     }
 
-    public class Spr9751
+    public sealed class Spr9751
     {
         public string Type { get; set; } = "hello";
         public decimal Bd { get; set; } = 2M;
@@ -1422,12 +1422,12 @@ public class EvaluationTests : AbstractExpressionTests
         }
     }
 
-    public class Spr9751_2
+    public sealed class Spr9751_2
     {
         public int Iii { get; set; } = 99;
     }
 
-    public class CustomMethodResolver : IMethodResolver
+    public sealed class CustomMethodResolver : IMethodResolver
     {
         public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
         {
@@ -1435,7 +1435,7 @@ public class EvaluationTests : AbstractExpressionTests
         }
     }
 
-    public class CustomMethodFilter : IMethodFilter
+    public sealed class CustomMethodFilter : IMethodFilter
     {
         public List<MethodInfo> Filter(List<MethodInfo> methods)
         {
@@ -1443,12 +1443,12 @@ public class EvaluationTests : AbstractExpressionTests
         }
     }
 
-    public class Foo
+    public sealed class Foo
     {
         public string Bar { get; set; } = "hello";
     }
 
-    public class TestClass
+    public sealed class TestClass
     {
         public Foo Wibble { get; set; }
 

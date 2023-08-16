@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class ParsingTests
+public sealed class ParsingTests
 {
     private readonly SpelExpressionParser _parser = new();
 

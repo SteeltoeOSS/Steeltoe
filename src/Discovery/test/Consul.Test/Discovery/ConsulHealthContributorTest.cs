@@ -11,7 +11,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
-public class ConsulHealthContributorTest
+public sealed class ConsulHealthContributorTest
 {
     [Fact]
     public void Constructor_ThrowsIfNulls()

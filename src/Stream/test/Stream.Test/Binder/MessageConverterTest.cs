@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class MessageConverterTest
+public sealed class MessageConverterTest
 {
     [Fact]
     public void TestHeaderEmbedding()

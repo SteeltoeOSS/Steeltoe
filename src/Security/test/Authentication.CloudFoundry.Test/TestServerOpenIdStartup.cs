@@ -12,7 +12,7 @@ using RichardSzalay.MockHttp;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class TestServerOpenIdStartup
+public sealed class TestServerOpenIdStartup
 {
     public IConfiguration Configuration { get; }
 

@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Stream.StubBinder2;
 
-public class StubBinder2Dependency
+public sealed class StubBinder2Dependency
 {
 }

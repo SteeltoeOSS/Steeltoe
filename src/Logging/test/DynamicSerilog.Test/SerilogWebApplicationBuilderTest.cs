@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
-public class SerilogWebApplicationBuilderTest
+public sealed class SerilogWebApplicationBuilderTest
 {
     public SerilogWebApplicationBuilderTest()
     {

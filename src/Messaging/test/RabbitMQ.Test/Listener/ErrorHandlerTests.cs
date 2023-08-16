@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
-public class ErrorHandlerTests
+public sealed class ErrorHandlerTests
 {
     [Fact]
     public void TestFatalErrorsAreRejected()

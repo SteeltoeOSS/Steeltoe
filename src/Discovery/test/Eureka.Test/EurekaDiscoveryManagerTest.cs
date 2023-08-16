@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaDiscoveryManagerTest : AbstractBaseTest
+public sealed class EurekaDiscoveryManagerTest : AbstractBaseTest
 {
     [Fact]
     public void Constructor_Initializes_Correctly()

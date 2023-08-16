@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class Fruit
+public sealed class Fruit
 {
 #pragma warning disable SA1401 // Fields should be private
     public string Name; // accessible as property field

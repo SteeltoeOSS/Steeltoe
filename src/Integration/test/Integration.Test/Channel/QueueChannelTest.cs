@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Channel;
 
-public class QueueChannelTest
+public sealed class QueueChannelTest
 {
     [Fact]
     public void TestSimpleSendAndReceive()

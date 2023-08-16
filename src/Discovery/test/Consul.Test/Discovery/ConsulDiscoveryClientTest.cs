@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
-public class ConsulDiscoveryClientTest
+public sealed class ConsulDiscoveryClientTest
 {
     [Fact]
     public void Constructor_ThrowsIfNulls()

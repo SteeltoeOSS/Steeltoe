@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Registry;
 
-public class ConsulRegistrationTest
+public sealed class ConsulRegistrationTest
 {
     [Fact]
     public void Constructor_ThrowsOnNulls()

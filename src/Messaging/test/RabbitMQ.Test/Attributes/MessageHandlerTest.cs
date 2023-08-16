@@ -15,7 +15,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
-public class MessageHandlerTest
+public sealed class MessageHandlerTest
 {
     [Fact]
     public void TestMessages()
@@ -42,7 +42,7 @@ public class MessageHandlerTest
         Assert.Same(list, foo.MessagingMessages);
     }
 
-    public class Foo
+    public sealed class Foo
     {
         public List<IMessage> MessagingMessages { get; private set; }
 

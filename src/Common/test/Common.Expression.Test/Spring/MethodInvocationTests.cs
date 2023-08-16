@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class MethodInvocationTests : AbstractExpressionTests
+public sealed class MethodInvocationTests : AbstractExpressionTests
 {
     [Fact]
     public void TestSimpleAccess01()
@@ -246,7 +246,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         Assert.Same(bytes, outBytes);
     }
 
-    public class TestServiceResolver : IServiceResolver
+    public sealed class TestServiceResolver : IServiceResolver
     {
         public BytesService Service => new();
 
@@ -257,7 +257,7 @@ public class MethodInvocationTests : AbstractExpressionTests
     }
 
     // Simple filter
-    public class LocalFilter : IMethodFilter
+    public sealed class LocalFilter : IMethodFilter
     {
         public bool RemoveIfNotAnnotated { get; set; }
         public bool FilterCalled { get; set; }
@@ -295,7 +295,7 @@ public class MethodInvocationTests : AbstractExpressionTests
     {
     }
 
-    public class TestObject
+    public sealed class TestObject
     {
         public int DoIt(int i)
         {
@@ -309,7 +309,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         }
     }
 
-    public class DummyMethodResolver : IMethodResolver
+    public sealed class DummyMethodResolver : IMethodResolver
     {
         public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
         {
@@ -317,7 +317,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         }
     }
 
-    public class BytesService
+    public sealed class BytesService
     {
         public byte[] HandleBytes(byte[] bytes)
         {

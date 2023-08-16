@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Handler;
 
-public class MethodInvokingMessageProcessorAnnotationTest
+public sealed class MethodInvokingMessageProcessorAnnotationTest
 {
     private readonly TestService _testService = new();
     private readonly Employee _employee = new("oleg", "zhurakousky");
@@ -272,14 +272,14 @@ public class MethodInvokingMessageProcessorAnnotationTest
         return builder.Build();
     }
 
-    public class MultipleMappingAnnotationTestBean
+    public sealed class MultipleMappingAnnotationTestBean
     {
         public void Test([Payload("payload")] [Header("foo")] string s)
         {
         }
     }
 
-    public class TestService
+    public sealed class TestService
     {
         public ISet<string> Ids { get; } = new HashSet<string>();
 
@@ -391,7 +391,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
     {
     }
 
-    public class Employee
+    public sealed class Employee
     {
         public string FirstName { get; }
 

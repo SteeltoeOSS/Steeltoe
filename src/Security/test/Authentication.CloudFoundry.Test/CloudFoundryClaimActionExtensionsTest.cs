@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryClaimActionExtensionsTest
+public sealed class CloudFoundryClaimActionExtensionsTest
 {
     [Fact]
     public void MapScopes_AddsClaimAction()

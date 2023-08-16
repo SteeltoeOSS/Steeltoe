@@ -11,16 +11,16 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
-public class RabbitTemplateSimpleRoutingConnectionFactoryTest
+public sealed class RabbitTemplateSimpleRoutingConnectionFactoryTest
 {
-    protected const string ConnectionFactoryName1 = "foo";
-    protected const string ConnectionFactoryName2 = "bar";
+    private const string ConnectionFactoryName1 = "foo";
+    private const string ConnectionFactoryName2 = "bar";
 
-    protected RabbitTemplate RoutingTemplate { get; }
+    private RabbitTemplate RoutingTemplate { get; }
 
-    protected Mock<IConnectionFactory> ConnectionFactory1 { get; }
-    protected Mock<IConnectionFactory> ConnectionFactory2 { get; }
-    protected Mock<IConnectionFactory> DefaultConnectionFactory { get; }
+    private Mock<IConnectionFactory> ConnectionFactory1 { get; }
+    private Mock<IConnectionFactory> ConnectionFactory2 { get; }
+    private Mock<IConnectionFactory> DefaultConnectionFactory { get; }
 
     public RabbitTemplateSimpleRoutingConnectionFactoryTest()
     {

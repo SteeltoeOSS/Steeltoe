@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class ContentTypeTckTest : AbstractTest
+public sealed class ContentTypeTckTest : AbstractTest
 {
     private IServiceCollection _container;
 

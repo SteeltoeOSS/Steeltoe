@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class SetValueTests : AbstractExpressionTests
+public sealed class SetValueTests : AbstractExpressionTests
 {
     private static readonly bool IsDebug = bool.Parse(bool.FalseString);
 
@@ -206,7 +206,7 @@ public class SetValueTests : AbstractExpressionTests
         Assert.True(o);
     }
 
-    protected void SetValueExpectError(string expression, object value)
+    private void SetValueExpectError(string expression, object value)
     {
         IExpression e = Parser.ParseExpression(expression);
         Assert.NotNull(e);
@@ -220,7 +220,7 @@ public class SetValueTests : AbstractExpressionTests
         Assert.Throws<SpelEvaluationException>(() => e.SetValue(lContext, value));
     }
 
-    protected void SetValue(string expression, object value)
+    private void SetValue(string expression, object value)
     {
         try
         {
@@ -247,7 +247,7 @@ public class SetValueTests : AbstractExpressionTests
         }
     }
 
-    protected void SetValue(string expression, object value, object expectedValue)
+    private void SetValue(string expression, object value, object expectedValue)
     {
         try
         {

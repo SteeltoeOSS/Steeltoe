@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Core;
 
-public class DestinationResolvingMessagingTemplateTest
+public sealed class DestinationResolvingMessagingTemplateTest
 {
     private readonly TestDestinationResolvingMessagingTemplate _template;
 

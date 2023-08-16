@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Binder.RabbitMQ.Test.Configuration;
 
-public class RabbitBinderOptionsTest
+public sealed class RabbitBinderOptionsTest
 {
     [Fact]
     public void InitializeAll_FromConfigValues()

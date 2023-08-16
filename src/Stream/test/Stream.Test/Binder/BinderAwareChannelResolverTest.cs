@@ -17,7 +17,7 @@ using IntChannel = Steeltoe.Integration.Channel;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class BinderAwareChannelResolverTest : AbstractTest
+public sealed class BinderAwareChannelResolverTest : AbstractTest
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly BinderAwareChannelResolver _resolver;

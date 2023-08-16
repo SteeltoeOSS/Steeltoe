@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Extensions;
 
-public class BinderServicesExtensionsTest
+public sealed class BinderServicesExtensionsTest
 {
     [Fact]
     public void AddBinderServices_AddsServices()

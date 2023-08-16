@@ -17,7 +17,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener.Adapters;
 
-public class MessageListenerAdapterTest
+public sealed class MessageListenerAdapterTest
 {
     private readonly SimpleService _simpleService = new();
 
@@ -163,7 +163,7 @@ public class MessageListenerAdapterTest
         Assert.True(called.Wait(TimeSpan.FromSeconds(10)));
     }
 
-    public class TestRecoveryCallback : IRecoveryCallback
+    public sealed class TestRecoveryCallback : IRecoveryCallback
     {
         private readonly AtomicReference<IMessage> _replyMessage;
         private readonly AtomicReference<Address> _replyAddress;
@@ -192,7 +192,7 @@ public class MessageListenerAdapterTest
         string AnotherHandle(string input);
     }
 
-    public class SimpleService : IService
+    public sealed class SimpleService : IService
     {
         public string Called { get; private set; }
 

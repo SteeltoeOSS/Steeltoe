@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
+public sealed class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
 {
     [Fact]
     public void TestScenario01_Roles()
@@ -158,7 +158,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
         }
     }
 
-    public class Manager : Person
+    public sealed class Manager : Person
     {
         public override string[] Roles =>
             new[]
@@ -172,7 +172,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
         }
     }
 
-    public class Teller : Person
+    public sealed class Teller : Person
     {
         public override string[] Roles =>
             new[]
@@ -186,7 +186,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
         }
     }
 
-    public class Supervisor : Person
+    public sealed class Supervisor : Person
     {
         public override string[] Roles =>
             new[]
@@ -200,7 +200,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
         }
     }
 
-    public class SecurityPrincipalAccessor : IPropertyAccessor
+    public sealed class SecurityPrincipalAccessor : IPropertyAccessor
     {
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
@@ -226,13 +226,13 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
             return null;
         }
 
-        public class Principal
+        public sealed class Principal
         {
             public string Name { get; } = "Andy";
         }
     }
 
-    public class PersonAccessor : IPropertyAccessor
+    public sealed class PersonAccessor : IPropertyAccessor
     {
         public Person ActivePerson { get; set; }
 
@@ -261,7 +261,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
         }
     }
 
-    public class MyMethodResolver : IMethodResolver
+    public sealed class MyMethodResolver : IMethodResolver
     {
         public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
         {
@@ -273,7 +273,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
             return null;
         }
 
-        public class HasRoleExecutor : IMethodExecutor
+        public sealed class HasRoleExecutor : IMethodExecutor
         {
             private readonly ITypeConverter _tc;
 

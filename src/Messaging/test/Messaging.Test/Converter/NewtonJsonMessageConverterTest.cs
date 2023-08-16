@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Converter;
 
-public class NewtonJsonMessageConverterTest
+public sealed class NewtonJsonMessageConverterTest
 {
     [Fact]
     public void DefaultConstructor()
@@ -275,14 +275,14 @@ public class NewtonJsonMessageConverterTest
     {
     }
 
-    public class T1 : IMessage
+    public sealed class T1 : IMessage
     {
         public object Payload => throw new NotImplementedException();
 
         public IMessageHeaders Headers => throw new NotImplementedException();
     }
 
-    public class T2 : IMessage<MyBean>
+    public sealed class T2 : IMessage<MyBean>
     {
         object IMessage.Payload => throw new NotImplementedException();
 
@@ -291,7 +291,7 @@ public class NewtonJsonMessageConverterTest
         public IMessageHeaders Headers => throw new NotImplementedException();
     }
 
-    public class T4<T> : IMyInterface<T>
+    public sealed class T4<T> : IMyInterface<T>
     {
         object IMessage.Payload => throw new NotImplementedException();
 
@@ -300,7 +300,7 @@ public class NewtonJsonMessageConverterTest
         public IMessageHeaders Headers => throw new NotImplementedException();
     }
 
-    public class T3<T> : IMessage<T>
+    public sealed class T3<T> : IMessage<T>
     {
         object IMessage.Payload => throw new NotImplementedException();
 
@@ -309,7 +309,7 @@ public class NewtonJsonMessageConverterTest
         public IMessageHeaders Headers => throw new NotImplementedException();
     }
 
-    public class MyBean
+    public sealed class MyBean
     {
         public byte[] Bytes { get; set; }
 

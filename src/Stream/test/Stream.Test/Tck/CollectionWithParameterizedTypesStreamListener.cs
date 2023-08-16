@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class CollectionWithParameterizedTypesStreamListener
+public sealed class CollectionWithParameterizedTypesStreamListener
 {
     [StreamListener(ISink.InputName)]
     [SendTo(ISource.OutputName)]

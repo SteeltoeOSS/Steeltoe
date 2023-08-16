@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class ExpressionLanguageScenarioTests : AbstractExpressionTests
+public sealed class ExpressionLanguageScenarioTests : AbstractExpressionTests
 {
     [Fact]
     public void TestScenario_UsingStandardInfrastructure()
@@ -204,7 +204,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         return s + s;
     }
 
-    public class FruitColorAccessor : IPropertyAccessor
+    public sealed class FruitColorAccessor : IPropertyAccessor
     {
         private static readonly Dictionary<string, Color> PropertyMap = new();
 
@@ -241,7 +241,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         }
     }
 
-    public class VegetableColorAccessor : IPropertyAccessor
+    public sealed class VegetableColorAccessor : IPropertyAccessor
     {
         private static readonly Dictionary<string, Color> PropertyMap = new();
 
@@ -277,7 +277,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         }
     }
 
-    public class TestClass
+    public sealed class TestClass
     {
         public string Str { get; set; }
 

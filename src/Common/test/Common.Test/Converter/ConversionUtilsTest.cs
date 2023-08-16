@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Converter;
 
-public class ConversionUtilsTest
+public sealed class ConversionUtilsTest
 {
     [Fact]
     public void TestCanCreateCompatListFrom()

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test;
 
-public class ConsulPostConfigurerTest
+public sealed class ConsulPostConfigurerTest
 {
     [Fact]
     public void ValidateOptionsComplainsAboutDefaultWhenWontWork()

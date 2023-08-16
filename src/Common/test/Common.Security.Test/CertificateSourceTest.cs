@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Security.Test;
 
-public class CertificateSourceTest
+public sealed class CertificateSourceTest
 {
     [Fact]
     public void CertificateSource_HasOptionsConfigurer()

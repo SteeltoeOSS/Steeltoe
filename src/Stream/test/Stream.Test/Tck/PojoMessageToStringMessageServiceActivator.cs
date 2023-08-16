@@ -10,7 +10,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class PojoMessageToStringMessageServiceActivator
+public sealed class PojoMessageToStringMessageServiceActivator
 {
     [ServiceActivator(InputChannel = ISink.InputName, OutputChannel = ISource.OutputName)]
     public IMessage<string> Echo(IMessage<Person> value)

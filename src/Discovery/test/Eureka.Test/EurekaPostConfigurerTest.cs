@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaPostConfigurerTest
+public sealed class EurekaPostConfigurerTest
 {
     [Fact]
     public void UpdateConfiguration_WithInstDefaults_UpdatesCorrectly()

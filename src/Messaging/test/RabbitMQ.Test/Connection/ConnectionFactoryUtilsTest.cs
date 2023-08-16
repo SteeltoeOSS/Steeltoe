@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
-public class ConnectionFactoryUtilsTest
+public sealed class ConnectionFactoryUtilsTest
 {
     [Fact]
     public void TestResourceHolder()

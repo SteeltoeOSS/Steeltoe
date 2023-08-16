@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class Person
+public sealed class Person
 {
     public string Name { get; set; }
 

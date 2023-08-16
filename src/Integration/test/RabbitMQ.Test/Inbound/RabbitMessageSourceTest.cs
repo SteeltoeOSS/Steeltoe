@@ -20,7 +20,7 @@ using R = RabbitMQ.Client;
 
 namespace Steeltoe.Integration.RabbitMQ.Test.Inbound;
 
-public class RabbitMessageSourceTest
+public sealed class RabbitMessageSourceTest
 {
     [Fact]
     public void TestAck()

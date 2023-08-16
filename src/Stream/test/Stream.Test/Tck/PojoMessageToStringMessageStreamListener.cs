@@ -11,7 +11,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class PojoMessageToStringMessageStreamListener
+public sealed class PojoMessageToStringMessageStreamListener
 {
     [StreamListener(ISink.InputName)]
     [SendTo(ISource.OutputName)]

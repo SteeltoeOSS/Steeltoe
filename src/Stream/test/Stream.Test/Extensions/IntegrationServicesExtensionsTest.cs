@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Extensions;
 
-public class IntegrationServicesExtensionsTest
+public sealed class IntegrationServicesExtensionsTest
 {
     [Fact]
     public void AddIntegrationServices_AddsServices()

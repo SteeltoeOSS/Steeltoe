@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class StringToMapMessageStreamListener
+public sealed class StringToMapMessageStreamListener
 {
     [StreamListener(ISink.InputName)]
     [SendTo(ISource.OutputName)]

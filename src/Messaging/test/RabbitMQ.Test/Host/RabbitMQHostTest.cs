@@ -16,7 +16,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Host;
 
-public class RabbitMQHostTest
+public sealed class RabbitMQHostTest
 {
     [Fact]
     public void HostCanBeStarted()

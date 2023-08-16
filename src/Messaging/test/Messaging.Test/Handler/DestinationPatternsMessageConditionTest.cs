@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Handler;
 
-public class DestinationPatternsMessageConditionTest
+public sealed class DestinationPatternsMessageConditionTest
 {
     [Fact]
     public void PrependSlash()

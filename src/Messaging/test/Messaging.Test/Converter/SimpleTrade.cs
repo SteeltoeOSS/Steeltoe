@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Messaging.Test.Converter;
 
-public class SimpleTrade
+public sealed class SimpleTrade
 {
     public string Ticker { get; set; }
 

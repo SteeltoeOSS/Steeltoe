@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Stream.Test.Extensions;
 
-public class StreamListenerExtensionsTest
+public sealed class StreamListenerExtensionsTest
 {
 }

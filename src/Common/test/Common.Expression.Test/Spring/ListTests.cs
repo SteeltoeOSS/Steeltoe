@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class ListTests : AbstractExpressionTests
+public sealed class ListTests : AbstractExpressionTests
 {
     private readonly Type _unmodifiableClass = typeof(ReadOnlyCollection<object>);
 

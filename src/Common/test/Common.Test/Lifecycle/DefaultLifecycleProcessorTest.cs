@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Lifecycle;
 
-public class DefaultLifecycleProcessorTest
+public sealed class DefaultLifecycleProcessorTest
 {
     [Fact]
     public async Task SingleSmartLifecycleAutoStartup()

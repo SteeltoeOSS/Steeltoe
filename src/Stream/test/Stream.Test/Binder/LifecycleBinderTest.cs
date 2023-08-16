@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class LifecycleBinderTest : AbstractTest
+public sealed class LifecycleBinderTest : AbstractTest
 {
     [Fact]
     public async Task TestOnlySmartLifecyclesStarted()
@@ -26,7 +26,7 @@ public class LifecycleBinderTest : AbstractTest
         Assert.False(lifecycle.IsRunning);
     }
 
-    public class SimpleLifecycle : ILifecycle
+    public sealed class SimpleLifecycle : ILifecycle
     {
         public bool IsRunning { get; private set; }
 

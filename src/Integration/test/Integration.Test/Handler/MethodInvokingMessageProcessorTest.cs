@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Handler;
 
-public class MethodInvokingMessageProcessorTest
+public sealed class MethodInvokingMessageProcessorTest
 {
     [Fact]
     public async Task TestMessageHandlerMethodFactoryOverride()
@@ -377,7 +377,7 @@ public class MethodInvokingMessageProcessorTest
         return serviceCollection;
     }
 
-    public class Foo
+    public sealed class Foo
     {
         [ServiceActivator]
 #pragma warning disable IDE0051 // Remove unused private members
@@ -388,7 +388,7 @@ public class MethodInvokingMessageProcessorTest
         }
     }
 
-    public class TestErrorService
+    public sealed class TestErrorService
     {
         public string Error(string input)
         {
@@ -401,7 +401,7 @@ public class MethodInvokingMessageProcessorTest
         }
     }
 
-    public class CheckedException : Exception
+    public sealed class CheckedException : Exception
     {
         public CheckedException(string message)
             : base(message)
@@ -409,7 +409,7 @@ public class MethodInvokingMessageProcessorTest
         }
     }
 
-    public class OverloadedMethodService
+    public sealed class OverloadedMethodService
     {
         private volatile object _lastArg;
 
@@ -428,7 +428,7 @@ public class MethodInvokingMessageProcessorTest
         }
     }
 
-    public class AnnotatedTestService
+    public sealed class AnnotatedTestService
     {
         public string MessageOnly(IMessage message)
         {
@@ -477,7 +477,7 @@ public class MethodInvokingMessageProcessorTest
         }
     }
 
-    public class TestService
+    public sealed class TestService
     {
         public string AcceptPayloadAndReturnObject(string s)
         {
@@ -538,7 +538,7 @@ public class MethodInvokingMessageProcessorTest
     {
     }
 
-    public class C1 : B1
+    public sealed class C1 : B1
     {
     }
 
@@ -560,7 +560,7 @@ public class MethodInvokingMessageProcessorTest
         }
     }
 
-    public class C2 : B2
+    public sealed class C2 : B2
     {
         [ServiceActivator(InputChannel = "in", OutputChannel = "out")]
         public override IMessage MyMethod(IMessage<string> msg)
@@ -582,7 +582,7 @@ public class MethodInvokingMessageProcessorTest
     {
     }
 
-    public class C3 : B3
+    public sealed class C3 : B3
     {
         [ServiceActivator(InputChannel = "in", OutputChannel = "out")]
         public override IMessage MyMethod(IMessage<string> msg)
@@ -591,7 +591,7 @@ public class MethodInvokingMessageProcessorTest
         }
     }
 
-    public class MyConfiguration
+    public sealed class MyConfiguration
     {
         [ServiceActivator(InputChannel = "foo", OutputChannel = "out")]
         public string Foo(Person person)
@@ -600,7 +600,7 @@ public class MethodInvokingMessageProcessorTest
         }
     }
 
-    public class TestHandlerMethodArgumentResolver : IHandlerMethodArgumentResolver
+    public sealed class TestHandlerMethodArgumentResolver : IHandlerMethodArgumentResolver
     {
         public object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
@@ -614,7 +614,7 @@ public class MethodInvokingMessageProcessorTest
         }
     }
 
-    public class Person
+    public sealed class Person
     {
         public string Name { get; }
 

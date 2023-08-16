@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Handler;
 
-public class AbstractReplyProducingMessageHandlerTest
+public sealed class AbstractReplyProducingMessageHandlerTest
 {
     private readonly Mock<IMessageChannel> _mockChannel;
     private readonly TestAbstractReplyProducingMessageHandler _handler;

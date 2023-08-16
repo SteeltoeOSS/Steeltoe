@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
-public class DefaultMessageHandlerMethodFactoryTest
+public sealed class DefaultMessageHandlerMethodFactoryTest
 {
     private readonly SampleBean _sample = new();
 

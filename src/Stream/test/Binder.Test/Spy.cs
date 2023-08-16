@@ -8,7 +8,7 @@ namespace Steeltoe.Stream.Binder.Test;
 /// Represents an out-of-band connection to the underlying middleware, so that tests can check that some messages actually do (or do not) transit through
 /// it.
 /// </summary>
-public class Spy
+public sealed class Spy
 {
     public Func<bool, object> Receive { get; set; }
 }

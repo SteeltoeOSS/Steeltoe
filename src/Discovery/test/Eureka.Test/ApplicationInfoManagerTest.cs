@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class ApplicationInfoManagerTest : AbstractBaseTest
+public sealed class ApplicationInfoManagerTest : AbstractBaseTest
 {
     private StatusChangedEventArgs _eventArgs;
 

@@ -9,7 +9,7 @@ using Xunit.Sdk;
 
 namespace Steeltoe.Common.Utils.Test.Diagnostics;
 
-public class CommandExecutorTest
+public sealed class CommandExecutorTest
 {
     [Fact]
     public async Task SuccessfulCommandShouldReturn0()

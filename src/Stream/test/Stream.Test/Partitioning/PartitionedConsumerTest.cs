@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Partitioning;
 
-public class PartitionedConsumerTest : AbstractTest
+public sealed class PartitionedConsumerTest : AbstractTest
 {
     [Fact]
     public async Task TestBindingPartitionedConsumer()

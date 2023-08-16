@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Discovery;
 
-public class ConfigurationServiceInstanceProviderTest
+public sealed class ConfigurationServiceInstanceProviderTest
 {
     [Fact]
     public void Returns_ConfiguredServices()

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Util;
 
-public class PatternMatchUtilsTest
+public sealed class PatternMatchUtilsTest
 {
     [Fact]
     public void TestTrivial()

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Net;
 
-public class InetUtilsTest
+public sealed class InetUtilsTest
 {
     [Fact]
     public void TestGetFirstNonLoopbackHostInfo()

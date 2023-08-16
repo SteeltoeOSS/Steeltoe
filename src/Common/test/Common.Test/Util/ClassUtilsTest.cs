@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Util;
 
-public class ClassUtilsTest
+public sealed class ClassUtilsTest
 {
     [Fact]
     public void TestIsAssignable_Throws()

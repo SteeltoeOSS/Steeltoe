@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Discovery;
 
-public class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
+public sealed class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
 {
     [Fact]
     public void AddConfigurationDiscoveryClient_AddsClientWithOptions()

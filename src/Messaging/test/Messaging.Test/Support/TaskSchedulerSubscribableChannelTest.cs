@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Support;
 
-public class TaskSchedulerSubscribableChannelTest
+public sealed class TaskSchedulerSubscribableChannelTest
 {
     internal TaskSchedulerSubscribableChannel Channel { get; }
     internal object Payload { get; }

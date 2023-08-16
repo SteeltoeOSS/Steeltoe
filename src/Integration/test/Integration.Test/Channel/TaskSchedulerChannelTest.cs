@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Channel;
 
-public class TaskSchedulerChannelTest
+public sealed class TaskSchedulerChannelTest
 {
     private readonly IServiceProvider _provider;
 

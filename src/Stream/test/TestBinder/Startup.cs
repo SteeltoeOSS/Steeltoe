@@ -12,7 +12,7 @@ using Steeltoe.Stream.TestBinder;
 
 namespace Steeltoe.Stream.TestBinder;
 
-public class Startup
+public sealed class Startup
 {
     public IConfiguration Configuration { get; }
 

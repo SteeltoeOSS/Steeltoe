@@ -19,7 +19,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener.Adapters;
 
-public class MessagingMessageListenerAdapterTest : AbstractTest
+public sealed class MessagingMessageListenerAdapterTest : AbstractTest
 {
     private readonly DefaultMessageHandlerMethodFactory _factory = new();
     private readonly SampleBean _sample = new();
@@ -277,19 +277,19 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         Assert.IsType<Foo>(_sample.BatchPayloads[0]);
     }
 
-    protected MessagingMessageListenerAdapter GetSimpleInstance(string methodName, params Type[] parameterTypes)
+    private MessagingMessageListenerAdapter GetSimpleInstance(string methodName, params Type[] parameterTypes)
     {
         MethodInfo m = typeof(SampleBean).GetMethod(methodName, parameterTypes);
         return CreateInstance(m, false);
     }
 
-    protected MessagingMessageListenerAdapter GetSimpleInstance(string methodName, bool returnExceptions, params Type[] parameterTypes)
+    private MessagingMessageListenerAdapter GetSimpleInstance(string methodName, bool returnExceptions, params Type[] parameterTypes)
     {
         MethodInfo m = typeof(SampleBean).GetMethod(methodName, parameterTypes);
         return CreateInstance(m, returnExceptions);
     }
 
-    protected MessagingMessageListenerAdapter GetMultiInstance(string methodName1, string methodName2, bool returnExceptions, Type m1ParameterType,
+    private MessagingMessageListenerAdapter GetMultiInstance(string methodName1, string methodName2, bool returnExceptions, Type m1ParameterType,
         Type m2ParameterType)
     {
         MethodInfo m1 = typeof(SampleBean).GetMethod(methodName1, new[]
@@ -305,7 +305,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         return CreateMultiInstance(m1, m2, returnExceptions);
     }
 
-    protected MessagingMessageListenerAdapter CreateMultiInstance(MethodInfo m1, MethodInfo m2, bool returnExceptions)
+    private MessagingMessageListenerAdapter CreateMultiInstance(MethodInfo m1, MethodInfo m2, bool returnExceptions)
     {
         var adapter = new MessagingMessageListenerAdapter(null, null, null, returnExceptions, null);
 
@@ -320,7 +320,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         return adapter;
     }
 
-    protected MessagingMessageListenerAdapter CreateInstance(MethodInfo m, bool returnExceptions)
+    private MessagingMessageListenerAdapter CreateInstance(MethodInfo m, bool returnExceptions)
     {
         var adapter = new MessagingMessageListenerAdapter(null, null, m, returnExceptions, null)
         {
@@ -330,13 +330,13 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         return adapter;
     }
 
-    protected BatchMessagingMessageListenerAdapter GetBatchInstance(string methodName, params Type[] parameterTypes)
+    private BatchMessagingMessageListenerAdapter GetBatchInstance(string methodName, params Type[] parameterTypes)
     {
         MethodInfo m = typeof(SampleBean).GetMethod(methodName, parameterTypes);
         return CreateBatchInstance(m);
     }
 
-    protected BatchMessagingMessageListenerAdapter CreateBatchInstance(MethodInfo m)
+    private BatchMessagingMessageListenerAdapter CreateBatchInstance(MethodInfo m)
     {
         var adapter = new BatchMessagingMessageListenerAdapter(null, null, m, false, null, null)
         {

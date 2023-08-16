@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Logging.DynamicLogger.Test;
 
-public class DynamicLoggerProviderTest
+public sealed class DynamicLoggerProviderTest
 {
     private readonly Dictionary<string, string> _defaultAppSettings = new()
     {

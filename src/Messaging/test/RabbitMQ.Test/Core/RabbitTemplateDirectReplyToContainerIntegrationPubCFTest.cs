@@ -9,7 +9,7 @@ using Xunit;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
-public class RabbitTemplateDirectReplyToContainerIntegrationPubCFTest : RabbitTemplateDirectReplyToContainerIntegrationTest
+public sealed class RabbitTemplateDirectReplyToContainerIntegrationPubCFTest : RabbitTemplateDirectReplyToContainerIntegrationTest
 {
     protected override RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)
     {

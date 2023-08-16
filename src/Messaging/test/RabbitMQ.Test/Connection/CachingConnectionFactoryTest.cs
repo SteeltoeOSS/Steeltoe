@@ -13,7 +13,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
-public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
+public sealed class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 {
     [Fact]
     public void TestWithConnectionFactoryDefaults()

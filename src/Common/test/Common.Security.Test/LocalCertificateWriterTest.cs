@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Security.Test;
 
-public class LocalCertificateWriterTest
+public sealed class LocalCertificateWriterTest
 {
     [Fact]
     public void CertificatesIncludeParams()

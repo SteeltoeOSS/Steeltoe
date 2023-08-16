@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Contexts;
 
-public class ServiceFactoryAccessorTests
+public sealed class ServiceFactoryAccessorTests
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -54,14 +54,14 @@ public class ServiceFactoryAccessorTests
         Assert.Throws<SpelEvaluationException>(() => noServiceExpr.GetValue(context));
     }
 
-    public class Car : IServiceNameAware
+    public sealed class Car : IServiceNameAware
     {
         public string Color => "red";
 
         public string ServiceName { get; set; } = "car";
     }
 
-    public class Boat : IServiceNameAware
+    public sealed class Boat : IServiceNameAware
     {
         public string Color => "blue";
 

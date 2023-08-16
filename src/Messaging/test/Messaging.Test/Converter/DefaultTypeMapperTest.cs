@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Converter;
 
-public class DefaultTypeMapperTest
+public sealed class DefaultTypeMapperTest
 {
     private readonly DefaultTypeMapper _typeMapper = new();
     private readonly MessageHeaders _headers = new();

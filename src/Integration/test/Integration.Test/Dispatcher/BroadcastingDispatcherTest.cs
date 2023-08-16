@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Dispatcher;
 
-public class BroadcastingDispatcherTest
+public sealed class BroadcastingDispatcherTest
 {
     private readonly Mock<IMessage> _messageMock = new();
 

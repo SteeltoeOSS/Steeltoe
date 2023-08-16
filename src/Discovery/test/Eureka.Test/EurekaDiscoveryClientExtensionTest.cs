@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaDiscoveryClientExtensionTest
+public sealed class EurekaDiscoveryClientExtensionTest
 {
     [Fact]
     public void ClientEnabledByDefault()
@@ -100,7 +100,7 @@ public class EurekaDiscoveryClientExtensionTest
         ((TestClientHandlerProvider)handlerProvider).Called.Should().BeTrue();
     }
 
-    internal class TestClientHandlerProvider : IHttpClientHandlerProvider
+    internal sealed class TestClientHandlerProvider : IHttpClientHandlerProvider
     {
         public bool Called { get; set; }
 

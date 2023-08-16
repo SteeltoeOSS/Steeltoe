@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Contexts;
 
-public class ConfigurationAccessorTests
+public sealed class ConfigurationAccessorTests
 {
     private readonly IServiceProvider _serviceProvider;
 

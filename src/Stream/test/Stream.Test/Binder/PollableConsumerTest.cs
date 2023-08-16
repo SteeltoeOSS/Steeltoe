@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class PollableConsumerTest : AbstractTest
+public sealed class PollableConsumerTest : AbstractTest
 {
     [Fact]
     public void TestSimple()

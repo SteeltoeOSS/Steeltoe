@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class DiscoveryClientTest : AbstractBaseTest
+public sealed class DiscoveryClientTest : AbstractBaseTest
 {
     private const string FooAddedJson = @"
                 { 

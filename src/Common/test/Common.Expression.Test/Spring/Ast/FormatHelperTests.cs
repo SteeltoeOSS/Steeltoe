@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring.Ast;
 
-public class FormatHelperTests
+public sealed class FormatHelperTests
 {
     [Fact]
     public void FormatMethodWithSingleArgumentForMessage()

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class SpelExceptionTests
+public sealed class SpelExceptionTests
 {
     [Fact]
     public void SpelExpressionMapNullVariables()

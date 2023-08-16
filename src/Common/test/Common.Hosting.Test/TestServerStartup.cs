@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Hosting.Test;
 
-public class TestServerStartup
+public sealed class TestServerStartup
 {
     public List<string> ExpectedAddresses { get; private set; }
 

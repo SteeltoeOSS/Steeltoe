@@ -6,6 +6,6 @@
 
 namespace A.B.C.D;
 
-public class TestClass
+public sealed class TestClass
 {
 }

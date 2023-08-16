@@ -20,7 +20,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class SpelReproTests : AbstractExpressionTests
+public sealed class SpelReproTests : AbstractExpressionTests
 {
     [Fact]
     public void NPE_SPR5661()
@@ -1529,7 +1529,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class ValuesMethodResolver : IMethodResolver
+    public sealed class ValuesMethodResolver : IMethodResolver
     {
         public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
         {
@@ -1537,7 +1537,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class ValuesMethodExecutor : IMethodExecutor
+    public sealed class ValuesMethodExecutor : IMethodExecutor
     {
         public ITypedValue Execute(IEvaluationContext context, object target, params object[] arguments)
         {
@@ -1562,7 +1562,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class ParseReflectiveMethodResolver : ReflectiveMethodResolver
+    public sealed class ParseReflectiveMethodResolver : ReflectiveMethodResolver
     {
         protected override MethodInfo[] GetMethods(Type type)
         {
@@ -1584,7 +1584,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class Reserver
+    public sealed class Reserver
     {
         public string NE = "abc";
         public string ne = "def";
@@ -1604,7 +1604,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class WideningPrimitiveConversion
+    public sealed class WideningPrimitiveConversion
     {
         public int GetX(long i)
         {
@@ -1612,7 +1612,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class ConversionPriority1
+    public sealed class ConversionPriority1
     {
         public int GetX(ValueType i)
         {
@@ -1625,7 +1625,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class ConversionPriority2
+    public sealed class ConversionPriority2
     {
         public int GetX(int i)
         {
@@ -1638,7 +1638,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class DollarSquareTemplateParserContext : IParserContext
+    public sealed class DollarSquareTemplateParserContext : IParserContext
     {
         public bool IsTemplate => true;
 
@@ -1647,7 +1647,7 @@ public class SpelReproTests : AbstractExpressionTests
         public string ExpressionSuffix => "]";
     }
 
-    public class MyTypeLocator : StandardTypeLocator
+    public sealed class MyTypeLocator : StandardTypeLocator
     {
         public override Type FindType(string typeName)
         {
@@ -1665,7 +1665,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class Spr5899Class
+    public sealed class Spr5899Class
     {
         public Spr5899Class()
         {
@@ -1707,7 +1707,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class TestProperties
+    public sealed class TestProperties
     {
         public Dictionary<string, string> JdbcProperties = new();
 
@@ -1722,7 +1722,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class MapAccessor : IPropertyAccessor
+    public sealed class MapAccessor : IPropertyAccessor
     {
         public IList<Type> GetSpecificTargetClasses()
         {
@@ -1753,9 +1753,9 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class Outer
+    public sealed class Outer
     {
-        public class Inner
+        public sealed class Inner
         {
             public static int Run()
             {
@@ -1769,7 +1769,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class XX
+    public sealed class XX
     {
         public Dictionary<string, string> M;
 
@@ -1785,7 +1785,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class MyBeanResolver : IServiceResolver
+    public sealed class MyBeanResolver : IServiceResolver
     {
         public object Resolve(IEvaluationContext context, string serviceName)
         {
@@ -1813,7 +1813,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class C
+    public sealed class C
     {
         public List<string> Ls;
 
@@ -1843,7 +1843,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class D
+    public sealed class D
     {
         public string A;
 
@@ -1858,12 +1858,12 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class Resource
+    public sealed class Resource
     {
         public string Server => "abc";
     }
 
-    public class ResourceSummary
+    public sealed class ResourceSummary
     {
         public Resource Resource { get; }
 
@@ -1873,12 +1873,12 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class Foo
+    public sealed class Foo
     {
         public ResourceSummary Resource = new();
     }
 
-    public class Foo2
+    public sealed class Foo2
     {
         public void Execute(string str)
         {
@@ -1886,12 +1886,12 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class Message
+    public sealed class Message
     {
         public string Payload { get; set; }
     }
 
-    public class Goo
+    public sealed class Goo
     {
         public static Goo Instance = new();
 
@@ -1908,12 +1908,12 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class Holder
+    public sealed class Holder
     {
         public Dictionary<string, string> Map = new();
     }
 
-    public class FunctionsClass // SPR9486
+    public sealed class FunctionsClass // SPR9486
     {
         public int Abs(int value)
         {
@@ -1931,7 +1931,7 @@ public class SpelReproTests : AbstractExpressionTests
         string Process(params string[] args);
     }
 
-    public class VarargsReceiver : IVarargsInterface
+    public sealed class VarargsReceiver : IVarargsInterface
     {
         public string Process(params string[] args)
         {
@@ -1939,7 +1939,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class ReflectionUtil<T>
+    public sealed class ReflectionUtil<T>
     {
         public object MethodToCall(T param)
         {
@@ -2020,7 +2020,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class TestPropertyAccessor : IPropertyAccessor
+    public sealed class TestPropertyAccessor : IPropertyAccessor
     {
         private readonly string _mapName;
 
@@ -2064,7 +2064,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class ContextObject
+    public sealed class ContextObject
     {
         public Dictionary<string, string> FirstContext = new();
 
@@ -2092,7 +2092,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class ListOf
+    public sealed class ListOf
     {
         public double Value { get; }
 
@@ -2102,7 +2102,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class BeanClass
+    public sealed class BeanClass
     {
         public List<ListOf> List { get; }
 
@@ -2126,7 +2126,7 @@ public class SpelReproTests : AbstractExpressionTests
         Z
     }
 
-    public class BooleanHolder
+    public sealed class BooleanHolder
     {
         public object SimpleProperty { get; set; } = true;
 
@@ -2142,7 +2142,7 @@ public class SpelReproTests : AbstractExpressionTests
         T Property { get; set; }
     }
 
-    public class GenericImplementation : IGenericInterface<int>
+    public sealed class GenericImplementation : IGenericInterface<int>
     {
         public int Property { get; set; }
     }
@@ -2152,7 +2152,7 @@ public class SpelReproTests : AbstractExpressionTests
         public int Property { get; }
     }
 
-    public class OnlyBridgeMethod : PackagePrivateClassWithGetter
+    public sealed class OnlyBridgeMethod : PackagePrivateClassWithGetter
     {
     }
 
@@ -2165,25 +2165,25 @@ public class SpelReproTests : AbstractExpressionTests
     {
     }
 
-    public class StaticFinalImpl1 : AbstractStaticFinal
+    public sealed class StaticFinalImpl1 : AbstractStaticFinal
     {
     }
 
-    public class StaticFinalImpl2 : AbstractStaticFinal
+    public sealed class StaticFinalImpl2 : AbstractStaticFinal
     {
     }
 
-    public class Spr10486
+    public sealed class Spr10486
     {
         public string Name { get; set; } = "name";
     }
 
-    public class Spr11142
+    public sealed class Spr11142
     {
         public string IsSomething => string.Empty;
     }
 
-    public class TestClass2
+    public sealed class TestClass2
     {
         // SPR-9194
         private readonly string _str;
@@ -2204,7 +2204,7 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class Spr11445Class : IServiceResolver
+    public sealed class Spr11445Class : IServiceResolver
     {
         private readonly AtomicInteger _counter = new();
 
@@ -2224,12 +2224,12 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class MapWithConstant : Hashtable
+    public sealed class MapWithConstant : Hashtable
     {
         public static readonly int X = 1;
     }
 
-    public class Item : IList<Item>, IList
+    public sealed class Item : IList<Item>, IList
     {
         private readonly List<Item> _children = new();
 
@@ -2338,11 +2338,11 @@ public class SpelReproTests : AbstractExpressionTests
         }
     }
 
-    public class UnnamedUser
+    public sealed class UnnamedUser
     {
     }
 
-    public class NamedUser
+    public sealed class NamedUser
     {
         public string Name => "foo";
     }

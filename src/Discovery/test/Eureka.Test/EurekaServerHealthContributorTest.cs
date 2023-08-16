@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaServerHealthContributorTest
+public sealed class EurekaServerHealthContributorTest
 {
     [Fact]
     public void MakeHealthStatus_ReturnsExpected()

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Kubernetes.Test.Discovery;
 
-public class KubernetesServiceInstanceTest
+public sealed class KubernetesServiceInstanceTest
 {
     [Fact]
     public void SchemeIsHttp()

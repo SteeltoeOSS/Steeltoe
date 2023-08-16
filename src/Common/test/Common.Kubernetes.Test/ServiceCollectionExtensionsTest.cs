@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Kubernetes.Test;
 
-public class ServiceCollectionExtensionsTest
+public sealed class ServiceCollectionExtensionsTest
 {
     public ServiceCollectionExtensionsTest()
     {

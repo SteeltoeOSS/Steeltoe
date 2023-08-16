@@ -13,7 +13,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
-public class DirectMessageListenerContainerMockTest
+public sealed class DirectMessageListenerContainerMockTest
 {
     [Fact(Skip = "Not needed, We disable autorecoverconsumers")]
     public async Task TestAlwaysCancelAutoRecoverConsumer()

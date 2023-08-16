@@ -21,7 +21,7 @@ using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.Sim
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 [Trait("Category", "Integration")]
-public class BrokerDeclaredQueueNameTest : AbstractTest
+public sealed class BrokerDeclaredQueueNameTest : AbstractTest
 {
     [Fact]
     public async Task TestBrokerNamedQueueDmlc()

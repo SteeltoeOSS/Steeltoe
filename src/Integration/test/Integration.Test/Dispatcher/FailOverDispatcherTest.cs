@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Dispatcher;
 
-public class FailOverDispatcherTest
+public sealed class FailOverDispatcherTest
 {
     private readonly IServiceProvider _provider;
 
@@ -222,7 +222,7 @@ public class FailOverDispatcherTest
         return handler;
     }
 
-    public class CountingTestEndpoint : IMessageHandler
+    public sealed class CountingTestEndpoint : IMessageHandler
     {
         public int Counter { get; private set; }
         public bool ShouldAccept { get; }
@@ -245,7 +245,7 @@ public class FailOverDispatcherTest
         }
     }
 
-    public class LatchedProcessor : IMessageProcessor
+    public sealed class LatchedProcessor : IMessageProcessor
     {
         public int Counter { get; private set; }
         public CountdownEvent Latch { get; }

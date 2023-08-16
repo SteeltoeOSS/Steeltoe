@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Kubernetes.Test.Discovery;
 
-public class DefaultIsServicePortSecureResolverTest
+public sealed class DefaultIsServicePortSecureResolverTest
 {
     [Fact]
     public void PortNumbers_ShouldBeSecuredIfDefaultOrAdded()

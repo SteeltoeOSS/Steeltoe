@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test;
 
-public class ConsulClientFactoryTest
+public sealed class ConsulClientFactoryTest
 {
     [Fact]
     public void CreateClient_ThrowsNullOptions()

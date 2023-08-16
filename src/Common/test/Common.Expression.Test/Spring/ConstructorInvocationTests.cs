@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class ConstructorInvocationTests : AbstractExpressionTests
+public sealed class ConstructorInvocationTests : AbstractExpressionTests
 {
     [Fact]
     public void TestTypeConstructors()
@@ -154,7 +154,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         Evaluate($"new {typeof(Company).FullName}(1.1d).Address", "1.1", typeof(string));
     }
 
-    public class DummyConstructorResolver : IConstructorResolver
+    public sealed class DummyConstructorResolver : IConstructorResolver
     {
         public IConstructorExecutor Resolve(IEvaluationContext context, string typeName, List<Type> argumentTypes)
         {
@@ -162,11 +162,11 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         }
     }
 
-    public class TestException : Exception
+    public sealed class TestException : Exception
     {
     }
 
-    public class Tester
+    public sealed class Tester
     {
         public static int Counter { get; set; }
         public int I { get; }

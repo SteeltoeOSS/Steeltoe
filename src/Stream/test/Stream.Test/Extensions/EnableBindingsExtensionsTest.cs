@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Extensions;
 
-public class EnableBindingsExtensionsTest
+public sealed class EnableBindingsExtensionsTest
 {
     [Fact]
     public void AddProcessor_AddsServices()

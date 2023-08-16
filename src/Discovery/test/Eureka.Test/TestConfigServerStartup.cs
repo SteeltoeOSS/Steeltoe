@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class TestConfigServerStartup
+public sealed class TestConfigServerStartup
 {
     public static string Host { get; set; }
 

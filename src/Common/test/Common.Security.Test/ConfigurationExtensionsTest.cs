@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Security.Test;
 
-public class ConfigurationExtensionsTest
+public sealed class ConfigurationExtensionsTest
 {
     [Fact]
     public void AddPemFiles_ThrowsOnNulls()
