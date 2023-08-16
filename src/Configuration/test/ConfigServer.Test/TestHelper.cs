@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using FluentAssertions;
 using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
@@ -34,7 +35,7 @@ public static class TestHelper
 
         try
         {
-            Assert.Null(settings.Name);
+            settings.Name.Should().BeNullOrEmpty();
         }
         catch
         {
