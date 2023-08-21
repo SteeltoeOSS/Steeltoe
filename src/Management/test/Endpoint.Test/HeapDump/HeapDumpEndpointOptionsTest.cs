@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Xunit;
@@ -43,5 +44,14 @@ public sealed class HeapDumpEndpointOptionsTest : BaseTest
         Assert.True(heapDumpEndpointOptions.Enabled);
         Assert.Equal("heapdump", heapDumpEndpointOptions.Id);
         Assert.Equal("heapdump", heapDumpEndpointOptions.Path);
+
+        if (Platform.IsOSX)
+        {
+            Assert.Equal("gcdump", heapDumpEndpointOptions.HeapDumpType);
+        }
+        else
+        {
+            Assert.Null(heapDumpEndpointOptions.HeapDumpType);
+        }
     }
 }

@@ -111,6 +111,7 @@ public abstract class BaseTest : IDisposable
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton<IApplicationInstanceInfo>(new ApplicationInstanceInfo(configurationRoot, string.Empty));
         services.ConfigureOptions(configureOptionsType);
+        services.AddLogging();
 
         ServiceProvider provider = services.BuildServiceProvider();
         return provider.GetRequiredService<IOptionsMonitor<TOptions>>();
