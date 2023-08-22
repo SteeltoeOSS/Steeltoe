@@ -11,9 +11,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 internal sealed class ConfigureHeapDumpEndpointOptions : ConfigureEndpointOptions<HeapDumpEndpointOptions>
 {
-    private readonly ILogger<ConfigureHeapDumpEndpointOptions> _logger;
     private const string ManagementInfoPrefix = "management:endpoints:heapdump";
-
+    private readonly ILogger<ConfigureHeapDumpEndpointOptions> _logger;
 
     public ConfigureHeapDumpEndpointOptions(IConfiguration configuration, ILogger<ConfigureHeapDumpEndpointOptions> logger)
         : base(configuration, ManagementInfoPrefix, "heapdump")
@@ -26,7 +25,7 @@ internal sealed class ConfigureHeapDumpEndpointOptions : ConfigureEndpointOption
         base.Configure(options);
 
         // Only gcdump works on OSX
-        if (Platform.IsOSX  && options.HeapDumpType != "gcdump")
+        if (Platform.IsOSX && options.HeapDumpType != "gcdump")
         {
             _logger.LogWarning("Only GC dumps are  supported on OSX.");
             options.HeapDumpType = "gcdump";

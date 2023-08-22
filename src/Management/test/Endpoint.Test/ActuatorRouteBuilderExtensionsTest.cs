@@ -20,13 +20,16 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ActuatorRouteBuilderExtensionsTest
 {
-
     public static IEnumerable<object[]> ActuatorOptions
     {
         get
         {
             IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"));
-            return hostBuilder.Build().Services.GetServices<EndpointOptions>().Select(options => new object[]{options});
+
+            return hostBuilder.Build().Services.GetServices<EndpointOptions>().Select(options => new object[]
+            {
+                options
+            });
         }
     }
 
