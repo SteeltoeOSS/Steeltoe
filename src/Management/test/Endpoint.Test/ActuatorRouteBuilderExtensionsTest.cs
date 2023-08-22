@@ -22,7 +22,6 @@ public sealed class ActuatorRouteBuilderExtensionsTest
 {
 
     public static IEnumerable<object[]> ActuatorOptions
-
     {
         get
         {
@@ -30,9 +29,9 @@ public sealed class ActuatorRouteBuilderExtensionsTest
             return hostBuilder.Build().Services.GetServices<EndpointOptions>().Select(options => new object[]{options});
         }
     }
+
     [Theory]
     [MemberData(nameof(ActuatorOptions))]
-
     public async Task MapTestAuthSuccess(EndpointOptions options)
     {
         IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"));
