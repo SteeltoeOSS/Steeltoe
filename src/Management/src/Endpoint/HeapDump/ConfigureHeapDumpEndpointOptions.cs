@@ -25,10 +25,10 @@ internal sealed class ConfigureHeapDumpEndpointOptions : ConfigureEndpointOption
     {
         base.Configure(options);
 
-        // Full dumps are broken on Osx, so default to gcdump
-        if (Platform.IsOSX)
+        // Only gcdump works on OSX
+        if (Platform.IsOSX  && options.HeapDumpType != "gcdump")
         {
-            _logger.LogInformation("Full dumps are not supported on OSX, defaulting to gcdump.");
+            _logger.LogWarning("Only GC dumps are  supported on OSX.");
             options.HeapDumpType = "gcdump";
         }
     }
