@@ -20,18 +20,33 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ActuatorRouteBuilderExtensionsTest
 {
-    [Fact]
-    public async Task MapTestAuthSuccess()
+    public static IEnumerable<object[]> ActuatorOptions
     {
-        IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"));
-        await ActAndAssertAsync(hostBuilder, true);
+        get
+        {
+            IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"));
+
+            return hostBuilder.Build().Services.GetServices<EndpointOptions>().Select(options => new object[]
+            {
+                options
+            });
+        }
     }
 
-    [Fact]
-    public async Task MapTestAuthFail()
+    [Theory]
+    [MemberData(nameof(ActuatorOptions))]
+    public async Task MapTestAuthSuccess(EndpointOptions options)
+    {
+        IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "actuators.read"));
+        await ActAndAssertAsync(hostBuilder, options, true);
+    }
+
+    [Theory]
+    [MemberData(nameof(ActuatorOptions))]
+    public async Task MapTestAuthFail(EndpointOptions options)
     {
         IHostBuilder hostBuilder = GetHostBuilder(policy => policy.RequireClaim("scope", "invalidscope"));
-        await ActAndAssertAsync(hostBuilder, false);
+        await ActAndAssertAsync(hostBuilder, options, false);
     }
 
     private static IHostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction)
@@ -64,32 +79,27 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         }).ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
     }
 
-    private async Task ActAndAssertAsync(IHostBuilder hostBuilder, bool expectedSuccess)
+    private async Task ActAndAssertAsync(IHostBuilder hostBuilder, EndpointOptions options, bool expectedSuccess)
     {
         using IHost host = await hostBuilder.StartAsync();
         using TestServer server = host.GetTestServer();
 
-        IEnumerable<EndpointOptions> optionsCollection = host.Services.GetServices<EndpointOptions>();
+        ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
+        string path = options.GetPathMatchPattern(managementOptions, managementOptions.Path);
+        path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
+        Assert.NotNull(path);
+        HttpResponseMessage response;
 
-        foreach (EndpointOptions options in optionsCollection)
+        if (options.AllowedVerbs.Contains("Get"))
         {
-            ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
-            string path = options.GetPathMatchPattern(managementOptions, managementOptions.Path);
-            path = path.Replace("metrics/{**_}", "metrics", StringComparison.Ordinal);
-            Assert.NotNull(path);
-            HttpResponseMessage response;
-
-            if (options.AllowedVerbs.Contains("Get"))
-            {
-                response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
-            }
-            else
-            {
-                response = await server.CreateClient().PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null);
-            }
-
-            Assert.True(expectedSuccess == response.IsSuccessStatusCode,
-                $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {options}");
+            response = await server.CreateClient().GetAsync(new Uri(path, UriKind.RelativeOrAbsolute));
         }
+        else
+        {
+            response = await server.CreateClient().PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null);
+        }
+
+        Assert.True(expectedSuccess == response.IsSuccessStatusCode,
+            $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {options}");
     }
 }
