@@ -141,6 +141,7 @@ public class ConsulRegistration : IConsulRegistration
 
         service.Name = NormalizeForConsul(appName);
         service.Tags = CreateTags(options);
+        service.Meta = options.Metadata;
 
         if (options.Port != 0)
         {
