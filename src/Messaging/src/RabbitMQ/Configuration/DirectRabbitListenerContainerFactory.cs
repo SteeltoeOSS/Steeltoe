@@ -6,8 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Retry;
+using Steeltoe.Common.RetryPolly;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Retry;
 
 namespace Steeltoe.Messaging.RabbitMQ.Configuration;
 
@@ -74,6 +77,9 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
         {
             instance.ConsumersPerQueue = ConsumersPerQueue.Value;
         }
+
+        instance.RetryTemplate = ContainerRetryTemplate;
+        instance.Recoverer = ContainerRecoveryCallback;
     }
 
     private void Configure(RabbitOptions options)
@@ -101,6 +107,12 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
         }
 
         MissingQueuesFatal = containerOptions.MissingQueuesFatal;
+        var retryOptions = containerOptions.Retry;
+        if (retryOptions.Enabled)
+        {
+            ContainerRetryTemplate = new PollyRetryTemplate(retryOptions.MaxAttempts, (int)retryOptions.InitialInterval.TotalMilliseconds, (int)retryOptions.MaxInterval.TotalMilliseconds, retryOptions.Multiplier, Logger);
+            ContainerRecoveryCallback = new RejectAndDoNotRequeueRecoverer();
+        }
 
         if (containerOptions.ConsumersPerQueue.HasValue)
         {
