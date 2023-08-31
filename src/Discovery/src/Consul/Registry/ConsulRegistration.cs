@@ -55,6 +55,8 @@ public class ConsulRegistration : IConsulRegistration
     /// <inheritdoc />
     public Uri Uri => new($"{Options.Scheme}://{Host}:{Port}");
 
+    public string[] Tags { get; private set; }
+
     /// <inheritdoc />
     public IDictionary<string, string> Metadata { get; private set; }
 
@@ -109,7 +111,8 @@ public class ConsulRegistration : IConsulRegistration
         ServiceId = agentServiceRegistration.Name;
         Host = agentServiceRegistration.Address;
         Port = agentServiceRegistration.Port;
-        Metadata = ConsulServerUtils.GetMetadata(agentServiceRegistration.Tags);
+        Tags = agentServiceRegistration.Tags;
+        Metadata = agentServiceRegistration.Meta;
     }
 
     /// <summary>
@@ -141,7 +144,7 @@ public class ConsulRegistration : IConsulRegistration
 
         service.Name = NormalizeForConsul(appName);
         service.Tags = CreateTags(options);
-        service.Meta = options.Metadata;
+        service.Meta = CreateMetadata(options);
 
         if (options.Port != 0)
         {
@@ -152,31 +155,44 @@ public class ConsulRegistration : IConsulRegistration
         return new ConsulRegistration(service, options);
     }
 
-    internal static string[] CreateTags(ConsulDiscoveryOptions options)
+    internal static IDictionary<string, string> CreateMetadata(ConsulDiscoveryOptions options)
     {
-        var tags = new List<string>();
+        var metadata = new Dictionary<string, string>();
 
-        if (options.Tags != null)
+        if (options.Metadata != null && options.Metadata.Any())
         {
-            tags.AddRange(options.Tags);
+            foreach (var m in options.Metadata)
+            {
+                metadata.Add(m.Key, m.Value);
+            }
         }
 
         if (!string.IsNullOrEmpty(options.InstanceZone))
         {
-            tags.Add($"{options.DefaultZoneMetadataName}={options.InstanceZone}");
+            metadata.Add(options.DefaultZoneMetadataName, options.InstanceZone);
         }
 
         if (!string.IsNullOrEmpty(options.InstanceGroup))
         {
-            tags.Add($"group={options.InstanceGroup}");
+            metadata.Add("group", options.InstanceGroup);
         }
 
-        // store the secure flag in the tags so that clients will be able to figure out whether to use http or https automatically
+        // store the secure flag in the metadata so that clients will be able to figure out whether to use http or https automatically
 #pragma warning disable S4040 // Strings should be normalized to uppercase
-        tags.Add($"secure={(options.Scheme == "https").ToString(CultureInfo.InvariantCulture).ToLowerInvariant()}");
+        metadata.Add("secure", (options.Scheme == "https").ToString(CultureInfo.InvariantCulture).ToLowerInvariant());
 #pragma warning restore S4040 // Strings should be normalized to uppercase
 
-        return tags.ToArray();
+        return metadata;
+    }
+
+    internal static string[] CreateTags(ConsulDiscoveryOptions options)
+    {
+        if (options.Tags == null || !options.Tags.Any())
+        {
+            return Array.Empty<string>();
+        }
+
+        return options.Tags.ToArray();
     }
 
     internal static string GetInstanceId(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
