@@ -17,6 +17,8 @@ internal sealed class ConfigureHeapDumpEndpointOptions : ConfigureEndpointOption
     public ConfigureHeapDumpEndpointOptions(IConfiguration configuration, ILogger<ConfigureHeapDumpEndpointOptions> logger)
         : base(configuration, ManagementInfoPrefix, "heapdump")
     {
+        ArgumentGuard.NotNull(logger);
+
         _logger = logger;
     }
 
@@ -27,7 +29,7 @@ internal sealed class ConfigureHeapDumpEndpointOptions : ConfigureEndpointOption
         // Only gcdump works on OSX
         if (Platform.IsOSX && options.HeapDumpType != "gcdump")
         {
-            _logger.LogWarning("Only GC dumps are  supported on OSX.");
+            _logger.LogWarning("Only GC dumps are supported on OSX.");
             options.HeapDumpType = "gcdump";
         }
     }
