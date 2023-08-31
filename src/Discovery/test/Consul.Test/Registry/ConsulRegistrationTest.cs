@@ -35,7 +35,11 @@ public sealed class ConsulRegistrationTest
             Name = "name",
             Address = "address",
             Port = 1234,
-            Tags = new[] { "tag1", "tag2" },
+            Tags = new[]
+            {
+                "tag1",
+                "tag2"
+            },
             Meta = new Dictionary<string, string>
             {
                 ["foo"] = "bar"

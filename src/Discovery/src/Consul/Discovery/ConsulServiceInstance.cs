@@ -58,9 +58,6 @@ public class ConsulServiceInstance : IServiceInstance
             return false;
         }
 
-        return serviceEntry
-            .Service
-            .Meta
-            .TryGetValue("secure", out string secureString) && bool.Parse(secureString);
+        return serviceEntry.Service.Meta.TryGetValue("secure", out string secureString) && bool.Parse(secureString);
     }
 }

@@ -20,7 +20,11 @@ public sealed class ConsulServiceInstanceTest
                 Service = "ServiceId",
                 Address = "foo.bar.com",
                 Port = 1234,
-                Tags = new[] { "tag1", "tag2" },
+                Tags = new[]
+                {
+                    "tag1",
+                    "tag2"
+                },
                 Meta = new Dictionary<string, string>
                 {
                     ["foo"] = "bar",

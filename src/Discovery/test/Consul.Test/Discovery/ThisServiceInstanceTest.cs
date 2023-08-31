@@ -22,7 +22,7 @@ public sealed class ThisServiceInstanceTest
             Port = 1234,
             Meta = new Dictionary<string, string>
             {
-                ["foo"] = "bar",
+                ["foo"] = "bar"
             }
         };
 

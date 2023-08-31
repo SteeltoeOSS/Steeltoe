@@ -161,7 +161,7 @@ public class ConsulRegistration : IConsulRegistration
 
         if (options.Metadata != null && options.Metadata.Any())
         {
-            foreach (var m in options.Metadata)
+            foreach (KeyValuePair<string, string> m in options.Metadata)
             {
                 metadata.Add(m.Key, m.Value);
             }
