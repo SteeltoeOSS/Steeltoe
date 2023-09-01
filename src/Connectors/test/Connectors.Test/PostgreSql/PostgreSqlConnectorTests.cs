@@ -348,14 +348,22 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        string rootDirectory = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
-        var reader = new DirectoryServiceBindingsReader(rootDirectory);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeDirectory("db");
+        fileProvider.IncludeFile("db/provider", "bitnami"u8.ToArray());
+        fileProvider.IncludeFile("db/type", "postgresql"u8.ToArray());
+        fileProvider.IncludeFile("db/host", "10.0.20.211"u8.ToArray());
+        fileProvider.IncludeFile("db/port", "5432"u8.ToArray());
+        fileProvider.IncludeFile("db/username", "postgres"u8.ToArray());
+        fileProvider.IncludeFile("db/password", "WzQTWCW6MCPoGe11qqw7fKLesvg4rykr"u8.ToArray());
+        fileProvider.IncludeFile("db/database", "my-postgresql-service-qf57l"u8.ToArray());
+
+        var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
         builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:PostgreSql:customer-profiles:ConnectionString"] =
-                "Host=ignored;Database=ignored;Include Error Detail=true;Log Parameters=true;host=localhost"
+            ["Steeltoe:Client:PostgreSql:db:ConnectionString"] = "Host=ignored;Database=ignored;Include Error Detail=true;Log Parameters=true;host=localhost"
         });
 
         builder.AddPostgreSql();
@@ -363,16 +371,17 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         await using WebApplication app = builder.Build();
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
 
-        PostgreSqlOptions customerProfilesOptions = optionsMonitor.Get("customer-profiles");
+        PostgreSqlOptions dbOptions = optionsMonitor.Get("db");
 
-        ExtractConnectionStringParameters(customerProfilesOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
+        ExtractConnectionStringParameters(dbOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
             "Include Error Detail=True",
             "Log Parameters=True",
-            "Host=10.194.59.205",
-            "Database=steeltoe",
-            "Username=testrolee93ccf859894dc60dcd53218492b37b4",
-            "Password=Qp!1mB1$Zk2T!$!D85_E"
+            "Host=10.0.20.211",
+            "Port=5432",
+            "Database=my-postgresql-service-qf57l",
+            "Username=postgres",
+            "Password=WzQTWCW6MCPoGe11qqw7fKLesvg4rykr"
         }, options => options.WithoutStrictOrdering());
     }
 
