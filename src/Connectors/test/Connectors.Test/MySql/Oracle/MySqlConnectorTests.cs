@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.MySql;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 using Xunit;
@@ -176,6 +177,47 @@ public sealed class MySqlConnectorTests
             "database=service_instance_db",
             "user id=f2537d98484c48779a6811b62852b38b",
             "password=rr7t44xnbvvto8b8"
+        }, options => options.WithoutStrictOrdering());
+    }
+
+    [Fact]
+    public async Task Binds_options_with_Kubernetes_service_bindings()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeDirectory("db");
+        fileProvider.IncludeFile("db/provider", "bitnami"u8.ToArray());
+        fileProvider.IncludeFile("db/type", "mysql"u8.ToArray());
+        fileProvider.IncludeFile("db/host", "10.0.219.125"u8.ToArray());
+        fileProvider.IncludeFile("db/port", "3306"u8.ToArray());
+        fileProvider.IncludeFile("db/username", "mysql"u8.ToArray());
+        fileProvider.IncludeFile("db/password", "12TsdezjbRuskoH12v4KcrBkWlVjoxtU"u8.ToArray());
+        fileProvider.IncludeFile("db/database", "my-mysql-service-4q5nt"u8.ToArray());
+
+        var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
+        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Steeltoe:Client:MySql:db:ConnectionString"] = "Connection Timeout=15;host=localhost"
+        });
+
+        builder.AddMySql();
+
+        await using WebApplication app = builder.Build();
+        var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<MySqlOptions>>();
+
+        MySqlOptions dbOptions = optionsMonitor.Get("db");
+
+        ExtractConnectionStringParameters(dbOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
+        {
+            "Connection Timeout=15",
+            "Server=10.0.219.125",
+            "Port=3306",
+            "Database=my-mysql-service-4q5nt",
+            "User ID=mysql",
+            "Password=12TsdezjbRuskoH12v4KcrBkWlVjoxtU"
         }, options => options.WithoutStrictOrdering());
     }
 
