@@ -173,13 +173,13 @@ public sealed class MongoDbConnectorTests
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
-        fileProvider.IncludeFile("db/provider", "bitnami"u8.ToArray());
-        fileProvider.IncludeFile("db/type", "mongodb"u8.ToArray());
-        fileProvider.IncludeFile("db/host", "10.0.13.36"u8.ToArray());
-        fileProvider.IncludeFile("db/port", "27017"u8.ToArray());
-        fileProvider.IncludeFile("db/username", "mongodb"u8.ToArray());
-        fileProvider.IncludeFile("db/password", "SDtUXKTRJspRAtxySqZMixAfWHP3oOGq"u8.ToArray());
-        fileProvider.IncludeFile("db/database", "my-mongodb-service-d8nkz"u8.ToArray());
+        fileProvider.IncludeFile("db/provider", "bitnami");
+        fileProvider.IncludeFile("db/type", "mongodb");
+        fileProvider.IncludeFile("db/host", "10.0.13.36");
+        fileProvider.IncludeFile("db/port", "27017");
+        fileProvider.IncludeFile("db/username", "mongodb");
+        fileProvider.IncludeFile("db/password", "SDtUXKTRJspRAtxySqZMixAfWHP3oOGq");
+        fileProvider.IncludeFile("db/database", "my-mongodb-service-d8nkz");
 
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
         builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);

@@ -187,13 +187,13 @@ public sealed class MySqlConnectorTests
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
-        fileProvider.IncludeFile("db/provider", "bitnami"u8.ToArray());
-        fileProvider.IncludeFile("db/type", "mysql"u8.ToArray());
-        fileProvider.IncludeFile("db/host", "10.0.219.125"u8.ToArray());
-        fileProvider.IncludeFile("db/port", "3306"u8.ToArray());
-        fileProvider.IncludeFile("db/username", "mysql"u8.ToArray());
-        fileProvider.IncludeFile("db/password", "12TsdezjbRuskoH12v4KcrBkWlVjoxtU"u8.ToArray());
-        fileProvider.IncludeFile("db/database", "my-mysql-service-4q5nt"u8.ToArray());
+        fileProvider.IncludeFile("db/provider", "bitnami");
+        fileProvider.IncludeFile("db/type", "mysql");
+        fileProvider.IncludeFile("db/host", "10.0.219.125");
+        fileProvider.IncludeFile("db/port", "3306");
+        fileProvider.IncludeFile("db/username", "mysql");
+        fileProvider.IncludeFile("db/password", "12TsdezjbRuskoH12v4KcrBkWlVjoxtU");
+        fileProvider.IncludeFile("db/database", "my-mysql-service-4q5nt");
 
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
         builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);

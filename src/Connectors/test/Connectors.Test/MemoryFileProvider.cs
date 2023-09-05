@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
@@ -27,6 +28,15 @@ internal sealed class MemoryFileProvider : IFileProvider
 
         IEnumerable<string> pathSegments = PathToSegments(path);
         _ = GetOrCreateDirectories(pathSegments);
+    }
+
+    public void IncludeFile(string path, string contents)
+    {
+        ArgumentGuard.NotNullOrEmpty(path);
+        ArgumentGuard.NotNull(contents);
+
+        byte[] bytes = Encoding.UTF8.GetBytes(contents);
+        IncludeFile(path, bytes);
     }
 
     public void IncludeFile(string path, byte[] contents)
@@ -64,6 +74,15 @@ internal sealed class MemoryFileProvider : IFileProvider
         }
 
         return currentDirectory;
+    }
+
+    public void ReplaceFile(string path, string contents)
+    {
+        ArgumentGuard.NotNullOrEmpty(path);
+        ArgumentGuard.NotNull(contents);
+
+        byte[] bytes = Encoding.UTF8.GetBytes(contents);
+        ReplaceFile(path, bytes);
     }
 
     public void ReplaceFile(string path, byte[] contents)

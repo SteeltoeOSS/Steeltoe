@@ -350,13 +350,13 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
-        fileProvider.IncludeFile("db/provider", "bitnami"u8.ToArray());
-        fileProvider.IncludeFile("db/type", "postgresql"u8.ToArray());
-        fileProvider.IncludeFile("db/host", "10.0.20.211"u8.ToArray());
-        fileProvider.IncludeFile("db/port", "5432"u8.ToArray());
-        fileProvider.IncludeFile("db/username", "postgres"u8.ToArray());
-        fileProvider.IncludeFile("db/password", "WzQTWCW6MCPoGe11qqw7fKLesvg4rykr"u8.ToArray());
-        fileProvider.IncludeFile("db/database", "my-postgresql-service-qf57l"u8.ToArray());
+        fileProvider.IncludeFile("db/provider", "bitnami");
+        fileProvider.IncludeFile("db/type", "postgresql");
+        fileProvider.IncludeFile("db/host", "10.0.20.211");
+        fileProvider.IncludeFile("db/port", "5432");
+        fileProvider.IncludeFile("db/username", "postgres");
+        fileProvider.IncludeFile("db/password", "WzQTWCW6MCPoGe11qqw7fKLesvg4rykr");
+        fileProvider.IncludeFile("db/database", "my-postgresql-service-qf57l");
 
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
         builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);

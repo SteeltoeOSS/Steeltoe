@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +23,7 @@ public sealed class ConfigurationChangeDetectionTests
 
         const string fileName = "appsettings.json";
 
-        string fileContent = @"{
+        string fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -38,7 +37,7 @@ public sealed class ConfigurationChangeDetectionTests
 ";
 
         var fileProvider = new MemoryFileProvider();
-        fileProvider.IncludeFile(fileName, Encoding.UTF8.GetBytes(fileContent));
+        fileProvider.IncludeFile(fileName, fileContents);
 
         builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
         builder.AddPostgreSql(configureOptions => configureOptions.DetectConfigurationChanges = true, null);
@@ -53,7 +52,7 @@ public sealed class ConfigurationChangeDetectionTests
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
 
-        fileContent = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -66,13 +65,13 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileProvider.ReplaceFile(fileName, Encoding.UTF8.GetBytes(fileContent));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=two.com;Database=second");
 
-        fileContent = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -85,7 +84,7 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileProvider.ReplaceFile(fileName, Encoding.UTF8.GetBytes(fileContent));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
@@ -103,7 +102,7 @@ public sealed class ConfigurationChangeDetectionTests
 
         const string fileName = "appsettings.json";
 
-        string fileContent = @"{
+        string fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -117,7 +116,7 @@ public sealed class ConfigurationChangeDetectionTests
 ";
 
         var fileProvider = new MemoryFileProvider();
-        fileProvider.IncludeFile(fileName, Encoding.UTF8.GetBytes(fileContent));
+        fileProvider.IncludeFile(fileName, fileContents);
 
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
@@ -136,7 +135,7 @@ public sealed class ConfigurationChangeDetectionTests
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
 
-        fileContent = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -149,13 +148,13 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileProvider.ReplaceFile(fileName, Encoding.UTF8.GetBytes(fileContent));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=two.com;Database=second");
 
-        fileContent = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -168,7 +167,7 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileProvider.ReplaceFile(fileName, Encoding.UTF8.GetBytes(fileContent));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
@@ -182,7 +181,7 @@ public sealed class ConfigurationChangeDetectionTests
 
         const string fileName = "appsettings.json";
 
-        string fileContent = @"{
+        string fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -196,7 +195,7 @@ public sealed class ConfigurationChangeDetectionTests
 ";
 
         var fileProvider = new MemoryFileProvider();
-        fileProvider.IncludeFile(fileName, Encoding.UTF8.GetBytes(fileContent));
+        fileProvider.IncludeFile(fileName, fileContents);
 
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
@@ -215,7 +214,7 @@ public sealed class ConfigurationChangeDetectionTests
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
 
-        fileContent = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -228,13 +227,13 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileProvider.ReplaceFile(fileName, Encoding.UTF8.GetBytes(fileContent));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=two.com;Database=second");
 
-        fileContent = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -247,7 +246,7 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileProvider.ReplaceFile(fileName, Encoding.UTF8.GetBytes(fileContent));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;

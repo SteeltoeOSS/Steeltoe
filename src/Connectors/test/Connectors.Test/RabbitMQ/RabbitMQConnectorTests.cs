@@ -239,12 +239,12 @@ public sealed class RabbitMQConnectorTests
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
-        fileProvider.IncludeFile("db/provider", "bitnami"u8.ToArray());
-        fileProvider.IncludeFile("db/type", "rabbitmq"u8.ToArray());
-        fileProvider.IncludeFile("db/host", "10.0.98.152"u8.ToArray());
-        fileProvider.IncludeFile("db/port", "5672"u8.ToArray());
-        fileProvider.IncludeFile("db/username", "rabbitmq"u8.ToArray());
-        fileProvider.IncludeFile("db/password", "PZ3kQK91dAYpRte0a9gGmCWYED3ijI0R"u8.ToArray());
+        fileProvider.IncludeFile("db/provider", "bitnami");
+        fileProvider.IncludeFile("db/type", "rabbitmq");
+        fileProvider.IncludeFile("db/host", "10.0.98.152");
+        fileProvider.IncludeFile("db/port", "5672");
+        fileProvider.IncludeFile("db/username", "rabbitmq");
+        fileProvider.IncludeFile("db/password", "PZ3kQK91dAYpRte0a9gGmCWYED3ijI0R");
 
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
         builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);

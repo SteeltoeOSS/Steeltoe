@@ -148,11 +148,11 @@ public sealed class RedisConnectorTests
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
-        fileProvider.IncludeFile("db/provider", "bitnami"u8.ToArray());
-        fileProvider.IncludeFile("db/type", "redis"u8.ToArray());
-        fileProvider.IncludeFile("db/host", "10.0.111.168"u8.ToArray());
-        fileProvider.IncludeFile("db/port", "6379"u8.ToArray());
-        fileProvider.IncludeFile("db/password", "v5gjxPDxq4lacijzEus9vGi0cJh0tsOE"u8.ToArray());
+        fileProvider.IncludeFile("db/provider", "bitnami");
+        fileProvider.IncludeFile("db/type", "redis");
+        fileProvider.IncludeFile("db/host", "10.0.111.168");
+        fileProvider.IncludeFile("db/port", "6379");
+        fileProvider.IncludeFile("db/password", "v5gjxPDxq4lacijzEus9vGi0cJh0tsOE");
 
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
         builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
