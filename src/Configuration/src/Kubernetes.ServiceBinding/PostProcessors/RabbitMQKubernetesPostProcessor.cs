@@ -23,6 +23,7 @@ internal sealed class RabbitMQKubernetesPostProcessor : IConfigurationPostProces
             // - Generic secrets: https://github.com/servicebinding/spec#well-known-secret-entries
             // - Input keys used at https://github.com/spring-cloud/spring-cloud-bindings/blob/main/spring-cloud-bindings/src/main/java/org/springframework/cloud/bindings/boot/RabbitMqBindingsPropertiesProcessor.java
 
+            mapper.SetToValue("useTls", "false");
             mapper.MapFromTo("host", "host");
             mapper.MapFromTo("port", "port");
             mapper.MapFromTo("username", "username");
