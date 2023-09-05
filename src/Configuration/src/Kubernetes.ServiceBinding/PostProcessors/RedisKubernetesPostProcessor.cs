@@ -26,6 +26,7 @@ internal sealed class RedisKubernetesPostProcessor : IConfigurationPostProcessor
             mapper.MapFromTo("host", "host");
             mapper.MapFromTo("port", "port");
             mapper.MapFromTo("ssl", "ssl");
+            mapper.SetToValue("user", null);
             mapper.MapFromTo("password", "password");
             mapper.MapFromTo("database", "defaultDatabase");
             mapper.MapFromTo("client-name", "name");

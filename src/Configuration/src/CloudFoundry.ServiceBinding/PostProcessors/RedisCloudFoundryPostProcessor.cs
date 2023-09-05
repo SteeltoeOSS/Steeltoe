@@ -23,6 +23,7 @@ internal sealed class RedisCloudFoundryPostProcessor : CloudFoundryPostProcessor
 
             mapper.MapFromTo("credentials:host", "host");
             mapper.MapFromTo("credentials:port", "port");
+            mapper.SetToValue("user", null);
             mapper.MapFromTo("credentials:password", "password");
 
             if (mapper.GetFromValue("credentials:tls_port") != null)

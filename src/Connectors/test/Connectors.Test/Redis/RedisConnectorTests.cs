@@ -14,6 +14,7 @@ using Moq;
 using StackExchange.Redis;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.Redis;
 using Xunit;
 
@@ -125,7 +126,7 @@ public sealed class RedisConnectorTests
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
         {
-            ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "localhost:12345,keepAlive=30"
+            ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "localhost:12345,keepAlive=30,user=admin"
         });
 
         builder.AddRedis();
@@ -138,6 +139,37 @@ public sealed class RedisConnectorTests
 
         RedisOptions optionsTwo = optionsMonitor.Get("myRedisServiceTwo");
         optionsTwo.ConnectionString.Should().Be("10.0.4.17:44369,password=aa786395-98c3-4e7e-aee4-ca02e5a8590a");
+    }
+
+    [Fact]
+    public async Task Binds_options_with_Kubernetes_service_bindings()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeDirectory("db");
+        fileProvider.IncludeFile("db/provider", "bitnami"u8.ToArray());
+        fileProvider.IncludeFile("db/type", "redis"u8.ToArray());
+        fileProvider.IncludeFile("db/host", "10.0.111.168"u8.ToArray());
+        fileProvider.IncludeFile("db/port", "6379"u8.ToArray());
+        fileProvider.IncludeFile("db/password", "v5gjxPDxq4lacijzEus9vGi0cJh0tsOE"u8.ToArray());
+
+        var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
+        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Steeltoe:Client:Redis:db:ConnectionString"] = "localhost:12345,keepAlive=30,user=admin"
+        });
+
+        builder.AddRedis();
+
+        await using WebApplication app = builder.Build();
+        var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+
+        RedisOptions dbOptions = optionsMonitor.Get("db");
+
+        dbOptions.ConnectionString.Should().Be("10.0.111.168:6379,keepAlive=30,password=v5gjxPDxq4lacijzEus9vGi0cJh0tsOE");
     }
 
     [Fact]
