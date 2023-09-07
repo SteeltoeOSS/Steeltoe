@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,7 +21,9 @@ public sealed class ConfigurationChangeDetectionTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        string appSettingsJson = @"{
+        const string fileName = "appsettings.json";
+
+        string fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -35,10 +36,10 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        var fileInfo = new MemoryFileInfo("appsettings.json", Encoding.UTF8.GetBytes(appSettingsJson));
-        var fileProvider = new MemoryFileProvider(fileInfo);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeFile(fileName, fileContents);
 
-        builder.Configuration.AddJsonFile(fileProvider, fileInfo.Name, false, true);
+        builder.Configuration.AddJsonFile(fileProvider, fileName, false, true);
         builder.AddPostgreSql(configureOptions => configureOptions.DetectConfigurationChanges = true, null);
 
         await using WebApplication app = builder.Build();
@@ -51,7 +52,7 @@ public sealed class ConfigurationChangeDetectionTests
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
 
-        appSettingsJson = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -64,13 +65,13 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileInfo.ReplaceContents(Encoding.UTF8.GetBytes(appSettingsJson));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=two.com;Database=second");
 
-        appSettingsJson = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -83,7 +84,7 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileInfo.ReplaceContents(Encoding.UTF8.GetBytes(appSettingsJson));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
@@ -99,7 +100,9 @@ public sealed class ConfigurationChangeDetectionTests
         {
         });
 
-        string appSettingsJson = @"{
+        const string fileName = "appsettings.json";
+
+        string fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -112,12 +115,12 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        var fileInfo = new MemoryFileInfo("appsettings.json", Encoding.UTF8.GetBytes(appSettingsJson));
-        var fileProvider = new MemoryFileProvider(fileInfo);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeFile(fileName, fileContents);
 
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
-            configurationBuilder.AddJsonFile(fileProvider, fileInfo.Name, false, true);
+            configurationBuilder.AddJsonFile(fileProvider, fileName, false, true);
             configurationBuilder.ConfigurePostgreSql(options => options.DetectConfigurationChanges = true);
         });
 
@@ -132,7 +135,7 @@ public sealed class ConfigurationChangeDetectionTests
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
 
-        appSettingsJson = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -145,13 +148,13 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileInfo.ReplaceContents(Encoding.UTF8.GetBytes(appSettingsJson));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=two.com;Database=second");
 
-        appSettingsJson = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -164,7 +167,7 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileInfo.ReplaceContents(Encoding.UTF8.GetBytes(appSettingsJson));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
@@ -176,7 +179,9 @@ public sealed class ConfigurationChangeDetectionTests
     {
         var builder = new HostBuilder();
 
-        string appSettingsJson = @"{
+        const string fileName = "appsettings.json";
+
+        string fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -189,12 +194,12 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        var fileInfo = new MemoryFileInfo("appsettings.json", Encoding.UTF8.GetBytes(appSettingsJson));
-        var fileProvider = new MemoryFileProvider(fileInfo);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeFile(fileName, fileContents);
 
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
-            configurationBuilder.AddJsonFile(fileProvider, fileInfo.Name, false, true);
+            configurationBuilder.AddJsonFile(fileProvider, fileName, false, true);
             configurationBuilder.ConfigurePostgreSql(options => options.DetectConfigurationChanges = true);
         });
 
@@ -209,7 +214,7 @@ public sealed class ConfigurationChangeDetectionTests
         string? connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=one.com;Database=first");
 
-        appSettingsJson = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -222,13 +227,13 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileInfo.ReplaceContents(Encoding.UTF8.GetBytes(appSettingsJson));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;
         connectionString.Should().Be("Host=two.com;Database=second");
 
-        appSettingsJson = @"{
+        fileContents = @"{
   ""Steeltoe"": {
     ""Client"": {
       ""PostgreSql"": {
@@ -241,7 +246,7 @@ public sealed class ConfigurationChangeDetectionTests
 }
 ";
 
-        fileInfo.ReplaceContents(Encoding.UTF8.GetBytes(appSettingsJson));
+        fileProvider.ReplaceFile(fileName, fileContents);
         fileProvider.NotifyChanged();
 
         connectionString = connectorFactory.Get("examplePostgreSqlService").Options.ConnectionString;

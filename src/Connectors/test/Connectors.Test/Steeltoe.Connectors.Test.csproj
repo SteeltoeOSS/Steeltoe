@@ -35,25 +35,4 @@
     <ProjectReference Include="..\..\src\Connectors\Steeltoe.Connectors.csproj" />
     <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connectors.CloudFoundry.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="resources\bindings\customer-profiles\database">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\bindings\customer-profiles\host">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\bindings\customer-profiles\password">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\bindings\customer-profiles\provider">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\bindings\customer-profiles\type">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\bindings\customer-profiles\username">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>

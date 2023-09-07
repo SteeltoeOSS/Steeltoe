@@ -11,6 +11,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.RabbitMQ;
 using Xunit;
 
@@ -229,6 +230,38 @@ public sealed class RabbitMQConnectorTests
 
         optionsTwo.ConnectionString.Should().Be(
             "amqp://799815ea-9f6d-40e3-9317-7cc8ca43552f:mw2cCEufc9biidCBA_lYILxc@q-s0.rabbitmq-server.benicia-services-subnet.service-instance-eda94023-757e-4ef4-9315-dcba2e96efb5.bosh:5672/eda94023-757e-4ef4-9315-dcba2e96efb5");
+    }
+
+    [Fact]
+    public async Task Binds_options_with_Kubernetes_service_bindings()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeDirectory("db");
+        fileProvider.IncludeFile("db/provider", "bitnami");
+        fileProvider.IncludeFile("db/type", "rabbitmq");
+        fileProvider.IncludeFile("db/host", "10.0.98.152");
+        fileProvider.IncludeFile("db/port", "5672");
+        fileProvider.IncludeFile("db/username", "rabbitmq");
+        fileProvider.IncludeFile("db/password", "PZ3kQK91dAYpRte0a9gGmCWYED3ijI0R");
+
+        var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
+        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            ["Steeltoe:Client:RabbitMQ:db:ConnectionString"] = "amqps://user:pass@localhost:5672/extra-virtual-host"
+        });
+
+        builder.AddRabbitMQ();
+
+        await using WebApplication app = builder.Build();
+        var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RabbitMQOptions>>();
+
+        RabbitMQOptions dbOptions = optionsMonitor.Get("db");
+
+        dbOptions.ConnectionString.Should().Be("amqp://rabbitmq:PZ3kQK91dAYpRte0a9gGmCWYED3ijI0R@10.0.98.152:5672/");
     }
 
     [Fact]
