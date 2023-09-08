@@ -8,7 +8,7 @@ internal sealed class PostgreSqlCloudFoundryPostProcessor : CloudFoundryPostProc
 {
     internal const string BindingType = "postgresql";
 
-    public override void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+    public override void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
         foreach (string key in FilterKeys(configurationData, BindingType))
         {

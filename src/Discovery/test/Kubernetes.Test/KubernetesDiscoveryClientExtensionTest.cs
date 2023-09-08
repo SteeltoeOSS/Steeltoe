@@ -30,7 +30,7 @@ public sealed class KubernetesDiscoveryClientExtensionTest
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" }
         };
@@ -49,7 +49,7 @@ public sealed class KubernetesDiscoveryClientExtensionTest
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "spring:cloud:kubernetes:discovery:enabled", "true" }

@@ -24,7 +24,7 @@ internal sealed class CloudFoundryServiceBindingConfigurationProvider : PostProc
 
     public override void Load()
     {
-        var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
         string? json = _serviceBindingsReader.GetServiceBindingsJson();
 
         if (!string.IsNullOrEmpty(json))
@@ -59,7 +59,7 @@ internal sealed class CloudFoundryServiceBindingConfigurationProvider : PostProc
         return stream;
     }
 
-    private void LoadSections(string prefix, IEnumerable<IConfigurationSection> sections, IDictionary<string, string> data)
+    private void LoadSections(string prefix, IEnumerable<IConfigurationSection> sections, IDictionary<string, string?> data)
     {
         foreach (IConfigurationSection section in sections)
         {
@@ -68,7 +68,7 @@ internal sealed class CloudFoundryServiceBindingConfigurationProvider : PostProc
         }
     }
 
-    private void LoadSection(string prefix, IConfigurationSection section, IDictionary<string, string> data)
+    private void LoadSection(string prefix, IConfigurationSection section, IDictionary<string, string?> data)
     {
         if (string.IsNullOrEmpty(section.Value))
         {

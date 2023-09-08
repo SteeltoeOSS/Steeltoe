@@ -11,10 +11,10 @@ public abstract class BasePostProcessorsTest
     protected const string TestBindingName = "test-name";
     protected const string TestProviderName = "test-provider";
 
-    protected Dictionary<string, string> GetConfigurationData(string bindingType, string bindingProvider, string bindingName,
+    protected Dictionary<string, string?> GetConfigurationData(string bindingType, string bindingProvider, string bindingName,
         params Tuple<string, string>[] secrets)
     {
-        var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        var dictionary = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
         {
             [$"vcap:services:{bindingProvider}:0:tags:0"] = bindingType,
             [$"vcap:services:{bindingProvider}:0:name"] = bindingName
@@ -47,9 +47,9 @@ public abstract class BasePostProcessorsTest
         return new TestPostProcessorConfigurationProvider(source);
     }
 
-    protected string? GetFileContentAtKey(Dictionary<string, string> configurationData, string key)
+    protected string? GetFileContentAtKey(Dictionary<string, string?> configurationData, string key)
     {
-        if (configurationData.TryGetValue(key, out string? value))
+        if (configurationData.TryGetValue(key, out string? value) && value != null)
         {
             return File.ReadAllText(value);
         }

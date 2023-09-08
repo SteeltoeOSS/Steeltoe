@@ -46,7 +46,7 @@ public sealed class KubernetesServiceBindingConfigurationSourceTest
         var builder = new ConfigurationBuilder();
         builder.Add(source);
 
-        builder.AddInMemoryCollection(new Dictionary<string, string>
+        builder.AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "some:value:in:configuration:path", "true" }
         });

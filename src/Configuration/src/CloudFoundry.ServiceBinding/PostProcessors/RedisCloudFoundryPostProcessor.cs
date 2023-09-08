@@ -8,7 +8,7 @@ internal sealed class RedisCloudFoundryPostProcessor : CloudFoundryPostProcessor
 {
     internal const string BindingType = "redis";
 
-    public override void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+    public override void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
         foreach (string key in FilterKeys(configurationData, BindingType))
         {
