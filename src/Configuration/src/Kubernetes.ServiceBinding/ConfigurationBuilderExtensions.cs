@@ -128,6 +128,7 @@ public static class ConfigurationBuilderExtensions
     {
         source.RegisterPostProcessor(new MySqlKubernetesPostProcessor());
         source.RegisterPostProcessor(new PostgreSqlKubernetesPostProcessor());
+        source.RegisterPostProcessor(new MongoDbKubernetesPostProcessor());
         source.RegisterPostProcessor(new RabbitMQKubernetesPostProcessor());
         source.RegisterPostProcessor(new RedisKubernetesPostProcessor());
     }

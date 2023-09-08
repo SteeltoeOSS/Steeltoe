@@ -26,24 +26,7 @@ internal abstract class ConfigurationDictionaryMapper
     public string MapFromTo(string fromKey, string toKey)
     {
         string value = GetFromValue(fromKey);
-
-        if (value != null)
-        {
-            SetToValue(toKey, value);
-        }
-
-        return value;
-    }
-
-    public string MapFromTo(string fromKey, params string[] toKeySegments)
-    {
-        string value = GetFromValue(fromKey);
-
-        if (value != null)
-        {
-            string toKey = string.Join(ConfigurationPath.KeyDelimiter, toKeySegments);
-            SetToValue(toKey, value);
-        }
+        SetToValue(toKey, value);
 
         return value;
     }
@@ -72,20 +55,21 @@ internal abstract class ConfigurationDictionaryMapper
     {
         string value = GetFromValue(fromKey);
 
-        if (value != null)
+        if (value == null)
         {
-            string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-            using (StreamWriter writer = File.CreateText(tempPath))
-            {
-                writer.Write(value);
-            }
-
-            SetToValue(toKey, tempPath);
-            return tempPath;
+            SetToValue(toKey, null);
+            return null;
         }
 
-        return null;
+        string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+        using (StreamWriter writer = File.CreateText(tempPath))
+        {
+            writer.Write(value);
+        }
+
+        SetToValue(toKey, tempPath);
+        return tempPath;
     }
 
     public void SetToValue(string toKey, string value)

@@ -65,6 +65,34 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     }
 
     [Fact]
+    public void Processes_MongoDb_configuration()
+    {
+        var postProcessor = new MongoDbKubernetesPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("host", "test-host"),
+            Tuple.Create("port", "test-port"),
+            Tuple.Create("database", "test-database"),
+            Tuple.Create("username", "test-username"),
+            Tuple.Create("password", "test-password")
+        };
+
+        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MongoDbKubernetesPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbKubernetesPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:server"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:authenticationDatabase"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+    }
+
+    [Fact]
     public void Processes_RabbitMQ_configuration()
     {
         var postProcessor = new RabbitMQKubernetesPostProcessor();

@@ -124,7 +124,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     private void SetConnectionString(IDictionary<string, string> configurationData, string bindingName, BindingInfo bindingInfo)
     {
-        Dictionary<string, string> separateSecrets = new();
+        Dictionary<string, string> separateSecrets = new(StringComparer.OrdinalIgnoreCase);
         IConnectionStringBuilder connectionStringBuilder = CreateConnectionStringBuilder();
 
         if (bindingInfo.ClientBindingSection != null)
