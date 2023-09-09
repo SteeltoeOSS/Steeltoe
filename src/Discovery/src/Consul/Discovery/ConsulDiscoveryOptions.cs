@@ -53,12 +53,12 @@ public class ConsulDiscoveryOptions
     public IList<string> Tags { get; set; }
 
     /// <summary>
-    /// Gets or sets Metadata to use when registering service.
+    /// Gets or sets Metadata to use when registering service
     /// </summary>
     public IDictionary<string, string> Metadata { get; set; }
 
     /// <summary>
-    /// Gets or sets a  value indicating whether use tags as metadata, defaults to true.
+    /// Gets or sets a  value indicating whether use tags as metadata, defaults to true
     /// </summary>
     public bool TagsAsMetadata { get; set; } = true;
 
