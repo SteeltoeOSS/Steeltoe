@@ -157,6 +157,7 @@ public class ConsulRegistration : IConsulRegistration
             service.Tags = options.Tags.ToArray();
             service.Meta = CreateMetadata(options);
         }
+
         if (options.Port != 0)
         {
             service.Port = options.Port;
