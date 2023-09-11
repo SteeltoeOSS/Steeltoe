@@ -19,7 +19,12 @@ internal static class ConfigurationDictionaryExtensions
             if (key.StartsWith(keyPrefix, StringComparison.OrdinalIgnoreCase) && key.EndsWith(keySuffix, StringComparison.OrdinalIgnoreCase) &&
                 value == keyValue)
             {
-                results.Add(ConfigurationPath.GetParentPath(key));
+                string? parentPath = ConfigurationPath.GetParentPath(key);
+
+                if (parentPath != null)
+                {
+                    results.Add(parentPath);
+                }
             }
         }
 
