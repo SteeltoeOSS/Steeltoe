@@ -369,13 +369,17 @@ public sealed class RedisConnectorTests
         connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object>()))
             .Returns(databaseMock.Object);
 
+        databaseMock.Setup(database => database.Multiplexer).Returns(connectionMultiplexerMock.Object);
+
         return connectionMultiplexerMock.Object;
     }
 
     private static async Task<IConnectionMultiplexer> ExtractUnderlyingMultiplexerFromRedisCacheAsync(RedisCache redisCache)
     {
         _ = await redisCache.GetAsync("ignored");
-        FieldInfo connectionField = typeof(RedisCache).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        return (IConnectionMultiplexer)connectionField.GetValue(redisCache)!;
+
+        FieldInfo cacheField = typeof(RedisCache).GetField("_cache", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var database = (IDatabase)cacheField.GetValue(redisCache)!;
+        return database.Multiplexer;
     }
 }
