@@ -10,7 +10,7 @@ internal sealed class RabbitMQKubernetesPostProcessor : IConfigurationPostProces
 {
     internal const string BindingType = "rabbitmq";
 
-    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
         foreach (string bindingKey in configurationData.Filter(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix,
             KubernetesServiceBindingConfigurationProvider.TypeKey, BindingType))

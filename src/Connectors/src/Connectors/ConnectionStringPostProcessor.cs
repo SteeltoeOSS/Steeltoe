@@ -27,7 +27,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         return new DbConnectionStringBuilderWrapper(new DbConnectionStringBuilder());
     }
 
-    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
         IConfigurationRoot parentConfiguration = provider.Source.GetParentConfiguration();
 
@@ -122,9 +122,9 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         }
     }
 
-    private void SetConnectionString(IDictionary<string, string> configurationData, string bindingName, BindingInfo bindingInfo)
+    private void SetConnectionString(IDictionary<string, string?> configurationData, string bindingName, BindingInfo bindingInfo)
     {
-        Dictionary<string, string> separateSecrets = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, string?> separateSecrets = new(StringComparer.OrdinalIgnoreCase);
         IConnectionStringBuilder connectionStringBuilder = CreateConnectionStringBuilder();
 
         if (bindingInfo.ClientBindingSection != null)
@@ -132,9 +132,9 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
             foreach (IConfigurationSection secretSection in bindingInfo.ClientBindingSection.GetChildren())
             {
                 string secretName = secretSection.Key;
-                string secretValue = secretSection.Value;
+                string? secretValue = secretSection.Value;
 
-                if (string.Equals(secretName, ConnectionStringName, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(secretValue))
+                if (string.Equals(secretName, ConnectionStringName, StringComparison.OrdinalIgnoreCase))
                 {
                     // Take the connection string from appsettings.json as baseline, then merge cloud-provided secrets into it.
                     connectionStringBuilder.ConnectionString = secretValue;
@@ -156,7 +156,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
             foreach (IConfigurationSection secretSection in bindingInfo.ServerBindingSection.GetChildren())
             {
                 string secretName = secretSection.Key;
-                string secretValue = secretSection.Value;
+                string? secretValue = secretSection.Value;
 
                 if (IsPartOfConnectionString(secretName))
                 {
@@ -172,7 +172,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         string connectionStringKey = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, ConnectionStringName);
         configurationData[connectionStringKey] = connectionStringBuilder.ConnectionString;
 
-        foreach ((string secretName, string secretValue) in separateSecrets)
+        foreach ((string secretName, string? secretValue) in separateSecrets)
         {
             string key = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, secretName);
             configurationData[key] = secretValue;

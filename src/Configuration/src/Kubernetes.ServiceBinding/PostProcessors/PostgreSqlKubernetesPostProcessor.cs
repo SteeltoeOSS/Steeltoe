@@ -10,7 +10,7 @@ internal sealed class PostgreSqlKubernetesPostProcessor : IConfigurationPostProc
 {
     internal const string BindingType = "postgresql";
 
-    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
         foreach (string bindingKey in configurationData.Filter(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix,
             KubernetesServiceBindingConfigurationProvider.TypeKey, BindingType))

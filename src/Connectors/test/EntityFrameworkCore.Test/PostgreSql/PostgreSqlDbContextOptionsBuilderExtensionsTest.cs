@@ -20,7 +20,7 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
         });
@@ -42,7 +42,7 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlService:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
         });

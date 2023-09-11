@@ -102,7 +102,7 @@ public sealed class MongoDbConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017/auth-db?connectTimeoutMS=5000",
             ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:Database"] = "db1",
@@ -140,7 +140,7 @@ public sealed class MongoDbConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017/auth-db?connectTimeoutMS=5000",
             ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:Database"] = "db1"
@@ -184,7 +184,7 @@ public sealed class MongoDbConnectorTests
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
         builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MongoDb:db:ConnectionString"] = "mongodb://localhost:27017/auth-db?connectTimeoutMS=5000",
             ["Steeltoe:Client:MongoDb:db:Database"] = "db1"
@@ -208,7 +208,7 @@ public sealed class MongoDbConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017",
             ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo:ConnectionString"] = "mongodb://user:pass@localhost:27018"
@@ -241,7 +241,7 @@ public sealed class MongoDbConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017/auth-db",
             ["Steeltoe:Client:MongoDb:myMongoDbServiceTwo:ConnectionString"] = "mongodb://user:pass@localhost:27018/auth-db"
@@ -296,7 +296,7 @@ public sealed class MongoDbConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MongoDb:Default:ConnectionString"] = "mongodb://localhost:27017/auth-db",
             ["Steeltoe:Client:MongoDb:Default:Database"] = "db"

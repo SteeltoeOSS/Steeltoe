@@ -10,7 +10,7 @@ internal sealed class RedisKubernetesPostProcessor : IConfigurationPostProcessor
 {
     internal const string BindingType = "redis";
 
-    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
         foreach (string bindingKey in configurationData.Filter(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix,
             KubernetesServiceBindingConfigurationProvider.TypeKey, BindingType))

@@ -8,7 +8,7 @@ internal sealed class MongoDbCloudFoundryPostProcessor : CloudFoundryPostProcess
 {
     internal const string BindingType = "mongodb";
 
-    public override void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+    public override void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
         foreach (string key in FilterKeys(configurationData, BindingType))
         {
@@ -24,11 +24,15 @@ internal sealed class MongoDbCloudFoundryPostProcessor : CloudFoundryPostProcess
             {
                 // The MongoDB Azure Service Broker solely provides an url, which contains the authentication database.
                 // We extract this and expose it as the database used for application data as well.
-                string url = mapper.GetFromValue("credentials:uri");
-                var uri = new Uri(url);
-                string database = uri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
+                string? url = mapper.GetFromValue("credentials:uri");
 
-                mapper.SetToValue("database", database);
+                if (!string.IsNullOrEmpty(url))
+                {
+                    var uri = new Uri(url);
+                    string database = uri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
+
+                    mapper.SetToValue("database", database);
+                }
             }
         }
     }

@@ -187,7 +187,7 @@ public sealed class RabbitMQConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqp://user1:pass1@host1:5672/virtual-host-1",
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
@@ -211,7 +211,7 @@ public sealed class RabbitMQConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqps://user:pass@localhost:5672"
         });
@@ -249,7 +249,7 @@ public sealed class RabbitMQConnectorTests
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
         builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:db:ConnectionString"] = "amqps://user:pass@localhost:5672/extra-virtual-host"
         });
@@ -269,7 +269,7 @@ public sealed class RabbitMQConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqp://user1:pass1@host1:5672/virtual-host-1",
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
@@ -309,7 +309,7 @@ public sealed class RabbitMQConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceOne:ConnectionString"] = "amqp://user1:pass1@host1:5672/virtual-host-1",
             ["Steeltoe:Client:RabbitMQ:myRabbitMQServiceTwo:ConnectionString"] = "amqps://user2:pass2@host2:5672/virtual-host-2"
@@ -380,7 +380,7 @@ public sealed class RabbitMQConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:RabbitMQ:Default:ConnectionString"] = "amqp://localhost:5672/my-virtual-host"
         });

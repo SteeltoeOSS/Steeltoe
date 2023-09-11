@@ -106,7 +106,7 @@ public sealed class MySqlConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
@@ -146,7 +146,7 @@ public sealed class MySqlConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "Connection Timeout=15;host=localhost"
         });
@@ -198,7 +198,7 @@ public sealed class MySqlConnectorTests
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
         builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:db:ConnectionString"] = "Connection Timeout=15;host=localhost"
         });
@@ -226,7 +226,7 @@ public sealed class MySqlConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
@@ -254,7 +254,7 @@ public sealed class MySqlConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:myMySqlServiceOne:ConnectionString"] = "SERVER=localhost;Database=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:MySql:myMySqlServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
@@ -307,7 +307,7 @@ public sealed class MySqlConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:MySql:Default:ConnectionString"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
         });

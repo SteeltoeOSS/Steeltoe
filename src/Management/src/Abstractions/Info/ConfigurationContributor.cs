@@ -53,7 +53,7 @@ internal abstract class ConfigurationContributor
         foreach (IConfigurationSection section in sections)
         {
             string key = section.Key;
-            string value = section.Value;
+            string? value = section.Value;
 
             if (value == null)
             {
