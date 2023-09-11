@@ -153,7 +153,7 @@ public sealed class CloudFoundrySecurityMiddleware
     private async Task ReturnErrorAsync(HttpContext context, SecurityResult error)
     {
         LogError(context, error);
-        context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
+        context.Response.Headers.Append("Content-Type", "application/json;charset=UTF-8");
 
         // allowing override of 400-level errors is more likely to cause confusion than to be useful
         if (_managementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse || (int)error.Code < 500)
