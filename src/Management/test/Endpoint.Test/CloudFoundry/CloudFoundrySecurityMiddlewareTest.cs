@@ -335,7 +335,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         Assert.Empty(token);
 
         HttpContext context2 = CreateRequest("GET", "/");
-        context2.Request.Headers.Add("Authorization", new StringValues("Bearer foobar"));
+        context2.Request.Headers.Append("Authorization", new StringValues("Bearer foobar"));
         string token2 = middleware.GetAccessToken(context2.Request);
         Assert.Equal("foobar", token2);
     }

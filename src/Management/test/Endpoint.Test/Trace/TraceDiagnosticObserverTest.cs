@@ -382,8 +382,8 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         context.Request.Scheme = "http";
         context.Request.Host = new HostString("localhost:1111");
         context.Request.QueryString = new QueryString("?foo=bar&bar=foo");
-        context.Request.Headers.Add("Header1", new StringValues("header1Value"));
-        context.Request.Headers.Add("Header2", new StringValues("header2Value"));
+        context.Request.Headers.Append("Header1", new StringValues("header1Value"));
+        context.Request.Headers.Append("Header2", new StringValues("header2Value"));
         return context;
     }
 }

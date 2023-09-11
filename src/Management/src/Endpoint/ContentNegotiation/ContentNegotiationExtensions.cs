@@ -28,7 +28,7 @@ internal static class ContentNegotiationExtensions
 
         string contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
 
-        responseHeaders.Add("Content-Type", contentType);
+        responseHeaders.Append("Content-Type", contentType);
 
         LogContentType(logger, requestHeaders, contentType);
     }
