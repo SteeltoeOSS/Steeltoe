@@ -17,6 +17,15 @@ jobs:
         if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
           throw 'This pipeline can only be run from pull requests. Use "/azp run cleanup-code" in a GitHub PR comment.'
         }
+  - task: UseDotNet@2
+    displayName: Install .NET 6
+    inputs:
+      version: 6.0.x
+  - task: UseDotNet@2
+    displayName: Install .NET 8
+    inputs:
+      version: 8.0.x
+      includePreviewVersions: true
   - checkout: self
     fetchDepth: 0
     persistCredentials: true
@@ -62,7 +71,7 @@ jobs:
 
         if ($baseCommitHash -ne $headCommitHash) {
           Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
-          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
+          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb --dotnetcoresdk=8.0.100-preview.7.23376.3 --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
         }
   - task: PowerShell@2
     displayName: Detect changes
