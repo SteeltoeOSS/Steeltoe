@@ -12,6 +12,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\PlaceholderCore\Steeltoe.Extensions.Configuration.PlaceholderCore.csproj" />
     <ProjectReference Include="..\..\src\SpringBootCore\Steeltoe.Extensions.Configuration.SpringBootCore.csproj" />
   </ItemGroup>
   <ItemGroup>
