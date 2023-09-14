@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Extensions.Configuration.Placeholder;
 using System;
 using System.Linq;
 
@@ -79,6 +80,24 @@ public class SpringBootHostBuilderExtensionsTest
 
         var hostBuilder = new HostBuilder()
             .AddSpringBootConfiguration();
+        var host = hostBuilder.Build();
+        var config = host.Services.GetServices<IConfiguration>().SingleOrDefault();
+
+        Assert.NotNull(config["foo:bar"]);
+        Assert.Equal("value", config["foo:bar"]);
+
+        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", string.Empty);
+    }
+
+    [Fact]
+    public void GenericHostConfiguresIConfiguration_Spring_Application_Json_Works_With_Placeholder()
+    {
+        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
+
+        var hostBuilder = new HostBuilder()
+            .AddSpringBootConfiguration()
+            .AddPlaceholderResolver();
+
         var host = hostBuilder.Build();
         var config = host.Services.GetServices<IConfiguration>().SingleOrDefault();
 
