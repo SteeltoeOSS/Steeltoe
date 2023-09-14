@@ -4,15 +4,14 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Services;
 
-namespace Steeltoe.Management.Endpoint.Refresh;
+namespace Steeltoe.Management.Endpoint.Services;
 
 public class ConfigureServicesEndpointOptions : ConfigureEndpointOptions<ServicesEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:services";
     public ConfigureServicesEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "services")
+        : base(configuration, ManagementInfoPrefix, "beans")
     {
     }
 }

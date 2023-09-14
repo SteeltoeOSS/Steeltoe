@@ -15,10 +15,9 @@ internal class ServicesEndpoint : IServicesEndpoint
     private readonly IOptionsMonitor<ServicesEndpointOptions> _options;
     private readonly IServiceCollection _serviceCollection;
     private readonly ILogger<ServicesEndpoint> _logger;
-    private readonly IServiceProvider _provider;
 
     public IEndpointOptions Options => _options.CurrentValue;
-    public ServicesEndpoint(IOptionsMonitor<ServicesEndpointOptions> options, IServiceCollection serviceCollection, IServiceProvider provider, ILogger<ServicesEndpoint> logger)
+    public ServicesEndpoint(IOptionsMonitor<ServicesEndpointOptions> options, IServiceCollection serviceCollection, ILogger<ServicesEndpoint> logger)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(serviceCollection);
@@ -27,7 +26,6 @@ internal class ServicesEndpoint : IServicesEndpoint
         _options = options;
         _serviceCollection = serviceCollection;
         _logger = logger;
-        _provider = provider;
     }
     public ServiceContextDescriptor Invoke()
     {
