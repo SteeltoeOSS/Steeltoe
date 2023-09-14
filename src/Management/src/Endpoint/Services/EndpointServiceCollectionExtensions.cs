@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Services;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Refresh actuator to the D/I container.
+    /// Adds components of the Services actuator to the D/I container.
     /// </summary>
     /// <param name="services">
     /// Service collection to add actuator to.

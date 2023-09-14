@@ -10,9 +10,9 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 
 public class ConfigureServicesEndpointOptions : ConfigureEndpointOptions<ServicesEndpointOptions>
 {
-    private const string ManagementInfoPrefix = "management:endpoints:beans";
+    private const string ManagementInfoPrefix = "management:endpoints:services";
     public ConfigureServicesEndpointOptions(IConfiguration configuration)
-        : base(configuration, ManagementInfoPrefix, "beans")
+        : base(configuration, ManagementInfoPrefix, "services")
     {
     }
 }
