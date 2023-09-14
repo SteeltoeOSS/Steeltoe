@@ -52,6 +52,41 @@ public class ConsulRegistrationTest
     }
 
     [Fact]
+    public void Constructor_WhenTagsAsMetadaSetToFalse_SetsProperties()
+    {
+        var areg = new AgentServiceRegistration()
+        {
+            ID = "id",
+            Name = "name",
+            Address = "address",
+            Port = 1234,
+            Meta = new Dictionary<string, string>
+            {
+                ["foo"] = "bar",
+            },
+            Tags = new string[] { "tag" }
+        };
+
+        var options = new ConsulDiscoveryOptions
+        {
+            TagsAsMetadata = false
+        };
+
+        var reg = new ConsulRegistration(areg, options);
+        Assert.Equal("id", reg.InstanceId);
+        Assert.Equal("name", reg.ServiceId);
+        Assert.Equal("address", reg.Host);
+        Assert.Equal(1234, reg.Port);
+        Assert.Single(reg.Metadata);
+        Assert.Contains("foo", reg.Metadata.Keys);
+        Assert.Contains("bar", reg.Metadata.Values);
+        Assert.Single(reg.Tags);
+        Assert.Contains("tag", reg.Tags);
+        Assert.False(reg.IsSecure);
+        Assert.Equal(new Uri("http://address:1234"), reg.Uri);
+    }
+
+    [Fact]
     public void CreateTags_ReturnsExpected()
     {
         var options = new ConsulDiscoveryOptions()
@@ -67,6 +102,32 @@ public class ConsulRegistrationTest
         Assert.Contains("zone=instancezone", result);
         Assert.Contains("group=instancegroup", result);
         Assert.Contains("secure=true", result);
+    }
+
+    [Fact]
+    public void CreateMetadata_ReturnsExpected()
+    {
+        var options = new ConsulDiscoveryOptions()
+        {
+            TagsAsMetadata = false,
+            Metadata = new Dictionary<string, string>
+            {
+                ["foo"] = "bar"
+            },
+            InstanceZone = "instancezone",
+            InstanceGroup = "instancegroup",
+            Scheme = "https"
+        };
+        var result = ConsulRegistration.CreateMetadata(options);
+        Assert.Equal(4, result.Keys.Count);
+        Assert.Contains(result, x => x.Key == "foo");
+        Assert.Equal("bar", result["foo"]);
+        Assert.Contains(result, x => x.Key == "zone");
+        Assert.Equal("instancezone", result["zone"]);
+        Assert.Contains(result, x => x.Key == "group");
+        Assert.Equal("instancegroup", result["group"]);
+        Assert.Contains(result, x => x.Key == "secure");
+        Assert.Equal("true", result["secure"]);
     }
 
     [Fact]
