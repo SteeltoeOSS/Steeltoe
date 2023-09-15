@@ -4,8 +4,12 @@
 
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry.ServiceBinding")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes.ServiceBinding")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes.ServiceBinding.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]

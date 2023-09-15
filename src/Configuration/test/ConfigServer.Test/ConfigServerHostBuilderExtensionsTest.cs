@@ -19,40 +19,45 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_DefaultWebHost_AddsConfigServer()
     {
-        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder()
-            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration)).UseStartup<TestConfigServerStartup>();
-
+        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder();
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
+        hostBuilder.UseStartup<TestConfigServerStartup>();
         hostBuilder.AddConfigServer();
-        var configurationRoot = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-        Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
-        Assert.Single(configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>());
+        IWebHost host = hostBuilder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        Assert.NotNull(configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>());
+        Assert.NotNull(configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>());
     }
 
     [Fact]
     public void AddConfigServer_New_WebHostBuilder_AddsConfigServer()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder()
-            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration)).UseStartup<TestConfigServerStartup>();
-
+        IWebHostBuilder hostBuilder = new WebHostBuilder();
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
+        hostBuilder.UseStartup<TestConfigServerStartup>();
         hostBuilder.AddConfigServer();
-        var configurationRoot = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-        Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
-        Assert.Single(configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>());
+        IWebHost host = hostBuilder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        Assert.NotNull(configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>());
+        Assert.NotNull(configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>());
     }
 
     [Fact]
     public void AddConfigServer_IHostBuilder_AddsConfigServer()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration))
-            .AddConfigServer();
+        IHostBuilder hostBuilder = new HostBuilder();
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
+        hostBuilder.AddConfigServer();
 
         IHost host = hostBuilder.Build();
-        var configurationRoot = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
-        Assert.Single(configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>());
+        Assert.NotNull(configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>());
+        Assert.NotNull(configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>());
     }
 
     [Fact]
@@ -60,10 +65,11 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
         hostBuilder.AddConfigServer();
-        WebApplication host = hostBuilder.Build();
 
-        var configurationRoot = host.Services.GetService<IConfiguration>() as IConfigurationRoot;
-        Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
-        Assert.Single(configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>());
+        WebApplication host = hostBuilder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        Assert.NotNull(configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>());
+        Assert.NotNull(configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>());
     }
 }
