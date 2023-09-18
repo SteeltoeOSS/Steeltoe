@@ -45,6 +45,7 @@
     -->
 
     <DriveInfoVersion>4.3.*</DriveInfoVersion>
+    <JwtTokensVersion>7.0.*</JwtTokensVersion>
     <SymReaderVersion>1.4.*</SymReaderVersion>
     <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
     <KubernetesClientVersion>9.0.*</KubernetesClientVersion>
@@ -76,13 +77,11 @@
     <SystemVersion>6.0.*</SystemVersion>
     <ExtensionsVersion>6.0.*</ExtensionsVersion>
     <AspNetCoreVersion>6.0.*</AspNetCoreVersion>
-    <JwtTokensVersion>6.20.*</JwtTokensVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <SystemVersion>8.0.*-preview.*</SystemVersion>
-    <ExtensionsVersion>8.0.*-preview.*</ExtensionsVersion>
-    <AspNetCoreVersion>8.0.*-preview.*</AspNetCoreVersion>
-    <JwtTokensVersion>7.0.*-preview*</JwtTokensVersion>
+    <SystemVersion>8.0.0-rc.1.*</SystemVersion>
+    <ExtensionsVersion>8.0.0-rc.1.*</ExtensionsVersion>
+    <AspNetCoreVersion>8.0.0-rc.1.*</AspNetCoreVersion>
   </PropertyGroup>
 </Project>

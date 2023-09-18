@@ -50,7 +50,7 @@ jobs:
       script: |
         if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
           Write-Output "Running code cleanup on all files in branch."
-          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb --dotnetcoresdk=8.0.100-preview.7.23376.3 --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff
+          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb --dotnetcoresdk=8.0.100-rc.1.23463.5 --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff
         }
         else {
           # We are in detached head (the merge result), so there's no need to account for an out-of-date PR.
@@ -61,5 +61,5 @@ jobs:
           if ($LastExitCode -ne 0) { throw "Command 'git rev-parse (2)' failed with exit code $LastExitCode." }
   
           Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
-          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb --dotnetcoresdk=8.0.100-preview.7.23376.3 --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff -f commits -a $headCommitHash -b $baseCommitHash
+          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb --dotnetcoresdk=8.0.100-rc.1.23463.5 --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff -f commits -a $headCommitHash -b $baseCommitHash
         }
