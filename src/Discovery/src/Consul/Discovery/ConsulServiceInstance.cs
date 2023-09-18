@@ -23,11 +23,22 @@ public class ConsulServiceInstance : IServiceInstance
     {
         // TODO: 3.0  ID = healthService.ID;
         Host = ConsulServerUtils.FindHost(serviceEntry);
-        var metadata = ConsulServerUtils.GetMetadata(serviceEntry);
-        IsSecure = metadata.TryGetValue("secure", out var secureString) && bool.Parse(secureString);
+
+        if (serviceEntry.Service.Meta == null)
+        {
+            var metadata = ConsulServerUtils.GetMetadata(serviceEntry);
+            Metadata = metadata;
+            IsSecure = GetIsSecure(metadata);
+        }
+        else
+        {
+            Metadata = serviceEntry.Service.Meta;
+            IsSecure = GetIsSecure(serviceEntry.Service.Meta);
+            Tags = serviceEntry.Service.Tags;
+        }
+
         ServiceId = serviceEntry.Service.Service;
         Port = serviceEntry.Service.Port;
-        Metadata = metadata;
         var scheme = IsSecure ? "https" : "http";
         Uri = new Uri($"{scheme}://{Host}:{Port}");
     }
@@ -53,4 +64,16 @@ public class ConsulServiceInstance : IServiceInstance
     public IDictionary<string, string> Metadata { get; }
 
     #endregion Implementation of IServiceInstance
+
+    public string[] Tags { get; }
+
+    private static bool GetIsSecure(IDictionary<string, string> meta)
+    {
+        if (meta == null)
+        {
+            return false;
+        }
+
+        return meta.TryGetValue("secure", out string secureString) && bool.Parse(secureString);
+    }
 }

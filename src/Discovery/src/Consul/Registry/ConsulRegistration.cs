@@ -9,6 +9,8 @@ using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Util;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace Steeltoe.Discovery.Consul.Registry;
@@ -45,7 +47,7 @@ public class ConsulRegistration : IConsulRegistration
         Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
         _options = options ?? throw new ArgumentNullException(nameof(options));
 
-        Initialize(agentServiceRegistration);
+        Initialize(agentServiceRegistration, options);
     }
 
     /// <summary>
@@ -58,7 +60,7 @@ public class ConsulRegistration : IConsulRegistration
         Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
 
-        Initialize(agentServiceRegistration);
+        Initialize(agentServiceRegistration, optionsMonitor.CurrentValue);
     }
 
     // For testing
@@ -66,13 +68,22 @@ public class ConsulRegistration : IConsulRegistration
     {
     }
 
-    internal void Initialize(AgentServiceRegistration agentServiceRegistration)
+    internal void Initialize(AgentServiceRegistration agentServiceRegistration, ConsulDiscoveryOptions options)
     {
         InstanceId = agentServiceRegistration.ID;
         ServiceId = agentServiceRegistration.Name;
         Host = agentServiceRegistration.Address;
         Port = agentServiceRegistration.Port;
-        Metadata = ConsulServerUtils.GetMetadata(agentServiceRegistration.Tags);
+
+        if (options.TagsAsMetadata)
+        {
+            Metadata = ConsulServerUtils.GetMetadata(agentServiceRegistration.Tags);
+        }
+        else
+        {
+            Tags = agentServiceRegistration.Tags;
+            Metadata = agentServiceRegistration.Meta;
+        }
     }
 
     /// <inheritdoc/>
@@ -108,6 +119,8 @@ public class ConsulRegistration : IConsulRegistration
         }
     }
 
+    public string[] Tags { get; private set; }
+
     /// <inheritdoc/>
     public IDictionary<string, string> Metadata { get; private set; }
 
@@ -135,7 +148,16 @@ public class ConsulRegistration : IConsulRegistration
 
         var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX + ":serviceName");
         service.Name = NormalizeForConsul(appName);
-        service.Tags = CreateTags(options);
+        if (options.TagsAsMetadata)
+        {
+            service.Tags = CreateTags(options);
+        }
+        else
+        {
+            service.Tags = options.Tags.ToArray();
+            service.Meta = CreateMetadata(options);
+        }
+
         if (options.Port != 0)
         {
             service.Port = options.Port;
@@ -143,6 +165,36 @@ public class ConsulRegistration : IConsulRegistration
         }
 
         return new ConsulRegistration(service, options);
+    }
+
+    internal static IDictionary<string, string> CreateMetadata(ConsulDiscoveryOptions options)
+    {
+        var metadata = new Dictionary<string, string>();
+
+        if (options.Metadata != null && options.Metadata.Any())
+        {
+            foreach (KeyValuePair<string, string> m in options.Metadata)
+            {
+                metadata.Add(m.Key, m.Value);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(options.InstanceZone))
+        {
+            metadata.Add(options.DefaultZoneMetadataName, options.InstanceZone);
+        }
+
+        if (!string.IsNullOrEmpty(options.InstanceGroup))
+        {
+            metadata.Add("group", options.InstanceGroup);
+        }
+
+        // store the secure flag in the metadata so that clients will be able to figure out whether to use http or https automatically
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+        metadata.Add("secure", (options.Scheme == "https").ToString(CultureInfo.InvariantCulture).ToLowerInvariant());
+#pragma warning restore S4040 // Strings should be normalized to uppercase
+
+        return metadata;
     }
 
     internal static string[] CreateTags(ConsulDiscoveryOptions options)
