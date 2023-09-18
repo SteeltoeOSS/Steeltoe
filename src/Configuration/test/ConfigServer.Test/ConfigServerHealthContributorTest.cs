@@ -60,7 +60,7 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.NotNull(contributor.FindProvider(configurationRoot));
+        Assert.NotNull(contributor.Provider);
     }
 
     [Fact]

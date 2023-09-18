@@ -8,6 +8,7 @@ using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Configuration.Placeholder;
 using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
@@ -144,9 +145,9 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddPemFiles("instance.crt", "instance.key").AddConfigServer(settings);
         configurationBuilder.Build();
 
-        ConfigServerConfigurationSource configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
-        Assert.NotNull(configServerSource);
-        Assert.NotNull(configServerSource.DefaultSettings.ClientCertificate);
+        var source = configurationBuilder.FindConfigurationSource<ConfigServerConfigurationSource>();
+        Assert.NotNull(source);
+        Assert.NotNull(source.DefaultSettings.ClientCertificate);
     }
 
     [Fact]
@@ -491,7 +492,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         configurationBuilder.AddConfigServer();
 
-        Assert.Single(configurationBuilder.Sources.OfType<CloudFoundryConfigurationSource>());
+        var source = configurationBuilder.FindConfigurationSource<CloudFoundryConfigurationSource>();
+        Assert.NotNull(source);
     }
 
     [Fact]
@@ -502,6 +504,6 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddCloudFoundry(new CustomCloudFoundrySettingsReader());
         configurationBuilder.AddConfigServer();
 
-        Assert.Single(configurationBuilder.Sources.Where(source => source is CloudFoundryConfigurationSource));
+        Assert.Single(configurationBuilder.GetConfigurationSources<CloudFoundryConfigurationSource>());
     }
 }
