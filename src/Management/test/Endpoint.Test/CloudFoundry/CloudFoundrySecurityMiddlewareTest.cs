@@ -320,6 +320,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         HttpResponseMessage response2 = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
         Assert.Equal(HttpStatusCode.Unauthorized, response2.StatusCode);
     }
+
     [Fact]
     public void GetAccessToken_ReturnsExpected()
     {

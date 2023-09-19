@@ -35,8 +35,7 @@ public sealed class CloudFoundrySecurityMiddleware
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
 
-        _endpointOptionsCollection = endpointOptionsCollection
-            .Where(options => options is not HypermediaEndpointOptions).ToList();
+        _endpointOptionsCollection = endpointOptionsCollection.Where(options => options is not HypermediaEndpointOptions).ToList();
 
         _next = next;
         _logger = loggerFactory.CreateLogger<CloudFoundrySecurityMiddleware>();
