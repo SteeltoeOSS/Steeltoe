@@ -12,12 +12,12 @@ namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 public sealed class HomeController : Controller
 {
     private readonly ConfigServerDataAsOptions _options;
-    private readonly IHealthContributor _health;
+    private readonly IHealthContributor _healthContributor;
 
-    public HomeController(IOptions<ConfigServerDataAsOptions> options, IHealthContributor health)
+    public HomeController(IOptions<ConfigServerDataAsOptions> options, IHealthContributor healthContributor)
     {
         _options = options.Value;
-        _health = health;
+        _healthContributor = healthContributor;
     }
 
     [HttpGet]
@@ -32,15 +32,19 @@ public sealed class HomeController : Controller
     }
 
     [HttpGet]
-    public string Health()
+    public async Task<string> HealthAsync()
     {
-        if (_health != null)
+        if (_healthContributor != null)
         {
-            HealthCheckResult health = _health.Health();
-            health.Details.TryGetValue("propertySources", out object sourceList);
+            HealthCheckResult health = await _healthContributor.HealthAsync(HttpContext.RequestAborted);
 
-            object nameList = ToCsv(sourceList as IList<string>);
-            return $"{health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)},{nameList}";
+            if (health != null)
+            {
+                health.Details.TryGetValue("propertySources", out object sourceList);
+
+                object nameList = ToCsv(sourceList as IList<string>);
+                return $"{health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)},{nameList}";
+            }
         }
 
         return string.Empty;

@@ -22,16 +22,16 @@ public sealed class EurekaHealthCheckHandlerTest
     }
 
     [Fact]
-    public void DoHealthChecks_ReturnsExpected()
+    public async Task DoHealthChecks_ReturnsExpected()
     {
         var handler = new EurekaHealthCheckHandler();
-        List<HealthCheckResult> result = handler.DoHealthChecks(new List<IHealthContributor>());
+        List<HealthCheckResult> result = await handler.DoHealthChecksAsync(new List<IHealthContributor>(), CancellationToken.None);
         Assert.Empty(result);
 
-        result = handler.DoHealthChecks(new List<IHealthContributor>
+        result = await handler.DoHealthChecksAsync(new List<IHealthContributor>
         {
             new TestContributor()
-        });
+        }, CancellationToken.None);
 
         Assert.Empty(result);
     }
@@ -115,12 +115,13 @@ public sealed class EurekaHealthCheckHandlerTest
         Assert.Equal(HealthStatus.Unknown, handler.AggregateStatus(results));
     }
 
-    public sealed class TestContributor : IHealthContributor
+    private sealed class TestContributor : IHealthContributor
     {
         public string Id => "TestContrib";
 
-        public HealthCheckResult Health()
+        public async Task<HealthCheckResult> HealthAsync(CancellationToken cancellationToken)
         {
+            await Task.Yield();
             throw new NotImplementedException();
         }
     }

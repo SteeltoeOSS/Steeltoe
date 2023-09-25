@@ -29,17 +29,19 @@ public class EurekaServerHealthContributor : IHealthContributor
     {
     }
 
-    public HealthCheckResult Health()
+    public Task<HealthCheckResult> HealthAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var result = new HealthCheckResult();
         AddHealthStatus(result);
         AddApplications(_discoveryClient.Applications, result);
-        return result;
+        return Task.FromResult(result);
     }
 
-    internal void AddHealthStatus(HealthCheckResult result)
+    private void AddHealthStatus(HealthCheckResult result)
     {
-        HealthStatus remoteStatus = AddRemoteInstanceStatus(_discoveryClient.LastRemoteInstanceStatus, result);
+        HealthStatus remoteStatus = AddRemoteInstanceStatus(result);
         HealthStatus fetchStatus = AddFetchStatus(_discoveryClient.ClientConfiguration, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
 
         HealthStatus heartBeatStatus = AddHeartbeatStatus(_discoveryClient.ClientConfiguration, _appInfoManager.InstanceConfig, result,
@@ -60,7 +62,7 @@ public class EurekaServerHealthContributor : IHealthContributor
         result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
     }
 
-    internal HealthStatus AddRemoteInstanceStatus(InstanceStatus lastRemoteInstanceStatus, HealthCheckResult result)
+    private HealthStatus AddRemoteInstanceStatus(HealthCheckResult result)
     {
         HealthStatus remoteStatus = MakeHealthStatus(_discoveryClient.LastRemoteInstanceStatus);
         result.Details.Add("remoteInstStatus", remoteStatus.ToString());

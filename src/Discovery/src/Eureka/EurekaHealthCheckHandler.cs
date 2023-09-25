@@ -29,14 +29,15 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
         Contributors = contributors.ToList();
     }
 
-    public virtual InstanceStatus GetStatus(InstanceStatus currentStatus)
+    public virtual async Task<InstanceStatus> GetStatusAsync(InstanceStatus currentStatus, CancellationToken cancellationToken)
     {
-        List<HealthCheckResult> results = DoHealthChecks(Contributors);
+        List<HealthCheckResult> results = await DoHealthChecksAsync(Contributors, cancellationToken);
         HealthStatus status = AggregateStatus(results);
         return MapToInstanceStatus(status);
     }
 
-    protected internal virtual List<HealthCheckResult> DoHealthChecks(IList<IHealthContributor> contributors)
+    protected internal virtual async Task<List<HealthCheckResult>> DoHealthChecksAsync(IList<IHealthContributor> contributors,
+        CancellationToken cancellationToken)
     {
         var results = new List<HealthCheckResult>();
 
@@ -44,16 +45,16 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
         {
             try
             {
-                HealthCheckResult result = contributor.Health();
+                HealthCheckResult result = await contributor.HealthAsync(cancellationToken);
 
                 if (result != null)
                 {
                     results.Add(result);
                 }
             }
-            catch (Exception e)
+            catch (Exception exception) when (exception is not OperationCanceledException)
             {
-                _logger?.LogError(e, "Health Contributor {id} failed, status not included!", contributor.Id);
+                _logger?.LogError(exception, "Health Contributor {id} failed, status not included!", contributor.Id);
             }
         }
 

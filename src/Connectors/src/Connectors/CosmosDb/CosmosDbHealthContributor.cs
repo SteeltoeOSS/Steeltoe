@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
@@ -34,7 +34,7 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
         _logger = logger;
     }
 
-    public HealthCheckResult Health()
+    public async Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
@@ -54,11 +54,7 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
         try
         {
             Task task = _cosmosClientShim.ReadAccountAsync();
-
-            if (!task.Wait(Timeout))
-            {
-                throw new TimeoutException();
-            }
+            await task.WaitAsync(Timeout, cancellationToken);
 
             result.Status = HealthStatus.Up;
             result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
@@ -67,14 +63,11 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
         }
         catch (Exception exception)
         {
-            if (exception is TargetInvocationException)
-            {
-                exception = exception.InnerException ?? exception;
-            }
+            exception = exception.UnwrapAll();
 
-            if (exception is AggregateException { InnerExceptions.Count: 1 } aggregateException)
+            if (exception is OperationCanceledException)
             {
-                exception = aggregateException.InnerExceptions[0];
+                ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
             _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);

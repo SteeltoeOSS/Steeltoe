@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 namespace Steeltoe.Common.HealthChecks;
 
 /// <summary>
@@ -15,10 +17,10 @@ public interface IHealthContributor
     string Id { get; }
 
     /// <summary>
-    /// Check the health of a resource.
+    /// Performs a health check.
     /// </summary>
     /// <returns>
-    /// The result of checking the health of a resource, or <c>null</c> if this health check is currently disabled.
+    /// The result of the health check, or <c>null</c> if this health check is currently disabled.
     /// </returns>
-    HealthCheckResult Health();
+    Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken);
 }

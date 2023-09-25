@@ -22,7 +22,13 @@ public abstract class AvailabilityHealthContributor : IHealthContributor
         _logger = logger;
     }
 
-    public HealthCheckResult Health()
+    public Task<HealthCheckResult> HealthAsync(CancellationToken cancellationToken)
+    {
+        HealthCheckResult result = Health();
+        return Task.FromResult(result);
+    }
+
+    private HealthCheckResult Health()
     {
         var health = new HealthCheckResult();
         IAvailabilityState currentHealth = GetState();

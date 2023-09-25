@@ -389,7 +389,7 @@ public class DiscoveryClient : IEurekaClient
             return false;
         }
 
-        RefreshInstanceInfo();
+        await RefreshInstanceInfoAsync(cancellationToken);
 
         if (inst.IsDirty)
         {
@@ -506,7 +506,7 @@ public class DiscoveryClient : IEurekaClient
         return null;
     }
 
-    protected internal void RefreshInstanceInfo()
+    protected internal async Task RefreshInstanceInfoAsync(CancellationToken cancellationToken)
     {
         InstanceInfo info = AppInfoManager.InstanceInfo;
 
@@ -523,12 +523,12 @@ public class DiscoveryClient : IEurekaClient
         {
             try
             {
-                status = HealthCheckHandler.GetStatus(info.Status);
+                status = await HealthCheckHandler.GetStatusAsync(info.Status, cancellationToken);
                 logger.LogDebug("RefreshInstanceInfo called, returning {status}", status);
             }
-            catch (Exception e)
+            catch (Exception exception) when (exception is not OperationCanceledException)
             {
-                logger.LogError(e, "RefreshInstanceInfo HealthCheck handler. App: {Application}, Instance: {Instance} marked DOWN", info.AppName,
+                logger.LogError(exception, "RefreshInstanceInfo HealthCheck handler. App: {Application}, Instance: {Instance} marked DOWN", info.AppName,
                     info.InstanceId);
 
                 status = InstanceStatus.Down;

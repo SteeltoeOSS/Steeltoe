@@ -49,7 +49,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         return health.Status is HealthStatus.Down or HealthStatus.OutOfService ? 503 : 200;
     }
 
-    public Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
+    public async Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
     {
         string groupName = healthRequest.GroupName;
         HealthEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
@@ -69,8 +69,8 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         }
 
         HealthCheckResult result = _healthAggregator is not IHealthRegistrationsAggregator registrationAggregator
-            ? _healthAggregator.Aggregate(filteredContributors, cancellationToken)
-            : registrationAggregator.Aggregate(filteredContributors, healthCheckRegistrations, _serviceProvider, cancellationToken);
+            ? await _healthAggregator.AggregateAsync(filteredContributors, cancellationToken)
+            : await registrationAggregator.AggregateAsync(filteredContributors, healthCheckRegistrations, _serviceProvider, cancellationToken);
 
         var response = new HealthEndpointResponse(result);
 
@@ -85,7 +85,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
             response.Groups = endpointOptions.Groups.Select(group => group.Key).ToList();
         }
 
-        return Task.FromResult(response);
+        return response;
     }
 
     private ICollection<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup)

@@ -13,9 +13,14 @@ internal sealed class DatabaseInterfaceShim : Shim
     {
     }
 
-    public TimeSpan Ping()
+    public async Task<TimeSpan> PingAsync()
     {
         InstanceAccessor runtimeInstanceAccessor = InstanceAccessor.AsRuntimeType();
-        return (TimeSpan)runtimeInstanceAccessor.InvokeMethod("Ping", true, 0)!;
+        var task = (Task)runtimeInstanceAccessor.InvokeMethod("PingAsync", true, 0)!;
+
+        await task;
+
+        using var taskShim = new TaskShim<TimeSpan>(task);
+        return taskShim.Result;
     }
 }

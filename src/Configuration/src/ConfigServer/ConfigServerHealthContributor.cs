@@ -32,7 +32,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         }
     }
 
-    public HealthCheckResult Health()
+    public async Task<HealthCheckResult> HealthAsync(CancellationToken cancellationToken)
     {
         var health = new HealthCheckResult();
 
@@ -52,7 +52,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
             return health;
         }
 
-        IList<PropertySource> sources = GetPropertySourcesAsync(CancellationToken.None).GetAwaiter().GetResult();
+        IList<PropertySource> sources = await GetPropertySourcesAsync(cancellationToken);
 
         if (sources == null || sources.Count == 0)
         {

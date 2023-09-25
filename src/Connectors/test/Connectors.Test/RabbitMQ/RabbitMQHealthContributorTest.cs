@@ -17,7 +17,7 @@ namespace Steeltoe.Connectors.Test.RabbitMQ;
 public sealed class RabbitMQHealthContributorTest
 {
     [Fact]
-    public void Not_Connected_Returns_Down_Status()
+    public async Task Not_Connected_Returns_Down_Status()
     {
         var connectionFactory = new ConnectionFactory
         {
@@ -30,9 +30,10 @@ public sealed class RabbitMQHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Down);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Down);
         status.Description.Should().Be("RabbitMQ health check failed");
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
@@ -41,7 +42,7 @@ public sealed class RabbitMQHealthContributorTest
     }
 
     [Fact]
-    public void Is_Connected_Returns_Up_Status()
+    public async Task Is_Connected_Returns_Up_Status()
     {
         var connectionMock = new Mock<IConnection>();
         connectionMock.Setup(connection => connection.IsOpen).Returns(true);
@@ -59,9 +60,10 @@ public sealed class RabbitMQHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Up);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Up);
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
         status.Details.Should().NotContainKey("error");
@@ -70,7 +72,7 @@ public sealed class RabbitMQHealthContributorTest
     }
 
     [Fact]
-    public void Lost_Connection_Returns_Down_Status()
+    public async Task Lost_Connection_Returns_Down_Status()
     {
         var connectionMock = new Mock<IConnection>();
         connectionMock.Setup(connection => connection.IsOpen).Returns(true);
@@ -89,13 +91,14 @@ public sealed class RabbitMQHealthContributorTest
         };
 
         // Ensure initial connection is obtained.
-        _ = healthContributor.Health();
+        _ = await healthContributor.HealthAsync(CancellationToken.None);
 
         connectionMock.Setup(connection => connection.IsOpen).Returns(false);
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Down);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Down);
         status.Description.Should().Be("RabbitMQ health check failed");
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
@@ -103,8 +106,22 @@ public sealed class RabbitMQHealthContributorTest
         status.Details.Should().Contain("status", "DOWN");
     }
 
+    [Fact]
+    public async Task Canceled_Throws()
+    {
+        var connectionFactoryMock = new Mock<IConnectionFactory>();
+        using var healthContributor = new RabbitMQHealthContributor(connectionFactoryMock.Object, "localhost", NullLogger<RabbitMQHealthContributor>.Instance);
+
+        using var source = new CancellationTokenSource();
+        source.Cancel();
+
+        Func<Task> action = async () => await healthContributor.HealthAsync(source.Token);
+
+        await action.Should().ThrowExactlyAsync<OperationCanceledException>();
+    }
+
     [Fact(Skip = "Integration test - Requires local RabbitMQ server")]
-    public void Integration_Is_Connected_Returns_Up_Status()
+    public async Task Integration_Is_Connected_Returns_Up_Status()
     {
         var connectionFactory = new ConnectionFactory
         {
@@ -116,9 +133,10 @@ public sealed class RabbitMQHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Up);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Up);
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
         status.Details.Should().NotContainKey("error");

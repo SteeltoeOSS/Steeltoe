@@ -809,7 +809,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void RefreshInstanceInfo_CallsHealthCheckHandler_UpdatesInstanceStatus()
+    public async Task RefreshInstanceInfo_CallsHealthCheckHandler_UpdatesInstanceStatus()
     {
         var configuration = new EurekaClientConfiguration
         {
@@ -824,9 +824,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var myHandler = new MyHealthCheckHandler(InstanceStatus.Down);
         client.HealthCheckHandler = myHandler;
 
-        client.RefreshInstanceInfo();
+        await client.RefreshInstanceInfoAsync(CancellationToken.None);
 
-        Assert.True(myHandler.Called);
+        Assert.True(myHandler.Awaited);
         Assert.Equal(InstanceStatus.Down, ApplicationInfoManager.Instance.InstanceInfo.Status);
     }
 

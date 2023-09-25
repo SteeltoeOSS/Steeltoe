@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 internal class DefaultHealthAggregator : IHealthAggregator
 {
-    public HealthCheckResult Aggregate(ICollection<IHealthContributor> contributors, CancellationToken cancellationToken)
+    public async Task<HealthCheckResult> AggregateAsync(ICollection<IHealthContributor> contributors, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(contributors);
 
@@ -23,16 +23,16 @@ internal class DefaultHealthAggregator : IHealthAggregator
         var healthChecks = new ConcurrentDictionary<string, HealthCheckResult>();
         var keyList = new ConcurrentBag<string>();
 
-        Parallel.ForEach(contributors, contributor =>
+        await Parallel.ForEachAsync(contributors, cancellationToken, async (contributor, _) =>
         {
             string contributorId = GetKey(keyList, contributor.Id);
             HealthCheckResult? healthCheckResult;
 
             try
             {
-                healthCheckResult = contributor.Health();
+                healthCheckResult = await contributor.HealthAsync(cancellationToken);
             }
-            catch (Exception)
+            catch (Exception exception) when (exception is not OperationCanceledException)
             {
                 healthCheckResult = new HealthCheckResult();
             }

@@ -19,8 +19,10 @@ internal sealed class HealthTestContributor : IHealthContributor
         Throws = throws;
     }
 
-    public HealthCheckResult Health()
+    public async Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
     {
+        await Task.Yield();
+
         if (Throws)
         {
             throw new Exception();

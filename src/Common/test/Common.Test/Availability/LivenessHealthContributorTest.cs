@@ -13,33 +13,33 @@ public sealed class LivenessHealthContributorTest
     private readonly ApplicationAvailability _availability = new();
 
     [Fact]
-    public void HandlesUnknown()
+    public async Task HandlesUnknown()
     {
         var contributor = new LivenessHealthContributor(_availability);
 
-        HealthCheckResult result = contributor.Health();
+        HealthCheckResult result = await contributor.HealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.Unknown, result.Status);
     }
 
     [Fact]
-    public void HandlesCorrect()
+    public async Task HandlesCorrect()
     {
         _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, "tests");
         var contributor = new LivenessHealthContributor(_availability);
 
-        HealthCheckResult result = contributor.Health();
+        HealthCheckResult result = await contributor.HealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
     }
 
     [Fact]
-    public void HandlesBroken()
+    public async Task HandlesBroken()
     {
         _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Broken, "tests");
         var contributor = new LivenessHealthContributor(_availability);
 
-        HealthCheckResult result = contributor.Health();
+        HealthCheckResult result = await contributor.HealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.Down, result.Status);
     }

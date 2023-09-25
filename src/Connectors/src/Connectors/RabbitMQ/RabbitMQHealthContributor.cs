@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
@@ -33,7 +33,7 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
         _logger = logger;
     }
 
-    public HealthCheckResult Health()
+    public Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
@@ -52,6 +52,8 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
 
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             _connectionInterfaceShim ??= _connectionFactoryInterfaceShim.CreateConnection();
 
             if (!_connectionInterfaceShim.IsOpen)
@@ -72,9 +74,11 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
         }
         catch (Exception exception)
         {
-            if (exception is TargetInvocationException)
+            exception = exception.UnwrapAll();
+
+            if (exception is OperationCanceledException)
             {
-                exception = exception.InnerException ?? exception;
+                ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
             _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
@@ -85,7 +89,7 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
             result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         }
 
-        return result;
+        return Task.FromResult<HealthCheckResult?>(result);
     }
 
     public void Dispose()

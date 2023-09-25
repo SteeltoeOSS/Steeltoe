@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -76,6 +77,34 @@ public sealed class HealthEndpointTest : BaseTest
         {
             Assert.True(testContributor.Called);
         }
+    }
+
+    [Fact]
+    public async Task Invoke_HandlesCancellation_Throws()
+    {
+        using var testContext = new TestContext(_output);
+
+        var contributors = new List<IHealthContributor>
+        {
+            new UpContributor(5000)
+        };
+
+        testContext.AdditionalServices = (services, _) =>
+        {
+            services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
+            services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+            services.AddHealthActuatorServices();
+        };
+
+        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
+
+        var source = new CancellationTokenSource();
+        source.Cancel();
+
+        HealthEndpointRequest healthRequest = GetHealthRequest();
+        Func<Task> action = async () => await handler.InvokeAsync(healthRequest, source.Token);
+
+        await action.Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]

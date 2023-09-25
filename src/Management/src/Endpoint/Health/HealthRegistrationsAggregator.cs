@@ -16,15 +16,15 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
 {
-    public SteeltoeHealthCheckResult Aggregate(ICollection<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations,
-        IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    public async Task<SteeltoeHealthCheckResult> AggregateAsync(ICollection<IHealthContributor> contributors,
+        ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(contributors);
         ArgumentGuard.NotNull(healthCheckRegistrations);
         ArgumentGuard.NotNull(serviceProvider);
 
         // get results from DefaultHealthAggregator first
-        SteeltoeHealthCheckResult aggregatorResult = Aggregate(contributors, cancellationToken);
+        SteeltoeHealthCheckResult aggregatorResult = await AggregateAsync(contributors, cancellationToken);
 
         // if there aren't any Microsoft health checks, return now
         if (healthCheckRegistrations.Count == 0)
@@ -33,28 +33,29 @@ internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, I
         }
 
         ConcurrentDictionary<string, SteeltoeHealthCheckResult> healthChecks =
-            AggregateMicrosoftHealthChecks(contributors, healthCheckRegistrations, serviceProvider, cancellationToken);
+            await AggregateMicrosoftHealthChecksAsync(contributors, healthCheckRegistrations, serviceProvider, cancellationToken);
 
         return AddChecksSetStatus(aggregatorResult, healthChecks);
     }
 
-    private static ConcurrentDictionary<string, SteeltoeHealthCheckResult> AggregateMicrosoftHealthChecks(IEnumerable<IHealthContributor> contributors,
-        IEnumerable<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    private static async Task<ConcurrentDictionary<string, SteeltoeHealthCheckResult>> AggregateMicrosoftHealthChecksAsync(
+        IEnumerable<IHealthContributor> contributors, IEnumerable<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider,
+        CancellationToken cancellationToken)
     {
         var healthChecks = new ConcurrentDictionary<string, SteeltoeHealthCheckResult>();
         var keys = new ConcurrentBag<string>(contributors.Select(contributor => contributor.Id));
 
         // run all HealthCheckRegistration checks in parallel
-        Parallel.ForEach(healthCheckRegistrations, registration =>
+        await Parallel.ForEachAsync(healthCheckRegistrations, cancellationToken, async (registration, _) =>
         {
             string contributorName = GetKey(keys, registration.Name);
             SteeltoeHealthCheckResult healthCheckResult;
 
             try
             {
-                healthCheckResult = RunMicrosoftHealthCheckAsync(serviceProvider, registration, cancellationToken).GetAwaiter().GetResult();
+                healthCheckResult = await RunMicrosoftHealthCheckAsync(serviceProvider, registration, cancellationToken);
             }
-            catch (Exception)
+            catch (Exception exception) when (exception is not OperationCanceledException)
             {
                 healthCheckResult = new SteeltoeHealthCheckResult();
             }

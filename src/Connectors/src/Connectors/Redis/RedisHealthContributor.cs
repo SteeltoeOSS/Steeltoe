@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
@@ -48,7 +48,7 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
         _connectionMultiplexerInterfaceShim = new ConnectionMultiplexerInterfaceShim(StackExchangeRedisPackageResolver.Default, connectionMultiplexer);
     }
 
-    public HealthCheckResult Health()
+    public async Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
@@ -67,9 +67,11 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
 
         try
         {
-            _connectionMultiplexerInterfaceShim ??= ConnectionMultiplexerShim.Connect(StackExchangeRedisPackageResolver.Default, _connectionString);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            _connectionMultiplexerInterfaceShim ??= await ConnectionMultiplexerShim.ConnectAsync(StackExchangeRedisPackageResolver.Default, _connectionString);
             _databaseInterfaceShim ??= _connectionMultiplexerInterfaceShim.GetDatabase();
-            TimeSpan roundTripTime = _databaseInterfaceShim.Ping();
+            TimeSpan roundTripTime = await _databaseInterfaceShim.PingAsync();
 
             result.Status = HealthStatus.Up;
             result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
@@ -79,9 +81,11 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
         }
         catch (Exception exception)
         {
-            if (exception is TargetInvocationException)
+            exception = exception.UnwrapAll();
+
+            if (exception is OperationCanceledException)
             {
-                exception = exception.InnerException ?? exception;
+                ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
             _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
