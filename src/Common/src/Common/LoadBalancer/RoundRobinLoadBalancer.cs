@@ -30,7 +30,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         _logger?.LogDebug("Distributed cache was provided to load balancer: {DistributedCacheIsNull}", DistributedCache == null);
     }
 
-    public virtual async Task<Uri> ResolveServiceInstanceAsync(Uri request)
+    public virtual async Task<Uri> ResolveServiceInstanceAsync(Uri request, CancellationToken cancellationToken)
     {
         string serviceName = request.Host;
         _logger?.LogTrace("ResolveServiceInstance {serviceName}", serviceName);
@@ -38,7 +38,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
 
         // get instances for this service
         IList<IServiceInstance> availableServiceInstances =
-            await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, DistributedCache, _cacheOptions);
+            await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, cancellationToken, DistributedCache, _cacheOptions);
 
         if (!availableServiceInstances.Any())
         {
@@ -47,7 +47,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         }
 
         // get next instance, or wrap back to first instance if we reach the end of the list
-        int nextInstanceIndex = await GetOrInitNextIndexAsync(cacheKey, 0);
+        int nextInstanceIndex = await GetOrInitNextIndexAsync(cacheKey, 0, cancellationToken);
 
         if (nextInstanceIndex >= availableServiceInstances.Count)
         {
@@ -57,22 +57,22 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         // get next instance, or wrap back to first instance if we reach the end of the list
         IServiceInstance serviceInstance = availableServiceInstances[nextInstanceIndex];
         _logger?.LogDebug("Resolved {url} to {service}", request.Host, serviceInstance.Host);
-        await SetNextIndexAsync(cacheKey, nextInstanceIndex);
+        await SetNextIndexAsync(cacheKey, nextInstanceIndex, cancellationToken);
         return new Uri(serviceInstance.Uri, request.PathAndQuery);
     }
 
-    public virtual Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception)
+    public virtual Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
 
-    private async Task<int> GetOrInitNextIndexAsync(string cacheKey, int initValue)
+    private async Task<int> GetOrInitNextIndexAsync(string cacheKey, int initValue, CancellationToken cancellationToken)
     {
         int index = initValue;
 
         if (DistributedCache != null)
         {
-            byte[] cacheEntry = await DistributedCache.GetAsync(cacheKey);
+            byte[] cacheEntry = await DistributedCache.GetAsync(cacheKey, cancellationToken);
 
             if (cacheEntry != null && cacheEntry.Length > 0)
             {
@@ -87,11 +87,11 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         return index;
     }
 
-    private async Task SetNextIndexAsync(string cacheKey, int currentValue)
+    private async Task SetNextIndexAsync(string cacheKey, int currentValue, CancellationToken cancellationToken)
     {
         if (DistributedCache != null)
         {
-            await DistributedCache.SetAsync(cacheKey, BitConverter.GetBytes(currentValue + 1));
+            await DistributedCache.SetAsync(cacheKey, BitConverter.GetBytes(currentValue + 1), cancellationToken);
         }
         else
         {

@@ -43,11 +43,11 @@ internal sealed class ConfigServerHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await _configuration.ProvideRuntimeReplacementsAsync(_discoveryClient);
+        await _configuration.ProvideRuntimeReplacementsAsync(_discoveryClient, cancellationToken);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        await _configuration.ShutdownAsync();
+        await _configuration.ShutdownAsync(cancellationToken);
     }
 }

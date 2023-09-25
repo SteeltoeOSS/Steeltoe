@@ -34,13 +34,13 @@ public sealed class RabbitListenerAttributeProcessorTest
 
         ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(SimpleMessageListenerTestBean));
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
         IRabbitListenerEndpoint endpoint = container.Endpoint;
         Assert.IsType<MethodRabbitListenerEndpoint>(endpoint);
-        var methodEndpoint = endpoint as MethodRabbitListenerEndpoint;
+        var methodEndpoint = (MethodRabbitListenerEndpoint)endpoint;
         Assert.NotNull(methodEndpoint.Instance);
         Assert.NotNull(methodEndpoint.Method);
 
@@ -48,7 +48,7 @@ public sealed class RabbitListenerAttributeProcessorTest
         methodEndpoint.SetupListenerContainer(listenerContainer);
         Assert.NotNull(listenerContainer.MessageListener);
         Assert.True(container.IsStarted);
-        provider.Dispose();
+        await provider.DisposeAsync();
         Assert.True(container.IsStopped);
     }
 
@@ -74,13 +74,13 @@ public sealed class RabbitListenerAttributeProcessorTest
             await Configuration.CreateAndStartServicesAsync(configurationRoot, queues, typeof(SimpleMessageListenerWithMixedAnnotationsTestBean));
 
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
         IRabbitListenerEndpoint endpoint = container.Endpoint;
         Assert.IsType<MethodRabbitListenerEndpoint>(endpoint);
-        var methodEndpoint = endpoint as MethodRabbitListenerEndpoint;
+        var methodEndpoint = (MethodRabbitListenerEndpoint)endpoint;
         Assert.NotNull(methodEndpoint.Instance);
         Assert.NotNull(methodEndpoint.Method);
 
@@ -92,7 +92,7 @@ public sealed class RabbitListenerAttributeProcessorTest
         methodEndpoint.SetupListenerContainer(listenerContainer);
         Assert.NotNull(listenerContainer.MessageListener);
         Assert.True(container.IsStarted);
-        provider.Dispose();
+        await provider.DisposeAsync();
         Assert.True(container.IsStopped);
     }
 
@@ -107,7 +107,7 @@ public sealed class RabbitListenerAttributeProcessorTest
 
         ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(MultipleQueueNamesTestBean));
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
@@ -135,7 +135,7 @@ public sealed class RabbitListenerAttributeProcessorTest
 
         ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(MultipleQueuesTestBean));
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
@@ -162,7 +162,7 @@ public sealed class RabbitListenerAttributeProcessorTest
 
         ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(MixedQueuesAndQueueNamesTestBean));
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
@@ -201,7 +201,7 @@ public sealed class RabbitListenerAttributeProcessorTest
             await Configuration.CreateAndStartServicesAsync(configurationRoot, queues, typeof(PropertyPlaceholderResolvingToQueueTestBean));
 
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
@@ -227,7 +227,8 @@ public sealed class RabbitListenerAttributeProcessorTest
             queue2
         };
 
-        await Assert.ThrowsAsync<ExpressionException>(() => Configuration.CreateAndStartServicesAsync(null, queues, typeof(InvalidValueInAnnotationTestBean)));
+        await Assert.ThrowsAsync<ExpressionException>(async () =>
+            await Configuration.CreateAndStartServicesAsync(null, queues, typeof(InvalidValueInAnnotationTestBean)));
     }
 
     [Fact]
@@ -236,7 +237,7 @@ public sealed class RabbitListenerAttributeProcessorTest
         var services = new ServiceCollection();
 
         RabbitListenerDeclareAttributeProcessor.ProcessDeclareAttributes(services, null, typeof(TestTarget));
-        IEnumerable<IExchange> exchanges = services.BuildServiceProvider().GetServices<IExchange>();
+        IExchange[] exchanges = services.BuildServiceProvider().GetServices<IExchange>().ToArray();
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Direct);
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Topic);
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.FanOut);

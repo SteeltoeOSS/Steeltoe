@@ -51,11 +51,9 @@ public sealed class CosmosDbHealthContributorTest
     {
         var cosmosClient = new CosmosClient("AccountEndpoint=https://localhost:8081;AccountKey=IA==");
 
-        using var healthContributor = new CosmosDbHealthContributor(cosmosClient, "localhost", NullLogger<CosmosDbHealthContributor>.Instance)
-        {
-            ServiceName = "Example",
-            Timeout = 1.Milliseconds()
-        };
+        using var healthContributor = new CosmosDbHealthContributor(cosmosClient, "localhost", NullLogger<CosmosDbHealthContributor>.Instance);
+        healthContributor.ServiceName = "Example";
+        healthContributor.Timeout = 1.Milliseconds();
 
         HealthCheckResult status = healthContributor.Health();
 

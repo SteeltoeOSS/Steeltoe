@@ -13,12 +13,12 @@ internal sealed class FakeLoadBalancer : ILoadBalancer
 {
     internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats { get; } = new();
 
-    public Task<Uri> ResolveServiceInstanceAsync(Uri request)
+    public Task<Uri> ResolveServiceInstanceAsync(Uri request, CancellationToken cancellationToken)
     {
         return Task.FromResult(new Uri(request.AbsoluteUri.Replace("replaceme", "someresolvedhost", StringComparison.Ordinal)));
     }
 
-    public Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception)
+    public Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception, CancellationToken cancellationToken)
     {
         Stats.Add(new Tuple<Uri, Uri, TimeSpan, Exception>(originalUri, resolvedUri, responseTime, exception));
         return Task.CompletedTask;

@@ -52,7 +52,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
             return health;
         }
 
-        IList<PropertySource> sources = GetPropertySources();
+        IList<PropertySource> sources = GetPropertySourcesAsync(CancellationToken.None).GetAwaiter().GetResult();
 
         if (sources == null || sources.Count == 0)
         {
@@ -82,7 +82,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         health.Details.Add("propertySources", names);
     }
 
-    internal IList<PropertySource> GetPropertySources()
+    internal async Task<IList<PropertySource>> GetPropertySourcesAsync(CancellationToken cancellationToken)
     {
         long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
@@ -90,7 +90,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         {
             LastAccess = currentTime;
             _logger.LogDebug("Cache stale, fetching config server health");
-            Cached = Provider.LoadInternal(false);
+            Cached = await Provider.LoadInternalAsync(false, cancellationToken);
         }
 
         return Cached?.PropertySources;

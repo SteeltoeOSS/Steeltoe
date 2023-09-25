@@ -23,7 +23,7 @@ public sealed class ConsulServiceRegistryTest
     }
 
     [Fact]
-    public void RegisterAsync_ThrowsOnNull()
+    public async Task RegisterAsync_ThrowsOnNull()
     {
         var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
@@ -34,7 +34,7 @@ public sealed class ConsulServiceRegistryTest
         var sch = new TtlScheduler(opts, clientMoq.Object);
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        Assert.ThrowsAsync<ArgumentNullException>(() => reg.RegisterAsync(null));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await reg.RegisterAsync(null, CancellationToken.None));
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public sealed class ConsulServiceRegistryTest
 
         IConfigurationRoot configurationRoot = builder.Build();
         var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
-        await reg.RegisterAsync(registration);
+        await reg.RegisterAsync(registration, CancellationToken.None);
 
         agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
 
@@ -67,7 +67,7 @@ public sealed class ConsulServiceRegistryTest
     }
 
     [Fact]
-    public void DeregisterAsync_ThrowsOnNull()
+    public async Task DeregisterAsync_ThrowsOnNull()
     {
         var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
@@ -78,7 +78,7 @@ public sealed class ConsulServiceRegistryTest
         var sch = new TtlScheduler(opts, clientMoq.Object);
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        Assert.ThrowsAsync<ArgumentNullException>(() => reg.DeregisterAsync(null));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await reg.DeregisterAsync(null, CancellationToken.None));
     }
 
     [Fact]
@@ -101,20 +101,20 @@ public sealed class ConsulServiceRegistryTest
 
         IConfigurationRoot configurationRoot = builder.Build();
         var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
-        await reg.RegisterAsync(registration);
+        await reg.RegisterAsync(registration, CancellationToken.None);
 
         agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
 
         Assert.Single(sch.ServiceHeartbeats);
         Assert.Contains(registration.InstanceId, sch.ServiceHeartbeats.Keys);
 
-        await reg.DeregisterAsync(registration);
+        await reg.DeregisterAsync(registration, CancellationToken.None);
         agentMoq.Verify(a => a.ServiceDeregister(registration.Service.ID, default), Times.Once);
         Assert.Empty(sch.ServiceHeartbeats);
     }
 
     [Fact]
-    public void SetStatusAsync_ThrowsOnNull()
+    public async Task SetStatusAsync_ThrowsOnNull()
     {
         var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
@@ -125,11 +125,11 @@ public sealed class ConsulServiceRegistryTest
         var sch = new TtlScheduler(opts, clientMoq.Object);
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        Assert.ThrowsAsync<ArgumentNullException>(() => reg.SetStatusAsync(null, string.Empty));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await reg.SetStatusAsync(null, string.Empty, CancellationToken.None));
     }
 
     [Fact]
-    public void SetStatusAsync_ThrowsInvalidStatus()
+    public async Task SetStatusAsync_ThrowsInvalidStatus()
     {
         var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
@@ -148,7 +148,7 @@ public sealed class ConsulServiceRegistryTest
         var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        Assert.ThrowsAsync<ArgumentException>(() => reg.SetStatusAsync(registration, string.Empty));
+        await Assert.ThrowsAsync<ArgumentException>(async () => await reg.SetStatusAsync(registration, string.Empty, CancellationToken.None));
     }
 
     [Fact]
@@ -171,14 +171,14 @@ public sealed class ConsulServiceRegistryTest
         var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        await reg.SetStatusAsync(registration, "Up");
+        await reg.SetStatusAsync(registration, "Up", CancellationToken.None);
         agentMoq.Verify(a => a.DisableServiceMaintenance(registration.InstanceId, default), Times.Once);
-        await reg.SetStatusAsync(registration, "Out_of_Service");
+        await reg.SetStatusAsync(registration, "Out_of_Service", CancellationToken.None);
         agentMoq.Verify(a => a.EnableServiceMaintenance(registration.InstanceId, "OUT_OF_SERVICE", default), Times.Once);
     }
 
     [Fact]
-    public void GetStatusAsync_ThrowsOnNull()
+    public async Task GetStatusAsync_ThrowsOnNull()
     {
         var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
@@ -189,7 +189,7 @@ public sealed class ConsulServiceRegistryTest
         var sch = new TtlScheduler(opts, clientMoq.Object);
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        Assert.ThrowsAsync<ArgumentNullException>(() => reg.GetStatusAsync(null));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await reg.GetStatusAsync(null, CancellationToken.None));
     }
 
     [Fact]
@@ -233,7 +233,7 @@ public sealed class ConsulServiceRegistryTest
         var sch = new TtlScheduler(opts, clientMoq.Object);
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
 
-        object ret = await reg.GetStatusAsync(registration);
+        object ret = await reg.GetStatusAsync(registration, CancellationToken.None);
         Assert.Equal("OUT_OF_SERVICE", ret);
     }
 }

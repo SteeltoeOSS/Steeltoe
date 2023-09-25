@@ -10,13 +10,14 @@ namespace Steeltoe.Common.Discovery;
 public static class ServiceInstanceProviderExtensions
 {
     public static async Task<IList<IServiceInstance>> GetInstancesWithCacheAsync(this IServiceInstanceProvider serviceInstanceProvider, string serviceId,
-        IDistributedCache distributedCache = null, DistributedCacheEntryOptions cacheOptions = null, string serviceInstancesKeyPrefix = "ServiceInstances:")
+        CancellationToken cancellationToken, IDistributedCache distributedCache = null, DistributedCacheEntryOptions cacheOptions = null,
+        string serviceInstancesKeyPrefix = "ServiceInstances:")
     {
         string cacheKey = $"{serviceInstancesKeyPrefix}{serviceId}";
 
         if (distributedCache != null)
         {
-            byte[] cacheValue = await distributedCache.GetAsync(cacheKey);
+            byte[] cacheValue = await distributedCache.GetAsync(cacheKey, cancellationToken);
             IList<IServiceInstance> instancesFromCache = FromCacheValue(cacheValue);
 
             if (instancesFromCache != null)
@@ -25,12 +26,12 @@ public static class ServiceInstanceProviderExtensions
             }
         }
 
-        IList<IServiceInstance> instances = serviceInstanceProvider.GetInstances(serviceId);
+        IList<IServiceInstance> instances = await serviceInstanceProvider.GetInstancesAsync(serviceId, cancellationToken);
 
         if (distributedCache != null && instances != null)
         {
             byte[] cacheValue = ToCacheValue(instances);
-            await distributedCache.SetAsync(cacheKey, cacheValue, cacheOptions ?? new DistributedCacheEntryOptions());
+            await distributedCache.SetAsync(cacheKey, cacheValue, cacheOptions ?? new DistributedCacheEntryOptions(), cancellationToken);
         }
 
         return instances;

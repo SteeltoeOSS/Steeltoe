@@ -169,7 +169,7 @@ public sealed class QueueChannelTest
             IMessage message = await channel.ReceiveAsync(cancellationTokenSource.Token);
             messageNull = message == null;
             latch.Signal();
-        });
+        }, CancellationToken.None);
 
         cancellationTokenSource.Cancel();
         Assert.True(latch.Wait(10000));
@@ -214,7 +214,7 @@ public sealed class QueueChannelTest
             IMessage message = await channel.ReceiveAsync(cancellationTokenSource.Token);
             messageNull = message == null;
             latch.Signal();
-        });
+        }, CancellationToken.None);
 
         cancellationTokenSource.Cancel();
         Assert.True(latch.Wait(10000));
@@ -254,7 +254,7 @@ public sealed class QueueChannelTest
         {
             await channel.SendAsync(Message.Create("test-2"), cancellationTokenSource.Token);
             latch.Signal();
-        });
+        }, CancellationToken.None);
 
         cancellationTokenSource.Cancel();
 
@@ -298,7 +298,7 @@ public sealed class QueueChannelTest
             cancellationTokenSource.CancelAfter(5);
             await channel.SendAsync(Message.Create("test-2"), cancellationTokenSource.Token);
             latch.Signal();
-        });
+        }, CancellationToken.None);
 
         Assert.True(latch.Wait(10000));
     }

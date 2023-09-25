@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Test.Discovery;
 public sealed class ConfigurationServiceInstanceProviderTest
 {
     [Fact]
-    public void Returns_ConfiguredServices()
+    public async Task Returns_ConfiguredServices()
     {
         var services = new List<ConfigurationServiceInstance>
         {
@@ -59,13 +59,18 @@ public sealed class ConfigurationServiceInstanceProviderTest
 
         var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
 
-        Assert.Equal(3, provider.GetInstances("fruitService").Count);
-        Assert.Equal(3, provider.GetInstances("vegetableService").Count);
-        Assert.Equal(2, provider.Services.Count);
+        IList<IServiceInstance> fruitInstances = await provider.GetInstancesAsync("fruitService", CancellationToken.None);
+        Assert.Equal(3, fruitInstances.Count);
+
+        IList<IServiceInstance> vegetableInstances = await provider.GetInstancesAsync("vegetableService", CancellationToken.None);
+        Assert.Equal(3, vegetableInstances.Count);
+
+        IList<string> servicesIds = await provider.GetServicesAsync(CancellationToken.None);
+        Assert.Equal(2, servicesIds.Count);
     }
 
     [Fact]
-    public void ReceivesUpdatesTo_ConfiguredServices()
+    public async Task ReceivesUpdatesTo_ConfiguredServices()
     {
         var services = new List<ConfigurationServiceInstance>
         {
@@ -80,11 +85,14 @@ public sealed class ConfigurationServiceInstanceProviderTest
 
         var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
         var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
-        Assert.Single(provider.GetInstances("fruitService"));
-        Assert.Equal("fruitball", provider.GetInstances("fruitService").First().Host);
+
+        IList<IServiceInstance> fruitInstances = await provider.GetInstancesAsync("fruitService", CancellationToken.None);
+
+        Assert.Single(fruitInstances);
+        Assert.Equal("fruitball", fruitInstances.First().Host);
 
         services.First().Host = "updatedValue";
 
-        Assert.Equal("updatedValue", provider.GetInstances("fruitService").First().Host);
+        Assert.Equal("updatedValue", fruitInstances.First().Host);
     }
 }

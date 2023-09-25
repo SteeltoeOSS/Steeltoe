@@ -16,8 +16,8 @@ namespace Steeltoe.Common.Http;
 
 public static class HttpClientHelper
 {
-    private const int DefaultGetAccessTokenTimeout = 10000; // Milliseconds
-    private const bool DefaultValidateCertificates = true;
+    internal const int DefaultGetAccessTokenTimeout = 10000; // Milliseconds
+    internal const bool DefaultValidateCertificates = true;
 
     private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate;
 
@@ -93,7 +93,6 @@ public static class HttpClientHelper
     public static string GetEncodedUserPassword(string user, string password)
     {
         user ??= string.Empty;
-
         password ??= string.Empty;
 
         return Convert.ToBase64String(Encoding.ASCII.GetBytes($"{user}:{password}"));
@@ -108,16 +107,20 @@ public static class HttpClientHelper
     /// <param name="requestUri">
     /// The remote Uri.
     /// </param>
-    /// <param name="getAccessToken">
-    /// A means of including a bearer token.
+    /// <param name="getAccessTokenAsync">
+    /// An async callback to obtain a bearer token.
     /// </param>
-    public static HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri, Func<string> getAccessToken)
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    public static async Task<HttpRequestMessage> GetRequestMessageAsync(HttpMethod method, Uri requestUri,
+        Func<CancellationToken, Task<string>> getAccessTokenAsync, CancellationToken cancellationToken)
     {
         HttpRequestMessage request = GetRequestMessage(method, requestUri, null, null);
 
-        if (getAccessToken != null)
+        if (getAccessTokenAsync != null)
         {
-            string accessToken = getAccessToken();
+            string accessToken = await getAccessTokenAsync(cancellationToken);
 
             if (accessToken != null)
             {
@@ -160,33 +163,25 @@ public static class HttpClientHelper
         return request;
     }
 
-    public static Task<string> GetAccessTokenAsync(string accessTokenUri, string clientId, string clientSecret, int timeout = DefaultGetAccessTokenTimeout,
-        bool validateCertificates = DefaultValidateCertificates, HttpClient httpClient = null, ILogger logger = null)
-    {
-        ArgumentGuard.NotNullOrEmpty(accessTokenUri);
-
-        var parsedUri = new Uri(accessTokenUri);
-        return GetAccessTokenAsync(parsedUri, clientId, clientSecret, timeout, validateCertificates, null, httpClient, logger);
-    }
-
-    public static Task<string> GetAccessTokenAsync(Uri accessTokenUri, string clientId, string clientSecret, int timeout = DefaultGetAccessTokenTimeout,
-        bool validateCertificates = DefaultValidateCertificates, Dictionary<string, string> additionalParams = null, HttpClient httpClient = null,
-        ILogger logger = null)
+    public static Task<string> GetAccessTokenAsync(string accessTokenUri, string clientId, string clientSecret, int timeout, bool validateCertificates,
+        HttpClient httpClient, ILogger logger, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(accessTokenUri);
         ArgumentGuard.NotNullOrEmpty(clientId);
         ArgumentGuard.NotNullOrEmpty(clientSecret);
 
-        if (!accessTokenUri.IsWellFormedOriginalString())
+        var parsedUri = new Uri(accessTokenUri);
+
+        if (!parsedUri.IsWellFormedOriginalString())
         {
             throw new ArgumentException("Access token Uri is not well-formed.", nameof(accessTokenUri));
         }
 
-        return GetAccessTokenInternalAsync(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, httpClient, additionalParams, logger);
+        return GetAccessTokenAsync(parsedUri, clientId, clientSecret, timeout, validateCertificates, null, httpClient, logger, cancellationToken);
     }
 
-    private static async Task<string> GetAccessTokenInternalAsync(Uri accessTokenUri, string clientId, string clientSecret, int timeout,
-        bool validateCertificates, HttpClient httpClient, Dictionary<string, string> additionalParams, ILogger logger)
+    private static async Task<string> GetAccessTokenAsync(Uri accessTokenUri, string clientId, string clientSecret, int timeout, bool validateCertificates,
+        Dictionary<string, string> additionalParams, HttpClient httpClient, ILogger logger, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
         logger?.LogInformation("HttpClient not provided, a new instance will be created and disposed after retrieving a token");
@@ -209,7 +204,7 @@ public static class HttpClientHelper
 
         try
         {
-            using HttpResponseMessage response = await client.SendAsync(request);
+            using HttpResponseMessage response = await client.SendAsync(request, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -219,19 +214,22 @@ public static class HttpClientHelper
                 return null;
             }
 
-            JsonDocument payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            JsonDocument payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
             JsonElement token = payload.RootElement.EnumerateObject().FirstOrDefault(n => n.Name == "access_token").Value;
 
+            return token.ToString();
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            logger?.LogError(exception, "GetAccessTokenAsync exception obtaining access token from: {uri}",
+                WebUtility.UrlEncode(accessTokenUri.OriginalString));
+        }
+        finally
+        {
             if (httpClient is null)
             {
                 client.Dispose();
             }
-
-            return token.ToString();
-        }
-        catch (Exception e)
-        {
-            logger?.LogError(e, "GetAccessTokenAsync exception obtaining access token from: {uri}", WebUtility.UrlEncode(accessTokenUri.OriginalString));
         }
 
         return null;

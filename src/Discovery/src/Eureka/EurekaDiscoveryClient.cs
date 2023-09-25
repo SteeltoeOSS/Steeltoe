@@ -18,8 +18,6 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 
     public override IEurekaClientConfiguration ClientConfiguration => _configOptions.CurrentValue;
 
-    public IList<string> Services => GetRegisteredServices();
-
     public string Description => "Spring Cloud Eureka Client";
 
     public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
@@ -31,20 +29,20 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         _configOptions = clientConfig;
         this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
 
-        Initialize();
+        InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    public IList<string> GetRegisteredServices()
+    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
     {
         Applications applications = Applications;
 
         if (applications == null)
         {
-            return new List<string>();
+            return Task.FromResult<IList<string>>(new List<string>());
         }
 
         IList<Application> registered = applications.GetRegisteredApplications();
-        var names = new List<string>();
+        IList<string> names = new List<string>();
 
         foreach (Application app in registered)
         {
@@ -58,13 +56,13 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 #pragma warning restore S4040 // Strings should be normalized to uppercase
         }
 
-        return names;
+        return Task.FromResult(names);
     }
 
-    public IList<IServiceInstance> GetInstances(string serviceId)
+    public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
         IList<InstanceInfo> infos = GetInstancesByVipAddress(serviceId, false);
-        var instances = new List<IServiceInstance>();
+        IList<IServiceInstance> instances = new List<IServiceInstance>();
 
         foreach (InstanceInfo info in infos)
         {
@@ -72,18 +70,18 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
             instances.Add(new EurekaServiceInstance(info));
         }
 
-        return instances;
+        return Task.FromResult(instances);
     }
 
-    public IServiceInstance GetLocalServiceInstance()
+    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
     {
-        return _thisInstance;
+        return Task.FromResult(_thisInstance);
     }
 
-    public override Task ShutdownAsync()
+    public override Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        appInfoManager.InstanceStatus = InstanceStatus.Down;
-        return base.ShutdownAsync();
+        AppInfoManager.InstanceStatus = InstanceStatus.Down;
+        return base.ShutdownAsync(cancellationToken);
     }
 
     private sealed class EurekaHttpClientInternal : EurekaHttpClient

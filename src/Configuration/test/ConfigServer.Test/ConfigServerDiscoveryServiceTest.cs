@@ -41,7 +41,7 @@ public sealed class ConfigServerDiscoveryServiceTest
     }
 
     [Fact]
-    public void InvokeGetInstances_ReturnsExpected()
+    public async Task InvokeGetInstances_ReturnsExpected()
     {
         var values = new Dictionary<string, string>
         {
@@ -55,12 +55,12 @@ public sealed class ConfigServerDiscoveryServiceTest
         var settings = new ConfigServerClientSettings();
 
         var service = new ConfigServerDiscoveryService(configurationRoot, settings, null);
-        IEnumerable<IServiceInstance> result = service.GetConfigServerInstances();
+        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(CancellationToken.None);
         Assert.Empty(result);
     }
 
     [Fact]
-    public void InvokeGetInstances_RetryEnabled_ReturnsExpected()
+    public async Task InvokeGetInstances_RetryEnabled_ReturnsExpected()
     {
         var values = new Dictionary<string, string>
         {
@@ -78,12 +78,12 @@ public sealed class ConfigServerDiscoveryServiceTest
         };
 
         var service = new ConfigServerDiscoveryService(configurationRoot, settings, null);
-        IEnumerable<IServiceInstance> result = service.GetConfigServerInstances();
+        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(CancellationToken.None);
         Assert.Empty(result);
     }
 
     [Fact]
-    public void GetConfigServerInstances_ReturnsExpected()
+    public async Task GetConfigServerInstances_ReturnsExpected()
     {
         var values = new Dictionary<string, string>
         {
@@ -102,12 +102,12 @@ public sealed class ConfigServerDiscoveryServiceTest
         };
 
         var service = new ConfigServerDiscoveryService(configurationRoot, settings, null);
-        IEnumerable<IServiceInstance> result = service.GetConfigServerInstances();
+        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(CancellationToken.None);
         Assert.Empty(result);
     }
 
     [Fact]
-    public void GetConfigServerInstancesCatchesDiscoveryExceptions()
+    public async Task GetConfigServerInstancesCatchesDiscoveryExceptions()
     {
         var appSettings = new Dictionary<string, string>
         {
@@ -118,7 +118,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientSettings(), null);
 
         // act - the test discovery client throws on GetInstances()
-        IEnumerable<IServiceInstance> result = service.GetConfigServerInstances();
+        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(CancellationToken.None);
 
         Assert.Empty(result);
     }
@@ -138,7 +138,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         Assert.IsType<EurekaDiscoveryClient>(service.DiscoveryClient);
 
         // replace the bootstrapped eureka client with a test client
-        await service.ProvideRuntimeReplacementsAsync(testDiscoveryClient);
+        await service.ProvideRuntimeReplacementsAsync(testDiscoveryClient, CancellationToken.None);
         service.DiscoveryClient.Should().Be(testDiscoveryClient);
         service.LoggerFactory.Should().NotBeNull();
     }
@@ -156,10 +156,10 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientSettings(), null);
-        var originalClient = service.DiscoveryClient as TestDiscoveryClient;
+        var originalClient = (TestDiscoveryClient)service.DiscoveryClient;
 
         // replace the bootstrapped eureka client with a test client
-        await service.ProvideRuntimeReplacementsAsync(replacementDiscoveryClient);
+        await service.ProvideRuntimeReplacementsAsync(replacementDiscoveryClient, CancellationToken.None);
 
         Assert.True(originalClient.HasShutdown, "ShutdownAsync() called on original discovery client.");
         Assert.False(replacementDiscoveryClient.HasShutdown, "ShutdownAsync() NOT called on replacement discovery client.");
@@ -176,10 +176,10 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientSettings(), null);
-        var originalClient = service.DiscoveryClient as TestDiscoveryClient;
+        var originalClient = (TestDiscoveryClient)service.DiscoveryClient;
 
         // replace the bootstrapped eureka client with a test client
-        await service.ShutdownAsync();
+        await service.ShutdownAsync(CancellationToken.None);
 
         Assert.True(originalClient.HasShutdown, "ShutdownAsync() called on original discovery client.");
     }

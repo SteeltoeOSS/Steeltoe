@@ -75,7 +75,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddDiscoveryClient_WithEurekaInetConfig_AddsDiscoveryClient()
+    public async Task AddDiscoveryClient_WithEurekaInetConfig_AddsDiscoveryClient()
     {
         var appsettings = new Dictionary<string, string>(FastEureka)
         {
@@ -92,7 +92,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
         Assert.NotNull(service);
-        IServiceInstance instanceInfo = service.GetLocalServiceInstance();
+        IServiceInstance instanceInfo = await service.GetLocalServiceInstanceAsync(CancellationToken.None);
         Assert.Equal("fromtest", instanceInfo.Host);
     }
 
@@ -110,10 +110,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         services.AddDiscoveryClient(configurationRoot);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
-        var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
+        var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetService<IDiscoveryClient>();
+        var eurekaHttpClient = (EurekaHttpClient)discoveryClient.HttpClient;
 
-        var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient) as HttpClient;
+        var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient);
 
         var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name == "_handler").GetValue(httpClient) as DelegatingHandler;
         object innerHandler = GetInnerHttpHandler(handler);
@@ -123,7 +123,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddDiscoveryClient_WithNoConfig_AddsNoOpDiscoveryClient()
+    public async Task AddDiscoveryClient_WithNoConfig_AddsNoOpDiscoveryClient()
     {
         var appsettings = new Dictionary<string, string>
         {
@@ -138,8 +138,8 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         Assert.NotNull(client);
         Assert.IsType<NoOpDiscoveryClient>(client);
-        Assert.Empty(client.Services);
-        Assert.Empty(client.GetInstances("any"));
+        Assert.Empty(await client.GetServicesAsync(CancellationToken.None));
+        Assert.Empty(await client.GetInstancesAsync("any", CancellationToken.None));
     }
 
     [Fact]
@@ -351,7 +351,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddServiceDiscovery_AddsNoOpClientIfBuilderActionNull()
+    public async Task AddServiceDiscovery_AddsNoOpClientIfBuilderActionNull()
     {
         IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
@@ -359,12 +359,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         var client = services.BuildServiceProvider().GetRequiredService<IDiscoveryClient>();
         Assert.NotNull(client);
         Assert.IsType<NoOpDiscoveryClient>(client);
-        Assert.Empty(client.Services);
-        Assert.Empty(client.GetInstances("any"));
+        Assert.Empty(await client.GetServicesAsync(CancellationToken.None));
+        Assert.Empty(await client.GetInstancesAsync("any", CancellationToken.None));
     }
 
     [Fact]
-    public void AddServiceDiscovery_WithConfiguration_AddsAndWorks()
+    public async Task AddServiceDiscovery_WithConfiguration_AddsAndWorks()
     {
         const string appsettings = @"
 {
@@ -389,10 +389,14 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         var client = services.GetService<IDiscoveryClient>();
         Assert.NotNull(client);
         Assert.IsType<ConfigurationDiscoveryClient>(client);
-        Assert.Contains("fruitService", client.Services);
-        Assert.Contains("vegetableService", client.Services);
-        Assert.Equal(2, client.GetInstances("fruitService").Count);
-        Assert.Equal(2, client.GetInstances("vegetableService").Count);
+        Assert.Contains("fruitService", await client.GetServicesAsync(CancellationToken.None));
+        Assert.Contains("vegetableService", await client.GetServicesAsync(CancellationToken.None));
+
+        IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
+        Assert.Equal(2, fruitInstances.Count);
+
+        IList<IServiceInstance> vegetableInstances = await client.GetInstancesAsync("vegetableService", CancellationToken.None);
+        Assert.Equal(2, vegetableInstances.Count);
     }
 
     [Fact]
@@ -433,7 +437,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddServiceDiscovery_WithEurekaInetConfig_AddsDiscoveryClient()
+    public async Task AddServiceDiscovery_WithEurekaInetConfig_AddsDiscoveryClient()
     {
         var appsettings = new Dictionary<string, string>
         {
@@ -452,7 +456,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
         Assert.NotNull(service);
-        IServiceInstance instanceInfo = service.GetLocalServiceInstance();
+        IServiceInstance instanceInfo = await service.GetLocalServiceInstanceAsync(CancellationToken.None);
         Assert.Equal("fromtest", instanceInfo.Host);
     }
 
@@ -470,10 +474,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         services.AddServiceDiscovery(builder => builder.UseEureka());
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
-        var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
+        var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetService<IDiscoveryClient>();
+        var eurekaHttpClient = (EurekaHttpClient)discoveryClient.HttpClient;
 
-        var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient) as HttpClient;
+        var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient);
 
         var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name == "_handler").GetValue(httpClient) as DelegatingHandler;
         object innerHandler = GetInnerHttpHandler(handler);
@@ -800,7 +804,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     {
         while (handler is not null)
         {
-            handler = handler.GetType().GetProperty("InnerHandler").GetValue(handler);
+            handler = handler.GetType().GetProperty("InnerHandler")?.GetValue(handler);
 
             if (handler is HttpClientHandler)
             {

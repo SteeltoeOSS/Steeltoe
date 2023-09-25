@@ -135,7 +135,7 @@ public sealed class ConfigServerHealthContributorTest
     }
 
     [Fact]
-    public void GetPropertySources_ReturnsExpected()
+    public async Task GetPropertySources_ReturnsExpected()
     {
         // this test does NOT expect to find a running Config Server
         var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
@@ -160,7 +160,7 @@ public sealed class ConfigServerHealthContributorTest
         };
 
         long lastAccess = contributor.LastAccess = DateTimeOffset.Now.ToUnixTimeMilliseconds() - 100;
-        IList<PropertySource> sources = contributor.GetPropertySources();
+        IList<PropertySource> sources = await contributor.GetPropertySourcesAsync(CancellationToken.None);
 
         Assert.NotEqual(lastAccess, contributor.LastAccess);
         Assert.Null(sources);
