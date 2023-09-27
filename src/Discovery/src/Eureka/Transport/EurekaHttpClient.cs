@@ -134,12 +134,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                 string jsonError = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger?.LogInformation("Failure during RegisterAsync: {jsonError}", jsonError);
             }
-            catch (Exception exception)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
-                if (exception is not OperationCanceledException)
-                {
-                    logger?.LogError(exception, "RegisterAsync Failed, request was made to {requestUri}, retry: {retry}", requestUri.ToMaskedUri(), retry);
-                }
+                logger?.LogError(exception, "RegisterAsync Failed, request was made to {requestUri}, retry: {retry}", requestUri.ToMaskedUri(), retry);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -189,7 +186,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                 {
                     instanceInfo = await response.Content.ReadFromJsonAsync<JsonInstanceInfo>(JsonSerializerOptions, cancellationToken);
                 }
-                catch (Exception exception)
+                catch (Exception exception) when (!exception.IsCancellation())
                 {
                     string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
@@ -197,11 +194,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                     {
                         // request was successful but body was empty. This is OK, we don't need a response body
                     }
-                    else if (exception is not OperationCanceledException)
-                    {
-                        logger?.LogError(exception, "Failed to read heartbeat response. Response code: {responseCode}, Body: {responseBody}",
-                            response.StatusCode, responseBody);
-                    }
+
+                    logger?.LogError(exception, "Failed to read heartbeat response. Response code: {responseCode}, Body: {responseBody}", response.StatusCode,
+                        responseBody);
                 }
 
                 InstanceInfo infoResp = null;
@@ -228,7 +223,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 logger?.LogError(exception, "SendHeartBeatAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
@@ -329,7 +324,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 logger?.LogError(exception, "GetApplicationAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
@@ -385,7 +380,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
                 return resp;
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 logger?.LogError(exception, "CancelAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
@@ -443,7 +438,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 logger?.LogError(exception, "DeleteStatusOverrideAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
@@ -503,7 +498,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 logger?.LogError(exception, "StatusUpdateAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
@@ -736,7 +731,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 logger?.LogError(exception, "DoGetInstanceAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
@@ -780,7 +775,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                 {
                     root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(JsonSerializerOptions, cancellationToken);
                 }
-                catch (Exception exception) when (exception is not OperationCanceledException)
+                catch (Exception exception) when (!exception.IsCancellation())
                 {
                     logger?.LogInformation(exception, "Failed to deserialize response");
                 }
@@ -809,12 +804,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception exception)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
-                if (exception is not OperationCanceledException)
-                {
-                    logger?.LogError(exception, "DoGetApplicationsAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
-                }
+                logger?.LogError(exception, "DoGetApplicationsAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);

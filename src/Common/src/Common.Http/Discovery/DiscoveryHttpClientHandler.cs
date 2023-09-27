@@ -44,7 +44,7 @@ public class DiscoveryHttpClientHandler : HttpClientHandler
             request.RequestUri = await _discoveryBase.LookupServiceAsync(current, cancellationToken);
             return await base.SendAsync(request, cancellationToken);
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             _logger?.LogDebug(exception, "Exception during SendAsync()");
             throw;

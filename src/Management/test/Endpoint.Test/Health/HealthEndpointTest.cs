@@ -104,7 +104,7 @@ public sealed class HealthEndpointTest : BaseTest
         HealthEndpointRequest healthRequest = GetHealthRequest();
         Func<Task> action = async () => await handler.InvokeAsync(healthRequest, source.Token);
 
-        await action.Should().ThrowAsync<OperationCanceledException>();
+        await action.Should().ThrowExactlyAsync<TaskCanceledException>();
     }
 
     [Fact]

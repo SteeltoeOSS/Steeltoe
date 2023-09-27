@@ -73,7 +73,7 @@ internal sealed class ConfigServerDiscoveryService
                 _logger.LogDebug("Locating configserver {serviceId} via discovery", _settings.DiscoveryServiceId);
                 instances = await DiscoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 _logger.LogError(exception, "Exception invoking GetInstances() during config server lookup");
 

@@ -61,7 +61,7 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
         {
             exception = exception.UnwrapAll();
 
-            if (exception is OperationCanceledException)
+            if (exception.IsCancellation())
             {
                 ExceptionDispatchInfo.Capture(exception).Throw();
             }

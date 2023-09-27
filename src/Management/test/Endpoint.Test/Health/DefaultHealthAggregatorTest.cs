@@ -67,7 +67,7 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
         var aggregator = new DefaultHealthAggregator();
         Func<Task> action = async () => await aggregator.AggregateAsync(contributors, source.Token);
 
-        await action.Should().ThrowAsync<OperationCanceledException>();
+        await action.Should().ThrowExactlyAsync<TaskCanceledException>();
     }
 
     [Fact]

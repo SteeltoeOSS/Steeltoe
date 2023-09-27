@@ -65,7 +65,7 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
         {
             exception = exception.UnwrapAll();
 
-            if (exception is OperationCanceledException)
+            if (exception.IsCancellation())
             {
                 ExceptionDispatchInfo.Capture(exception).Throw();
             }

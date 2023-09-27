@@ -55,7 +55,7 @@ internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, I
             {
                 healthCheckResult = await RunMicrosoftHealthCheckAsync(serviceProvider, registration, cancellationToken);
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 healthCheckResult = new SteeltoeHealthCheckResult();
             }
@@ -100,7 +100,7 @@ internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, I
                 healthCheckResult.Details.Add("error", result.Exception.Message);
             }
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             // Catch all exceptions so that a status can always be returned
             healthCheckResult.Details.Add("exception", exception.Message);

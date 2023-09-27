@@ -308,15 +308,12 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
                 }
             }
         }
-        catch (Exception exception)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             error = exception;
         }
 
-        if (error is not OperationCanceledException)
-        {
-            Logger.LogWarning(error, "Could not locate PropertySource");
-        }
+        Logger.LogWarning(error, "Could not locate PropertySource");
 
         if (Settings.FailFast)
         {
@@ -552,16 +549,13 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
                 return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions, cancellationToken);
             }
-            catch (Exception exception)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 error = exception;
 
-                if (exception is not OperationCanceledException)
-                {
-                    Logger.LogError(exception, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
-                }
+                Logger.LogError(exception, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
 
-                if (IsContinueExceptionType(exception))
+                if (IsSocketError(exception))
                 {
                     continue;
                 }
@@ -783,7 +777,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
                 Logger.LogWarning("Renewing Vault token {token} returned status: {status}", obscuredToken, response.StatusCode);
             }
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             Logger.LogError(exception, "Unable to renew Vault token {token}. Is the token invalid or expired?", obscuredToken);
         }
@@ -857,18 +851,8 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         return client;
     }
 
-    private bool IsContinueExceptionType(Exception exception)
+    private static bool IsSocketError(Exception exception)
     {
-        if (exception is OperationCanceledException)
-        {
-            return true;
-        }
-
-        if (exception is HttpRequestException && exception.InnerException is SocketException)
-        {
-            return true;
-        }
-
-        return false;
+        return exception is HttpRequestException && exception.InnerException is SocketException;
     }
 }

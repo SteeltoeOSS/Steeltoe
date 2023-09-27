@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
@@ -52,7 +53,7 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
                     results.Add(result);
                 }
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 _logger?.LogError(exception, "Health Contributor {id} failed, status not included!", contributor.Id);
             }

@@ -300,7 +300,7 @@ public class DiscoveryClient : IEurekaClient
                 fetched = await FetchRegistryDeltaAsync(cancellationToken);
             }
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             logger.LogError(exception, "FetchRegistry Failed for Eureka service urls: {EurekaServerServiceUrls}",
                 new Uri(ClientConfiguration.EurekaServerServiceUrls).ToMaskedString());
@@ -340,7 +340,7 @@ public class DiscoveryClient : IEurekaClient
             logger.LogDebug("Unregister {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
             return resp.StatusCode == HttpStatusCode.OK;
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             logger.LogError(exception, "Unregister Failed");
         }
@@ -371,7 +371,7 @@ public class DiscoveryClient : IEurekaClient
 
             return result;
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             logger.LogError(exception, "Register Failed");
         }
@@ -420,7 +420,7 @@ public class DiscoveryClient : IEurekaClient
 
             return result;
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             logger.LogError(exception, "Renew Failed");
         }
@@ -526,7 +526,7 @@ public class DiscoveryClient : IEurekaClient
                 status = await HealthCheckHandler.GetStatusAsync(info.Status, cancellationToken);
                 logger.LogDebug("RefreshInstanceInfo called, returning {status}", status);
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 logger.LogError(exception, "RefreshInstanceInfo HealthCheck handler. App: {Application}, Instance: {Instance} marked DOWN", info.AppName,
                     info.InstanceId);

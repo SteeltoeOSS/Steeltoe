@@ -78,7 +78,7 @@ internal sealed class SecurityUtils
             Permissions permissions = await GetPermissionsAsync(response, cancellationToken);
             return new SecurityResult(permissions);
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             _logger.LogError(exception, "Cloud Foundry returned exception while obtaining permissions from: {PermissionsUri}", checkPermissionsUri);
 
@@ -107,7 +107,7 @@ internal sealed class SecurityUtils
                 permissions = enabled ? Permissions.Full : Permissions.Restricted;
             }
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             _logger.LogError(exception, "Exception extracting permissions from {json}", SecurityUtilities.SanitizeInput(json));
             throw;

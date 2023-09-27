@@ -4,6 +4,8 @@
 
 using System.Globalization;
 using System.Net.Http.Json;
+using FluentAssertions;
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +15,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -331,29 +332,22 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_HostTimesOut()
     {
-        var settings = new ConfigServerClientSettings
+        var messageHandler = new SlowHttpMessageHandler(1.Seconds(), new HttpResponseMessage());
+
+        var httpClient = new HttpClient(messageHandler)
         {
-            Timeout = 100
+            Timeout = 100.Milliseconds()
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, httpClient, NullLoggerFactory.Instance);
 
-        try
+        Func<Task> action = async () => await provider.RemoteLoadAsync(new[]
         {
-            await Assert.ThrowsAsync<HttpRequestException>(async () => await provider.RemoteLoadAsync(new[]
-            {
-                "http://localhost:9999/app/profile"
-            }, null, CancellationToken.None));
-        }
-        catch (ThrowsException e)
-        {
-            if (e.InnerException is OperationCanceledException)
-            {
-                return;
-            }
+            "http://localhost:9999/app/profile"
+        }, null, CancellationToken.None);
 
-            Assert.True(false, "Request didn't timeout or throw OperationCanceledException");
-        }
+        (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerException<TimeoutException>();
     }
 
     [Fact]
@@ -1281,6 +1275,24 @@ public sealed class ConfigServerConfigurationProviderTest
         var oldCulture = CultureInfo.DefaultThreadCurrentCulture;
         CultureInfo.DefaultThreadCurrentCulture = newCulture;
         return oldCulture;
+    }
+
+    private sealed class SlowHttpMessageHandler : HttpMessageHandler
+    {
+        private readonly TimeSpan _sleepTime;
+        private readonly HttpResponseMessage _responseMessage;
+
+        public SlowHttpMessageHandler(TimeSpan sleepTime, HttpResponseMessage responseMessage)
+        {
+            _sleepTime = sleepTime;
+            _responseMessage = responseMessage;
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            await Task.Delay(_sleepTime, cancellationToken);
+            return _responseMessage;
+        }
     }
 
     private sealed class TestServiceInfo : IServiceInstance

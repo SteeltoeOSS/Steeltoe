@@ -38,7 +38,7 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
             {
                 await contributor.ContributeAsync(builder, cancellationToken);
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 _logger.LogError(exception, "Operation failed.");
             }

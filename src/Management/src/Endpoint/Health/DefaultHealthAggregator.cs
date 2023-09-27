@@ -32,7 +32,7 @@ internal class DefaultHealthAggregator : IHealthAggregator
             {
                 healthCheckResult = await contributor.HealthAsync(cancellationToken);
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 healthCheckResult = new HealthCheckResult();
             }

@@ -219,7 +219,7 @@ public static class HttpClientHelper
 
             return token.ToString();
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             logger?.LogError(exception, "GetAccessTokenAsync exception obtaining access token from: {uri}",
                 WebUtility.UrlEncode(accessTokenUri.OriginalString));
