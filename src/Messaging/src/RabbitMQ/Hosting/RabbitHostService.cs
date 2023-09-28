@@ -59,9 +59,20 @@ public class RabbitHostService : IHostedService
         }
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger?.LogInformation("Stopping RabbitHostService ...");
-        return Task.CompletedTask;
+
+        // Ensure any RabbitContainers get stopped
+        var processor = _applicationContext.GetService<ILifecycleProcessor>();
+
+        if (processor != null)
+        {
+            await processor.StopAsync();
+        }
+        else
+        {
+            _logger?.LogInformation("Found no ILifecycleProcessor service to initialize");
+        }
     }
 }

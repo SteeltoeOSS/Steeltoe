@@ -8,6 +8,9 @@ using Steeltoe.Messaging.Support;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support;
 
+/// <summary>
+/// Adapted from: https://github.com/spring-projects/spring-amqp/blob/main/spring-amqp/src/main/java/org/springframework/amqp/support/AmqpMessageHeaderAccessor.java
+/// </summary>
 public class RabbitHeaderAccessor : MessageHeaderAccessor
 {
     public const int IntMask = 32;

@@ -17,6 +17,9 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener.Adapters;
 
+/// <summary>
+/// Adapted from: https://github.com/spring-projects/spring-amqp/blob/2.1.x/spring-rabbit/src/test/java/org/springframework/amqp/rabbit/listener/adapter/MessageListenerAdapterTests.java
+/// </summary>
 public sealed class MessageListenerAdapterTest
 {
     private readonly SimpleService _simpleService = new();
@@ -112,6 +115,8 @@ public sealed class MessageListenerAdapterTest
         _adapter.OnMessage(message, null);
         Assert.Equal("AnotherHandle", _simpleService.Called);
     }
+
+    // We do not support JdkProxyListener
 
     [Fact]
     public void TestReplyRetry()

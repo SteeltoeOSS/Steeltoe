@@ -271,6 +271,9 @@ public static class RabbitServicesExtensions
         services.AddRabbitListenerEndpointRegistry();
         services.AddRabbitListenerEndpointRegistrar();
         services.AddRabbitListenerAttributeProcessor();
+
+        services.AddRabbitAdmin();
+        services.AddRabbitTemplate();
         return services;
     }
 

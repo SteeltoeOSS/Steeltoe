@@ -5,8 +5,11 @@
 using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
+using RabbitMQ.Client;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Expression.Internal.Spring.Ast;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
@@ -15,6 +18,12 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
+/// <summary>
+///  Message listener adapter that delegates the handling of messages to target listener methods via reflection, with
+///  flexible message type conversion.Allows listener methods to operate on message content types, completely independent
+///  from the Rabbit API.
+///  See more from the original Java implementation: https://github.com/spring-projects/spring-amqp/blob/2.1.x/spring-rabbit/src/main/java/org/springframework/amqp/rabbit/listener/adapter/MessageListenerAdapter.java
+/// </summary>
 public class MessageListenerAdapter : AbstractMessageListenerAdapter
 {
     public const string OriginalDefaultListenerMethod = "HandleMessage";

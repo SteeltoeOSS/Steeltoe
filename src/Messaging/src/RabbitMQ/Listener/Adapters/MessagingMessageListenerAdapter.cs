@@ -14,6 +14,13 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
+/// <summary>
+///  An  <see cref="IMessageListener"/>  adapter that invokes a configurable <see cref="HandlerAdapter"/>.
+///
+///  Adapted from: https://github.com/spring-projects/spring-amqp/blob/main/spring-rabbit/src/main/java/org/springframework/amqp/rabbit/listener/adapter/MessagingMessageListenerAdapter.java#L69
+///
+///  Notable differences: Steeltoe uses the IMessage throughout instead of converting between Amqp and Message
+/// </summary>
 public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 {
     public virtual object Instance { get; }

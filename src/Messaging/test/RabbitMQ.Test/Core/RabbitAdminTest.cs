@@ -172,7 +172,7 @@ public sealed class RabbitAdminTest : AbstractTest
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         serviceCollection.AddRabbitServices();
-        serviceCollection.AddRabbitAdmin();
+      
         var e1 = new DirectExchange("e1", false, true);
         serviceCollection.AddRabbitExchange(e1);
         var q1 = new Queue("q1", false, false, true);

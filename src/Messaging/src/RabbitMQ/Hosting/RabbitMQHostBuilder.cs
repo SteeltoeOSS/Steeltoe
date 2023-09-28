@@ -30,8 +30,7 @@ public class RabbitMQHostBuilder : IHostBuilder
             services.Configure<RabbitOptions>(rabbitConfigSection);
 
             services.AddRabbitServices();
-            services.AddRabbitAdmin();
-            services.AddRabbitTemplate();
+           
         });
     }
 

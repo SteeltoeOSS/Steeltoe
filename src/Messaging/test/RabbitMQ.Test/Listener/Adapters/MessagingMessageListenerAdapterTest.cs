@@ -19,6 +19,9 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener.Adapters;
 
+/// <summary>
+/// Adapted from: https://github.com/spring-projects/spring-amqp/blob/2.1.x/spring-rabbit/src/test/java/org/springframework/amqp/rabbit/listener/adapter/MessagingMessageListenerAdapterTests.java
+/// </summary>
 public sealed class MessagingMessageListenerAdapterTest : AbstractTest
 {
     private readonly DefaultMessageHandlerMethodFactory _factory = new();
