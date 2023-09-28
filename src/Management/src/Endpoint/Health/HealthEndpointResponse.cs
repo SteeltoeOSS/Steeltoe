@@ -15,6 +15,8 @@ public sealed class HealthEndpointResponse : HealthCheckResult
     /// </summary>
     public IList<string> Groups { get; set; } = new List<string>();
 
+    public bool Exists { get; set; } = true;
+
     public HealthEndpointResponse(HealthCheckResult? result)
     {
         result ??= new HealthCheckResult();
