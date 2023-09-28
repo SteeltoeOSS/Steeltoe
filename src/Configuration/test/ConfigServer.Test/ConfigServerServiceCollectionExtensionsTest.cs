@@ -28,7 +28,7 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
         var services = new ServiceCollection();
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(environment.EnvironmentName);
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(environment);
         IConfigurationRoot configurationRoot = builder.Build();
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.ConfigureConfigServerClientOptions();

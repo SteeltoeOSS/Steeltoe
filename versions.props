@@ -14,7 +14,7 @@
     <MicrosoftAzureCosmosVersion>3.33.*</MicrosoftAzureCosmosVersion>
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
     <CoverletVersion>3.2.*</CoverletVersion>
-    <FluentAssertionsVersion>6.8.*</FluentAssertionsVersion>
+    <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <MockHttpVersion>6.0.*</MockHttpVersion>
     <MoqVersion>4.18.*</MoqVersion>
