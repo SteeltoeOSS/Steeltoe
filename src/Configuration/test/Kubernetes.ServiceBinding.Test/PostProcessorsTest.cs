@@ -24,7 +24,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("password", "test-password")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, MySqlKubernetesPostProcessor.BindingType, secrets);
+        Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, MySqlKubernetesPostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
@@ -51,7 +51,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("password", "test-password")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, PostgreSqlKubernetesPostProcessor.BindingType, secrets);
+        Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, PostgreSqlKubernetesPostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
@@ -60,6 +60,34 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+    }
+
+    [Fact]
+    public void Processes_MongoDb_configuration()
+    {
+        var postProcessor = new MongoDbKubernetesPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("host", "test-host"),
+            Tuple.Create("port", "test-port"),
+            Tuple.Create("database", "test-database"),
+            Tuple.Create("username", "test-username"),
+            Tuple.Create("password", "test-password")
+        };
+
+        Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, MongoDbKubernetesPostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbKubernetesPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:server"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:authenticationDatabase"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
     }
@@ -78,7 +106,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("virtual-host", "test-virtual-host")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RabbitMQKubernetesPostProcessor.BindingType, secrets);
+        Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, RabbitMQKubernetesPostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
@@ -106,7 +134,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("client-name", "test-client-name")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(TestBindingName, RedisKubernetesPostProcessor.BindingType, secrets);
+        Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, RedisKubernetesPostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);

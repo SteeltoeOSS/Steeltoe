@@ -24,7 +24,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:password", "test-password")
         };
 
-        Dictionary<string, string> configurationData =
+        Dictionary<string, string?> configurationData =
             GetConfigurationData(MySqlCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -56,7 +56,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:sslrootcert", "test-ssl-root-cert")
         };
 
-        Dictionary<string, string> configurationData =
+        Dictionary<string, string?> configurationData =
             GetConfigurationData(PostgreSqlCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -89,7 +89,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:protocols:amqp:vhost", "test-vhost")
         };
 
-        Dictionary<string, string> configurationData =
+        Dictionary<string, string?> configurationData =
             GetConfigurationData(RabbitMQCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -117,7 +117,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:password", "test-password")
         };
 
-        Dictionary<string, string> configurationData =
+        Dictionary<string, string?> configurationData =
             GetConfigurationData(RedisCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -142,7 +142,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:password", "test-password")
         };
 
-        Dictionary<string, string> configurationData =
+        Dictionary<string, string?> configurationData =
             GetConfigurationData(RedisCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -170,7 +170,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:password", "test-password")
         };
 
-        Dictionary<string, string> configurationData =
+        Dictionary<string, string?> configurationData =
             GetConfigurationData(SqlServerCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -194,7 +194,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:uri", "mongodb://localhost:27017/auth-db?appname=sample")
         };
 
-        Dictionary<string, string> configurationData =
+        Dictionary<string, string?> configurationData =
             GetConfigurationData(MongoDbCloudFoundryPostProcessor.BindingType, "csb-azure-mongodb", TestBindingName, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
@@ -218,7 +218,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:cosmosdb_database_id", "test-database")
         };
 
-        Dictionary<string, string> configurationData =
+        Dictionary<string, string?> configurationData =
             GetConfigurationData(CosmosDbCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);

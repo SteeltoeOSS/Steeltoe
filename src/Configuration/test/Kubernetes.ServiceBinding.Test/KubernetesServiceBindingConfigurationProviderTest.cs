@@ -66,7 +66,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
         var provider = new KubernetesServiceBindingConfigurationProvider(source);
         provider.Load();
 
-        provider.TryGet("k8s:bindings:test-name-1:type", out string value).Should().BeTrue();
+        provider.TryGet("k8s:bindings:test-name-1:type", out string? value).Should().BeTrue();
         value.Should().Be("test-type-1");
         provider.TryGet("k8s:bindings:test-name-1:provider", out value).Should().BeTrue();
         value.Should().Be("test-provider-1");
@@ -127,7 +127,7 @@ public sealed class KubernetesServiceBindingConfigurationProviderTest
     {
         public bool PostProcessorCalled { get; set; }
 
-        public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+        public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
         {
             PostProcessorCalled = true;
         }

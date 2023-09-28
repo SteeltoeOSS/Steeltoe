@@ -10,7 +10,7 @@ internal sealed class MySqlKubernetesPostProcessor : IConfigurationPostProcessor
 {
     internal const string BindingType = "mysql";
 
-    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
         foreach (string bindingKey in configurationData.Filter(KubernetesServiceBindingConfigurationProvider.FromKeyPrefix,
             KubernetesServiceBindingConfigurationProvider.TypeKey, BindingType))
@@ -21,7 +21,7 @@ internal sealed class MySqlKubernetesPostProcessor : IConfigurationPostProcessor
             // Mapping from Kubernetes secrets to driver-specific connection string parameters.
             // At the time of writing (June 2023), there's no complete official documentation for the available secrets. Some pointers:
             // - Generic secrets: https://github.com/servicebinding/spec#well-known-secret-entries
-            // - Input keys used at https://github.com/spring-cloud/spring-cloud-bindings/blob/main/src/main/java/org/springframework/cloud/bindings/boot/MySqlBindingsPropertiesProcessor.java
+            // - Input keys used at https://github.com/spring-cloud/spring-cloud-bindings/blob/main/spring-cloud-bindings/src/main/java/org/springframework/cloud/bindings/boot/MySqlBindingsPropertiesProcessor.java
 
             mapper.MapFromTo("host", "host");
             mapper.MapFromTo("port", "port");

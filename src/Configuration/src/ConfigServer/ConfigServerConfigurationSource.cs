@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Options;
+using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -121,12 +122,12 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
             Configuration = configurationBuilder.Build();
         }
 
-        IConfigurationSource certificateSource = Sources.FirstOrDefault(cSource => cSource is ICertificateSource);
+        var certificateSource = Sources.FindConfigurationSource<ICertificateSource>();
 
         if (certificateSource != null && DefaultSettings.ClientCertificate == null)
         {
             var certificateConfigurer =
-                (IConfigureNamedOptions<CertificateOptions>)Activator.CreateInstance(((ICertificateSource)certificateSource).OptionsConfigurer, Configuration)!;
+                (IConfigureNamedOptions<CertificateOptions>)Activator.CreateInstance(certificateSource.OptionsConfigurer, Configuration)!;
 
             var options = new CertificateOptions();
             certificateConfigurer.Configure(options);

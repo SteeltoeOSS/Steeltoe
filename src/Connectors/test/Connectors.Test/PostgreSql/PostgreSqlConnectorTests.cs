@@ -185,7 +185,7 @@ public sealed class PostgreSqlConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
@@ -225,7 +225,7 @@ public sealed class PostgreSqlConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
         });
@@ -348,14 +348,22 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        string rootDirectory = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "bindings");
-        var reader = new DirectoryServiceBindingsReader(rootDirectory);
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeDirectory("db");
+        fileProvider.IncludeFile("db/provider", "bitnami");
+        fileProvider.IncludeFile("db/type", "postgresql");
+        fileProvider.IncludeFile("db/host", "10.0.20.211");
+        fileProvider.IncludeFile("db/port", "5432");
+        fileProvider.IncludeFile("db/username", "postgres");
+        fileProvider.IncludeFile("db/password", "WzQTWCW6MCPoGe11qqw7fKLesvg4rykr");
+        fileProvider.IncludeFile("db/database", "my-postgresql-service-qf57l");
+
+        var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
         builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["Steeltoe:Client:PostgreSql:customer-profiles:ConnectionString"] =
-                "Host=ignored;Database=ignored;Include Error Detail=true;Log Parameters=true;host=localhost"
+            ["Steeltoe:Client:PostgreSql:db:ConnectionString"] = "Host=ignored;Database=ignored;Include Error Detail=true;Log Parameters=true;host=localhost"
         });
 
         builder.AddPostgreSql();
@@ -363,16 +371,17 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         await using WebApplication app = builder.Build();
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<PostgreSqlOptions>>();
 
-        PostgreSqlOptions customerProfilesOptions = optionsMonitor.Get("customer-profiles");
+        PostgreSqlOptions dbOptions = optionsMonitor.Get("db");
 
-        ExtractConnectionStringParameters(customerProfilesOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
+        ExtractConnectionStringParameters(dbOptions.ConnectionString).Should().BeEquivalentTo(new List<string>
         {
             "Include Error Detail=True",
             "Log Parameters=True",
-            "Host=10.194.59.205",
-            "Database=steeltoe",
-            "Username=testrolee93ccf859894dc60dcd53218492b37b4",
-            "Password=Qp!1mB1$Zk2T!$!D85_E"
+            "Host=10.0.20.211",
+            "Port=5432",
+            "Database=my-postgresql-service-qf57l",
+            "Username=postgres",
+            "Password=WzQTWCW6MCPoGe11qqw7fKLesvg4rykr"
         }, options => options.WithoutStrictOrdering());
     }
 
@@ -381,7 +390,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
@@ -409,7 +418,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
@@ -437,7 +446,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
@@ -458,7 +467,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceOne:ConnectionString"] = "SERVER=localhost;DB=db1;UID=user1;PWD=pass1",
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceTwo:ConnectionString"] = "SERVER=localhost;DB=db2;UID=user2;PWD=pass2"
@@ -481,7 +490,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass;Log Parameters=True"
         });
@@ -544,7 +553,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "SERVER=localhost;DB=myDb;UID=myUser;PWD=myPass"
         });
@@ -569,7 +578,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "host=localhost"
         });
@@ -594,7 +603,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "host=localhost",
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
@@ -621,7 +630,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
         });
@@ -649,7 +658,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "host=localhost",
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
@@ -676,7 +685,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:alternatePostgreSqlService:ConnectionString"] = "host=localhost",
             ["Steeltoe:Client:PostgreSql:Default:ConnectionString"] = "host=ignored"
@@ -706,7 +715,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:PostgreSql:myPostgreSqlServiceAzureOne:ConnectionString"] = "Include Error Detail=true;Log Parameters=true;host=localhost"
         });

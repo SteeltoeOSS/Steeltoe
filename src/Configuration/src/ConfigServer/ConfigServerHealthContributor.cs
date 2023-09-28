@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -25,7 +24,12 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         ArgumentGuard.NotNull(logger);
 
         _logger = logger;
-        Provider = FindProvider(configuration);
+        Provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();
+
+        if (Provider == null)
+        {
+            _logger.LogWarning("Unable to find ConfigServerConfigurationProvider, health check disabled");
+        }
     }
 
     public HealthCheckResult Health()
@@ -110,35 +114,5 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
     internal long GetTimeToLive()
     {
         return Provider.Settings.HealthTimeToLive;
-    }
-
-    internal ConfigServerConfigurationProvider FindProvider(IConfiguration configuration)
-    {
-        ConfigServerConfigurationProvider result = null;
-
-        if (configuration is IConfigurationRoot root)
-        {
-            foreach (IConfigurationProvider provider in root.Providers)
-            {
-                if (provider is PlaceholderResolverProvider placeholder)
-                {
-                    result = FindProvider(placeholder.Configuration);
-                    break;
-                }
-
-                if (provider is ConfigServerConfigurationProvider configServer)
-                {
-                    result = configServer;
-                    break;
-                }
-            }
-        }
-
-        if (result == null)
-        {
-            _logger.LogWarning("Unable to find ConfigServerConfigurationProvider, health check disabled");
-        }
-
-        return result;
     }
 }

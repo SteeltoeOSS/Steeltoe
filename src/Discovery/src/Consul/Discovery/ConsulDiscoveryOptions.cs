@@ -26,6 +26,11 @@ public class ConsulDiscoveryOptions
     /// </summary>
     public IList<string> Tags { get; set; }
 
+    /// <summary>
+    /// Gets or sets Metadata to use when registering service.
+    /// </summary>
+    public IDictionary<string, string> Metadata { get; set; }
+
     public bool UseNetUtils { get; set; }
 
     public InetUtils NetUtils { get; set; }

@@ -14,6 +14,7 @@ using Moq;
 using StackExchange.Redis;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.Redis;
 using Xunit;
 
@@ -99,7 +100,7 @@ public sealed class RedisConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "server1:6380,keepAlive=30",
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
@@ -123,9 +124,9 @@ public sealed class RedisConnectorTests
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "localhost:12345,keepAlive=30"
+            ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "localhost:12345,keepAlive=30,user=admin"
         });
 
         builder.AddRedis();
@@ -141,11 +142,42 @@ public sealed class RedisConnectorTests
     }
 
     [Fact]
+    public async Task Binds_options_with_Kubernetes_service_bindings()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeDirectory("db");
+        fileProvider.IncludeFile("db/provider", "bitnami");
+        fileProvider.IncludeFile("db/type", "redis");
+        fileProvider.IncludeFile("db/host", "10.0.111.168");
+        fileProvider.IncludeFile("db/port", "6379");
+        fileProvider.IncludeFile("db/password", "v5gjxPDxq4lacijzEus9vGi0cJh0tsOE");
+
+        var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
+        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Steeltoe:Client:Redis:db:ConnectionString"] = "localhost:12345,keepAlive=30,user=admin"
+        });
+
+        builder.AddRedis();
+
+        await using WebApplication app = builder.Build();
+        var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+
+        RedisOptions dbOptions = optionsMonitor.Get("db");
+
+        dbOptions.ConnectionString.Should().Be("10.0.111.168:6379,keepAlive=30,password=v5gjxPDxq4lacijzEus9vGi0cJh0tsOE");
+    }
+
+    [Fact]
     public async Task Registers_ConnectorFactory_for_IConnectionMultiplexer()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "server1:6380,keepAlive=30",
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
@@ -185,7 +217,7 @@ public sealed class RedisConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "server1:6380,keepAlive=30",
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
@@ -227,7 +259,7 @@ public sealed class RedisConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:myRedisServiceOne:ConnectionString"] = "server1:6380,keepAlive=30",
             ["Steeltoe:Client:Redis:myRedisServiceTwo:ConnectionString"] = "server2:6380,allowAdmin=true"
@@ -298,7 +330,7 @@ public sealed class RedisConnectorTests
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string>
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Steeltoe:Client:Redis:Default:ConnectionString"] = "server1:6380,keepAlive=30"
         });

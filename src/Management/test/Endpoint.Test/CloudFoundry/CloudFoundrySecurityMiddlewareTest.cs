@@ -289,6 +289,39 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
+    public async Task CloudFoundrySecurityMiddleware_InvokeAsync_ReturnsExpected()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:enabled"] = "true",
+
+            ["management:endpoints:info:enabled"] = "true",
+
+            ["info:application:name"] = "foobar",
+            ["info:application:version"] = "1.0.0",
+            ["info:application:date"] = "5/1/2008",
+            ["info:application:time"] = "8:30:52 AM",
+            ["info:NET:type"] = "Core",
+            ["info:NET:version"] = "2.0.0",
+            ["info:NET:ASPNET:type"] = "Core",
+            ["info:NET:ASPNET:version"] = "2.0.0",
+            ["vcap:application:application_id"] = "foobar",
+            ["vcap:application:cf_api"] = "http://localhost:9999/foo"
+        };
+
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
+
+        using var server = new TestServer(builder);
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication"));
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode); // We expect the authorization to fail, but the FindEndpoint logic to work.
+
+        HttpResponseMessage response2 = await client.GetAsync(new Uri("http://localhost/cloudfoundryapplication/info"));
+        Assert.Equal(HttpStatusCode.Unauthorized, response2.StatusCode);
+    }
+
+    [Fact]
     public void GetAccessToken_ReturnsExpected()
     {
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();

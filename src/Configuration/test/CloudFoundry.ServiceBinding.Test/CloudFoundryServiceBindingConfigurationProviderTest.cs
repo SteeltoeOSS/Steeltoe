@@ -104,7 +104,7 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
         var builder = new ConfigurationBuilder();
         builder.Add(source);
 
-        builder.AddInMemoryCollection(new Dictionary<string, string>
+        builder.AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "some:value:in:configuration:path", "true" }
         });
@@ -142,7 +142,7 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
     {
         public bool PostProcessorCalled { get; private set; }
 
-        public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+        public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
         {
             PostProcessorCalled = true;
         }

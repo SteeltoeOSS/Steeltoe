@@ -17,7 +17,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Logging;
-using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Discovery;
 
 namespace Steeltoe.Configuration.ConfigServer;
@@ -124,9 +123,9 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         ArgumentGuard.NotNull(source);
 
         ConfigServerClientSettings newSettings = source.DefaultSettings;
-        IConfiguration configuration = WrapWithPlaceholderResolver(source.Configuration, loggerFactory);
+
         loggerFactory ??= BootstrapLoggerFactory.Instance;
-        Initialize(newSettings, configuration, null, loggerFactory);
+        Initialize(newSettings, source.Configuration, null, loggerFactory);
     }
 
     private void Initialize(ConfigServerClientSettings settings, IConfiguration configuration, HttpClient httpClient, ILoggerFactory loggerFactory)
@@ -849,21 +848,6 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         }
 
         return client;
-    }
-
-    private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration, ILoggerFactory loggerFactory)
-    {
-        var root = (IConfigurationRoot)configuration;
-
-        if (root.Providers.LastOrDefault() is PlaceholderResolverProvider)
-        {
-            return configuration;
-        }
-
-        return new ConfigurationRoot(new List<IConfigurationProvider>
-        {
-            new PlaceholderResolverProvider(root.Providers.ToList(), loggerFactory)
-        });
     }
 
     private bool IsContinueExceptionType(Exception exception)

@@ -20,9 +20,9 @@ public sealed class ThisServiceInstanceTest
             Name = "foobar",
             Address = "test.foo.bar",
             Port = 1234,
-            Tags = new[]
+            Meta = new Dictionary<string, string>
             {
-                "foo=bar"
+                ["foo"] = "bar"
             }
         };
 

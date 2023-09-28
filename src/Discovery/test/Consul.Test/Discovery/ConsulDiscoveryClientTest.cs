@@ -36,10 +36,10 @@ public sealed class ConsulDiscoveryClientTest
                         Service = "ServiceId",
                         Address = "foo.bar.com",
                         Port = 1234,
-                        Tags = new[]
+                        Meta = new Dictionary<string, string>
                         {
-                            "foo=bar",
-                            "secure=true"
+                            ["foo"] = "bar",
+                            ["secure"] = "true"
                         }
                     }
                 },
@@ -50,10 +50,10 @@ public sealed class ConsulDiscoveryClientTest
                         Service = "ServiceId",
                         Address = "foo1.bar1.com",
                         Port = 5678,
-                        Tags = new[]
+                        Meta = new Dictionary<string, string>
                         {
-                            "bar=foo",
-                            "secure=false"
+                            ["bar"] = "foo",
+                            ["secure"] = "false"
                         }
                     }
                 }
@@ -206,10 +206,10 @@ public sealed class ConsulDiscoveryClientTest
                         Service = "ServiceId",
                         Address = "foo.bar.com",
                         Port = 1234,
-                        Tags = new[]
+                        Meta = new Dictionary<string, string>
                         {
-                            "foo=bar",
-                            "secure=true"
+                            ["foo"] = "bar",
+                            ["secure"] = "true"
                         }
                     }
                 },
@@ -220,10 +220,10 @@ public sealed class ConsulDiscoveryClientTest
                         Service = "ServiceId",
                         Address = "foo1.bar1.com",
                         Port = 5678,
-                        Tags = new[]
+                        Meta = new Dictionary<string, string>
                         {
-                            "bar=foo",
-                            "secure=false"
+                            ["bar"] = "foo",
+                            ["secure"] = "false"
                         }
                     }
                 }

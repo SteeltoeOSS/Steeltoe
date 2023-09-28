@@ -13,7 +13,7 @@ internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
     public string BindingName { get; }
     public string BindingType { get; }
 
-    private ServiceBindingMapper(IDictionary<string, string> configurationData, string bindingKey, string bindingType, string bindingProvider,
+    private ServiceBindingMapper(IDictionary<string, string?> configurationData, string bindingKey, string bindingType, string bindingProvider,
         string bindingName, string[] toPrefix)
         : base(configurationData, bindingKey, toPrefix)
     {
@@ -22,14 +22,14 @@ internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
         BindingType = bindingType;
     }
 
-    public static ServiceBindingMapper Create(IDictionary<string, string> configurationData, string bindingKey, string bindingType)
+    public static ServiceBindingMapper Create(IDictionary<string, string?> configurationData, string bindingKey, string bindingType)
     {
         ArgumentGuard.NotNull(bindingType);
         ArgumentGuard.NotNull(bindingKey);
         ArgumentGuard.NotNull(configurationData);
 
-        string bindingName = configurationData[ConfigurationPath.Combine(bindingKey, "name")];
-        string bindingProvider = ConfigurationPath.GetSectionKey(ConfigurationPath.GetParentPath(bindingKey));
+        string bindingName = configurationData[ConfigurationPath.Combine(bindingKey, "name")] ?? string.Empty;
+        string bindingProvider = ConfigurationPath.GetSectionKey(ConfigurationPath.GetParentPath(bindingKey)) ?? string.Empty;
 
         List<string> toPrefix = CloudFoundryServiceBindingConfigurationProvider.ToKeyPrefix.Split(ConfigurationPath.KeyDelimiter).ToList();
         toPrefix.Add(bindingType);

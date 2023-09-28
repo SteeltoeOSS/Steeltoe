@@ -27,6 +27,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.ConfigServer;
@@ -69,10 +70,10 @@ public sealed class HostBuilderExtensionsTest
         IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
 
         IHost host = hostBuilder.AddSteeltoe(exclusions).Build();
-        var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
-        Assert.Single(configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>());
+        Assert.NotNull(configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>());
+        Assert.NotNull(configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>());
     }
 
     [Fact]

@@ -41,7 +41,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
 
     private void Load(bool reload)
     {
-        var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 
         if (_source.FileProvider == null)
         {
@@ -80,7 +80,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
             AddBindingType(binding, data);
             AddBindingProvider(binding, data);
 
-            foreach (KeyValuePair<string, string> secretEntry in binding.Secrets)
+            foreach (KeyValuePair<string, string?> secretEntry in binding.Secrets)
             {
                 AddBindingSecret(binding, secretEntry, data);
             }
@@ -96,7 +96,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
         _changeToken?.Dispose();
     }
 
-    private void AddBindingType(ServiceBinding binding, Dictionary<string, string> data)
+    private void AddBindingType(ServiceBinding binding, Dictionary<string, string?> data)
     {
         string typeKey = ConfigurationPath.Combine(FromKeyPrefix, binding.Name, TypeKey);
 
@@ -106,7 +106,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
         }
     }
 
-    private void AddBindingProvider(ServiceBinding binding, Dictionary<string, string> data)
+    private void AddBindingProvider(ServiceBinding binding, Dictionary<string, string?> data)
     {
         if (!string.IsNullOrEmpty(binding.Provider))
         {
@@ -119,7 +119,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
         }
     }
 
-    private void AddBindingSecret(ServiceBinding binding, KeyValuePair<string, string> secretEntry, Dictionary<string, string> data)
+    private void AddBindingSecret(ServiceBinding binding, KeyValuePair<string, string?> secretEntry, Dictionary<string, string?> data)
     {
         string secretKey = ConfigurationPath.Combine(FromKeyPrefix, binding.Name, secretEntry.Key);
 
@@ -131,12 +131,12 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
 
     internal sealed class ServiceBinding
     {
-        private readonly Dictionary<string, string> _secrets;
+        private readonly Dictionary<string, string?> _secrets;
 
         public string Name { get; }
         public string Path { get; }
         public string? Provider { get; }
-        public IDictionary<string, string> Secrets => new ReadOnlyDictionary<string, string>(_secrets);
+        public IDictionary<string, string?> Secrets => new ReadOnlyDictionary<string, string?>(_secrets);
         public string Type { get; }
 
         // Creates a new Binding instance using the specified file system directory
@@ -146,17 +146,17 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
         }
 
         // Creates a new Binding instance using the specified content
-        private ServiceBinding(string name, string path, IDictionary<string, string> secrets)
+        private ServiceBinding(string name, string path, IDictionary<string, string?> secrets)
         {
             Name = name ?? throw new ArgumentException("Binding has no name and is not a valid binding");
             Path = path ?? throw new ArgumentException("Binding has no path and is not a valid binding");
 
-            _secrets = new Dictionary<string, string>();
+            _secrets = new Dictionary<string, string?>();
 
             string? type = null;
             string? provider = null;
 
-            foreach ((string secretName, string secretValue) in secrets)
+            foreach ((string secretName, string? secretValue) in secrets)
             {
                 switch (secretName)
                 {
@@ -176,17 +176,17 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
             Provider = provider;
         }
 
-        private static IDictionary<string, string> CreateSecrets(string path, IFileProvider fileProvider)
+        private static IDictionary<string, string?> CreateSecrets(string path, IFileProvider fileProvider)
         {
             return CreateFilePerEntry(path, fileProvider);
         }
 
-        private static IDictionary<string, string> CreateFilePerEntry(string path, IFileProvider fileProvider)
+        private static IDictionary<string, string?> CreateFilePerEntry(string path, IFileProvider fileProvider)
         {
             try
             {
                 IDirectoryContents directoryContents = fileProvider.GetDirectoryContents(path);
-                var result = new Dictionary<string, string>();
+                var result = new Dictionary<string, string?>();
 
                 foreach (IFileInfo fileInfo in directoryContents.Where(element => !element.IsDirectory))
                 {
