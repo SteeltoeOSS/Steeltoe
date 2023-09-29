@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Discovery.Client;
 
@@ -19,7 +20,7 @@ public static class ConfigurationUrlHelpers
         if (!string.IsNullOrEmpty(urls))
         {
             var addresses = urls.Split(';');
-            foreach (var address in addresses)
+            foreach (var address in addresses.Where(a => !string.IsNullOrEmpty(a)))
             {
                 if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
                     && (address.Contains("*") || address.Contains("::") || address.Contains("+")))
