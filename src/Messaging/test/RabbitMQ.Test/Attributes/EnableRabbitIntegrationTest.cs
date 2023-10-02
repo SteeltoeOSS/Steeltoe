@@ -71,7 +71,7 @@ public sealed class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitInte
     }
 
     [Fact]
-    public void AutoSimpleDeclareAnonymousQueue() 
+    public void AutoSimpleDeclareAnonymousQueue()
     {
         var registry = _context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
         var container = registry.GetListenerContainer("anonymousQueue575") as DirectMessageListenerContainer;

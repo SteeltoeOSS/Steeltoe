@@ -17,7 +17,6 @@ using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Support;
-using Steeltoe.Messaging.RabbitMQ.Retry;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using R = RabbitMQ.Client;
 
@@ -36,7 +35,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     protected readonly object LifecycleMonitor = new();
     protected readonly ILogger Logger;
     protected readonly ILoggerFactory LoggerFactory;
-    public IRecoveryCallback Recoverer { get; set; }
 
     private string _listenerId;
     private IConnectionFactory _connectionFactory;
@@ -50,6 +48,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     protected virtual long LastReceive { get; private set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
     protected virtual bool ForceCloseChannel { get; set; } = true;
+    public IRecoveryCallback Recoverer { get; set; }
 
     public virtual IConnectionFactory ConnectionFactory
     {
@@ -1060,7 +1059,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
         if (IsDeBatchingEnabled && BatchingStrategy.CanDebatch(message.Headers))
         {
-            BatchingStrategy.DeBatch(message, (fragment) => InvokeListener(channel, fragment));
+            BatchingStrategy.DeBatch(message, fragment => InvokeListener(channel, fragment));
         }
         else
         {

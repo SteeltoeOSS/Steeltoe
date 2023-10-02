@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Retry;
 using Steeltoe.Common.RetryPolly;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
@@ -74,12 +73,14 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
     public async Task TestMaxAttemptsRetryOnThrow()
     {
         var cf = new CachingConnectionFactory("localhost");
-        var maxAttempts = 3;
+        int maxAttempts = 3;
+
         var container = new DirectMessageListenerContainer(null, cf)
         {
             RetryTemplate = new PollyRetryTemplate(maxAttempts, 1, 1, 1),
             Recoverer = new DefaultReplyRecoveryCallback()
         };
+
         container.SetQueueNames(Q1);
 
         var listener = new ThrowingMessageListener();
@@ -159,23 +160,23 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
             return null;
         }
     }
+
     private sealed class ThrowingMessageListener : IReplyingMessageListener<string, string>
     {
-        private int _exceptionCounter;
+        public int ExceptionCounter { get; private set; }
 
         public ThrowingMessageListener(int exceptionCounter = 0)
         {
-            _exceptionCounter = exceptionCounter;
+            ExceptionCounter = exceptionCounter;
         }
-
-        public int ExceptionCounter { get => _exceptionCounter; }
 
         public string HandleMessage(string input)
         {
-            _exceptionCounter++;
+            ExceptionCounter++;
             throw new InvalidOperationException("Intentional exception to test retry");
         }
     }
+
     private sealed class TestConsumerTagStrategy : IConsumerTagStrategy
     {
         private readonly string _testName;

@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Retry;
 using Steeltoe.Common.RetryPolly;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Listener;
@@ -107,11 +106,13 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
         }
 
         MissingQueuesFatal = containerOptions.MissingQueuesFatal;
-        var retryOptions = containerOptions.Retry;
+        RabbitOptions.ListenerRetryOptions retryOptions = containerOptions.Retry;
 
         if (retryOptions.Enabled)
         {
-            RetryTemplate = new PollyRetryTemplate(retryOptions.MaxAttempts, (int)retryOptions.InitialInterval.TotalMilliseconds, (int)retryOptions.MaxInterval.TotalMilliseconds, retryOptions.Multiplier, Logger);
+            RetryTemplate = new PollyRetryTemplate(retryOptions.MaxAttempts, (int)retryOptions.InitialInterval.TotalMilliseconds,
+                (int)retryOptions.MaxInterval.TotalMilliseconds, retryOptions.Multiplier, Logger);
+
             ReplyRecoveryCallback = new RejectAndDoNotRequeueRecoverer();
         }
 
