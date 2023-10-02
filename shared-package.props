@@ -38,8 +38,10 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)\build\icon.png" Pack="true" PackagePath="\" Visible="false" />
     <!-- Add a PackageReadme.md file in the project directory to override the default one. -->
-    <None Condition="Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildProjectDirectory)\PackageReadme.md" Visible="false" Pack="True" PackagePath="" />
-    <None Condition="!Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildThisFileDirectory)\PackageReadme.md" Visible="false" Pack="True" PackagePath="" />
+    <None Condition="Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildProjectDirectory)\PackageReadme.md" Visible="false" Pack="True"
+      PackagePath="" />
+    <None Condition="!Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildThisFileDirectory)\PackageReadme.md" Visible="false" Pack="True"
+      PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
