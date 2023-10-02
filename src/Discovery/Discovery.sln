@@ -82,6 +82,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Hosting", "..\Common\src\Common.Hosting\Steeltoe.Common.Hosting.csproj", "{83AF2142-5080-4556-ABAF-921E0E609054}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -452,6 +454,18 @@ Global
 		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Release|x64.Build.0 = Release|Any CPU
 		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Release|x86.ActiveCfg = Release|Any CPU
 		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438}.Release|x86.Build.0 = Release|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Debug|x64.Build.0 = Debug|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Debug|x86.Build.0 = Debug|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Release|x64.ActiveCfg = Release|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Release|x64.Build.0 = Release|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Release|x86.ActiveCfg = Release|Any CPU
+		{83AF2142-5080-4556-ABAF-921E0E609054}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -487,6 +501,7 @@ Global
 		{55A893A9-C40F-4BFE-821D-87CA38CA7035} = {26A62999-E553-40B7-B393-2195557F6D8B}
 		{10B22A7B-6F70-431D-88C9-7C3F8A5A6536} = {26A62999-E553-40B7-B393-2195557F6D8B}
 		{992D1C9D-15D2-4AB2-8CC4-094B89CCD438} = {26A62999-E553-40B7-B393-2195557F6D8B}
+		{83AF2142-5080-4556-ABAF-921E0E609054} = {26A62999-E553-40B7-B393-2195557F6D8B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09301AE1-862F-43FC-9E71-732151D4CDDF}

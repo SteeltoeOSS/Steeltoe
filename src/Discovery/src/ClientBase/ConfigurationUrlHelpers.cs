@@ -19,8 +19,8 @@ public static class ConfigurationUrlHelpers
         var uris = new List<Uri>();
         if (!string.IsNullOrEmpty(urls))
         {
-            var addresses = urls.Split(';');
-            foreach (var address in addresses.Where(a => !string.IsNullOrEmpty(a)))
+            var addresses = urls.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var address in addresses)
             {
                 if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
                     && (address.Contains("*") || address.Contains("::") || address.Contains("+")))

@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.ClientBase.Test;
 
-public class ConfigurationUrlHelpers
+public class ConfigurationUrlHelpersTest
 {
     [Fact]
     public void GetAspNetCoreUrlsHandlesTrailingSemicolon()
