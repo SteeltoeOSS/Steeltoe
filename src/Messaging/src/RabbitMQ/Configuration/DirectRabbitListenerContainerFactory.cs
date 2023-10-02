@@ -78,8 +78,8 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
             instance.ConsumersPerQueue = ConsumersPerQueue.Value;
         }
 
-        instance.RetryTemplate = ContainerRetryTemplate;
-        instance.Recoverer = ContainerRecoveryCallback;
+        instance.RetryTemplate = RetryTemplate;
+        instance.Recoverer = ReplyRecoveryCallback;
     }
 
     private void Configure(RabbitOptions options)
@@ -108,10 +108,11 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
 
         MissingQueuesFatal = containerOptions.MissingQueuesFatal;
         var retryOptions = containerOptions.Retry;
+
         if (retryOptions.Enabled)
         {
-            ContainerRetryTemplate = new PollyRetryTemplate(retryOptions.MaxAttempts, (int)retryOptions.InitialInterval.TotalMilliseconds, (int)retryOptions.MaxInterval.TotalMilliseconds, retryOptions.Multiplier, Logger);
-            ContainerRecoveryCallback = new RejectAndDoNotRequeueRecoverer();
+            RetryTemplate = new PollyRetryTemplate(retryOptions.MaxAttempts, (int)retryOptions.InitialInterval.TotalMilliseconds, (int)retryOptions.MaxInterval.TotalMilliseconds, retryOptions.Multiplier, Logger);
+            ReplyRecoveryCallback = new RejectAndDoNotRequeueRecoverer();
         }
 
         if (containerOptions.ConsumersPerQueue.HasValue)

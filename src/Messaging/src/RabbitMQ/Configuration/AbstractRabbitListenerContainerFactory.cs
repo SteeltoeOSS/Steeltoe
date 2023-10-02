@@ -95,10 +95,6 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
 
     public IRecoveryCallback ReplyRecoveryCallback { get; set; }
 
-    public RetryTemplate ContainerRetryTemplate { get; set; }
-
-    public IRecoveryCallback ContainerRecoveryCallback { get; set; }
-
     public Action<TContainer> ContainerCustomizer { get; set; }
 
     public bool BatchListener { get; set; }

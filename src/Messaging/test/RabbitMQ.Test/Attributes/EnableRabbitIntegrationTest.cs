@@ -71,7 +71,7 @@ public sealed class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitInte
     }
 
     [Fact]
-    public void AutoSimpleDeclareAnonymousQueue()
+    public void AutoSimpleDeclareAnonymousQueue() 
     {
         var registry = _context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
         var container = registry.GetListenerContainer("anonymousQueue575") as DirectMessageListenerContainer;
@@ -826,13 +826,16 @@ public sealed class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitInte
             });
 
             // Add default container factory
+            // In Spring RetryTemplate and RecoveryCallback are setup by default
+            // However the behaviour of Retry on exception is handled by setting the advice chain (AOP) in spring, but in dotnet it will be used if present
+            // To resolve this, we are removing the retryTemplate setup here and using a different container to test relevant functionality: AutoSimpleDeclareAnonymousQueue
+            // now uses txListenerContainerFactory
+
             services.AddRabbitListenerContainerFactory((p, f) =>
             {
                 IApplicationContext context = p.GetApplicationContext();
                 f.ErrorHandler = context.GetService<IErrorHandler>("errorHandler");
                 f.ConsumerTagStrategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy");
-                f.RetryTemplate = new PollyRetryTemplate(3, 1, 1, 1);
-                f.ReplyRecoveryCallback = new DefaultReplyRecoveryCallback();
                 f.SetBeforeSendReplyPostProcessors(new AddSomeHeadersPostProcessor());
             });
 
@@ -1045,7 +1048,7 @@ public sealed class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitInte
         }
 
         [DeclareAnonymousQueue("myAnonymous")]
-        [RabbitListener(Queue = "#{@myAnonymous}", Id = "anonymousQueue575")]
+        [RabbitListener(Queue = "#{@myAnonymous}", Id = "anonymousQueue575", ContainerFactory = "txListenerContainerFactory")]
         public string HandleWithAnonymousQueueToDeclare(string data)
         {
             return $"viaAnonymous:{data}";
