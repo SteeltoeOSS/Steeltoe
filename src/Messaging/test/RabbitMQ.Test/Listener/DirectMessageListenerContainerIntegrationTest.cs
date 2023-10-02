@@ -81,7 +81,7 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
             Recoverer = new DefaultReplyRecoveryCallback()
         };
         container.SetQueueNames(Q1);
-      
+
         var listener = new ThrowingMessageListener();
         var adapter = new MessageListenerAdapter(null, listener);
         container.MessageListener = adapter;
@@ -190,18 +190,6 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         public string CreateConsumerTag(string queue)
         {
             return $"{queue}/{_testName}{_n++}";
-        }
-    }
-    private sealed class TestRecoveryCallBack : IRecoveryCallback<string>
-    {
-        public string Recover(IRetryContext context)
-        {
-            return "FOO";
-        }
-
-        object IRecoveryCallback.Recover(IRetryContext context)
-        {
-            return Recover(context);
         }
     }
 }
