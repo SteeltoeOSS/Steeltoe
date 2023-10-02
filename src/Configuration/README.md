@@ -21,10 +21,6 @@ See the `Configuration` directory inside the [Samples](https://github.com/Steelt
 
 Unlike the Java version of the configuration server client, the Steeltoe client currently only supports property and yaml files; not plain text.
 
-### Client decryption
-
-Steeltoe client only supports clear text communication with the configuration server. Client decryption is on our road map, but not currently supported. For now, you cannot send encrypted data to the client.
-
 ### Server initiated reload
 
 Currently reloads must be initiated by the client, Steeltoe has not implemented handlers to listen for server change events.
