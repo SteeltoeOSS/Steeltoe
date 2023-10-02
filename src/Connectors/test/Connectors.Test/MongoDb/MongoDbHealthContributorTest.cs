@@ -30,7 +30,7 @@ public sealed class MongoDbHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Down);
@@ -51,7 +51,7 @@ public sealed class MongoDbHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Up);
@@ -77,7 +77,7 @@ public sealed class MongoDbHealthContributorTest
         using var source = new CancellationTokenSource();
         source.Cancel();
 
-        Func<Task> action = async () => await healthContributor.HealthAsync(source.Token);
+        Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
 
         await action.Should().ThrowExactlyAsync<OperationCanceledException>();
     }
@@ -98,7 +98,7 @@ public sealed class MongoDbHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Up);

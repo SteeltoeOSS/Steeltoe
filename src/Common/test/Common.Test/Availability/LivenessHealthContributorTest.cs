@@ -17,7 +17,7 @@ public sealed class LivenessHealthContributorTest
     {
         var contributor = new LivenessHealthContributor(_availability);
 
-        HealthCheckResult result = await contributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult result = await contributor.CheckHealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.Unknown, result.Status);
     }
@@ -28,7 +28,7 @@ public sealed class LivenessHealthContributorTest
         _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, "tests");
         var contributor = new LivenessHealthContributor(_availability);
 
-        HealthCheckResult result = await contributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult result = await contributor.CheckHealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
     }
@@ -39,7 +39,7 @@ public sealed class LivenessHealthContributorTest
         _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Broken, "tests");
         var contributor = new LivenessHealthContributor(_availability);
 
-        HealthCheckResult result = await contributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult result = await contributor.CheckHealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.Down, result.Status);
     }

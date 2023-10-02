@@ -10,7 +10,7 @@ internal sealed class DisabledContributor : IHealthContributor
 {
     public string Id => "Disabled";
 
-    public Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult<HealthCheckResult?>(null);
     }

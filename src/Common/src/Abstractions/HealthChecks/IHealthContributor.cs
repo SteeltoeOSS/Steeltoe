@@ -19,8 +19,11 @@ public interface IHealthContributor
     /// <summary>
     /// Performs a health check.
     /// </summary>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     /// <returns>
     /// The result of the health check, or <c>null</c> if this health check is currently disabled.
     /// </returns>
-    Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken);
+    Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken);
 }

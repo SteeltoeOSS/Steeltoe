@@ -46,7 +46,7 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
         {
             try
             {
-                HealthCheckResult result = await contributor.HealthAsync(cancellationToken);
+                HealthCheckResult result = await contributor.CheckHealthAsync(cancellationToken);
 
                 if (result != null)
                 {

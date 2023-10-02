@@ -36,7 +36,7 @@ public sealed class HomeController : Controller
     {
         if (_healthContributor != null)
         {
-            HealthCheckResult health = await _healthContributor.HealthAsync(HttpContext.RequestAborted);
+            HealthCheckResult health = await _healthContributor.CheckHealthAsync(HttpContext.RequestAborted);
 
             if (health != null)
             {

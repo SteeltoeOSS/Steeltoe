@@ -30,7 +30,7 @@ public sealed class RabbitMQHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Down);
@@ -60,7 +60,7 @@ public sealed class RabbitMQHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Up);
@@ -91,11 +91,11 @@ public sealed class RabbitMQHealthContributorTest
         };
 
         // Ensure initial connection is obtained.
-        _ = await healthContributor.HealthAsync(CancellationToken.None);
+        _ = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         connectionMock.Setup(connection => connection.IsOpen).Returns(false);
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Down);
@@ -115,7 +115,7 @@ public sealed class RabbitMQHealthContributorTest
         using var source = new CancellationTokenSource();
         source.Cancel();
 
-        Func<Task> action = async () => await healthContributor.HealthAsync(source.Token);
+        Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
 
         await action.Should().ThrowExactlyAsync<OperationCanceledException>();
     }
@@ -133,7 +133,7 @@ public sealed class RabbitMQHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Up);

@@ -36,7 +36,7 @@ public sealed class CosmosDbHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Down);
@@ -56,7 +56,7 @@ public sealed class CosmosDbHealthContributorTest
         healthContributor.ServiceName = "Example";
         healthContributor.Timeout = 1.Milliseconds();
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Down);
@@ -77,7 +77,7 @@ public sealed class CosmosDbHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Up);
@@ -103,7 +103,7 @@ public sealed class CosmosDbHealthContributorTest
         using var source = new CancellationTokenSource();
         source.Cancel();
 
-        Func<Task> action = async () => await healthContributor.HealthAsync(source.Token);
+        Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
 
         await action.Should().ThrowExactlyAsync<TaskCanceledException>();
     }
@@ -119,7 +119,7 @@ public sealed class CosmosDbHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         status.Should().NotBeNull();
         status!.Status.Should().Be(HealthStatus.Up);

@@ -48,7 +48,7 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
         _connectionMultiplexerInterfaceShim = new ConnectionMultiplexerInterfaceShim(StackExchangeRedisPackageResolver.Default, connectionMultiplexer);
     }
 
-    public async Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
+    public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 

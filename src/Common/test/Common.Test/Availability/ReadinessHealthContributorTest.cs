@@ -17,7 +17,7 @@ public sealed class ReadinessHealthContributorTest
     {
         var contributor = new ReadinessHealthContributor(_availability);
 
-        HealthCheckResult result = await contributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult result = await contributor.CheckHealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.Unknown, result.Status);
     }
@@ -28,7 +28,7 @@ public sealed class ReadinessHealthContributorTest
         _availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, "tests");
         var contributor = new ReadinessHealthContributor(_availability);
 
-        HealthCheckResult result = await contributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult result = await contributor.CheckHealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
     }
@@ -39,7 +39,7 @@ public sealed class ReadinessHealthContributorTest
         _availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.RefusingTraffic, "tests");
         var contributor = new ReadinessHealthContributor(_availability);
 
-        HealthCheckResult result = await contributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult result = await contributor.CheckHealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.OutOfService, result.Status);
     }

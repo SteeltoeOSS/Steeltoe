@@ -33,7 +33,7 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
         _logger = logger;
     }
 
-    public Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 

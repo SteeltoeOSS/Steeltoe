@@ -34,7 +34,7 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
         _logger = logger;
     }
 
-    public async Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
+    public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 

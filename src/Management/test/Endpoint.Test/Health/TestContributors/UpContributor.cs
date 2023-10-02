@@ -17,7 +17,7 @@ internal sealed class UpContributor : IHealthContributor
         _sleepTime = sleepTime;
     }
 
-    public async Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
+    public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         if (_sleepTime != null)
         {

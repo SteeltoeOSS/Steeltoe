@@ -108,7 +108,7 @@ public sealed class ConsulHealthContributorTest
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(catResult);
 
         var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
-        HealthCheckResult result = await contrib.HealthAsync(CancellationToken.None);
+        HealthCheckResult result = await contrib.CheckHealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Equal(2, result.Details.Count);

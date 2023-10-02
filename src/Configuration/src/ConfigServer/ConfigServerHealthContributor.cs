@@ -32,7 +32,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         }
     }
 
-    public async Task<HealthCheckResult> HealthAsync(CancellationToken cancellationToken)
+    public async Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
     {
         var health = new HealthCheckResult();
 

@@ -25,7 +25,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
     {
     }
 
-    public Task<HealthCheckResult> HealthAsync(CancellationToken cancellationToken)
+    public Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 

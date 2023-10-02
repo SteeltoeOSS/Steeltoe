@@ -86,7 +86,7 @@ public class ConsulHealthContributor : IHealthContributor
     /// <returns>
     /// The health check result.
     /// </returns>
-    public async Task<HealthCheckResult> HealthAsync(CancellationToken cancellationToken)
+    public async Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
     {
         var result = new HealthCheckResult();
         string leaderStatus = await GetLeaderStatusAsync(cancellationToken);

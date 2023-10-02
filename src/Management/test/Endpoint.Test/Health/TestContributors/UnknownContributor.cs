@@ -10,7 +10,7 @@ internal sealed class UnknownContributor : IHealthContributor
 {
     public string Id => "Unknown";
 
-    public Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult<HealthCheckResult?>(new HealthCheckResult
         {

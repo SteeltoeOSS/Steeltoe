@@ -10,7 +10,7 @@ internal sealed class OutOfServiceContributor : IHealthContributor
 {
     public string Id => "Out";
 
-    public Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult<HealthCheckResult?>(new HealthCheckResult
         {

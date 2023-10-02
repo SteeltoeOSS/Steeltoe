@@ -119,7 +119,7 @@ public sealed class EurekaHealthCheckHandlerTest
     {
         public string Id => "TestContrib";
 
-        public async Task<HealthCheckResult> HealthAsync(CancellationToken cancellationToken)
+        public async Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
         {
             await Task.Yield();
             throw new NotImplementedException();

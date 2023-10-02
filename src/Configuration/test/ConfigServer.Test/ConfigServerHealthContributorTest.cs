@@ -186,7 +186,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.Null(contributor.Provider);
-        HealthCheckResult health = await contributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult health = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));
@@ -212,7 +212,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
-        HealthCheckResult health = await contributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult health = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
     }
@@ -238,7 +238,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
-        HealthCheckResult health = await contributor.HealthAsync(CancellationToken.None);
+        HealthCheckResult health = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));

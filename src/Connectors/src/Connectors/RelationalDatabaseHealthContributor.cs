@@ -32,7 +32,7 @@ internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, 
         Id = GetDatabaseType(connection);
     }
 
-    public async Task<HealthCheckResult?> HealthAsync(CancellationToken cancellationToken)
+    public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
