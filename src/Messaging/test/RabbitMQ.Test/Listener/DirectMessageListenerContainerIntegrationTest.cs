@@ -98,6 +98,7 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         await template.StopAsync();
         cf.Destroy();
     }
+
     public void Dispose()
     {
         _admin.DeleteQueue(Q1);

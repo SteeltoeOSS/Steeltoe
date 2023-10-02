@@ -825,11 +825,10 @@ public sealed class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitInte
                 f.AutoStartup = false;
             });
 
-            // Add default container factory
-            // In Spring RetryTemplate and RecoveryCallback are setup by default
-            // However the behaviour of Retry on exception is handled by setting the advice chain (AOP) in spring, but in dotnet it will be used if present
-            // To resolve this, we are removing the retryTemplate setup here and using a different container to test relevant functionality: AutoSimpleDeclareAnonymousQueue
-            // now uses txListenerContainerFactory
+            // Add default Rabbit listener container factory.  In Spring, RetryTemplate and RecoveryCallback are setup by default.
+            // In Steeltoe, no retry policy is added by default (additional configuration is required).
+            // To resolve this difference, we do not setup the retryTemplate here.
+            // Tests that need to work with retries now use txListenerContainerFactory
 
             services.AddRabbitListenerContainerFactory((p, f) =>
             {
