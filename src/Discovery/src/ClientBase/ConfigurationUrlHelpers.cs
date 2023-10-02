@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Discovery.Client;
 
@@ -18,7 +19,7 @@ public static class ConfigurationUrlHelpers
         var uris = new List<Uri>();
         if (!string.IsNullOrEmpty(urls))
         {
-            var addresses = urls.Split(';');
+            var addresses = urls.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var address in addresses)
             {
                 if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
