@@ -6,8 +6,8 @@ using System.Globalization;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Common.Http;
 using Steeltoe.Connectors.Services;
-using Steeltoe.Discovery.Client;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -110,7 +110,7 @@ internal static class EurekaPostConfigurer
             }
         }
 
-        options.ApplyConfigUrls(configuration.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
+        options.ApplyConfigUrls(configuration.GetAspNetCoreUrls());
 
         if (options.InstanceId.EndsWith(defaultIdEnding, StringComparison.Ordinal))
         {

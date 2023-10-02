@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 
 namespace Steeltoe.Discovery.Eureka;
@@ -104,7 +105,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfiguration, IDiscoveryRegi
         return base.HostName;
     }
 
-    public void ApplyConfigUrls(List<Uri> addresses, string wildcardHostname)
+    public void ApplyConfigUrls(List<Uri> addresses)
     {
         // only use addresses from configuration if there are any and registration method hasn't been set
         // if registration method has been set, the user probably wants to define their own behavior
@@ -123,7 +124,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfiguration, IDiscoveryRegi
                     NonSecurePortEnabled = false;
                 }
 
-                if (address.Host != wildcardHostname && address.Host != "0.0.0.0")
+                if (!ConfigurationUrlHelpers.WildcardHosts.Contains(address.Host))
                 {
                     HostName = address.Host;
                 }
