@@ -298,28 +298,28 @@ public sealed class InvocableHandlerMethodTest
         var handlerMethod = new InvocableHandlerMethod(handler, method);
         HandlerMethod.Invoker invoker = handlerMethod.HandlerInvoker;
 
-        long start = DateTime.Now.Ticks;
+        long start = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < count; i++)
         {
             invoker(handler, providedArgs);
         }
 
-        long end = DateTime.Now.Ticks;
+        long end = DateTime.UtcNow.Ticks;
         _outputHelper.WriteLine("Ticks: " + (end - start));
         return end - start;
     }
 
     private long TimedReflectionInvoke(object handler, MethodInfo method, int count, params object[] providedArgs)
     {
-        long start = DateTime.Now.Ticks;
+        long start = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < count; i++)
         {
             method.Invoke(handler, providedArgs);
         }
 
-        long end = DateTime.Now.Ticks;
+        long end = DateTime.UtcNow.Ticks;
         _outputHelper.WriteLine("Ticks: " + (end - start));
         return end - start;
     }

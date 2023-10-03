@@ -40,8 +40,8 @@ namespace Microsoft.Diagnostics.Tools.GCDump
         /// <returns></returns>
         public static bool DumpFromEventPipe(CancellationToken ct, int processID, MemoryGraph memoryGraph, TextWriter log, int timeout, DotNetHeapInfo dotNetInfo = null)
         {
-            DateTime start = DateTime.Now;
-            Func<TimeSpan> getElapsed = () => DateTime.Now - start;
+            DateTime start = DateTime.UtcNow;
+            Func<TimeSpan> getElapsed = () => DateTime.UtcNow - start;
 
             var dumper = new DotNetHeapDumpGraphReader(log)
             {

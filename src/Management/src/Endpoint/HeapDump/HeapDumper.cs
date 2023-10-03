@@ -80,10 +80,10 @@ public sealed class HeapDumper
     {
         if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
         {
-            return $"gcdump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
+            return $"gcdump-{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
         }
 
-        return $"minidump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.dmp";
+        return $"minidump-{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}-live.dmp";
     }
 
     private bool TryCollectMemoryGraph(int processId, int timeout, bool verbose, out MemoryGraph memoryGraph, CancellationToken cancellationToken)

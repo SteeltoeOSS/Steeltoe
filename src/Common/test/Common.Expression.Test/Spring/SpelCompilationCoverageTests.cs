@@ -689,12 +689,12 @@ public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
 
         expression = (SpelExpression)Parser.ParseExpression("#var?.Day");
-        context.SetVariable("var", DateTime.Now);
+        context.SetVariable("var", DateTime.UtcNow);
         Assert.InRange(expression.GetValue<int>(context), 1, 31);
         context.SetVariable("var", null);
         Assert.Null(expression.GetValue());
         AssertCanCompile(expression);
-        context.SetVariable("var", DateTime.Now);
+        context.SetVariable("var", DateTime.UtcNow);
         Assert.InRange(expression.GetValue<int>(context), 1, 31);
         context.SetVariable("var", null);
         Assert.Null(expression.GetValue());
@@ -5544,14 +5544,14 @@ public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
     public void PropertyReferenceValueType()
     {
         // static property on value type
-        _expression = Parser.ParseExpression("T(DateTime).Now");
-        long start = DateTime.Now.Ticks;
+        _expression = Parser.ParseExpression("T(DateTime).UtcNow");
+        long start = DateTime.UtcNow.Ticks;
         Assert.True(start < _expression.GetValue<DateTime>().Ticks);
         AssertCanCompile(_expression);
         Assert.True(start < _expression.GetValue<DateTime>().Ticks);
 
         // instance property on value type
-        _expression = Parser.ParseExpression("T(DateTime).Now.Second");
+        _expression = Parser.ParseExpression("T(DateTime).UtcNow.Second");
         Assert.InRange(_expression.GetValue<int>(), 0, 60);
         AssertCanCompile(_expression);
         Assert.InRange(_expression.GetValue<int>(), 0, 60);

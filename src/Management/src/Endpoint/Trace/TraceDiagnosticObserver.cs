@@ -149,7 +149,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
             details.Add("timeTaken", GetTimeTaken(duration));
         }
 
-        long timestamp = GetJavaTime(DateTime.Now.Ticks);
+        long timestamp = GetJavaTime(DateTime.UtcNow.Ticks);
         return new TraceResult(timestamp, details);
     }
 
