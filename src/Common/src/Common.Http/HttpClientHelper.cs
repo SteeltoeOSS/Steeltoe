@@ -4,10 +4,7 @@
 
 using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Security;
-using System.Reflection;
 using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -18,10 +15,6 @@ public static class HttpClientHelper
 {
     internal const int DefaultGetAccessTokenTimeout = 10000; // Milliseconds
     internal const bool DefaultValidateCertificates = true;
-
-    private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate;
-
-    private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (_, _, _, _) => true;
 
     public static string SteeltoeUserAgent { get; } = $"Steeltoe/{typeof(HttpClientHelper).Assembly.GetName().Version}";
 
@@ -58,8 +51,9 @@ public static class HttpClientHelper
         if (!validateCertificates)
         {
             handler ??= new HttpClientHandler();
-
-            handler.ServerCertificateCustomValidationCallback = GetDisableDelegate();
+#pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
+            handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+#pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
             handler.SslProtocols = SslProtocols.Tls12;
             client = new HttpClient(handler);
         }
@@ -233,28 +227,5 @@ public static class HttpClientHelper
         }
 
         return null;
-    }
-
-    internal static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> GetDisableDelegate()
-    {
-        if (_reflectedDelegate != null)
-        {
-            return _reflectedDelegate;
-        }
-
-        PropertyInfo property = typeof(HttpClientHandler).GetProperty(
-            "DangerousAcceptAnyServerCertificateValidator", BindingFlags.Public | BindingFlags.Static);
-
-        if (property != null)
-        {
-            _reflectedDelegate = property.GetValue(null) as Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool>;
-
-            if (_reflectedDelegate != null)
-            {
-                return _reflectedDelegate;
-            }
-        }
-
-        return DefaultDelegate;
     }
 }
