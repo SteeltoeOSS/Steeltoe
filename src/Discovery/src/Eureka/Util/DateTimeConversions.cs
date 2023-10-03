@@ -6,7 +6,7 @@ namespace Steeltoe.Discovery.Eureka.Util;
 
 public static class DateTimeConversions
 {
-    private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime BaseTime = DateTime.UnixEpoch;
 
     public static long ToJavaMillis(DateTime dateTime)
     {
