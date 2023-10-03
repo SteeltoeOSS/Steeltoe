@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Retry;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Batch;
@@ -34,6 +35,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     protected readonly object LifecycleMonitor = new();
     protected readonly ILogger Logger;
     protected readonly ILoggerFactory LoggerFactory;
+
     private string _listenerId;
     private IConnectionFactory _connectionFactory;
 
@@ -46,6 +48,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     protected virtual long LastReceive { get; private set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
     protected virtual bool ForceCloseChannel { get; set; } = true;
+    public IRecoveryCallback Recoverer { get; set; }
 
     public virtual IConnectionFactory ConnectionFactory
     {
@@ -144,6 +147,8 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     public virtual bool IsLazyLoad { get; private set; }
 
     public virtual bool Initialized { get; private set; }
+
+    public RetryTemplate RetryTemplate { get; set; }
 
     public virtual IPlatformTransactionManager TransactionManager { get; set; }
 
@@ -1054,7 +1059,26 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
         if (IsDeBatchingEnabled && BatchingStrategy.CanDebatch(message.Headers))
         {
-            BatchingStrategy.DeBatch(message, fragment => ActualInvokeListener(channel, fragment));
+            BatchingStrategy.DeBatch(message, fragment => InvokeListener(channel, fragment));
+        }
+        else
+        {
+            InvokeListener(channel, message);
+        }
+    }
+
+    private void InvokeListener(R.IModel channel, IMessage message)
+    {
+        if (RetryTemplate != null)
+        {
+            if (Recoverer != null)
+            {
+                RetryTemplate.Execute(context => ActualInvokeListener(channel, message), Recoverer);
+            }
+            else
+            {
+                RetryTemplate.Execute(context => ActualInvokeListener(channel, message));
+            }
         }
         else
         {

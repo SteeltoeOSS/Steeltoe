@@ -825,14 +825,16 @@ public sealed class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitInte
                 f.AutoStartup = false;
             });
 
-            // Add default container factory
+            // Add default Rabbit listener container factory.  In Spring, RetryTemplate and RecoveryCallback are setup by default.
+            // In Steeltoe, no retry policy is added by default (additional configuration is required).
+            // To resolve this difference, we do not setup the retryTemplate here.
+            // Tests that need to work with retries now use txListenerContainerFactory
+
             services.AddRabbitListenerContainerFactory((p, f) =>
             {
                 IApplicationContext context = p.GetApplicationContext();
                 f.ErrorHandler = context.GetService<IErrorHandler>("errorHandler");
                 f.ConsumerTagStrategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy");
-                f.RetryTemplate = new PollyRetryTemplate(3, 1, 1, 1);
-                f.ReplyRecoveryCallback = new DefaultReplyRecoveryCallback();
                 f.SetBeforeSendReplyPostProcessors(new AddSomeHeadersPostProcessor());
             });
 
@@ -1045,7 +1047,7 @@ public sealed class EnableRabbitIntegrationTest : IClassFixture<EnableRabbitInte
         }
 
         [DeclareAnonymousQueue("myAnonymous")]
-        [RabbitListener(Queue = "#{@myAnonymous}", Id = "anonymousQueue575")]
+        [RabbitListener(Queue = "#{@myAnonymous}", Id = "anonymousQueue575", ContainerFactory = "txListenerContainerFactory")]
         public string HandleWithAnonymousQueueToDeclare(string data)
         {
             return $"viaAnonymous:{data}";
