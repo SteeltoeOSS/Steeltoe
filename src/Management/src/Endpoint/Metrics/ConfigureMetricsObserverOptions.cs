@@ -41,5 +41,10 @@ internal sealed class ConfigureMetricsObserverOptions : IConfigureOptions<Metric
         {
             options.EgressIgnorePattern = DefaultEgressIgnorePattern;
         }
+
+        if(string.IsNullOrEmpty(options.EventCounterIntervalSec))
+        {
+            options.EventCounterIntervalSec = "1";
+        }
     }
 }

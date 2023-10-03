@@ -21,6 +21,8 @@ Steeltoe.Management.Diagnostics.MetricsObserverOptions.EgressIgnorePattern.get -
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.EgressIgnorePattern.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents.get -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterEvents.set -> void
+Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterIntervalSec.get -> string?
+Steeltoe.Management.Diagnostics.MetricsObserverOptions.EventCounterIntervalSec.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics.set -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.GCEvents.get -> bool

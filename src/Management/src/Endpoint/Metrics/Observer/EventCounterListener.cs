@@ -21,10 +21,7 @@ internal sealed class EventCounterListener : EventListener
     private readonly ILogger<EventCounterListener> _logger;
     private readonly bool _isInitialized;
 
-    private readonly Dictionary<string, string?> _refreshInterval = new()
-    {
-        { "EventCounterIntervalSec", "1" }
-    };
+    private readonly Dictionary<string, string?> _refreshInterval = new ();
 
     private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new();
     private readonly ConcurrentDictionary<string, ObservableGauge<long>> _longMeasureMetrics = new();
@@ -41,10 +38,11 @@ internal sealed class EventCounterListener : EventListener
 
         _optionsMonitor = optionsMonitor;
         _logger = logger;
-
-        if (optionsMonitor.CurrentValue.EventCounterEvents)
+        MetricsObserverOptions observerOptions = optionsMonitor.CurrentValue;
+        if (observerOptions.EventCounterEvents)
         {
             _isInitialized = true;
+            _refreshInterval = new() { { "EventCounterIntervalSec", observerOptions.EventCounterIntervalSec} };
             ProcessPreInitEventSources();
         }
     }
