@@ -343,10 +343,7 @@ public sealed class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclar
         queue.SetAdminsThatShouldDeclare(admin1);
         Assert.Single(queue.DeclaringAdmins);
 
-        queue.SetAdminsThatShouldDeclare(new object[]
-        {
-            null
-        });
+        queue.SetAdminsThatShouldDeclare(null);
 
         Assert.Empty(queue.DeclaringAdmins);
         queue.SetAdminsThatShouldDeclare(admin1, admin2);
