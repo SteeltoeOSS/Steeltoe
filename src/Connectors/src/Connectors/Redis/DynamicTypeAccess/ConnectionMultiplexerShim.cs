@@ -29,6 +29,22 @@ internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
         return new ConnectionMultiplexerInterfaceShim(packageResolver, instance);
     }
 
+    public static async Task<ConnectionMultiplexerInterfaceShim> ConnectAsync(StackExchangeRedisPackageResolver packageResolver, string configuration)
+    {
+        ArgumentGuard.NotNull(packageResolver);
+
+        var task = (Task)packageResolver.ConnectionMultiplexerClass.InvokeMethodOverload("ConnectAsync", true, new[]
+        {
+            typeof(string),
+            typeof(TextWriter)
+        }, configuration, null)!;
+
+        await task;
+
+        using var taskShim = new TaskShim<IDisposable>(task);
+        return new ConnectionMultiplexerInterfaceShim(packageResolver, taskShim.Result);
+    }
+
     public void Dispose()
     {
         Instance.Dispose();

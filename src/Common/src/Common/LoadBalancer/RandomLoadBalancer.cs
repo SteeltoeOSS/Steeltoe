@@ -42,12 +42,12 @@ public class RandomLoadBalancer : ILoadBalancer
         _logger = logger;
     }
 
-    public virtual async Task<Uri> ResolveServiceInstanceAsync(Uri request)
+    public virtual async Task<Uri> ResolveServiceInstanceAsync(Uri request, CancellationToken cancellationToken)
     {
         _logger?.LogTrace("ResolveServiceInstance {serviceInstance}", request.Host);
 
         IList<IServiceInstance> availableServiceInstances =
-            await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, _distributedCache, _cacheOptions);
+            await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, cancellationToken, _distributedCache, _cacheOptions);
 
         if (availableServiceInstances.Count > 0)
         {
@@ -61,7 +61,7 @@ public class RandomLoadBalancer : ILoadBalancer
         return request;
     }
 
-    public virtual Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception)
+    public virtual Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

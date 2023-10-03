@@ -9,12 +9,15 @@ namespace Steeltoe.Discovery;
 public interface IDiscoveryClient : IServiceInstanceProvider
 {
     /// <summary>
-    /// ServiceInstance with information used to register the local service.
+    /// Gets the local service instance with information used to register the local service.
     /// </summary>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     /// <returns>
-    /// The IServiceInstance.
+    /// The service instance.
     /// </returns>
-    IServiceInstance GetLocalServiceInstance();
+    Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken);
 
-    Task ShutdownAsync();
+    Task ShutdownAsync(CancellationToken cancellationToken);
 }

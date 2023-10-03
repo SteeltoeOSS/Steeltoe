@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.Common;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
@@ -31,7 +32,7 @@ internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, 
         Id = GetDatabaseType(connection);
     }
 
-    public HealthCheckResult Health()
+    public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
@@ -50,10 +51,10 @@ internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, 
 
         try
         {
-            _connection.Open();
+            await _connection.OpenAsync(cancellationToken);
             DbCommand command = _connection.CreateCommand();
             command.CommandText = "SELECT 1;";
-            command.ExecuteScalar();
+            await command.ExecuteScalarAsync(cancellationToken);
 
             result.Status = HealthStatus.Up;
             result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
@@ -62,6 +63,13 @@ internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, 
         }
         catch (Exception exception)
         {
+            exception = exception.UnwrapAll();
+
+            if (exception.IsCancellation())
+            {
+                ExceptionDispatchInfo.Capture(exception).Throw();
+            }
+
             _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);
 
             result.Status = HealthStatus.Down;
@@ -71,7 +79,7 @@ internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, 
         }
         finally
         {
-            _connection.Close();
+            await _connection.CloseAsync();
         }
 
         return result;

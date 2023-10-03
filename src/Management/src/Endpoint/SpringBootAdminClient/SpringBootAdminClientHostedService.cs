@@ -60,7 +60,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         {
             response = await _httpClient.PostAsJsonAsync($"{_clientOptions.Url}/instances", app, cancellationToken);
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             _logger.LogError(exception, "Error connecting to SpringBootAdmin: {Message}", exception.Message);
         }

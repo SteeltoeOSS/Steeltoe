@@ -204,7 +204,7 @@ public sealed class CloudFoundryConfigurationProviderTest
             }
         }
 
-        _ = Task.Run(ReloadLoop);
+        _ = Task.Run(ReloadLoop, cts.Token);
 
         while (!cts.IsCancellationRequested)
         {

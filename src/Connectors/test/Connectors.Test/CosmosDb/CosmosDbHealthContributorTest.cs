@@ -17,7 +17,7 @@ namespace Steeltoe.Connectors.Test.CosmosDb;
 public sealed class CosmosDbHealthContributorTest
 {
     [Fact]
-    public void Not_Connected_Returns_Down_Status()
+    public async Task Not_Connected_Returns_Down_Status()
     {
         var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
 
@@ -36,9 +36,10 @@ public sealed class CosmosDbHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Down);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Down);
         status.Description.Should().Be("CosmosDB health check failed");
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
@@ -47,19 +48,18 @@ public sealed class CosmosDbHealthContributorTest
     }
 
     [Fact]
-    public void Not_Connected_With_Timeout_Returns_Down_Status()
+    public async Task Not_Connected_With_Timeout_Returns_Down_Status()
     {
         var cosmosClient = new CosmosClient("AccountEndpoint=https://localhost:8081;AccountKey=IA==");
 
-        using var healthContributor = new CosmosDbHealthContributor(cosmosClient, "localhost", NullLogger<CosmosDbHealthContributor>.Instance)
-        {
-            ServiceName = "Example",
-            Timeout = 1.Milliseconds()
-        };
+        using var healthContributor = new CosmosDbHealthContributor(cosmosClient, "localhost", NullLogger<CosmosDbHealthContributor>.Instance);
+        healthContributor.ServiceName = "Example";
+        healthContributor.Timeout = 1.Milliseconds();
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Down);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Down);
         status.Description.Should().Be("CosmosDB health check failed");
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
@@ -68,27 +68,48 @@ public sealed class CosmosDbHealthContributorTest
     }
 
     [Fact]
-    public void Is_Connected_Returns_Up_Status()
+    public async Task Is_Connected_Returns_Up_Status()
     {
         var cosmosClientMock = new Mock<CosmosClient>();
-        cosmosClientMock.Setup(client => client.ReadAccountAsync()).Returns(Task.FromResult(new Mock<AccountProperties>().Object));
 
         using var healthContributor = new CosmosDbHealthContributor(cosmosClientMock.Object, "localhost", NullLogger<CosmosDbHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Up);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Up);
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
         status.Details.Should().NotContainKey("error");
         status.Details.Should().Contain("status", "UP");
     }
 
+    [Fact]
+    public async Task Canceled_Throws()
+    {
+        var cosmosClientMock = new Mock<CosmosClient>();
+
+        cosmosClientMock.Setup(client => client.ReadAccountAsync()).Returns(async () =>
+        {
+            await Task.Delay(3.Seconds());
+            return null!;
+        });
+
+        using var healthContributor = new CosmosDbHealthContributor(cosmosClientMock.Object, "localhost", NullLogger<CosmosDbHealthContributor>.Instance);
+
+        using var source = new CancellationTokenSource();
+        source.Cancel();
+
+        Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
+
+        await action.Should().ThrowExactlyAsync<TaskCanceledException>();
+    }
+
     [Fact(Skip = "Integration test - Requires local CosmosDB emulator")]
-    public void Integration_Is_Connected_Returns_Up_Status()
+    public async Task Integration_Is_Connected_Returns_Up_Status()
     {
         var cosmosClient = new CosmosClient(
             "AccountEndpoint=https://localhost:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==");
@@ -98,9 +119,10 @@ public sealed class CosmosDbHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Up);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Up);
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
         status.Details.Should().NotContainKey("error");

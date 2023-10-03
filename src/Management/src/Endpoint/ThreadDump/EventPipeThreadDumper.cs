@@ -76,7 +76,7 @@ public sealed class EventPipeThreadDumper
             using EventPipeSession session = client.StartEventPipeSession(providers);
             await DumpThreadsAsync(session, results, cancellationToken);
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             _logger.LogError(exception, "Unable to dump threads");
         }
@@ -161,7 +161,7 @@ public sealed class EventPipeThreadDumper
                 }
             }
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             _logger.LogError(exception, "Error processing trace file for thread dump");
             results.Clear();
@@ -451,7 +451,7 @@ public sealed class EventPipeThreadDumper
             // using the generated trace file, symbolocate and compute stacks.
             return TraceLog.CreateFromEventPipeDataFile(tempNetTraceFilename);
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             _logger.LogError(exception, "Error creating trace file for thread dump");
             return string.Empty;

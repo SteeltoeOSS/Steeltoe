@@ -29,9 +29,9 @@ internal sealed class CosmosClientShim : Shim, IDisposable
         return new CosmosClientShim(instanceAccessor);
     }
 
-    public Task ReadAccountAsync()
+    public async Task ReadAccountAsync()
     {
-        return (Task)InstanceAccessor.InvokeMethod("ReadAccountAsync", true)!;
+        await (Task)InstanceAccessor.InvokeMethod("ReadAccountAsync", true)!;
     }
 
     public void Dispose()

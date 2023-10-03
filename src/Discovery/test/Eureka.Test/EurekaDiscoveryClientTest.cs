@@ -10,7 +10,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
 {
     [Fact]
-    public void Constructor_Initializes_Correctly()
+    public async Task Constructor_Initializes_Correctly()
     {
         var clientConfig = new EurekaClientOptions
         {
@@ -30,10 +30,12 @@ public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
         Assert.Equal(clientConfig, client.ClientConfiguration);
         Assert.NotNull(client.HttpClient);
         Assert.NotNull(client.Description);
-        Assert.NotNull(client.Services);
-        Assert.Empty(client.Services);
 
-        IServiceInstance thisService = client.GetLocalServiceInstance();
+        IList<string> services = await client.GetServicesAsync(CancellationToken.None);
+        Assert.NotNull(services);
+        Assert.Empty(services);
+
+        IServiceInstance thisService = await client.GetLocalServiceInstanceAsync(CancellationToken.None);
         Assert.NotNull(thisService);
         Assert.Equal(instanceConfig.ResolveHostName(false), thisService.Host);
         Assert.Equal(instanceConfig.SecurePortEnabled, thisService.IsSecure);

@@ -6,5 +6,5 @@ namespace Steeltoe.Common.HealthChecks;
 
 public interface IHealthAggregator
 {
-    HealthCheckResult Aggregate(ICollection<IHealthContributor> contributors, CancellationToken cancellationToken);
+    Task<HealthCheckResult> AggregateAsync(ICollection<IHealthContributor> contributors, CancellationToken cancellationToken);
 }

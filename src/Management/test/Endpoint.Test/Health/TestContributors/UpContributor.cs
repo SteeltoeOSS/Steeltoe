@@ -17,11 +17,11 @@ internal sealed class UpContributor : IHealthContributor
         _sleepTime = sleepTime;
     }
 
-    public HealthCheckResult Health()
+    public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         if (_sleepTime != null)
         {
-            Thread.Sleep((int)_sleepTime);
+            await Task.Delay(_sleepTime.Value, cancellationToken);
         }
 
         return new HealthCheckResult

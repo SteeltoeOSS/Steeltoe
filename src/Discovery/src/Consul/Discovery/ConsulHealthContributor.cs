@@ -78,30 +78,33 @@ public class ConsulHealthContributor : IHealthContributor
     }
 
     /// <summary>
-    /// Compute the health of the Consul server connection.
+    /// Computes the health of the Consul server connection.
     /// </summary>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     /// <returns>
-    /// the health check result.
+    /// The health check result.
     /// </returns>
-    public HealthCheckResult Health()
+    public async Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
     {
         var result = new HealthCheckResult();
-        string leaderStatus = GetLeaderStatusAsync().GetAwaiter().GetResult();
-        Dictionary<string, string[]> services = GetCatalogServicesAsync().GetAwaiter().GetResult();
+        string leaderStatus = await GetLeaderStatusAsync(cancellationToken);
+        Dictionary<string, string[]> services = await GetCatalogServicesAsync(cancellationToken);
         result.Status = HealthStatus.Up;
         result.Details.Add("leader", leaderStatus);
         result.Details.Add("services", services);
         return result;
     }
 
-    internal Task<string> GetLeaderStatusAsync()
+    internal Task<string> GetLeaderStatusAsync(CancellationToken cancellationToken)
     {
-        return _client.Status.Leader();
+        return _client.Status.Leader(cancellationToken);
     }
 
-    internal async Task<Dictionary<string, string[]>> GetCatalogServicesAsync()
+    internal async Task<Dictionary<string, string[]>> GetCatalogServicesAsync(CancellationToken cancellationToken)
     {
-        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(QueryOptions.Default);
+        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(QueryOptions.Default, cancellationToken);
         return result.Response;
     }
 }

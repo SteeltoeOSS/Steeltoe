@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -30,6 +31,15 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
     protected override async Task<HealthEndpointResponse> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         string groupName = GetRequestedHealthGroup(context.Request.Path);
+
+        if (!IsValidGroup(groupName))
+        {
+            return new HealthEndpointResponse(null)
+            {
+                Exists = false
+            };
+        }
+
         bool hasClaim = GetHasClaim(context);
 
         var request = new HealthEndpointRequest(groupName, hasClaim);
@@ -53,6 +63,12 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
         return string.Empty;
     }
 
+    private bool IsValidGroup(string groupName)
+    {
+        return groupName == _endpointOptionsMonitor.CurrentValue.Id || groupName == "{**_}" ||
+            _endpointOptionsMonitor.CurrentValue.Groups.Any(pair => pair.Key == groupName);
+    }
+
     private bool GetHasClaim(HttpContext context)
     {
         EndpointClaim? claim = _endpointOptionsMonitor.CurrentValue.Claim;
@@ -61,6 +77,12 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
     protected override async Task WriteResponseAsync(HealthEndpointResponse result, HttpContext context, CancellationToken cancellationToken)
     {
+        if (!result.Exists)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            return;
+        }
+
         if (ManagementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse)
         {
             context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
