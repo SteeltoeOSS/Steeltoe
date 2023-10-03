@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Reflection;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring;
@@ -305,7 +306,7 @@ public sealed class MethodInvocationTests : AbstractExpressionTests
         [Annotation]
         public string DoIt(double d)
         {
-            return FormattableString.Invariant($"double {d:F1}");
+            return string.Create(CultureInfo.InvariantCulture, $"double {d:F1}");
         }
     }
 
