@@ -619,11 +619,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                     }
                 }
 
-                if (!open)
-                {
-                    return !open;
-                }
-
                 return !open;
             }).ToList();
         }

@@ -69,7 +69,7 @@ public class SerilogOptions : ISerilogOptions
         MinimumLevel = new MinimumLevel
         {
             Default = minimumLevel,
-            Override = overrideLevels ?? new Dictionary<string, LogEventLevel>()
+            Override = overrideLevels
         };
 
         _serilogConfiguration = loggerConfiguration.ClearLevels(MinimumLevel);

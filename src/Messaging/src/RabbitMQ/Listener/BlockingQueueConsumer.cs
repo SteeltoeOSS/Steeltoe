@@ -511,12 +511,14 @@ public class BlockingQueueConsumer
                 }
 
                 failures ??= new DeclarationException(e);
-
                 failures.AddFailedQueue(queueName);
             }
         }
 
+        // Rule suppressed due to Sonar bug: https://github.com/SonarSource/sonar-dotnet/issues/8140
+#pragma warning disable S2583 // Conditionally executed code should be reachable
         if (failures != null)
+#pragma warning restore S2583 // Conditionally executed code should be reachable
         {
             throw failures;
         }

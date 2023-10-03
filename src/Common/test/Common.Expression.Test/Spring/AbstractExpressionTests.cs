@@ -40,7 +40,7 @@ public abstract class AbstractExpressionTests
                 return; // no point doing other checks
             }
 
-            Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
+            Assert.Fail($"Expression returned null value, but expected '{expectedValue}'");
         }
 
         Type resultType = value.GetType();
@@ -68,7 +68,7 @@ public abstract class AbstractExpressionTests
                 return; // no point doing other checks
             }
 
-            Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
+            Assert.Fail($"Expression returned null value, but expected '{expectedValue}'");
         }
 
         Type resultType = value.GetType();
@@ -95,7 +95,7 @@ public abstract class AbstractExpressionTests
                 return; // no point doing other checks
             }
 
-            Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
+            Assert.Fail($"Expression returned null value, but expected '{expectedValue}'");
         }
 
         Type resultType = value.GetType();

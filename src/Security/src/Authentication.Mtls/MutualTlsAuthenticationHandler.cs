@@ -112,11 +112,15 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
 
             await Events.CertificateValidated(certificateValidatedContext);
 
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // https://github.com/dotnet/aspnetcore/issues/45594
             if (certificateValidatedContext.Result != null)
             {
                 return certificateValidatedContext.Result;
             }
 
+            // ReSharper disable once HeuristicUnreachableCode
+            // https://github.com/dotnet/aspnetcore/issues/45594
             certificateValidatedContext.Success();
             return certificateValidatedContext.Result;
         }
@@ -129,6 +133,8 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
 
             await Events.AuthenticationFailed(authenticationFailedContext);
 
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // https://github.com/dotnet/aspnetcore/issues/45594
             if (authenticationFailedContext.Result != null)
             {
                 return authenticationFailedContext.Result;

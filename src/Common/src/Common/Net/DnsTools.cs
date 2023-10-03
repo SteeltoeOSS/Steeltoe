@@ -42,11 +42,7 @@ public static class DnsTools
             if (!string.IsNullOrEmpty(result))
             {
                 IPHostEntry response = Dns.GetHostEntry(result);
-
-                if (response != null)
-                {
-                    return response.HostName;
-                }
+                return response.HostName;
             }
         }
         catch (Exception)

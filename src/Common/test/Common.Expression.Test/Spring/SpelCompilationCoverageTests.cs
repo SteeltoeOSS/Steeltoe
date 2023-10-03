@@ -574,17 +574,15 @@ public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        bool b = true;
         _expression = Parser.ParseExpression("!#root");
-        Assert.False(_expression.GetValue<bool>(b));
+        Assert.False(_expression.GetValue<bool>(true));
         AssertCanCompile(_expression);
-        Assert.False(_expression.GetValue<bool>(b));
+        Assert.False(_expression.GetValue<bool>(true));
 
-        b = false;
         _expression = Parser.ParseExpression("!#root");
-        Assert.True(_expression.GetValue<bool>(b));
+        Assert.True(_expression.GetValue<bool>(false));
         AssertCanCompile(_expression);
-        Assert.True(_expression.GetValue<bool>(b));
+        Assert.True(_expression.GetValue<bool>(false));
     }
 
     [Fact]
@@ -608,16 +606,13 @@ public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(expression);
         Assert.Equal("b", expression.GetValue<string>());
 
-        bool root = true;
         expression = Parser.ParseExpression("(#root and True)?T(int).Parse('1'):T(long).Parse('3')");
-        Assert.Equal(1, expression.GetValue(root));
+        Assert.Equal(1, expression.GetValue(true));
         AssertCantCompile(expression); // Have not gone down false branch
-        root = false;
-        Assert.Equal(3L, expression.GetValue(root));
+        Assert.Equal(3L, expression.GetValue(false));
         AssertCanCompile(expression);
-        Assert.Equal(3L, expression.GetValue(root));
-        root = true;
-        Assert.Equal(1, expression.GetValue(root));
+        Assert.Equal(3L, expression.GetValue(false));
+        Assert.Equal(1, expression.GetValue(true));
     }
 
     [Fact]
@@ -5753,22 +5748,6 @@ public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
             foreach (object l in ls)
             {
                 s.Append(l);
-                s.Append(' ');
-            }
-        }
-        else if (obj is object[] os)
-        {
-            foreach (object o in os)
-            {
-                s.Append(o);
-                s.Append(' ');
-            }
-        }
-        else if (obj is int[] iss)
-        {
-            foreach (int i in iss)
-            {
-                s.Append(i);
                 s.Append(' ');
             }
         }

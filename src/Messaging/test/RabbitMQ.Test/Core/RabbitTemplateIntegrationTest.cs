@@ -1650,9 +1650,9 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             Assert.NotNull(objects);
             Assert.Equal("FooAsAString", objects[0]);
             Assert.Equal("FooAsAString", objects[1]);
-            var asObjects = message.Headers.Get<object>("bytes") as List<object>;
-            byte[] bytes = asObjects.Cast<byte>().ToArray();
-            Assert.Equal("abc", EncodingUtils.Utf8.GetString(bytes));
+            var binaryTableValue = message.Headers.Get<object>("bytes") as RC.BinaryTableValue;
+            Assert.NotNull(binaryTableValue);
+            Assert.Equal("abc", EncodingUtils.Utf8.GetString(binaryTableValue.Bytes));
             return message;
         }
     }

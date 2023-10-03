@@ -76,7 +76,7 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
                 // Leave stack trace for later, exception may actually be resolved and handled..
                 string error = ex.Message;
 
-                if (error != null && !error.Contains(parameter.Name, StringComparison.Ordinal))
+                if (!error.Contains(parameter.Name, StringComparison.Ordinal))
                 {
                     _logger?.LogDebug(ex, $"Error resolving parameter: {parameter.Name}, error: {error}");
                 }

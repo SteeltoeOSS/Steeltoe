@@ -145,7 +145,7 @@ public class Selection : SpelNode
 
             if (_variant == Last)
             {
-                object lastElem = result == null || result.Count == 0 ? null : result[result.Count - 1];
+                object lastElem = result.Count == 0 ? null : result[result.Count - 1];
                 return new TypedValueHolderValueRef(new TypedValue(lastElem), this);
             }
 
@@ -155,25 +155,22 @@ public class Selection : SpelNode
             }
 
             // Array
-            if (operandAsArray != null)
+            Type elementType = null;
+            Type typeDesc = op.TypeDescriptor;
+
+            if (typeDesc != null)
             {
-                Type elementType = null;
-                Type typeDesc = op.TypeDescriptor;
-
-                if (typeDesc != null)
-                {
-                    elementType = ReflectionHelper.GetElementTypeDescriptor(typeDesc);
-                }
-
-                if (elementType == null)
-                {
-                    throw new InvalidOperationException("Unresolvable element type");
-                }
-
-                var resultArray = Array.CreateInstance(elementType, result.Count);
-                Array.Copy(result.ToArray(), 0, resultArray, 0, result.Count);
-                return new TypedValueHolderValueRef(new TypedValue(resultArray), this);
+                elementType = ReflectionHelper.GetElementTypeDescriptor(typeDesc);
             }
+
+            if (elementType == null)
+            {
+                throw new InvalidOperationException("Unresolvable element type");
+            }
+
+            var resultArray = Array.CreateInstance(elementType, result.Count);
+            Array.Copy(result.ToArray(), 0, resultArray, 0, result.Count);
+            return new TypedValueHolderValueRef(new TypedValue(resultArray), this);
         }
 
         if (operand == null)

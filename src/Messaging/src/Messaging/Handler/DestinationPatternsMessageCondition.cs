@@ -106,12 +106,11 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
             if (pattern.Equals(destination) || MatchPattern(pattern, destination))
             {
                 matches ??= new List<string>();
-
                 matches.Add(pattern);
             }
         }
 
-        if (matches == null || matches.Count == 0)
+        if (matches == null)
         {
             return null;
         }
