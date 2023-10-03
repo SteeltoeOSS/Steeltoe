@@ -15,7 +15,9 @@
     <Rule Id="S108" Action="Info" />
     <Rule Id="S110" Action="Warning" />
     <Rule Id="S1104" Action="None" />
+    <Rule Id="S1133" Action="None" />
     <Rule Id="S1135" Action="Info" />
+    <Rule Id="S1144" Action="Info" />
     <Rule Id="S1151" Action="Warning" />
     <Rule Id="S1172" Action="Info" />
     <Rule Id="S1185" Action="Info" />
@@ -31,6 +33,7 @@
     <Rule Id="S1854" Action="Info" />
     <Rule Id="S1858" Action="Warning" />
     <Rule Id="S1994" Action="Warning" />
+    <Rule Id="S2094" Action="Info" />
     <Rule Id="S2148" Action="Warning" />
     <Rule Id="S2156" Action="Warning" />
     <Rule Id="S2187" Action="None" />
@@ -50,6 +53,7 @@
     <Rule Id="S3241" Action="Info" />
     <Rule Id="S3253" Action="Info" />
     <Rule Id="S3267" Action="None" />
+    <Rule Id="S3363" Action="None" />
     <Rule Id="S3433" Action="None" />
     <Rule Id="S3459" Action="Info" />
     <Rule Id="S3597" Action="None" />
@@ -57,7 +61,6 @@
     <Rule Id="S3776" Action="Info" />
     <Rule Id="S3872" Action="Warning" />
     <Rule Id="S3874" Action="Warning" />
-    <Rule Id="S3884" Action="None" />
     <Rule Id="S3889" Action="None" />
     <Rule Id="S3898" Action="Warning" />
     <Rule Id="S3906" Action="Warning" />
@@ -85,18 +88,24 @@
     <Rule Id="S4159" Action="None" />
     <Rule Id="S4210" Action="None" />
     <Rule Id="S4211" Action="None" />
+    <Rule Id="S4214" Action="Warning" />
     <Rule Id="S4225" Action="Warning" />
     <Rule Id="S4260" Action="None" />
     <Rule Id="S4261" Action="Warning" />
     <Rule Id="S4277" Action="None" />
     <Rule Id="S4428" Action="None" />
     <Rule Id="S4433" Action="None" />
+    <Rule Id="S4487" Action="Info" />
     <Rule Id="S4583" Action="None" />
+    <Rule Id="S4663" Action="Info" />
     <Rule Id="S5773" Action="None" />
     <Rule Id="S6419" Action="None" />
     <Rule Id="S6420" Action="None" />
     <Rule Id="S6422" Action="None" />
     <Rule Id="S6424" Action="None" />
+    <Rule Id="S6507" Action="Warning" />
+    <Rule Id="S6513" Action="Warning" />
+    <Rule Id="S6563" Action="Warning" />
     <Rule Id="S881" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">

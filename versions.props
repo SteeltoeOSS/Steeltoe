@@ -28,7 +28,7 @@
     <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.2.*</SerilogExceptionsVersion>
     <SerilogSinksDebugVersion>2.0.*</SerilogSinksDebugVersion>
-    <SonarAnalyzerVersion>8.47.*</SonarAnalyzerVersion>
+    <SonarAnalyzerVersion>9.11.*</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
     <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
