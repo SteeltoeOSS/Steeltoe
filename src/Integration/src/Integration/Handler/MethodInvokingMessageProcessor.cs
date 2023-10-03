@@ -67,9 +67,8 @@ public class MethodInvokingMessageProcessor<T> : AbstractMessageProcessor<T>, IL
         try
         {
             object result = _invocableHandlerMethod.Invoke(message);
-#pragma warning disable S2219 // Runtime type checking should be simplified
-            if (result != null && typeof(T).IsAssignableFrom(result.GetType()))
-#pragma warning restore S2219 // Runtime type checking should be simplified
+
+            if (result is T)
             {
                 return (T)ConversionService.Convert(result, result?.GetType(), typeof(T));
             }

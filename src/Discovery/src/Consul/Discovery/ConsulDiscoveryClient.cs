@@ -12,7 +12,11 @@ using Steeltoe.Discovery.Consul.Registry;
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// A IDiscoveryClient implementation for Consul.
+/// A discovery client for
+/// <see href="https://www.consul.io/">
+/// HashiCorp Consul
+/// </see>
+/// .
 /// </summary>
 public class ConsulDiscoveryClient : IConsulDiscoveryClient
 {
@@ -22,24 +26,10 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     private readonly IServiceInstance _thisServiceInstance;
     private readonly IConsulServiceRegistrar _registrar;
 
-    internal ConsulDiscoveryOptions Options
-    {
-        get
-        {
-            if (_optionsMonitor != null)
-            {
-                return _optionsMonitor.CurrentValue;
-            }
-
-            return _options;
-        }
-    }
+    private ConsulDiscoveryOptions Options => _optionsMonitor != null ? _optionsMonitor.CurrentValue : _options;
 
     /// <inheritdoc />
     public string Description { get; } = "HashiCorp Consul Client";
-
-    /// <inheritdoc />
-    public IList<string> Services => GetServiceNamesAsync().GetAwaiter().GetResult();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
@@ -106,105 +96,73 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     }
 
     /// <inheritdoc />
-    public IServiceInstance GetLocalServiceInstance()
+    public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
-        return _thisServiceInstance;
+        return GetInstancesAsync(serviceId, QueryOptions.Default, cancellationToken);
     }
 
     /// <inheritdoc />
-    public IList<IServiceInstance> GetInstances(string serviceId)
+    public async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions, CancellationToken cancellationToken)
     {
-        return GetInstances(serviceId, QueryOptions.Default);
-    }
+        ArgumentGuard.NotNull(serviceId);
+        ArgumentGuard.NotNull(queryOptions);
 
-    /// <inheritdoc />
-    public Task ShutdownAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Returns the instances for the provided service ID.
-    /// </summary>
-    /// <param name="serviceId">
-    /// the service id to get instances for.
-    /// </param>
-    /// <param name="queryOptions">
-    /// any Consul query options to use when doing lookup.
-    /// </param>
-    /// <returns>
-    /// the list of service instances.
-    /// </returns>
-    public IList<IServiceInstance> GetInstances(string serviceId, QueryOptions queryOptions = null)
-    {
-        return GetInstancesAsync(serviceId, queryOptions).GetAwaiter().GetResult();
-    }
-
-    /// <summary>
-    /// Returns all instances for all services.
-    /// </summary>
-    /// <param name="queryOptions">
-    /// any Consul query options to use when doing lookup.
-    /// </param>
-    /// <returns>
-    /// the list of service instances.
-    /// </returns>
-    public IList<IServiceInstance> GetAllInstances(QueryOptions queryOptions = null)
-    {
-        return GetAllInstancesAsync().GetAwaiter().GetResult();
-
-        async Task<IList<IServiceInstance>> GetAllInstancesAsync()
-        {
-            queryOptions ??= QueryOptions.Default;
-            var instances = new List<IServiceInstance>();
-            IList<string> result = await GetServiceNamesAsync();
-
-            foreach (string serviceId in result)
-            {
-                await AddInstancesToListAsync(instances, serviceId, queryOptions);
-            }
-
-            return instances;
-        }
-    }
-
-    /// <summary>
-    /// Returns a list of service names in the catalog.
-    /// </summary>
-    /// <param name="queryOptions">
-    /// any Consul query options to use when doing lookup.
-    /// </param>
-    /// <returns>
-    /// the list of services.
-    /// </returns>
-    public IList<string> GetServiceNames(QueryOptions queryOptions = null)
-    {
-        queryOptions ??= QueryOptions.Default;
-        return GetServiceNamesAsync(queryOptions).GetAwaiter().GetResult();
-    }
-
-    internal async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions)
-    {
         var instances = new List<IServiceInstance>();
-        await AddInstancesToListAsync(instances, serviceId, queryOptions);
+        await AddInstancesToListAsync(instances, serviceId, queryOptions, cancellationToken);
         return instances;
     }
 
-    internal async Task<IList<string>> GetServiceNamesAsync(QueryOptions queryOptions = null)
+    /// <inheritdoc />
+    public async Task<IList<IServiceInstance>> GetAllInstancesAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
     {
-        queryOptions ??= QueryOptions.Default;
-        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(queryOptions);
+        ArgumentGuard.NotNull(queryOptions);
+
+        var instances = new List<IServiceInstance>();
+        IList<string> serviceIds = await GetServiceNamesAsync(queryOptions, cancellationToken);
+
+        foreach (string serviceId in serviceIds)
+        {
+            await AddInstancesToListAsync(instances, serviceId, queryOptions, cancellationToken);
+        }
+
+        return instances;
+    }
+
+    /// <inheritdoc />
+    public async Task<IList<string>> GetServiceNamesAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
+    {
+        ArgumentGuard.NotNull(queryOptions);
+
+        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(queryOptions, cancellationToken);
         Dictionary<string, string[]> response = result.Response;
         return response.Keys.ToList();
     }
 
-    internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions)
+    /// <inheritdoc />
+    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
     {
-        QueryResult<ServiceEntry[]> result = await _client.Health.Service(serviceId, Options.DefaultQueryTag, Options.QueryPassing, queryOptions);
+        return GetServiceNamesAsync(QueryOptions.Default, cancellationToken);
+    }
 
-        ServiceEntry[] response = result.Response;
+    /// <inheritdoc />
+    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(_thisServiceInstance);
+    }
 
-        foreach (ConsulServiceInstance instance in response.Select(s => new ConsulServiceInstance(s)))
+    /// <inheritdoc />
+    public Task ShutdownAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions,
+        CancellationToken cancellationToken)
+    {
+        QueryResult<ServiceEntry[]> result =
+            await _client.Health.Service(serviceId, Options.DefaultQueryTag, Options.QueryPassing, queryOptions, cancellationToken);
+
+        foreach (ConsulServiceInstance instance in result.Response.Select(entry => new ConsulServiceInstance(entry)))
         {
             instances.Add(instance);
         }

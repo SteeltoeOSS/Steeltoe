@@ -52,6 +52,6 @@ public sealed class CommandExecutorTest
             await executor.ExecuteAsync("no-such-command");
         };
 
-        await act.Should().ThrowAsync<CommandException>().WithMessage("'no-such-command' failed to start*");
+        await act.Should().ThrowExactlyAsync<CommandException>().WithMessage("'no-such-command' failed to start*");
     }
 }

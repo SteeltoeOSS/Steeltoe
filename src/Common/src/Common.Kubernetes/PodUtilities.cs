@@ -37,9 +37,10 @@ public sealed class PodUtilities
 
             return response.Body.Items?.FirstOrDefault(p => p.Metadata.Name == hostname);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             _logger.LogError(exception, "Failed to retrieve information about the current pod.");
+
             return null;
         }
     }

@@ -8,5 +8,5 @@ namespace Steeltoe.Discovery.Eureka;
 
 public interface IHealthCheckHandler
 {
-    InstanceStatus GetStatus(InstanceStatus currentStatus);
+    Task<InstanceStatus> GetStatusAsync(InstanceStatus currentStatus, CancellationToken cancellationToken);
 }

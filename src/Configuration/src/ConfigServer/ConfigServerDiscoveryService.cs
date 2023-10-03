@@ -60,22 +60,23 @@ internal sealed class ConfigServerDiscoveryService
         _logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", DiscoveryClient.GetType());
     }
 
-    internal IEnumerable<IServiceInstance> GetConfigServerInstances()
+    internal async Task<IEnumerable<IServiceInstance>> GetConfigServerInstancesAsync(CancellationToken cancellationToken)
     {
         int attempts = 0;
         int backOff = _settings.RetryInitialInterval;
-        List<IServiceInstance> instances;
+        IList<IServiceInstance> instances;
 
         do
         {
             try
             {
                 _logger.LogDebug("Locating configserver {serviceId} via discovery", _settings.DiscoveryServiceId);
-                instances = DiscoveryClient.GetInstances(_settings.DiscoveryServiceId).ToList();
+                instances = await DiscoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
             }
-            catch (Exception exception)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 _logger.LogError(exception, "Exception invoking GetInstances() during config server lookup");
+
                 instances = new List<IServiceInstance>();
             }
 
@@ -102,22 +103,22 @@ internal sealed class ConfigServerDiscoveryService
         return instances;
     }
 
-    internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDI)
+    internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDI, CancellationToken cancellationToken)
     {
         if (discoveryClientFromDI is not null)
         {
             _logger.LogInformation("Replacing the IDiscoveryClient built at startup with one for runtime");
-            await DiscoveryClient.ShutdownAsync();
+            await DiscoveryClient.ShutdownAsync(cancellationToken);
             DiscoveryClient = discoveryClientFromDI;
             _usingInitialDiscoveryClient = false;
         }
     }
 
-    internal async Task ShutdownAsync()
+    internal async Task ShutdownAsync(CancellationToken cancellationToken)
     {
         if (_usingInitialDiscoveryClient)
         {
-            await DiscoveryClient.ShutdownAsync();
+            await DiscoveryClient.ShutdownAsync(cancellationToken);
         }
     }
 }

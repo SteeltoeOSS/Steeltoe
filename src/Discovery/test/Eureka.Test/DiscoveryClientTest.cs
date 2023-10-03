@@ -124,7 +124,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
         var client = new DiscoveryClient(configuration, httpClient);
-        Applications result = await client.FetchFullRegistryAsync();
+        Applications result = await client.FetchFullRegistryAsync(CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(1, result.Version);
         Assert.Equal("UP_1_", result.AppsHashCode);
@@ -156,7 +156,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
         var client = new DiscoveryClient(configuration, httpClient);
-        Task<Applications> result = client.FetchFullRegistryAsync();
+        Task<Applications> result = client.FetchFullRegistryAsync(CancellationToken.None);
         client.RegistryFetchCounter = 100;
         Applications apps = await result;
         Assert.Null(apps);
@@ -199,7 +199,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         apps.Add(app);
         client.Applications = apps;
 
-        Applications result = await client.FetchRegistryDeltaAsync();
+        Applications result = await client.FetchRegistryDeltaAsync(CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(3, result.Version);
         Assert.Equal("UP_1_", result.AppsHashCode);
@@ -232,7 +232,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
         var client = new DiscoveryClient(configuration, httpClient);
-        Task<Applications> result = client.FetchRegistryDeltaAsync();
+        Task<Applications> result = client.FetchRegistryDeltaAsync(CancellationToken.None);
         client.RegistryFetchCounter = 100;
         Applications apps = await result;
         Assert.Null(apps);
@@ -270,7 +270,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
         var client = new DiscoveryClient(configuration, httpClient);
-        bool result = await client.RegisterAsync();
+        bool result = await client.RegisterAsync(CancellationToken.None);
         Assert.False(result);
 
         // Verify Register done
@@ -312,7 +312,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
         var client = new DiscoveryClient(configuration, httpClient);
-        bool result = await client.RegisterAsync();
+        bool result = await client.RegisterAsync(CancellationToken.None);
         Assert.True(result);
 
         // Verify Register done
@@ -354,7 +354,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
         var client = new DiscoveryClient(configuration, httpClient);
-        bool result = await client.RenewAsync();
+        bool result = await client.RenewAsync(CancellationToken.None);
 
         // Verify Register done
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -398,7 +398,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
         var client = new DiscoveryClient(configuration, httpClient);
-        bool result = await client.RenewAsync();
+        bool result = await client.RenewAsync(CancellationToken.None);
         Assert.True(result);
     }
 
@@ -434,7 +434,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
         var client = new DiscoveryClient(configuration, httpClient);
-        bool result = await client.UnregisterAsync();
+        bool result = await client.UnregisterAsync(CancellationToken.None);
         Assert.True(result);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -809,7 +809,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void RefreshInstanceInfo_CallsHealthCheckHandler_UpdatesInstanceStatus()
+    public async Task RefreshInstanceInfo_CallsHealthCheckHandler_UpdatesInstanceStatus()
     {
         var configuration = new EurekaClientConfiguration
         {
@@ -824,9 +824,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var myHandler = new MyHealthCheckHandler(InstanceStatus.Down);
         client.HealthCheckHandler = myHandler;
 
-        client.RefreshInstanceInfo();
+        await client.RefreshInstanceInfoAsync(CancellationToken.None);
 
-        Assert.True(myHandler.Called);
+        Assert.True(myHandler.Awaited);
         Assert.Equal(InstanceStatus.Down, ApplicationInfoManager.Instance.InstanceInfo.Status);
     }
 
@@ -921,23 +921,23 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             eventCount++;
         };
 
-        await client.FetchFullRegistryAsync();
+        await client.FetchFullRegistryAsync(CancellationToken.None);
         Assert.Equal(1, eventCount);
 
         TestConfigServerStartup.Response = FooModifiedJson;
 
-        await client.FetchRegistryDeltaAsync();
+        await client.FetchRegistryDeltaAsync(CancellationToken.None);
         Assert.Equal(2, eventCount);
     }
 
     private void TimerFunc()
     {
-        ++_timerFuncCount;
+        Interlocked.Increment(ref _timerFuncCount);
     }
 
     private void TimerFuncThrows()
     {
-        ++_timerFuncCount;
+        Interlocked.Increment(ref _timerFuncCount);
         throw new FormatException();
     }
 }

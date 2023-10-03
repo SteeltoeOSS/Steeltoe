@@ -23,7 +23,7 @@ public class DiscoveryHttpClientHandlerBase
         this.logger = logger;
     }
 
-    public virtual Uri LookupService(Uri current)
+    public virtual async Task<Uri> LookupServiceAsync(Uri current, CancellationToken cancellationToken)
     {
         logger?.LogDebug("LookupService({uri})", current);
 
@@ -32,18 +32,6 @@ public class DiscoveryHttpClientHandlerBase
             return current;
         }
 
-        return loadBalancer.ResolveServiceInstanceAsync(current).GetAwaiter().GetResult();
-    }
-
-    public virtual async Task<Uri> LookupServiceAsync(Uri current)
-    {
-        logger?.LogDebug("LookupService({uri})", current);
-
-        if (!current.IsDefaultPort)
-        {
-            return current;
-        }
-
-        return await loadBalancer.ResolveServiceInstanceAsync(current);
+        return await loadBalancer.ResolveServiceInstanceAsync(current, cancellationToken);
     }
 }

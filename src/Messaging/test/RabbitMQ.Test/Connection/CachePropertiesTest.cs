@@ -16,11 +16,9 @@ public sealed class CachePropertiesTest
     [Fact]
     public void TestChannelCache()
     {
-        using var channelCf = new CachingConnectionFactory("localhost")
-        {
-            ServiceName = "testChannelCache",
-            ChannelCacheSize = 4
-        };
+        using var channelCf = new CachingConnectionFactory("localhost");
+        channelCf.ServiceName = "testChannelCache";
+        channelCf.ChannelCacheSize = 4;
 
         using IConnection c1 = channelCf.CreateConnection();
         using IConnection c2 = channelCf.CreateConnection();
@@ -73,13 +71,11 @@ public sealed class CachePropertiesTest
     [Fact]
     public void TestConnectionCache()
     {
-        using var connectionCf = new CachingConnectionFactory("localhost")
-        {
-            ChannelCacheSize = 10,
-            ConnectionCacheSize = 5,
-            CacheMode = CachingMode.Connection,
-            ServiceName = "testConnectionCache"
-        };
+        using var connectionCf = new CachingConnectionFactory("localhost");
+        connectionCf.ChannelCacheSize = 10;
+        connectionCf.ConnectionCacheSize = 5;
+        connectionCf.CacheMode = CachingMode.Connection;
+        connectionCf.ServiceName = "testConnectionCache";
 
         using IConnection c1 = connectionCf.CreateConnection();
         using IConnection c2 = connectionCf.CreateConnection();

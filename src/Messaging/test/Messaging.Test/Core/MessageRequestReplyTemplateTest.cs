@@ -57,7 +57,7 @@ public sealed class MessageRequestReplyTemplateTest
     [Fact]
     public async Task SendAndReceiveAsyncMissingDestination()
     {
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _template.SendAndReceiveAsync(Message.Create("request")));
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await _template.SendAndReceiveAsync(Message.Create("request")));
     }
 
     [Fact]

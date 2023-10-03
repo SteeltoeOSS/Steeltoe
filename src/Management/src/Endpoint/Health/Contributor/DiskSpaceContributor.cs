@@ -22,7 +22,13 @@ internal sealed class DiskSpaceContributor : IHealthContributor
         _optionsMonitor = optionsMonitor;
     }
 
-    public HealthCheckResult? Health()
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
+    {
+        HealthCheckResult? result = Health();
+        return Task.FromResult(result);
+    }
+
+    private HealthCheckResult? Health()
     {
         DiskSpaceContributorOptions options = _optionsMonitor.CurrentValue;
 

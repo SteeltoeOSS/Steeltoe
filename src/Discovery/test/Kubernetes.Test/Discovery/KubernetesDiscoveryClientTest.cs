@@ -35,7 +35,7 @@ public sealed class KubernetesDiscoveryClientTest
     }
 
     [Fact]
-    public void GetInstances_ThrowsOnNull()
+    public async Task GetInstances_ThrowsOnNull()
     {
         var k8SDiscoveryOptions = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions());
 
@@ -47,11 +47,11 @@ public sealed class KubernetesDiscoveryClientTest
         var testK8SDiscoveryClient = new KubernetesDiscoveryClient(
             new DefaultIsServicePortSecureResolver(k8SDiscoveryOptions.CurrentValue), client, k8SDiscoveryOptions);
 
-        Assert.Throws<ArgumentNullException>(() => testK8SDiscoveryClient.GetInstances(null));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await testK8SDiscoveryClient.GetInstancesAsync(null, CancellationToken.None));
     }
 
     [Fact]
-    public void GetInstances_ShouldBeAbleToHandleEndpointsFromMultipleNamespaces()
+    public async Task GetInstances_ShouldBeAbleToHandleEndpointsFromMultipleNamespaces()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
@@ -83,7 +83,7 @@ public sealed class KubernetesDiscoveryClientTest
 
         IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<IServiceInstance>? genericInstances = discoveryClient.GetInstances("endpoint");
+        IList<IServiceInstance>? genericInstances = await discoveryClient.GetInstancesAsync("endpoint", CancellationToken.None);
         List<KubernetesServiceInstance> instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
 
         Assert.NotNull(instances);
@@ -96,7 +96,7 @@ public sealed class KubernetesDiscoveryClientTest
     }
 
     [Fact]
-    public void GetInstances_ShouldBeAbleToHandleEndpointsSingleAddress()
+    public async Task GetInstances_ShouldBeAbleToHandleEndpointsSingleAddress()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
@@ -124,7 +124,7 @@ public sealed class KubernetesDiscoveryClientTest
 
         IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<IServiceInstance>? genericInstances = discoveryClient.GetInstances("endpoint");
+        IList<IServiceInstance>? genericInstances = await discoveryClient.GetInstancesAsync("endpoint", CancellationToken.None);
         List<KubernetesServiceInstance> instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
 
         Assert.NotNull(instances);
@@ -134,7 +134,7 @@ public sealed class KubernetesDiscoveryClientTest
     }
 
     [Fact]
-    public void GetInstances_ShouldBeAbleToHandleEndpointsSingleAddressAndMultiplePorts()
+    public async Task GetInstances_ShouldBeAbleToHandleEndpointsSingleAddressAndMultiplePorts()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
@@ -162,7 +162,7 @@ public sealed class KubernetesDiscoveryClientTest
 
         IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<IServiceInstance>? genericInstances = discoveryClient.GetInstances("endpoint");
+        IList<IServiceInstance>? genericInstances = await discoveryClient.GetInstancesAsync("endpoint", CancellationToken.None);
         List<KubernetesServiceInstance> instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
 
         Assert.NotNull(instances);
@@ -173,7 +173,7 @@ public sealed class KubernetesDiscoveryClientTest
     }
 
     [Fact]
-    public void GetInstances_ShouldBeAbleToHandleEndpointsMultipleAddresses()
+    public async Task GetInstances_ShouldBeAbleToHandleEndpointsMultipleAddresses()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
@@ -201,7 +201,7 @@ public sealed class KubernetesDiscoveryClientTest
 
         IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<IServiceInstance>? instances = discoveryClient.GetInstances("endpoint");
+        IList<IServiceInstance>? instances = await discoveryClient.GetInstancesAsync("endpoint", CancellationToken.None);
 
         Assert.NotNull(instances);
         Assert.Equal(2, instances.Count);
@@ -210,7 +210,7 @@ public sealed class KubernetesDiscoveryClientTest
     }
 
     [Fact]
-    public void GetServices_ShouldReturnAllServicesWhenNoLabelsAreAppliedToTheClient()
+    public async Task GetServices_ShouldReturnAllServicesWhenNoLabelsAreAppliedToTheClient()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
@@ -236,7 +236,7 @@ public sealed class KubernetesDiscoveryClientTest
 
         var discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<string>? services = discoveryClient.Services;
+        IList<string>? services = await discoveryClient.GetServicesAsync(CancellationToken.None);
 
         Assert.NotNull(services);
         Assert.Equal(3, services.Count);
@@ -246,7 +246,7 @@ public sealed class KubernetesDiscoveryClientTest
     }
 
     [Fact]
-    public void GetServices_ShouldReturnOnlyMatchingServicesWhenLabelsAreAppliedToTheClient()
+    public async Task GetServices_ShouldReturnOnlyMatchingServicesWhenLabelsAreAppliedToTheClient()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
@@ -272,10 +272,10 @@ public sealed class KubernetesDiscoveryClientTest
 
         var discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<string>? services = discoveryClient.GetLabeledServices(new Dictionary<string, string>
+        IList<string>? services = await discoveryClient.GetLabeledServicesAsync(new Dictionary<string, string>
         {
             { "label", "value" }
-        });
+        }, CancellationToken.None);
 
         Assert.NotNull(services);
         Assert.Equal(2, services.Count);
@@ -284,7 +284,7 @@ public sealed class KubernetesDiscoveryClientTest
     }
 
     [Fact]
-    public void EnabledPropertyWorksBothWays()
+    public async Task EnabledPropertyWorksBothWays()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
@@ -312,7 +312,7 @@ public sealed class KubernetesDiscoveryClientTest
 
         var discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
-        IList<string>? services = discoveryClient.Services;
+        IList<string>? services = await discoveryClient.GetServicesAsync(CancellationToken.None);
 
         Assert.NotNull(services);
         Assert.Empty(services);
@@ -320,7 +320,7 @@ public sealed class KubernetesDiscoveryClientTest
         // turn it on
         discoveryOptions.Enabled = true;
 
-        services = discoveryClient.Services;
+        services = await discoveryClient.GetServicesAsync(CancellationToken.None);
 
         Assert.NotNull(services);
         Assert.Equal(2, services.Count);

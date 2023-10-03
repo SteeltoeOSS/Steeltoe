@@ -166,7 +166,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         }
         else if (_refreshTimer == null)
         {
-            _refreshTimer = new Timer(_ => DoLoad(), null, TimeSpan.Zero, Settings.PollingInterval);
+            _refreshTimer = new Timer(_ => DoLoadAsync(true, CancellationToken.None).GetAwaiter().GetResult(), null, TimeSpan.Zero, Settings.PollingInterval);
         }
         else if (existingPollingInterval != Settings.PollingInterval)
         {
@@ -179,10 +179,10 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
     /// </summary>
     public override void Load()
     {
-        LoadInternal();
+        LoadInternalAsync(true, CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    internal ConfigEnvironment LoadInternal(bool updateDictionary = true)
+    internal async Task<ConfigEnvironment> LoadInternalAsync(bool updateDictionary, CancellationToken cancellationToken)
     {
         if (!Settings.Enabled)
         {
@@ -193,7 +193,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         if (IsDiscoveryFirstEnabled())
         {
             _configServerDiscoveryService ??= new ConfigServerDiscoveryService(_configuration, Settings, _loggerFactory);
-            DiscoverServerInstances();
+            await DiscoverServerInstancesAsync(cancellationToken);
         }
 
         // Adds client settings (e.g spring:cloud:config:uri, etc) to the Data dictionary
@@ -210,7 +210,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
                 try
                 {
-                    return DoLoad(updateDictionary);
+                    return await DoLoadAsync(updateDictionary, cancellationToken);
                 }
                 catch (ConfigServerException e)
                 {
@@ -233,10 +233,10 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         }
 
         Logger.LogInformation("Fetching configuration from server at: {uri}", Settings.Uri);
-        return DoLoad(updateDictionary);
+        return await DoLoadAsync(updateDictionary, cancellationToken);
     }
 
-    internal ConfigEnvironment DoLoad(bool updateDictionary = true)
+    internal async Task<ConfigEnvironment> DoLoadAsync(bool updateDictionary, CancellationToken cancellationToken)
     {
         Exception error = null;
 
@@ -253,10 +253,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
                 }
 
                 // Invoke Config Servers
-                Task<ConfigEnvironment> task = RemoteLoadAsync(uris, label);
-
-                // Wait for results from server
-                ConfigEnvironment env = task.GetAwaiter().GetResult();
+                ConfigEnvironment env = await RemoteLoadAsync(uris, label, cancellationToken);
 
                 // Update configuration Data dictionary with any results
                 if (env != null)
@@ -311,9 +308,9 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
-            error = e;
+            error = exception;
         }
 
         Logger.LogWarning(error, "Could not locate PropertySource");
@@ -336,9 +333,9 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         return Settings.Label.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries);
     }
 
-    private void DiscoverServerInstances()
+    private async Task DiscoverServerInstancesAsync(CancellationToken cancellationToken)
     {
-        IServiceInstance[] instances = _configServerDiscoveryService.GetConfigServerInstances().ToArray();
+        IServiceInstance[] instances = (await _configServerDiscoveryService.GetConfigServerInstancesAsync(cancellationToken)).ToArray();
 
         if (!instances.Any())
         {
@@ -394,19 +391,19 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         }
     }
 
-    internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDi)
+    internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDi, CancellationToken cancellationToken)
     {
         if (_configServerDiscoveryService is not null)
         {
-            await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientFromDi);
+            await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientFromDi, cancellationToken);
         }
     }
 
-    internal async Task ShutdownAsync()
+    internal async Task ShutdownAsync(CancellationToken cancellationToken)
     {
         if (_configServerDiscoveryService is not null)
         {
-            await _configServerDiscoveryService.ShutdownAsync();
+            await _configServerDiscoveryService.ShutdownAsync(cancellationToken);
         }
     }
 
@@ -422,14 +419,17 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
     /// <param name="password">
     /// Password to use if required.
     /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     /// <returns>
     /// The HttpRequestMessage built from the path.
     /// </returns>
-    protected internal HttpRequestMessage GetRequestMessage(Uri requestUri, string username, string password)
+    internal async Task<HttpRequestMessage> GetRequestMessageAsync(Uri requestUri, string username, string password, CancellationToken cancellationToken)
     {
         HttpRequestMessage request = string.IsNullOrEmpty(Settings.AccessTokenUri)
             ? HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, username, password)
-            : HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, () => FetchAccessTokenAsync().GetAwaiter().GetResult());
+            : await HttpClientHelper.GetRequestMessageAsync(HttpMethod.Get, requestUri, FetchAccessTokenAsync, cancellationToken);
 
         if (!string.IsNullOrEmpty(Settings.Token) && !ConfigServerClientSettings.IsMultiServerConfiguration(Settings.Uri))
         {
@@ -498,7 +498,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         data["spring:cloud:config:health:timeToLive"] = Settings.HealthTimeToLive.ToString(culture);
     }
 
-    protected internal async Task<ConfigEnvironment> RemoteLoadAsync(IEnumerable<string> requestUris, string label)
+    protected internal async Task<ConfigEnvironment> RemoteLoadAsync(IEnumerable<string> requestUris, string label, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(requestUris);
 
@@ -519,12 +519,12 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
             var uri = new Uri(GetConfigServerUri(serverUri, label), UriKind.RelativeOrAbsolute);
 
             // Get the request message
-            HttpRequestMessage request = GetRequestMessage(uri, username, password);
+            HttpRequestMessage request = await GetRequestMessageAsync(uri, username, password, cancellationToken);
 
             // Invoke Config Server
             try
             {
-                using HttpResponseMessage response = await HttpClient.SendAsync(request);
+                using HttpResponseMessage response = await HttpClient.SendAsync(request, cancellationToken);
 
                 Logger.LogInformation("Config Server returned status: {statusCode} invoking path: {requestUri}", response.StatusCode,
                     WebUtility.UrlEncode(requestUri));
@@ -547,14 +547,15 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
                     return null;
                 }
 
-                return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions);
+                return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions, cancellationToken);
             }
-            catch (Exception exception)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 error = exception;
+
                 Logger.LogError(exception, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
 
-                if (IsContinueExceptionType(exception))
+                if (IsSocketError(exception))
                 {
                     continue;
                 }
@@ -729,7 +730,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
 
     private void RenewToken()
     {
-        _ = new Timer(_ => RefreshVaultTokenAsync().GetAwaiter().GetResult(), null, TimeSpan.FromMilliseconds(Settings.TokenRenewRate),
+        _ = new Timer(_ => RefreshVaultTokenAsync(CancellationToken.None).GetAwaiter().GetResult(), null, TimeSpan.FromMilliseconds(Settings.TokenRenewRate),
             TimeSpan.FromMilliseconds(Settings.TokenRenewRate));
     }
 
@@ -739,7 +740,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
     /// <returns>
     /// The task object representing asynchronous operation.
     /// </returns>
-    private async Task<string> FetchAccessTokenAsync()
+    private async Task<string> FetchAccessTokenAsync(CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(Settings.AccessTokenUri))
         {
@@ -747,11 +748,11 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         }
 
         return await HttpClientHelper.GetAccessTokenAsync(Settings.AccessTokenUri, Settings.ClientId, Settings.ClientSecret, Settings.Timeout,
-            Settings.ValidateCertificates, HttpClient, Logger);
+            Settings.ValidateCertificates, HttpClient, Logger, cancellationToken);
     }
 
     // fire and forget
-    private async Task RefreshVaultTokenAsync()
+    private async Task RefreshVaultTokenAsync(CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(Settings.Token))
         {
@@ -765,18 +766,18 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
             HttpClient ??= GetConfiguredHttpClient(Settings);
 
             Uri uri = GetVaultRenewUri();
-            HttpRequestMessage message = GetVaultRenewMessage(uri);
+            HttpRequestMessage message = await GetVaultRenewMessageAsync(uri, cancellationToken);
 
             Logger.LogInformation("Renewing Vault token {token} for {ttl} milliseconds at Uri {uri}", obscuredToken, Settings.TokenTtl, uri);
 
-            using HttpResponseMessage response = await HttpClient.SendAsync(message);
+            using HttpResponseMessage response = await HttpClient.SendAsync(message, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 Logger.LogWarning("Renewing Vault token {token} returned status: {status}", obscuredToken, response.StatusCode);
             }
         }
-        catch (Exception exception)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             Logger.LogError(exception, "Unable to renew Vault token {token}. Is the token invalid or expired?", obscuredToken);
         }
@@ -794,9 +795,9 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         return new Uri(rawUri + VaultRenewPath, UriKind.RelativeOrAbsolute);
     }
 
-    private HttpRequestMessage GetVaultRenewMessage(Uri requestUri)
+    private async Task<HttpRequestMessage> GetVaultRenewMessageAsync(Uri requestUri, CancellationToken cancellationToken)
     {
-        HttpRequestMessage request = HttpClientHelper.GetRequestMessage(HttpMethod.Post, requestUri, () => FetchAccessTokenAsync().GetAwaiter().GetResult());
+        HttpRequestMessage request = await HttpClientHelper.GetRequestMessageAsync(HttpMethod.Post, requestUri, FetchAccessTokenAsync, cancellationToken);
 
         if (!string.IsNullOrEmpty(Settings.Token))
         {
@@ -850,18 +851,8 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         return client;
     }
 
-    private bool IsContinueExceptionType(Exception exception)
+    private static bool IsSocketError(Exception exception)
     {
-        if (exception is TaskCanceledException)
-        {
-            return true;
-        }
-
-        if (exception is HttpRequestException && exception.InnerException is SocketException)
-        {
-            return true;
-        }
-
-        return false;
+        return exception is HttpRequestException && exception.InnerException is SocketException;
     }
 }

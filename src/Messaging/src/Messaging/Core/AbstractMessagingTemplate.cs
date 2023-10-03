@@ -39,7 +39,7 @@ public abstract class AbstractMessagingTemplate<TDestination> : AbstractMessageR
         IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
     {
         IMessage requestMessage = DoConvert(request, headers, requestPostProcessor);
-        IMessage replyMessage = await SendAndReceiveAsync(destination, requestMessage);
+        IMessage replyMessage = await SendAndReceiveAsync(destination, requestMessage, cancellationToken);
 
         if (replyMessage != null)
         {

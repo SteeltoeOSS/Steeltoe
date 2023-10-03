@@ -10,11 +10,11 @@ internal sealed class DownContributor : IHealthContributor
 {
     public string Id => "Down";
 
-    public HealthCheckResult Health()
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
-        return new HealthCheckResult
+        return Task.FromResult<HealthCheckResult?>(new HealthCheckResult
         {
             Status = HealthStatus.Down
-        };
+        });
     }
 }

@@ -355,6 +355,21 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
+    public async Task GetStatusCode_InvalidGroupName_Returns404()
+    {
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>();
+        using var server = new TestServer(builder);
+        HttpClient client = server.CreateClient();
+
+        HttpResponseMessage responseMessage = await client.GetAsync(new Uri("http://localhost/actuator/health/foo"));
+
+        Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
+
+        string body = await responseMessage.Content.ReadAsStringAsync();
+        Assert.Empty(body);
+    }
+
+    [Fact]
     public void RoutesByPathAndVerb()
     {
         var endpointOptions = GetOptionsFromSettings<HealthEndpointOptions>();

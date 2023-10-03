@@ -700,7 +700,7 @@ public class RabbitTemplate
 
     public virtual Task<T> ReceiveAndConvertAsync<T>(string queueName, int timeoutMillis, CancellationToken cancellationToken = default)
     {
-        return Task.Run(() => (T)DoReceiveAndConvert(queueName, timeoutMillis, typeof(T), cancellationToken));
+        return Task.Run(() => (T)DoReceiveAndConvert(queueName, timeoutMillis, typeof(T), cancellationToken), cancellationToken);
     }
 
     public virtual Task<object> ReceiveAndConvertAsync(Type type, CancellationToken cancellation = default)
@@ -720,7 +720,7 @@ public class RabbitTemplate
 
     public virtual Task<object> ReceiveAndConvertAsync(string queueName, int timeoutMillis, Type type, CancellationToken cancellationToken = default)
     {
-        return Task.Run(() => DoReceiveAndConvert(queueName, timeoutMillis, type, cancellationToken));
+        return Task.Run(() => DoReceiveAndConvert(queueName, timeoutMillis, type, cancellationToken), cancellationToken);
     }
 
     public virtual bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback)

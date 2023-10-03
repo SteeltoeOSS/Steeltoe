@@ -23,7 +23,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
     }
 
     [Fact]
-    public void ContributeWithNullBuilderThrows()
+    public async Task ContributeWithNullBuilderThrows()
     {
         var appsettings = new Dictionary<string, string?>
         {
@@ -40,7 +40,7 @@ public sealed class AppSettingsInfoContributorTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(configurationRoot);
 
-        Assert.ThrowsAsync<ArgumentNullException>(() => settings.ContributeAsync(null!, CancellationToken.None));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await settings.ContributeAsync(null!, CancellationToken.None));
     }
 
     [Fact]

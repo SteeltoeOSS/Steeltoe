@@ -7,23 +7,32 @@ namespace Steeltoe.Common.Discovery;
 public interface IServiceInstanceProvider
 {
     /// <summary>
-    /// Gets a human readable description of the implementation.
+    /// Gets a human-readable description of this provider.
     /// </summary>
     string Description { get; }
 
     /// <summary>
-    /// Gets all known service Ids.
+    /// Gets all known service IDs.
     /// </summary>
-    IList<string> Services { get; }
-
-    /// <summary>
-    /// Get all ServiceInstances associated with a particular serviceId.
-    /// </summary>
-    /// <param name="serviceId">
-    /// the serviceId to lookup.
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
     /// </param>
     /// <returns>
-    /// List of service instances.
+    /// The service IDs.
     /// </returns>
-    IList<IServiceInstance> GetInstances(string serviceId);
+    Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Gets all service instances associated with the specified service ID.
+    /// </summary>
+    /// <param name="serviceId">
+    /// The ID of the service to lookup.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// The list of service instances.
+    /// </returns>
+    Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken);
 }

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
@@ -11,20 +12,29 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class ScopedEurekaHealthCheckHandler : EurekaHealthCheckHandler
 {
-    internal IServiceScopeFactory ScopeFactory;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     public ScopedEurekaHealthCheckHandler(IServiceScopeFactory scopeFactory, ILogger<ScopedEurekaHealthCheckHandler> logger = null)
         : base(logger)
     {
-        ScopeFactory = scopeFactory;
+        ArgumentGuard.NotNull(scopeFactory);
+
+        _scopeFactory = scopeFactory;
     }
 
-    public override InstanceStatus GetStatus(InstanceStatus currentStatus)
+    public override async Task<InstanceStatus> GetStatusAsync(InstanceStatus currentStatus, CancellationToken cancellationToken)
     {
-        using IServiceScope scope = ScopeFactory.CreateScope();
-        Contributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToList();
-        InstanceStatus result = base.GetStatus(currentStatus);
-        Contributors = null;
-        return result;
+        using IServiceScope scope = _scopeFactory.CreateScope();
+
+        try
+        {
+            Contributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToList();
+            InstanceStatus result = await base.GetStatusAsync(currentStatus, cancellationToken);
+            return result;
+        }
+        finally
+        {
+            Contributors = null;
+        }
     }
 }

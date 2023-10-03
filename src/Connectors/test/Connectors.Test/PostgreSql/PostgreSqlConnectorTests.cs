@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Connectors.PostgreSql;
@@ -338,7 +339,7 @@ YrSRLwUCgYAURMaw8BXwBsp8hB8cPWJ5G7K+9eyKImSmLUdKdAhV7g9uEKOk0uYg
 bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
 7BzaXnC0iPbhCQwsVrdPHU7rwocyR4oBm+BVyLe6FqCb0+LijCgXYQ==
 -----END RSA PRIVATE KEY-----"
-        }, options => options.WithoutStrictOrdering());
+        }, options => options.WithoutStrictOrdering().Using(IgnoreLineEndingsComparer.Instance));
 
         CleanupTempFiles(optionsAzureOne.ConnectionString, optionsAzureTwo.ConnectionString, optionsGoogle.ConnectionString);
     }

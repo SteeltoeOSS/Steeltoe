@@ -64,11 +64,11 @@ public sealed class GitInfoContributorTest : BaseTest
     }
 
     [Fact]
-    public void ContributeWithNullBuilderThrows()
+    public async Task ContributeWithNullBuilderThrows()
     {
         // Uses git.properties file in test project
         var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
-        Assert.ThrowsAsync<ArgumentNullException>(() => contributor.ContributeAsync(null!, CancellationToken.None));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await contributor.ContributeAsync(null!, CancellationToken.None));
     }
 
     [Fact]
