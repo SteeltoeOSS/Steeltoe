@@ -31,7 +31,10 @@ public static class ConfigurationUrlHelpers
 
         if (!string.IsNullOrEmpty(urlStringFromConfiguration))
         {
-            string[] addresses = urlStringFromConfiguration.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] addresses = urlStringFromConfiguration.Split(new[]
+            {
+                ';'
+            }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string address in addresses)
             {
