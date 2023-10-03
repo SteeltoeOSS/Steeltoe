@@ -19,18 +19,6 @@ public class BindingBuilder
         return new DestinationConfigurer(exchange.ExchangeName, DestinationType.Exchange);
     }
 
-    private static Dictionary<string, object> CreateMapForKeys(params string[] keys)
-    {
-        var map = new Dictionary<string, object>();
-
-        foreach (string key in keys)
-        {
-            map[key] = null;
-        }
-
-        return map;
-    }
-
     public static IBinding Create(string bindingName, DestinationType type)
     {
         if (type == DestinationType.Exchange)
@@ -90,6 +78,18 @@ public class BindingBuilder
         {
             Destination = destination;
             Exchange = exchange;
+        }
+
+        private static Dictionary<string, object> CreateMapForKeys(params string[] keys)
+        {
+            var map = new Dictionary<string, object>();
+
+            foreach (string key in keys)
+            {
+                map[key] = null;
+            }
+
+            return map;
         }
 
         public HeadersExchangeSingleValueBindingCreator Where(string key)
