@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.RetryPolly;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -9,6 +10,7 @@ using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Xunit;
 using Xunit.Abstractions;
+using static Steeltoe.Messaging.RabbitMQ.Test.Attributes.EnableRabbitIntegrationTest;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
@@ -63,6 +65,37 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         Assert.True(await ConsumersOnQueueAsync(Q2, 0));
         Assert.True(await ActiveConsumerCountAsync(container, 0));
         Assert.Empty(container.ConsumersByQueue);
+        await template.StopAsync();
+        cf.Destroy();
+    }
+
+    [Fact]
+    public async Task TestMaxAttemptsRetryOnThrow()
+    {
+        var cf = new CachingConnectionFactory("localhost");
+        int maxAttempts = 3;
+
+        var container = new DirectMessageListenerContainer(null, cf)
+        {
+            RetryTemplate = new PollyRetryTemplate(maxAttempts, 1, 1, 1),
+            Recoverer = new DefaultReplyRecoveryCallback()
+        };
+
+        container.SetQueueNames(Q1);
+
+        var listener = new ThrowingMessageListener();
+        var adapter = new MessageListenerAdapter(null, listener);
+        container.MessageListener = adapter;
+        container.ServiceName = "simple";
+        container.ConsumerTagStrategy = new TestConsumerTagStrategy(_testName);
+        await container.StartAsync();
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
+        var template = new RabbitTemplate(cf);
+        template.ConvertSendAndReceive<string>(Q1, "foo");
+
+        Assert.Equal(maxAttempts, listener.ExceptionCounter);
+
+        await container.StopAsync();
         await template.StopAsync();
         cf.Destroy();
     }
@@ -125,6 +158,22 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
             }
 
             return null;
+        }
+    }
+
+    private sealed class ThrowingMessageListener : IReplyingMessageListener<string, string>
+    {
+        public int ExceptionCounter { get; private set; }
+
+        public ThrowingMessageListener(int exceptionCounter = 0)
+        {
+            ExceptionCounter = exceptionCounter;
+        }
+
+        public string HandleMessage(string input)
+        {
+            ExceptionCounter++;
+            throw new InvalidOperationException("Intentional exception to test retry");
         }
     }
 
