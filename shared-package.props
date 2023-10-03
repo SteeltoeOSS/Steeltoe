@@ -12,6 +12,7 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>See https://github.com/SteeltoeOSS/Steeltoe/releases.</PackageReleaseNotes>
+    <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -36,6 +37,11 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)\build\icon.png" Pack="true" PackagePath="\" Visible="false" />
+    <!-- Add a PackageReadme.md file in the project directory to override the default one. -->
+    <None Condition="Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildProjectDirectory)\PackageReadme.md" Visible="false" Pack="True"
+      PackagePath="" />
+    <None Condition="!Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildThisFileDirectory)\PackageReadme.md" Visible="false" Pack="True"
+      PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
