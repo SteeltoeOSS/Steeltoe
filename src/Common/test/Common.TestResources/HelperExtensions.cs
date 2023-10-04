@@ -12,10 +12,10 @@ namespace Steeltoe.Common.TestResources;
 public static class HelperExtensions
 {
     /// <summary>
-    /// Add a mock IActionDescriptorCollectionProvider for testing
+    /// Add a mock IActionDescriptorCollectionProvider for testing.
     /// </summary>
     /// <param name="services">
-    /// The IServiceCollection to update
+    /// The IServiceCollection to update.
     /// </param>
     public static void AddActionDescriptorCollectionProvider(this IServiceCollection services)
     {

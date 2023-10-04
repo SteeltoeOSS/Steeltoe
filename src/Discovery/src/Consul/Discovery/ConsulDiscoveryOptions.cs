@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
@@ -222,10 +223,7 @@ public class ConsulDiscoveryOptions
     /// <param name="addresses">
     /// A list of addresses the application is listening on.
     /// </param>
-    /// <param name="wildcardHostname">
-    /// String representation of a wildcard hostname.
-    /// </param>
-    public void ApplyConfigUrls(List<Uri> addresses, string wildcardHostname)
+    public void ApplyConfigUrls(List<Uri> addresses)
     {
         // try to pull some values out of server config to override defaults, but only if not using NetUtils
         // if NetUtils are configured, the user probably wants to define their own behavior
@@ -242,7 +240,7 @@ public class ConsulDiscoveryOptions
             Port = configAddress.Port;
 
             // only set the host if it isn't a wildcard
-            if (configAddress.Host != wildcardHostname && configAddress.Host != "0.0.0.0")
+            if (!ConfigurationUrlHelpers.WildcardHosts.Contains(configAddress.Host))
             {
                 HostName = configAddress.Host;
             }
