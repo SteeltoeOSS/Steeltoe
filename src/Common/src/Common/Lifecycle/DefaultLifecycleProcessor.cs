@@ -63,7 +63,7 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
     {
         if (disposing)
         {
-            OnCloseAsync().Wait();
+            OnCloseAsync().GetAwaiter().GetResult();
         }
     }
 

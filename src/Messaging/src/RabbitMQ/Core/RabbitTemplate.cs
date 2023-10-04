@@ -1297,7 +1297,7 @@ public class RabbitTemplate
     {
         if (disposing)
         {
-            StopAsync().Wait();
+            StopAsync().GetAwaiter().GetResult();
         }
     }
 

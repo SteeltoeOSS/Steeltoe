@@ -94,7 +94,7 @@ public class BatchingRabbitTemplate : RabbitTemplate
 
     public void Flush()
     {
-        FlushAsync(default).Wait();
+        FlushAsync(default).GetAwaiter().GetResult();
     }
 
     public async Task FlushAsync(CancellationToken cancellationToken)

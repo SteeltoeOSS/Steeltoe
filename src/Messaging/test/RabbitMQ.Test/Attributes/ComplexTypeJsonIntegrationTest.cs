@@ -143,7 +143,7 @@ public sealed class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJs
         {
             _services = CreateContainer();
             Provider = _services.BuildServiceProvider();
-            Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
+            Provider.GetRequiredService<IHostedService>().StartAsync(default).GetAwaiter().GetResult();
         }
 
         private ServiceCollection CreateContainer(IConfiguration configuration = null)

@@ -562,8 +562,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Equal("test-message", Encoding.UTF8.GetString((byte[])reply.Payload));
         reply = rabbitTemplate.Receive();
         Assert.Null(reply);
-        rabbitTemplate.StopAsync().Wait();
-        container.StopAsync().Wait();
+        rabbitTemplate.StopAsync().GetAwaiter().GetResult();
+        container.StopAsync().GetAwaiter().GetResult();
         cachingConnectionFactory.Destroy();
     }
 
@@ -603,7 +603,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Equal("test-message", Encoding.UTF8.GetString((byte[])reply.Payload));
         reply = rabbitTemplate.Receive(Route);
         Assert.Null(reply);
-        rabbitTemplate.StopAsync().Wait();
+        rabbitTemplate.StopAsync().GetAwaiter().GetResult();
         cachingConnectionFactory.Destroy();
     }
 
@@ -643,7 +643,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Equal("test-message", Encoding.UTF8.GetString((byte[])reply.Payload));
         reply = rabbitTemplate.Receive(Route);
         Assert.Null(reply);
-        rabbitTemplate.StopAsync().Wait();
+        rabbitTemplate.StopAsync().GetAwaiter().GetResult();
         cachingConnectionFactory.Destroy();
     }
 
@@ -682,7 +682,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Equal("message", received.Result);
         string result = rabbitTemplate.ReceiveAndConvert<string>();
         Assert.Null(result);
-        rabbitTemplate.StopAsync().Wait();
+        rabbitTemplate.StopAsync().GetAwaiter().GetResult();
         cachingConnectionFactory.Destroy();
     }
 
@@ -719,7 +719,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
-        rabbitTemplate.StopAsync().Wait();
+        rabbitTemplate.StopAsync().GetAwaiter().GetResult();
     }
 
     [Fact]
@@ -755,7 +755,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
-        rabbitTemplate.StopAsync().Wait();
+        rabbitTemplate.StopAsync().GetAwaiter().GetResult();
     }
 
     [Fact]
@@ -795,7 +795,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         result = rabbitTemplate.ReceiveAndConvert<string>();
         Assert.Null(result);
-        rabbitTemplate.StopAsync().Wait();
+        rabbitTemplate.StopAsync().GetAwaiter().GetResult();
         cachingConnectionFactory.Destroy();
     }
 
@@ -832,7 +832,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
-        rabbitTemplate.StopAsync().Wait();
+        rabbitTemplate.StopAsync().GetAwaiter().GetResult();
     }
 
     [Fact]
@@ -868,7 +868,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
-        rabbitTemplate.StopAsync().Wait();
+        rabbitTemplate.StopAsync().GetAwaiter().GetResult();
     }
 
     [Fact]
@@ -918,7 +918,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         container.ConnectionFactory = rabbitTemplate.ConnectionFactory;
         container.SetQueueNames(ReplyQueueName);
         container.MessageListener = rabbitTemplate;
-        container.StartAsync().Wait();
+        container.StartAsync().GetAwaiter().GetResult();
 
         const int count = 10;
         var results = new ConcurrentDictionary<double, object>();
@@ -980,7 +980,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         while (receiveCount.Value < count * 2);
 
         Task.WaitAll(tasks.ToArray());
-        container.StopAsync().Wait();
+        container.StopAsync().GetAwaiter().GetResult();
         Assert.Equal(count * 2, results.Count);
 
         foreach (KeyValuePair<double, object> entry in results)
@@ -1005,7 +1005,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.NotNull(result);
         Assert.Equal("TEST", Encoding.UTF8.GetString((byte[])result.Payload));
         Assert.Equal(messageId, result.Headers.CorrelationId());
-        rabbitTemplate.StopAsync().Wait();
+        rabbitTemplate.StopAsync().GetAwaiter().GetResult();
     }
 
     [Fact]
@@ -1042,7 +1042,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         messageListener.SetBeforeSendReplyPostProcessors(new GZipPostProcessor());
         container.MessageListener = messageListener;
         container.Initialize();
-        container.StartAsync().Wait();
+        container.StartAsync().GetAwaiter().GetResult();
         using RabbitTemplate rabbitTemplate = CreateSendAndReceiveRabbitTemplate(Template.ConnectionFactory);
 
         try
@@ -1062,8 +1062,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
         finally
         {
-            rabbitTemplate.StopAsync().Wait();
-            container.StopAsync().Wait();
+            rabbitTemplate.StopAsync().GetAwaiter().GetResult();
+            container.StopAsync().GetAwaiter().GetResult();
         }
     }
 
@@ -1269,11 +1269,11 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             };
 
             container.MessageListener = messageListenerAdapter;
-            container.StartAsync().Wait();
+            container.StartAsync().GetAwaiter().GetResult();
             rabbitTemplate.DefaultReceiveQueue = Route;
             rabbitTemplate.RoutingKey = Route;
             string result = rabbitTemplate.ConvertSendAndReceive<string>("foo");
-            container.StopAsync().Wait();
+            container.StopAsync().GetAwaiter().GetResult();
             Assert.Equal("FOO", result);
 
             if (expectUsedTemp)
@@ -1291,7 +1291,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
         finally
         {
-            rabbitTemplate.StopAsync().Wait();
+            rabbitTemplate.StopAsync().GetAwaiter().GetResult();
         }
     }
 

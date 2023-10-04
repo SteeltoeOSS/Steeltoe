@@ -105,7 +105,7 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
 
                 if (isAsyncMethod)
                 {
-                    resultAsTask.Wait();
+                    resultAsTask.GetAwaiter().GetResult();
                 }
             }
 
