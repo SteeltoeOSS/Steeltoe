@@ -191,7 +191,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     }
 
     [Fact]
-    public void TestDebatchByContainer()
+    public async Task TestDebatchByContainer()
     {
         ServiceProvider provider = new ServiceCollection().BuildServiceProvider();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
@@ -205,7 +205,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         var batchSize = new AtomicInteger();
         container.MessageListener = new TestDebatchListener(received, lastInBatch, batchSize, latch);
         container.Initialize();
-        container.StartAsync();
+        await container.StartAsync();
 
         try
         {
@@ -233,13 +233,13 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         }
         finally
         {
-            container.StopAsync();
+            await container.StopAsync();
             container.Dispose();
         }
     }
 
     [Fact]
-    public void TestDebatchByContainerPerformance()
+    public async Task TestDebatchByContainerPerformance()
     {
         ServiceProvider provider = new ServiceCollection().BuildServiceProvider();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
@@ -254,7 +254,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         container.PrefetchCount = 1000;
         container.BatchingStrategy = new SimpleBatchingStrategy(1000, int.MaxValue, 30000);
         container.Initialize();
-        container.StartAsync();
+        await container.StartAsync();
 
         try
         {
@@ -283,13 +283,13 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         }
         finally
         {
-            container.StopAsync();
+            await container.StopAsync();
             container.Dispose();
         }
     }
 
     [Fact]
-    public void TestDebatchByContainerBadMessageRejected()
+    public async Task TestDebatchByContainerBadMessageRejected()
     {
         ServiceProvider provider = new ServiceCollection().BuildServiceProvider();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
@@ -302,7 +302,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         var errorHandler = new TestConditionalRejectingErrorHandler();
         container.ErrorHandler = errorHandler;
         container.Initialize();
-        container.StartAsync();
+        await container.StartAsync();
 
         try
         {
@@ -318,13 +318,13 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
             IMessage<byte[]> message = Message.Create(Encoding.UTF8.GetBytes("\u0000\u0000\u0000\u0004foo"), headers);
             template.Send(string.Empty, Route, message);
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
             Assert.Equal(0, listener.Count);
             Assert.True(errorHandler.HandleErrorCalled);
         }
         finally
         {
-            container.StopAsync();
+            await container.StopAsync();
             container.Dispose();
         }
     }
@@ -495,7 +495,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     }
 
     [Fact]
-    public void TestSimpleBatchGZippedWithEncodingInflated()
+    public async Task TestSimpleBatchGZippedWithEncodingInflated()
     {
         var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
 
@@ -518,7 +518,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
         template.Send(string.Empty, Route, message);
-        Thread.Sleep(100);
+        await Task.Delay(100);
         byte[] output = template.ReceiveAndConvert<byte[]>(Route);
         Assert.NotNull(output);
         Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString(output));

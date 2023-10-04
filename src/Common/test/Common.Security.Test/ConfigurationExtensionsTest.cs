@@ -68,7 +68,7 @@ public sealed class ConfigurationExtensionsTest
         Assert.Equal("key1", configurationRoot["privateKey"]);
 
         await File.WriteAllTextAsync(tempFile1, "barfoo");
-        Thread.Sleep(4000);
+        await Task.Delay(4000);
         Assert.Equal("barfoo", configurationRoot["certificate"]);
         Assert.Equal("key1", configurationRoot["privateKey"]);
         Assert.True(changeCalled, "Change wasn't called for tempFile1");
@@ -78,7 +78,7 @@ public sealed class ConfigurationExtensionsTest
 
         changeCalled = false;
         await File.WriteAllTextAsync(tempFile2, "barbar");
-        Thread.Sleep(4000);
+        await Task.Delay(4000);
         Assert.Equal("barfoo", configurationRoot["certificate"]);
         Assert.Equal("barbar", configurationRoot["privateKey"]);
         Assert.True(changeCalled, "Change wasn't called for tempFile2");

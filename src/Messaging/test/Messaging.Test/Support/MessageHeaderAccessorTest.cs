@@ -38,7 +38,7 @@ public sealed class MessageHeaderAccessorTest
     }
 
     [Fact]
-    public void ExistingHeadersModification()
+    public async Task ExistingHeadersModification()
     {
         HeadersDictionary map = new Dictionary<string, object>
         {
@@ -48,7 +48,7 @@ public sealed class MessageHeaderAccessorTest
 
         IMessage<string> message = Message.Create("payload", map);
 
-        Thread.Sleep(50);
+        await Task.Delay(50);
 
         var accessor = new MessageHeaderAccessor(message);
         accessor.SetHeader("foo", "BAR");

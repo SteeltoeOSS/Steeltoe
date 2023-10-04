@@ -143,7 +143,7 @@ public sealed class DirectMessageListenerContainerMockTest
             consumer.Value.HandleBasicDeliver("consumerTag", (ulong)i, false, string.Empty, string.Empty, props, body);
         }
 
-        Thread.Sleep(200);
+        await Task.Delay(200);
 
         consumer.Value.HandleBasicDeliver("consumerTag", 16ul, false, string.Empty, string.Empty, props, body);
 

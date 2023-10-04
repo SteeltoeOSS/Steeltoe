@@ -831,7 +831,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void StartTimer_StartsTimer()
+    public async Task StartTimer_StartsTimer()
     {
         var configuration = new EurekaClientConfiguration
         {
@@ -843,13 +843,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         _timerFuncCount = 0;
         Timer result = client.StartTimer("MyTimer", 10, TimerFunc);
         Assert.NotNull(result);
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         Assert.True(_timerFuncCount > 0);
-        result.Dispose();
+        await result.DisposeAsync();
     }
 
     [Fact]
-    public void StartTimer_StartsTimer_KeepsRunningOnExceptions()
+    public async Task StartTimer_StartsTimer_KeepsRunningOnExceptions()
     {
         var configuration = new EurekaClientConfiguration
         {
@@ -861,13 +861,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         _timerFuncCount = 0;
         Timer result = client.StartTimer("MyTimer", 10, TimerFuncThrows);
         Assert.NotNull(result);
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         Assert.True(_timerFuncCount >= 1);
-        result.Dispose();
+        await result.DisposeAsync();
     }
 
     [Fact]
-    public void StartTimer_StartsTimer_StopsAfterDispose()
+    public async Task StartTimer_StartsTimer_StopsAfterDispose()
     {
         var configuration = new EurekaClientConfiguration
         {
@@ -879,11 +879,11 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         _timerFuncCount = 0;
         Timer result = client.StartTimer("MyTimer", 10, TimerFuncThrows);
         Assert.NotNull(result);
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         Assert.True(_timerFuncCount >= 1);
-        result.Dispose();
+        await result.DisposeAsync();
         int currentCount = _timerFuncCount;
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         Assert.Equal(currentCount, _timerFuncCount);
     }
 

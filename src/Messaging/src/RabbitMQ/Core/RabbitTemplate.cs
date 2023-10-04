@@ -1314,7 +1314,7 @@ public class RabbitTemplate
             {
                 if (c.IsRunning)
                 {
-                    c.StopAsync();
+                    _ = c.StopAsync();
                 }
             }
 

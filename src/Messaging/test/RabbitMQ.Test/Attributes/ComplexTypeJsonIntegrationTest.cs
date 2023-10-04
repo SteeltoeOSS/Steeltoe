@@ -22,12 +22,10 @@ public sealed class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJs
     public const string TestQueue2 = "test.complex.receive";
 
     private readonly ServiceProvider _provider;
-    private readonly StartupFixture _fixture;
 
-    public ComplexTypeJsonIntegrationTest(StartupFixture fix)
+    public ComplexTypeJsonIntegrationTest(StartupFixture fixture)
     {
-        _fixture = fix;
-        _provider = _fixture.Provider;
+        _provider = fixture.Provider;
     }
 
     [Fact]
@@ -56,7 +54,7 @@ public sealed class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJs
     }
 
     [Fact]
-    public void TestReceiveNoWait()
+    public async Task TestReceiveNoWait()
     {
         RabbitTemplate template = _provider.GetRabbitTemplate();
         Foo<Bar<Baz, Qux>> foo = MakeAFoo();
@@ -68,7 +66,7 @@ public sealed class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJs
 
         while (n++ < 100 && foo == null)
         {
-            Thread.Sleep(100);
+            await Task.Delay(100);
             result = template.ReceiveAndConvert<Foo<Bar<Baz, Qux>>>();
         }
 
@@ -135,14 +133,12 @@ public sealed class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJs
 
     public sealed class StartupFixture : IDisposable
     {
-        private readonly IServiceCollection _services;
-
         public ServiceProvider Provider { get; set; }
 
         public StartupFixture()
         {
-            _services = CreateContainer();
-            Provider = _services.BuildServiceProvider();
+            IServiceCollection services = CreateContainer();
+            Provider = services.BuildServiceProvider();
             Provider.GetRequiredService<IHostedService>().StartAsync(default).GetAwaiter().GetResult();
         }
 
