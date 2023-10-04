@@ -1019,7 +1019,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     protected virtual bool ForceCloseChannel { get; set; } = true;
 
-
     protected virtual string GetRoutingLookupKey()
     {
         return ConnectionFactory is IRoutingConnectionFactory ? LookupKeyQualifier + GetQueuesAsListString() : null;

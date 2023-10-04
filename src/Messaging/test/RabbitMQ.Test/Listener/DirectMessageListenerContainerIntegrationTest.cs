@@ -164,6 +164,7 @@ public class DirectMessageListenerContainerIntegrationTest : IDisposable
             }
         }
     }
+
     private sealed class ThrowingMessageListener : IReplyingMessageListener<string, string>
     {
         public int ExceptionCounter { get; private set; }
@@ -179,6 +180,7 @@ public class DirectMessageListenerContainerIntegrationTest : IDisposable
             throw new InvalidOperationException("Intentional exception to test retry");
         }
     }
+
     private class TestConsumerTagStrategy : IConsumerTagStrategy
     {
         private readonly string testName;
