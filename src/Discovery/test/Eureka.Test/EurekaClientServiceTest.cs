@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Xunit;
 
@@ -53,7 +54,7 @@ public sealed class EurekaClientServiceTest
     }
 
     [Fact]
-    public void GetInstances_ReturnsExpected()
+    public async Task GetInstances_ReturnsExpected()
     {
         var values = new Dictionary<string, string>
         {
@@ -63,13 +64,16 @@ public sealed class EurekaClientServiceTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         IConfigurationRoot configurationRoot = builder.Build();
-        IList<IServiceInstance> result = EurekaClientService.GetInstances(configurationRoot, "testService");
+
+        IList<IServiceInstance> result =
+            await EurekaClientService.GetInstancesAsync(configurationRoot, "testService", NullLoggerFactory.Instance, CancellationToken.None);
+
         Assert.NotNull(result);
         Assert.Empty(result);
     }
 
     [Fact]
-    public void GetServices_ReturnsExpected()
+    public async Task GetServices_ReturnsExpected()
     {
         var values = new Dictionary<string, string>
         {
@@ -79,7 +83,7 @@ public sealed class EurekaClientServiceTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         IConfigurationRoot configurationRoot = builder.Build();
-        IList<string> result = EurekaClientService.GetServices(configurationRoot);
+        IList<string> result = await EurekaClientService.GetServicesAsync(configurationRoot, NullLoggerFactory.Instance, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Empty(result);
     }

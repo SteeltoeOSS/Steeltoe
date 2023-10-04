@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
@@ -31,7 +31,7 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
         _logger = logger;
     }
 
-    public HealthCheckResult Health()
+    public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         _logger.LogTrace("Checking {DbConnection} health at {Host}", Id, Host);
 
@@ -50,7 +50,7 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
 
         try
         {
-            _ = _mongoClientShim.ListDatabaseNames(CancellationToken.None);
+            using IDisposable cursor = await _mongoClientShim.ListDatabaseNamesAsync(cancellationToken);
 
             result.Status = HealthStatus.Up;
             result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
@@ -59,9 +59,11 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
         }
         catch (Exception exception)
         {
-            if (exception is TargetInvocationException)
+            exception = exception.UnwrapAll();
+
+            if (exception.IsCancellation())
             {
-                exception = exception.InnerException ?? exception;
+                ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
             _logger.LogError(exception, "{DbConnection} at {Host} is down!", Id, Host);

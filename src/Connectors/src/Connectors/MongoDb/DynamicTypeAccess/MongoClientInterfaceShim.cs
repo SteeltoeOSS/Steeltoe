@@ -13,11 +13,16 @@ internal sealed class MongoClientInterfaceShim : Shim
     {
     }
 
-    public IDisposable ListDatabaseNames(CancellationToken cancellationToken)
+    public async Task<IDisposable> ListDatabaseNamesAsync(CancellationToken cancellationToken)
     {
-        return (IDisposable)InstanceAccessor.InvokeMethodOverload("ListDatabaseNames", true, new[]
+        var task = (Task)InstanceAccessor.InvokeMethodOverload("ListDatabaseNamesAsync", true, new[]
         {
             typeof(CancellationToken)
         }, cancellationToken)!;
+
+        await task;
+
+        using var taskShim = new TaskShim<IDisposable>(task);
+        return taskShim.Result;
     }
 }

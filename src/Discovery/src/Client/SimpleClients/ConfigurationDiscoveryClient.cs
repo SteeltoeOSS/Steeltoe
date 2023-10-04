@@ -14,12 +14,12 @@ public class ConfigurationDiscoveryClient : ConfigurationServiceInstanceProvider
     {
     }
 
-    public IServiceInstance GetLocalServiceInstance()
+    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException("No known use case for implementing this method");
     }
 
-    public Task ShutdownAsync()
+    public Task ShutdownAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

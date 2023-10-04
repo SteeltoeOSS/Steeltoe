@@ -31,7 +31,7 @@ public sealed class ConsulHealthContributorTest
         statusMoq.Setup(s => s.Leader(default)).Returns(statusResult);
 
         var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
-        string result = await contrib.GetLeaderStatusAsync();
+        string result = await contrib.GetLeaderStatusAsync(CancellationToken.None);
         Assert.Equal("thestatus", result);
     }
 
@@ -66,14 +66,14 @@ public sealed class ConsulHealthContributorTest
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(catResult);
 
         var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
-        Dictionary<string, string[]> result = await contrib.GetCatalogServicesAsync();
+        Dictionary<string, string[]> result = await contrib.GetCatalogServicesAsync(CancellationToken.None);
         Assert.Equal(2, result.Count);
         Assert.Contains("foo", result.Keys);
         Assert.Contains("bar", result.Keys);
     }
 
     [Fact]
-    public void Health_ReturnsExpected()
+    public async Task Health_ReturnsExpected()
     {
         var queryResult = new QueryResult<Dictionary<string, string[]>>
         {
@@ -108,7 +108,7 @@ public sealed class ConsulHealthContributorTest
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(catResult);
 
         var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
-        HealthCheckResult result = contrib.Health();
+        HealthCheckResult result = await contrib.CheckHealthAsync(CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Equal(2, result.Details.Count);

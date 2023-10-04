@@ -38,7 +38,7 @@ public sealed class DbMigrationsEndpointTests : BaseTest
     {
         var sut = new DbMigrationsEndpointHandler.DatabaseMigrationScanner();
 
-        sut.Invoking(scanner => scanner.GetMigrations(new MockDbContext())).Should().Throw<TargetInvocationException>()
+        sut.Invoking(scanner => scanner.GetMigrations(new MockDbContext())).Should().ThrowExactly<TargetInvocationException>()
             .WithInnerException<InvalidOperationException>().WithMessage("*No database provider has been configured for this DbContext*");
     }
 

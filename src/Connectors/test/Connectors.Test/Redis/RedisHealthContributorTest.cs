@@ -16,7 +16,7 @@ namespace Steeltoe.Connectors.Test.Redis;
 public sealed class RedisHealthContributorTest
 {
     [Fact]
-    public void Not_Connected_Returns_Down_Status()
+    public async Task Not_Connected_Returns_Down_Status()
     {
         var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
 
@@ -30,9 +30,10 @@ public sealed class RedisHealthContributorTest
 
         healthContributor.SetConnectionMultiplexer(connectionMultiplexerMock.Object);
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Down);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Down);
         status.Description.Should().Be("Redis health check failed");
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
@@ -41,10 +42,10 @@ public sealed class RedisHealthContributorTest
     }
 
     [Fact]
-    public void Is_Connected_Returns_Up_Status()
+    public async Task Is_Connected_Returns_Up_Status()
     {
         var databaseMock = new Mock<IDatabase>();
-        databaseMock.Setup(database => database.Ping(It.IsAny<CommandFlags>())).Returns(50.Milliseconds());
+        databaseMock.Setup(database => database.PingAsync(It.IsAny<CommandFlags>())).Returns(Task.FromResult(50.Milliseconds()));
 
         var connectionMultiplexerMock = new Mock<IConnectionMultiplexer>();
 
@@ -58,9 +59,10 @@ public sealed class RedisHealthContributorTest
 
         healthContributor.SetConnectionMultiplexer(connectionMultiplexerMock.Object);
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Up);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Up);
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
         status.Details.Should().NotContainKey("error");
@@ -68,8 +70,21 @@ public sealed class RedisHealthContributorTest
         status.Details.Should().Contain("ping", 50D);
     }
 
+    [Fact]
+    public async Task Canceled_Throws()
+    {
+        using var healthContributor = new RedisHealthContributor("localhost", NullLogger<RedisHealthContributor>.Instance);
+
+        using var source = new CancellationTokenSource();
+        source.Cancel();
+
+        Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
+
+        await action.Should().ThrowExactlyAsync<OperationCanceledException>();
+    }
+
     [Fact(Skip = "Integration test - Requires local Redis server")]
-    public void Integration_Is_Connected_Returns_Up_Status()
+    public async Task Integration_Is_Connected_Returns_Up_Status()
     {
         const string connectionString = "localhost";
 
@@ -78,9 +93,10 @@ public sealed class RedisHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Up);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Up);
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
         status.Details.Should().NotContainKey("error");

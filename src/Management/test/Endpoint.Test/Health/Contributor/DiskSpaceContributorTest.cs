@@ -22,12 +22,12 @@ public sealed class DiskSpaceContributorTest : BaseTest
     }
 
     [Fact]
-    public void Health_InitializedWithDefaults_ReturnsExpected()
+    public async Task Health_InitializedWithDefaults_ReturnsExpected()
     {
         IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor = GetOptionsMonitorFromSettings<DiskSpaceContributorOptions>();
         var contributor = new DiskSpaceContributor(optionsMonitor);
         Assert.Equal("diskSpace", contributor.Id);
-        HealthCheckResult? result = contributor.Health();
+        HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);
@@ -38,7 +38,7 @@ public sealed class DiskSpaceContributorTest : BaseTest
     }
 
     [Fact]
-    public void Health_UnknownDirectory_ReportsError()
+    public async Task Health_UnknownDirectory_ReportsError()
     {
         var optionsMonitor = new TestOptionsMonitor<DiskSpaceContributorOptions>(new DiskSpaceContributorOptions
         {
@@ -47,7 +47,7 @@ public sealed class DiskSpaceContributorTest : BaseTest
 
         var contributor = new DiskSpaceContributor(optionsMonitor);
 
-        HealthCheckResult? result = contributor.Health();
+        HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
 
         result.Should().NotBeNull();
         result!.Status.Should().Be(HealthStatus.Unknown);

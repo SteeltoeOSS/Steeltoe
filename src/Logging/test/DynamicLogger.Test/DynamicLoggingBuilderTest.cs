@@ -280,10 +280,11 @@ public sealed class DynamicLoggingBuilderTest
 
         string log = console.ToString();
 
-        log.Should().Be($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
+        // Casting to object as workaround, see https://github.com/fluentassertions/fluentassertions/issues/2339.
+        ((object)log).Should().BeEquivalentTo($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
       => Outer Scope => InnerScopeKey=InnerScopeValue
       Something bad.
-");
+", options => options.Using(IgnoreLineEndingsComparer.Instance));
     }
 
     [Fact]
@@ -319,9 +320,10 @@ public sealed class DynamicLoggingBuilderTest
 
         string log = console.ToString();
 
-        log.Should().Be($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
+        // Casting to object as workaround, see https://github.com/fluentassertions/fluentassertions/issues/2339.
+        ((object)log).Should().BeEquivalentTo($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
       => Outer Scope => InnerScopeKey=InnerScopeValue
       Something bad.
-");
+", options => options.Using(IgnoreLineEndingsComparer.Instance));
     }
 }

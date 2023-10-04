@@ -54,7 +54,7 @@ public sealed class EnableRabbitTest
     [Fact]
     public async Task NoRabbitAdminConfiguration()
     {
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(FullBean)));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await RabbitSampleConfig.CreateAndStartServicesAsync(typeof(FullBean)));
         Assert.Contains("rabbitAdmin", exception.Message, StringComparison.Ordinal);
     }
 
@@ -95,14 +95,18 @@ public sealed class EnableRabbitTest
     [Fact]
     public async Task UnknownFactory()
     {
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(CustomBean)));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await RabbitSampleConfig.CreateAndStartServicesAsync(typeof(CustomBean)));
+
         Assert.Contains("customFactory", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public async Task InvalidPriorityConfiguration()
     {
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => RabbitSampleConfig.CreateAndStartServicesAsync(typeof(InvalidPriorityBean)));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await RabbitSampleConfig.CreateAndStartServicesAsync(typeof(InvalidPriorityBean)));
+
         Assert.Contains("NotANumber", exception.Message, StringComparison.Ordinal);
     }
 
@@ -112,7 +116,7 @@ public sealed class EnableRabbitTest
         ServiceProvider services = await TestProperShutdownOnExceptionConfig.CreateAndStartServicesAsync();
         var context = services.GetRequiredService<IApplicationContext>();
         var listenerEndpointRegistry = context.GetService<IRabbitListenerEndpointRegistry>();
-        services.Dispose();
+        await services.DisposeAsync();
 
         foreach (IMessageListenerContainer messageListenerContainer in listenerEndpointRegistry.GetListenerContainers())
         {
@@ -122,25 +126,25 @@ public sealed class EnableRabbitTest
 
     private void TestRabbitListenerRepeatable(IApplicationContext context)
     {
-        var defaultFactory = context.GetService<IRabbitListenerContainerFactory>("rabbitListenerContainerFactory") as RabbitListenerContainerTestFactory;
+        var defaultFactory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>("rabbitListenerContainerFactory");
         Assert.Equal(4, defaultFactory.GetListenerContainers().Count);
 
-        var first = defaultFactory.GetListenerContainer("first").Endpoint as AbstractRabbitListenerEndpoint;
+        var first = (AbstractRabbitListenerEndpoint)defaultFactory.GetListenerContainer("first").Endpoint;
         Assert.Equal("first", first.Id);
         Assert.Single(first.QueueNames);
         Assert.Equal("myQueue", first.QueueNames[0]);
 
-        var second = defaultFactory.GetListenerContainer("second").Endpoint as AbstractRabbitListenerEndpoint;
+        var second = (AbstractRabbitListenerEndpoint)defaultFactory.GetListenerContainer("second").Endpoint;
         Assert.Equal("second", second.Id);
         Assert.Single(second.QueueNames);
         Assert.Equal("anotherQueue", second.QueueNames[0]);
 
-        var third = defaultFactory.GetListenerContainer("third").Endpoint as AbstractRabbitListenerEndpoint;
+        var third = (AbstractRabbitListenerEndpoint)defaultFactory.GetListenerContainer("third").Endpoint;
         Assert.Equal("third", third.Id);
         Assert.Single(third.QueueNames);
         Assert.Equal("class1", third.QueueNames[0]);
 
-        var fourth = defaultFactory.GetListenerContainer("fourth").Endpoint as AbstractRabbitListenerEndpoint;
+        var fourth = (AbstractRabbitListenerEndpoint)defaultFactory.GetListenerContainer("fourth").Endpoint;
         Assert.Equal("fourth", fourth.Id);
         Assert.Single(fourth.QueueNames);
         Assert.Equal("class2", fourth.QueueNames[0]);
@@ -148,8 +152,8 @@ public sealed class EnableRabbitTest
 
     private void TestSampleConfiguration(IApplicationContext context, int expectedDefaultContainers)
     {
-        var defaultFactory = context.GetService<IRabbitListenerContainerFactory>("rabbitListenerContainerFactory") as RabbitListenerContainerTestFactory;
-        var simpleFactory = context.GetService<IRabbitListenerContainerFactory>("simpleFactory") as RabbitListenerContainerTestFactory;
+        var defaultFactory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>("rabbitListenerContainerFactory");
+        var simpleFactory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>("simpleFactory");
 
         Assert.Equal(expectedDefaultContainers, defaultFactory.ListenerContainers.Count);
         Assert.Single(simpleFactory.ListenerContainers);
@@ -184,11 +188,11 @@ public sealed class EnableRabbitTest
 
     private void TestFullConfiguration(IApplicationContext context)
     {
-        var simpleFactory = context.GetService<IRabbitListenerContainerFactory>("simpleFactory") as RabbitListenerContainerTestFactory;
+        var simpleFactory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>("simpleFactory");
         Assert.Single(simpleFactory.ListenerContainers);
 
         MessageListenerTestContainer testContainer = simpleFactory.GetListenerContainers()[0];
-        var endpoint = testContainer.Endpoint as AbstractRabbitListenerEndpoint;
+        var endpoint = (AbstractRabbitListenerEndpoint)testContainer.Endpoint;
         Assert.Equal("listener1", endpoint.Id);
         AssertQueues(endpoint, "queue1", "queue2");
         Assert.Empty(endpoint.Queues);
@@ -199,7 +203,7 @@ public sealed class EnableRabbitTest
 
         var container = new DirectMessageListenerContainer(context);
         endpoint.SetupListenerContainer(container);
-        var listener = container.MessageListener as MessagingMessageListenerAdapter;
+        var listener = (MessagingMessageListenerAdapter)container.MessageListener;
 
         var accessor = new RabbitHeaderAccessor
         {
@@ -214,14 +218,14 @@ public sealed class EnableRabbitTest
 
     private void TestCustomConfiguration(IApplicationContext context)
     {
-        var customFactory = context.GetService<IRabbitListenerContainerFactory>("customFactory") as RabbitListenerContainerTestFactory;
-        var defaultFactory = context.GetService<IRabbitListenerContainerFactory>("rabbitListenerContainerFactory") as RabbitListenerContainerTestFactory;
+        var customFactory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>("customFactory");
+        var defaultFactory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>("rabbitListenerContainerFactory");
         Assert.Single(defaultFactory.ListenerContainers);
         Assert.Single(customFactory.ListenerContainers);
         MessageListenerTestContainer testContainer = defaultFactory.GetListenerContainers()[0];
         IRabbitListenerEndpoint endpoint = testContainer.Endpoint;
         Assert.IsType<SimpleRabbitListenerEndpoint>(endpoint);
-        var simpleEndpoint = endpoint as SimpleRabbitListenerEndpoint;
+        var simpleEndpoint = (SimpleRabbitListenerEndpoint)endpoint;
         Assert.IsType<MessageListenerAdapter>(simpleEndpoint.MessageListener);
         var customRegistry = context.GetService<IRabbitListenerEndpointRegistry>();
         Assert.IsType<CustomRabbitListenerEndpointRegistry>(customRegistry);
@@ -233,13 +237,13 @@ public sealed class EnableRabbitTest
 
     private void TestDefaultContainerFactoryConfiguration(IApplicationContext context)
     {
-        var defaultFactory = context.GetService<IRabbitListenerContainerFactory>("rabbitListenerContainerFactory") as RabbitListenerContainerTestFactory;
+        var defaultFactory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>("rabbitListenerContainerFactory");
         Assert.Single(defaultFactory.GetListenerContainers());
     }
 
     private void TestExplicitContainerFactoryConfiguration(IApplicationContext context)
     {
-        var defaultFactory = context.GetService<IRabbitListenerContainerFactory>("simpleFactory") as RabbitListenerContainerTestFactory;
+        var defaultFactory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>("simpleFactory");
         Assert.Single(defaultFactory.GetListenerContainers());
     }
 

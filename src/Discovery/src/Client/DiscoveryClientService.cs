@@ -22,6 +22,6 @@ internal sealed class DiscoveryClientService : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return _discoveryClient.ShutdownAsync();
+        return _discoveryClient.ShutdownAsync(cancellationToken);
     }
 }

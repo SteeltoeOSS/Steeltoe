@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using FluentAssertions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
@@ -13,17 +14,17 @@ namespace Steeltoe.Management.Endpoint.Test.Health;
 public sealed class DefaultHealthAggregatorTest : BaseTest
 {
     [Fact]
-    public void Aggregate_EmptyContributorList_ReturnsExpectedHealth()
+    public async Task Aggregate_EmptyContributorList_ReturnsExpectedHealth()
     {
         var aggregator = new DefaultHealthAggregator();
-        HealthCheckResult result = aggregator.Aggregate(Array.Empty<IHealthContributor>(), CancellationToken.None);
+        HealthCheckResult result = await aggregator.AggregateAsync(Array.Empty<IHealthContributor>(), CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Unknown, result.Status);
         Assert.NotNull(result.Details);
     }
 
     [Fact]
-    public void Aggregate_DisabledContributorOnly_ReturnsExpectedHealth()
+    public async Task Aggregate_DisabledContributorOnly_ReturnsExpectedHealth()
     {
         var contributors = new List<IHealthContributor>
         {
@@ -31,14 +32,14 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
         };
 
         var aggregator = new DefaultHealthAggregator();
-        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
+        HealthCheckResult result = await aggregator.AggregateAsync(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Unknown, result.Status);
         Assert.NotNull(result.Details);
     }
 
     [Fact]
-    public void Aggregate_SingleContributor_ReturnsExpectedHealth()
+    public async Task Aggregate_SingleContributor_ReturnsExpectedHealth()
     {
         var contributors = new List<IHealthContributor>
         {
@@ -46,14 +47,31 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
         };
 
         var aggregator = new DefaultHealthAggregator();
-        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
+        HealthCheckResult result = await aggregator.AggregateAsync(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);
     }
 
     [Fact]
-    public void Aggregate_MultipleContributor_ReturnsExpectedHealth()
+    public async Task Aggregate_SingleCanceledContributor_Throws()
+    {
+        var contributors = new List<IHealthContributor>
+        {
+            new UpContributor(5000)
+        };
+
+        var source = new CancellationTokenSource();
+        source.Cancel();
+
+        var aggregator = new DefaultHealthAggregator();
+        Func<Task> action = async () => await aggregator.AggregateAsync(contributors, source.Token);
+
+        await action.Should().ThrowExactlyAsync<TaskCanceledException>();
+    }
+
+    [Fact]
+    public async Task Aggregate_MultipleContributor_ReturnsExpectedHealth()
     {
         var contributors = new List<IHealthContributor>
         {
@@ -65,14 +83,14 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
         };
 
         var aggregator = new DefaultHealthAggregator();
-        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
+        HealthCheckResult result = await aggregator.AggregateAsync(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Down, result.Status);
         Assert.NotNull(result.Details);
     }
 
     [Fact]
-    public void Aggregate_DuplicateContributor_ReturnsExpectedHealth()
+    public async Task Aggregate_DuplicateContributor_ReturnsExpectedHealth()
     {
         var contributors = new List<IHealthContributor>();
 
@@ -82,14 +100,14 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
         }
 
         var aggregator = new DefaultHealthAggregator();
-        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
+        HealthCheckResult result = await aggregator.AggregateAsync(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Contains("Up-9", result.Details.Keys);
     }
 
     [Fact]
-    public void Aggregate_MultipleContributor_OrderDoesNotMatter_ReturnsExpectedHealth()
+    public async Task Aggregate_MultipleContributor_OrderDoesNotMatter_ReturnsExpectedHealth()
     {
         var contributors = new List<IHealthContributor>
         {
@@ -99,14 +117,14 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
         };
 
         var aggregator = new DefaultHealthAggregator();
-        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
+        HealthCheckResult result = await aggregator.AggregateAsync(contributors, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.NotNull(result.Details);
     }
 
     [Fact]
-    public void AggregatesInParallel()
+    public async Task AggregatesInParallel()
     {
         var stopwatch = new Stopwatch();
 
@@ -119,7 +137,7 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
 
         var aggregator = new DefaultHealthAggregator();
         stopwatch.Start();
-        HealthCheckResult result = aggregator.Aggregate(contributors, CancellationToken.None);
+        HealthCheckResult result = await aggregator.AggregateAsync(contributors, CancellationToken.None);
         stopwatch.Stop();
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);

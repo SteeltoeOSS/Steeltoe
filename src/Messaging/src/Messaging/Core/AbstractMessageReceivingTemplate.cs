@@ -38,7 +38,7 @@ public abstract class AbstractMessageReceivingTemplate<TDestination> : AbstractM
 
     public virtual Task<T> ReceiveAndConvertAsync<T>(CancellationToken cancellationToken = default)
     {
-        return ReceiveAndConvertAsync<T>(RequiredDefaultReceiveDestination);
+        return ReceiveAndConvertAsync<T>(RequiredDefaultReceiveDestination, cancellationToken);
     }
 
     public virtual async Task<T> ReceiveAndConvertAsync<T>(TDestination destination, CancellationToken cancellationToken = default)

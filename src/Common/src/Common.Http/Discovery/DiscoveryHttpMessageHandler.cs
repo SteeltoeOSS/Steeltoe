@@ -41,12 +41,12 @@ public class DiscoveryHttpMessageHandler : DelegatingHandler
 
         try
         {
-            request.RequestUri = await _discoveryBase.LookupServiceAsync(current);
+            request.RequestUri = await _discoveryBase.LookupServiceAsync(current, cancellationToken);
             return await base.SendAsync(request, cancellationToken);
         }
-        catch (Exception e)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger?.LogDebug(e, "Exception during SendAsync()");
+            _logger?.LogDebug(exception, "Exception during SendAsync()");
             throw;
         }
         finally

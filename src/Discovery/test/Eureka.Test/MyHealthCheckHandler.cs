@@ -10,17 +10,19 @@ public sealed class MyHealthCheckHandler : IHealthCheckHandler
 {
     private readonly InstanceStatus _status;
 
-    public bool Called { get; set; }
+    public bool Awaited { get; set; }
 
     public MyHealthCheckHandler(InstanceStatus status)
     {
         _status = status;
-        Called = false;
+        Awaited = false;
     }
 
-    public InstanceStatus GetStatus(InstanceStatus currentStatus)
+    public async Task<InstanceStatus> GetStatusAsync(InstanceStatus currentStatus, CancellationToken cancellationToken)
     {
-        Called = true;
+        await Task.Yield();
+
+        Awaited = true;
         return _status;
     }
 }

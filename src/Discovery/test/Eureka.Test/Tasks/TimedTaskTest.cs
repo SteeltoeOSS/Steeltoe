@@ -25,7 +25,7 @@ public sealed class TimedTaskTest : AbstractBaseTest
 
     private void TimerFunc()
     {
-        ++_timerFuncCount;
+        Interlocked.Increment(ref _timerFuncCount);
         Thread.Sleep(3000);
     }
 }

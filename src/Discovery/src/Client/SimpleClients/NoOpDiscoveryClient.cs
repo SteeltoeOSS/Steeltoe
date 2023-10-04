@@ -15,8 +15,6 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
 
     public string Description => "An IDiscoveryClient that passes through to underlying infrastructure";
 
-    public IList<string> Services => new List<string>();
-
     internal NoOpDiscoveryClient(IConfiguration configuration, ILogger<NoOpDiscoveryClient> logger = null)
     {
         logger?.LogWarning("No discovery client has been completely configured, using default no-op discovery client.");
@@ -28,7 +26,12 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
         }
     }
 
-    internal Dictionary<string, string> GetConfiguredClients(IConfiguration configuration)
+    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult<IList<string>>(new List<string>());
+    }
+
+    private Dictionary<string, string> GetConfiguredClients(IConfiguration configuration)
     {
         if (configuration is null)
         {
@@ -64,17 +67,17 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
         return clientsWithConfig;
     }
 
-    public IList<IServiceInstance> GetInstances(string serviceId)
+    public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
-        return _serviceInstances;
+        return Task.FromResult(_serviceInstances);
     }
 
-    public IServiceInstance GetLocalServiceInstance()
+    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException("No known use case for implementing this method");
     }
 
-    public Task ShutdownAsync()
+    public Task ShutdownAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

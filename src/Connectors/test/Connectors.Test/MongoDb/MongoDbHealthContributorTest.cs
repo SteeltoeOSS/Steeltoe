@@ -15,7 +15,7 @@ namespace Steeltoe.Connectors.Test.MongoDb;
 public sealed class MongoDbHealthContributorTest
 {
     [Fact]
-    public void Not_Connected_Returns_Down_Status()
+    public async Task Not_Connected_Returns_Down_Status()
     {
         var settings = new MongoClientSettings
         {
@@ -30,9 +30,10 @@ public sealed class MongoDbHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Down);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Down);
         status.Description.Should().Be("MongoDB health check failed");
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
@@ -41,27 +42,48 @@ public sealed class MongoDbHealthContributorTest
     }
 
     [Fact]
-    public void Is_Connected_Returns_Up_Status()
+    public async Task Is_Connected_Returns_Up_Status()
     {
         var mongoClientMock = new Mock<IMongoClient>();
-        mongoClientMock.Setup(client => client.ListDatabaseNames(It.IsAny<CancellationToken>())).Returns(() => null!);
 
         var healthContributor = new MongoDbHealthContributor(mongoClientMock.Object, "localhost", NullLogger<MongoDbHealthContributor>.Instance)
         {
             ServiceName = "Example"
         };
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Up);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Up);
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
         status.Details.Should().NotContainKey("error");
         status.Details.Should().Contain("status", "UP");
     }
 
+    [Fact]
+    public async Task Canceled_Throws()
+    {
+        var mongoClientMock = new Mock<IMongoClient>();
+
+        mongoClientMock.Setup(client => client.ListDatabaseNamesAsync(It.IsAny<CancellationToken>())).Returns((CancellationToken cancellationToken) =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return null!;
+        });
+
+        var healthContributor = new MongoDbHealthContributor(mongoClientMock.Object, "localhost", NullLogger<MongoDbHealthContributor>.Instance);
+
+        using var source = new CancellationTokenSource();
+        source.Cancel();
+
+        Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
+
+        await action.Should().ThrowExactlyAsync<OperationCanceledException>();
+    }
+
     [Fact(Skip = "Integration test - Requires local MongoDb server")]
-    public void Integration_Is_Connected_Returns_Up_Status()
+    public async Task Integration_Is_Connected_Returns_Up_Status()
     {
         var settings = new MongoClientSettings
         {
@@ -76,9 +98,10 @@ public sealed class MongoDbHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult status = healthContributor.Health();
+        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Status.Should().Be(HealthStatus.Up);
+        status.Should().NotBeNull();
+        status!.Status.Should().Be(HealthStatus.Up);
         status.Details.Should().Contain("host", "localhost");
         status.Details.Should().Contain("service", "Example");
         status.Details.Should().NotContainKey("error");

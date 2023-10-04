@@ -12,20 +12,22 @@ public class ConfigurationServiceInstanceProvider : IServiceInstanceProvider
 
     public string Description => "A service instance provider that returns services from app configuration";
 
-    public IList<string> Services => GetServices();
-
     public ConfigurationServiceInstanceProvider(IOptionsMonitor<List<ConfigurationServiceInstance>> serviceInstances)
     {
         _serviceInstances = serviceInstances;
     }
 
-    public IList<IServiceInstance> GetInstances(string serviceId)
+    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
     {
-        return new List<IServiceInstance>(_serviceInstances.CurrentValue.Where(si => si.ServiceId.Equals(serviceId, StringComparison.OrdinalIgnoreCase)));
+        IList<string> services = _serviceInstances.CurrentValue.Select(si => si.ServiceId).Distinct().ToList();
+        return Task.FromResult(services);
     }
 
-    internal IList<string> GetServices()
+    public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
-        return _serviceInstances.CurrentValue.Select(si => si.ServiceId).Distinct().ToList();
+        IList<IServiceInstance> instances = _serviceInstances.CurrentValue.Cast<IServiceInstance>().Where(instance =>
+            instance.ServiceId.Equals(serviceId, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        return Task.FromResult(instances);
     }
 }
