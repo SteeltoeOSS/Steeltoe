@@ -96,7 +96,7 @@ public sealed class EurekaServerHealthContributorTest
 
         results = new HealthCheckResult();
         long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * configuration.RegistryFetchIntervalSeconds * 10;
-        var dateTime = new DateTime(ticks);
+        var dateTime = new DateTime(ticks, DateTimeKind.Utc);
         contrib.AddFetchStatus(configuration, results, ticks);
         Assert.Contains("fetch", results.Details.Keys);
         Assert.Contains("Reporting failures", (string)results.Details["fetch"], StringComparison.Ordinal);
@@ -136,7 +136,7 @@ public sealed class EurekaServerHealthContributorTest
 
         results = new HealthCheckResult();
         long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * instanceConfig.LeaseRenewalIntervalInSeconds * 10;
-        var dateTime = new DateTime(ticks);
+        var dateTime = new DateTime(ticks, DateTimeKind.Utc);
         contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, ticks);
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Reporting failures", (string)results.Details["heartbeat"], StringComparison.Ordinal);

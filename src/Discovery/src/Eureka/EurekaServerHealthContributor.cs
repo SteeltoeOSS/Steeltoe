@@ -88,14 +88,14 @@ public class EurekaServerHealthContributor : IHealthContributor
             {
                 result.Details.Add("heartbeat", "Reporting failures connecting");
                 result.Details.Add("heartbeatStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
-                result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks).ToString("s", CultureInfo.InvariantCulture));
+                result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
                 result.Details.Add("heartbeatFailures", lastGoodHeartbeatPeriod / (instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond));
                 return HealthStatus.Down;
             }
 
             result.Details.Add("heartbeat", "Successful");
             result.Details.Add("heartbeatStatus", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
-            result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks).ToString("s", CultureInfo.InvariantCulture));
+            result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
             return HealthStatus.Up;
         }
 
@@ -121,14 +121,14 @@ public class EurekaServerHealthContributor : IHealthContributor
             {
                 result.Details.Add("fetch", "Reporting failures connecting");
                 result.Details.Add("fetchStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
-                result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks).ToString("s", CultureInfo.InvariantCulture));
+                result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
                 result.Details.Add("fetchFailures", lastGoodFetchPeriod / (clientConfiguration.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond));
                 return HealthStatus.Down;
             }
 
             result.Details.Add("fetch", "Successful");
             result.Details.Add("fetchStatus", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
-            result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks).ToString("s", CultureInfo.InvariantCulture));
+            result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
             return HealthStatus.Up;
         }
 

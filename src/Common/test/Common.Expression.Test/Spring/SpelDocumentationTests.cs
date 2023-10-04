@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Expression.Test.Spring;
 
 public sealed class SpelDocumentationTests : AbstractExpressionTests
 {
-    private static readonly Inventor Tesla = new("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian")
+    private static readonly Inventor Tesla = new("Nikola Tesla", new DateTime(1856, 7, 9, 0, 0, 0, DateTimeKind.Local), "Serbian")
     {
         PlaceOfBirth = new PlaceOfBirth("SmilJan"),
         Inventions = new[]
@@ -31,7 +31,7 @@ public sealed class SpelDocumentationTests : AbstractExpressionTests
         }
     };
 
-    private static readonly Inventor Pupin = new("Pupin", new DateTime(1856, 7, 9), "Idvor")
+    private static readonly Inventor Pupin = new("Pupin", new DateTime(1856, 7, 9, 0, 0, 0, DateTimeKind.Local), "Idvor")
     {
         PlaceOfBirth = new PlaceOfBirth("Idvor")
     };
@@ -58,7 +58,7 @@ public sealed class SpelDocumentationTests : AbstractExpressionTests
     public void TestRootObject()
     {
         // The constructor arguments are name, birthday, and nationality.
-        var tesla = new Inventor("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian");
+        var tesla = new Inventor("Nikola Tesla", new DateTime(1856, 7, 9, 0, 0, 0, DateTimeKind.Local), "Serbian");
 
         var parser = new SpelExpressionParser();
         IExpression exp = parser.ParseExpression("Name");
