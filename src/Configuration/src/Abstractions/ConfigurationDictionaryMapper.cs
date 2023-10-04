@@ -21,6 +21,22 @@ internal abstract class ConfigurationDictionaryMapper
         ToPrefix = toPrefix.Length > 0 ? string.Join(ConfigurationPath.KeyDelimiter, toPrefix) + ConfigurationPath.KeyDelimiter : string.Empty;
     }
 
+    /// <summary>
+    /// Finds configuration entries under the <see cref="BindingKey" />, transfers them as-is to <see cref="ToPrefix" />.
+    /// </summary>
+    /// <param name="configurationKeys">List of keys to map.</param>
+    public void MapFrom(IEnumerable<string> configurationKeys)
+    {
+        foreach (string? key in configurationKeys)
+        {
+            if (!key.Equals("type", StringComparison.InvariantCultureIgnoreCase) && !key.Equals("provider", StringComparison.InvariantCultureIgnoreCase))
+            {
+                string? value = GetFromValue(key);
+                SetToValue(key, value);
+            }
+        }
+    }
+
     public string? MapFromTo(string fromKey, string toKey)
     {
         string? value = GetFromValue(fromKey);

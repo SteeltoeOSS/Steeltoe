@@ -147,4 +147,29 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData[$"{keyPrefix}:defaultDatabase"].Should().Be("test-database");
         configurationData[$"{keyPrefix}:name"].Should().Be("test-client-name");
     }
+
+    [Fact]
+    public void Processes_ApplicationConfigurationService_configuration()
+    {
+        var postProcessor = new ApplicationConfigurationServicePostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("provider", "acs"),
+            Tuple.Create("random", "data"),
+            Tuple.Create("from", "some-source"),
+            Tuple.Create("mySecret", "a-password"),
+        };
+
+        Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, ApplicationConfigurationServicePostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        configurationData["random"].Should().Be("data");
+        configurationData["from"].Should().Be("some-source");
+        configurationData["mySecret"].Should().Be("a-password");
+        configurationData.Should().NotContainKey("provider");
+        configurationData.Should().NotContainKey("type");
+    }
 }
