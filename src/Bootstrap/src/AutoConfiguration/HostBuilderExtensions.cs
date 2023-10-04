@@ -110,7 +110,7 @@ public static class HostBuilderExtensions
 
     private static bool WireIfLoaded(this IHostBuilder hostBuilder, Action<IHostBuilder> action, params string[] assembly)
     {
-        if (assembly.All(AssemblyExtensions.IsAssemblyLoaded))
+        if (Array.TrueForAll(assembly, AssemblyExtensions.IsAssemblyLoaded))
         {
             action(hostBuilder);
             return true;

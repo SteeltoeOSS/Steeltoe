@@ -114,7 +114,7 @@ public static class WebApplicationBuilderExtensions
 
     private static bool WireIfLoaded(this WebApplicationBuilder webApplicationBuilder, Action<WebApplicationBuilder> action, params string[] assembly)
     {
-        if (assembly.All(AssemblyExtensions.IsAssemblyLoaded))
+        if (Array.TrueForAll(assembly, AssemblyExtensions.IsAssemblyLoaded))
         {
             action(webApplicationBuilder);
             return true;
