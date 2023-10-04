@@ -185,7 +185,7 @@ public abstract class AbstractExpressionTests
                 sb.Append(',');
             }
 
-            if (sb[sb.Length - 1] == ',')
+            if (sb[^1] == ',')
             {
                 return $"{sb.ToString(0, sb.Length - 1)}}}";
             }
@@ -212,7 +212,7 @@ public abstract class AbstractExpressionTests
                 }
             }
 
-            if (sb[sb.Length - 1] == ',')
+            if (sb[^1] == ',')
             {
                 return $"{sb.ToString(0, sb.Length - 1)}]";
             }

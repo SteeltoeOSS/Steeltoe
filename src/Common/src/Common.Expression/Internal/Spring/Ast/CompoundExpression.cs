@@ -21,7 +21,7 @@ public class CompoundExpression : SpelNode
     {
         IValueRef valueRef = GetValueRef(state);
         ITypedValue result = valueRef.GetValue();
-        exitTypeDescriptor = children[children.Length - 1].ExitDescriptor;
+        exitTypeDescriptor = children[^1].ExitDescriptor;
         return result;
     }
 

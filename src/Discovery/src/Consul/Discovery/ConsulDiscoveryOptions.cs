@@ -234,7 +234,7 @@ public class ConsulDiscoveryOptions
 
             if (configAddress == null)
             {
-                configAddress = addresses.First();
+                configAddress = addresses[0];
             }
 
             Port = configAddress.Port;

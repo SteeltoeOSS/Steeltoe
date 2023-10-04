@@ -92,7 +92,7 @@ public static class DiscoveryServiceCollectionExtensions
 
         if (implementations.Count == 1)
         {
-            builderAction = builder => builder.Extensions.Add(implementations.First());
+            builderAction = builder => builder.Extensions.Add(implementations[0]);
         }
         else if (implementations.Count > 1)
         {

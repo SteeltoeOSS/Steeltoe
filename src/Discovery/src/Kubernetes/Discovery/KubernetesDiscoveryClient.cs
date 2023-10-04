@@ -82,7 +82,7 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
         if (instances.Count == 1)
         {
-            return instances.First();
+            return instances[0];
         }
 
         _logger?.LogWarning("The local service instance was requested, but what we returned might not be correct!");

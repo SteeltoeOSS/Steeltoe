@@ -145,7 +145,7 @@ public class Selection : SpelNode
 
             if (_variant == Last)
             {
-                object lastElem = result.Count == 0 ? null : result[result.Count - 1];
+                object lastElem = result.Count == 0 ? null : result[^1];
                 return new TypedValueHolderValueRef(new TypedValue(lastElem), this);
             }
 

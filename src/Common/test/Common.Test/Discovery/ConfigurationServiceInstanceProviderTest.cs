@@ -89,10 +89,10 @@ public sealed class ConfigurationServiceInstanceProviderTest
         IList<IServiceInstance> fruitInstances = await provider.GetInstancesAsync("fruitService", CancellationToken.None);
 
         Assert.Single(fruitInstances);
-        Assert.Equal("fruitball", fruitInstances.First().Host);
+        Assert.Equal("fruitball", fruitInstances[0].Host);
 
-        services.First().Host = "updatedValue";
+        services[0].Host = "updatedValue";
 
-        Assert.Equal("updatedValue", fruitInstances.First().Host);
+        Assert.Equal("updatedValue", fruitInstances[0].Host);
     }
 }
