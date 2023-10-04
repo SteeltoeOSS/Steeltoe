@@ -122,7 +122,7 @@ public static class WebHostBuilderExtensions
     private static void WireIfAnyLoaded(this IWebHostBuilder hostBuilder, Action<IWebHostBuilder> action, IReadOnlySet<string> assemblyNamesToExclude,
         params PackageResolver[] packageResolvers)
     {
-        if (packageResolvers.Any(packageResolver => packageResolver.IsAvailable(assemblyNamesToExclude)))
+        if (Array.Exists(packageResolvers, packageResolver => packageResolver.IsAvailable(assemblyNamesToExclude)))
         {
             action(hostBuilder);
         }

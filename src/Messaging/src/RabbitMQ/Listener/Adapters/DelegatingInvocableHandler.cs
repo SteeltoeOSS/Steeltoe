@@ -153,7 +153,8 @@ public class DelegatingInvocableHandler
         Attribute[][] parameterAnnotations = GetParameterAnnotations(method);
 
         // Single param; no annotation or not @Header
-        if (parameterAnnotations.Length == 1 && (parameterAnnotations[0].Length == 0 || !parameterAnnotations[0].Any(attr => attr is HeaderAttribute)) &&
+        if (parameterAnnotations.Length == 1 &&
+            (parameterAnnotations[0].Length == 0 || !Array.Exists(parameterAnnotations[0], attr => attr is HeaderAttribute)) &&
             parameters[0].ParameterType.IsAssignableFrom(payloadType))
         {
             return true;
@@ -163,7 +164,7 @@ public class DelegatingInvocableHandler
 
         for (int i = 0; i < parameterAnnotations.Length; i++)
         {
-            if ((parameterAnnotations[i].Length == 0 || !parameterAnnotations[i].Any(attr => attr is HeaderAttribute)) &&
+            if ((parameterAnnotations[i].Length == 0 || !Array.Exists(parameterAnnotations[i], attr => attr is HeaderAttribute)) &&
                 parameters[i].ParameterType.IsAssignableFrom(payloadType))
             {
                 if (foundCandidate)

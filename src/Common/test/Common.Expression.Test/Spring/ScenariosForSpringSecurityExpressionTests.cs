@@ -138,7 +138,7 @@ public sealed class ScenariosForSpringSecurityExpressionTests : AbstractExpressi
 
             foreach (string myRole in myRoles)
             {
-                if (roles.Any(role => myRole == role))
+                if (Array.Exists(roles, role => myRole == role))
                 {
                     return true;
                 }

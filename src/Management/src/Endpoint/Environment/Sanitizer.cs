@@ -32,7 +32,7 @@ internal sealed class Sanitizer
 
     public string? Sanitize(string key, string? value)
     {
-        if (value != null && _matchers.Any(regex => regex.IsMatch(key)))
+        if (value != null && _matchers.Exists(regex => regex.IsMatch(key)))
         {
             return "******";
         }
