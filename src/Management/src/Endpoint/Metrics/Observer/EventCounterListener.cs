@@ -46,7 +46,7 @@ internal sealed class EventCounterListener : EventListener
 
             _refreshInterval = new Dictionary<string, string?>
             {
-                { "EventCounterIntervalSec", observerOptions.EventCounterIntervalSec }
+                { "EventCounterIntervalSec", observerOptions.EventCounterIntervalSec?.ToString(CultureInfo.InvariantCulture) ?? "1" }
             };
 
             ProcessPreInitEventSources();

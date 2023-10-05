@@ -20,7 +20,7 @@ public sealed class MetricsObserverOptionsTest : BaseTest
         Assert.True(options.AspNetCoreHosting);
         Assert.True(options.GCEvents);
         Assert.False(options.EventCounterEvents);
-        Assert.Equal("1", options.EventCounterIntervalSec);
+        Assert.Equal(1, options.EventCounterIntervalSec);
         Assert.True(options.ThreadPoolEvents);
         Assert.False(options.HttpClientCore);
         Assert.False(options.HttpClientDesktop);
@@ -49,7 +49,7 @@ public sealed class MetricsObserverOptionsTest : BaseTest
         Assert.False(options.AspNetCoreHosting);
         Assert.False(options.GCEvents);
         Assert.True(options.EventCounterEvents);
-        Assert.Equal("5", options.EventCounterIntervalSec);
+        Assert.Equal(5, options.EventCounterIntervalSec);
         Assert.False(options.ThreadPoolEvents);
         Assert.True(options.HttpClientCore);
         Assert.True(options.HttpClientDesktop);

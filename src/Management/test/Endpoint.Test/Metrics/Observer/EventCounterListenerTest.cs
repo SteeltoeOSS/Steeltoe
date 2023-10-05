@@ -48,7 +48,7 @@ public sealed class EventCounterListenerTest : BaseTest
         var options = new MetricsObserverOptions
         {
             EventCounterEvents = true,
-            EventCounterIntervalSec = "1"
+            EventCounterIntervalSec = 1
         };
 
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
@@ -88,7 +88,7 @@ public sealed class EventCounterListenerTest : BaseTest
         {
             ExcludedMetrics = exclusions,
             EventCounterEvents = true,
-            EventCounterIntervalSec = "1"
+            EventCounterIntervalSec = 1
         };
 
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
@@ -131,7 +131,7 @@ public sealed class EventCounterListenerTest : BaseTest
         {
             IncludedMetrics = inclusions,
             EventCounterEvents = true,
-            EventCounterIntervalSec = "1"
+            EventCounterIntervalSec = 1
         });
 
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);

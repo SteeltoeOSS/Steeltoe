@@ -26,7 +26,7 @@ public sealed class MetricsObserverOptions
 
     public bool EventCounterEvents { get; set; }
 
-    public string? EventCounterIntervalSec { get; set; }
+    public int? EventCounterIntervalSec { get; set; }
 
     public bool HttpClientCore { get; set; }
 
