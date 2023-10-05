@@ -1,4 +1,8 @@
 <Project>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);S2094</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="$(MSBuildThisFileDirectory)\src\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj" />
   </ItemGroup>
