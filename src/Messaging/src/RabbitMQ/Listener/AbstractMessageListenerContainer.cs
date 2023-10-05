@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Retry;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Batch;
@@ -579,6 +580,10 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         IsLazyLoad = true;
     }
 
+    internal virtual IRecoveryCallback Recoverer { get; set; }
+
+    internal virtual RetryTemplate RetryTemplate { get; set; }
+
     protected virtual IConnection CreateConnection()
     {
         return ConnectionFactory.CreateConnection();
@@ -1153,6 +1158,25 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         if (IsDeBatchingEnabled && BatchingStrategy.CanDebatch(message.Headers))
         {
             BatchingStrategy.DeBatch(message, (fragment) => ActualInvokeListener(channel, fragment));
+        }
+        else
+        {
+            InvokeListener(channel, message);
+        }
+    }
+
+    private void InvokeListener(R.IModel channel, IMessage message)
+    {
+        if (RetryTemplate != null)
+        {
+            if (Recoverer != null)
+            {
+                RetryTemplate.Execute(context => ActualInvokeListener(channel, message), Recoverer);
+            }
+            else
+            {
+                RetryTemplate.Execute(context => ActualInvokeListener(channel, message));
+            }
         }
         else
         {
