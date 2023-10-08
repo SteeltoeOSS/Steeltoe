@@ -19,9 +19,9 @@
     <MockHttpVersion>6.0.*</MockHttpVersion>
     <MoqVersion>4.18.*</MoqVersion>
     <TestSdkVersion>17.3.*</TestSdkVersion>
-    <XunitVersion>2.4.*</XunitVersion>
+    <XunitVersion>2.5.*</XunitVersion>
     <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
-    <XunitStudioVersion>2.4.*</XunitStudioVersion>
+    <XunitStudioVersion>2.5.*</XunitStudioVersion>
     <NSubstituteVersion>4.3.*</NSubstituteVersion>
     <HealthChecksVersion>6.0.*</HealthChecksVersion>
     <HealthChecksRabbitVersion>3.1.*</HealthChecksRabbitVersion>

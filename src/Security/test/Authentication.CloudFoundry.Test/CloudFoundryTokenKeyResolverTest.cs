@@ -180,7 +180,7 @@ public sealed class CloudFoundryTokenKeyResolverTest
         JsonWebKeySet webKeySet = resolver.GetJsonWebKeySet(webKey);
         Assert.NotNull(webKeySet);
         Assert.NotNull(webKeySet.Keys);
-        Assert.Equal(1, webKeySet.Keys.Count);
+        Assert.Single(webKeySet.Keys);
     }
 
     [Fact]

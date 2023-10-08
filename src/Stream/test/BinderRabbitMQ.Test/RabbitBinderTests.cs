@@ -62,7 +62,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     }
 
     [Fact]
-    public void TestSendAndReceiveBad()
+    public async Task TestSendAndReceiveBad()
     {
         var bindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(bindingsOptions);
@@ -104,12 +104,12 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
 
-        producerBinding.UnbindAsync();
-        consumerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestProducerErrorChannel()
+    public async Task TestProducerErrorChannel()
     {
         CachingConnectionFactory ccf = GetResource();
         ccf.IsPublisherConfirms = true;
@@ -182,11 +182,11 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal("Mock Nack", nack.NackReason);
         Assert.Equal(message, nack.CorrelationData);
         Assert.Equal(message, nack.FailedMessage);
-        producerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestProducerAckChannel()
+    public async Task TestProducerAckChannel()
     {
         var bindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(bindingsOptions);
@@ -221,11 +221,11 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         moduleOutputChannel.Send(message);
         Assert.True(confirmLatch.Wait(TimeSpan.FromSeconds(10000)));
         Assert.Equal(messageBytes, confirm.Value.Payload);
-        producerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestProducerConfirmHeader()
+    public async Task TestProducerConfirmHeader()
     {
         RabbitTestBinder binder = GetBinder();
 
@@ -248,14 +248,14 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
             .Build();
 
         moduleOutputChannel.Send(message);
-        CorrelationData.Confirm confirm = correlation.Future.Result;
+        CorrelationData.Confirm confirm = await correlation.Future;
         Assert.True(confirm.Ack);
 
-        producerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestConsumerProperties()
+    public async Task TestConsumerProperties()
     {
         var rabbitConsumerOptions = new RabbitConsumerOptions
         {
@@ -293,7 +293,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal(3, GetFieldValue<int>(retry, "_maxAttempts"));
         Assert.Equal(1000, GetFieldValue<int>(retry, "_backOffInitialInterval"));
         Assert.Equal(2.0, GetFieldValue<double>(retry, "_backOffMultiplier"));
-        consumerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
         Assert.False(endpoint.IsRunning);
 
         bindingsOptions.Bindings.Remove("input");
@@ -329,7 +329,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         Assert.Equal("foo.props.0.test", container.GetQueueNames()[0]);
 
-        consumerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
         Assert.False(endpoint.IsRunning);
     }
 
@@ -451,7 +451,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     }
 
     [Fact]
-    public void TestAnonWithBuiltInExchange()
+    public async Task TestAnonWithBuiltInExchange()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -469,12 +469,12 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.StartsWith("anonymous.", queueName, StringComparison.Ordinal);
         Assert.True(container.IsRunning);
 
-        consumerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
         Assert.False(container.IsRunning);
     }
 
     [Fact]
-    public void TestAnonWithBuiltInExchangeCustomPrefix()
+    public async Task TestAnonWithBuiltInExchangeCustomPrefix()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -492,7 +492,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.StartsWith("customPrefix.", queueName, StringComparison.Ordinal);
         Assert.True(container.IsRunning);
 
-        consumerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
         Assert.False(container.IsRunning);
     }
 
@@ -787,7 +787,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     }
 
     [Fact]
-    public void TestProducerProperties()
+    public async Task TestProducerProperties()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -809,7 +809,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.NotNull(matchers);
         Assert.Equal(4, matchers.Count);
 
-        producerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
         Assert.False(endpoint.IsRunning);
 
         Assert.False(endpoint.Template.IsChannelTransacted);
@@ -868,7 +868,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.NotNull(received);
 
         Assert.Equal(42, received.Headers[RabbitMessageHeaders.ReceivedDelay]);
-        producerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
         Assert.False(endpoint.IsRunning);
     }
 
@@ -921,7 +921,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     }
 
     [Fact]
-    public void TestNonDurablePubSubWithAutoBindDlq()
+    public async Task TestNonDurablePubSubWithAutoBindDlq()
     {
         ILogger<RabbitAdmin> logger = LoggerFactory.CreateLogger<RabbitAdmin>();
         var admin = new RabbitAdmin(GetResource(), logger);
@@ -946,7 +946,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         IBinding consumerBinding = binder.BindConsumer("nondurabletest.0", "tgroup", moduleInputChannel, consumerProperties);
 
-        consumerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
         Assert.Null(admin.GetQueueProperties($"{TestPrefix}nondurabletest.0.dlq"));
     }
 
@@ -1057,7 +1057,9 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
                 while (n++ < 100 && info.MessagesUnacknowledged < 1L)
                 {
+#pragma warning disable xUnit1031 // Do not use blocking task operations in test method
                     Task.Delay(100).GetAwaiter().GetResult();
+#pragma warning restore xUnit1031 // Do not use blocking task operations in test method
                     info = client.GetQueue($"{TestPrefix}dlqTestManual.default", vhost);
                 }
 
@@ -1122,7 +1124,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     }
 
     [Fact]
-    public void TestAutoBindDlqPartionedConsumerFirst()
+    public async Task TestAutoBindDlqPartionedConsumerFirst()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -1220,11 +1222,11 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal("bindertest.partDLQ.0.dlqPartGrp-0", received.Headers.ReceivedRoutingKey());
         Assert.DoesNotContain(BinderHeaders.PartitionHeader, received.Headers.Select(h => h.Key));
 
-        input0Binding.UnbindAsync();
-        input1Binding.UnbindAsync();
-        defaultConsumerBinding1.UnbindAsync();
-        defaultConsumerBinding2.UnbindAsync();
-        outputBinding.UnbindAsync();
+        await input0Binding.UnbindAsync();
+        await input1Binding.UnbindAsync();
+        await defaultConsumerBinding1.UnbindAsync();
+        await defaultConsumerBinding2.UnbindAsync();
+        await outputBinding.UnbindAsync();
     }
 
     [Fact]
@@ -1240,7 +1242,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     }
 
     [Fact]
-    public void TestAutoBindDlqPartitionedProducerFirst()
+    public async Task TestAutoBindDlqPartitionedProducerFirst()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -1336,15 +1338,15 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         Assert.DoesNotContain(BinderHeaders.PartitionHeader, received.Headers);
 
-        input0Binding.UnbindAsync();
-        input1Binding.UnbindAsync();
-        defaultConsumerBinding1.UnbindAsync();
-        defaultConsumerBinding2.UnbindAsync();
-        outputBinding.UnbindAsync();
+        await input0Binding.UnbindAsync();
+        await input1Binding.UnbindAsync();
+        await defaultConsumerBinding1.UnbindAsync();
+        await defaultConsumerBinding2.UnbindAsync();
+        await outputBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestAutoBindDlQWithRepublish()
+    public async Task TestAutoBindDlQWithRepublish()
     {
         MaxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
         Assert.True(MaxStackTraceSize > 0);
@@ -1405,11 +1407,11 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         template.ReceiveTimeout = 500;
         Assert.Null(template.Receive($"{TestPrefix}foo.dlqpubtest2.foo.dlq"));
 
-        consumerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestBatchingAndCompression()
+    public async Task TestBatchingAndCompression()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -1465,13 +1467,13 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal("bar", inMessage.Payload.GetString());
         Assert.Null(inMessage.Headers[RabbitMessageHeaders.DeliveryMode]);
 
-        producerBinding.UnbindAsync();
-        consumerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
     }
 
     // TestProducerBatching, TestConsumerBatching only works with SMLC - not implemented in steeltoe
     [Fact]
-    public void TestInternalHeadersNotPropagated()
+    public async Task TestInternalHeadersNotPropagated()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -1510,8 +1512,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Null(received.Headers[IntegrationMessageHeaderAccessor.SourceData]);
         Assert.Null(received.Headers[IntegrationMessageHeaderAccessor.DeliveryAttempt]);
 
-        producerBinding.UnbindAsync();
-        consumerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
         admin.DeleteQueue("propagate");
     }
 
@@ -1708,7 +1710,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     }
 
     [Fact]
-    public void TestRoutingKeyExpression()
+    public async Task TestRoutingKeyExpression()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -1744,11 +1746,11 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         Assert.Equal("{\"field\":\"rkeTest\"}", ((byte[])bytes).GetString());
 
-        producerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestRoutingKeyExpressionPartitionedAndDelay()
+    public async Task TestRoutingKeyExpressionPartitionedAndDelay()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -1789,11 +1791,11 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.IsType<byte[]>(bytes);
 
         Assert.Equal("{\"field\":\"rkepTest\"}", ((byte[])bytes).GetString());
-        producerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestPolledConsumer()
+    public async Task TestPolledConsumer()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -1827,11 +1829,11 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         }
 
         Assert.True(polled);
-        binding.UnbindAsync();
+        await binding.UnbindAsync();
     }
 
     [Fact]
-    public void TestPolledConsumer_AbstractBinder()
+    public async Task TestPolledConsumer_AbstractBinder()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -1841,11 +1843,11 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         ConsumerOptions consumerOptions = GetConsumerOptions("input", rabbitBindingsOptions);
         IBinding binding = binder.BindConsumer("pollable", "group", (object)inboundBindTarget, consumerOptions);
         Assert.True(binding is DefaultBinding<IPollableSource<IMessageHandler>>);
-        binding.UnbindAsync();
+        await binding.UnbindAsync();
     }
 
     [Fact]
-    public void TestPolledConsumerRequeue()
+    public async Task TestPolledConsumerRequeue()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         RabbitTestBinder binder = GetBinder(rabbitBindingsOptions);
@@ -1889,7 +1891,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         });
 
         Assert.True(isPolled);
-        binding.UnbindAsync();
+        await binding.UnbindAsync();
     }
 
     [Fact]

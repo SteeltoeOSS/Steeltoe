@@ -15,7 +15,7 @@ public sealed class MessageHeaderAccessorTest
     public void NewEmptyHeaders()
     {
         var accessor = new MessageHeaderAccessor();
-        Assert.Equal(0, accessor.ToDictionary().Count);
+        Assert.Empty(accessor.ToDictionary());
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public sealed class MessageHeaderAccessorTest
         headers.CopyHeaders(null);
         headers.CopyHeadersIfAbsent(null);
 
-        Assert.Equal(1, ((HeadersDictionary)headers.MessageHeaders).Count);
+        Assert.Single(headers.MessageHeaders);
         Assert.Contains("id", ((HeadersDictionary)headers.MessageHeaders).Keys);
     }
 
@@ -175,9 +175,9 @@ public sealed class MessageHeaderAccessorTest
         accessor.SetHeader("foo", "bar3");
         HeadersDictionary map3 = accessor.ToDictionary();
 
-        Assert.Equal(1, map1.Count);
-        Assert.Equal(1, map2.Count);
-        Assert.Equal(1, map3.Count);
+        Assert.Single(map1);
+        Assert.Single(map2);
+        Assert.Single(map3);
 
         Assert.Equal("bar1", map1["foo"]);
         Assert.Equal("bar2", map2["foo"]);

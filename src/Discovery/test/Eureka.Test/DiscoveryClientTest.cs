@@ -131,7 +131,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         IList<Application> apps = result.GetRegisteredApplications();
         Assert.NotNull(apps);
-        Assert.Equal(1, apps.Count);
+        Assert.Single(apps);
         Assert.Equal("FOO", apps[0].Name);
     }
 
@@ -206,9 +206,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         IList<Application> reg = result.GetRegisteredApplications();
         Assert.NotNull(reg);
-        Assert.Equal(1, reg.Count);
+        Assert.Single(reg);
         Assert.Equal("FOO", reg[0].Name);
-        Assert.Equal(1, reg[0].Instances.Count);
+        Assert.Single(reg[0].Instances);
     }
 
     [Fact]
@@ -537,12 +537,12 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         result = client.GetInstancesByVipAddress("boohoo", false);
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
 
         apps.ReturnUpInstancesOnly = true;
         result = client.GetInstancesByVipAddress("vapp1", false);
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -641,7 +641,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var client = new DiscoveryClient(configuration);
         IList<InstanceInfo> result = client.GetInstanceById("myId");
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -711,7 +711,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         result = client.GetInstanceById("boohoo");
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
     }
 
     [Fact]

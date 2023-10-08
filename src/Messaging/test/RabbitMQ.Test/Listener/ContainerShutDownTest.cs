@@ -19,7 +19,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 public sealed class ContainerShutDownTest : AbstractTest
 {
     [Fact]
-    public void TestUninterruptibleListenerDmlc()
+    public async Task TestUninterruptibleListenerDmlc()
     {
         using var cf = new CachingConnectionFactory("localhost");
         var admin = new RabbitAdmin(cf);
@@ -49,8 +49,8 @@ public sealed class ContainerShutDownTest : AbstractTest
             channels = (SessionManager)field.GetValue(connection.Target.Connection);
             Assert.NotNull(channels);
 
-            container.StartAsync();
-            Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
+            await container.StartAsync().WaitAsync(TimeSpan.FromSeconds(10));
+            Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(1)));
 
             var template = new RabbitTemplate(cf);
 
@@ -67,7 +67,7 @@ public sealed class ContainerShutDownTest : AbstractTest
         }
         finally
         {
-            container.StopAsync();
+            await container.StopAsync();
 
             if (channels != null)
             {

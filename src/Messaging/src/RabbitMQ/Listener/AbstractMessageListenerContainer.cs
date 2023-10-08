@@ -450,18 +450,16 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         return Task.CompletedTask;
     }
 
-    public virtual Task StopAsync(Action callback)
+    public virtual async Task StopAsync(Action callback)
     {
         try
         {
-            StopAsync();
+            await StopAsync();
         }
         finally
         {
             callback();
         }
-
-        return Task.CompletedTask;
     }
 
     public virtual void LazyLoad()

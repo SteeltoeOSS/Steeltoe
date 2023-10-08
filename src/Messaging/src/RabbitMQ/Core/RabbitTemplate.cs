@@ -1308,19 +1308,23 @@ public class RabbitTemplate
 
     public virtual async Task StopAsync()
     {
+        var tasks = new List<Task>();
+
         lock (DirectReplyToContainers)
         {
             foreach (DirectReplyToMessageListenerContainer c in DirectReplyToContainers.Values)
             {
                 if (c.IsRunning)
                 {
-                    _ = c.StopAsync();
+                    Task task = c.StopAsync();
+                    tasks.Add(task);
                 }
             }
 
             DirectReplyToContainers.Clear();
         }
 
+        await Task.WhenAll(tasks);
         await DoStopAsync();
     }
 
@@ -1545,7 +1549,7 @@ public class RabbitTemplate
                         container.ErrorHandler = ReplyErrorHandler;
                     }
 
-                    container.StartAsync();
+                    container.StartAsync().GetAwaiter().GetResult();
                     DirectReplyToContainers.TryAdd(connectionFactory, container);
                     _replyAddress = Address.AmqRabbitMQReplyTo;
                 }
