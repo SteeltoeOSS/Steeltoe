@@ -8,12 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
-    <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="$(HealthChecksVersion)" />
-    <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="$(HealthChecksVersion)" />
-    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="$(HealthChecksVersion)" />
-    <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="$(HealthChecksRabbitVersion)" />
-    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="$(HealthChecksVersion)" />
-    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(HealthChecksVersion)" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="$(MicrosoftAzureCosmosVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SystemSqlClientVersion)" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
