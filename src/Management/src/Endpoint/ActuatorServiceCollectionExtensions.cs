@@ -32,10 +32,8 @@ public static class ActuatorServiceCollectionExtensions
 
         services.TryAddScoped<ActuatorEndpointMapper>();
 
-        // Workaround for services.ConfigureOptions<ConfigureManagementOptions>() registering multiple times,
-        // see https://github.com/dotnet/runtime/issues/42358.
-        services.AddOptions();
-        services.TryAddTransient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>();
+        services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
+
     }
 
     internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
@@ -44,14 +42,24 @@ public static class ActuatorServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.ConfigureOptions<TConfigureOptions>();
+        services.ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+    }
+    internal static void ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>(this IServiceCollection services)
+        where TOptions: class
+        where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
+    {
+        // Workaround for services.ConfigureOptions<TConfigureOptions>() registering multiple times,
+        // see https://github.com/dotnet/runtime/issues/42358.
+
+        services.AddOptions();
+        services.TryAddTransient<IConfigureOptions<TOptions>, TConfigureOptions>();
+     
         services.AddSingleton<IOptionsChangeTokenSource<TOptions>>((provider) => {
             TConfigureOptions configurer = (TConfigureOptions)provider.GetRequiredService<IConfigureOptions<TOptions>>();
             IConfiguration configuration = provider.GetRequiredService<IConfiguration>();
             return new ConfigurationChangeTokenSource<TOptions>(configuration.GetSection(configurer.ConfigurationKey));
         });
-
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
 
     public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)

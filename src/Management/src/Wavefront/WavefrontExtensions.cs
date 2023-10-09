@@ -16,6 +16,7 @@ using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Wavefront.Exporters;
+using Steeltoe.Management.Endpoint;
 
 namespace Steeltoe.Management.Wavefront;
 
@@ -37,7 +38,7 @@ public static class WavefrontExtensions
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticsService>());
 
-        services.ConfigureOptions<ConfigureWavefrontExporterOptions>();
+        services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
         services.AddMetricsObservers();
 
         services.AddOpenTelemetry().WithMetrics(builder =>

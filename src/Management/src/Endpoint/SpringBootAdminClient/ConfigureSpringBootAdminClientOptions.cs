@@ -5,10 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
-internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptions<SpringBootAdminClientOptions>
+internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptionsWithKey<SpringBootAdminClientOptions>
 {
     private const string ManagementInfoPrefix = "spring:boot:admin:client";
 
@@ -23,6 +24,8 @@ internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptions<
         _configuration = configuration;
         _applicationInstanceInfo = applicationInstanceInfo;
     }
+
+    public string ConfigurationKey => ManagementInfoPrefix;
 
     public void Configure(SpringBootAdminClientOptions options)
     {

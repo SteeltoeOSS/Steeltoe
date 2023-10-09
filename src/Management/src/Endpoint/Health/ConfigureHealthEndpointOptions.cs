@@ -14,14 +14,10 @@ namespace Steeltoe.Management.Endpoint.Health;
 internal sealed class ConfigureHealthEndpointOptions : ConfigureEndpointOptions<HealthEndpointOptions>
 {
     private const string HealthOptionsPrefix = "management:endpoints:health";
-    private readonly IConfiguration _configuration;
-
+  
     public ConfigureHealthEndpointOptions(IConfiguration configuration)
         :base(configuration, HealthOptionsPrefix, "health")
     {
-        ArgumentGuard.NotNull(configuration);
-
-        _configuration = configuration;
     }
 
     public override void Configure(HealthEndpointOptions options)

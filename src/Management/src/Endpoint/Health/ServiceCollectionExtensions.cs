@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
-        services.ConfigureOptions<ConfigureDiskSpaceContributorOptions>();
+        services.ConfigureOptionsWithChangeTokenSource<DiskSpaceContributorOptions, ConfigureDiskSpaceContributorOptions>();
         services.TryAddScoped<IHealthEndpointHandler, HealthEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IEndpointMiddleware, HealthEndpointMiddleware>());
         services.AddScoped<HealthEndpointMiddleware>();

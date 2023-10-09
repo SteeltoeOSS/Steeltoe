@@ -23,13 +23,8 @@ internal sealed class ConfigureEnvironmentEndpointOptions : ConfigureEndpointOpt
         "vcap_services"
     };
 
-    private readonly IConfiguration _configuration;
-
     public ConfigureEnvironmentEndpointOptions(IConfiguration configuration): base(configuration, ManagementInfoPrefix, "env")
     {
-        ArgumentGuard.NotNull(configuration);
-
-        _configuration = configuration;
     }
 
     public override void Configure(EnvironmentEndpointOptions options)
