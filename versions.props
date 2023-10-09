@@ -54,7 +54,7 @@
     <ExtensionsVersion>6.0.*</ExtensionsVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
     <JwtTokensVersion>6.20.*</JwtTokensVersion>
-    <KubernetesClientVersion>9.0.*</KubernetesClientVersion>
+    <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
