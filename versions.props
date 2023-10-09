@@ -30,7 +30,7 @@
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
     <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
-    <TestSdkVersion>17.3.*</TestSdkVersion>
+    <TestSdkVersion>17.7.*</TestSdkVersion>
     <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
     <XunitStudioVersion>2.5.*</XunitStudioVersion>
     <XunitVersion>2.5.*</XunitVersion>
