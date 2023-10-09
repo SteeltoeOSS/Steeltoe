@@ -44,7 +44,7 @@
 
     <AspNetCoreVersion>6.0.*</AspNetCoreVersion>
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
-    <CastleCoreVersion>4.4.*</CastleCoreVersion>
+    <CastleCoreVersion>5.1.*</CastleCoreVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
     <DiagnosticsTracingVersion>3.0.*</DiagnosticsTracingVersion>
