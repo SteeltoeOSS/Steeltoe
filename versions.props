@@ -6,7 +6,7 @@
     -->
 
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
-    <CoverletVersion>3.2.*</CoverletVersion>
+    <CoverletVersion>6.0.*</CoverletVersion>
     <EFCoreTestVersion>7.0.*</EFCoreTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
