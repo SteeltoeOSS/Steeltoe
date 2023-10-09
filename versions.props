@@ -43,7 +43,7 @@
     -->
 
     <AspNetCoreVersion>6.0.*</AspNetCoreVersion>
-    <BouncyCastleVersion>1.9.*</BouncyCastleVersion>
+    <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <CastleCoreVersion>4.4.*</CastleCoreVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
