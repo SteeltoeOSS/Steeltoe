@@ -59,7 +59,7 @@
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
     <PollyContribVersion>1.1.*</PollyContribVersion>
-    <PollyVersion>7.2.*</PollyVersion>
+    <PollyVersion>8.0.*</PollyVersion>
     <RabbitClientVersion>5.1.*</RabbitClientVersion>
     <RuntimeLoaderVersion>4.3.*</RuntimeLoaderVersion>
     <SerilogExtensionsLoggingVersion>3.1.*</SerilogExtensionsLoggingVersion>
