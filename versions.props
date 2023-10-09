@@ -11,13 +11,13 @@
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
     <HealthChecksVersion>6.0.*</HealthChecksVersion>
-    <MicrosoftAzureCosmosVersion>3.33.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftAzureCosmosVersion>3.35.*</MicrosoftAzureCosmosVersion>
     <MicrosoftSqlClientVersion>5.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>6.0.*</MockHttpVersion>
-    <MongoDbClientVersion>2.19.*</MongoDbClientVersion>
+    <MongoDbClientVersion>2.21.*</MongoDbClientVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.2.*</MySqlConnectorVersion>
-    <MySqlDataVersion>8.0.*</MySqlDataVersion>
+    <MySqlDataVersion>8.1.*</MySqlDataVersion>
     <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
     <NpgsqlVersion>7.0.*</NpgsqlVersion>
     <NSubstituteVersion>4.3.*</NSubstituteVersion>
