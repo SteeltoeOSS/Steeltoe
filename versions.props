@@ -15,7 +15,7 @@
     <MicrosoftSqlClientVersion>5.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>6.0.*</MockHttpVersion>
     <MongoDbClientVersion>2.19.*</MongoDbClientVersion>
-    <MoqVersion>4.18.*</MoqVersion>
+    <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.2.*</MySqlConnectorVersion>
     <MySqlV8>8.0.*</MySqlV8>
     <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
