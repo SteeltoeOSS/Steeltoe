@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -21,7 +22,6 @@ using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
-
 namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorServiceCollectionExtensions
@@ -38,16 +38,20 @@ public static class ActuatorServiceCollectionExtensions
         services.TryAddTransient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>();
     }
 
-    public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
+    internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
         where TOptions : EndpointOptions
-        where TConfigureOptions : class
+        where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
     {
         ArgumentGuard.NotNull(services);
 
         services.ConfigureOptions<TConfigureOptions>();
+        services.AddSingleton<IOptionsChangeTokenSource<TOptions>>((provider) => {
+            TConfigureOptions configurer = (TConfigureOptions)provider.GetRequiredService<IConfigureOptions<TOptions>>();
+            IConfiguration configuration = provider.GetRequiredService<IConfiguration>();
+            return new ConfigurationChangeTokenSource<TOptions>(configuration.GetSection(configurer.ConfigurationKey));
+        });
 
-        services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
 
     public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)

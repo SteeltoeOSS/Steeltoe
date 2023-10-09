@@ -3,18 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Options;
-
-internal abstract class ConfigureEndpointOptions<T> : IConfigureOptions<T>
+internal abstract class ConfigureEndpointOptions<T> : IConfigureOptionsWithKey<T>
     where T : EndpointOptions
 {
     private readonly string _prefix;
     private readonly string _id;
+    private readonly IConfiguration _configuration;
+    
+    protected IConfiguration Configuration => _configuration;
 
-    protected IConfiguration Configuration { get; }
+    string IConfigureOptionsWithKey<T>.ConfigurationKey => _prefix;
 
     protected ConfigureEndpointOptions(IConfiguration configuration, string prefix, string id)
     {
@@ -22,7 +23,7 @@ internal abstract class ConfigureEndpointOptions<T> : IConfigureOptions<T>
         ArgumentGuard.NotNull(prefix);
         ArgumentGuard.NotNull(id);
 
-        Configuration = configuration;
+        _configuration = configuration;
         _prefix = prefix;
         _id = id;
     }

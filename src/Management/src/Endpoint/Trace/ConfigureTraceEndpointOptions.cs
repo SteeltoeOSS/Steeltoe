@@ -5,10 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-internal sealed class ConfigureTraceEndpointOptions : IConfigureNamedOptions<TraceEndpointOptions>
+internal sealed class ConfigureTraceEndpointOptions : ConfigureEndpointOptions<TraceEndpointOptions>, IConfigureNamedOptions<TraceEndpointOptions>
 {
     private const string ManagementInfoPrefixV1 = "management:endpoints:trace";
     private const string ManagementInfoPrefix = "management:endpoints:httptrace";
@@ -16,6 +17,7 @@ internal sealed class ConfigureTraceEndpointOptions : IConfigureNamedOptions<Tra
     private readonly IConfiguration _configuration;
 
     public ConfigureTraceEndpointOptions(IConfiguration configuration)
+        : base(configuration, ManagementInfoPrefix, "httptrace")
     {
         ArgumentGuard.NotNull(configuration);
 
@@ -46,17 +48,6 @@ internal sealed class ConfigureTraceEndpointOptions : IConfigureNamedOptions<Tra
         }
     }
 
-    public void Configure(TraceEndpointOptions options)
-    {
-        ArgumentGuard.NotNull(options);
-
-        _configuration.GetSection(ManagementInfoPrefix).Bind(options);
-
-        if (string.IsNullOrEmpty(options.Id))
-        {
-            options.Id = "httptrace";
-        }
-    }
 
     public enum TraceEndpointOptionNames
     {
