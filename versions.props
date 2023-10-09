@@ -24,7 +24,7 @@
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>6.5.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
-    <SerilogExceptionsVersion>8.2.*</SerilogExceptionsVersion>
+    <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>9.11.*</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
@@ -62,9 +62,9 @@
     <PollyVersion>8.0.*</PollyVersion>
     <RabbitClientVersion>5.1.*</RabbitClientVersion>
     <RuntimeLoaderVersion>4.3.*</RuntimeLoaderVersion>
-    <SerilogExtensionsLoggingVersion>3.1.*</SerilogExtensionsLoggingVersion>
-    <SerilogSettingsConfigurationVersion>3.3.*</SerilogSettingsConfigurationVersion>
-    <SerilogSinksConsoleVersion>4.0.*</SerilogSinksConsoleVersion>
+    <SerilogExtensionsLoggingVersion>7.0.*</SerilogExtensionsLoggingVersion>
+    <SerilogSettingsConfigurationVersion>7.0.*</SerilogSettingsConfigurationVersion>
+    <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
     <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
     <SymReaderVersion>1.4.*</SymReaderVersion>
     <SystemVersion>6.0.*</SystemVersion>
