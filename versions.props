@@ -17,9 +17,9 @@
     <MongoDbClientVersion>2.19.*</MongoDbClientVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.2.*</MySqlConnectorVersion>
-    <MySqlV8>8.0.*</MySqlV8>
+    <MySqlDataVersion>8.0.*</MySqlDataVersion>
     <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
-    <NpgsqlVersion>6.0.*</NpgsqlVersion>
+    <NpgsqlVersion>7.0.*</NpgsqlVersion>
     <NSubstituteVersion>4.3.*</NSubstituteVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>6.5.*</RabbitClientTestVersion>
