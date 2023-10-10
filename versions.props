@@ -7,7 +7,7 @@
 
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
-    <EFCoreTestVersion>7.0.*</EFCoreTestVersion>
+    <EntityFrameworkCoreTestVersion>7.0.*</EntityFrameworkCoreTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.35.*</MicrosoftAzureCosmosVersion>
@@ -46,7 +46,7 @@
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
     <DiagnosticsTracingVersion>3.1.*</DiagnosticsTracingVersion>
     <EasyNetQVersion>2.0.*</EasyNetQVersion>
-    <EFCoreVersion>6.0.*</EFCoreVersion>
+    <EntityFrameworkCoreVersion>6.0.*</EntityFrameworkCoreVersion>
     <ExtensionsVersion>7.0.*</ExtensionsVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
     <JwtTokensVersion>6.20.*</JwtTokensVersion>
