@@ -47,10 +47,12 @@ public sealed class EventCounterListenerTest : BaseTest
     {
         var options = new MetricsObserverOptions
         {
-            EventCounterEvents = true
+            EventCounterEvents = true,
+            EventCounterIntervalSec = 1
         };
 
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
+
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
@@ -85,7 +87,8 @@ public sealed class EventCounterListenerTest : BaseTest
         var options = new MetricsObserverOptions
         {
             ExcludedMetrics = exclusions,
-            EventCounterEvents = true
+            EventCounterEvents = true,
+            EventCounterIntervalSec = 1
         };
 
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
@@ -127,7 +130,8 @@ public sealed class EventCounterListenerTest : BaseTest
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(new MetricsObserverOptions
         {
             IncludedMetrics = inclusions,
-            EventCounterEvents = true
+            EventCounterEvents = true,
+            EventCounterIntervalSec = 1
         });
 
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
