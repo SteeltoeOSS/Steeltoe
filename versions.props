@@ -46,7 +46,7 @@
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
     <DiagnosticsTracingVersion>3.0.*</DiagnosticsTracingVersion>
     <DriveInfoVersion>4.3.*</DriveInfoVersion>
-    <EasyNetQVersion>1.4.*</EasyNetQVersion>
+    <EasyNetQVersion>2.0.*</EasyNetQVersion>
     <EFCoreVersion>6.0.*</EFCoreVersion>
     <ExtensionsVersion>7.0.*</ExtensionsVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
