@@ -4,7 +4,6 @@
 
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Security;
@@ -14,9 +13,9 @@ namespace Steeltoe.Management.Endpoint.Health;
 internal sealed class ConfigureHealthEndpointOptions : ConfigureEndpointOptions<HealthEndpointOptions>
 {
     private const string HealthOptionsPrefix = "management:endpoints:health";
-  
+
     public ConfigureHealthEndpointOptions(IConfiguration configuration)
-        :base(configuration, HealthOptionsPrefix, "health")
+        : base(configuration, HealthOptionsPrefix, "health")
     {
     }
 
@@ -25,8 +24,6 @@ internal sealed class ConfigureHealthEndpointOptions : ConfigureEndpointOptions<
         ArgumentGuard.NotNull(options);
         base.Configure(options);
 
-      
-       
         if (options.Claim == null && !string.IsNullOrEmpty(options.Role))
         {
             options.Claim = new EndpointClaim

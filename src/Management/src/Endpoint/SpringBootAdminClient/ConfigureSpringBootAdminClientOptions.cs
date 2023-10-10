@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -16,6 +15,8 @@ internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptionsW
     private readonly IConfiguration _configuration;
     private readonly IApplicationInstanceInfo _applicationInstanceInfo;
 
+    public string ConfigurationKey => ManagementInfoPrefix;
+
     public ConfigureSpringBootAdminClientOptions(IConfiguration configuration, IApplicationInstanceInfo applicationInstanceInfo)
     {
         ArgumentGuard.NotNull(configuration);
@@ -24,8 +25,6 @@ internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptionsW
         _configuration = configuration;
         _applicationInstanceInfo = applicationInstanceInfo;
     }
-
-    public string ConfigurationKey => ManagementInfoPrefix;
 
     public void Configure(SpringBootAdminClientOptions options)
     {

@@ -4,7 +4,6 @@
 
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Trace;

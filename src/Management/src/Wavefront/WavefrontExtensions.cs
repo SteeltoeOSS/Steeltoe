@@ -13,10 +13,10 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Wavefront.Exporters;
-using Steeltoe.Management.Endpoint;
 
 namespace Steeltoe.Management.Wavefront;
 

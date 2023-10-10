@@ -22,6 +22,7 @@ using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
+
 namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorServiceCollectionExtensions
@@ -33,7 +34,6 @@ public static class ActuatorServiceCollectionExtensions
         services.TryAddScoped<ActuatorEndpointMapper>();
 
         services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
-
     }
 
     internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
@@ -43,10 +43,13 @@ public static class ActuatorServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
     }
+
     internal static void ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>(this IServiceCollection services)
-        where TOptions: class
+        where TOptions : class
         where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
     {
         // Workaround for services.ConfigureOptions<TConfigureOptions>() registering multiple times,
@@ -54,10 +57,11 @@ public static class ActuatorServiceCollectionExtensions
 
         services.AddOptions();
         services.TryAddTransient<IConfigureOptions<TOptions>, TConfigureOptions>();
-     
-        services.AddSingleton<IOptionsChangeTokenSource<TOptions>>((provider) => {
-            TConfigureOptions configurer = (TConfigureOptions)provider.GetRequiredService<IConfigureOptions<TOptions>>();
-            IConfiguration configuration = provider.GetRequiredService<IConfiguration>();
+
+        services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(provider =>
+        {
+            var configurer = (TConfigureOptions)provider.GetRequiredService<IConfigureOptions<TOptions>>();
+            var configuration = provider.GetRequiredService<IConfiguration>();
             return new ConfigurationChangeTokenSource<TOptions>(configuration.GetSection(configurer.ConfigurationKey));
         });
     }

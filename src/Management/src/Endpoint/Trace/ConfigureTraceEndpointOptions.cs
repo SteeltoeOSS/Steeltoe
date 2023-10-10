@@ -48,7 +48,6 @@ internal sealed class ConfigureTraceEndpointOptions : ConfigureEndpointOptions<T
         }
     }
 
-
     public enum TraceEndpointOptionNames
     {
         V1,

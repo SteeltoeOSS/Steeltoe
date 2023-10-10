@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -23,7 +22,8 @@ internal sealed class ConfigureEnvironmentEndpointOptions : ConfigureEndpointOpt
         "vcap_services"
     };
 
-    public ConfigureEnvironmentEndpointOptions(IConfiguration configuration): base(configuration, ManagementInfoPrefix, "env")
+    public ConfigureEnvironmentEndpointOptions(IConfiguration configuration)
+        : base(configuration, ManagementInfoPrefix, "env")
     {
     }
 

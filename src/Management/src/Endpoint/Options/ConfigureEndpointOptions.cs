@@ -6,16 +6,16 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Options;
+
 internal abstract class ConfigureEndpointOptions<T> : IConfigureOptionsWithKey<T>
     where T : EndpointOptions
 {
     private readonly string _prefix;
     private readonly string _id;
-    private readonly IConfiguration _configuration;
-    
-    protected IConfiguration Configuration => _configuration;
 
     string IConfigureOptionsWithKey<T>.ConfigurationKey => _prefix;
+
+    protected IConfiguration Configuration { get; }
 
     protected ConfigureEndpointOptions(IConfiguration configuration, string prefix, string id)
     {
@@ -23,7 +23,7 @@ internal abstract class ConfigureEndpointOptions<T> : IConfigureOptionsWithKey<T
         ArgumentGuard.NotNull(prefix);
         ArgumentGuard.NotNull(id);
 
-        _configuration = configuration;
+        Configuration = configuration;
         _prefix = prefix;
         _id = id;
     }
