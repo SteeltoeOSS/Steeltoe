@@ -49,7 +49,6 @@
     <EntityFrameworkCoreVersion>6.0.*</EntityFrameworkCoreVersion>
     <ExtensionsVersion>7.0.*</ExtensionsVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
-    <JwtTokensVersion>6.20.*</JwtTokensVersion>
     <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
     <MatchTargetFrameworkVersion>6.0.*</MatchTargetFrameworkVersion>
