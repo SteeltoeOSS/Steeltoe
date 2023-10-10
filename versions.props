@@ -19,7 +19,7 @@
     <MySqlDataVersion>8.1.*</MySqlDataVersion>
     <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
     <NpgsqlVersion>7.0.*</NpgsqlVersion>
-    <NSubstituteVersion>4.3.*</NSubstituteVersion>
+    <NSubstituteVersion>5.1.*</NSubstituteVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>6.5.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
