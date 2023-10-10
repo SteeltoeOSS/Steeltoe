@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="EasyNetQ.Management.Client" Version="$(EasyNetQVersion)" />
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
   </ItemGroup>
 
   <ItemGroup>

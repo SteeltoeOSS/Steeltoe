@@ -7,11 +7,10 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="$(MicrosoftAzureCosmosVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SystemSqlClientVersion)" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />

@@ -10,7 +10,6 @@
     <EFCoreTestVersion>7.0.*</EFCoreTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
-    <HealthChecksVersion>6.0.*</HealthChecksVersion>
     <MicrosoftAzureCosmosVersion>3.35.*</MicrosoftAzureCosmosVersion>
     <MicrosoftSqlClientVersion>5.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>6.0.*</MockHttpVersion>
@@ -31,7 +30,6 @@
     <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
     <TestSdkVersion>17.7.*</TestSdkVersion>
-    <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
     <XunitStudioVersion>2.5.*</XunitStudioVersion>
     <XunitVersion>2.5.*</XunitVersion>
 
@@ -42,7 +40,6 @@
       - Before release of the next major version, pin these down and never change them between minor/patch releases.
     -->
 
-    <AspNetCoreVersion>6.0.*</AspNetCoreVersion>
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <CastleCoreVersion>5.1.*</CastleCoreVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
@@ -51,11 +48,12 @@
     <DriveInfoVersion>4.3.*</DriveInfoVersion>
     <EasyNetQVersion>1.4.*</EasyNetQVersion>
     <EFCoreVersion>6.0.*</EFCoreVersion>
-    <ExtensionsVersion>6.0.*</ExtensionsVersion>
+    <ExtensionsVersion>7.0.*</ExtensionsVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
     <JwtTokensVersion>6.20.*</JwtTokensVersion>
     <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
+    <MatchTargetFrameworkVersion>6.0.*</MatchTargetFrameworkVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
     <PollyContribVersion>1.1.*</PollyContribVersion>
@@ -67,7 +65,7 @@
     <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
     <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
     <SymReaderVersion>1.4.*</SymReaderVersion>
-    <SystemVersion>6.0.*</SystemVersion>
+    <SystemVersion>7.0.*</SystemVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
   </PropertyGroup>
 </Project>

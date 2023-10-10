@@ -7,7 +7,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="RichardSzalay.MockHttp" Version="$(MockHttpVersion)" />
   </ItemGroup>
 
