@@ -7,6 +7,7 @@
 
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
+    <EasyNetQVersion>2.0.*</EasyNetQVersion>
     <EntityFrameworkCoreTestVersion>7.0.*</EntityFrameworkCoreTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
@@ -45,7 +46,6 @@
     <ConsulVersion>1.6.10.*</ConsulVersion>
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
     <DiagnosticsTracingVersion>3.1.*</DiagnosticsTracingVersion>
-    <EasyNetQVersion>2.0.*</EasyNetQVersion>
     <EntityFrameworkCoreVersion>6.0.*</EntityFrameworkCoreVersion>
     <ExtensionsVersion>7.0.*</ExtensionsVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
