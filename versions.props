@@ -13,7 +13,7 @@
     <MicrosoftAzureCosmosVersion>3.35.*</MicrosoftAzureCosmosVersion>
     <MicrosoftSqlClientVersion>5.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>6.0.*</MockHttpVersion>
-    <MongoDbClientVersion>2.21.*</MongoDbClientVersion>
+    <MongoDbDriverVersion>2.22.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.2.*</MySqlConnectorVersion>
     <MySqlDataVersion>8.1.*</MySqlDataVersion>
