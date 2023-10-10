@@ -44,8 +44,7 @@
     <CastleCoreVersion>5.1.*</CastleCoreVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
-    <DiagnosticsTracingVersion>3.0.*</DiagnosticsTracingVersion>
-    <DriveInfoVersion>4.3.*</DriveInfoVersion>
+    <DiagnosticsTracingVersion>3.1.*</DiagnosticsTracingVersion>
     <EasyNetQVersion>2.0.*</EasyNetQVersion>
     <EFCoreVersion>6.0.*</EFCoreVersion>
     <ExtensionsVersion>7.0.*</ExtensionsVersion>
