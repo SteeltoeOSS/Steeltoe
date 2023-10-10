@@ -63,7 +63,7 @@
     <SerilogSettingsConfigurationVersion>7.0.*</SerilogSettingsConfigurationVersion>
     <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
     <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
-    <SymReaderVersion>1.4.*</SymReaderVersion>
+    <SymReaderVersion>2.0.*</SymReaderVersion>
     <SystemVersion>7.0.*</SystemVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
   </PropertyGroup>
