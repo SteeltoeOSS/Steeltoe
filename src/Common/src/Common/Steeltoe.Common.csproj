@@ -9,16 +9,16 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemVersion)" />
-    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="$(SystemVersion)" />
-    <PackageReference Include="System.Text.Json" Version="$(SystemVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(FoundationalVersion)" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(FoundationalVersion)" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="$(FoundationalVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(FoundationalVersion)" />
   </ItemGroup>
 
   <ItemGroup>

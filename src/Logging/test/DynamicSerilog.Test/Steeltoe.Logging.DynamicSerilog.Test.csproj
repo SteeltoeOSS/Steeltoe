@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Serilog.Enrichers.Thread" Version="$(SerilogEnrichersThreadVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(FoundationalVersion)" />
     <PackageReference Include="Serilog.Exceptions" Version="$(SerilogExceptionsVersion)" />
   </ItemGroup>
 

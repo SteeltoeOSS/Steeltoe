@@ -18,6 +18,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MatchTargetFrameworkVersion)" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="$(OpenIdConnectVersion)" />
   </ItemGroup>
 </Project>

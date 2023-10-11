@@ -19,13 +19,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Diagnostics.NETCore.Client" Version="$(DiagnosticsNetCoreClientVersion)" />
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="$(DiagnosticsTracingVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(MatchTargetFrameworkVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.DiaSymReader" Version="$(SymReaderVersion)" />
     <PackageReference Include="Microsoft.DiaSymReader.PortablePdb" Version="$(SymReaderPortableVersion)" />
-    <PackageReference Include="System.Net.Http.Json" Version="$(SystemVersion)" />
+    <PackageReference Include="System.Net.Http.Json" Version="$(FoundationalVersion)" />
   </ItemGroup>
 
   <ItemGroup>

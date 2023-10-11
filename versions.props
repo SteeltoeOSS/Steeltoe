@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <!--
-      Non-exposed dependencies, only referenced from test projects or build infrastructure.
+      Non-exposed dependencies, only referenced from test projects, benchmarks or build infrastructure.
       It's safe to update these at any time, so wildcards are allowed.
     -->
 
@@ -33,7 +33,9 @@
     <TestSdkVersion>17.7.*</TestSdkVersion>
     <XunitStudioVersion>2.5.*</XunitStudioVersion>
     <XunitVersion>2.5.*</XunitVersion>
+  </PropertyGroup>
 
+  <PropertyGroup>
     <!--
       Exposed dependencies, observable by Steeltoe consumers.
       Be cautious with updates:
@@ -47,11 +49,25 @@
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
     <DiagnosticsTracingVersion>3.1.*</DiagnosticsTracingVersion>
     <EntityFrameworkCoreVersion>6.0.*</EntityFrameworkCoreVersion>
-    <ExtensionsVersion>7.0.*</ExtensionsVersion>
+    <FoundationalVersion>
+      <!--
+        Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
+        For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
+      -->
+      7.0.*
+    </FoundationalVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
     <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
-    <MatchTargetFrameworkVersion>6.0.*</MatchTargetFrameworkVersion>
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      6.0.*
+    </MatchTargetFrameworkVersion>
+    <OpenIdConnectVersion>7.0.*</OpenIdConnectVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
     <PollyContribVersion>1.1.*</PollyContribVersion>
@@ -63,7 +79,6 @@
     <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
     <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
     <SymReaderVersion>2.0.*</SymReaderVersion>
-    <SystemVersion>7.0.*</SystemVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
   </PropertyGroup>
 </Project>

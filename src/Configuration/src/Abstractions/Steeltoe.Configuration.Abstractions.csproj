@@ -10,9 +10,9 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(FoundationalVersion)" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,7 +11,7 @@
     <PackageReference Include="System.Data.SqlClient" Version="$(SystemSqlClientVersion)" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MatchTargetFrameworkVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(FoundationalVersion)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbDriverVersion)" />
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
     <PackageReference Include="MySql.Data" Version="$(MySqlDataVersion)" />
