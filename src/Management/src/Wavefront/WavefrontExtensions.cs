@@ -44,7 +44,7 @@ public static class WavefrontExtensions
         {
             builder.AddMeter(SteeltoeMetrics.InstrumentationName);
             builder.AddWavefrontExporter();
-        }).StartWithHost();
+        });
 
         return services;
     }

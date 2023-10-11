@@ -67,8 +67,10 @@
       6.0.*
     </MatchTargetFrameworkVersion>
     <OpenIdConnectVersion>7.0.*</OpenIdConnectVersion>
+    <OpenTelemetryExporterJaegerVersion>1.5.*</OpenTelemetryExporterJaegerVersion>
+    <OpenTelemetryExporterPrometheusVersion>1.4.0-rc.3</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
-    <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
+    <OpenTelemetryVersion>1.6.*</OpenTelemetryVersion>
     <PollyContribVersion>1.1.*</PollyContribVersion>
     <PollyVersion>8.0.*</PollyVersion>
     <RabbitClientVersion>5.1.*</RabbitClientVersion>

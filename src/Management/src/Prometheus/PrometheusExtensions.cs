@@ -35,7 +35,7 @@ public static class PrometheusExtensions
         {
             builder.AddMeter(SteeltoeMetrics.InstrumentationName);
             builder.AddPrometheusExporter();
-        }).StartWithHost();
+        });
 
         return services;
     }
