@@ -58,7 +58,7 @@ public class CertificateRotationService : IDisposable, ICertificateRotationServi
         var authorityCertStore = new X509Store(StoreName.CertificateAuthority, StoreLocation.CurrentUser);
         personalCertStore.Open(OpenFlags.ReadWrite);
         authorityCertStore.Open(OpenFlags.ReadWrite);
-        if (_lastValue != null)
+        if (_lastValue != null && personalCertStore.Certificates.Contains(_lastValue.Certificate))
         {
             personalCertStore.Certificates.Remove(_lastValue.Certificate);
             foreach (var cert in _lastValue.IssuerChain)

@@ -40,7 +40,7 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
             return;
         }
 
-        options.Certificate = new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet);
+        options.Certificate = new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
     }
 
     public void Configure(CertificateOptions options)
