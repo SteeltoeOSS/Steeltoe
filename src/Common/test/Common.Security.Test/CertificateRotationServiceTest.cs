@@ -24,7 +24,7 @@ public class CertificateRotationServiceTest
     [Trait("Category", "SkipOnMacOS")]
     public async Task ServiceLoadsCertificate()
     {
-        var personalCertStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+        using var personalCertStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
         personalCertStore.Open(OpenFlags.ReadWrite);
         personalCertStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false).Should().BeEmpty();
 
@@ -41,7 +41,7 @@ public class CertificateRotationServiceTest
         services.AddSingleton<IConfigureOptions<CertificateOptions>, ConfigureCertificateOptions>();
         services.AddSingleton<ICertificateRotationService, CertificateRotationService>();
 
-        var serviceProvider = services.BuildServiceProvider();
+        using var serviceProvider = services.BuildServiceProvider();
         var service = serviceProvider.GetRequiredService<ICertificateRotationService>();
 
         service.Start();
@@ -69,7 +69,7 @@ public class CertificateRotationServiceTest
         newCollection.Should().NotIntersectWith(collection);
 #else
         // avoid warning about missing await for .NET Core 3.1 target
-        await Task.Delay(1);
+        await Task.Yield();
 #endif
 
         personalCertStore.Close();
