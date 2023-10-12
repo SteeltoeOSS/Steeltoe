@@ -107,12 +107,11 @@ public sealed class EventCounterListenerTest : BaseTest
 
             if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty, StringComparison.Ordinal)))
             {
-                Assert.NotNull(summary);
                 Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
             }
             else
             {
-                Assert.True(summary == null || summary.Count == 0, $"Expected no metrics for {metric}");
+                Assert.True(summary.Count == 0, $"Expected no metrics for {metric}");
             }
         }
     }
@@ -149,12 +148,11 @@ public sealed class EventCounterListenerTest : BaseTest
 
             if (inclusions.Contains(metric.Substring("System.Runtime.".Length)))
             {
-                Assert.NotNull(summary);
                 Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
             }
             else
             {
-                Assert.True(summary == null || summary.Count == 0, $"Expected no metrics for {metric}");
+                Assert.True(summary.Count == 0, $"Expected no metrics for {metric}");
             }
         }
     }

@@ -49,7 +49,7 @@ public class StringToArrayConverter : AbstractGenericConditionalConverter
         }
 
         // Handle string, not delimited, to char[]
-        if (fields.Length == 1 && sourceString[sourceString.Length - 1] != _delimit[0] && targetElementType == typeof(char))
+        if (fields.Length == 1 && sourceString[^1] != _delimit[0] && targetElementType == typeof(char))
         {
             return sourceString.ToCharArray();
         }

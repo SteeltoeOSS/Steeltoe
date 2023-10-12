@@ -63,11 +63,6 @@ public class ConstructorReference : SpelNode
             }
         }
 
-        if (executor == null)
-        {
-            return false;
-        }
-
         ConstructorInfo constructor = executor.Constructor;
         return constructor.IsPublic && ReflectionHelper.IsPublic(constructor.DeclaringType);
     }

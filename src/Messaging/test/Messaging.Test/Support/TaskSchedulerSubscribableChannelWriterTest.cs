@@ -42,7 +42,7 @@ public sealed class TaskSchedulerSubscribableChannelWriterTest
     }
 
     [Fact]
-    public async ValueTask WriteAsyncNoInterceptors()
+    public async Task WriteAsyncNoInterceptors()
     {
         var mock = new Mock<IMessageHandler>();
         Handler = mock.Object;
@@ -52,7 +52,7 @@ public sealed class TaskSchedulerSubscribableChannelWriterTest
     }
 
     [Fact]
-    public async ValueTask WriteAsyncWithoutScheduler()
+    public async Task WriteAsyncWithoutScheduler()
     {
         var mock = new Mock<IMessageHandler>();
         Handler = mock.Object;
@@ -66,7 +66,7 @@ public sealed class TaskSchedulerSubscribableChannelWriterTest
     }
 
     [Fact]
-    public async ValueTask WriteAsyncWithScheduler()
+    public async Task WriteAsyncWithScheduler()
     {
         var mock = new Mock<IMessageHandler>();
         Handler = mock.Object;
@@ -83,7 +83,7 @@ public sealed class TaskSchedulerSubscribableChannelWriterTest
     }
 
     [Fact]
-    public async ValueTask SubscribeTwice()
+    public async Task SubscribeTwice()
     {
         var mock = new Mock<IMessageHandler>();
         Handler = mock.Object;
@@ -106,7 +106,7 @@ public sealed class TaskSchedulerSubscribableChannelWriterTest
     }
 
     [Fact]
-    public async ValueTask FailurePropagates()
+    public async Task FailurePropagates()
     {
         var ex = new Exception("My exception");
         var mock = new Mock<IMessageHandler>();
@@ -136,7 +136,7 @@ public sealed class TaskSchedulerSubscribableChannelWriterTest
     }
 
     [Fact]
-    public async ValueTask ConcurrentModification()
+    public async Task ConcurrentModification()
     {
         var mock = new Mock<IMessageHandler>();
         Handler = mock.Object;
@@ -148,7 +148,7 @@ public sealed class TaskSchedulerSubscribableChannelWriterTest
     }
 
     [Fact]
-    public async ValueTask InterceptorWithModifiedMessage()
+    public async Task InterceptorWithModifiedMessage()
     {
         var mock = new Mock<IMessageHandler>();
         Handler = mock.Object;
@@ -170,7 +170,7 @@ public sealed class TaskSchedulerSubscribableChannelWriterTest
     }
 
     [Fact]
-    public async ValueTask InterceptorWithNull()
+    public async Task InterceptorWithNull()
     {
         var mock = new Mock<IMessageHandler>();
         Handler = mock.Object;
@@ -187,7 +187,7 @@ public sealed class TaskSchedulerSubscribableChannelWriterTest
     }
 
     [Fact]
-    public async ValueTask InterceptorWithException()
+    public async Task InterceptorWithException()
     {
         var expected = new Exception("Fake exception");
         var mock = new Mock<IMessageHandler>();
@@ -216,7 +216,7 @@ public sealed class TaskSchedulerSubscribableChannelWriterTest
     }
 
     [Fact]
-    public async ValueTask TestWaitToWriteAsync()
+    public async Task TestWaitToWriteAsync()
     {
         var mock = new Mock<IMessageHandler>();
         Handler = mock.Object;

@@ -80,8 +80,7 @@ public abstract class Literal : SpelNode
 
     public static string GetNumberLiteral(string numberToken)
     {
-        if (numberToken[numberToken.Length - 1] == 'd' || numberToken[numberToken.Length - 1] == 'D' || numberToken[numberToken.Length - 1] == 'f' ||
-            numberToken[numberToken.Length - 1] == 'F')
+        if (numberToken[^1] == 'd' || numberToken[^1] == 'D' || numberToken[^1] == 'f' || numberToken[^1] == 'F')
         {
             return numberToken.Substring(0, numberToken.Length - 1);
         }

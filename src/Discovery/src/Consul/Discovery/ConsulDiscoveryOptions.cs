@@ -230,11 +230,11 @@ public class ConsulDiscoveryOptions
         if (addresses.Any() && !UseNetUtils && UseAspNetCoreUrls && Port == 0)
         {
             // prefer https
-            Uri configAddress = addresses.FirstOrDefault(u => u.Scheme == "https");
+            Uri configAddress = addresses.Find(u => u.Scheme == "https");
 
             if (configAddress == null)
             {
-                configAddress = addresses.First();
+                configAddress = addresses[0];
             }
 
             Port = configAddress.Port;

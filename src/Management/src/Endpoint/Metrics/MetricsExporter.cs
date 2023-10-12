@@ -53,14 +53,14 @@ internal sealed class MetricsExporter
 
         lock (_collectionLock)
         {
-            if (DateTime.Now > _lastCollection.AddMilliseconds(_cacheDurationMilliseconds))
+            if (DateTime.UtcNow > _lastCollection.AddMilliseconds(_cacheDurationMilliseconds))
             {
                 _metricSamples.Clear();
                 _availableTags.Clear();
                 _collect(); // Calls AggregationManager.Collect
                 _lastCollectionSamples = new MetricsCollection<IList<MetricSample>>(_metricSamples);
                 _lastAvailableTags = new MetricsCollection<IList<MetricTag>>(_availableTags);
-                _lastCollection = DateTime.Now;
+                _lastCollection = DateTime.UtcNow;
             }
         }
 

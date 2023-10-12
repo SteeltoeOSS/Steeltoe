@@ -53,7 +53,7 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
 
         while (n++ < 100 && request == null)
         {
-            Thread.Sleep(100);
+            await Task.Delay(100);
             request = replyChannel.BasicGet(TestReleaseConsumerQ, true);
         }
 

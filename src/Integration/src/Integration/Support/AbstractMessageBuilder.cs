@@ -107,7 +107,7 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
         incomingSequenceDetails = new List<List<object>>(incomingSequenceDetails);
 
-        List<object> sequenceDetails = incomingSequenceDetails[incomingSequenceDetails.Count - 1];
+        List<object> sequenceDetails = incomingSequenceDetails[^1];
         incomingSequenceDetails.RemoveAt(incomingSequenceDetails.Count - 1);
 
         if (sequenceDetails.Count != 3)

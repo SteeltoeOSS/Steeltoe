@@ -9,7 +9,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry;
 
 public static class CloudFoundryHelper
 {
-    private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime BaseTime = DateTime.UnixEpoch;
 
     public static List<string> GetScopes(JsonElement user)
     {
@@ -36,7 +36,7 @@ public static class CloudFoundryHelper
             var handler = new HttpClientHandler
             {
 #pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
-                ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 #pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
             };
 

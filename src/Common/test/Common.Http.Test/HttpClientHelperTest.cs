@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Xunit;
 
@@ -79,12 +77,5 @@ public sealed class HttpClientHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await HttpClientHelper.GetAccessTokenAsync("https://foo/bar", "clientid", null,
             HttpClientHelper.DefaultGetAccessTokenTimeout, HttpClientHelper.DefaultValidateCertificates, null, null, CancellationToken.None));
-    }
-
-    [Fact]
-    public void GetDisableDelegate_ReturnsExpected()
-    {
-        Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> del1 = HttpClientHelper.GetDisableDelegate();
-        Assert.NotNull(del1);
     }
 }

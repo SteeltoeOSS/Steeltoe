@@ -35,19 +35,19 @@ public abstract class ResourceHolderSupport : IResourceHolder
             throw new InvalidOperationException("No timeout specified for this resource holder");
         }
 
-        long timeToLive = (Deadline.Value.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond;
+        long timeToLive = (Deadline.Value.Ticks - DateTime.UtcNow.Ticks) / TimeSpan.TicksPerMillisecond;
         CheckTransactionTimeout(timeToLive <= 0);
         return timeToLive;
     }
 
     public void SetTimeoutInSeconds(int seconds)
     {
-        Deadline = DateTime.Now + TimeSpan.FromSeconds(seconds);
+        Deadline = DateTime.UtcNow + TimeSpan.FromSeconds(seconds);
     }
 
     public void SetTimeoutInMillis(long milliseconds)
     {
-        Deadline = DateTime.Now + TimeSpan.FromMilliseconds(milliseconds);
+        Deadline = DateTime.UtcNow + TimeSpan.FromMilliseconds(milliseconds);
     }
 
     public void Requested()

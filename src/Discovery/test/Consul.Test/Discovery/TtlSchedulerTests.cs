@@ -93,7 +93,7 @@ public sealed class TtlSchedulerTests
     }
 
     [Fact]
-    public void Timer_CallsPassTtl()
+    public async Task Timer_CallsPassTtl()
     {
         var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
@@ -110,7 +110,7 @@ public sealed class TtlSchedulerTests
 
         var sch = new TtlScheduler(opts, client);
         sch.Add("foobar");
-        Thread.Sleep(2500);
+        await Task.Delay(2500);
         agentMoq.Verify(a => a.PassTTL("service:foobar", "ttl", default), Times.AtLeastOnce);
         sch.Remove("foobar");
     }

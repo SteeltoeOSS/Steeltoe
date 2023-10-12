@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Endpoint.Test.ManagementPort;
 public sealed class ManagementEndpointServedOnDifferentPort
 {
     [Fact]
-    public void AddAllActuators_WebApplication_MakeSureTheManagementPortIsSet()
+    public async Task AddAllActuators_WebApplication_MakeSureTheManagementPortIsSet()
     {
         var appsettings = new Dictionary<string, string?>
         {
@@ -39,14 +39,14 @@ public sealed class ManagementEndpointServedOnDifferentPort
         app.Start();
 
         using HttpClient httpClient = app.GetTestServer().CreateClient();
-        HttpResponseMessage response = httpClient.GetAsync(new Uri("http://localhost:9090/actuator")).Result;
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost:9090/actuator"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = httpClient.GetAsync(new Uri("http://localhost:8080")).Result;
+        response = await httpClient.GetAsync(new Uri("http://localhost:8080"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
-    public void AddAllActuators_WorksWithUseCloudHosting()
+    public async Task AddAllActuators_WorksWithUseCloudHosting()
     {
         var appsettings = new Dictionary<string, string?>
         {
@@ -65,14 +65,14 @@ public sealed class ManagementEndpointServedOnDifferentPort
         app.Start();
 
         using HttpClient httpClient = app.GetTestServer().CreateClient();
-        HttpResponseMessage response = httpClient.GetAsync(new Uri("https://localhost:9090/actuator")).Result;
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("https://localhost:9090/actuator"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = httpClient.GetAsync(new Uri("http://localhost:5100")).Result;
+        response = await httpClient.GetAsync(new Uri("http://localhost:5100"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
-    public void AddAllActuators_WebApplication_MakeSure_SSLEnabled()
+    public async Task AddAllActuators_WebApplication_MakeSure_SSLEnabled()
     {
         using var scope1 = new EnvironmentVariableScope("ASPNETCORE_URLS", null);
         using var scope2 = new EnvironmentVariableScope("PORT", null);
@@ -95,14 +95,14 @@ public sealed class ManagementEndpointServedOnDifferentPort
         app.Start();
 
         using HttpClient httpClient = app.GetTestServer().CreateClient();
-        HttpResponseMessage response = httpClient.GetAsync(new Uri("https://localhost:9090/actuator")).Result;
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("https://localhost:9090/actuator"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        response = httpClient.GetAsync(new Uri("http://localhost:8080")).Result;
+        response = await httpClient.GetAsync(new Uri("http://localhost:8080"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
-    public void AddAllActuators_GenericHost_MakeSureTheManagementPortIsSet()
+    public async Task AddAllActuators_GenericHost_MakeSureTheManagementPortIsSet()
     {
         var settings = new Dictionary<string, string?>
         {
@@ -128,7 +128,7 @@ public sealed class ManagementEndpointServedOnDifferentPort
         host.Start();
 
         using HttpClient httpClient = host.GetTestServer().CreateClient();
-        HttpResponseMessage response = httpClient.GetAsync(new Uri("http://localhost:9090/actuator")).Result;
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost:9090/actuator"));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 

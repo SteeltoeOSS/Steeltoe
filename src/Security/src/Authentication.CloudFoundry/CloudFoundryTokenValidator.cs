@@ -68,7 +68,7 @@ public class CloudFoundryTokenValidator
 
             if (_options.AdditionalAudiences != null)
             {
-                bool found = _options.AdditionalAudiences.Any(x => x == audience);
+                bool found = Array.Exists(_options.AdditionalAudiences, x => x == audience);
 
                 if (found)
                 {
@@ -103,7 +103,7 @@ public class CloudFoundryTokenValidator
 
         foreach (Claim claim in validJwt.Claims)
         {
-            if (claim.Type == "scope" || (claim.Type == "authorities" && _options.RequiredScopes.Any(x => x == claim.Value)))
+            if (claim.Type == "scope" || (claim.Type == "authorities" && Array.Exists(_options.RequiredScopes, x => x == claim.Value)))
             {
                 return true;
             }

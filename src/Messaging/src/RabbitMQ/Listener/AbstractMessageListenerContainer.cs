@@ -188,7 +188,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         ArgumentGuard.NotNull(queues);
         ArgumentGuard.ElementsNotNull(queues);
 
-        if (IsRunning && queues.Any(queue => queue.QueueName == string.Empty))
+        if (IsRunning && Array.Exists(queues, queue => queue.QueueName == string.Empty))
         {
             throw new InvalidOperationException("Cannot add broker-named queues dynamically.");
         }
@@ -210,7 +210,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         ArgumentGuard.NotNull(queues);
         ArgumentGuard.ElementsNotNull(queues);
 
-        if (IsRunning && queues.Any(queue => queue.QueueName == string.Empty))
+        if (IsRunning && Array.Exists(queues, queue => queue.QueueName == string.Empty))
         {
             throw new InvalidOperationException("Cannot add broker-named queues dynamically.");
         }
@@ -450,18 +450,16 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         return Task.CompletedTask;
     }
 
-    public virtual Task StopAsync(Action callback)
+    public virtual async Task StopAsync(Action callback)
     {
         try
         {
-            StopAsync();
+            await StopAsync();
         }
         finally
         {
             callback();
         }
-
-        return Task.CompletedTask;
     }
 
     public virtual void LazyLoad()

@@ -82,7 +82,7 @@ public static class Message
     }
 }
 
-public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
+public class Message<TPayload> : IMessage<TPayload>
 {
     protected readonly TPayload InnerPayload;
 

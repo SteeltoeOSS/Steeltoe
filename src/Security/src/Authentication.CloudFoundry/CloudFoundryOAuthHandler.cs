@@ -22,7 +22,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
     public CloudFoundryOAuthHandler(IOptionsMonitor<CloudFoundryOAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
     {
-        _logger = logger?.CreateLogger<CloudFoundryOAuthHandler>();
+        _logger = logger.CreateLogger<CloudFoundryOAuthHandler>();
     }
 
     protected internal virtual Dictionary<string, string> GetTokenInfoRequestParameters(OAuthTokenResponse tokens)
@@ -137,6 +137,8 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
 
         AddQueryString(queryStrings, properties, "scope", scope);
 
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+        // https://github.com/dotnet/aspnetcore/issues/14250#issuecomment-538012394
         if (Options.StateDataFormat != null)
         {
             string state = Options.StateDataFormat.Protect(properties);

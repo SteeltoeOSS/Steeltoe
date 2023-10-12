@@ -1599,7 +1599,7 @@ public sealed class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         if (physicalClose)
         {
             RC.IModel channel1 = con.CreateChannel();
-            RabbitUtils.SetPhysicalCloseRequired(channel1, physicalClose);
+            RabbitUtils.SetPhysicalCloseRequired(channel1, true);
             channel1.Close();
         }
         else

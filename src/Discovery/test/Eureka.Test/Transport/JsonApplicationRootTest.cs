@@ -54,6 +54,6 @@ public sealed class JsonApplicationRootTest : AbstractBaseTest
         Assert.NotNull(result.Application);
         Assert.Equal("FOO", result.Application.Name);
         Assert.NotNull(result.Application.Instances);
-        Assert.Equal(1, result.Application.Instances.Count);
+        Assert.Single(result.Application.Instances);
     }
 }

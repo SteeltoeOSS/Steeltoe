@@ -22,7 +22,7 @@ public static class DnsTools
     {
         try
         {
-            return Dns.GetHostAddresses(hostName).FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+            return Array.Find(Dns.GetHostAddresses(hostName), ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
         }
         catch (Exception)
         {
@@ -42,11 +42,7 @@ public static class DnsTools
             if (!string.IsNullOrEmpty(result))
             {
                 IPHostEntry response = Dns.GetHostEntry(result);
-
-                if (response != null)
-                {
-                    return response.HostName;
-                }
+                return response.HostName;
             }
         }
         catch (Exception)

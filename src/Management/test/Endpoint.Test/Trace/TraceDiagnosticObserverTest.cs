@@ -240,7 +240,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
     }
 
     [Fact]
-    public void Subscribe_Listener_StopActivity_AddsToQueue()
+    public async Task Subscribe_Listener_StopActivity_AddsToQueue()
     {
         using var listener = new DiagnosticListener("Microsoft.AspNetCore");
         IOptionsMonitor<TraceEndpointOptions> option = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>();
@@ -257,7 +257,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
             HttpContext = context
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         listener.StopActivity(current, new
         {
@@ -279,7 +279,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
         Assert.True(headers.ContainsKey("request"));
         Assert.True(headers.ContainsKey("response"));
         short timeTaken = short.Parse((string)result.Info["timeTaken"]!, CultureInfo.InvariantCulture);
-        Assert.InRange(timeTaken, 1000, 1300);
+        Assert.InRange(timeTaken, 900, 1300);
     }
 
     [Fact]

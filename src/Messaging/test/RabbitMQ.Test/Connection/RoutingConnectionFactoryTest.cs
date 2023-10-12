@@ -48,7 +48,7 @@ public sealed class RoutingConnectionFactoryTest
     }
 
     [Fact]
-    public void TestSimpleRoutingConnectionFactory()
+    public async Task TestSimpleRoutingConnectionFactory()
     {
         var connectionFactory1 = new Mock<IConnectionFactory>();
         var connectionFactory2 = new Mock<IConnectionFactory>();
@@ -77,7 +77,8 @@ public sealed class RoutingConnectionFactoryTest
             tasks.Add(task);
         }
 
-        Assert.True(Task.WaitAll(tasks.ToArray(), 10000));
+        await Task.WhenAll(tasks).WaitAsync(TimeSpan.FromSeconds(10));
+
         connectionFactory1.Verify(f => f.CreateConnection(), Times.Exactly(2));
         connectionFactory2.Verify(f => f.CreateConnection());
     }

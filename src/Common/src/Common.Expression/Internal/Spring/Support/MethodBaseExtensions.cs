@@ -22,7 +22,7 @@ public static class MethodBaseExtensions
             return false;
         }
 
-        ParameterInfo lastParam = parameters[parameters.Length - 1];
+        ParameterInfo lastParam = parameters[^1];
         return lastParam.GetCustomAttribute<ParamArrayAttribute>() != null;
     }
 

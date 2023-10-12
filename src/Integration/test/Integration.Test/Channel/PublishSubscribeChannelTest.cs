@@ -27,7 +27,7 @@ public sealed class PublishSubscribeChannelTest
     }
 
     [Fact]
-    public async ValueTask TestSendAsync()
+    public async Task TestSendAsync()
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
@@ -61,7 +61,7 @@ public sealed class PublishSubscribeChannelTest
     }
 
     [Fact]
-    public async ValueTask TestSendAsyncOneHandler_10_000_000()
+    public async Task TestSendAsyncOneHandler_10_000_000()
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
@@ -81,7 +81,7 @@ public sealed class PublishSubscribeChannelTest
     }
 
     [Fact]
-    public async ValueTask TestSendAsyncTwoHandler_10_000_000()
+    public async Task TestSendAsyncTwoHandler_10_000_000()
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();

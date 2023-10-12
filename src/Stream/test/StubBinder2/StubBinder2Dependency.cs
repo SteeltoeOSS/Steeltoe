@@ -6,4 +6,5 @@ namespace Steeltoe.Stream.StubBinder2;
 
 public sealed class StubBinder2Dependency
 {
+    public int Value { get; set; }
 }

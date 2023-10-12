@@ -77,7 +77,7 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     private Connector<TOptions, TConnection> GetCachedConnector(string name)
     {
         // While option values can change at runtime, the list of named options is fixed (determined at application startup).
-        return _namedConnectors.GetOrAdd(name, _ => new Connector<TOptions, TConnection>(_serviceProvider, name, _createConnection, _useSingletonConnection));
+        return _namedConnectors.GetOrAdd(name, key => new Connector<TOptions, TConnection>(_serviceProvider, key, _createConnection, _useSingletonConnection));
     }
 
     /// <inheritdoc />
