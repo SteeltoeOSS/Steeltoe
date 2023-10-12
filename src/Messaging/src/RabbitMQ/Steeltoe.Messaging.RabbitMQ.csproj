@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Steeltoe Messaging RabbitMQ</Description>
     <PackageTags>Messaging, ASPNET Core, Spring, Spring Cloud</PackageTags>
     <IsPackable>true</IsPackable>
