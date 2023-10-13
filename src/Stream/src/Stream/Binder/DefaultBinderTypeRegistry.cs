@@ -131,23 +131,17 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
 
     internal static IBinderType LoadAndCheckAssembly(MetadataLoadContext context, string assemblyPath)
     {
-        BinderType result = null;
-
         try
         {
             Assembly assembly = context.LoadFromAssemblyPath(assemblyPath);
-
-            if (assembly != null)
-            {
-                return CheckAssembly(assembly);
-            }
+            return CheckAssembly(assembly);
         }
         catch
         {
             // most failures here are situations that aren't relevant, so just fail silently
         }
 
-        return result;
+        return null;
     }
 
     internal static IBinderType CheckAssembly(Assembly assembly)

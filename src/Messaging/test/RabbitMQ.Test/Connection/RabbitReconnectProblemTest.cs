@@ -21,7 +21,7 @@ public sealed class RabbitReconnectProblemTest
     }
 
     [Fact(Skip = "Requires manual intervention")]
-    public void SurviveAReconnect()
+    public async Task SurviveAReconnect()
     {
         var myQueue = new Queue("my-queue");
 
@@ -49,7 +49,7 @@ public sealed class RabbitReconnectProblemTest
             // The CCF should reconnect and the receives in
             // CheckIt should stop throwing exceptions
             // The available permits should always be == 2.
-            Thread.Sleep(2000);
+            await Task.Delay(2000);
             CheckIt(template, i++, myQueue.ActualName);
             using Dictionary<IConnection, SemaphoreSlim>.ValueCollection.Enumerator values = ccf.CheckoutPermits.Values.GetEnumerator();
             values.MoveNext();

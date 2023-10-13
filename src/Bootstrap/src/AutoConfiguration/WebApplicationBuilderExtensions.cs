@@ -114,7 +114,7 @@ public static class WebApplicationBuilderExtensions
 
     private static bool WireIfLoaded(this WebApplicationBuilder webApplicationBuilder, Action<WebApplicationBuilder> action, params string[] assembly)
     {
-        if (assembly.All(AssemblyExtensions.IsAssemblyLoaded))
+        if (Array.TrueForAll(assembly, AssemblyExtensions.IsAssemblyLoaded))
         {
             action(webApplicationBuilder);
             return true;
@@ -126,7 +126,7 @@ public static class WebApplicationBuilderExtensions
     private static void WireIfAnyLoaded(this WebApplicationBuilder builder, Action<WebApplicationBuilder> action, IReadOnlySet<string> assemblyNamesToExclude,
         params PackageResolver[] packageResolvers)
     {
-        if (packageResolvers.Any(packageResolver => packageResolver.IsAvailable(assemblyNamesToExclude)))
+        if (Array.Exists(packageResolvers, packageResolver => packageResolver.IsAvailable(assemblyNamesToExclude)))
         {
             action(builder);
         }

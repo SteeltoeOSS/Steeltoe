@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
@@ -45,7 +44,7 @@ public static class WavefrontExtensions
         {
             builder.AddMeter(SteeltoeMetrics.InstrumentationName);
             builder.AddWavefrontExporter();
-        }).StartWithHost();
+        });
 
         return services;
     }

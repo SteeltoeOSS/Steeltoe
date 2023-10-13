@@ -127,7 +127,7 @@ public sealed class RabbitProxy
                 }
             }
 
-            t.Wait();
+            t.GetAwaiter().GetResult();
         }
         catch (Exception)
         {

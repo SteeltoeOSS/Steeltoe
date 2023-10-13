@@ -17,7 +17,7 @@ public sealed class ApplicationTest : AbstractBaseTest
         Assert.Equal("foobar", app.Name);
         Assert.Equal(0, app.Count);
         Assert.NotNull(app.Instances);
-        Assert.Equal(0, app.Instances.Count);
+        Assert.Empty(app.Instances);
         Assert.Null(app.GetInstance("bar"));
     }
 
@@ -158,7 +158,7 @@ public sealed class ApplicationTest : AbstractBaseTest
         Assert.Equal("myApp", app.Name);
         Assert.NotNull(app.Instances);
         Assert.Equal(1, app.Count);
-        Assert.Equal(1, app.Instances.Count);
+        Assert.Single(app.Instances);
         Assert.NotNull(app.GetInstance("InstanceId"));
         InstanceInfo info = app.GetInstance("InstanceId");
 

@@ -14,17 +14,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 [Trait("Category", "Integration")]
 public sealed class DlqExpiryTests : IClassFixture<DlqStartupFixture>
 {
-    private readonly DlqStartupFixture _fixture;
     private readonly ServiceProvider _provider;
 
-    public DlqExpiryTests(DlqStartupFixture fix)
+    public DlqExpiryTests(DlqStartupFixture fixture)
     {
-        _fixture = fix;
-        _provider = _fixture.Provider;
+        _provider = fixture.Provider;
     }
 
     [Fact]
-    public void TestExpiredDies()
+    public async Task TestExpiredDies()
     {
         RabbitTemplate template = _provider.GetRabbitTemplate();
         var listener = _provider.GetService<Listener>();
@@ -33,7 +31,7 @@ public sealed class DlqExpiryTests : IClassFixture<DlqStartupFixture>
 
         template.ConvertAndSend(queue1.QueueName, "foo");
         Assert.True(listener.Latch.Wait(TimeSpan.FromSeconds(10)));
-        Thread.Sleep(300);
+        await Task.Delay(300);
         Assert.Equal(2, listener.Counter);
     }
 }

@@ -162,7 +162,7 @@ public abstract class SpelNode : ISpelNode
             }
 
             SpelNode lastChild = childCount == 0 ? null : arguments[childCount - 1];
-            TypeDescriptor arrayType = paramDescriptors[paramDescriptors.Length - 1];
+            TypeDescriptor arrayType = paramDescriptors[^1];
 
             // Determine if the final passed argument is already suitably packaged in array
             // form to be passed to the method

@@ -80,10 +80,10 @@ public class SimpleBatchingStrategy : IBatchingStrategy
         if (_currentSize >= _bufferLimit)
         {
             // release immediately, we're already over the limit
-            return DateTime.Now;
+            return DateTime.UtcNow;
         }
 
-        return DateTime.Now + TimeSpan.FromMilliseconds(_timeout);
+        return DateTime.UtcNow + TimeSpan.FromMilliseconds(_timeout);
     }
 
     public ICollection<MessageBatch> ReleaseBatches()

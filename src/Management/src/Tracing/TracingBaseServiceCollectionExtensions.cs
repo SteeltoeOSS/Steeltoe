@@ -143,7 +143,7 @@ public static class TracingBaseServiceCollectionExtensions
             AddWavefrontExporter(builder);
 
             action?.Invoke(builder);
-        }).StartWithHost();
+        });
 
         return services;
     }

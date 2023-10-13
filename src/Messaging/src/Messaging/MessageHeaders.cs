@@ -42,7 +42,7 @@ public class MessageHeaders : IMessageHeaders
         set => _idGenerator = value;
     }
 
-    ICollection IDictionary.Keys => (ICollection)Keys;
+    ICollection IDictionary.Keys => new List<object>(Keys);
 
     ICollection IDictionary.Values => (ICollection)Values;
 
@@ -271,12 +271,13 @@ public class MessageHeaders : IMessageHeaders
 
     IDictionaryEnumerator IDictionary.GetEnumerator()
     {
-        return (IDictionaryEnumerator)Headers.GetEnumerator();
+        using IEnumerator<KeyValuePair<string, object>> enumerator = GetEnumerator();
+        return new StringObjectDictionaryEnumerator(enumerator);
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return ((IEnumerable)Headers).GetEnumerator();
+        return GetEnumerator();
     }
 
     void IDictionary.Add(object key, object value)
@@ -355,6 +356,31 @@ public class MessageHeaders : IMessageHeaders
         else
         {
             Headers[TimestampName] = timestamp.Value;
+        }
+    }
+
+    private sealed class StringObjectDictionaryEnumerator : IDictionaryEnumerator
+    {
+        private readonly IEnumerator<KeyValuePair<string, object>> _enumerator;
+
+        public object Current => _enumerator.Current;
+        public DictionaryEntry Entry => new(_enumerator.Current.Key, _enumerator.Current.Value);
+        public object Key => _enumerator.Current.Key;
+        public object Value => _enumerator.Current.Value;
+
+        public StringObjectDictionaryEnumerator(IEnumerator<KeyValuePair<string, object>> enumerator)
+        {
+            _enumerator = enumerator;
+        }
+
+        public bool MoveNext()
+        {
+            return _enumerator.MoveNext();
+        }
+
+        public void Reset()
+        {
+            _enumerator.Reset();
         }
     }
 }

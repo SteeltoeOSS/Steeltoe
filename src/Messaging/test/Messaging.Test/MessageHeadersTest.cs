@@ -16,10 +16,10 @@ public sealed class MessageHeadersTest
     }
 
     [Fact]
-    public void TestTimestampOverwritten()
+    public async Task TestTimestampOverwritten()
     {
         var headers1 = new MessageHeaders();
-        Thread.Sleep(50);
+        await Task.Delay(50);
         var headers2 = new MessageHeaders(headers1);
         Assert.NotEqual(headers1.Timestamp, headers2.Timestamp);
     }

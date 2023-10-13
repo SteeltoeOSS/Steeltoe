@@ -40,7 +40,7 @@ public abstract class AbstractExpressionTests
                 return; // no point doing other checks
             }
 
-            Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
+            Assert.Fail($"Expression returned null value, but expected '{expectedValue}'");
         }
 
         Type resultType = value.GetType();
@@ -68,7 +68,7 @@ public abstract class AbstractExpressionTests
                 return; // no point doing other checks
             }
 
-            Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
+            Assert.Fail($"Expression returned null value, but expected '{expectedValue}'");
         }
 
         Type resultType = value.GetType();
@@ -95,7 +95,7 @@ public abstract class AbstractExpressionTests
                 return; // no point doing other checks
             }
 
-            Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
+            Assert.Fail($"Expression returned null value, but expected '{expectedValue}'");
         }
 
         Type resultType = value.GetType();
@@ -185,7 +185,7 @@ public abstract class AbstractExpressionTests
                 sb.Append(',');
             }
 
-            if (sb[sb.Length - 1] == ',')
+            if (sb[^1] == ',')
             {
                 return $"{sb.ToString(0, sb.Length - 1)}}}";
             }
@@ -212,7 +212,7 @@ public abstract class AbstractExpressionTests
                 }
             }
 
-            if (sb[sb.Length - 1] == ',')
+            if (sb[^1] == ',')
             {
                 return $"{sb.ToString(0, sb.Length - 1)}]";
             }

@@ -61,7 +61,7 @@ public class InetUtils
                     {
                         lowest = ipProps.Index;
                     }
-                    else if (result != null)
+                    else
                     {
                         continue;
                     }
@@ -201,7 +201,7 @@ public class InetUtils
         {
             IPAddress[] results = Dns.GetHostAddresses(hostName);
 
-            if (results != null && results.Length > 0)
+            if (results.Length > 0)
             {
                 foreach (IPAddress address in results)
                 {
@@ -232,11 +232,7 @@ public class InetUtils
             if (!string.IsNullOrEmpty(result))
             {
                 IPHostEntry response = Dns.GetHostEntry(result);
-
-                if (response != null)
-                {
-                    return response.HostName;
-                }
+                return response.HostName;
             }
         }
         catch (Exception e)

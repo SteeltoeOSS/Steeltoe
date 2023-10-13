@@ -7,10 +7,10 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EFCoreTestVersion)" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EFCoreTestVersion)" />
-    <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EFCoreTestVersion)" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(EFCoreTestVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EntityFrameworkCoreTestVersion)" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(EntityFrameworkCoreTestVersion)" />
   </ItemGroup>
 
   <ItemGroup>

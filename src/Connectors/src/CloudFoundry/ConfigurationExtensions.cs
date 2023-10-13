@@ -109,7 +109,7 @@ internal static class ConfigurationExtensions
                 throw new ConnectorException($"Multiple services of type: {typeof(TServiceInfo)}, bound to application.");
             }
 
-            return results.First();
+            return results[0];
         }
 
         return null;

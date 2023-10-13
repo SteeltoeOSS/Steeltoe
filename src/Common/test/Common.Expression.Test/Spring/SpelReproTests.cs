@@ -1487,15 +1487,8 @@ public sealed class SpelReproTests : AbstractExpressionTests
     private void CheckTemplateParsingError(string expression, IParserContext context, string expectedMessage)
     {
         var parser = new SpelExpressionParser();
-        var ex = Assert.Throws<ParseException>(() => parser.ParseExpression(expression, context));
-        string message = ex.Message;
-
-        if (ex is ExpressionException exception)
-        {
-            message = exception.SimpleMessage;
-        }
-
-        Assert.Equal(expectedMessage, message);
+        var parseException = Assert.Throws<ParseException>(() => parser.ParseExpression(expression, context));
+        Assert.Equal(expectedMessage, parseException.SimpleMessage);
     }
 
     public static class FooLists

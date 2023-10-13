@@ -15,6 +15,7 @@ namespace Steeltoe.Integration.Endpoint;
 public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessageProducer
 {
     private readonly MessagingTemplate _messagingTemplate;
+    private readonly object _lock = new();
 
     private IErrorMessageStrategy _errorMessageStrategy = new DefaultErrorMessageStrategy();
 
@@ -25,7 +26,6 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
     private volatile IMessageChannel _errorChannel;
 
     private volatile string _errorChannelName;
-    protected object @lock = new();
 
     protected virtual MessagingTemplate MessagingTemplate => _messagingTemplate;
 
@@ -35,7 +35,7 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
         {
             if (_outputChannelName != null)
             {
-                lock (@lock)
+                lock (_lock)
                 {
                     if (_outputChannelName != null)
                     {
@@ -68,7 +68,7 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
         {
             if (_errorChannelName != null)
             {
-                lock (@lock)
+                lock (_lock)
                 {
                     if (_errorChannelName != null)
                     {

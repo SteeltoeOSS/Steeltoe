@@ -135,7 +135,7 @@ public sealed class PlaceholderResolverProviderTest
     }
 
     [Fact]
-    public void GetReloadToken_ReturnsExpected_NotifyChanges()
+    public async Task GetReloadToken_ReturnsExpected_NotifyChanges()
     {
         const string appsettings1 = @"
                 {
@@ -184,11 +184,11 @@ public sealed class PlaceholderResolverProviderTest
         Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
         Assert.Equal("myName", val);
 
-        File.WriteAllText(path, appsettings2);
+        await File.WriteAllTextAsync(path, appsettings2);
 
         // There is a 250ms delay to detect change
         // ASP.NET Core tests use 2000 Sleep for this kind of test
-        Thread.Sleep(2000);
+        await Task.Delay(2000);
 
         Assert.True(token.HasChanged);
         Assert.True(holder.TryGet("spring:cloud:config:name", out val));
@@ -218,7 +218,7 @@ public sealed class PlaceholderResolverProviderTest
     }
 
     [Fact]
-    public void Load_ReloadsConfiguration()
+    public async Task Load_ReloadsConfiguration()
     {
         const string appsettings1 = @"
                 {
@@ -263,8 +263,8 @@ public sealed class PlaceholderResolverProviderTest
         Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
         Assert.Equal("myName", val);
 
-        File.WriteAllText(path, appsettings2);
-        Thread.Sleep(1000); // There is a 250ms delay
+        await File.WriteAllTextAsync(path, appsettings2);
+        await Task.Delay(1000); // There is a 250ms delay
 
         holder.Load();
 

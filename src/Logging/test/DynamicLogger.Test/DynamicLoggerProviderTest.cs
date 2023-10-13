@@ -213,7 +213,7 @@ public sealed class DynamicLoggerProviderTest
     }
 
     [Fact(Skip = "This method of console redirection doesn't work in Logging 3.0")]
-    public void LoggerLogs_At_Configured_Setting()
+    public async Task LoggerLogs_At_Configured_Setting()
     {
         var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
         ILogger logger = provider.CreateLogger("A.B.C.D.TestClass");
@@ -224,7 +224,7 @@ public sealed class DynamicLoggerProviderTest
             WriteLogEntries(logger);
 
             // pause the thread to allow the logging to happen
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             string logged = unConsole.ToString();
 
@@ -245,7 +245,7 @@ public sealed class DynamicLoggerProviderTest
             WriteLogEntries(logger);
 
             // pause the thread to allow the logging to happen
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             string logged2 = unConsole.ToString();
 
@@ -266,7 +266,7 @@ public sealed class DynamicLoggerProviderTest
             WriteLogEntries(logger);
 
             // pause the thread to allow the logging to happen
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             string logged3 = unConsole.ToString();
 
@@ -287,7 +287,7 @@ public sealed class DynamicLoggerProviderTest
             WriteLogEntries(logger);
 
             // pause the thread to allow the logging to happen
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             string logged4 = unConsole.ToString();
 
@@ -308,7 +308,7 @@ public sealed class DynamicLoggerProviderTest
             WriteLogEntries(logger);
 
             // pause the thread to allow the logging to happen
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             string logged5 = unConsole.ToString();
 

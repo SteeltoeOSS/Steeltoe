@@ -44,7 +44,7 @@ public sealed class JsonApplicationTest : AbstractBaseTest
         Assert.NotNull(result);
         Assert.Equal("FOO", result.Name);
         Assert.NotNull(result.Instances);
-        Assert.Equal(1, result.Instances.Count);
+        Assert.Single(result.Instances);
 
         // Rest is validated by JsonInstanceInfoTest
     }

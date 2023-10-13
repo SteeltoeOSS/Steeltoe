@@ -574,17 +574,15 @@ public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        bool b = true;
         _expression = Parser.ParseExpression("!#root");
-        Assert.False(_expression.GetValue<bool>(b));
+        Assert.False(_expression.GetValue<bool>(true));
         AssertCanCompile(_expression);
-        Assert.False(_expression.GetValue<bool>(b));
+        Assert.False(_expression.GetValue<bool>(true));
 
-        b = false;
         _expression = Parser.ParseExpression("!#root");
-        Assert.True(_expression.GetValue<bool>(b));
+        Assert.True(_expression.GetValue<bool>(false));
         AssertCanCompile(_expression);
-        Assert.True(_expression.GetValue<bool>(b));
+        Assert.True(_expression.GetValue<bool>(false));
     }
 
     [Fact]
@@ -608,16 +606,13 @@ public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(expression);
         Assert.Equal("b", expression.GetValue<string>());
 
-        bool root = true;
         expression = Parser.ParseExpression("(#root and True)?T(int).Parse('1'):T(long).Parse('3')");
-        Assert.Equal(1, expression.GetValue(root));
+        Assert.Equal(1, expression.GetValue(true));
         AssertCantCompile(expression); // Have not gone down false branch
-        root = false;
-        Assert.Equal(3L, expression.GetValue(root));
+        Assert.Equal(3L, expression.GetValue(false));
         AssertCanCompile(expression);
-        Assert.Equal(3L, expression.GetValue(root));
-        root = true;
-        Assert.Equal(1, expression.GetValue(root));
+        Assert.Equal(3L, expression.GetValue(false));
+        Assert.Equal(1, expression.GetValue(true));
     }
 
     [Fact]
@@ -689,12 +684,12 @@ public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Null(expression.GetValue());
 
         expression = (SpelExpression)Parser.ParseExpression("#var?.Day");
-        context.SetVariable("var", DateTime.Now);
+        context.SetVariable("var", DateTime.UtcNow);
         Assert.InRange(expression.GetValue<int>(context), 1, 31);
         context.SetVariable("var", null);
         Assert.Null(expression.GetValue());
         AssertCanCompile(expression);
-        context.SetVariable("var", DateTime.Now);
+        context.SetVariable("var", DateTime.UtcNow);
         Assert.InRange(expression.GetValue<int>(context), 1, 31);
         context.SetVariable("var", null);
         Assert.Null(expression.GetValue());
@@ -5544,14 +5539,14 @@ public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
     public void PropertyReferenceValueType()
     {
         // static property on value type
-        _expression = Parser.ParseExpression("T(DateTime).Now");
-        long start = DateTime.Now.Ticks;
+        _expression = Parser.ParseExpression("T(DateTime).UtcNow");
+        long start = DateTime.UtcNow.Ticks;
         Assert.True(start < _expression.GetValue<DateTime>().Ticks);
         AssertCanCompile(_expression);
         Assert.True(start < _expression.GetValue<DateTime>().Ticks);
 
         // instance property on value type
-        _expression = Parser.ParseExpression("T(DateTime).Now.Second");
+        _expression = Parser.ParseExpression("T(DateTime).UtcNow.Second");
         Assert.InRange(_expression.GetValue<int>(), 0, 60);
         AssertCanCompile(_expression);
         Assert.InRange(_expression.GetValue<int>(), 0, 60);
@@ -5753,22 +5748,6 @@ public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
             foreach (object l in ls)
             {
                 s.Append(l);
-                s.Append(' ');
-            }
-        }
-        else if (obj is object[] os)
-        {
-            foreach (object o in os)
-            {
-                s.Append(o);
-                s.Append(' ');
-            }
-        }
-        else if (obj is int[] iss)
-        {
-            foreach (int i in iss)
-            {
-                s.Append(i);
                 s.Append(' ');
             }
         }

@@ -31,7 +31,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
     }
 
     [Fact]
-    public void TestAnonymousGroup()
+    public async Task TestAnonymousGroup()
     {
         TTestBinder binder = GetBinder();
         var bindingsOptions = new RabbitBindingsOptions();
@@ -60,7 +60,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         Assert.NotNull(receivedMessage2);
         Assert.Equal(testPayload1, Encoding.UTF8.GetString(receivedMessage2.Payload));
 
-        binding2.UnbindAsync();
+        await binding2.UnbindAsync();
 
         string testPayload2 = $"foo-{Guid.NewGuid()}";
 
@@ -81,13 +81,13 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         Assert.NotNull(receivedMessage2);
         Assert.Equal(testPayload3, Encoding.UTF8.GetString(receivedMessage2.Payload));
 
-        producerBinding.UnbindAsync();
-        binding1.UnbindAsync();
-        binding2.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await binding1.UnbindAsync();
+        await binding2.UnbindAsync();
     }
 
     [Fact]
-    public void TestOneRequiredGroup()
+    public async Task TestOneRequiredGroup()
     {
         TTestBinder binder = GetBinder();
         var bindingsOptions = new RabbitBindingsOptions();
@@ -115,12 +115,12 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         Assert.NotNull(receivedMessage1);
         Assert.Equal(testPayload, Encoding.UTF8.GetString(receivedMessage1.Payload));
 
-        producerBinding.UnbindAsync();
-        consumerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestTwoRequiredGroups()
+    public async Task TestTwoRequiredGroups()
     {
         TTestBinder binder = GetBinder();
         var bindingsOptions = new RabbitBindingsOptions();
@@ -158,13 +158,13 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         Assert.NotNull(receivedMessage2);
         Assert.Equal(testPayload, Encoding.UTF8.GetString(receivedMessage2.Payload));
 
-        consumerBinding1.UnbindAsync();
-        consumerBinding2.UnbindAsync();
-        producerBinding.UnbindAsync();
+        await consumerBinding1.UnbindAsync();
+        await consumerBinding2.UnbindAsync();
+        await producerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestPartitionedModuleSpel()
+    public async Task TestPartitionedModuleSpel()
     {
         var bindingsOptions = new RabbitBindingsOptions();
         TTestBinder binder = GetBinder(bindingsOptions);
@@ -272,10 +272,10 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
             Assert.Single(receivedMessages.Where(payloadIs2).Where(correlationHeadersForPayload2));
         }
 
-        input0Binding.UnbindAsync();
-        input1Binding.UnbindAsync();
-        input2Binding.UnbindAsync();
-        outputBinding.UnbindAsync();
+        await input0Binding.UnbindAsync();
+        await input1Binding.UnbindAsync();
+        await input2Binding.UnbindAsync();
+        await outputBinding.UnbindAsync();
     }
 
     protected abstract string GetEndpointRouting(object endpoint);

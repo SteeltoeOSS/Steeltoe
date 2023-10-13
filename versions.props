@@ -1,42 +1,41 @@
 <Project>
   <PropertyGroup>
     <!--
-      Non-exposed dependencies, only referenced from test projects or build infrastructure.
+      Non-exposed dependencies, only referenced from test projects, benchmarks or build infrastructure.
       It's safe to update these at any time, so wildcards are allowed.
     -->
 
-    <MongoDbClientVersion>2.19.*</MongoDbClientVersion>
-    <MySqlConnectorVersion>2.2.*</MySqlConnectorVersion>
-    <MySqlV8>8.0.*</MySqlV8>
-    <NpgsqlVersion>6.0.*</NpgsqlVersion>
-    <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
-    <MicrosoftSqlClientVersion>5.1.*</MicrosoftSqlClientVersion>
-    <MicrosoftAzureCosmosVersion>3.33.*</MicrosoftAzureCosmosVersion>
-    <StackExchangeVersion>2.6.*</StackExchangeVersion>
-    <CoverletVersion>3.2.*</CoverletVersion>
-    <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
-    <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
-    <MockHttpVersion>6.0.*</MockHttpVersion>
-    <MoqVersion>4.18.*</MoqVersion>
-    <TestSdkVersion>17.3.*</TestSdkVersion>
-    <XunitVersion>2.4.*</XunitVersion>
-    <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
-    <XunitStudioVersion>2.4.*</XunitStudioVersion>
-    <NSubstituteVersion>4.3.*</NSubstituteVersion>
-    <HealthChecksVersion>6.0.*</HealthChecksVersion>
-    <HealthChecksRabbitVersion>3.1.*</HealthChecksRabbitVersion>
-    <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
-    <SerilogExceptionsVersion>8.2.*</SerilogExceptionsVersion>
-    <SerilogSinksDebugVersion>2.0.*</SerilogSinksDebugVersion>
-    <SonarAnalyzerVersion>8.47.*</SonarAnalyzerVersion>
-    <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
-    <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
-    <EFCoreTestVersion>7.0.*</EFCoreTestVersion>
+    <CoverletVersion>6.0.*</CoverletVersion>
+    <EasyNetQVersion>2.0.*</EasyNetQVersion>
+    <EntityFrameworkCoreTestVersion>7.0.*</EntityFrameworkCoreTestVersion>
+    <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
+    <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
+    <MicrosoftAzureCosmosVersion>3.35.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftSqlClientVersion>5.1.*</MicrosoftSqlClientVersion>
+    <MockHttpVersion>6.0.*</MockHttpVersion>
+    <MongoDbDriverVersion>2.22.*</MongoDbDriverVersion>
+    <MoqVersion>4.20.69</MoqVersion>
+    <MySqlConnectorVersion>2.2.*</MySqlConnectorVersion>
+    <MySqlDataVersion>8.1.*</MySqlDataVersion>
     <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
+    <NpgsqlVersion>7.0.*</NpgsqlVersion>
+    <NSubstituteVersion>5.1.*</NSubstituteVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>6.5.*</RabbitClientTestVersion>
+    <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
+    <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
+    <SonarAnalyzerVersion>9.11.*</SonarAnalyzerVersion>
+    <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
+    <StackExchangeVersion>2.6.*</StackExchangeVersion>
+    <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
+    <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
+    <TestSdkVersion>17.7.*</TestSdkVersion>
+    <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
+    <XunitVersion>2.5.*</XunitVersion>
+  </PropertyGroup>
 
+  <PropertyGroup>
     <!--
       Exposed dependencies, observable by Steeltoe consumers.
       Be cautious with updates:
@@ -44,35 +43,44 @@
       - Before release of the next major version, pin these down and never change them between minor/patch releases.
     -->
 
-    <DriveInfoVersion>4.3.*</DriveInfoVersion>
-    <SystemVersion>6.0.*</SystemVersion>
-    <ExtensionsVersion>6.0.*</ExtensionsVersion>
-    <JwtTokensVersion>6.20.*</JwtTokensVersion>
-    <SymReaderVersion>1.4.*</SymReaderVersion>
-    <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
-    <KubernetesClientVersion>9.0.*</KubernetesClientVersion>
-    <BouncyCastleVersion>1.9.*</BouncyCastleVersion>
+    <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
+    <CastleCoreVersion>5.1.*</CastleCoreVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
-    <HdrHistogramVersion>2.5.*</HdrHistogramVersion>
-    <JsonNetVersion>13.0.*</JsonNetVersion>
-    <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
-    <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
-    <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
-    <SerilogExtensionsLoggingVersion>3.1.*</SerilogExtensionsLoggingVersion>
-    <SerilogSettingsConfigurationVersion>3.3.*</SerilogSettingsConfigurationVersion>
-    <SerilogSinksConsoleVersion>4.0.*</SerilogSinksConsoleVersion>
-    <RabbitClientVersion>5.1.*</RabbitClientVersion>
-    <EasyNetQVersion>1.4.*</EasyNetQVersion>
-    <ReactiveVersion>5.0.*</ReactiveVersion>
-    <PollyVersion>7.2.*</PollyVersion>
-    <PollyContribVersion>1.1.*</PollyContribVersion>
-    <CastleCoreVersion>4.4.*</CastleCoreVersion>
-    <RuntimeLoaderVersion>4.3.*</RuntimeLoaderVersion>
-    <DiagnosticsTracingVersion>3.0.*</DiagnosticsTracingVersion>
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
-    <EFCoreVersion>6.0.*</EFCoreVersion>
+    <DiagnosticsTracingVersion>3.1.*</DiagnosticsTracingVersion>
+    <EntityFrameworkCoreVersion>6.0.*</EntityFrameworkCoreVersion>
+    <FoundationalVersion>
+      <!--
+        Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
+        For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
+      -->
+      7.0.*
+    </FoundationalVersion>
+    <JsonNetVersion>13.0.*</JsonNetVersion>
+    <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
-    <AspNetCoreVersion>6.0.*</AspNetCoreVersion>
-    <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      6.0.*
+    </MatchTargetFrameworkVersion>
+    <OpenIdConnectVersion>7.0.*</OpenIdConnectVersion>
+    <OpenTelemetryExporterJaegerVersion>1.5.*</OpenTelemetryExporterJaegerVersion>
+    <OpenTelemetryExporterPrometheusVersion>1.4.0-rc.3</OpenTelemetryExporterPrometheusVersion>
+    <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
+    <OpenTelemetryVersion>1.6.*</OpenTelemetryVersion>
+    <PollyContribVersion>1.1.*</PollyContribVersion>
+    <PollyVersion>8.0.*</PollyVersion>
+    <RabbitClientVersion>5.1.*</RabbitClientVersion>
+    <RuntimeLoaderVersion>4.3.*</RuntimeLoaderVersion>
+    <SerilogExtensionsLoggingVersion>7.0.*</SerilogExtensionsLoggingVersion>
+    <SerilogSettingsConfigurationVersion>7.0.*</SerilogSettingsConfigurationVersion>
+    <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
+    <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
+    <SymReaderVersion>2.0.*</SymReaderVersion>
+    <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
   </PropertyGroup>
 </Project>

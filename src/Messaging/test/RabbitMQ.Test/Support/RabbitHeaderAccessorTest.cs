@@ -14,7 +14,7 @@ public sealed class RabbitHeaderAccessorTest
     public void NewEmptyHeaders()
     {
         var accessor = new RabbitHeaderAccessor();
-        Assert.Equal(0, accessor.ToDictionary().Count);
+        Assert.Empty(accessor.ToDictionary());
     }
 
     [Fact]

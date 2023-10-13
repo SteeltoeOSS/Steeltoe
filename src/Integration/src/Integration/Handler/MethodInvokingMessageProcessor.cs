@@ -70,7 +70,7 @@ public class MethodInvokingMessageProcessor<T> : AbstractMessageProcessor<T>, IL
 
             if (result is T)
             {
-                return (T)ConversionService.Convert(result, result?.GetType(), typeof(T));
+                return (T)ConversionService.Convert(result, result.GetType(), typeof(T));
             }
 
             return (T)result;

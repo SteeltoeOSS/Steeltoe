@@ -457,7 +457,7 @@ public static class ReflectionHelpers
         {
             string filename = Path.GetFileNameWithoutExtension(assembly);
 
-            if (!loadedAssemblies.Any(a => a.FullName.StartsWith(filename, StringComparison.OrdinalIgnoreCase)))
+            if (!Array.Exists(loadedAssemblies, a => a.FullName.StartsWith(filename, StringComparison.OrdinalIgnoreCase)))
             {
                 try
                 {

@@ -26,10 +26,7 @@ public class DynamicDestinationsBindable : AbstractBindable
         {
             _outputBindings.TryRemove(entry.Key, out IBinding binding);
 
-            if (binding != null)
-            {
-                binding.UnbindAsync();
-            }
+            binding?.UnbindAsync().GetAwaiter().GetResult();
         }
     }
 }

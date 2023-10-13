@@ -218,7 +218,7 @@ public sealed class HostBuilderExtensionsTest
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClients.First());
+        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
     }
 
     [Fact]

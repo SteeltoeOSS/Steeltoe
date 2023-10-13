@@ -281,7 +281,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         IList<InstanceInfo> instances = app.Instances;
         Assert.NotNull(instances);
-        Assert.Equal(1, instances.Count);
+        Assert.Single(instances);
 
         foreach (InstanceInfo instance in instances)
         {
@@ -379,7 +379,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         IList<InstanceInfo> instances = resp.Response.Instances;
         Assert.NotNull(instances);
-        Assert.Equal(1, instances.Count);
+        Assert.Single(instances);
 
         foreach (InstanceInfo instance in instances)
         {
@@ -453,7 +453,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         IList<InstanceInfo> instances = resp.Response.Instances;
         Assert.NotNull(instances);
-        Assert.Equal(1, instances.Count);
+        Assert.Single(instances);
 
         foreach (InstanceInfo instance in instances)
         {

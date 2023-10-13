@@ -55,13 +55,10 @@ public static class BinderServicesExtensions
                             configuration
                         });
 
-                        if (instance != null)
+                        method.Invoke(instance, new object[]
                         {
-                            method.Invoke(instance, new object[]
-                            {
-                                services
-                            });
-                        }
+                            services
+                        });
 
                         binderConfiguration.Value.ResolvedAssembly = type.Assembly.Location;
                     }

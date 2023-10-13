@@ -79,10 +79,7 @@ public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChann
         PostProcessPollableSource(bindingTarget);
         var sourceAsLifecycle = resources.Source as ILifecycle;
 
-        if (sourceAsLifecycle != null)
-        {
-            sourceAsLifecycle.StartAsync();
-        }
+        sourceAsLifecycle?.StartAsync().GetAwaiter().GetResult();
 
         var binding = new DefaultPollableChannelBinding(this, name, group, inboundTarget, sourceAsLifecycle ?? null, consumerOptions, destination);
         return binding;

@@ -22,7 +22,7 @@ public sealed class BlockingQueueConsumerIntegrationTest
     public const string Queue2Name = "test.queue2.BlockingQueueConsumerIntegrationTests";
 
     [Fact]
-    public void TestTransactionalLowLevel()
+    public async Task TestTransactionalLowLevel()
     {
         using var connectionFactory = new CachingConnectionFactory("localhost");
         var admin = new RabbitAdmin(connectionFactory);
@@ -48,7 +48,7 @@ public sealed class BlockingQueueConsumerIntegrationTest
                 if (consumers.Count < 2)
                 {
                     n++;
-                    Thread.Sleep(100);
+                    await Task.Delay(100);
                     consumers = blockingQueueConsumer.CurrentConsumers();
                 }
                 else

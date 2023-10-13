@@ -27,7 +27,7 @@ public sealed class AbstractMessageChannelBinderTest : AbstractTest
     }
 
     [Fact]
-    public void TestEndpointLifecycle()
+    public async Task TestEndpointLifecycle()
     {
         var binder = _serviceProvider.GetService<IBinder>() as TestChannelBinder;
         Assert.NotNull(binder);
@@ -70,7 +70,7 @@ public sealed class AbstractMessageChannelBinderTest : AbstractTest
         Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
         Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
 
-        consumerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
 
         Assert.False(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
         Assert.False(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
@@ -90,13 +90,13 @@ public sealed class AbstractMessageChannelBinderTest : AbstractTest
         Assert.True(registry.ContainsService<IMessageChannel>("bar.errors"));
         Assert.True(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
 
-        producerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
         Assert.False(registry.ContainsService<IMessageChannel>("bar.errors"));
         Assert.False(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
     }
 
     [Fact]
-    public void TestEndpointBinderHasRecoverer()
+    public async Task TestEndpointBinderHasRecoverer()
     {
         var binder = _serviceProvider.GetService<IBinder>() as TestChannelBinder;
         Assert.NotNull(binder);
@@ -135,7 +135,7 @@ public sealed class AbstractMessageChannelBinderTest : AbstractTest
         Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
         Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
 
-        consumerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
 
         Assert.False(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
         Assert.False(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));

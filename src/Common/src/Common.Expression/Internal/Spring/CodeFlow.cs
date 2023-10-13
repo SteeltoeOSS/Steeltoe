@@ -392,7 +392,7 @@ public class CodeFlow
             return null;
         }
 
-        return top[top.Count - 1];
+        return top[^1];
     }
 
     public int NextFieldId()

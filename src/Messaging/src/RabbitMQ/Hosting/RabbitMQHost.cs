@@ -34,25 +34,25 @@ public sealed class RabbitMQHost : IHost
         _host?.Dispose();
     }
 
-    public Task StartAsync(CancellationToken cancellationToken = default)
+    public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         using (IServiceScope scope = _host.Services.CreateScope())
         {
             var lifecycleProcessor = scope.ServiceProvider.GetRequiredService<ILifecycleProcessor>();
-            lifecycleProcessor.OnRefreshAsync();
+            await lifecycleProcessor.OnRefreshAsync();
         }
 
-        return _host.StartAsync(cancellationToken);
+        await _host.StartAsync(cancellationToken);
     }
 
-    public Task StopAsync(CancellationToken cancellationToken = default)
+    public async Task StopAsync(CancellationToken cancellationToken = default)
     {
         using (IServiceScope scope = _host.Services.CreateScope())
         {
             var lifecycleProcessor = scope.ServiceProvider.GetRequiredService<ILifecycleProcessor>();
-            lifecycleProcessor.StopAsync();
+            await lifecycleProcessor.StopAsync();
         }
 
-        return _host.StopAsync(cancellationToken);
+        await _host.StopAsync(cancellationToken);
     }
 }

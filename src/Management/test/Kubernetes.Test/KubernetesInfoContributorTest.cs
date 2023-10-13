@@ -94,8 +94,9 @@ public sealed class KubernetesInfoContributorTest
         var coreMock = new Mock<ICoreV1Operations>();
 
         coreMock.Setup(operations => operations.ListNamespacedPodWithHttpMessagesAsync(It.IsAny<string>(), It.IsAny<bool?>(), It.IsAny<string>(),
-            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<bool?>(),
-            It.IsAny<bool?>(), It.IsAny<IReadOnlyDictionary<string, IReadOnlyList<string>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool?>(), It.IsAny<int?>(),
+                It.IsAny<bool?>(), It.IsAny<bool?>(), It.IsAny<IReadOnlyDictionary<string, IReadOnlyList<string>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(response);
 
         var kubernetesMock = new Mock<IKubernetes>();
         kubernetesMock.Setup(kubernetes => kubernetes.CoreV1).Returns(coreMock.Object);

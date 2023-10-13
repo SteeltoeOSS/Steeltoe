@@ -5,11 +5,11 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Stream.Binder.RabbitMQ.Configuration;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Steeltoe.Stream.Binder.RabbitMQ.Test.Configuration;
 
@@ -200,14 +200,14 @@ public sealed class RabbitBindingsOptionsTest
 
         foreach (Tuple<string, string, string> tuple in GetOptionsConfigPairs(configuration, inputBinding, inputBindingsKey))
         {
-            AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, $"{inputBindingsKey}:{tuple.Item1}");
+            tuple.Item2.Should().Be(tuple.Item3, $"{inputBindingsKey}:{tuple.Item1}");
         }
 
         const string outputBindingsKey = "bindings:output:producer";
 
         foreach (Tuple<string, string, string> tuple in GetOptionsConfigPairs(configuration, outputBinding, outputBindingsKey))
         {
-            AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, $"{outputBindingsKey}:{tuple.Item1}");
+            tuple.Item2.Should().Be(tuple.Item3, $"{outputBindingsKey}:{tuple.Item1}");
         }
     }
 
@@ -267,28 +267,6 @@ public sealed class RabbitBindingsOptionsTest
                 }
 
                 yield return new Tuple<string, string, string>($"{inputBindingsKey}:{child.Key}", value?.ToString(), childValue);
-            }
-        }
-    }
-
-    public static class AssertOptionEquals
-    {
-        public static void Equal(string expected, string actual, string optionName)
-        {
-            if (!expected.Equals(actual, StringComparison.OrdinalIgnoreCase))
-            {
-                throw new OptionEqualsException(expected, actual, optionName);
-            }
-        }
-
-        public sealed class OptionEqualsException : EqualException
-        {
-            public override string Message => $"{UserMessage} {base.Message}";
-
-            public OptionEqualsException(string expected, string actual, string optionName)
-                : base(expected, actual)
-            {
-                UserMessage = optionName;
             }
         }
     }

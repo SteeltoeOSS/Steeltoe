@@ -21,7 +21,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
     private const string DefaultObserverName = "TraceDiagnosticObserver";
     private const string StopEventName = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
-    private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime BaseTime = DateTime.UnixEpoch;
     private readonly IOptionsMonitor<TraceEndpointOptions> _optionsMonitor;
     private readonly ILogger<TraceDiagnosticObserver> _logger;
     internal ConcurrentQueue<TraceResult> Queue { get; } = new();
@@ -149,7 +149,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
             details.Add("timeTaken", GetTimeTaken(duration));
         }
 
-        long timestamp = GetJavaTime(DateTime.Now.Ticks);
+        long timestamp = GetJavaTime(DateTime.UtcNow.Ticks);
         return new TraceResult(timestamp, details);
     }
 

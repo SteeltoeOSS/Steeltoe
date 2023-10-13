@@ -37,128 +37,128 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal(2d, o);
         _output.WriteLine("Performance check for SpEL expression: 'Convert.ToDouble(Payload)/18D'");
 
-        long startTime = DateTime.Now.Ticks;
+        long startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(nh);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
-        startTime = DateTime.Now.Ticks;
-
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            _expression.GetValue(nh);
-        }
-
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
-
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(nh);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
+
+        startTime = DateTime.UtcNow.Ticks;
+
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            _expression.GetValue(nh);
+        }
+
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
         Compile(_expression);
         _output.WriteLine("Now compiled:");
         o = _expression.GetValue(nh);
         Assert.Equal(2d, o);
 
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(nh);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
-        startTime = DateTime.Now.Ticks;
-
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            _expression.GetValue(nh);
-        }
-
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
-
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(nh);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
+
+        startTime = DateTime.UtcNow.Ticks;
+
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            _expression.GetValue(nh);
+        }
+
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
         _expression = Parser.ParseExpression("Payload/18D");
         o = _expression.GetValue(nh);
         Assert.Equal(2d, o);
         _output.WriteLine("Performance check for SpEL expression: 'Payload / 18D");
 
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(nh);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
-        startTime = DateTime.Now.Ticks;
-
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            _expression.GetValue(nh);
-        }
-
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
-
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(nh);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
+
+        startTime = DateTime.UtcNow.Ticks;
+
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            _expression.GetValue(nh);
+        }
+
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
         Compile(_expression);
         _output.WriteLine("Now compiled:");
         o = _expression.GetValue(nh);
         Assert.Equal(2d, o);
 
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(nh);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
-        startTime = DateTime.Now.Ticks;
-
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            _expression.GetValue(nh);
-        }
-
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
-
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(nh);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
+
+        startTime = DateTime.UtcNow.Ticks;
+
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            _expression.GetValue(nh);
+        }
+
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
     }
 
     [Fact]
@@ -169,64 +169,64 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal("bcd", o);
         _output.WriteLine("Performance check for SpEL expression: '{'abcde','ijklm'}[0].substring({1,3,4}[0],{1,3,4}[1])'");
 
-        long startTime = DateTime.Now.Ticks;
+        long startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue();
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
-        startTime = DateTime.Now.Ticks;
-
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            _expression.GetValue();
-        }
-
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
-
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue();
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
+
+        startTime = DateTime.UtcNow.Ticks;
+
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            _expression.GetValue();
+        }
+
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
         Compile(_expression);
         _output.WriteLine("Now compiled:");
         o = _expression.GetValue();
         Assert.Equal("bcd", o);
 
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue();
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
-        startTime = DateTime.Now.Ticks;
-
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            _expression.GetValue();
-        }
-
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
-
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue();
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
+
+        startTime = DateTime.UtcNow.Ticks;
+
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            _expression.GetValue();
+        }
+
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
     }
 
     [Fact]
@@ -237,64 +237,64 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal("jkl", o);
         _output.WriteLine("Performance check for SpEL expression: '{'abcde',{'ijklm','nopqr'}}[1][0].Substring({1,3,4}[0],{1,3,4}[1])'");
 
-        long startTime = DateTime.Now.Ticks;
+        long startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue();
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
-        startTime = DateTime.Now.Ticks;
-
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            _expression.GetValue();
-        }
-
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
-
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue();
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
+
+        startTime = DateTime.UtcNow.Ticks;
+
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            _expression.GetValue();
+        }
+
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
         Compile(_expression);
         _output.WriteLine("Now compiled:");
         o = _expression.GetValue();
         Assert.Equal("jkl", o);
 
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue();
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
-        startTime = DateTime.Now.Ticks;
-
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            _expression.GetValue();
-        }
-
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
-
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue();
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
+
+        startTime = DateTime.UtcNow.Ticks;
+
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            _expression.GetValue();
+        }
+
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
     }
 
     [Fact]
@@ -306,64 +306,64 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal("helloworld spring", o);
         _output.WriteLine("Performance check for SpEL expression: 'hello' + World + ' spring'");
 
-        long startTime = DateTime.Now.Ticks;
+        long startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(g);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
-        startTime = DateTime.Now.Ticks;
-
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            _expression.GetValue(g);
-        }
-
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
-
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(g);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
+
+        startTime = DateTime.UtcNow.Ticks;
+
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            _expression.GetValue(g);
+        }
+
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
         Compile(_expression);
         _output.WriteLine("Now compiled:");
         o = _expression.GetValue(g);
         Assert.Equal("helloworld spring", o);
 
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(g);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
 
-        startTime = DateTime.Now.Ticks;
-
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            _expression.GetValue(g);
-        }
-
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
-
-        startTime = DateTime.Now.Ticks;
+        startTime = DateTime.UtcNow.Ticks;
 
         for (int i = 0; i < 1_000_000; i++)
         {
             _expression.GetValue(g);
         }
 
-        _output.WriteLine("One million iterations: " + (DateTime.Now.Ticks - startTime) / 10000 + "ms");
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
+
+        startTime = DateTime.UtcNow.Ticks;
+
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            _expression.GetValue(g);
+        }
+
+        _output.WriteLine("One million iterations: " + (DateTime.UtcNow.Ticks - startTime) / 10000 + "ms");
     }
 
     [Fact]
@@ -388,14 +388,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            long startTime = DateTime.Now.Ticks;
+            long startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 b = expression.GetValue<bool>(payload);
             }
 
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             iTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -410,14 +410,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            long startTime = DateTime.Now.Ticks;
+            long startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 bc = expression.GetValue<bool>(payload);
             }
 
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             iTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -460,14 +460,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -482,14 +482,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -528,14 +528,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -550,14 +550,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -596,14 +596,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -618,14 +618,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -664,14 +664,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -686,14 +686,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -732,14 +732,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -754,14 +754,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -800,14 +800,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
@@ -822,14 +822,14 @@ public sealed class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         for (int i = 0; i < Iterations; i++)
         {
-            startTime = DateTime.Now.Ticks;
+            startTime = DateTime.UtcNow.Ticks;
 
             for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
 
-            endTime = DateTime.Now.Ticks;
+            endTime = DateTime.UtcNow.Ticks;
             long interpretedSpeed = endTime - startTime;
             interpretedTotal += interpretedSpeed;
             Log($"{interpretedSpeed}ticks ");
