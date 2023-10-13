@@ -139,7 +139,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
                 throw new NotImplementedException("Support for multiple servers is not implemented. Please open a GitHub issue if you need this.");
             }
 
-            // MongoDB allows semicolon as separator for query string parameters.
+            // MongoDB allows semicolon as separator for query string parameters, to provide backwards compatibility.
             connectionString = connectionString.Replace(';', '&');
 
             var uri = new Uri(connectionString);

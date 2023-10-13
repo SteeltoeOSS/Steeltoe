@@ -17,7 +17,6 @@
       "Common\\test\\Common.Http.Test\\Steeltoe.Common.Http.Test.csproj",
       "Common\\test\\Common.Kubernetes.Test\\Steeltoe.Common.Kubernetes.Test.csproj",
       "Common\\test\\Common.Net.Test\\Steeltoe.Common.Net.Test.csproj",
-      "Common\\test\\Common.RetryPolly.Test\\Steeltoe.Common.RetryPolly.Test.csproj",
       "Common\\test\\Common.Security.Test\\Steeltoe.Common.Security.Test.csproj",
       "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
       "Common\\test\\Common.Test\\Steeltoe.Common.Test.csproj",

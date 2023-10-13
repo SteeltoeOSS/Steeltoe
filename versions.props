@@ -1,40 +1,41 @@
 <Project>
   <PropertyGroup>
     <!--
-      Non-exposed dependencies, only referenced from test projects or build infrastructure.
+      Non-exposed dependencies, only referenced from test projects, benchmarks or build infrastructure.
       It's safe to update these at any time, so wildcards are allowed.
     -->
 
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
-    <CoverletVersion>3.2.*</CoverletVersion>
-    <EFCoreTestVersion>7.0.*</EFCoreTestVersion>
+    <CoverletVersion>6.0.*</CoverletVersion>
+    <EasyNetQVersion>2.0.*</EasyNetQVersion>
+    <EntityFrameworkCoreTestVersion>7.0.*</EntityFrameworkCoreTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
-    <HealthChecksVersion>6.0.*</HealthChecksVersion>
-    <MicrosoftAzureCosmosVersion>3.33.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftAzureCosmosVersion>3.35.*</MicrosoftAzureCosmosVersion>
     <MicrosoftSqlClientVersion>5.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>6.0.*</MockHttpVersion>
-    <MongoDbClientVersion>2.19.*</MongoDbClientVersion>
-    <MoqVersion>4.18.*</MoqVersion>
+    <MongoDbDriverVersion>2.22.*</MongoDbDriverVersion>
+    <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.2.*</MySqlConnectorVersion>
-    <MySqlV8>8.0.*</MySqlV8>
+    <MySqlDataVersion>8.1.*</MySqlDataVersion>
     <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
-    <NpgsqlVersion>6.0.*</NpgsqlVersion>
-    <NSubstituteVersion>4.3.*</NSubstituteVersion>
+    <NpgsqlVersion>7.0.*</NpgsqlVersion>
+    <NSubstituteVersion>5.1.*</NSubstituteVersion>
     <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>6.5.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
-    <SerilogExceptionsVersion>8.2.*</SerilogExceptionsVersion>
+    <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>9.11.*</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
     <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
-    <TestSdkVersion>17.3.*</TestSdkVersion>
+    <TestSdkVersion>17.7.*</TestSdkVersion>
     <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
-    <XunitStudioVersion>2.5.*</XunitStudioVersion>
     <XunitVersion>2.5.*</XunitVersion>
+  </PropertyGroup>
 
+  <PropertyGroup>
     <!--
       Exposed dependencies, observable by Steeltoe consumers.
       Be cautious with updates:
@@ -42,32 +43,44 @@
       - Before release of the next major version, pin these down and never change them between minor/patch releases.
     -->
 
-    <AspNetCoreVersion>6.0.*</AspNetCoreVersion>
-    <BouncyCastleVersion>1.9.*</BouncyCastleVersion>
-    <CastleCoreVersion>4.4.*</CastleCoreVersion>
+    <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
+    <CastleCoreVersion>5.1.*</CastleCoreVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
-    <DiagnosticsTracingVersion>3.0.*</DiagnosticsTracingVersion>
-    <DriveInfoVersion>4.3.*</DriveInfoVersion>
-    <EasyNetQVersion>1.4.*</EasyNetQVersion>
-    <EFCoreVersion>6.0.*</EFCoreVersion>
-    <ExtensionsVersion>6.0.*</ExtensionsVersion>
+    <DiagnosticsTracingVersion>3.1.*</DiagnosticsTracingVersion>
+    <EntityFrameworkCoreVersion>6.0.*</EntityFrameworkCoreVersion>
+    <FoundationalVersion>
+      <!--
+        Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
+        For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
+      -->
+      7.0.*
+    </FoundationalVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
-    <JwtTokensVersion>6.20.*</JwtTokensVersion>
-    <KubernetesClientVersion>9.0.*</KubernetesClientVersion>
+    <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      6.0.*
+    </MatchTargetFrameworkVersion>
+    <OpenIdConnectVersion>7.0.*</OpenIdConnectVersion>
+    <OpenTelemetryExporterJaegerVersion>1.5.*</OpenTelemetryExporterJaegerVersion>
+    <OpenTelemetryExporterPrometheusVersion>1.4.0-rc.3</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
-    <OpenTelemetryVersion>1.4.0-rc.3</OpenTelemetryVersion>
+    <OpenTelemetryVersion>1.6.*</OpenTelemetryVersion>
     <PollyContribVersion>1.1.*</PollyContribVersion>
-    <PollyVersion>7.2.*</PollyVersion>
+    <PollyVersion>8.0.*</PollyVersion>
     <RabbitClientVersion>5.1.*</RabbitClientVersion>
     <RuntimeLoaderVersion>4.3.*</RuntimeLoaderVersion>
-    <SerilogExtensionsLoggingVersion>3.1.*</SerilogExtensionsLoggingVersion>
-    <SerilogSettingsConfigurationVersion>3.3.*</SerilogSettingsConfigurationVersion>
-    <SerilogSinksConsoleVersion>4.0.*</SerilogSinksConsoleVersion>
+    <SerilogExtensionsLoggingVersion>7.0.*</SerilogExtensionsLoggingVersion>
+    <SerilogSettingsConfigurationVersion>7.0.*</SerilogSettingsConfigurationVersion>
+    <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
     <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
-    <SymReaderVersion>1.4.*</SymReaderVersion>
-    <SystemVersion>6.0.*</SystemVersion>
+    <SymReaderVersion>2.0.*</SymReaderVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
   </PropertyGroup>
 </Project>

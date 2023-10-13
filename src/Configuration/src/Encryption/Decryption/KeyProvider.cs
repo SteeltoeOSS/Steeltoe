@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -9,20 +9,30 @@ namespace Steeltoe.Configuration.Encryption.Decryption;
 
 internal sealed class KeyProvider : IKeyProvider
 {
-    private readonly Pkcs12Store _pkcs12;
+    private readonly Pkcs12Store _store;
 
     public KeyProvider(string fileName, string pfxPassword)
-        : this(new FileStream(fileName, FileMode.Open, FileAccess.Read), pfxPassword)
     {
+        using var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+        _store = CreateStore(fileStream, pfxPassword);
     }
 
-    public KeyProvider(FileStream fileStream, string pfxPassword)
+    public KeyProvider(Stream fileStream, string pfxPassword)
     {
-        _pkcs12 = new Pkcs12Store(fileStream, pfxPassword.ToArray());
+        _store = CreateStore(fileStream, pfxPassword);
+    }
+
+    private static Pkcs12Store CreateStore(Stream fileStream, string pfxPassword)
+    {
+        var builder = new Pkcs12StoreBuilder();
+        Pkcs12Store store = builder.Build();
+
+        store.Load(fileStream, pfxPassword.ToArray());
+        return store;
     }
 
     public ICipherParameters GetKey(string keyAlias)
     {
-        return _pkcs12.GetKey(keyAlias)?.Key;
+        return _store.GetKey(keyAlias)?.Key;
     }
 }

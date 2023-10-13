@@ -126,7 +126,7 @@ public sealed class MongoDbConnectorTests
         var optionsSnapshot = app.Services.GetRequiredService<IOptionsSnapshot<MongoDbOptions>>();
 
         MongoDbOptions optionsOne = optionsSnapshot.Get("myMongoDbServiceOne");
-        optionsOne.ConnectionString.Should().Be("mongodb://localhost/auth-db?appname=mongodb-test;connectTimeout=5s");
+        optionsOne.ConnectionString.Should().Be("mongodb://localhost/auth-db?appname=mongodb-test&connectTimeout=5s");
         optionsOne.Database.Should().Be("db1");
 
         MongoDbOptions optionsTwo = optionsSnapshot.Get("myMongoDbServiceTwo");

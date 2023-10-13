@@ -7,15 +7,14 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="$(MicrosoftAzureCosmosVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SystemSqlClientVersion)" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(FoundationalVersion)" />
+    <PackageReference Include="MongoDB.Driver" Version="$(MongoDbDriverVersion)" />
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
-    <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
+    <PackageReference Include="MySql.Data" Version="$(MySqlDataVersion)" />
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
     <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />

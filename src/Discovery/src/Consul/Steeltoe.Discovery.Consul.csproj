@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Consul" Version="$(ConsulVersion)" />
-    <PackageReference Include="System.Net.Http.WinHttpHandler" Version="$(SystemVersion)" />
+    <PackageReference Include="System.Net.Http.WinHttpHandler" Version="$(FoundationalVersion)" />
   </ItemGroup>
 
   <ItemGroup>

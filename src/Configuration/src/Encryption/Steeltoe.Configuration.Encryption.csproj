@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="BouncyCastle.NetCore" Version="$(BouncyCastleVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="$(MatchTargetFrameworkVersion)" />
   </ItemGroup>
 
   <ItemGroup>

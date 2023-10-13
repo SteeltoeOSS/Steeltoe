@@ -19,6 +19,6 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(FoundationalVersion)" />
   </ItemGroup>
 </Project>

@@ -10,8 +10,4 @@
     <ProjectReference Include="..\..\src\Kubernetes\Steeltoe.Management.Kubernetes.csproj" />
     <ProjectReference Include="..\Endpoint.Test\Steeltoe.Management.Endpoint.Test.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
-  </ItemGroup>
 </Project>

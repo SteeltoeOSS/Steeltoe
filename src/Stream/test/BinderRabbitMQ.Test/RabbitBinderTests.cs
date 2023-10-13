@@ -46,7 +46,6 @@ using Steeltoe.Stream.Provisioning;
 using Xunit;
 using Xunit.Abstractions;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
-using ExchangeType = Steeltoe.Messaging.RabbitMQ.Configuration.ExchangeType;
 using Message = Steeltoe.Messaging.Message;
 using Queue = Steeltoe.Messaging.RabbitMQ.Configuration.Queue;
 using RabbitBinding = Steeltoe.Messaging.RabbitMQ.Configuration.Binding;
@@ -136,9 +135,9 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         ec.Subscribe(new TestMessageHandler
         {
-            OnHandleMessage = message =>
+            OnHandleMessage = innerMessage =>
             {
-                errorMessage.GetAndSet(message);
+                errorMessage.GetAndSet(innerMessage);
                 latch.Signal();
             }
         });
@@ -179,6 +178,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.IsAssignableFrom<NackedRabbitMessageException>(errorMessage.Value.Payload);
         var nack = errorMessage.Value.Payload as NackedRabbitMessageException;
 
+        Assert.NotNull(nack);
         Assert.Equal("Mock Nack", nack.NackReason);
         Assert.Equal(message, nack.CorrelationData);
         Assert.Equal(message, nack.FailedMessage);
@@ -330,6 +330,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal("foo.props.0.test", container.GetQueueNames()[0]);
 
         await consumerBinding.UnbindAsync();
+        Assert.NotNull(endpoint);
         Assert.False(endpoint.IsRunning);
     }
 
@@ -523,14 +524,14 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.False(container.IsRunning);
         Assert.Equal(group, container.GetQueueNames()[0]);
 
-        var client = new Client();
-        IEnumerable<EasyNetQ.Management.Client.Model.Binding> bindings = await client.GetBindingsBySourceAsync("/", "propsUser2");
+        ManagementClient client = ManagementClientFactory.CreateDefault();
+        IEnumerable<EasyNetQ.Management.Client.Model.Binding> bindings = await client.GetBindingsWithSourceAsync("/", "propsUser2");
         int n = 0;
 
-        while (n++ < 100 && (bindings == null || !bindings.Any()))
+        while (n++ < 100 && !bindings.Any())
         {
             await Task.Delay(100);
-            bindings = await client.GetBindingsBySourceAsync("/", "propsUser2");
+            bindings = await client.GetBindingsWithSourceAsync("/", "propsUser2");
         }
 
         Assert.Equal(2, bindings.Count());
@@ -556,12 +557,6 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.NotEqual(bindings.ElementAt(1).RoutingKey, bindings.ElementAt(0).RoutingKey);
 
         Exchange exchange = await client.GetExchangeAsync("/", "propsUser2");
-
-        while (n++ < 100 && exchange == null)
-        {
-            await Task.Delay(100);
-            exchange = await client.GetExchangeAsync("/", "propsUser2");
-        }
 
         Assert.Equal("direct", exchange.Type);
         Assert.True(exchange.Durable);
@@ -612,15 +607,15 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         Assert.True(container.IsRunning);
 
-        var client = new Client();
-        IEnumerable<EasyNetQ.Management.Client.Model.Binding> bindings = await client.GetBindingsBySourceAsync("/", "propsUser3");
+        ManagementClient client = ManagementClientFactory.CreateDefault();
+        IEnumerable<EasyNetQ.Management.Client.Model.Binding> bindings = await client.GetBindingsWithSourceAsync("/", "propsUser3");
 
         int n = 0;
 
-        while (n++ < 100 && (bindings == null || !bindings.Any()))
+        while (n++ < 100 && !bindings.Any())
         {
             await Task.Delay(100);
-            bindings = await client.GetBindingsBySourceAsync("/", "propsUser3");
+            bindings = await client.GetBindingsWithSourceAsync("/", "propsUser3");
         }
 
         Assert.Single(bindings);
@@ -628,13 +623,13 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal("propsUser3.infra", bindings.ElementAt(0).Destination);
         Assert.Equal("foo", bindings.ElementAt(0).RoutingKey);
 
-        bindings = await client.GetBindingsBySourceAsync("/", "customDLX");
+        bindings = await client.GetBindingsWithSourceAsync("/", "customDLX");
         n = 0;
 
-        while (n++ < 100 && (bindings == null || !bindings.Any()))
+        while (n++ < 100 && !bindings.Any())
         {
             await Task.Delay(100);
-            bindings = await client.GetBindingsBySourceAsync("/", "customDLX");
+            bindings = await client.GetBindingsWithSourceAsync("/", "customDLX");
         }
 
         Assert.Equal("customDLX", bindings.ElementAt(0).Source);
@@ -642,26 +637,12 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal("customDLRK", bindings.ElementAt(0).RoutingKey);
 
         Exchange exchange = await client.GetExchangeAsync("/", "propsUser3");
-        n = 0;
-
-        while (n++ < 100 && exchange == null)
-        {
-            await Task.Delay(100);
-            exchange = await client.GetExchangeAsync("/", "propsUser3");
-        }
 
         Assert.Equal("direct", exchange.Type);
         Assert.False(exchange.Durable);
         Assert.True(exchange.AutoDelete);
 
         exchange = await client.GetExchangeAsync("/", "customDLX");
-        n = 0;
-
-        while (n++ < 100 && exchange == null)
-        {
-            await Task.Delay(100);
-            exchange = await client.GetExchangeAsync("/", "customDLX");
-        }
 
         Assert.Equal("topic", exchange.Type);
         Assert.True(exchange.Durable);
@@ -670,7 +651,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         EasyNetQ.Management.Client.Model.Queue queue = await client.GetQueueAsync("/", "propsUser3.infra");
         n = 0;
 
-        while (n++ < 100 && (queue == null || queue.Consumers == 0))
+        while (n++ < 100 && queue.Consumers == 0)
         {
             await Task.Delay(100);
             queue = await client.GetQueueAsync("/", "propsUser3.infra");
@@ -678,13 +659,13 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         Assert.NotNull(queue);
 
-        Assert.Equal("30000", queue.Arguments["x-expires"]);
-        Assert.Equal("10000", queue.Arguments["x-max-length"]);
-        Assert.Equal("100000", queue.Arguments["x-max-length-bytes"]);
+        Assert.Equal(30000d, queue.Arguments["x-expires"]);
+        Assert.Equal(10000d, queue.Arguments["x-max-length"]);
+        Assert.Equal(100_000d, queue.Arguments["x-max-length-bytes"]);
         Assert.Equal("drop-head", queue.Arguments["x-overflow"]);
-        Assert.Equal("10", queue.Arguments["x-max-priority"]);
+        Assert.Equal(10d, queue.Arguments["x-max-priority"]);
 
-        Assert.Equal("2000", queue.Arguments["x-message-ttl"]);
+        Assert.Equal(2000d, queue.Arguments["x-message-ttl"]);
         Assert.Equal("customDLX", queue.Arguments["x-dead-letter-exchange"]);
         Assert.Equal("customDLRK", queue.Arguments["x-dead-letter-routing-key"]);
 
@@ -692,24 +673,15 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.Equal("testConsumerTag#0", queue.ExclusiveConsumerTag);
 
         queue = await client.GetQueueAsync("/", "customDLQ");
-
-        n = 0;
-
-        while (n++ < 100 && queue == null)
-        {
-            await Task.Delay(100);
-            queue = await client.GetQueueAsync("/", "customDLQ");
-        }
-
         Assert.NotNull(queue);
 
-        Assert.Equal("60000", queue.Arguments["x-expires"]);
-        Assert.Equal("20000", queue.Arguments["x-max-length"]);
-        Assert.Equal("40000", queue.Arguments["x-max-length-bytes"]);
+        Assert.Equal(60000d, queue.Arguments["x-expires"]);
+        Assert.Equal(20000d, queue.Arguments["x-max-length"]);
+        Assert.Equal(40000d, queue.Arguments["x-max-length-bytes"]);
         Assert.Equal("reject-publish", queue.Arguments["x-overflow"]);
-        Assert.Equal("8", queue.Arguments["x-max-priority"]);
+        Assert.Equal(8d, queue.Arguments["x-max-priority"]);
 
-        Assert.Equal("1000", queue.Arguments["x-message-ttl"]);
+        Assert.Equal(1000d, queue.Arguments["x-message-ttl"]);
         Assert.Equal("propsUser3", queue.Arguments["x-dead-letter-exchange"]);
         Assert.Equal("propsUser3", queue.Arguments["x-dead-letter-routing-key"]);
 
@@ -751,39 +723,41 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.False(container.IsRunning);
         Assert.Equal($"propsHeader.{group}", container.GetQueueNames()[0]);
 
-        var client = new Client();
-        IEnumerable<EasyNetQ.Management.Client.Model.Binding> bindings = await client.GetBindingsBySourceAsync("/", "propsHeader");
+        ManagementClient client = ManagementClientFactory.CreateDefault();
+        IEnumerable<EasyNetQ.Management.Client.Model.Binding> bindings = await client.GetBindingsWithSourceAsync("/", "propsHeader");
 
         int n = 0;
 
-        while (n++ < 100 && (bindings == null || !bindings.Any()))
+        while (n++ < 100 && !bindings.Any())
         {
             await Task.Delay(100);
-            bindings = await client.GetBindingsBySourceAsync("/", "propsHeader");
+            bindings = await client.GetBindingsWithSourceAsync("/", "propsHeader");
         }
 
         Assert.Single(bindings);
         EasyNetQ.Management.Client.Model.Binding binding = bindings.First();
         Assert.Equal("propsHeader", binding.Source);
         Assert.Equal($"propsHeader.{group}", binding.Destination);
-        Assert.Contains(binding.Arguments, arg => arg.Key == "x-match" && arg.Value == "any");
-        Assert.Contains(binding.Arguments, arg => arg.Key == "foo" && arg.Value == "bar");
+        Assert.NotNull(binding.Arguments);
+        Assert.Contains(binding.Arguments, arg => arg is { Key: "x-match", Value: "any" });
+        Assert.Contains(binding.Arguments, arg => arg is { Key: "foo", Value: "bar" });
 
-        bindings = await client.GetBindingsBySourceAsync("/", "propsHeader.dlx");
+        bindings = await client.GetBindingsWithSourceAsync("/", "propsHeader.dlx");
         n = 0;
 
-        while (n++ < 100 && (bindings == null || !bindings.Any()))
+        while (n++ < 100 && !bindings.Any())
         {
             await Task.Delay(100);
-            bindings = await client.GetBindingsBySourceAsync("/", "propsHeader.dlx");
+            bindings = await client.GetBindingsWithSourceAsync("/", "propsHeader.dlx");
         }
 
         Assert.Single(bindings);
         binding = bindings.First();
         Assert.Equal("propsHeader.dlx", binding.Source);
         Assert.Equal($"propsHeader.{group}.dlq", binding.Destination);
-        Assert.Contains(binding.Arguments, arg => arg.Key == "x-match" && arg.Value == "any");
-        Assert.Contains(binding.Arguments, arg => arg.Key == "foo" && arg.Value == "bar");
+        Assert.NotNull(binding.Arguments);
+        Assert.Contains(binding.Arguments, arg => arg is { Key: "x-match", Value: "any" });
+        Assert.Contains(binding.Arguments, arg => arg is { Key: "foo", Value: "bar" });
     }
 
     [Fact]
@@ -797,6 +771,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         IBinding producerBinding = binder.BindProducer("props.0", CreateBindableChannel("input", bindingOptions), producerOptions);
 
         var endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
+        Assert.NotNull(endpoint);
         Assert.Equal(MessageDeliveryMode.Persistent, endpoint.DefaultDeliveryMode);
 
         var mapper = GetPropertyValue<DefaultRabbitHeaderMapper>(endpoint, "HeaderMapper");
@@ -847,6 +822,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         producerBinding = binder.BindProducer("props.0", channel, producerProperties);
 
         endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
+        Assert.NotNull(endpoint);
         Assert.Same(GetResource(), endpoint.Template.ConnectionFactory);
 
         Assert.Equal($"'props.0-' + Headers['{BinderHeaders.PartitionHeader}']", endpoint.RoutingKeyExpression.ExpressionString);
@@ -1044,7 +1020,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         DirectChannel moduleInputChannel = CreateBindableChannel("input", bindingProperties);
         moduleInputChannel.ComponentName = "dlqTestManual";
 
-        var client = new Client();
+        ManagementClient client = ManagementClientFactory.CreateDefault();
         Vhost vhost = client.GetVhost("/");
 
         moduleInputChannel.Subscribe(new TestMessageHandler
@@ -1052,7 +1028,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
             // Wait until unacked state is reflected in the admin
             OnHandleMessage = _ =>
             {
-                EasyNetQ.Management.Client.Model.Queue info = client.GetQueue($"{TestPrefix}dlqTestManual.default", vhost);
+                EasyNetQ.Management.Client.Model.Queue info = client.GetQueue(vhost, $"{TestPrefix}dlqTestManual.default");
                 int n = 0;
 
                 while (n++ < 100 && info.MessagesUnacknowledged < 1L)
@@ -1060,7 +1036,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 #pragma warning disable xUnit1031 // Do not use blocking task operations in test method
                     Task.Delay(100).GetAwaiter().GetResult();
 #pragma warning restore xUnit1031 // Do not use blocking task operations in test method
-                    info = client.GetQueue($"{TestPrefix}dlqTestManual.default", vhost);
+                    info = client.GetQueue(vhost, $"{TestPrefix}dlqTestManual.default");
                 }
 
                 throw new Exception("foo");
@@ -1090,12 +1066,12 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.InRange(n, 1, 100);
 
         n = 0;
-        EasyNetQ.Management.Client.Model.Queue info = client.GetQueue($"{TestPrefix}dlqTestManual.default", vhost);
+        EasyNetQ.Management.Client.Model.Queue info = client.GetQueue(vhost, $"{TestPrefix}dlqTestManual.default");
 
         while (n++ < 100 && info.MessagesUnacknowledged > 0L)
         {
             await Task.Delay(200);
-            info = client.GetQueue($"{TestPrefix}dlqTestManual.default", vhost);
+            info = client.GetQueue(vhost, $"{TestPrefix}dlqTestManual.default");
         }
 
         Assert.Equal(0, info.MessagesUnacknowledged);
@@ -1365,6 +1341,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         moduleInputChannel.ComponentName = "dlqPubTest";
         Exception exception = BigCause(null);
 
+        Assert.NotNull(exception.StackTrace);
         Assert.True(exception.StackTrace.Length > MaxStackTraceSize);
         var noNotRepublish = new AtomicBoolean();
 
@@ -1421,7 +1398,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         rabbitProducerOptions.DeliveryMode = MessageDeliveryMode.NonPersistent;
         rabbitProducerOptions.BatchingEnabled = true;
         rabbitProducerOptions.BatchSize = 2;
-        rabbitProducerOptions.BatchBufferLimit = 100000;
+        rabbitProducerOptions.BatchBufferLimit = 100_000;
         rabbitProducerOptions.BatchTimeout = 30000;
         rabbitProducerOptions.Compress = true;
 
@@ -1435,6 +1412,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         IBinding producerBinding = binder.BindProducer("batching.0", output, producerProperties);
 
         var postProcessor = binder.Binder.CompressingPostProcessor as GZipPostProcessor;
+        Assert.NotNull(postProcessor);
         Assert.Equal(CompressionLevel.Fastest, postProcessor.Level);
 
         IMessage<byte[]> fooMessage = Message.Create("foo".GetBytes());
@@ -1926,6 +1904,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         }
         catch (MessageHandlingException e)
         {
+            Assert.NotNull(e.InnerException);
             Assert.Equal("test DLQ", e.InnerException.Message);
         }
 
@@ -2156,7 +2135,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.NotNull(received);
         Assert.Equal("partPubDLQ.0-1", received.Headers["x-original-routingKey"]);
         Assert.DoesNotContain(BinderHeaders.PartitionHeader, received.Headers);
-        Assert.Equal(MessageDeliveryMode.NonPersistent, received.Headers.ReceivedDeliveryMode().Value);
+        Assert.Equal(MessageDeliveryMode.NonPersistent, received.Headers.ReceivedDeliveryMode());
 
         output.Send(Message.Create(0));
         received = template.Receive(streamDlqName);
