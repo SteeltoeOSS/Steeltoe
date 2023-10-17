@@ -6,8 +6,6 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-#pragma warning disable S4023 // Interfaces should not be empty
 public interface ICloudFoundryEndpointHandler : IEndpointHandler<string, Links>
-#pragma warning restore S4023 // Interfaces should not be empty
 {
 }
