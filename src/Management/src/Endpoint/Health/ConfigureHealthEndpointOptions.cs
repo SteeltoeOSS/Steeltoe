@@ -22,6 +22,7 @@ internal sealed class ConfigureHealthEndpointOptions : ConfigureEndpointOptions<
     public override void Configure(HealthEndpointOptions options)
     {
         ArgumentGuard.NotNull(options);
+
         base.Configure(options);
 
         if (options.Claim == null && !string.IsNullOrEmpty(options.Role))
