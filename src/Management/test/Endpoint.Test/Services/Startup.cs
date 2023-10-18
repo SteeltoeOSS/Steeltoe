@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Services;
 
 namespace Steeltoe.Management.Endpoint.Test.Services;
