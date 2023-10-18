@@ -4,8 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Web.Hypermedia;
 
-#pragma warning disable S4023 // Interfaces should not be empty
 public interface IActuatorEndpointHandler : IEndpointHandler<string, Links>
-#pragma warning restore S4023 // Interfaces should not be empty
 {
 }

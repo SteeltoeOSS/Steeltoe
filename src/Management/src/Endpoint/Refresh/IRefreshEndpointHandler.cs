@@ -4,8 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
-#pragma warning disable S4023 // Interfaces should not be empty
 public interface IRefreshEndpointHandler : IEndpointHandler<object?, IList<string>>
-#pragma warning restore S4023 // Interfaces should not be empty
 {
 }

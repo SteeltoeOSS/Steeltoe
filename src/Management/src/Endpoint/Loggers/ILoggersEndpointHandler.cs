@@ -4,8 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-#pragma warning disable S4023 // Interfaces should not be empty
 public interface ILoggersEndpointHandler : IEndpointHandler<LoggersRequest, LoggersResponse>
-#pragma warning restore S4023 // Interfaces should not be empty
 {
 }
