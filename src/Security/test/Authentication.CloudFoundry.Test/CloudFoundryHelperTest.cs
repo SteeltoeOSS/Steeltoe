@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryHelperTest
+public sealed class CloudFoundryHelperTest
 {
     [Fact]
     public void GetBackChannelHandler_ReturnsExpected()

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Support;
 
-public class ChannelInterceptorTest
+public sealed class ChannelInterceptorTest
 {
     private readonly TaskSchedulerSubscribableChannel _channel;
 

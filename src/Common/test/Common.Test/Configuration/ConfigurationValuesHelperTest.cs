@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Configuration;
 
-public class ConfigurationValuesHelperTest
+public sealed class ConfigurationValuesHelperTest
 {
     [Fact]
     public void GetString_NoResolveFromConfig()

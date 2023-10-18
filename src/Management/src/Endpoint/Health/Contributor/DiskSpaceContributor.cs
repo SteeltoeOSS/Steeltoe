@@ -2,43 +2,115 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor;
 
-public class DiskSpaceContributor : IHealthContributor
+internal sealed class DiskSpaceContributor : IHealthContributor
 {
-    private const string DefaultId = "diskSpace";
-    private readonly DiskSpaceContributorOptions _options;
+    private readonly IOptionsMonitor<DiskSpaceContributorOptions> _optionsMonitor;
 
-    public string Id { get; } = DefaultId;
+    public string Id => "diskSpace";
 
-    public DiskSpaceContributor(DiskSpaceContributorOptions options = null)
+    public DiskSpaceContributor(IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor)
     {
-        _options = options ?? new DiskSpaceContributorOptions();
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        _optionsMonitor = optionsMonitor;
     }
 
-    public HealthCheckResult Health()
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
-        var result = new HealthCheckResult();
+        HealthCheckResult? result = Health();
+        return Task.FromResult(result);
+    }
 
-        string fullPath = Path.GetFullPath(_options.Path);
-        var dirInfo = new DirectoryInfo(fullPath);
+    private HealthCheckResult? Health()
+    {
+        DiskSpaceContributorOptions options = _optionsMonitor.CurrentValue;
 
-        if (dirInfo.Exists)
+        if (!options.Enabled)
         {
-            string rootName = dirInfo.Root.Name;
-            var d = new DriveInfo(rootName);
-            long freeSpace = d.TotalFreeSpace;
-            result.Status = freeSpace >= _options.Threshold ? HealthStatus.Up : HealthStatus.Down;
-
-            result.Details.Add("total", d.TotalSize);
-            result.Details.Add("free", freeSpace);
-            result.Details.Add("threshold", _options.Threshold);
-            result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            return null;
         }
 
-        return result;
+        if (!string.IsNullOrEmpty(options.Path))
+        {
+            string absolutePath = Path.GetFullPath(options.Path);
+
+            if (Directory.Exists(absolutePath))
+            {
+                DriveInfo[] systemDrives = DriveInfo.GetDrives();
+                DriveInfo? driveInfo = FindVolume(absolutePath, systemDrives);
+
+                if (driveInfo != null)
+                {
+                    long freeSpaceInBytes = driveInfo.TotalFreeSpace;
+
+                    var result = new HealthCheckResult
+                    {
+                        Status = freeSpaceInBytes >= options.Threshold ? HealthStatus.Up : HealthStatus.Down
+                    };
+
+                    result.Details.Add("total", driveInfo.TotalSize);
+                    result.Details.Add("free", freeSpaceInBytes);
+                    result.Details.Add("threshold", options.Threshold);
+                    result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+                    return result;
+                }
+            }
+        }
+
+        return new HealthCheckResult
+        {
+            Status = HealthStatus.Unknown,
+            Description = "Failed to determine free disk space.",
+            Details =
+            {
+                ["error"] = "The configured path is invalid or does not exist.",
+                ["status"] = HealthStatus.Unknown.ToSnakeCaseString(SnakeCaseStyle.AllCaps)
+            }
+        };
+    }
+
+    internal static DriveInfo? FindVolume(string absolutePath, IEnumerable<DriveInfo> systemDrives)
+    {
+        // Prefer to match "/mnt/data/path/to/directory" against "/mnt/data" over "/".
+        DriveInfo? longestMatch = null;
+
+        foreach (DriveInfo drive in systemDrives)
+        {
+            string volumePath = drive.RootDirectory.FullName;
+
+            if (!PathIsOrStartsWith(absolutePath, volumePath))
+            {
+                continue;
+            }
+
+            if (longestMatch == null || longestMatch.RootDirectory.FullName.Length < drive.RootDirectory.FullName.Length)
+            {
+                longestMatch = drive;
+            }
+        }
+
+        return longestMatch;
+    }
+
+    private static bool PathIsOrStartsWith(string absolutePath, string volumePath)
+    {
+        if (!absolutePath.StartsWith(volumePath, StringComparison.OrdinalIgnoreCase))
+        {
+            // Exit fast if no match is possible.
+            return false;
+        }
+
+        // "/tmp/someLonger" is not a subdirectory of "/tmp/some".
+        // And on Linux, "/tmp/SOME" is not the same as "/tmp/some".
+
+        string relativePath = Path.GetRelativePath(volumePath, absolutePath);
+        return !relativePath.StartsWith("..", StringComparison.Ordinal);
     }
 }

@@ -9,7 +9,7 @@ using Xunit.Sdk;
 
 namespace Steeltoe.Common.Utils.Test.Diagnostics;
 
-public class CommandExecutorTest
+public sealed class CommandExecutorTest
 {
     [Fact]
     public async Task SuccessfulCommandShouldReturn0()
@@ -52,6 +52,6 @@ public class CommandExecutorTest
             await executor.ExecuteAsync("no-such-command");
         };
 
-        await act.Should().ThrowAsync<CommandException>().WithMessage("'no-such-command' failed to start*");
+        await act.Should().ThrowExactlyAsync<CommandException>().WithMessage("'no-such-command' failed to start*");
     }
 }

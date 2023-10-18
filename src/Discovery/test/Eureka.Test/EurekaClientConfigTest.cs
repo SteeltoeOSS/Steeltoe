@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaClientConfigTest : AbstractBaseTest
+public sealed class EurekaClientConfigTest : AbstractBaseTest
 {
     [Fact]
     public void DefaultConstructor_InitializedWithDefaults()

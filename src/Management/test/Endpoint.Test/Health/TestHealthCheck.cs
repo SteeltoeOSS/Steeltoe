@@ -6,10 +6,16 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class TestHealthCheck : IHealthCheck
+internal sealed class TestHealthCheck : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        return Task.Run(() => new HealthCheckResult(HealthStatus.Healthy));
+        var data = new Dictionary<string, object>
+        {
+            ["tags"] = context.Registration.Tags
+        };
+
+        var result = new HealthCheckResult(HealthStatus.Healthy, data: data);
+        return Task.FromResult(result);
     }
 }

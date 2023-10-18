@@ -3,21 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Health;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class AuthStartup
+public sealed class AuthStartup
 {
-    public IConfiguration Configuration { get; }
-
-    public AuthStartup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();

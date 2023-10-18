@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class ActuatorServiceCollectionExtensionsTest
+public sealed class ActuatorServiceCollectionExtensionsTest
 {
     [Fact]
     public void AddAllActuators_ConfiguresCorsDefaults()
@@ -23,14 +23,15 @@ public class ActuatorServiceCollectionExtensionsTest
         {
         });
 
-        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
+        IWebHost host = hostBuilder.ConfigureServices((_, services) => services.AddAllActuators()).Build();
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
         Assert.NotNull(options);
-        CorsPolicy policy = options.Value.GetPolicy("SteeltoeManagement");
+        CorsPolicy? policy = options.Value.GetPolicy("SteeltoeManagement");
+        Assert.NotNull(policy);
         Assert.True(policy.IsOriginAllowed("*"));
-        Assert.Contains(policy.Methods, m => m == "GET");
-        Assert.Contains(policy.Methods, m => m == "POST");
+        Assert.Contains(policy.Methods, method => method == "GET");
+        Assert.Contains(policy.Methods, method => method == "POST");
     }
 
     [Fact]
@@ -40,33 +41,32 @@ public class ActuatorServiceCollectionExtensionsTest
         {
         });
 
-        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(myPolicy => myPolicy.WithOrigins("http://google.com")))
-            .Build();
+        IWebHost host = hostBuilder.ConfigureServices((_, services) => services.AddAllActuators(myPolicy => myPolicy.WithOrigins("http://google.com"))).Build();
 
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
         Assert.NotNull(options);
-        CorsPolicy policy = options.Value.GetPolicy("SteeltoeManagement");
+        CorsPolicy? policy = options.Value.GetPolicy("SteeltoeManagement");
+        Assert.NotNull(policy);
         Assert.True(policy.IsOriginAllowed("http://google.com"));
         Assert.False(policy.IsOriginAllowed("http://bing.com"));
         Assert.False(policy.IsOriginAllowed("*"));
-        Assert.Contains(policy.Methods, m => m == "GET");
-        Assert.Contains(policy.Methods, m => m == "POST");
+        Assert.Contains(policy.Methods, method => method == "GET");
+        Assert.Contains(policy.Methods, method => method == "POST");
     }
 
     [Fact]
     public void AddAllActuators_YesCF_onCF()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
 
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
         {
         }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
-        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
+        IWebHost host = hostBuilder.ConfigureServices((_, services) => services.AddAllActuators()).Build();
 
-        Assert.NotNull(host.Services.GetService<ICloudFoundryEndpoint>());
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Assert.NotNull(host.Services.GetService<ICloudFoundryEndpointHandler>());
     }
 
     [Fact]
@@ -76,8 +76,8 @@ public class ActuatorServiceCollectionExtensionsTest
         {
         }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
-        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators()).Build();
+        IWebHost host = hostBuilder.ConfigureServices((_, services) => services.AddAllActuators()).Build();
 
-        Assert.Null(host.Services.GetService<ICloudFoundryEndpoint>());
+        Assert.Null(host.Services.GetService<ICloudFoundryEndpointHandler>());
     }
 }

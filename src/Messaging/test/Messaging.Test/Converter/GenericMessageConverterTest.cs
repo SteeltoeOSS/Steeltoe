@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Converter;
 
-public class GenericMessageConverterTest
+public sealed class GenericMessageConverterTest
 {
     private readonly IConversionService _conversionService = new DefaultConversionService();
 

@@ -30,7 +30,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Integration.RabbitMQ.Test.Inbound;
 
-public class InboundEndpointTest
+public sealed class InboundEndpointTest
 {
     [Fact]
     public void TestInt2809JavaTypePropertiesToRabbit()
@@ -230,7 +230,7 @@ public class InboundEndpointTest
         Assert.Contains("test2", asList);
     }
 
-    public class ThrowingMessageConverter : ISmartMessageConverter
+    public sealed class ThrowingMessageConverter : ISmartMessageConverter
     {
         public string ServiceName { get; set; }
 
@@ -265,7 +265,7 @@ public class InboundEndpointTest
         }
     }
 
-    public class Foo
+    public sealed class Foo
     {
         public string Bar { get; }
 

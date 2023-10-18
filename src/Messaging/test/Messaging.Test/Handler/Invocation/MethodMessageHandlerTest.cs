@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Handler.Invocation;
 
-public class MethodMessageHandlerTest
+public sealed class MethodMessageHandlerTest
 {
     private const string DestinationHeader = "destination";
 

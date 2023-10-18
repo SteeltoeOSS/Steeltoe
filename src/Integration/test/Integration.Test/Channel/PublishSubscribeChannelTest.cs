@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Channel;
 
-public class PublishSubscribeChannelTest
+public sealed class PublishSubscribeChannelTest
 {
     [Fact]
     public void TestSend()

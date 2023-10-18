@@ -2,349 +2,235 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Threading.Channels;
-using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Contexts;
+using FluentAssertions;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Xunit;
 
 namespace Steeltoe.Integration.Test.Channel;
 
-public class QueueChannelTest
+public sealed class QueueChannelTest
 {
+    private static readonly TimeSpan DefaultTestTimeout = TimeSpan.FromSeconds(5);
+    private static readonly Action<AbstractMessageChannel> SendTestMessage = channel => channel.Send(Message.Create("testing"));
+
+    private static readonly Func<AbstractPollableChannel, int?, IMessage?> ReceiveTestMessage = (channel, timeout) =>
+        timeout == null ? channel.Receive() : channel.Receive(timeout.Value);
+
     [Fact]
     public void TestSimpleSendAndReceive()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var latch = new CountdownEvent(1);
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+        var channel = new QueueChannel();
 
-        Task.Run(() =>
-        {
-            IMessage message = channel.Receive();
-
-            if (message != null)
-            {
-                latch.Signal();
-            }
-        });
-
-        channel.Send(Message.Create("testing"));
-        Assert.True(latch.Wait(10000));
+        AssertMessageExchange(() => ReceiveTestMessage(channel, null) != null, () => SendTestMessage(channel));
     }
 
     [Fact]
     public void TestSimpleSendAndReceiveWithNonBlockingQueue()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var latch = new CountdownEvent(1);
-
-        var chan = System.Threading.Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue)
+        var boundedChannel = System.Threading.Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue)
         {
             FullMode = BoundedChannelFullMode.DropWrite
         });
 
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>(), chan);
+        var channel = new QueueChannel(null, boundedChannel);
 
-        Task.Run(() =>
-        {
-            IMessage message = channel.Receive();
-
-            if (message != null)
-            {
-                latch.Signal();
-            }
-        });
-
-        channel.Send(Message.Create("testing"));
-        Assert.True(latch.Wait(10000));
+        AssertMessageExchange(() => ReceiveTestMessage(channel, null) != null, () => SendTestMessage(channel));
     }
 
     [Fact]
     public void TestSimpleSendAndReceiveWithNonBlockingQueueWithTimeout()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var latch = new CountdownEvent(1);
-
-        var chan = System.Threading.Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue)
+        var boundedChannel = System.Threading.Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue)
         {
             FullMode = BoundedChannelFullMode.DropWrite
         });
 
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>(), chan);
+        var channel = new QueueChannel(null, boundedChannel);
+        const int receiveTimeout = 500;
 
-        Task.Run(() =>
-        {
-            IMessage message = channel.Receive(1);
-
-            if (message != null)
-            {
-                latch.Signal();
-            }
-        });
-
-        channel.Send(Message.Create("testing"));
-        Assert.True(latch.Wait(10000));
+        AssertMessageExchange(() => ReceiveTestMessage(channel, receiveTimeout) != null, () => SendTestMessage(channel));
     }
 
     [Fact]
     public void TestSimpleSendAndReceiveWithTimeout()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var latch = new CountdownEvent(1);
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+        var channel = new QueueChannel();
+        const int receiveTimeout = 500;
 
-        Task.Run(() =>
-        {
-            IMessage message = channel.Receive(1);
-
-            if (message != null)
-            {
-                latch.Signal();
-            }
-        });
-
-        channel.Send(Message.Create("testing"));
-        Assert.True(latch.Wait(10000));
+        AssertMessageExchange(() => ReceiveTestMessage(channel, receiveTimeout) != null, () => SendTestMessage(channel));
     }
 
     [Fact]
     public void TestImmediateReceive()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        bool messageNull = false;
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
-        var latch1 = new CountdownEvent(1);
-        var latch2 = new CountdownEvent(1);
+        var channel = new QueueChannel();
+        const int receiveTimeout = 0;
 
-        void ReceiveAction1()
-        {
-            IMessage message = channel.Receive(0);
-            messageNull = message == null;
-            latch1.Signal();
-        }
-
-        Task.Run(ReceiveAction1);
-        Assert.True(latch1.Wait(10000));
-        channel.Send(Message.Create("testing"));
-
-        void ReceiveAction2()
-        {
-            IMessage message = channel.Receive(0);
-
-            if (message != null)
-            {
-                latch2.Signal();
-            }
-        }
-
-        Task.Run(ReceiveAction2);
-        Assert.True(latch2.Wait(10000));
+        AssertMessageExchange(() => ReceiveTestMessage(channel, receiveTimeout) == null, null);
+        SendTestMessage(channel);
+        AssertMessageExchange(() => ReceiveTestMessage(channel, receiveTimeout) != null, null);
     }
 
     [Fact]
-    public void TestBlockingReceiveAsyncWithNoTimeout()
+    public async Task TestBlockingReceiveAsyncWithNoTimeout()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        bool messageNull = false;
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
-        var latch = new CountdownEvent(1);
+        var channel = new QueueChannel();
         var cancellationTokenSource = new CancellationTokenSource();
 
-        Task.Run(async () =>
-        {
-            IMessage message = await channel.ReceiveAsync(cancellationTokenSource.Token);
-            messageNull = message == null;
-            latch.Signal();
-        });
-
-        cancellationTokenSource.Cancel();
-        Assert.True(latch.Wait(10000));
-        Assert.True(messageNull);
+        await AssertMessageExchangeAsync(async () => await channel.ReceiveAsync(cancellationTokenSource.Token) == null, cancellationTokenSource.Cancel);
     }
 
     [Fact]
     public void TestBlockingReceiveWithTimeout()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        bool messageNull = false;
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
-        var latch = new CountdownEvent(1);
+        var channel = new QueueChannel();
+        const int receiveTimeout = 500;
 
-        Task.Run(() =>
-        {
-            IMessage message = channel.Receive(5);
-            messageNull = message == null;
-            latch.Signal();
-        });
-
-        Assert.True(latch.Wait(10000));
-        Assert.True(messageNull);
+        AssertMessageExchange(() => ReceiveTestMessage(channel, receiveTimeout) == null, null);
     }
 
     [Fact]
-    public void TestBlockingReceiveAsyncWithTimeout()
+    public async Task TestBlockingReceiveAsyncWithTimeout()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        bool messageNull = false;
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
-        var latch = new CountdownEvent(1);
+        var channel = new QueueChannel();
+        const int receiveTimeout = 500;
+
         var cancellationTokenSource = new CancellationTokenSource();
-        cancellationTokenSource.CancelAfter(10000);
+        cancellationTokenSource.CancelAfter(receiveTimeout);
 
-        Task.Run(async () =>
-        {
-            IMessage message = await channel.ReceiveAsync(cancellationTokenSource.Token);
-            messageNull = message == null;
-            latch.Signal();
-        });
-
-        cancellationTokenSource.Cancel();
-        Assert.True(latch.Wait(10000));
-        Assert.True(messageNull);
+        await AssertMessageExchangeAsync(async () => await channel.ReceiveAsync(cancellationTokenSource.Token) == null, cancellationTokenSource.Cancel);
     }
 
     [Fact]
     public void TestImmediateSend()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 3);
-        bool result1 = channel.Send(Message.Create("test-1"));
-        Assert.True(result1);
-        bool result2 = channel.Send(Message.Create("test-2"), 100);
-        Assert.True(result2);
-        bool result3 = channel.Send(Message.Create("test-3"), 0);
-        Assert.True(result3);
-        bool result4 = channel.Send(Message.Create("test-4"), 0);
-        Assert.False(result4);
+        var channel = new QueueChannel(null, 3);
+        const int receiveTimeout = 500;
+        const int receiveTimeoutZero = 0;
+
+        channel.Send(Message.Create("test-1")).Should().BeTrue();
+        channel.Send(Message.Create("test-2"), receiveTimeout).Should().BeTrue();
+        channel.Send(Message.Create("test-3"), receiveTimeoutZero).Should().BeTrue();
+        channel.Send(Message.Create("test-4"), receiveTimeoutZero).Should().BeFalse();
     }
 
     [Fact]
-    public void TestBlockingSendAsyncWithNoTimeout()
+    public async Task TestBlockingSendAsyncWithNoTimeout()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-        bool result1 = channel.Send(Message.Create("test-1"));
-        Assert.True(result1);
-        var latch = new CountdownEvent(1);
+        var channel = new QueueChannel(null, 1);
+
+        (await channel.SendAsync(Message.Create("test-1"))).Should().BeTrue();
+
         var cancellationTokenSource = new CancellationTokenSource();
 
-        Task.Run(async () =>
-        {
-            await channel.SendAsync(Message.Create("test-2"), cancellationTokenSource.Token);
-            latch.Signal();
-        });
-
-        cancellationTokenSource.Cancel();
-
-        Assert.True(latch.Wait(10000));
+        await AssertMessageExchangeAsync(async () => !await channel.SendAsync(Message.Create("test-2"), cancellationTokenSource.Token),
+            cancellationTokenSource.Cancel);
     }
 
     [Fact]
     public void TestBlockingSendWithTimeout()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-        bool result1 = channel.Send(Message.Create("test-1"));
-        Assert.True(result1);
-        var latch = new CountdownEvent(1);
+        var channel = new QueueChannel(null, 1);
 
-        Task.Run(() =>
-        {
-            channel.Send(Message.Create("test-2"), 5);
-            latch.Signal();
-        });
+        channel.Send(Message.Create("test-1")).Should().BeTrue();
 
-        Assert.True(latch.Wait(10000));
+        const int sendTimeout = 500;
+        AssertMessageExchange(() => !channel.Send(Message.Create("test-2"), sendTimeout), null);
     }
 
     [Fact]
-    public void TestBlockingSendAsyncWithTimeout()
+    public async Task TestBlockingSendAsyncWithTimeout()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-        bool result1 = channel.Send(Message.Create("test-1"));
-        Assert.True(result1);
-        var latch = new CountdownEvent(1);
+        var channel = new QueueChannel(null, 1);
+
+        (await channel.SendAsync(Message.Create("test-1"))).Should().BeTrue();
+
         var cancellationTokenSource = new CancellationTokenSource();
+        const int sendTimeout = 500;
 
-        Task.Run(async () =>
+        await AssertMessageExchangeAsync(async () =>
         {
-            cancellationTokenSource.CancelAfter(5);
-            await channel.SendAsync(Message.Create("test-2"), cancellationTokenSource.Token);
-            latch.Signal();
-        });
-
-        Assert.True(latch.Wait(10000));
+            cancellationTokenSource.CancelAfter(sendTimeout);
+            return !await channel.SendAsync(Message.Create("test-2"), cancellationTokenSource.Token);
+        }, null);
     }
 
     [Fact]
     public void TestClear()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 2);
+        var channel = new QueueChannel(null, 2);
+
         IMessage<string> message1 = Message.Create("test1");
         IMessage<string> message2 = Message.Create("test2");
         IMessage<string> message3 = Message.Create("test3");
-        Assert.True(channel.Send(message1));
-        Assert.True(channel.Send(message2));
-        Assert.False(channel.Send(message3, 0));
-        Assert.Equal(2, channel.QueueSize);
-        Assert.Equal(2 - 2, channel.RemainingCapacity);
+
+        channel.Send(message1).Should().BeTrue();
+        channel.Send(message2).Should().BeTrue();
+        channel.Send(message3, 0).Should().BeFalse();
+
+        channel.QueueSize.Should().Be(2);
+        channel.RemainingCapacity.Should().Be(2 - 2);
+
         IList<IMessage> clearedMessages = channel.Clear();
-        Assert.NotNull(clearedMessages);
-        Assert.Equal(2, clearedMessages.Count);
-        Assert.Equal(0, channel.QueueSize);
-        Assert.Equal(2, channel.RemainingCapacity);
-        Assert.True(channel.Send(message3));
+        clearedMessages.Should().HaveCount(2);
+
+        channel.QueueSize.Should().Be(0);
+        channel.RemainingCapacity.Should().Be(2);
+
+        channel.Send(message3).Should().BeTrue();
     }
 
     [Fact]
     public void TestClearEmptyChannel()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+        var channel = new QueueChannel();
+
         IList<IMessage> clearedMessages = channel.Clear();
-        Assert.NotNull(clearedMessages);
-        Assert.Empty(clearedMessages);
+
+        clearedMessages.Should().BeEmpty();
     }
 
     [Fact]
     public void TestPurge()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
-        var channel = new QueueChannel(provider.GetService<IApplicationContext>());
-        Assert.Throws<NotSupportedException>(() => channel.Purge(null));
+        var channel = new QueueChannel();
+
+        Func<IList<IMessage>> action = () => channel.Purge(null);
+        action.Should().ThrowExactly<NotSupportedException>();
+    }
+
+    private static void AssertMessageExchange(Func<bool> backgroundOperation, Action? foregroundOperation)
+    {
+        Task backgroundTask = Task.Run(() =>
+        {
+            bool succeeded = backgroundOperation();
+            succeeded.Should().BeTrue("background operation should succeed");
+        });
+
+        foregroundOperation?.Invoke();
+
+        bool succeeded = backgroundTask.Wait(DefaultTestTimeout);
+
+        if (!succeeded)
+        {
+            throw new TimeoutException($"Background operation timed out unexpectedly after {DefaultTestTimeout}.");
+        }
+    }
+
+    private static async Task AssertMessageExchangeAsync(Func<Task<bool>> backgroundAsyncOperation, Action? foregroundOperation)
+    {
+        Task backgroundTask = Task.Run(async () =>
+        {
+            bool succeeded = await backgroundAsyncOperation();
+            succeeded.Should().BeTrue("async background operation should succeed");
+        });
+
+        foregroundOperation?.Invoke();
+
+        await backgroundTask.WaitAsync(DefaultTestTimeout);
     }
 }

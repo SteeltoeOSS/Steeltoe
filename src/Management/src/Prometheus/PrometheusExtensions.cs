@@ -9,8 +9,8 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.MetricCollectors;
 
 namespace Steeltoe.Management.Prometheus;
 
@@ -28,6 +28,7 @@ public static class PrometheusExtensions
     public static IServiceCollection AddPrometheusActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
+
         services.ConfigureEndpointOptions<PrometheusEndpointOptions, ConfigurePrometheusEndpointOptions>();
 
         services.AddOpenTelemetry().WithMetrics(builder =>
@@ -39,17 +40,19 @@ public static class PrometheusExtensions
         return services;
     }
 
-    public static IApplicationBuilder MapPrometheusActuator(this IApplicationBuilder app)
+    public static IApplicationBuilder MapPrometheusActuator(this IApplicationBuilder builder)
     {
-        ManagementEndpointOptions? managementOptions = app.ApplicationServices.GetService<IOptionsMonitor<ManagementEndpointOptions>>()?.CurrentValue;
+        ArgumentGuard.NotNull(builder);
 
-        PrometheusEndpointOptions? prometheusOptions =
-            app.ApplicationServices.GetService<IEnumerable<IEndpointOptions>>()?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
+        ManagementOptions? managementOptions = builder.ApplicationServices.GetService<IOptionsMonitor<ManagementOptions>>()?.CurrentValue;
+
+        PrometheusEndpointOptions? prometheusOptions = builder.ApplicationServices.GetService<IEnumerable<EndpointOptions>>()
+            ?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
 
         string root = managementOptions?.Path ?? "/actuator";
         string id = prometheusOptions?.Id ?? "prometheus";
         string path = root + "/" + id;
 
-        return app.UseOpenTelemetryPrometheusScrapingEndpoint(path);
+        return builder.UseOpenTelemetryPrometheusScrapingEndpoint(path);
     }
 }

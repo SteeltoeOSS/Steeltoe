@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class OperatorTests : AbstractExpressionTests
+public sealed class OperatorTests : AbstractExpressionTests
 {
     [Fact]
     public void TestEqual()
@@ -626,11 +626,11 @@ public class OperatorTests : AbstractExpressionTests
         }
     }
 
-    public class SubComparable : BaseComparable
+    public sealed class SubComparable : BaseComparable
     {
     }
 
-    public class OtherSubComparable : BaseComparable
+    public sealed class OtherSubComparable : BaseComparable
     {
     }
 }

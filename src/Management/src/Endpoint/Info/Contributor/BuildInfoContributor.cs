@@ -3,44 +3,42 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
+using Steeltoe.Common;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
-public class BuildInfoContributor : IInfoContributor
+internal sealed class BuildInfoContributor : IInfoContributor
 {
-    private readonly Assembly _application;
-    private readonly Assembly _steeltoe;
+    private readonly Assembly _applicationAssembly = Assembly.GetEntryAssembly()!;
+    private readonly Assembly _steeltoeAssembly = typeof(BuildInfoContributor).Assembly;
 
-    public BuildInfoContributor()
+    public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
-        _application = Assembly.GetEntryAssembly();
-        _steeltoe = typeof(BuildInfoContributor).Assembly;
-    }
+        ArgumentGuard.NotNull(builder);
 
-    public void Contribute(IInfoBuilder builder)
-    {
-        builder.WithInfo("applicationVersionInfo", GetImportantDetails(_application));
-        builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoe));
+        builder.WithInfo("applicationVersionInfo", GetImportantDetails(_applicationAssembly));
+        builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoeAssembly));
 
         // this is for Spring Boot Admin
-        builder.WithInfo("build", new Dictionary<string, string>
+        builder.WithInfo("build", new Dictionary<string, string?>
         {
-            { "version", _application.GetName().Version.ToString() }
+            { "version", _applicationAssembly.GetName().Version?.ToString() }
         });
+
+        return Task.CompletedTask;
     }
 
-    private Dictionary<string, string> GetImportantDetails(Assembly assembly)
+    private Dictionary<string, string?> GetImportantDetails(Assembly assembly)
     {
-        return new Dictionary<string, string>
+        string? fileVersion = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;
+        string? productVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+        return new Dictionary<string, string?>
         {
             { "ProductName", assembly.GetName().Name },
-            { "FileVersion", ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyFileVersionAttribute), false)).Version },
-            {
-                "ProductVersion",
-                ((AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute), false))
-                .InformationalVersion
-            }
+            { "FileVersion", fileVersion },
+            { "ProductVersion", productVersion }
         };
     }
 }

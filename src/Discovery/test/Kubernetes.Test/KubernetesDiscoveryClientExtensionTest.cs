@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Kubernetes.Test;
 
-public class KubernetesDiscoveryClientExtensionTest
+public sealed class KubernetesDiscoveryClientExtensionTest
 {
     [Fact]
     public void ClientEnabledByDefault()
@@ -30,7 +30,7 @@ public class KubernetesDiscoveryClientExtensionTest
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" }
         };
@@ -49,7 +49,7 @@ public class KubernetesDiscoveryClientExtensionTest
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "spring:cloud:kubernetes:discovery:enabled", "true" }

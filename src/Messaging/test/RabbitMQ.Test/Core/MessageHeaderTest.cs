@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
-public class MessageHeaderTest
+public sealed class MessageHeaderTest
 {
     [Fact]
     public void TestReplyTo()

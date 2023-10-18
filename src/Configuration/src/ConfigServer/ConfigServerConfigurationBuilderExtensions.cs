@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Configuration.CloudFoundry;
+using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -89,6 +90,11 @@ public static class ConfigServerConfigurationBuilderExtensions
         if (configurationBuilder.Sources.All(source => source is not CloudFoundryConfigurationSource))
         {
             configurationBuilder.Add(new CloudFoundryConfigurationSource());
+        }
+
+        if (configurationBuilder.Sources.All(source => source is not PlaceholderResolverSource))
+        {
+            configurationBuilder.AddPlaceholderResolver(loggerFactory);
         }
 
         if (configurationBuilder is IConfiguration configuration)

@@ -11,47 +11,47 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string> AppSettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
-        ["management:endpoints:enabled"] = "true"
+        ["management:endpoints:enabled"] = "true",
+        ["management:endpoints:actuator:exposure:include:0"] = "*"
     };
 
     [Fact]
     public async Task HandleRefreshRequestAsync_ReturnsExpected()
     {
-        IOptionsMonitor<RefreshEndpointOptions> opts = GetOptionsMonitorFromSettings<RefreshEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
+        IOptionsMonitor<RefreshEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<RefreshEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var ep = new RefreshEndpoint(opts, configurationRoot, NullLogger<RefreshEndpoint>.Instance);
-        var middle = new RefreshEndpointMiddleware(ep, managementOptions, NullLogger<RefreshEndpointMiddleware>.Instance);
+        var handler = new RefreshEndpointHandler(endpointOptionsMonitor, configurationRoot, NullLoggerFactory.Instance);
+        var middleware = new RefreshEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/refresh");
-        await middle.HandleRefreshRequestAsync(context);
+        await middleware.InvokeAsync(context, null);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
-        string json = await reader.ReadLineAsync();
+        string? json = await reader.ReadLineAsync();
 
         const string expected =
-            "[\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\"]";
+            "[\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"management:endpoints:actuator\",\"management:endpoints:actuator:exposure\",\"management:endpoints:actuator:exposure:include\",\"management:endpoints:actuator:exposure:include:0\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\"]";
 
         Assert.Equal(expected, json);
     }
@@ -59,11 +59,9 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task RefreshActuator_ReturnsExpectedData()
     {
-        string ancEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
+        using var scope = new EnvironmentVariableScope("ASPNETCORE_ENVIRONMENT", null);
 
-        var appSettings = new Dictionary<string, string>(AppSettings);
-        appSettings.Add("management:endpoints:actuator:exposure:include:0", "*");
+        var appSettings = new Dictionary<string, string?>(AppSettings);
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
@@ -73,31 +71,32 @@ public class EndpointMiddlewareTest : BaseTest
                     loggingBuilder.AddDynamicConsole();
                 });
 
-        using (var server = new TestServer(builder))
-        {
-            HttpClient client = server.CreateClient();
-            HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/refresh"));
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            string json = await result.Content.ReadAsStringAsync();
+        using var server = new TestServer(builder);
 
-            const string expected =
-                "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"management:endpoints:actuator\",\"management:endpoints:actuator:exposure\",\"management:endpoints:actuator:exposure:include\",\"management:endpoints:actuator:exposure:include:0\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\",\"environment\",\"applicationName\"]";
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/refresh"), null);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
 
-            Assert.Equal(expected, json);
-        }
+        const string expected =
+            "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"management:endpoints:actuator\",\"management:endpoints:actuator:exposure\",\"management:endpoints:actuator:exposure:include\",\"management:endpoints:actuator:exposure:include:0\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:Console\",\"Logging:Console:IncludeScopes\",\"environment\",\"applicationName\"]";
 
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", ancEnv);
+        Assert.Equal(expected, json);
     }
 
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<RefreshEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/refresh", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
-        Assert.Equal("/cloudfoundryapplication/refresh", options.GetContextPath(mgmtOptions.Get(CFContext.Name)));
-        Assert.Contains("Get", options.AllowedVerbs);
+        var endpointOptions = GetOptionsFromSettings<RefreshEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
+
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/refresh", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
+
+        Assert.Equal("/cloudfoundryapplication/refresh",
+            endpointOptions.GetPathMatchPattern(managementOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
+
+        Assert.Contains("Post", endpointOptions.AllowedVerbs);
     }
 
     private HttpContext CreateRequest(string method, string path)
@@ -109,7 +108,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
-        context.Request.Path = new PathString(path);
+        context.Request.Path = path;
         context.Request.Scheme = "http";
         context.Request.Host = new HostString("localhost");
         return context;

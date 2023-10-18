@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.LoadBalancer;
 
-public class RoundRobinLoadBalancerTest
+public sealed class RoundRobinLoadBalancerTest
 {
     [Fact]
     public void Throws_If_IServiceInstanceProviderNotProvided()
@@ -71,9 +71,10 @@ public class RoundRobinLoadBalancerTest
 
         Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[$"{RoundRobinLoadBalancer.IndexKeyPrefix}fruitService"]);
         Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[$"{RoundRobinLoadBalancer.IndexKeyPrefix}vegetableService"]);
-        Uri fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
-        await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
-        Uri vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
+
+        Uri fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
+        await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        Uri vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
 
         Assert.Equal(1, loadBalancer.NextIndexForService[$"{RoundRobinLoadBalancer.IndexKeyPrefix}fruitservice"]);
         Assert.Equal(8000, fruitResult.Port);
@@ -130,9 +131,9 @@ public class RoundRobinLoadBalancerTest
         var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
         var loadBalancer = new RoundRobinLoadBalancer(provider, GetCache());
 
-        Uri fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
-        await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
-        Uri vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
+        Uri fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
+        await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        Uri vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
 
         Assert.Equal(8000, fruitResult.Port);
         Assert.Equal(8011, vegResult.Port);

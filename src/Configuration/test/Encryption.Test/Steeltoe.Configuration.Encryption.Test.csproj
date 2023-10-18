@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
+    <ProjectReference Include="..\..\src\Encryption\Steeltoe.Configuration.Encryption.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Decryption\server.jks">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

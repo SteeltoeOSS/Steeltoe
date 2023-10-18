@@ -8,7 +8,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class GlobalErrorHandlerWithErrorMessageConfiguration
+public sealed class GlobalErrorHandlerWithErrorMessageConfiguration
 {
     public bool GlobalErrorInvoked { get; set; }
 

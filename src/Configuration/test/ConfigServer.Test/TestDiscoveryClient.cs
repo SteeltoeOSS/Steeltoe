@@ -13,19 +13,22 @@ internal sealed class TestDiscoveryClient : IDiscoveryClient
 
     public string Description => throw new NotImplementedException();
 
-    public IList<string> Services => throw new NotImplementedException();
-
-    public IList<IServiceInstance> GetInstances(string serviceId)
+    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public IServiceInstance GetLocalServiceInstance()
+    public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
-    public Task ShutdownAsync()
+    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task ShutdownAsync(CancellationToken cancellationToken)
     {
         HasShutdown = true;
         return Task.CompletedTask;

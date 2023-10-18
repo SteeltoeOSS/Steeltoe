@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class LiteralTests : AbstractExpressionTests
+public sealed class LiteralTests : AbstractExpressionTests
 {
     [Fact]
     public void TestLiteralBoolean01()

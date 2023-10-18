@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Dispatcher;
 
-public class RoundRobinDispatcherConcurrentTest
+public sealed class RoundRobinDispatcherConcurrentTest
 {
     private const int TotalExecutions = 40;
 

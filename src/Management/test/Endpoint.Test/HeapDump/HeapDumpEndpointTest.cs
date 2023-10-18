@@ -5,7 +5,6 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.HeapDump;
@@ -15,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 
-public class HeapDumpEndpointTest : BaseTest
+public sealed class HeapDumpEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -25,31 +24,24 @@ public class HeapDumpEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsIfNullRepo()
-    {
-        IOptionsMonitor<HeapDumpEndpointOptions> options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new HeapDumpEndpoint(options, null, NullLogger<HeapDumpEndpoint>.Instance));
-    }
-
-    [Fact]
-    public void Invoke_CreatesDump()
+    public async Task Invoke_CreatesDump()
     {
         IOptionsMonitor<HeapDumpEndpointOptions> options = GetOptionsMonitorFromSettings<HeapDumpEndpointOptions, ConfigureHeapDumpEndpointOptions>();
 
         if (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase))
         {
-            using var tc = new TestContext(_output);
+            using var testContext = new TestContext(_output);
 
-            tc.AdditionalServices = (services, configuration) =>
+            testContext.AdditionalServices = (services, _) =>
             {
                 services.AddHeapDumpActuatorServices();
 
-                services.AddSingleton<IHeapDumper>(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
+                services.AddSingleton(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
             };
 
-            var ep = tc.GetService<IHeapDumpEndpoint>();
+            var handler = testContext.GetRequiredService<IHeapDumpEndpointHandler>();
 
-            string result = ep.Invoke();
+            string? result = await handler.InvokeAsync(null, CancellationToken.None);
             Assert.NotNull(result);
             Assert.True(File.Exists(result));
             File.Delete(result);
@@ -58,18 +50,18 @@ public class HeapDumpEndpointTest : BaseTest
         {
             if (typeof(object).Assembly.GetType("System.Index") != null)
             {
-                using var tc = new TestContext(_output);
+                using var testContext = new TestContext(_output);
 
-                tc.AdditionalServices = (services, configuration) =>
+                testContext.AdditionalServices = (services, _) =>
                 {
                     services.AddHeapDumpActuatorServices();
 
-                    services.AddSingleton<IHeapDumper>(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
+                    services.AddSingleton(sp => new HeapDumper(options, sp.GetRequiredService<ILogger<HeapDumper>>()));
                 };
 
-                var ep = tc.GetService<IHeapDumpEndpoint>();
+                var handler = testContext.GetRequiredService<IHeapDumpEndpointHandler>();
 
-                string result = ep.Invoke();
+                string? result = await handler.InvokeAsync(null, CancellationToken.None);
                 Assert.NotNull(result);
                 Assert.True(File.Exists(result));
                 File.Delete(result);

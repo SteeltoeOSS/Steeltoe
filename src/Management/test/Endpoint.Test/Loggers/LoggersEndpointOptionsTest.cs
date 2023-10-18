@@ -9,20 +9,20 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
-public class LoggersEndpointOptionsTest : BaseTest
+public sealed class LoggersEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<LoggersEndpointOptions>();
-        Assert.Null(opts.Enabled);
-        Assert.Equal("loggers", opts.Id);
+        var options = GetOptionsFromSettings<LoggersEndpointOptions>();
+        Assert.Null(options.Enabled);
+        Assert.Equal("loggers", options.Id);
     }
 
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:loggers:enabled"] = "false",
@@ -33,16 +33,16 @@ public class LoggersEndpointOptionsTest : BaseTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
 
-        var opts = GetOptionsFromSettings<LoggersEndpointOptions>(appsettings);
-        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
+        var loggersEndpointOptions = GetOptionsFromSettings<LoggersEndpointOptions>(appsettings);
+        var cloudFoundryEndpointOptions = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
 
-        Assert.True(cloudOpts.Enabled);
-        Assert.Equal(string.Empty, cloudOpts.Id);
-        Assert.Equal(string.Empty, cloudOpts.Path);
-        Assert.True(cloudOpts.ValidateCertificates);
+        Assert.True(cloudFoundryEndpointOptions.Enabled);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Path);
+        Assert.True(cloudFoundryEndpointOptions.ValidateCertificates);
 
-        Assert.False(opts.Enabled);
-        Assert.Equal("loggers", opts.Id);
-        Assert.Equal("loggers", opts.Path);
+        Assert.False(loggersEndpointOptions.Enabled);
+        Assert.Equal("loggers", loggersEndpointOptions.Id);
+        Assert.Equal("loggers", loggersEndpointOptions.Path);
     }
 }

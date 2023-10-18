@@ -11,7 +11,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
-public class RabbitReconnectProblemTest
+public sealed class RabbitReconnectProblemTest
 {
     private readonly ITestOutputHelper _output;
 

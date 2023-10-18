@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Support;
 
-public class MessageBuilderTest
+public sealed class MessageBuilderTest
 {
     [Fact]
     public void TestSimpleIMessageCreation()

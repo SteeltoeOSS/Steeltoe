@@ -10,23 +10,14 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
-    [Fact]
-    public void AddThreadDumpActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(services.AddThreadDumpActuator);
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
     [Fact]
     public void AddThreadDumpActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -44,9 +35,9 @@ public class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<ThreadDumpEndpointOptions>>();
         Assert.NotNull(options);
-        var repo = serviceProvider.GetService<IThreadDumper>();
-        Assert.NotNull(repo);
-        var ep = serviceProvider.GetService<ThreadDumpEndpointV2>();
-        Assert.NotNull(ep);
+        var threadDumper = serviceProvider.GetService<EventPipeThreadDumper>();
+        Assert.NotNull(threadDumper);
+        var handler = serviceProvider.GetService<IThreadDumpEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

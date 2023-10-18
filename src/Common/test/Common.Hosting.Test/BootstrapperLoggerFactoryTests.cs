@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Hosting.Test;
 
-public class BootstrapperLoggerFactoryTests
+public sealed class BootstrapperLoggerFactoryTests
 {
     [Fact]
     public void BootstrapLoggerFactory_CorrectTypeResolved()

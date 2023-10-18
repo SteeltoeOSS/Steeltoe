@@ -8,7 +8,7 @@ using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Common.Hosting;
 
-public class BootstrapLoggerHostedService : IHostedService
+public sealed class BootstrapLoggerHostedService : IHostedService
 {
     private readonly ILoggerFactory _loggerFactory;
 

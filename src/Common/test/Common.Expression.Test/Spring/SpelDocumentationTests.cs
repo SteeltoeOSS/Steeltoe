@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class SpelDocumentationTests : AbstractExpressionTests
+public sealed class SpelDocumentationTests : AbstractExpressionTests
 {
     private static readonly Inventor Tesla = new("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian")
     {
@@ -468,7 +468,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
         }
     }
 
-    public class InstituteOfElectricalAndElectronicsEngineers
+    public sealed class InstituteOfElectricalAndElectronicsEngineers
     {
         public Inventor[] Members { get; } = new Inventor[1];
         public List<object> Members2 { get; } = new();
@@ -499,7 +499,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
         }
     }
 
-    public class TemplatedParserContext : IParserContext
+    public sealed class TemplatedParserContext : IParserContext
     {
         public string ExpressionPrefix => "${";
 

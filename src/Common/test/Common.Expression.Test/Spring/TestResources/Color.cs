@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class Color
+public sealed class Color
 {
     public static Color Orange { get; } = new(1);
     public static Color Yellow { get; } = new(2);

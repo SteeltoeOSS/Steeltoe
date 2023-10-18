@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <Description>Enabling request tracing in distributed systems.</Description>
-    <PackageTags>management;monitoring;distributed trace</PackageTags>
+    <Description>Enables request tracing in distributed systems.</Description>
+    <PackageTags>management;monitoring;distributed tracing</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -26,7 +27,6 @@
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\Abstractions\Steeltoe.Logging.Abstractions.csproj" />
-    <ProjectReference Include="..\MetricCollectors\Steeltoe.Management.MetricCollectors.csproj" />
     <ProjectReference Include="..\Wavefront\Steeltoe.Management.Wavefront.csproj" />
   </ItemGroup>
 </Project>

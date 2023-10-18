@@ -3,12 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryJwtBearerConfigurerTest
+public sealed class CloudFoundryJwtBearerConfigurerTest
 {
     [Fact]
     public void Configure_NoServiceInfo_ReturnsExpected()

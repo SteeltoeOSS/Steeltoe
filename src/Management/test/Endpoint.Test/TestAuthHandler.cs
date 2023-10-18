@@ -10,12 +10,12 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public const string AuthenticationScheme = "TestScheme";
 
-    public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
-        : base(options, logger, encoder, clock)
+    public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> optionsMonitor, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+        : base(optionsMonitor, logger, encoder, clock)
     {
     }
 

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryScopeClaimActionTest
+public sealed class CloudFoundryScopeClaimActionTest
 {
     [Fact]
     public void Run_AddsClaims()

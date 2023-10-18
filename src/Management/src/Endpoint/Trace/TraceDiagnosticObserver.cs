@@ -15,40 +15,39 @@ using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
-public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
+internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepository
 {
     private const string DiagnosticName = "Microsoft.AspNetCore";
     private const string DefaultObserverName = "TraceDiagnosticObserver";
-    private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
+    private const string StopEventName = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    private readonly IOptionsMonitor<TraceEndpointOptions> _options;
+    private readonly IOptionsMonitor<TraceEndpointOptions> _optionsMonitor;
     private readonly ILogger<TraceDiagnosticObserver> _logger;
-    internal ConcurrentQueue<TraceResult> Queue = new();
+    internal ConcurrentQueue<TraceResult> Queue { get; } = new();
 
-    public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> options, ILogger<TraceDiagnosticObserver> logger)
-        : base(DefaultObserverName, DiagnosticName, logger)
+    public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
+        : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
 
-        _options = options;
-        _logger = logger;
+        _optionsMonitor = optionsMonitor;
+        _logger = loggerFactory.CreateLogger<TraceDiagnosticObserver>();
     }
 
-    public List<TraceResult> GetTraces()
+    public virtual HttpTraceResult GetTraces()
     {
-        TraceResult[] traces = Queue.ToArray();
-        return new List<TraceResult>(traces);
+        return new HttpTraceResultV1(Queue.ToList());
     }
 
-    public override void ProcessEvent(string eventName, object value)
+    public override void ProcessEvent(string eventName, object? value)
     {
-        if (eventName != StopEvent)
+        if (eventName != StopEventName)
         {
             return;
         }
 
-        Activity current = Activity.Current;
+        Activity? current = Activity.Current;
 
         if (current == null)
         {
@@ -60,30 +59,41 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
             return;
         }
 
-        HttpContext context = GetHttpContextPropertyValue(value);
+        HttpContext? context = GetHttpContextPropertyValue(value);
 
         if (context != null)
         {
-            TraceResult trace = MakeTrace(context, current.Duration);
-            Queue.Enqueue(trace);
-
-            if (Queue.Count > _options.CurrentValue.Capacity && !Queue.TryDequeue(out _))
-            {
-                _logger.LogDebug("Stop - Dequeue failed");
-            }
+            RecordHttpTrace(current, context);
         }
     }
 
-    protected internal TraceResult MakeTrace(HttpContext context, TimeSpan duration)
+    protected virtual void RecordHttpTrace(Activity current, HttpContext context)
     {
+        ArgumentGuard.NotNull(current);
+        ArgumentGuard.NotNull(context);
+
+        TraceResult trace = MakeTrace(context, current.Duration);
+        Queue.Enqueue(trace);
+
+        if (Queue.Count > _optionsMonitor.CurrentValue.Capacity && !Queue.TryDequeue(out _))
+        {
+            _logger.LogDebug("Stop - Dequeue failed");
+        }
+    }
+
+    internal TraceResult MakeTrace(HttpContext context, TimeSpan duration)
+    {
+        ArgumentGuard.NotNull(context);
+
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
-        TraceEndpointOptions options = _options.CurrentValue;
+        TraceEndpointOptions options = _optionsMonitor.CurrentValue;
+        string? pathInfo = GetPathInfo(request);
 
-        var details = new Dictionary<string, object>
+        var details = new Dictionary<string, object?>
         {
             { "method", request.Method },
-            { "path", GetPathInfo(request) }
+            { "path", pathInfo }
         };
 
         var headers = new Dictionary<string, object>();
@@ -101,7 +111,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
         if (options.AddPathInfo)
         {
-            details.Add("pathInfo", GetPathInfo(request));
+            details.Add("pathInfo", pathInfo);
         }
 
         if (options.AddUserPrincipal)
@@ -121,7 +131,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
         if (options.AddAuthType)
         {
-            details.Add("authType", GetAuthType(request));
+            details.Add("authType", string.Empty);
         }
 
         if (options.AddRemoteAddress)
@@ -139,104 +149,114 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
             details.Add("timeTaken", GetTimeTaken(duration));
         }
 
-        return new TraceResult(GetJavaTime(DateTime.Now.Ticks), details);
+        long timestamp = GetJavaTime(DateTime.Now.Ticks);
+        return new TraceResult(timestamp, details);
     }
 
-    protected internal long GetJavaTime(long ticks)
+    internal long GetJavaTime(long ticks)
     {
         long javaTicks = ticks - BaseTime.Ticks;
         return javaTicks / 10000;
     }
 
-    protected internal string GetSessionId(HttpContext context)
+    internal string? GetSessionId(HttpContext context)
     {
+        ArgumentGuard.NotNull(context);
+
         var sessionFeature = context.Features.Get<ISessionFeature>();
-        return sessionFeature == null ? null : context.Session.Id;
+        return sessionFeature?.Session.Id;
     }
 
-    protected internal string GetTimeTaken(TimeSpan duration)
+    internal string GetTimeTaken(TimeSpan duration)
     {
         long timeInMilliseconds = (long)duration.TotalMilliseconds;
         return timeInMilliseconds.ToString(CultureInfo.InvariantCulture);
     }
 
-    protected internal string GetAuthType(HttpRequest request)
+    internal Dictionary<string, IList<string?>> GetRequestParameters(HttpRequest request)
     {
-        return string.Empty;
-    }
+        ArgumentGuard.NotNull(request);
 
-    protected internal Dictionary<string, string[]> GetRequestParameters(HttpRequest request)
-    {
-        var parameters = new Dictionary<string, string[]>();
+        var parameters = new Dictionary<string, IList<string?>>();
         IQueryCollection query = request.Query;
 
-        foreach (KeyValuePair<string, StringValues> p in query)
+        foreach (KeyValuePair<string, StringValues> pair in query)
         {
-            parameters.Add(p.Key, p.Value.ToArray());
+            parameters.Add(pair.Key, pair.Value.ToArray());
         }
 
-        if (request.HasFormContentType && request.Form != null)
+        if (request.HasFormContentType)
         {
             IFormCollection formData = request.Form;
 
-            foreach (KeyValuePair<string, StringValues> p in formData)
+            foreach (KeyValuePair<string, StringValues> pair in formData)
             {
-                parameters.Add(p.Key, p.Value.ToArray());
+                parameters.Add(pair.Key, pair.Value.ToArray());
             }
         }
 
         return parameters;
     }
 
-    protected internal string GetRequestUri(HttpRequest request)
+    internal string GetRequestUri(HttpRequest request)
     {
+        ArgumentGuard.NotNull(request);
+
         return $"{request.Scheme}://{request.Host.Value}{request.Path.Value}";
     }
 
-    protected internal string GetPathInfo(HttpRequest request)
+    internal string? GetPathInfo(HttpRequest request)
     {
+        ArgumentGuard.NotNull(request);
+
         return request.Path.Value;
     }
 
-    protected internal string GetUserPrincipal(HttpContext context)
+    internal string? GetUserPrincipal(HttpContext context)
     {
-        return context?.User?.Identity?.Name;
+        ArgumentGuard.NotNull(context);
+
+        return context.User.Identity?.Name;
     }
 
-    protected internal string GetRemoteAddress(HttpContext context)
+    internal string? GetRemoteAddress(HttpContext context)
     {
-        return context?.Connection?.RemoteIpAddress?.ToString();
+        ArgumentGuard.NotNull(context);
+
+        return context.Connection.RemoteIpAddress?.ToString();
     }
 
-    protected internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
+    internal Dictionary<string, object?> GetHeaders(int status, IHeaderDictionary headers)
     {
-        Dictionary<string, object> result = GetHeaders(headers);
+        ArgumentGuard.NotNull(headers);
+
+        Dictionary<string, object?> result = GetHeaders(headers);
         result.Add("status", status.ToString(CultureInfo.InvariantCulture));
         return result;
     }
 
-    protected internal Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
+    private Dictionary<string, object?> GetHeaders(IHeaderDictionary headers)
     {
-        var result = new Dictionary<string, object>();
+        var result = new Dictionary<string, object?>();
 
-        foreach (KeyValuePair<string, StringValues> h in headers)
+        foreach (KeyValuePair<string, StringValues> pair in headers)
         {
             // Add filtering
 #pragma warning disable S4040 // Strings should be normalized to uppercase
-            result.Add(h.Key.ToLowerInvariant(), GetHeaderValue(h.Value));
+            result.Add(pair.Key.ToLowerInvariant(), GetHeaderValue(pair.Value));
 #pragma warning restore S4040 // Strings should be normalized to uppercase
         }
 
         return result;
     }
 
-    protected internal object GetHeaderValue(StringValues values)
+    private object? GetHeaderValue(StringValues values)
     {
-        var result = new List<string>();
+        var result = new List<string?>();
 
-        foreach (string v in values)
+        foreach (string? value in values)
         {
-            result.Add(v);
+            result.Add(value);
         }
 
         if (result.Count == 1)
@@ -252,8 +272,8 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
         return result;
     }
 
-    protected internal HttpContext GetHttpContextPropertyValue(object obj)
+    internal HttpContext? GetHttpContextPropertyValue(object instance)
     {
-        return DiagnosticHelpers.GetProperty<HttpContext>(obj, "HttpContext");
+        return GetPropertyOrDefault<HttpContext>(instance, "HttpContext");
     }
 }

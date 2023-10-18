@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.Util;
 
-public class DateTimeConversionsTest
+public sealed class DateTimeConversionsTest
 {
     [Fact]
     public void ToJavaMillis_Throws_IfNotUTC()

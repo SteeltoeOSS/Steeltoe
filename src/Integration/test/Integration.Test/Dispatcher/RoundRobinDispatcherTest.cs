@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Dispatcher;
 
-public class RoundRobinDispatcherTest
+public sealed class RoundRobinDispatcherTest
 {
     private readonly UnicastingDispatcher _dispatcher;
 

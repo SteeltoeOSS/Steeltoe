@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
-public class RabbitTemplateIntegrationPubCFTest : RabbitTemplateIntegrationTest
+public sealed class RabbitTemplateIntegrationPubCFTest : RabbitTemplateIntegrationTest
 {
     public RabbitTemplateIntegrationPubCFTest()
     {

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Configuration;
 
-public class QueueNameTest
+public sealed class QueueNameTest
 {
     [Fact]
     public void TestAnonymous()

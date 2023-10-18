@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Logging.DynamicLogger.Test;
 
-public class TestDynamicMessageProcessor : IDynamicMessageProcessor
+public sealed class TestDynamicMessageProcessor : IDynamicMessageProcessor
 {
     public bool ProcessCalled { get; set; }
 

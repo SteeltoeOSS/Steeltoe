@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring.Support;
 
-public class StandardComponentsTests
+public sealed class StandardComponentsTests
 {
     [Fact]
     public void TestStandardEvaluationContext()

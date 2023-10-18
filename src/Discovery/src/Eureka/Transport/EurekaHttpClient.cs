@@ -87,15 +87,10 @@ public class EurekaHttpClient : IEurekaHttpClient
     {
     }
 
-    public virtual Task<EurekaHttpResponse> RegisterAsync(InstanceInfo info)
+    public virtual async Task<EurekaHttpResponse> RegisterAsync(InstanceInfo info, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(info);
 
-        return RegisterInternalAsync(info);
-    }
-
-    private async Task<EurekaHttpResponse> RegisterInternalAsync(InstanceInfo info)
-    {
         if ((Platform.IsContainerized || Platform.IsCloudHosted) && info.HostName?.Equals("localhost", StringComparison.OrdinalIgnoreCase) == true)
         {
             logger?.LogWarning(
@@ -104,15 +99,14 @@ public class EurekaHttpClient : IEurekaHttpClient
 
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
-        string serviceUrl = null;
         httpClient ??= GetHttpClient(Configuration);
 
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
+            string serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{info.AppName}");
-            HttpRequestMessage request = GetRequestMessage(HttpMethod.Post, requestUri);
+            HttpRequestMessage request = await GetRequestMessageAsync(HttpMethod.Post, requestUri, cancellationToken);
 
             try
             {
@@ -121,7 +115,7 @@ public class EurekaHttpClient : IEurekaHttpClient
                     Instance = info.ToJsonInstance()
                 });
 
-                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
                 logger?.LogDebug("RegisterAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                 int statusCode = (int)response.StatusCode;
 
@@ -137,12 +131,12 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
 
-                string jsonError = await response.Content.ReadAsStringAsync();
+                string jsonError = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger?.LogInformation("Failure during RegisterAsync: {jsonError}", jsonError);
             }
-            catch (Exception e)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
-                logger?.LogError(e, "RegisterAsync Failed, request was made to {requestUri}, retry: {retry}", requestUri.ToMaskedUri(), retry);
+                logger?.LogError(exception, "RegisterAsync Failed, request was made to {requestUri}, retry: {retry}", requestUri.ToMaskedUri(), retry);
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -152,18 +146,13 @@ public class EurekaHttpClient : IEurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the RegisterAsync request");
     }
 
-    public virtual Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatAsync(string appName, string id, InstanceInfo info, InstanceStatus overriddenStatus)
+    public virtual async Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatAsync(string appName, string id, InstanceInfo info,
+        InstanceStatus overriddenStatus, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(info);
-
         ArgumentGuard.NotNullOrEmpty(appName);
         ArgumentGuard.NotNullOrEmpty(id);
+        ArgumentGuard.NotNull(info);
 
-        return SendHeartBeatInternalAsync(id, info, overriddenStatus);
-    }
-
-    private async Task<EurekaHttpResponse<InstanceInfo>> SendHeartBeatInternalAsync(string id, InstanceInfo info, InstanceStatus overriddenStatus)
-    {
         var queryArgs = new Dictionary<string, string>
         {
             { "status", info.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
@@ -180,37 +169,34 @@ public class EurekaHttpClient : IEurekaHttpClient
 
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
-        string serviceUrl = null;
         httpClient ??= GetHttpClient(Configuration);
 
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
+            string serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{info.AppName}/{id}", queryArgs);
-            HttpRequestMessage request = GetRequestMessage(HttpMethod.Put, requestUri);
+            HttpRequestMessage request = await GetRequestMessageAsync(HttpMethod.Put, requestUri, cancellationToken);
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
                 JsonInstanceInfo instanceInfo = null;
 
                 try
                 {
-                    instanceInfo = await response.Content.ReadFromJsonAsync<JsonInstanceInfo>(JsonSerializerOptions);
+                    instanceInfo = await response.Content.ReadFromJsonAsync<JsonInstanceInfo>(JsonSerializerOptions, cancellationToken);
                 }
-                catch (Exception e)
+                catch (Exception exception) when (!exception.IsCancellation())
                 {
-                    string responseBody = await response.Content.ReadAsStringAsync();
+                    string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
                     if (response.IsSuccessStatusCode && string.IsNullOrEmpty(responseBody))
                     {
                         // request was successful but body was empty. This is OK, we don't need a response body
                     }
-                    else
-                    {
-                        logger?.LogError(e, "Failed to read heartbeat response. Response code: {responseCode}, Body: {responseBody}", response.StatusCode,
-                            responseBody);
-                    }
+
+                    logger?.LogError(exception, "Failed to read heartbeat response. Response code: {responseCode}, Body: {responseBody}", response.StatusCode,
+                        responseBody);
                 }
 
                 InstanceInfo infoResp = null;
@@ -237,9 +223,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception e)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
-                logger?.LogError(e, "SendHeartBeatAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                logger?.LogError(exception, "SendHeartBeatAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -249,66 +235,70 @@ public class EurekaHttpClient : IEurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the SendHeartBeatAsync request");
     }
 
-    public virtual Task<EurekaHttpResponse<Applications>> GetApplicationsAsync(ISet<string> regions = null)
+    public virtual Task<EurekaHttpResponse<Applications>> GetApplicationsAsync(CancellationToken cancellationToken)
     {
-        return DoGetApplicationsAsync("apps/", regions);
+        return GetApplicationsAsync(null, cancellationToken);
     }
 
-    public virtual Task<EurekaHttpResponse<Applications>> GetDeltaAsync(ISet<string> regions = null)
+    public virtual Task<EurekaHttpResponse<Applications>> GetApplicationsAsync(ISet<string> regions, CancellationToken cancellationToken)
     {
-        return DoGetApplicationsAsync("apps/delta", regions);
+        return DoGetApplicationsAsync("apps/", regions, cancellationToken);
     }
 
-    public virtual Task<EurekaHttpResponse<Applications>> GetVipAsync(string vipAddress, ISet<string> regions = null)
+    public virtual Task<EurekaHttpResponse<Applications>> GetDeltaAsync(CancellationToken cancellationToken)
+    {
+        return GetDeltaAsync(null, cancellationToken);
+    }
+
+    public virtual Task<EurekaHttpResponse<Applications>> GetDeltaAsync(ISet<string> regions, CancellationToken cancellationToken)
+    {
+        return DoGetApplicationsAsync("apps/delta", regions, cancellationToken);
+    }
+
+    public virtual Task<EurekaHttpResponse<Applications>> GetVipAsync(string vipAddress, CancellationToken cancellationToken)
+    {
+        return GetVipAsync(vipAddress, null, cancellationToken);
+    }
+
+    public virtual Task<EurekaHttpResponse<Applications>> GetVipAsync(string vipAddress, ISet<string> regions, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNullOrEmpty(vipAddress);
 
-        return GetVipInternalAsync(vipAddress, regions);
+        return DoGetApplicationsAsync($"vips/{vipAddress}", regions, cancellationToken);
     }
 
-    private Task<EurekaHttpResponse<Applications>> GetVipInternalAsync(string vipAddress, ISet<string> regions)
+    public virtual Task<EurekaHttpResponse<Applications>> GetSecureVipAsync(string secureVipAddress, CancellationToken cancellationToken)
     {
-        return DoGetApplicationsAsync($"vips/{vipAddress}", regions);
+        return GetSecureVipAsync(secureVipAddress, null, cancellationToken);
     }
 
-    public virtual Task<EurekaHttpResponse<Applications>> GetSecureVipAsync(string secureVipAddress, ISet<string> regions = null)
+    public virtual Task<EurekaHttpResponse<Applications>> GetSecureVipAsync(string secureVipAddress, ISet<string> regions, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNullOrEmpty(secureVipAddress);
 
-        return GetSecureVipInternalAsync(secureVipAddress, regions);
+        return DoGetApplicationsAsync($"vips/{secureVipAddress}", regions, cancellationToken);
     }
 
-    private Task<EurekaHttpResponse<Applications>> GetSecureVipInternalAsync(string secureVipAddress, ISet<string> regions = null)
-    {
-        return DoGetApplicationsAsync($"vips/{secureVipAddress}", regions);
-    }
-
-    public virtual Task<EurekaHttpResponse<Application>> GetApplicationAsync(string appName)
+    public virtual async Task<EurekaHttpResponse<Application>> GetApplicationAsync(string appName, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNullOrEmpty(appName);
 
-        return GetApplicationInternalAsync(appName);
-    }
-
-    private async Task<EurekaHttpResponse<Application>> GetApplicationInternalAsync(string appName)
-    {
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
-        string serviceUrl = null;
         httpClient ??= GetHttpClient(Configuration);
 
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
+            string serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{appName}");
-            HttpRequestMessage request = GetRequestMessage(HttpMethod.Get, requestUri);
+            HttpRequestMessage request = await GetRequestMessageAsync(HttpMethod.Get, requestUri, cancellationToken);
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
-                var applicationRoot = await response.Content.ReadFromJsonAsync<JsonApplicationRoot>(JsonSerializerOptions);
+                var applicationRoot = await response.Content.ReadFromJsonAsync<JsonApplicationRoot>(JsonSerializerOptions, cancellationToken);
 
                 Application appResp = null;
 
@@ -334,9 +324,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception e)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
-                logger?.LogError(e, "GetApplicationAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                logger?.LogError(exception, "GetApplicationAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -346,56 +336,40 @@ public class EurekaHttpClient : IEurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the GetApplicationAsync request");
     }
 
-    public virtual Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsync(string id)
+    public virtual Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsync(string id, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNullOrEmpty(id);
 
-        return GetInstanceInternalAsync(id);
+        return DoGetInstanceAsync($"instances/{id}", cancellationToken);
     }
 
-    public virtual Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsync(string appName, string id)
+    public virtual Task<EurekaHttpResponse<InstanceInfo>> GetInstanceAsync(string appName, string id, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNullOrEmpty(appName);
         ArgumentGuard.NotNullOrEmpty(id);
 
-        return GetInstanceInternalAsync(appName, id);
+        return DoGetInstanceAsync($"apps/{appName}/{id}", cancellationToken);
     }
 
-    private Task<EurekaHttpResponse<InstanceInfo>> GetInstanceInternalAsync(string id)
-    {
-        return DoGetInstanceAsync($"instances/{id}");
-    }
-
-    private Task<EurekaHttpResponse<InstanceInfo>> GetInstanceInternalAsync(string appName, string id)
-    {
-        return DoGetInstanceAsync($"apps/{appName}/{id}");
-    }
-
-    public virtual Task<EurekaHttpResponse> CancelAsync(string appName, string id)
+    public virtual async Task<EurekaHttpResponse> CancelAsync(string appName, string id, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNullOrEmpty(appName);
         ArgumentGuard.NotNullOrEmpty(id);
 
-        return CancelInternalAsync(appName, id);
-    }
-
-    private async Task<EurekaHttpResponse> CancelInternalAsync(string appName, string id)
-    {
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
-        string serviceUrl = null;
         httpClient ??= GetHttpClient(Configuration);
 
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
+            string serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{appName}/{id}");
-            HttpRequestMessage request = GetRequestMessage(HttpMethod.Delete, requestUri);
+            HttpRequestMessage request = await GetRequestMessageAsync(HttpMethod.Delete, requestUri, cancellationToken);
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
                 logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                 Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
@@ -406,9 +380,9 @@ public class EurekaHttpClient : IEurekaHttpClient
 
                 return resp;
             }
-            catch (Exception e)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
-                logger?.LogError(e, "CancelAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                logger?.LogError(exception, "CancelAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -418,18 +392,12 @@ public class EurekaHttpClient : IEurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the CancelAsync request");
     }
 
-    public virtual Task<EurekaHttpResponse> DeleteStatusOverrideAsync(string appName, string id, InstanceInfo info)
+    public virtual async Task<EurekaHttpResponse> DeleteStatusOverrideAsync(string appName, string id, InstanceInfo info, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNullOrEmpty(appName);
         ArgumentGuard.NotNullOrEmpty(id);
-
         ArgumentGuard.NotNull(info);
 
-        return DeleteStatusOverrideInternalAsync(appName, id, info);
-    }
-
-    private async Task<EurekaHttpResponse> DeleteStatusOverrideInternalAsync(string appName, string id, InstanceInfo info)
-    {
         var queryArgs = new Dictionary<string, string>
         {
             {
@@ -440,19 +408,18 @@ public class EurekaHttpClient : IEurekaHttpClient
 
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
-        string serviceUrl = null;
         httpClient ??= GetHttpClient(Configuration);
 
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
+            string serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{appName}/{id}/status", queryArgs);
-            HttpRequestMessage request = GetRequestMessage(HttpMethod.Delete, requestUri);
+            HttpRequestMessage request = await GetRequestMessageAsync(HttpMethod.Delete, requestUri, cancellationToken);
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
                 logger?.LogDebug("DeleteStatusOverrideAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(),
                     response.StatusCode, retry);
@@ -471,9 +438,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception e)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
-                logger?.LogError(e, "DeleteStatusOverrideAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                logger?.LogError(exception, "DeleteStatusOverrideAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -483,18 +450,13 @@ public class EurekaHttpClient : IEurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the DeleteStatusOverrideAsync request");
     }
 
-    public virtual Task<EurekaHttpResponse> StatusUpdateAsync(string appName, string id, InstanceStatus newStatus, InstanceInfo info)
+    public virtual async Task<EurekaHttpResponse> StatusUpdateAsync(string appName, string id, InstanceStatus newStatus, InstanceInfo info,
+        CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNullOrEmpty(appName);
         ArgumentGuard.NotNullOrEmpty(id);
-
         ArgumentGuard.NotNull(info);
 
-        return StatusUpdateInternalAsync(appName, id, newStatus, info);
-    }
-
-    private async Task<EurekaHttpResponse> StatusUpdateInternalAsync(string appName, string id, InstanceStatus newStatus, InstanceInfo info)
-    {
         var queryArgs = new Dictionary<string, string>
         {
             { "value", newStatus.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
@@ -506,19 +468,18 @@ public class EurekaHttpClient : IEurekaHttpClient
 
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
-        string serviceUrl = null;
         httpClient ??= GetHttpClient(Configuration);
 
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
+            string serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri($"{serviceUrl}apps/{appName}/{id}/status", queryArgs);
-            HttpRequestMessage request = GetRequestMessage(HttpMethod.Put, requestUri);
+            HttpRequestMessage request = await GetRequestMessageAsync(HttpMethod.Put, requestUri, cancellationToken);
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
                 logger?.LogDebug("StatusUpdateAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode,
                     retry);
@@ -537,9 +498,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception e)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
-                logger?.LogError(e, "StatusUpdateAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                logger?.LogError(exception, "StatusUpdateAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -549,17 +510,17 @@ public class EurekaHttpClient : IEurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the StatusUpdateAsync request");
     }
 
-    public virtual void Shutdown()
+    public virtual Task ShutdownAsync(CancellationToken cancellationToken)
     {
+        return Task.CompletedTask;
     }
 
-    internal string FetchAccessToken()
+    private async Task<string> FetchAccessTokenAsync(CancellationToken cancellationToken)
     {
         return Configuration is not EurekaClientOptions options || string.IsNullOrEmpty(options.AccessTokenUri)
             ? null
-            : HttpClientHelper.GetAccessTokenAsync(
-                    options.AccessTokenUri, options.ClientId, options.ClientSecret, DefaultGetAccessTokenTimeout, options.ValidateCertificates).GetAwaiter()
-                .GetResult();
+            : await HttpClientHelper.GetAccessTokenAsync(options.AccessTokenUri, options.ClientId, options.ClientSecret, DefaultGetAccessTokenTimeout,
+                options.ValidateCertificates, null, null, cancellationToken);
     }
 
     internal IList<string> GetServiceUrlCandidates()
@@ -619,7 +580,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         }
     }
 
-    internal string GetServiceUrl(IList<string> candidateServiceUrls, ref int index)
+    private string GetServiceUrl(IList<string> candidateServiceUrls, ref int index)
     {
         string serviceUrl = ServiceUrl;
 
@@ -636,7 +597,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         return serviceUrl;
     }
 
-    protected internal static IList<string> MakeServiceUrls(string serviceUrls)
+    private static IList<string> MakeServiceUrls(string serviceUrls)
     {
         var results = new List<string>();
 
@@ -665,7 +626,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         return url;
     }
 
-    protected internal HttpRequestMessage GetRequestMessage(HttpMethod method, Uri requestUri)
+    protected internal async Task<HttpRequestMessage> GetRequestMessageAsync(HttpMethod method, Uri requestUri, CancellationToken cancellationToken)
     {
         var rawUri = new Uri(requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped));
         string rawUserInfo = requestUri.GetComponents(UriComponents.UserInfo, UriFormat.Unescaped);
@@ -682,7 +643,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         }
         else
         {
-            request = HttpClientHelper.GetRequestMessage(method, rawUri, FetchAccessToken);
+            request = await HttpClientHelper.GetRequestMessageAsync(method, rawUri, FetchAccessTokenAsync, cancellationToken);
         }
 
         foreach (KeyValuePair<string, string> header in headers)
@@ -728,24 +689,23 @@ public class EurekaHttpClient : IEurekaHttpClient
         MakeServiceUrls(Configuration.EurekaServerServiceUrls);
     }
 
-    protected virtual async Task<EurekaHttpResponse<InstanceInfo>> DoGetInstanceAsync(string path)
+    protected virtual async Task<EurekaHttpResponse<InstanceInfo>> DoGetInstanceAsync(string path, CancellationToken cancellationToken)
     {
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
-        string serviceUrl = null;
         httpClient ??= GetHttpClient(Configuration);
 
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
+            string serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri(serviceUrl + path);
-            HttpRequestMessage request = GetRequestMessage(HttpMethod.Get, requestUri);
+            HttpRequestMessage request = await GetRequestMessageAsync(HttpMethod.Get, requestUri, cancellationToken);
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request);
-                var infoRoot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions);
+                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
+                var infoRoot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions, cancellationToken);
 
                 InstanceInfo infoResp = null;
 
@@ -771,9 +731,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception e)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
-                logger?.LogError(e, "DoGetInstanceAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                logger?.LogError(exception, "DoGetInstanceAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);
@@ -783,7 +743,8 @@ public class EurekaHttpClient : IEurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the DoGetInstanceAsync request");
     }
 
-    protected virtual async Task<EurekaHttpResponse<Applications>> DoGetApplicationsAsync(string path, ISet<string> regions)
+    protected virtual async Task<EurekaHttpResponse<Applications>> DoGetApplicationsAsync(string path, ISet<string> regions,
+        CancellationToken cancellationToken)
     {
         string regionParams = CommaDelimit(regions);
 
@@ -796,28 +757,27 @@ public class EurekaHttpClient : IEurekaHttpClient
 
         IList<string> candidateServiceUrls = GetServiceUrlCandidates();
         int index = 0;
-        string serviceUrl = null;
         httpClient ??= GetHttpClient(Configuration);
 
         // For retries
         for (int retry = 0; retry < GetRetryCount(Configuration); retry++)
         {
-            serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
+            string serviceUrl = GetServiceUrl(candidateServiceUrls, ref index);
             Uri requestUri = GetRequestUri(serviceUrl + path, queryArgs);
-            HttpRequestMessage request = GetRequestMessage(HttpMethod.Get, requestUri);
+            HttpRequestMessage request = await GetRequestMessageAsync(HttpMethod.Get, requestUri, cancellationToken);
 
             try
             {
-                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
                 JsonApplicationsRoot root = null;
 
                 try
                 {
-                    root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(JsonSerializerOptions);
+                    root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(JsonSerializerOptions, cancellationToken);
                 }
-                catch (Exception e)
+                catch (Exception exception) when (!exception.IsCancellation())
                 {
-                    logger?.LogInformation(e, "Failed to deserialize response");
+                    logger?.LogInformation(exception, "Failed to deserialize response");
                 }
 
                 Applications appsResp = null;
@@ -844,9 +804,9 @@ public class EurekaHttpClient : IEurekaHttpClient
                     return resp;
                 }
             }
-            catch (Exception e)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
-                logger?.LogError(e, "DoGetApplicationsAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                logger?.LogError(exception, "DoGetApplicationsAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
             }
 
             Interlocked.CompareExchange(ref ServiceUrl, null, serviceUrl);

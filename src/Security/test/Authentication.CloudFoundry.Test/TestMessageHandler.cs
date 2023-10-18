@@ -6,7 +6,7 @@ using System.Net;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class TestMessageHandler : HttpMessageHandler
+public sealed class TestMessageHandler : HttpMessageHandler
 {
     public HttpRequestMessage LastRequest { get; set; }
 

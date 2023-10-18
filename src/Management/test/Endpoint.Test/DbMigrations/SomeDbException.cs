@@ -6,7 +6,7 @@ using System.Data.Common;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
-public class SomeDbException : DbException
+internal sealed class SomeDbException : DbException
 {
     public SomeDbException(string message)
         : base(message)

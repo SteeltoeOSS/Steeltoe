@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Security.Test;
 
-public class PemCertificateSourceTest
+public sealed class PemCertificateSourceTest
 {
     [Fact]
     public void PemCertificateSource_HasOptionsConfigurer()

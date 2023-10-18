@@ -5,12 +5,12 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryOpenIdConnectConfigurerTest
+public sealed class CloudFoundryOpenIdConnectConfigurerTest
 {
     [Fact]
     public void Configure_NoServiceInfo_ReturnsExpected()

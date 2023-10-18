@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Core;
 
-public class CachingDestinationResolverTest
+public sealed class CachingDestinationResolverTest
 {
     [Fact]
     public void CachedDestination()

@@ -8,27 +8,27 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 
-public class MetricsObserverOptionsTest : BaseTest
+public sealed class MetricsObserverOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        MetricsObserverOptions opts = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
+        MetricsObserverOptions options = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
 
-        Assert.Equal(ConfigureMetricsObserverOptions.DefaultIngressIgnorePattern, opts.IngressIgnorePattern);
-        Assert.Equal(ConfigureMetricsObserverOptions.DefaultEgressIgnorePattern, opts.EgressIgnorePattern);
-        Assert.True(opts.AspNetCoreHosting);
-        Assert.True(opts.GCEvents);
-        Assert.False(opts.EventCounterEvents);
-        Assert.True(opts.ThreadPoolEvents);
-        Assert.False(opts.HttpClientCore);
-        Assert.False(opts.HttpClientDesktop);
+        Assert.Equal(ConfigureMetricsObserverOptions.DefaultIngressIgnorePattern, options.IngressIgnorePattern);
+        Assert.Equal(ConfigureMetricsObserverOptions.DefaultEgressIgnorePattern, options.EgressIgnorePattern);
+        Assert.True(options.AspNetCoreHosting);
+        Assert.True(options.GCEvents);
+        Assert.False(options.EventCounterEvents);
+        Assert.True(options.ThreadPoolEvents);
+        Assert.False(options.HttpClientCore);
+        Assert.False(options.HttpClientDesktop);
     }
 
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:metrics:observer:ingressIgnorePattern"] = "pattern",
             ["management:metrics:observer:egressIgnorePattern"] = "pattern",
@@ -40,15 +40,15 @@ public class MetricsObserverOptionsTest : BaseTest
             ["management:metrics:observer:httpClientDesktop"] = "true"
         };
 
-        MetricsObserverOptions opts = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>(appsettings);
+        MetricsObserverOptions options = GetOptionsFromSettings<MetricsObserverOptions, ConfigureMetricsObserverOptions>(appsettings);
 
-        Assert.Equal("pattern", opts.IngressIgnorePattern);
-        Assert.Equal("pattern", opts.EgressIgnorePattern);
-        Assert.False(opts.AspNetCoreHosting);
-        Assert.False(opts.GCEvents);
-        Assert.True(opts.EventCounterEvents);
-        Assert.False(opts.ThreadPoolEvents);
-        Assert.True(opts.HttpClientCore);
-        Assert.True(opts.HttpClientDesktop);
+        Assert.Equal("pattern", options.IngressIgnorePattern);
+        Assert.Equal("pattern", options.EgressIgnorePattern);
+        Assert.False(options.AspNetCoreHosting);
+        Assert.False(options.GCEvents);
+        Assert.True(options.EventCounterEvents);
+        Assert.False(options.ThreadPoolEvents);
+        Assert.True(options.HttpClientCore);
+        Assert.True(options.HttpClientDesktop);
     }
 }

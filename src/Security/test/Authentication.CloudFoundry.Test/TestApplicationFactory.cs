@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
+public sealed class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
     where TStartup : class
 {
     private readonly IReadOnlyDictionary<string, string> _configuration;

@@ -60,7 +60,7 @@ public sealed class ConfigServerHealthContributorTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
-        Assert.NotNull(contributor.FindProvider(configurationRoot));
+        Assert.NotNull(contributor.Provider);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public sealed class ConfigServerHealthContributorTest
     }
 
     [Fact]
-    public void GetPropertySources_ReturnsExpected()
+    public async Task GetPropertySources_ReturnsExpected()
     {
         // this test does NOT expect to find a running Config Server
         var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
@@ -160,7 +160,7 @@ public sealed class ConfigServerHealthContributorTest
         };
 
         long lastAccess = contributor.LastAccess = DateTimeOffset.Now.ToUnixTimeMilliseconds() - 100;
-        IList<PropertySource> sources = contributor.GetPropertySources();
+        IList<PropertySource> sources = await contributor.GetPropertySourcesAsync(CancellationToken.None);
 
         Assert.NotEqual(lastAccess, contributor.LastAccess);
         Assert.Null(sources);
@@ -168,7 +168,7 @@ public sealed class ConfigServerHealthContributorTest
     }
 
     [Fact]
-    public void Health_NoProvider_ReturnsExpected()
+    public async Task Health_NoProvider_ReturnsExpected()
     {
         var values = new Dictionary<string, string>
         {
@@ -186,14 +186,14 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.Null(contributor.Provider);
-        HealthCheckResult health = contributor.Health();
+        HealthCheckResult health = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));
     }
 
     [Fact]
-    public void Health_NotEnabled_ReturnsExpected()
+    public async Task Health_NotEnabled_ReturnsExpected()
     {
         var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
         {
@@ -212,13 +212,13 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
-        HealthCheckResult health = contributor.Health();
+        HealthCheckResult health = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
     }
 
     [Fact]
-    public void Health_NoPropertySources_ReturnsExpected()
+    public async Task Health_NoPropertySources_ReturnsExpected()
     {
         // this test does NOT expect to find a running Config Server
         var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
@@ -238,7 +238,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
-        HealthCheckResult health = contributor.Health();
+        HealthCheckResult health = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));

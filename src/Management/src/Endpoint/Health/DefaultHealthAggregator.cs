@@ -3,15 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class DefaultHealthAggregator : IHealthAggregator
+internal class DefaultHealthAggregator : IHealthAggregator
 {
-    public HealthCheckResult Aggregate(IList<IHealthContributor> contributors)
+    public async Task<HealthCheckResult> AggregateAsync(ICollection<IHealthContributor> contributors, CancellationToken cancellationToken)
     {
-        if (contributors == null)
+        ArgumentGuard.NotNull(contributors);
+
+        if (contributors.Count == 0)
         {
             return new HealthCheckResult();
         }
@@ -20,21 +23,24 @@ public class DefaultHealthAggregator : IHealthAggregator
         var healthChecks = new ConcurrentDictionary<string, HealthCheckResult>();
         var keyList = new ConcurrentBag<string>();
 
-        Parallel.ForEach(contributors, contributor =>
+        await Parallel.ForEachAsync(contributors, cancellationToken, async (contributor, _) =>
         {
             string contributorId = GetKey(keyList, contributor.Id);
-            HealthCheckResult healthCheckResult = null;
+            HealthCheckResult? healthCheckResult;
 
             try
             {
-                healthCheckResult = contributor.Health();
+                healthCheckResult = await contributor.CheckHealthAsync(cancellationToken);
             }
-            catch (Exception)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 healthCheckResult = new HealthCheckResult();
             }
 
-            healthChecks.TryAdd(contributorId, healthCheckResult);
+            if (healthCheckResult != null)
+            {
+                healthChecks.TryAdd(contributorId, healthCheckResult);
+            }
         });
 
         return AddChecksSetStatus(aggregatorResult, healthChecks);
@@ -42,12 +48,14 @@ public class DefaultHealthAggregator : IHealthAggregator
 
     protected static string GetKey(ConcurrentBag<string> keys, string key)
     {
+        ArgumentGuard.NotNull(keys);
+
         lock (keys)
         {
             // add the contributor with a -n appended to the id
-            if (keys.Any(k => k == key))
+            if (keys.Any(value => value == key))
             {
-                string newKey = $"{key}-{keys.Count(k => k.StartsWith(key, StringComparison.Ordinal))}";
+                string newKey = $"{key}-{keys.Count(value => value.StartsWith(key, StringComparison.Ordinal))}";
                 keys.Add(newKey);
                 return newKey;
             }
@@ -59,6 +67,9 @@ public class DefaultHealthAggregator : IHealthAggregator
 
     protected HealthCheckResult AddChecksSetStatus(HealthCheckResult result, ConcurrentDictionary<string, HealthCheckResult> healthChecks)
     {
+        ArgumentGuard.NotNull(result);
+        ArgumentGuard.NotNull(healthChecks);
+
         foreach (KeyValuePair<string, HealthCheckResult> healthCheck in healthChecks)
         {
             if (healthCheck.Value.Status > result.Status)

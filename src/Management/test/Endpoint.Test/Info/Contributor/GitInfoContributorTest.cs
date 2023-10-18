@@ -11,37 +11,49 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info.Contributor;
 
-public class GitInfoContributorTest : BaseTest
+public sealed class GitInfoContributorTest : BaseTest
 {
     [Fact]
-    public void ReadGitPropertiesMissingPropertiesFile()
+    public async Task ReadGitPropertiesMissingPropertiesFile()
     {
-        IConfiguration configuration = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitProperties("foobar");
+        var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
+
+        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync("foobar", CancellationToken.None);
+
         Assert.Null(configuration);
     }
 
     [Fact]
-    public void ReadEmptyGitPropertiesFile()
+    public async Task ReadEmptyGitPropertiesFile()
     {
+        var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}empty.git.properties";
-        IConfiguration configuration = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitProperties(path);
+
+        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(path, CancellationToken.None);
+
         Assert.Null(configuration);
     }
 
     [Fact]
-    public void ReadMalformedGitPropertiesFile()
+    public async Task ReadMalformedGitPropertiesFile()
     {
+        var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}garbage.git.properties";
-        IConfiguration configuration = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitProperties(path);
+
+        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(path, CancellationToken.None);
+
         Assert.NotNull(configuration);
         Assert.Null(configuration["git"]);
     }
 
     [Fact]
-    public void ReadGoodPropertiesFile()
+    public async Task ReadGoodPropertiesFile()
     {
+        var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
         string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}git.properties";
-        IConfiguration configuration = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance).ReadGitProperties(path);
+
+        IConfiguration? configuration = await contributor.ReadGitPropertiesAsync(path, CancellationToken.None);
+
         Assert.NotNull(configuration);
         Assert.Equal("true", configuration["git:dirty"]);
 
@@ -52,48 +64,48 @@ public class GitInfoContributorTest : BaseTest
     }
 
     [Fact]
-    public void ContributeWithNullBuilderThrows()
+    public async Task ContributeWithNullBuilderThrows()
     {
         // Uses git.properties file in test project
-        var contrib = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
-        Assert.Throws<ArgumentNullException>(() => contrib.Contribute(null));
+        var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await contributor.ContributeAsync(null!, CancellationToken.None));
     }
 
     [Fact]
-    public void ContributeAddsToBuilder()
+    public async Task ContributeAddsToBuilder()
     {
         // Uses git.properties file in test project
-        var contrib = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
+        var contributor = new GitInfoContributor(NullLogger<GitInfoContributor>.Instance);
         var builder = new InfoBuilder();
-        contrib.Contribute(builder);
+        await contributor.ContributeAsync(builder, CancellationToken.None);
 
-        Dictionary<string, object> result = builder.Build();
+        IDictionary<string, object> result = builder.Build();
         Assert.NotNull(result);
-        var gitDict = result["git"] as Dictionary<string, object>;
-        Assert.NotNull(gitDict);
-        Assert.Equal(7, gitDict.Count);
-        Assert.True(gitDict.ContainsKey("build"));
-        Assert.True(gitDict.ContainsKey("branch"));
-        Assert.True(gitDict.ContainsKey("commit"));
-        Assert.True(gitDict.ContainsKey("closest"));
-        Assert.True(gitDict.ContainsKey("dirty"));
-        Assert.True(gitDict.ContainsKey("remote"));
-        Assert.True(gitDict.ContainsKey("tags"));
+        var gitDictionary = result["git"] as Dictionary<string, object>;
+        Assert.NotNull(gitDictionary);
+        Assert.Equal(7, gitDictionary.Count);
+        Assert.True(gitDictionary.ContainsKey("build"));
+        Assert.True(gitDictionary.ContainsKey("branch"));
+        Assert.True(gitDictionary.ContainsKey("commit"));
+        Assert.True(gitDictionary.ContainsKey("closest"));
+        Assert.True(gitDictionary.ContainsKey("dirty"));
+        Assert.True(gitDictionary.ContainsKey("remote"));
+        Assert.True(gitDictionary.ContainsKey("tags"));
 
-        var gitBuildDict = gitDict["build"] as Dictionary<string, object>;
-        Assert.NotNull(gitBuildDict);
-        Assert.True(gitBuildDict.ContainsKey("time"));
+        var gitBuildDictionary = gitDictionary["build"] as Dictionary<string, object>;
+        Assert.NotNull(gitBuildDictionary);
+        Assert.True(gitBuildDictionary.ContainsKey("time"));
 
         // Verify that datetime values are normalized correctly
-        object gitBuildTime = gitBuildDict["time"];
+        object gitBuildTime = gitBuildDictionary["time"];
         Assert.Equal(DateTime.Parse("2017-07-12T18:40:39Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), gitBuildTime);
 
-        var gitCommitDict = gitDict["commit"] as Dictionary<string, object>;
-        Assert.NotNull(gitCommitDict);
-        Assert.True(gitCommitDict.ContainsKey("time"));
+        var gitCommitDictionary = gitDictionary["commit"] as Dictionary<string, object>;
+        Assert.NotNull(gitCommitDictionary);
+        Assert.True(gitCommitDictionary.ContainsKey("time"));
 
         // Verify that datetime values are normalized correctly
-        object gitCommitTime = gitCommitDict["time"];
+        object gitCommitTime = gitCommitDictionary["time"];
         Assert.Equal(DateTime.Parse("2017-06-08T12:47:02Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), gitCommitTime);
     }
 }

@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class ErrorHandlingTest : AbstractTest
+public sealed class ErrorHandlingTest : AbstractTest
 {
     private readonly IServiceCollection _container;
 

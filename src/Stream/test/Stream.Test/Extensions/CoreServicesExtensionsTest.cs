@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Extensions;
 
-public class CoreServicesExtensionsTest
+public sealed class CoreServicesExtensionsTest
 {
     [Fact]
     public void AddCoreServices_AddsServices()

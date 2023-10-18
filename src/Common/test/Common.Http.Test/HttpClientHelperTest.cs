@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Http.Test;
 
-public class HttpClientHelperTest
+public sealed class HttpClientHelperTest
 {
     [Fact]
     public void GetHttpClient_SetsTimeout()
@@ -51,7 +51,7 @@ public class HttpClientHelperTest
         HttpRequestMessage message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, new Uri("https://localhost/foobar"), null, null);
         Assert.NotNull(message);
         Assert.Equal(HttpMethod.Put, message.Method);
-        Assert.Equal("https://localhost/foobar", message.RequestUri.ToString());
+        Assert.Equal("https://localhost/foobar", message.RequestUri?.ToString());
         Assert.Null(message.Headers.Authorization);
     }
 
@@ -61,7 +61,7 @@ public class HttpClientHelperTest
         HttpRequestMessage message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, new Uri("https://localhost/foobar"), "foo", "bar");
         Assert.NotNull(message);
         Assert.Equal(HttpMethod.Put, message.Method);
-        Assert.Equal("https://localhost/foobar", message.RequestUri.ToString());
+        Assert.Equal("https://localhost/foobar", message.RequestUri?.ToString());
         Assert.NotNull(message.Headers.Authorization);
         string bytes = Convert.ToBase64String(Encoding.ASCII.GetBytes("foo" + ":" + "bar"));
         Assert.Equal("Basic", message.Headers.Authorization.Scheme);
@@ -69,11 +69,16 @@ public class HttpClientHelperTest
     }
 
     [Fact]
-    public void GetAccessToken_ThrowsNulls()
+    public async Task GetAccessToken_ThrowsNulls()
     {
-        Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessTokenAsync(string.Empty, null, null));
-        Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessTokenAsync("https://foo/bar", null, null));
-        Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessTokenAsync("https://foo/bar", "clientid", null));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await HttpClientHelper.GetAccessTokenAsync(string.Empty, null, null,
+            HttpClientHelper.DefaultGetAccessTokenTimeout, HttpClientHelper.DefaultValidateCertificates, null, null, CancellationToken.None));
+
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await HttpClientHelper.GetAccessTokenAsync("https://foo/bar", null, null,
+            HttpClientHelper.DefaultGetAccessTokenTimeout, HttpClientHelper.DefaultValidateCertificates, null, null, CancellationToken.None));
+
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await HttpClientHelper.GetAccessTokenAsync("https://foo/bar", "clientid", null,
+            HttpClientHelper.DefaultGetAccessTokenTimeout, HttpClientHelper.DefaultValidateCertificates, null, null, CancellationToken.None));
     }
 
     [Fact]

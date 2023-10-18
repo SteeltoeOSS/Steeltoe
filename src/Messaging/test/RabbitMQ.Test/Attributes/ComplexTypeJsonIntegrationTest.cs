@@ -16,7 +16,7 @@ using Xunit;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonIntegrationTest.StartupFixture>
+public sealed class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonIntegrationTest.StartupFixture>
 {
     public const string TestQueue = "test.complex.send.and.receive";
     public const string TestQueue2 = "test.complex.receive";
@@ -103,7 +103,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonInteg
         return foo;
     }
 
-    public class EmptyPostProcessor : IMessagePostProcessor
+    public sealed class EmptyPostProcessor : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
@@ -116,7 +116,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonInteg
         }
     }
 
-    public class TestPostProcessor : IMessagePostProcessor
+    public sealed class TestPostProcessor : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
@@ -192,7 +192,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonInteg
         }
     }
 
-    public class Listener
+    public sealed class Listener
     {
         [RabbitListener(TestQueue)]
         public Foo<Bar<Baz, Qux>> Listen(string input)
@@ -201,7 +201,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonInteg
         }
     }
 
-    public class Foo<T>
+    public sealed class Foo<T>
     {
         public T Field { get; set; }
 
@@ -211,7 +211,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonInteg
         }
     }
 
-    public class Bar<TFieldA, TFieldB>
+    public sealed class Bar<TFieldA, TFieldB>
     {
         public TFieldA AField { get; set; }
 
@@ -223,7 +223,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonInteg
         }
     }
 
-    public class Baz
+    public sealed class Baz
     {
         public string BazField { get; set; }
 
@@ -238,7 +238,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJsonInteg
         }
     }
 
-    public class Qux
+    public sealed class Qux
     {
         public int QuxField { get; set; }
 

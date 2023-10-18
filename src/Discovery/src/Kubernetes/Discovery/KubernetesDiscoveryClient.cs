@@ -21,8 +21,6 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
     public string Description => "Steeltoe provided Kubernetes native service discovery client";
 
-    public IList<string> Services => GetLabeledServices(null);
-
     public IKubernetes KubernetesClient { get; set; }
 
     public KubernetesDiscoveryClient(DefaultIsServicePortSecureResolver isServicePortSecureResolver, IKubernetes kubernetesClient,
@@ -34,7 +32,12 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         _logger = logger;
     }
 
-    public IList<string> GetLabeledServices(IDictionary<string, string> labels)
+    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
+    {
+        return GetLabeledServicesAsync(null, cancellationToken);
+    }
+
+    public async Task<IList<string>> GetLabeledServicesAsync(IDictionary<string, string> labels, CancellationToken cancellationToken)
     {
         if (!_discoveryOptions.CurrentValue.Enabled)
         {
@@ -43,39 +46,39 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
         string labelSelectorValue = labels != null ? string.Join(",", labels.Keys.Select(k => $"{k}={labels[k]}")) : null;
 
-        if (_discoveryOptions.CurrentValue.AllNamespaces)
-        {
-            return KubernetesClient.CoreV1.ListServiceForAllNamespaces(labelSelector: labelSelectorValue).Items.Select(service => service.Metadata.Name)
-                .ToList();
-        }
+        V1ServiceList services = _discoveryOptions.CurrentValue.AllNamespaces
+            ? await KubernetesClient.CoreV1.ListServiceForAllNamespacesAsync(labelSelector: labelSelectorValue, cancellationToken: cancellationToken)
+            : await KubernetesClient.CoreV1.ListNamespacedServiceAsync(_discoveryOptions.CurrentValue.Namespace, labelSelector: labelSelectorValue,
+                cancellationToken: cancellationToken);
 
-        return KubernetesClient.CoreV1.ListNamespacedService(_discoveryOptions.CurrentValue.Namespace, labelSelector: labelSelectorValue).Items
-            .Select(service => service.Metadata.Name).ToList();
+        return services.Items.Select(service => service.Metadata.Name).ToList();
     }
 
-    public IList<IServiceInstance> GetInstances(string serviceId)
+    public async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(serviceId);
 
-        IList<V1Endpoints> endpoints = _discoveryOptions.CurrentValue.AllNamespaces
-            ? KubernetesClient.CoreV1.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
-            : KubernetesClient.CoreV1.ListNamespacedEndpoints(
-                _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace, fieldSelector: $"metadata.name={serviceId}").Items;
+        V1EndpointsList endpoints = _discoveryOptions.CurrentValue.AllNamespaces
+            ? await KubernetesClient.CoreV1.ListEndpointsForAllNamespacesAsync(fieldSelector: $"metadata.name={serviceId}",
+                cancellationToken: cancellationToken)
+            : await KubernetesClient.CoreV1.ListNamespacedEndpointsAsync(_discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace,
+                fieldSelector: $"metadata.name={serviceId}", cancellationToken: cancellationToken);
 
-        IEnumerable<EndpointSubsetNs> subsetsNs = endpoints.Select(GetSubsetsFromEndpoints);
+        IEnumerable<EndpointSubsetNs> subsetsNs = endpoints.Items.Select(GetSubsetsFromEndpoints);
         var serviceInstances = new List<IServiceInstance>();
 
         foreach (EndpointSubsetNs es in subsetsNs)
         {
-            serviceInstances.AddRange(GetNamespacedServiceInstances(es, serviceId));
+            IList<IServiceInstance> instances = await GetNamespacedServiceInstancesAsync(es, serviceId, cancellationToken);
+            serviceInstances.AddRange(instances);
         }
 
         return serviceInstances;
     }
 
-    public IServiceInstance GetLocalServiceInstance()
+    public async Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
     {
-        IList<IServiceInstance> instances = GetInstances(_discoveryOptions.CurrentValue.ServiceName);
+        IList<IServiceInstance> instances = await GetInstancesAsync(_discoveryOptions.CurrentValue.ServiceName, cancellationToken);
 
         if (instances.Count == 1)
         {
@@ -86,12 +89,12 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         return instances[0];
     }
 
-    public Task ShutdownAsync()
+    public Task ShutdownAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
 
-    private IList<IServiceInstance> GetNamespacedServiceInstances(EndpointSubsetNs es, string serviceId)
+    private async Task<IList<IServiceInstance>> GetNamespacedServiceInstancesAsync(EndpointSubsetNs es, string serviceId, CancellationToken cancellationToken)
     {
         string k8SNamespace = es.Namespace;
         IList<V1EndpointSubset> subsets = es.EndpointSubsets;
@@ -99,7 +102,11 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
         if (subsets.Any())
         {
-            V1Service service = KubernetesClient.CoreV1.ListNamespacedService(k8SNamespace, fieldSelector: $"metadata.name={serviceId}").Items.FirstOrDefault();
+            V1ServiceList serviceList = await KubernetesClient.CoreV1.ListNamespacedServiceAsync(k8SNamespace, fieldSelector: $"metadata.name={serviceId}",
+                cancellationToken: cancellationToken);
+
+            V1Service service = serviceList.Items.FirstOrDefault();
+
             IDictionary<string, string> serviceMetadata = GetServiceMetadata(service);
             Metadata metadataProps = _discoveryOptions.CurrentValue.Metadata;
 

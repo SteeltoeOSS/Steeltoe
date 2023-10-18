@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Availability;
 
-public class ApplicationAvailabilityTest
+public sealed class ApplicationAvailabilityTest
 {
     private readonly ILogger<ApplicationAvailability> _logger = NullLogger<ApplicationAvailability>.Instance;
 

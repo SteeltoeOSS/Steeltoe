@@ -12,8 +12,8 @@ namespace Steeltoe.Management.Endpoint.Test.Security;
 /// </summary>
 internal sealed class SetsUserInContextForTestsMiddleware
 {
-    public const string TestFakeAuthentication = "TestFakeAuthentication";
-    public const string TestingHeader = "X-Test-Header";
+    private const string TestFakeAuthentication = "TestFakeAuthentication";
+    private const string TestingHeader = "X-Test-Header";
 
     private readonly RequestDelegate _next;
 

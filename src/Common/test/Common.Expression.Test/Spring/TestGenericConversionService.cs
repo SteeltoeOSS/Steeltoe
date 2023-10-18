@@ -6,7 +6,7 @@ using Steeltoe.Common.Converter;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class TestGenericConversionService : IConversionService
+public sealed class TestGenericConversionService : IConversionService
 {
     public bool CanBypassConvert(Type sourceType, Type targetType)
     {

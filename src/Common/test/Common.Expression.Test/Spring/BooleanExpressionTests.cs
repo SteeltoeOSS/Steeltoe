@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class BooleanExpressionTests : AbstractExpressionTests
+public sealed class BooleanExpressionTests : AbstractExpressionTests
 {
     [Fact]
     public void TestBooleanTrue()

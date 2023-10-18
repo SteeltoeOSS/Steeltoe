@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class Company
+public sealed class Company
 {
     public string Address { get; }
 

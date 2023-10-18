@@ -4,18 +4,17 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.MetricCollectors;
 using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Management.Wavefront;
@@ -36,8 +35,9 @@ public static class WavefrontExtensions
         ArgumentGuard.NotNull(services);
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticsService>());
 
+        services.ConfigureOptions<ConfigureWavefrontExporterOptions>();
         services.AddMetricsObservers();
 
         services.AddOpenTelemetry().WithMetrics(builder =>
@@ -60,7 +60,9 @@ public static class WavefrontExtensions
     /// </returns>
     public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.ConfigureServices((_, collection) =>
         {
             collection.AddWavefrontMetrics();
         });
@@ -74,6 +76,8 @@ public static class WavefrontExtensions
     /// </param>
     public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
     {
+        ArgumentGuard.NotNull(applicationBuilder);
+
         applicationBuilder.Services.AddWavefrontMetrics();
         return applicationBuilder;
     }
@@ -86,16 +90,20 @@ public static class WavefrontExtensions
     /// </param>
     public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((context, collection) => collection.AddWavefrontMetrics());
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.ConfigureServices((_, collection) => collection.AddWavefrontMetrics());
     }
 
     public static MeterProviderBuilder AddWavefrontExporter(this MeterProviderBuilder builder)
     {
-        return builder.AddReader(sp =>
+        ArgumentGuard.NotNull(builder);
+
+        return builder.AddReader(serviceProvider =>
         {
-            var logger = sp.GetService<ILogger<WavefrontMetricsExporter>>();
-            var configuration = sp.GetService<IConfiguration>();
-            var wavefrontExporter = new WavefrontMetricsExporter(new WavefrontExporterOptions(configuration), logger);
+            var logger = serviceProvider.GetRequiredService<ILogger<WavefrontMetricsExporter>>();
+            var options = serviceProvider.GetRequiredService<IOptions<WavefrontExporterOptions>>();
+            var wavefrontExporter = new WavefrontMetricsExporter(options.Value, logger);
 
             var metricReader = new PeriodicExportingMetricReader(wavefrontExporter, wavefrontExporter.Options.Step)
             {

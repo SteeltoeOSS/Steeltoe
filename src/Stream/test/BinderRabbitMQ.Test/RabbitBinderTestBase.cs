@@ -176,7 +176,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         CachingConnectionFactory = null;
     }
 
-    public class WrapperAccessor : RabbitOutboundEndpoint
+    public sealed class WrapperAccessor : RabbitOutboundEndpoint
     {
         public WrapperAccessor(IApplicationContext context, RabbitTemplate template)
             : base(context, template, null)
@@ -189,7 +189,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         }
     }
 
-    public class TestPartitionSupport : IPartitionKeyExtractorStrategy, IPartitionSelectorStrategy
+    public sealed class TestPartitionSupport : IPartitionKeyExtractorStrategy, IPartitionSelectorStrategy
     {
         public string ServiceName { get; set; }
 

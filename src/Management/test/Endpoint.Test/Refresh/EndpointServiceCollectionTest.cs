@@ -10,22 +10,14 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Refresh;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
-    [Fact]
-    public void AddRefreshActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRefreshActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
     [Fact]
     public void AddRefreshActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication"
@@ -41,7 +33,7 @@ public class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<RefreshEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<IRefreshEndpoint>();
-        Assert.NotNull(ep);
+        var handler = serviceProvider.GetService<IRefreshEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }

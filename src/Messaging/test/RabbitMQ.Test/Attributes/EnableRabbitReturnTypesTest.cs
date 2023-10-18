@@ -17,7 +17,7 @@ using Xunit.Abstractions;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class EnableRabbitReturnTypesTest
+public sealed class EnableRabbitReturnTypesTest
 {
     public const string Q1 = "EnableRabbitReturnTypesTests.1";
     public const string Q2 = "EnableRabbitReturnTypesTests.2";
@@ -195,7 +195,7 @@ public class EnableRabbitReturnTypesTest
         return provider;
     }
 
-    public class Listener
+    public sealed class Listener
     {
         [RabbitListener("EnableRabbitReturnTypesTests.1")]
         public IOne Listen1(string input)
@@ -259,11 +259,11 @@ public class EnableRabbitReturnTypesTest
         public string Field { get; set; }
     }
 
-    public class Three : Two
+    public sealed class Three : Two
     {
     }
 
-    public class Four : Two
+    public sealed class Four : Two
     {
     }
 }

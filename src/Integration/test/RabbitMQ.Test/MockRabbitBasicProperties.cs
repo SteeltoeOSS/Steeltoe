@@ -6,7 +6,7 @@ using RabbitMQ.Client;
 
 namespace Steeltoe.Integration.RabbitMQ.Test;
 
-public class MockRabbitBasicProperties : IBasicProperties
+public sealed class MockRabbitBasicProperties : IBasicProperties
 {
     string IContentHeader.ProtocolClassName => string.Empty;
 

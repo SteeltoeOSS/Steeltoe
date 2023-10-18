@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Order;
 
-public class OrderCompareTest
+public sealed class OrderCompareTest
 {
     private readonly OrderComparer _orderComparer = OrderComparer.Instance;
 

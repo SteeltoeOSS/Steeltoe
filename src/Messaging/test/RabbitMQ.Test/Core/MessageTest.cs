@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
-public class MessageTest
+public sealed class MessageTest
 {
     [Fact]
     public void ToStringForEmptyMessageBody()

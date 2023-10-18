@@ -4,6 +4,8 @@
 
 using System.Globalization;
 using System.Net.Http.Json;
+using FluentAssertions;
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +15,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -322,38 +323,31 @@ public sealed class ConfigServerConfigurationProviderTest
         var settings = new ConfigServerClientSettings();
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<UriFormatException>(() => provider.RemoteLoadAsync(new[]
+        await Assert.ThrowsAsync<UriFormatException>(async () => await provider.RemoteLoadAsync(new[]
         {
             "foobar\\foobar\\"
-        }, null));
+        }, null, CancellationToken.None));
     }
 
     [Fact]
     public async Task RemoteLoadAsync_HostTimesOut()
     {
-        var settings = new ConfigServerClientSettings
+        var messageHandler = new SlowHttpMessageHandler(1.Seconds(), new HttpResponseMessage());
+
+        var httpClient = new HttpClient(messageHandler)
         {
-            Timeout = 100
+            Timeout = 100.Milliseconds()
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var settings = new ConfigServerClientSettings();
+        var provider = new ConfigServerConfigurationProvider(settings, httpClient, NullLoggerFactory.Instance);
 
-        try
+        Func<Task> action = async () => await provider.RemoteLoadAsync(new[]
         {
-            await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(new[]
-            {
-                "http://localhost:9999/app/profile"
-            }, null));
-        }
-        catch (ThrowsException e)
-        {
-            if (e.InnerException is TaskCanceledException)
-            {
-                return;
-            }
+            "http://localhost:9999/app/profile"
+        }, null, CancellationToken.None);
 
-            Assert.True(false, "Request didn't timeout or throw TaskCanceledException");
-        }
+        (await action.Should().ThrowExactlyAsync<TaskCanceledException>()).WithInnerException<TimeoutException>();
     }
 
     [Fact]
@@ -368,16 +362,14 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(settings.GetUris(), null));
+        await Assert.ThrowsAsync<HttpRequestException>(async () => await provider.RemoteLoadAsync(settings.GetUris(), null, CancellationToken.None));
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
@@ -396,16 +388,14 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        ConfigEnvironment result = await provider.RemoteLoadAsync(settings.RawUris, null);
+        ConfigEnvironment result = await provider.RemoteLoadAsync(settings.RawUris, null, CancellationToken.None);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
@@ -422,8 +412,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-   
+                    ""propertySources"": [
+
                     ]
                 }";
 
@@ -434,10 +424,8 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Label = "testlabel";
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         var settings = new ConfigServerClientSettings
         {
@@ -458,7 +446,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void DoLoad_MultipleLabels_ChecksAllLabels()
+    public async Task DoLoad_MultipleLabels_ChecksAllLabels()
     {
         const string environment = @"
                 {
@@ -466,8 +454,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""key1"": ""value1"",
@@ -490,17 +478,15 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Label = "testlabel";
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.Label = "label,testlabel";
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        provider.DoLoad();
+        await provider.DoLoadAsync(true, CancellationToken.None);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal(2, TestConfigServerStartup.RequestCount);
@@ -516,8 +502,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""key1"": ""value1"",
@@ -532,16 +518,14 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Response = environment;
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        ConfigEnvironment env = await provider.RemoteLoadAsync(settings.GetUris(), null);
+        ConfigEnvironment env = await provider.RemoteLoadAsync(settings.GetUris(), null, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.NotNull(env);
@@ -560,7 +544,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void Load_MultipleConfigServers_ReturnsGreaterThanEqualBadRequest_StopsChecking()
+    public async Task Load_MultipleConfigServers_ReturnsGreaterThanEqualBadRequest_StopsChecking()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
@@ -573,24 +557,22 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.Uri = "http://localhost:8888, http://localhost:8888";
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        provider.LoadInternal();
+        await provider.LoadInternalAsync(true, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
     }
 
     [Fact]
-    public void Load_MultipleConfigServers_ReturnsNotFoundStatus_DoesNotContinueChecking()
+    public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus_DoesNotContinueChecking()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
@@ -603,24 +585,22 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.Uri = "http://localhost:8888, http://localhost:8888";
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        provider.LoadInternal();
+        await provider.LoadInternalAsync(true, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
     }
 
     [Fact]
-    public void Load_ConfigServerReturnsNotFoundStatus()
+    public async Task Load_ConfigServerReturnsNotFoundStatus()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
@@ -632,23 +612,21 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        provider.LoadInternal();
+        await provider.LoadInternalAsync(true, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal(26, provider.Properties.Count);
     }
 
     [Fact]
-    public void Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
+    public async Task Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
@@ -660,21 +638,19 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.FailFast = true;
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
     }
 
     [Fact]
-    public void Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
+    public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
     {
         ConfigServerClientSettings settings = _commonSettings;
         settings.FailFast = true;
@@ -682,10 +658,8 @@ public sealed class ConfigServerConfigurationProviderTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
@@ -697,12 +671,12 @@ public sealed class ConfigServerConfigurationProviderTest
             200
         };
 
-        Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
     }
 
     [Fact]
-    public void Load_ConfigServerReturnsBadStatus_FailFastEnabled()
+    public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
@@ -714,21 +688,19 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.FailFast = true;
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
     }
 
     [Fact]
-    public void Load_MultipleConfigServers_ReturnsBadStatus_StopsChecking_FailFastEnabled()
+    public async Task Load_MultipleConfigServers_ReturnsBadStatus_StopsChecking_FailFastEnabled()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
@@ -742,10 +714,8 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.FailFast = true;
@@ -753,12 +723,12 @@ public sealed class ConfigServerConfigurationProviderTest
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
     }
 
     [Fact]
-    public void Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled()
+    public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled()
     {
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
@@ -775,10 +745,8 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         var settings = new ConfigServerClientSettings
         {
@@ -792,12 +760,12 @@ public sealed class ConfigServerConfigurationProviderTest
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
         Assert.Equal(6, TestConfigServerStartup.RequestCount);
     }
 
     [Fact]
-    public void Load_ChangesDataDictionary()
+    public async Task Load_ChangesDataDictionary()
     {
         const string environment = @"
                 {
@@ -805,8 +773,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""key1"": ""value1"",
@@ -821,16 +789,14 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Response = environment;
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        provider.LoadInternal();
+        await provider.LoadInternalAsync(true, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
 
@@ -849,8 +815,8 @@ public sealed class ConfigServerConfigurationProviderTest
                         ""profiles"": [""Production""],
                         ""label"": ""testlabel"",
                         ""version"": ""testversion"",
-                        ""propertySources"": [ 
-                            { 
+                        ""propertySources"": [
+                            {
                                 ""name"": ""source"",
                                 ""source"": {
                                             ""featureToggles.ShowModule[0]"": ""FT1"",
@@ -867,10 +833,8 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Response = environment;
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
-        using var server = new TestServer(builder)
-        {
-            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
-        };
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
@@ -895,8 +859,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""featureToggles.ShowModule[0]"": ""none""
@@ -1070,7 +1034,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void GetRequestMessage_AddsBasicAuthIfPassword()
+    public async Task GetRequestMessage_AddsBasicAuthIfPassword()
     {
         var settings = new ConfigServerClientSettings
         {
@@ -1082,7 +1046,7 @@ public sealed class ConfigServerConfigurationProviderTest
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         var requestUri = new Uri(provider.GetConfigServerUri(settings.RawUris[0], null));
-        HttpRequestMessage request = provider.GetRequestMessage(requestUri, "user", "password");
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, "user", "password", CancellationToken.None);
 
         Assert.Equal(HttpMethod.Get, request.Method);
         Assert.Equal(requestUri, request.RequestUri);
@@ -1092,7 +1056,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void GetRequestMessage_AddsVaultToken_IfNeeded()
+    public async Task GetRequestMessage_AddsVaultToken_IfNeeded()
     {
         var settings = new ConfigServerClientSettings
         {
@@ -1104,7 +1068,7 @@ public sealed class ConfigServerConfigurationProviderTest
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
         var requestUri = new Uri(provider.GetConfigServerUri(settings.RawUris[0], null));
-        HttpRequestMessage request = provider.GetRequestMessage(requestUri, null, null);
+        HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, null, null, CancellationToken.None);
 
         Assert.Equal(HttpMethod.Get, request.Method);
         Assert.Equal(requestUri, request.RequestUri);
@@ -1216,7 +1180,7 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void DiscoverServerInstances_FailsFast()
+    public async Task DiscoverServerInstances_FailsFast()
     {
         var values = new Dictionary<string, string>
         {
@@ -1237,7 +1201,7 @@ public sealed class ConfigServerConfigurationProviderTest
         var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
         var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
-        var exception = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+        var exception = await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
         Assert.StartsWith("Could not locate Config Server via discovery", exception.Message, StringComparison.Ordinal);
     }
 
@@ -1250,8 +1214,8 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""profiles"": [""Production""],
                     ""label"": ""testlabel"",
                     ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
+                    ""propertySources"": [
+                        {
                             ""name"": ""source"",
                             ""source"": {
                                 ""name"": ""my-app"",
@@ -1268,10 +1232,8 @@ public sealed class ConfigServerConfigurationProviderTest
 
         ConfigServerClientSettings settings = _commonSettings;
 
-        using var server = new TestServer(hostBuilder)
-        {
-            BaseAddress = new Uri(settings.Uri)
-        };
+        using var server = new TestServer(hostBuilder);
+        server.BaseAddress = new Uri(settings.Uri);
 
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
@@ -1294,7 +1256,7 @@ public sealed class ConfigServerConfigurationProviderTest
             }
         }
 
-        _ = Task.Run(ReloadLoop);
+        _ = Task.Run(ReloadLoop, cts.Token);
 
         while (!cts.IsCancellationRequested)
         {
@@ -1313,6 +1275,24 @@ public sealed class ConfigServerConfigurationProviderTest
         var oldCulture = CultureInfo.DefaultThreadCurrentCulture;
         CultureInfo.DefaultThreadCurrentCulture = newCulture;
         return oldCulture;
+    }
+
+    private sealed class SlowHttpMessageHandler : HttpMessageHandler
+    {
+        private readonly TimeSpan _sleepTime;
+        private readonly HttpResponseMessage _responseMessage;
+
+        public SlowHttpMessageHandler(TimeSpan sleepTime, HttpResponseMessage responseMessage)
+        {
+            _sleepTime = sleepTime;
+            _responseMessage = responseMessage;
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            await Task.Delay(_sleepTime, cancellationToken);
+            return _responseMessage;
+        }
     }
 
     private sealed class TestServiceInfo : IServiceInstance

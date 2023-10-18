@@ -4,17 +4,19 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
 /// <summary>
-/// Extension methods for registering Kubernetes <see cref="ServiceBindingConfigurationProvider" /> with <see cref="IConfigurationBuilder" />.
+/// Extension methods for registering Kubernetes <see cref="KubernetesServiceBindingConfigurationProvider" /> with <see cref="IConfigurationBuilder" />.
 /// </summary>
 public static class ConfigurationBuilderExtensions
 {
     private const bool DefaultOptional = true;
     private const bool DefaultReloadOnChange = false;
     private static readonly Predicate<string> DefaultIgnoreKeyPredicate = _ => false;
+    private static readonly IServiceBindingsReader DefaultReader = new EnvironmentServiceBindingsReader();
 
     /// <summary>
     /// Adds configuration using files from the directory path specified by the environment variable "SERVICE_BINDING_ROOT". File name and directory paths
@@ -28,7 +30,7 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder)
     {
-        return builder.AddKubernetesServiceBindings(DefaultOptional, DefaultReloadOnChange, DefaultIgnoreKeyPredicate);
+        return builder.AddKubernetesServiceBindings(DefaultOptional, DefaultReloadOnChange, DefaultIgnoreKeyPredicate, DefaultReader);
     }
 
     /// <summary>
@@ -46,7 +48,7 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional)
     {
-        return builder.AddKubernetesServiceBindings(optional, DefaultReloadOnChange, DefaultIgnoreKeyPredicate);
+        return builder.AddKubernetesServiceBindings(optional, DefaultReloadOnChange, DefaultIgnoreKeyPredicate, DefaultReader);
     }
 
     /// <summary>
@@ -67,7 +69,7 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional, bool reloadOnChange)
     {
-        return builder.AddKubernetesServiceBindings(optional, reloadOnChange, DefaultIgnoreKeyPredicate);
+        return builder.AddKubernetesServiceBindings(optional, reloadOnChange, DefaultIgnoreKeyPredicate, DefaultReader);
     }
 
     /// <summary>
@@ -92,49 +94,42 @@ public static class ConfigurationBuilderExtensions
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional, bool reloadOnChange,
         Predicate<string> ignoreKeyPredicate)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(ignoreKeyPredicate);
-
-        var source = new ServiceBindingConfigurationSource
-        {
-            Optional = optional,
-            ReloadOnChange = reloadOnChange,
-            IgnoreKeyPredicate = ignoreKeyPredicate
-        };
-
-        return RegisterPostProcessors(builder, source);
+        return AddKubernetesServiceBindings(builder, optional, reloadOnChange, ignoreKeyPredicate, DefaultReader);
     }
 
-    private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, ServiceBindingConfigurationSource source)
+    internal static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional, bool reloadOnChange,
+        Predicate<string> ignoreKeyPredicate, IServiceBindingsReader serviceBindingsReader)
     {
-        source.RegisterPostProcessor(new ArtemisPostProcessor());
-        source.RegisterPostProcessor(new CassandraPostProcessor());
-        source.RegisterPostProcessor(new ConfigServerPostProcessor());
-        source.RegisterPostProcessor(new CouchbasePostProcessor());
-        source.RegisterPostProcessor(new DB2PostProcessor());
-        source.RegisterPostProcessor(new ElasticSearchPostProcessor());
-        source.RegisterPostProcessor(new EurekaPostProcessor());
-        source.RegisterPostProcessor(new KafkaPostProcessor());
-        source.RegisterPostProcessor(new LdapPostProcessor());
-        source.RegisterPostProcessor(new MongoDbPostProcessor());
-        source.RegisterPostProcessor(new MySqlPostProcessor());
-        source.RegisterPostProcessor(new Neo4JPostProcessor());
-        source.RegisterPostProcessor(new OraclePostProcessor());
-        source.RegisterPostProcessor(new PostgreSqlPostProcessor());
-        source.RegisterPostProcessor(new RabbitMQPostProcessor());
-        source.RegisterPostProcessor(new RedisPostProcessor());
-        source.RegisterPostProcessor(new SapHanaPostProcessor());
-        source.RegisterPostProcessor(new SpringSecurityOAuth2PostProcessor());
-        source.RegisterPostProcessor(new SqlServerPostProcessor());
-        source.RegisterPostProcessor(new VaultPostProcessor());
-        source.RegisterPostProcessor(new WavefrontPostProcessor());
+        ArgumentGuard.NotNull(builder);
+        ArgumentGuard.NotNull(ignoreKeyPredicate);
+        ArgumentGuard.NotNull(serviceBindingsReader);
 
-        // Legacy Connector Post Processors
-        source.RegisterPostProcessor(new RabbitMQLegacyConnectorPostProcessor());
-        source.RegisterPostProcessor(new MySqlLegacyConnectorPostProcessor());
-        source.RegisterPostProcessor(new PostgreSqlLegacyConnectorPostProcessor());
+        if (!builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().Any())
+        {
+            var source = new KubernetesServiceBindingConfigurationSource(serviceBindingsReader)
+            {
+                Optional = optional,
+                ReloadOnChange = reloadOnChange,
+                IgnoreKeyPredicate = ignoreKeyPredicate
+            };
 
-        builder.Add(source);
+            // All post-processors must be registered *before* the configuration source is added to the builder. When adding the source,
+            // WebApplicationBuilder immediately builds the configuration provider and loads it, which executes the post-processors.
+            // Therefore adding post-processors afterwards is a no-op.
+
+            RegisterPostProcessors(source);
+            builder.Add(source);
+        }
+
         return builder;
+    }
+
+    private static void RegisterPostProcessors(KubernetesServiceBindingConfigurationSource source)
+    {
+        source.RegisterPostProcessor(new MySqlKubernetesPostProcessor());
+        source.RegisterPostProcessor(new PostgreSqlKubernetesPostProcessor());
+        source.RegisterPostProcessor(new MongoDbKubernetesPostProcessor());
+        source.RegisterPostProcessor(new RabbitMQKubernetesPostProcessor());
+        source.RegisterPostProcessor(new RedisKubernetesPostProcessor());
     }
 }

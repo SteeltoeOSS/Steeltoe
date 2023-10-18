@@ -4,8 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
-using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul.Discovery;
 
 namespace Steeltoe.Discovery.Consul;
@@ -43,6 +43,6 @@ public static class ConsulPostConfigurer
     {
         options.NetUtils = new InetUtils(netOptions);
         options.ApplyNetUtils();
-        options.ApplyConfigUrls(configuration.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
+        options.ApplyConfigUrls(configuration.GetAspNetCoreUrls());
     }
 }

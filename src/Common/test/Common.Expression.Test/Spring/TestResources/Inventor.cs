@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable S4004 // Collection properties should be readonly
 // ReSharper disable InconsistentNaming
 
@@ -10,7 +9,7 @@ using System.Globalization;
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class Inventor
+public sealed class Inventor
 {
     private PlaceOfBirth _placeOfBirth;
     public List<int> ListOfInteger { get; set; } = new();
@@ -201,7 +200,7 @@ public class Inventor
         return strings.Length + i;
     }
 
-    public class TestException : Exception
+    public sealed class TestException : Exception
     {
     }
 #pragma warning disable SA1401 // Fields should be private

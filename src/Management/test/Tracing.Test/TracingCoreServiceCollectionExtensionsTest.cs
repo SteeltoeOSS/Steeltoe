@@ -11,15 +11,8 @@ using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 
-public class TracingCoreServiceCollectionExtensionsTest : TestBase
+public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
 {
-    [Fact]
-    public void AddDistributedTracingAspNetCore_ThrowsOnNulls()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(null));
-        Assert.Equal("services", ex.ParamName);
-    }
-
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
@@ -31,7 +24,6 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
         ValidateServiceContainerCore(serviceProvider);
     }
 
-    // this test should find OTLP exporter is configured, see TracingBase.Test for Zipkin & Jaeger
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
     {
@@ -49,7 +41,7 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresWavefrontExporters()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string>
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string?>
         {
             { "management:metrics:export:wavefront:uri", "https://test.wavefront.com" },
             { "management:metrics:export:wavefront:apiToken", "fakeSecret" }

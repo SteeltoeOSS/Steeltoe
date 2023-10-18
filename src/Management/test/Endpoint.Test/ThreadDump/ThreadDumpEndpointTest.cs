@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Xunit;
@@ -12,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 
-public class ThreadDumpEndpointTest : BaseTest
+public sealed class ThreadDumpEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -22,27 +21,19 @@ public class ThreadDumpEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_ThrowsIfNullRepo()
+    public async Task Invoke_CallsDumpThreads()
     {
-        IOptionsMonitor<ThreadDumpEndpointOptions> options = GetOptionsMonitorFromSettings<ThreadDumpEndpointOptions>();
-        Assert.Throws<ArgumentNullException>(() => new ThreadDumpEndpoint(options, null, NullLogger<ThreadDumpEndpoint>.Instance));
-    }
+        using var testContext = new TestContext(_output);
 
-    [Fact]
-    public void Invoke_CallsDumpThreads()
-    {
-        using var tc = new TestContext(_output);
-        var dumper = new TestThreadDumper();
-
-        tc.AdditionalServices = (services, configuration) =>
+        testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton<IThreadDumper>(dumper);
+            services.AddSingleton<EventPipeThreadDumper>();
             services.AddThreadDumpActuatorServices(MediaTypeVersion.V1);
         };
 
-        var ep = tc.GetService<IThreadDumpEndpoint>();
-        List<ThreadInfo> result = ep.Invoke();
-        Assert.NotNull(result);
-        Assert.True(dumper.DumpThreadsCalled);
+        var handler = testContext.GetRequiredService<IThreadDumpEndpointHandler>();
+        IList<ThreadInfo> result = await handler.InvokeAsync(null, CancellationToken.None);
+
+        result.Should().NotBeEmpty();
     }
 }

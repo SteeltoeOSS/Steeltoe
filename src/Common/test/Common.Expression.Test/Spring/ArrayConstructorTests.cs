@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class ArrayConstructorTests : AbstractExpressionTests
+public sealed class ArrayConstructorTests : AbstractExpressionTests
 {
     [Fact]
     public void SimpleArrayWithInitializer()

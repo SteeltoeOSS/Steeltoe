@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
@@ -32,13 +32,9 @@ public static class TestHelper
         Assert.Equal(ConfigServerClientSettings.DefaultHealthEnabled, settings.HealthEnabled);
         Assert.Equal(ConfigServerClientSettings.DefaultHealthTimeToLive, settings.HealthTimeToLive);
 
-        try
+        if (settings.Name != null)
         {
-            Assert.Null(settings.Name);
-        }
-        catch
-        {
-            Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, settings.Name);
+            Assert.Equal(HostingHelpers.TestAppName, settings.Name);
         }
 
         Assert.Null(settings.Label);

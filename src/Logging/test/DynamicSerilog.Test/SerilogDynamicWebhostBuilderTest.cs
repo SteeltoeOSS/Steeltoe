@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
-public class SerilogDynamicWebHostBuilderTest
+public sealed class SerilogDynamicWebHostBuilderTest
 {
     public SerilogDynamicWebHostBuilderTest()
     {
@@ -57,7 +57,8 @@ public class SerilogDynamicWebHostBuilderTest
         object logger = host.Services.GetService(typeof(ILogger<SerilogDynamicWebHostBuilderTest>));
         ILogEventSink[] sinks = GetSinks(logger);
         Assert.NotNull(sinks);
-        var testSink = sinks.FirstOrDefault(x => x.GetType() == typeof(TestSink)) as TestSink;
+        TestSink testSink = sinks.OfType<TestSink>().FirstOrDefault();
+        Assert.NotNull(testSink);
 
         List<string> logs = testSink.GetLogs();
         Assert.NotEmpty(logs);

@@ -79,11 +79,7 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
             }
             else
             {
-                Task task = Factory.StartNew(() =>
-                {
-                    Invoke(interceptors, message, handler);
-                });
-
+                Task task = Factory.StartNew(() => Invoke(interceptors, message, handler), cancellationToken);
                 task.GetAwaiter().GetResult();
             }
         }

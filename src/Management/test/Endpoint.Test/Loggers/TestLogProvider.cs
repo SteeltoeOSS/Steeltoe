@@ -3,21 +3,20 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 
 internal sealed class TestLogProvider : IDynamicLoggerProvider
 {
-    public string Category { get; set; }
-
-    public LogLevel Level { get; set; }
-
-    public bool GetLoggerConfigurationsCalled { get; set; }
+    public string? Category { get; private set; }
+    public LogLevel Level { get; private set; }
+    public bool GetLoggerConfigurationsCalled { get; private set; }
 
     public ILogger CreateLogger(string categoryName)
     {
-        throw new NotImplementedException();
+        return NullLogger.Instance;
     }
 
     public void Dispose()

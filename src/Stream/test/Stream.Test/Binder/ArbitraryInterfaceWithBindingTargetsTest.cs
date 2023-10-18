@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class ArbitraryInterfaceWithBindingTargetsTest : AbstractTest
+public sealed class ArbitraryInterfaceWithBindingTargetsTest : AbstractTest
 {
     [Fact]
     public async Task TestArbitraryInterfaceChannelsBound()

@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class SpelCompilationCoverageTests : AbstractExpressionTests
+public sealed class SpelCompilationCoverageTests : AbstractExpressionTests
 {
     private const string InvariantCulturePropertyAccess = "T(System.Globalization.CultureInfo).InvariantCulture";
     private IExpression _expression;
@@ -5823,7 +5823,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(expr);
         Assert.Equal(expectedResult, expr.GetValue(p));
     }
-#pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning disable IDE0051 // Remove unused private members
 #pragma warning disable S1144 // Unused private types or members should be removed
@@ -5890,7 +5889,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class TestAArguments
+    public sealed class TestAArguments
     {
         public int Value;
 
@@ -5905,7 +5904,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class MyAccessor : ICompilablePropertyAccessor
+    public sealed class MyAccessor : ICompilablePropertyAccessor
     {
         private static readonly MethodInfo _method = typeof(Payload2).GetMethod(nameof(Payload2.GetField), new[]
         {
@@ -5970,7 +5969,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class CompilableMapAccessor : ICompilablePropertyAccessor
+    public sealed class CompilableMapAccessor : ICompilablePropertyAccessor
     {
         private static readonly MethodInfo _getItem = typeof(IDictionary).GetMethod("get_Item", new[]
         {
@@ -6039,7 +6038,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Reg
+    public sealed class Reg
     {
         public int Value { get; private set; }
 
@@ -6082,12 +6081,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class LongHolder
+    public sealed class LongHolder
     {
         public long SomeLong = 3L;
     }
 
-    public class RecordHolder
+    public sealed class RecordHolder
     {
         public Dictionary<string, long> Record = new();
 
@@ -6104,7 +6103,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Foo
+    public sealed class Foo
     {
         public string Bar()
         {
@@ -6117,7 +6116,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class MessageHeaders : Dictionary<string, object>
+    public sealed class MessageHeaders : Dictionary<string, object>
     {
     }
 
@@ -6130,7 +6129,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         int[] IArray { get; }
     }
 
-    public class MyMessage : IMessage<string>
+    public sealed class MyMessage : IMessage<string>
     {
         public MessageHeaders Headers
         {
@@ -6183,7 +6182,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Payload2
+    public sealed class Payload2
     {
         private const string _var2 = "def";
 
@@ -6205,17 +6204,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Payload2Holder
+    public sealed class Payload2Holder
     {
         public Payload2 Payload2 = new();
     }
 
-    public class FooString
+    public sealed class FooString
     {
         public string Object { get; } = "hello";
     }
 
-    public class TestClass6
+    public sealed class TestClass6
     {
         public static string Apple = "value2";
 
@@ -6228,7 +6227,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public string Banana { get; } = "value3";
     }
 
-    public class Two
+    public sealed class Two
     {
         public Three Threeee { get; } = new();
 
@@ -6238,7 +6237,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Payload
+    public sealed class Payload
     {
         public Two Holder = new();
 
@@ -6248,7 +6247,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         };
     }
 
-    public class TestClass5
+    public sealed class TestClass5
     {
         public static int _I;
         public static string _S;
@@ -6586,7 +6585,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class TestClass10
+    public sealed class TestClass10
     {
         public string S;
 
@@ -6640,7 +6639,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class TestClass8
+    public sealed class TestClass8
     {
         public int I { get; }
 
@@ -6673,7 +6672,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Obj
+    public sealed class Obj
     {
         public readonly string Param1;
 
@@ -6683,7 +6682,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Obj2
+    public sealed class Obj2
     {
         public readonly string Output;
 
@@ -6700,7 +6699,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Obj3
+    public sealed class Obj3
     {
         public readonly string Output;
 
@@ -6733,7 +6732,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Obj4
+    public sealed class Obj4
     {
         public readonly string Output;
 
@@ -6750,7 +6749,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Person
+    public sealed class Person
     {
         public int Age { get; set; }
 
@@ -6760,7 +6759,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Person3
+    public sealed class Person3
     {
         public string Name { get; }
         public object Age { get; }
@@ -6772,7 +6771,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Apple : IComparable
+    public sealed class Apple : IComparable
     {
         public object GotComparedTo;
         public int I;
@@ -6807,7 +6806,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     }
 
     // For OpNe_SPR14863
-    public class MyContext
+    public sealed class MyContext
     {
         public Dictionary<string, string> Data { get; }
 
@@ -6817,7 +6816,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class TestClass7
+    public sealed class TestClass7
     {
         public static string Property = "UK 123".Split(' ')[0];
 
@@ -6828,7 +6827,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class GenericMessageTestHelper<T>
+    public sealed class GenericMessageTestHelper<T>
     {
         public T Payload { get; }
 
@@ -6838,7 +6837,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class GenericMessageTestHelper2<T>
+    public sealed class GenericMessageTestHelper2<T>
         where T : struct
     {
         public object Payload { get; }
@@ -6849,7 +6848,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Greeter
+    public sealed class Greeter
     {
         public string World => "world";
 
@@ -6859,7 +6858,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class PayloadX
+    public sealed class PayloadX
     {
         public int valueI = 120;
 
@@ -6901,7 +6900,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class SomeCompareMethod2
+    public sealed class SomeCompareMethod2
     {
         public static int Negate(int i1)
         {
@@ -7006,14 +7005,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class Three
+    public sealed class Three
     {
         public double four = 0.04d;
 
         public double Four => four;
     }
 
-    public class StaticsHelper
+    public sealed class StaticsHelper
     {
         public static StaticsHelper sh = new();
         public static StaticsHelper Fielda = sh;
@@ -7039,19 +7038,19 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class TestClass1
+    public sealed class TestClass1
     {
         public int Index1 = 1;
         public int Index2 = 3;
         public string Word = "abcd";
     }
 
-    public class FooObjectHolder
+    public sealed class FooObjectHolder
     {
         public FooObject Foo { get; set; } = new();
     }
 
-    public class FooObject
+    public sealed class FooObject
     {
         public object TheObject => "hello";
 
@@ -7061,7 +7060,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
     }
 
-    public class TestClass4
+    public sealed class TestClass4
     {
         public bool A { get; set; }
 

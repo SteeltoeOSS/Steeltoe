@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Support.Converter;
 
-public class SimpleMessageConverterTest
+public sealed class SimpleMessageConverterTest
 {
     [Fact]
     public void BytesAsDefaultMessageBodyType()

@@ -16,7 +16,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
 [Trait("Category", "Integration")]
-public class ContainerShutDownTest : AbstractTest
+public sealed class ContainerShutDownTest : AbstractTest
 {
     [Fact]
     public void TestUninterruptibleListenerDmlc()

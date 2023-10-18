@@ -8,7 +8,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class InternalPipeLine
+public sealed class InternalPipeLine
 {
     [StreamListener(ISink.InputName)]
     [SendTo("internalchannel")]

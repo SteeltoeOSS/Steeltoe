@@ -10,10 +10,10 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Discovery;
 
-public class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
+public sealed class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
 {
     [Fact]
-    public void AddConfigurationDiscoveryClient_AddsClientWithOptions()
+    public async Task AddConfigurationDiscoveryClient_AddsClientWithOptions()
     {
         const string appsettings = @"
 {
@@ -44,8 +44,14 @@ public class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
 
         Assert.NotNull(serviceInstanceProvider);
         Assert.IsType<ConfigurationServiceInstanceProvider>(serviceInstanceProvider);
-        Assert.Equal(2, serviceInstanceProvider.Services.Count);
-        Assert.Equal(2, serviceInstanceProvider.GetInstances("fruitService").Count);
-        Assert.Equal(2, serviceInstanceProvider.GetInstances("vegetableService").Count);
+
+        IList<string> servicesIds = await serviceInstanceProvider.GetServicesAsync(CancellationToken.None);
+        Assert.Equal(2, servicesIds.Count);
+
+        IList<IServiceInstance> fruitInstances = await serviceInstanceProvider.GetInstancesAsync("fruitService", CancellationToken.None);
+        Assert.Equal(2, fruitInstances.Count);
+
+        IList<IServiceInstance> vegetableInstances = await serviceInstanceProvider.GetInstancesAsync("vegetableService", CancellationToken.None);
+        Assert.Equal(2, vegetableInstances.Count);
     }
 }

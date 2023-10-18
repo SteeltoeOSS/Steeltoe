@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
-public class MessageMethodArgumentResolverTest
+public sealed class MessageMethodArgumentResolverTest
 {
     private readonly IMessageConverter _converter;
 

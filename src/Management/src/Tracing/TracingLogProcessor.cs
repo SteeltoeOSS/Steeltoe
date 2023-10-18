@@ -9,18 +9,22 @@ using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Tracing;
 
-public class TracingLogProcessor : IDynamicMessageProcessor
+public sealed class TracingLogProcessor : IDynamicMessageProcessor
 {
     private readonly ITracingOptions _options;
 
     public TracingLogProcessor(ITracingOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         _options = options;
     }
 
     public string Process(string inputLogMessage)
     {
-        TelemetrySpan currentSpan = GetCurrentSpan();
+        ArgumentGuard.NotNull(inputLogMessage);
+
+        TelemetrySpan? currentSpan = GetCurrentSpan();
 
         if (currentSpan != null)
         {
@@ -57,7 +61,7 @@ public class TracingLogProcessor : IDynamicMessageProcessor
         return inputLogMessage;
     }
 
-    protected internal TelemetrySpan GetCurrentSpan()
+    private TelemetrySpan? GetCurrentSpan()
     {
         TelemetrySpan span = Tracer.CurrentSpan;
 

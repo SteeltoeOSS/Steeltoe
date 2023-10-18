@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 
-public class ApplicationTest : AbstractBaseTest
+public sealed class ApplicationTest : AbstractBaseTest
 {
     [Fact]
     public void DefaultConstructor_InitializedWithDefaults()

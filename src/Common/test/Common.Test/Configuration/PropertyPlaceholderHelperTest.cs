@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Configuration;
 
-public class PropertyPlaceholderHelperTest
+public sealed class PropertyPlaceholderHelperTest
 {
     [Fact]
     public void ResolvePlaceholders_ResolvesSinglePlaceholder()

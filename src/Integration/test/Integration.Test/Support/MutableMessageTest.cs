@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Support;
 
-public class MutableMessageTest
+public sealed class MutableMessageTest
 {
     [Fact]
     public void TestMessageIdTimestampRemains()

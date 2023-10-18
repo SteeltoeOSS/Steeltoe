@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
-using Steeltoe.Connector.Services;
+using Steeltoe.Connectors.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 

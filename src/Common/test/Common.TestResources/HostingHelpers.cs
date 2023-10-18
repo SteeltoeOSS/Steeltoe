@@ -9,6 +9,8 @@ namespace Steeltoe.Common.TestResources;
 
 public static class HostingHelpers
 {
+    public const string TestAppName = "TestApp";
+
     public static IHostEnvironment GetHostingEnvironment()
     {
         return GetHostingEnvironment("EnvironmentName");
@@ -18,7 +20,8 @@ public static class HostingHelpers
     {
         return new HostingEnvironment
         {
-            EnvironmentName = environmentName
+            EnvironmentName = environmentName,
+            ApplicationName = TestAppName
         };
     }
 }

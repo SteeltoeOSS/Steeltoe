@@ -11,7 +11,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
-public class RoutingConnectionFactoryTest
+public sealed class RoutingConnectionFactoryTest
 {
     [Fact]
     public void TestAbstractRoutingConnectionFactory()

@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Connector.Services;
+namespace Steeltoe.Connectors.Services;
 
-public class EurekaServiceInfo : UriServiceInfo
+internal sealed class EurekaServiceInfo : UriServiceInfo
 {
-    public string ClientId { get; internal set; }
+    public string ClientId { get; }
 
-    public string ClientSecret { get; internal set; }
+    public string ClientSecret { get; }
 
-    public string TokenUri { get; internal set; }
+    public string TokenUri { get; }
 
     public EurekaServiceInfo(string id, string uri, string clientId, string clientSecret, string tokenUri)
         : base(id, uri)

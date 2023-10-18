@@ -2,27 +2,30 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-internal class MetricCollectionHostedService : IHostedService
+internal sealed class MetricCollectionHostedService : IHostedService
 {
     private readonly AggregationManager _aggregationManager;
 
     public MetricCollectionHostedService(AggregationManager aggregationManager)
     {
+        ArgumentGuard.NotNull(aggregationManager);
+
         _aggregationManager = aggregationManager;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() => _aggregationManager.Start());
+        return Task.Run(_aggregationManager.Start, cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() => _aggregationManager.Dispose());
+        return Task.Run(_aggregationManager.Dispose, cancellationToken);
     }
 }

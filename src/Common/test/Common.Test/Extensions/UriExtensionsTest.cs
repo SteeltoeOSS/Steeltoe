@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Extensions;
 
-public class UriExtensionsTest
+public sealed class UriExtensionsTest
 {
     [Fact]
     public void MaskExistingBasicAuthenticationToString()

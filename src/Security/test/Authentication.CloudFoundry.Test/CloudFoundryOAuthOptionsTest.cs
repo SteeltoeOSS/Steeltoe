@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class CloudFoundryOAuthOptionsTest
+public sealed class CloudFoundryOAuthOptionsTest
 {
     private const string DefaultOauthUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}";
     private const string DefaultAccessTokenUrl = DefaultOauthUrl + CloudFoundryDefaults.AccessTokenUri;

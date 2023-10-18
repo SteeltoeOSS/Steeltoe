@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Net.Test;
 
-public class WindowsNetworkFileShareTest
+public sealed class WindowsNetworkFileShareTest
 {
     [Fact]
     public void GetErrorForKnownNumber_ReturnsKnownError()

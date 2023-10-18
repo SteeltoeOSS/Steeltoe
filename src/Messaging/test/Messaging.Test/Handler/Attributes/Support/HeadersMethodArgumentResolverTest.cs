@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
-public class HeadersMethodArgumentResolverTest
+public sealed class HeadersMethodArgumentResolverTest
 {
     private readonly HeadersMethodArgumentResolver _resolver = new();
 

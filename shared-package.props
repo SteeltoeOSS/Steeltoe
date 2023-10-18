@@ -12,6 +12,7 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>See https://github.com/SteeltoeOSS/Steeltoe/releases.</PackageReleaseNotes>
+    <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -36,6 +37,11 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)\build\icon.png" Pack="true" PackagePath="\" Visible="false" />
+    <!-- Add a PackageReadme.md file in the project directory to override the default one. -->
+    <None Condition="Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildProjectDirectory)\PackageReadme.md" Visible="false" Pack="True"
+      PackagePath="" />
+    <None Condition="!Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildThisFileDirectory)\PackageReadme.md" Visible="false" Pack="True"
+      PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,12 +52,16 @@
     <Error Text="The 'Description' property must be set for packable project '$(MSBuildProjectName)'." Condition="'$(Description)' == ''" />
   </Target>
 
-  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Configuration'))">
+  <ItemGroup
+    Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Management')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Connectors'))">
+
     <!-- Widen the condition above as we're completing more public API reviews -->
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
   </ItemGroup>
 
-  <PropertyGroup Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Configuration'))">
+  <PropertyGroup
+    Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Management')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Connectors'))">
+
     <!-- Narrow the condition above as we're completing more public API reviews -->
     <NoWarn>$(NoWarn);SA1401;S1168;S2360;S3900;S3956;S4004;S4023</NoWarn>
   </PropertyGroup>

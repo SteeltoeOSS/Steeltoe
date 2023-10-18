@@ -27,8 +27,13 @@ public class DynamicConsoleLoggerProvider : DynamicLoggerProviderBase
     /// message processors to apply to message.
     /// </param>
     public DynamicConsoleLoggerProvider(IOptionsMonitor<LoggerFilterOptions> filterOptions, ConsoleLoggerProvider consoleLoggerProvider,
-        IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
+        IEnumerable<IDynamicMessageProcessor> messageProcessors)
         : base(() => consoleLoggerProvider, GetInitialLevelsFromOptions(filterOptions), messageProcessors)
+    {
+    }
+
+    public DynamicConsoleLoggerProvider(IOptionsMonitor<LoggerFilterOptions> filterOptions, ConsoleLoggerProvider consoleLoggerProvider)
+        : this(filterOptions, consoleLoggerProvider, null)
     {
     }
 

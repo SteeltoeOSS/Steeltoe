@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Registry;
 
-public class ConsulRegistrationTest
+public sealed class ConsulRegistrationTest
 {
     [Fact]
     public void Constructor_ThrowsOnNulls()
@@ -37,7 +37,12 @@ public class ConsulRegistrationTest
             Port = 1234,
             Tags = new[]
             {
-                "foo=bar"
+                "tag1",
+                "tag2"
+            },
+            Meta = new Dictionary<string, string>
+            {
+                ["foo"] = "bar"
             }
         };
 
@@ -47,6 +52,8 @@ public class ConsulRegistrationTest
         Assert.Equal("name", reg.ServiceId);
         Assert.Equal("address", reg.Host);
         Assert.Equal(1234, reg.Port);
+        Assert.Contains("tag1", reg.Tags);
+        Assert.Contains("tag2", reg.Tags);
         Assert.Single(reg.Metadata);
         Assert.Contains("foo", reg.Metadata.Keys);
         Assert.Contains("bar", reg.Metadata.Values);
@@ -61,7 +68,8 @@ public class ConsulRegistrationTest
         {
             Tags = new List<string>
             {
-                "foo=bar"
+                "foo",
+                "bar"
             },
             InstanceZone = "instancezone",
             InstanceGroup = "instancegroup",
@@ -69,11 +77,43 @@ public class ConsulRegistrationTest
         };
 
         string[] result = ConsulRegistration.CreateTags(options);
-        Assert.Equal(4, result.Length);
-        Assert.Contains("foo=bar", result);
-        Assert.Contains("zone=instancezone", result);
-        Assert.Contains("group=instancegroup", result);
-        Assert.Contains("secure=true", result);
+        Assert.Equal(2, result.Length);
+        Assert.Contains("foo", result);
+        Assert.Contains("bar", result);
+    }
+
+    [Fact]
+    public void CreateMetadata_ReturnsExpected()
+    {
+        var options = new ConsulDiscoveryOptions
+        {
+            Metadata = new Dictionary<string, string>
+            {
+                ["foo"] = "bar",
+                ["baz"] = "qux"
+            },
+            InstanceZone = "instancezone",
+            InstanceGroup = "instancegroup",
+            Scheme = "https"
+        };
+
+        IDictionary<string, string> result = ConsulRegistration.CreateMetadata(options);
+        Assert.Equal(5, result.Keys.Count);
+
+        Assert.Contains(result, x => x.Key == "foo");
+        Assert.Equal("bar", result["foo"]);
+
+        Assert.Contains(result, x => x.Key == "baz");
+        Assert.Equal("qux", result["baz"]);
+
+        Assert.Contains(result, x => x.Key == "zone");
+        Assert.Equal("instancezone", result["zone"]);
+
+        Assert.Contains(result, x => x.Key == "group");
+        Assert.Equal("instancegroup", result["group"]);
+
+        Assert.Contains(result, x => x.Key == "secure");
+        Assert.Equal("true", result["secure"]);
     }
 
     [Fact]
@@ -115,32 +155,6 @@ public class ConsulRegistrationTest
         appInstanceInfo = new ApplicationInstanceInfo(configuration);
         result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
         Assert.Equal("ConsulDiscoveryServiceName", result.Service.Name);
-    }
-
-    [Fact]
-    public void Tags_MapTo_Metadata()
-    {
-        // arrange some tags in configuration
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-        {
-            { "consul:discovery:tags:0", "key0=value0" },
-            { "consul:discovery:tags:1", "key1=value1" },
-            { "consul:discovery:tags:2", "keyvalue" }
-        }).Build();
-
-        // bind to options
-        var options = new ConsulDiscoveryOptions();
-        configurationRoot.Bind(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix, options);
-        string[] tags = ConsulRegistration.CreateTags(options);
-
-        // act - get metadata from tags
-        IDictionary<string, string> result = ConsulServerUtils.GetMetadata(tags);
-        Assert.Contains(result, k => k.Key == "key0");
-        Assert.Equal("value0", result["key0"]);
-        Assert.Contains(result, k => k.Key == "key1");
-        Assert.Equal("value1", result["key1"]);
-        Assert.Contains(result, k => k.Key == "keyvalue");
-        Assert.Equal("keyvalue", result["keyvalue"]);
     }
 
     [Fact]

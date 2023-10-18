@@ -8,21 +8,21 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class CloudFoundryEndpointOptionsTest : BaseTest
+public sealed class CloudFoundryEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
-        Assert.Null(opts.Enabled);
-        Assert.True(opts.ValidateCertificates);
-        Assert.Equal(string.Empty, opts.Id);
+        var options = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
+        Assert.Null(options.Enabled);
+        Assert.True(options.ValidateCertificates);
+        Assert.Equal(string.Empty, options.Id);
     }
 
     [Fact]
     public void Constructor_BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -31,16 +31,16 @@ public class CloudFoundryEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 
-        var opts = GetOptionsFromSettings<InfoEndpointOptions>(appsettings);
-        var cloudOpts = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
+        var infoEndpointOptions = GetOptionsFromSettings<InfoEndpointOptions>(appsettings);
+        var cloudFoundryEndpointOptions = GetOptionsFromSettings<CloudFoundryEndpointOptions>(appsettings);
 
-        Assert.True(cloudOpts.Enabled);
-        Assert.Equal(string.Empty, cloudOpts.Id);
-        Assert.Equal(string.Empty, cloudOpts.Path);
-        Assert.False(cloudOpts.ValidateCertificates);
+        Assert.True(cloudFoundryEndpointOptions.Enabled);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Path);
+        Assert.False(cloudFoundryEndpointOptions.ValidateCertificates);
 
-        Assert.True(opts.Enabled);
-        Assert.Equal("info", opts.Id);
-        Assert.Equal("info", opts.Path);
+        Assert.True(infoEndpointOptions.Enabled);
+        Assert.Equal("info", infoEndpointOptions.Id);
+        Assert.Equal("info", infoEndpointOptions.Path);
     }
 }

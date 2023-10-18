@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Stream.Test.Binding;
 
-public class MessageConverterConfigurerTest : AbstractTest
+public sealed class MessageConverterConfigurerTest : AbstractTest
 {
 }

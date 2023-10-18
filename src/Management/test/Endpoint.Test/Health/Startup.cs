@@ -9,24 +9,24 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
-using Steeltoe.Management.Endpoint.Test.Health.MockContributors;
+using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 
-public class Startup
+public sealed class Startup
 {
-    public IConfiguration Configuration { get; set; }
+    private readonly IConfiguration _configuration;
 
     public Startup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        _configuration = configuration;
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
 
-        switch (Configuration.GetValue<string>("HealthCheckType"))
+        switch (_configuration.GetValue<string?>("HealthCheckType"))
         {
             case "down":
                 services.AddHealthActuator(typeof(DownContributor));
@@ -37,11 +37,14 @@ public class Startup
             case "unknown":
                 services.AddHealthActuator(typeof(UnknownContributor));
                 break;
+            case "disabled":
+                services.AddHealthActuator(typeof(DisabledContributor));
+                break;
             case "defaultAggregator":
                 services.AddHealthActuator(new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
                 break;
             case "microsoftHealthAggregator":
-                services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestServiceOptions());
+                services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestHealthCheckServiceOptions());
                 services.AddHealthActuator(new HealthRegistrationsAggregator(), typeof(DiskSpaceContributor));
                 break;
             default:

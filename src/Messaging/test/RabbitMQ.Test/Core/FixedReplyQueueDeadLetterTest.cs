@@ -22,7 +22,7 @@ using Xunit;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
-public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLetterTest.FixedReplyStartupFixture>
+public sealed class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLetterTest.FixedReplyStartupFixture>
 {
     private readonly ServiceProvider _provider;
     private readonly FixedReplyStartupFixture _fixture;
@@ -282,7 +282,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLe
         }
     }
 
-    public class PojoListener
+    public sealed class PojoListener
     {
         public string HandleMessage(string foo)
         {
@@ -291,7 +291,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueueDeadLe
         }
     }
 
-    public class DeadListener
+    public sealed class DeadListener
     {
         public CountdownEvent Latch { get; set; } = new(1);
 

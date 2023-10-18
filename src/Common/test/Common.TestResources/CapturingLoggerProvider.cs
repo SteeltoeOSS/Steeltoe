@@ -18,7 +18,7 @@ public sealed class CapturingLoggerProvider : ILoggerProvider, ILogger
 
     public IDisposable BeginScope<TState>(TState state)
     {
-        return null;
+        return EmptyDisposable.Instance;
     }
 
     public bool IsEnabled(LogLevel logLevel)

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Support;
 
-public class MessageBuilderTest
+public sealed class MessageBuilderTest
 {
     [Fact]
     public void TestReadOnlyHeaders()

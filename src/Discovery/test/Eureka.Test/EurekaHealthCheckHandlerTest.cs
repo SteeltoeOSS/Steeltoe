@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaHealthCheckHandlerTest
+public sealed class EurekaHealthCheckHandlerTest
 {
     [Fact]
     public void MapToInstanceStatus_ReturnsExpected()
@@ -22,16 +22,16 @@ public class EurekaHealthCheckHandlerTest
     }
 
     [Fact]
-    public void DoHealthChecks_ReturnsExpected()
+    public async Task DoHealthChecks_ReturnsExpected()
     {
         var handler = new EurekaHealthCheckHandler();
-        List<HealthCheckResult> result = handler.DoHealthChecks(new List<IHealthContributor>());
+        List<HealthCheckResult> result = await handler.DoHealthChecksAsync(new List<IHealthContributor>(), CancellationToken.None);
         Assert.Empty(result);
 
-        result = handler.DoHealthChecks(new List<IHealthContributor>
+        result = await handler.DoHealthChecksAsync(new List<IHealthContributor>
         {
             new TestContributor()
-        });
+        }, CancellationToken.None);
 
         Assert.Empty(result);
     }
@@ -115,12 +115,13 @@ public class EurekaHealthCheckHandlerTest
         Assert.Equal(HealthStatus.Unknown, handler.AggregateStatus(results));
     }
 
-    public class TestContributor : IHealthContributor
+    private sealed class TestContributor : IHealthContributor
     {
         public string Id => "TestContrib";
 
-        public HealthCheckResult Health()
+        public async Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
         {
+            await Task.Yield();
             throw new NotImplementedException();
         }
     }

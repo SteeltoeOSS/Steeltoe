@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.Tasks;
 
-public class TimedTaskTest : AbstractBaseTest
+public sealed class TimedTaskTest : AbstractBaseTest
 {
     private volatile int _timerFuncCount;
 
@@ -25,7 +25,7 @@ public class TimedTaskTest : AbstractBaseTest
 
     private void TimerFunc()
     {
-        ++_timerFuncCount;
+        Interlocked.Increment(ref _timerFuncCount);
         Thread.Sleep(3000);
     }
 }

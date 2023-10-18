@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Contexts;
 
-public class ApplicationContextExpressionTests
+public sealed class ApplicationContextExpressionTests
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -79,14 +79,14 @@ public class ApplicationContextExpressionTests
         return context.ServiceExpressionResolver.Evaluate(result, new ServiceExpressionContext(context));
     }
 
-    public class TestService : IServiceNameAware
+    public sealed class TestService : IServiceNameAware
     {
         public string Name => ServiceName;
 
         public string ServiceName { get; set; } = "NotSet";
     }
 
-    public class ValueTestService : IServiceNameAware
+    public sealed class ValueTestService : IServiceNameAware
     {
         public string ServiceName { get; set; } = "tb3";
     }

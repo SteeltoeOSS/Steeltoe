@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class PropertyAccessTests : AbstractExpressionTests
+public sealed class PropertyAccessTests : AbstractExpressionTests
 {
     [Fact]
     public void TestSimpleAccess01()

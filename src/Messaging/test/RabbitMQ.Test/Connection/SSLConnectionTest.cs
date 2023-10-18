@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Connection;
 
-public class SslConnectionTest
+public sealed class SslConnectionTest
 {
 }

@@ -7,105 +7,75 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
-public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, MetricsRequest>
+internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequest?, MetricsResponse?>
 {
-    public MetricsEndpointMiddleware(IMetricsEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<MetricsEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    private readonly ILogger<MetricsEndpointMiddleware> _logger;
+
+    public MetricsEndpointMiddleware(IMetricsEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
+        _logger = loggerFactory.CreateLogger<MetricsEndpointMiddleware>();
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<MetricsResponse?> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
-        {
-            return HandleMetricsRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
+        MetricsRequest? metricsRequest = GetMetricsRequest(context);
+        return await EndpointHandler.InvokeAsync(metricsRequest, cancellationToken);
     }
 
-    public override string HandleRequest(MetricsRequest arg)
-    {
-        IMetricsResponse result = Endpoint.Invoke(arg);
-        return result == null ? null : Serialize(result);
-    }
-
-    protected internal async Task HandleMetricsRequestAsync(HttpContext context)
+    private MetricsRequest? GetMetricsRequest(HttpContext context)
     {
         HttpRequest request = context.Request;
-        HttpResponse response = context.Response;
-
-        logger.LogDebug("Incoming path: {path}", request.Path.Value);
+        _logger.LogDebug("Handling metrics for path: {path}", request.Path.Value);
 
         string metricName = GetMetricName(request);
 
         if (!string.IsNullOrEmpty(metricName))
         {
             // GET /metrics/{metricName}?tag=key:value&tag=key:value
-            List<KeyValuePair<string, string>> tags = ParseTags(request.Query);
-            var metricRequest = new MetricsRequest(metricName, tags);
-            string serialInfo = HandleRequest(metricRequest);
-
-            if (serialInfo != null)
-            {
-                response.StatusCode = (int)HttpStatusCode.OK;
-                await context.Response.WriteAsync(serialInfo);
-            }
-            else
-            {
-                response.StatusCode = (int)HttpStatusCode.NotFound;
-            }
+            IList<KeyValuePair<string, string>> tags = ParseTags(request.Query);
+            return new MetricsRequest(metricName, tags);
         }
-        else
-        {
-            // GET /metrics
-            string serialInfo = HandleRequest(null);
-            logger.LogDebug("Returning: {info}", serialInfo);
 
-            context.HandleContentNegotiation(logger);
-            context.Response.StatusCode = (int)HttpStatusCode.OK;
-            await context.Response.WriteAsync(serialInfo);
-        }
+        // GET /metrics
+        return null;
     }
 
-    protected internal string GetMetricName(HttpRequest request)
+    internal string GetMetricName(HttpRequest request)
     {
-        ManagementEndpointOptions mgmtOptions = managementOptions.GetFromContextPath(request.Path);
+        string? baseRequestPath = ManagementOptionsMonitor.CurrentValue.GetBaseRequestPath(request);
+        string path = $"{baseRequestPath}/{EndpointHandler.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
 
-        if (mgmtOptions == null)
-        {
-            return GetMetricName(request, Endpoint.Options.Path);
-        }
-
-        string path = $"{mgmtOptions.Path}/{Endpoint.Options.Id}".Replace("//", "/", StringComparison.Ordinal);
-        string metricName = GetMetricName(request, path);
-
-        return metricName;
+        return GetMetricName(request, path);
     }
 
-    protected internal List<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
+    private string GetMetricName(HttpRequest request, string path)
+    {
+        if (request.Path.StartsWithSegments(path, out PathString remaining) && remaining.HasValue)
+        {
+            return remaining.Value!.TrimStart('/');
+        }
+
+        return string.Empty;
+    }
+
+    internal IList<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
     {
         var results = new List<KeyValuePair<string, string>>();
 
-        if (query == null)
+        foreach (KeyValuePair<string, StringValues> parameter in query)
         {
-            return results;
-        }
-
-        foreach (KeyValuePair<string, StringValues> q in query)
-        {
-            if (q.Key.Equals("tag", StringComparison.OrdinalIgnoreCase))
+            if (parameter.Key.Equals("tag", StringComparison.OrdinalIgnoreCase))
             {
-                foreach (string kvp in q.Value)
+                foreach (string? value in parameter.Value)
                 {
-                    KeyValuePair<string, string>? pair = ParseTag(kvp);
+                    KeyValuePair<string, string>? pair = ParseTag(value);
 
                     if (pair != null && !results.Contains(pair.Value))
                     {
@@ -118,30 +88,37 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         return results;
     }
 
-    protected internal KeyValuePair<string, string>? ParseTag(string kvp)
+    internal KeyValuePair<string, string>? ParseTag(string? tag)
     {
-        string[] str = kvp.Split(new[]
+        if (tag != null)
         {
-            ':'
-        }, 2);
+            string[] segments = tag.Split(new[]
+            {
+                ':'
+            }, 2);
 
-        if (str != null && str.Length == 2)
-        {
-            return new KeyValuePair<string, string>(str[0], str[1]);
+            if (segments.Length == 2)
+            {
+                return new KeyValuePair<string, string>(segments[0], segments[1]);
+            }
         }
 
         return null;
     }
 
-    private string GetMetricName(HttpRequest request, string path)
+    protected override async Task WriteResponseAsync(MetricsResponse? result, HttpContext context, CancellationToken cancellationToken)
     {
-        var epPath = new PathString(path);
+        MetricsRequest? metricsRequest = GetMetricsRequest(context);
 
-        if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
+        if (metricsRequest != null && result == null)
         {
-            return remaining.Value.TrimStart('/');
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+        }
+        else
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
         }
 
-        return null;
+        await base.WriteResponseAsync(result, context, cancellationToken);
     }
 }

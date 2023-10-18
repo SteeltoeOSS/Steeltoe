@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Registry;
 
-public class ConsulServiceRegistrarTest
+public sealed class ConsulServiceRegistrarTest
 {
     [Fact]
     public void Constructor_ThrowsOnNulls()

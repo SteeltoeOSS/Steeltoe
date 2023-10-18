@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Support;
 
-public class ErrorMessageTest
+public sealed class ErrorMessageTest
 {
     [Fact]
     public void TestToString()

@@ -6,7 +6,7 @@ using System.Net;
 
 namespace Steeltoe.Common.Http.Test;
 
-public class TestInnerDelegatingHandlerBrokenServer : DelegatingHandler
+public sealed class TestInnerDelegatingHandlerBrokenServer : DelegatingHandler
 {
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {

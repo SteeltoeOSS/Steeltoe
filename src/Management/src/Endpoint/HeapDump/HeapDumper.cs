@@ -12,23 +12,28 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
-public class HeapDumper : IHeapDumper
+public sealed class HeapDumper
 {
-    private readonly string _basePathOverride;
-    private readonly IOptionsMonitor<HeapDumpEndpointOptions> _options;
+    private readonly string? _basePathOverride;
+    private readonly IOptionsMonitor<HeapDumpEndpointOptions> _optionsMonitor;
     private readonly ILogger<HeapDumper> _logger;
 
-    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> options, ILogger<HeapDumper> logger, string basePathOverride = null)
+    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, ILogger<HeapDumper> logger)
+        : this(optionsMonitor, null, logger)
     {
-        ArgumentGuard.NotNull(options);
+    }
+
+    public HeapDumper(IOptionsMonitor<HeapDumpEndpointOptions> optionsMonitor, string? basePathOverride, ILogger<HeapDumper> logger)
+    {
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(logger);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
         _logger = logger;
         _basePathOverride = basePathOverride;
     }
 
-    public string DumpHeap()
+    public string? DumpHeapToFile(CancellationToken cancellationToken)
     {
         string fileName = CreateFileName();
 
@@ -39,11 +44,13 @@ public class HeapDumper : IHeapDumper
 
         try
         {
-            if (Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+            using var process = Process.GetCurrentProcess();
+
+            if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogInformation("Attempting to create a gcdump");
 
-                if (TryCollectMemoryGraph(CancellationToken.None, Process.GetCurrentProcess().Id, 30, true, out MemoryGraph memoryGraph))
+                if (TryCollectMemoryGraph(process.Id, 30, true, out MemoryGraph memoryGraph, cancellationToken))
                 {
                     GCHeapDump.WriteMemoryGraph(memoryGraph, fileName, "dotnet-gcdump");
                     return fileName;
@@ -52,25 +59,26 @@ public class HeapDumper : IHeapDumper
                 return null;
             }
 
-            if (!Enum.TryParse(typeof(DumpType), _options.CurrentValue.HeapDumpType, out object dumpType))
+            if (!Enum.TryParse(_optionsMonitor.CurrentValue.HeapDumpType, out DumpType dumpType))
             {
                 dumpType = DumpType.Full;
             }
 
             _logger.LogInformation($"Attempting to create a '{dumpType}' dump");
-            new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump((DumpType)dumpType, fileName);
+            var client = new DiagnosticsClient(process.Id);
+            client.WriteDump(dumpType, fileName);
             return fileName;
         }
         catch (DiagnosticsClientException exception)
         {
-            _logger.LogError($"Could not create core dump to process. Error {exception}.");
+            _logger.LogError(exception, "Could not create core dump to process.");
             return null;
         }
     }
 
-    internal string CreateFileName()
+    private string CreateFileName()
     {
-        if (Environment.Version.Major == 3 || "gcdump".Equals(_options.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
+        if (System.Environment.Version.Major == 3 || string.Equals("gcdump", _optionsMonitor.CurrentValue.HeapDumpType, StringComparison.OrdinalIgnoreCase))
         {
             return $"gcdump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.gcdump";
         }
@@ -78,14 +86,14 @@ public class HeapDumper : IHeapDumper
         return $"minidump-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}-live.dmp";
     }
 
-    internal bool TryCollectMemoryGraph(CancellationToken ct, int processId, int timeout, bool verbose, out MemoryGraph memoryGraph)
+    private bool TryCollectMemoryGraph(int processId, int timeout, bool verbose, out MemoryGraph memoryGraph, CancellationToken cancellationToken)
     {
         var heapInfo = new DotNetHeapInfo();
         TextWriter log = verbose ? Console.Out : TextWriter.Null;
 
         memoryGraph = new MemoryGraph(50_000);
 
-        if (!EventPipeDotNetHeapDumper.DumpFromEventPipe(ct, processId, memoryGraph, log, timeout, heapInfo))
+        if (!EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, memoryGraph, log, timeout, heapInfo))
         {
             return false;
         }

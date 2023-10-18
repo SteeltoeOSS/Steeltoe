@@ -4,7 +4,7 @@
 
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using Steeltoe.Connector;
+using Steeltoe.Connectors.CloudFoundry;
 using Steeltoe.Discovery.Client.SimpleClients;
 
 namespace Steeltoe.Discovery.Client;

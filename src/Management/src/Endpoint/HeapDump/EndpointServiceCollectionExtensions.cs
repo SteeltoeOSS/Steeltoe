@@ -22,7 +22,7 @@ public static class EndpointServiceCollectionExtensions
 
         services.AddHeapDumpActuatorServices();
 
-        services.TryAddSingleton<IHeapDumper, HeapDumper>();
+        services.TryAddSingleton<HeapDumper>();
         services.AddCommonActuatorServices();
     }
 }

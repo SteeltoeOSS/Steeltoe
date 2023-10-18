@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.EntityFrameworkCore;
+namespace Steeltoe.Connectors.EntityFrameworkCore;
 
 /// <summary>
 /// Applies code first migrations for the specified Entity Framework DB Context This task name is "migrate".
@@ -27,6 +27,9 @@ public class MigrateDbContextTask<T> : IApplicationTask
 
     public MigrateDbContextTask(T db, ILogger<MigrateDbContextTask<T>> logger)
     {
+        ArgumentGuard.NotNull(db);
+        ArgumentGuard.NotNull(logger);
+
         _db = db;
         _logger = logger;
     }

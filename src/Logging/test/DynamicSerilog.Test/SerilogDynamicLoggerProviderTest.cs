@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
-public class SerilogDynamicLoggerProviderTest
+public sealed class SerilogDynamicLoggerProviderTest
 {
     public SerilogDynamicLoggerProviderTest()
     {

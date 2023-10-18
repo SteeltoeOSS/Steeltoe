@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Http.Test.LoadBalancer;
 
-public class LoadBalancerHttpClientBuilderExtensionsTest
+public sealed class LoadBalancerHttpClientBuilderExtensionsTest
 {
     [Fact]
     public void AddRandomLoadBalancer_ThrowsIfBuilderNull()

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring.Ast;
 
-public class OpPlusTests
+public sealed class OpPlusTests
 {
     [Fact]
     public void Test_EmptyOperands()

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Core;
 
-public class DestinationResolvingMessagingTemplateTest
+public sealed class DestinationResolvingMessagingTemplateTest
 {
     private readonly TestDestinationResolvingMessagingTemplate _template;
 
@@ -62,7 +62,7 @@ public class DestinationResolvingMessagingTemplateTest
     public Task SendAsyncNoDestinationResolver()
     {
         var template = new TestDestinationResolvingMessagingTemplate();
-        return Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAsync("myChannel", Message.Create("payload")));
+        return Assert.ThrowsAsync<InvalidOperationException>(async () => await template.SendAsync("myChannel", Message.Create("payload")));
     }
 
     [Fact]

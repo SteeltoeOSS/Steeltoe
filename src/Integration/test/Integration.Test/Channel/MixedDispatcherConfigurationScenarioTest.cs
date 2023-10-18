@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Channel;
 
-public class MixedDispatcherConfigurationScenarioTest
+public sealed class MixedDispatcherConfigurationScenarioTest
 {
     private const int TotalExecutions = 40;
     private readonly IMessage _message = Message.Create("test");

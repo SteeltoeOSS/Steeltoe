@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Util;
 
-public class ConsulServerUtilsTest
+public sealed class ConsulServerUtilsTest
 {
     [Fact]
     public void FindHost_ReturnsExpected()

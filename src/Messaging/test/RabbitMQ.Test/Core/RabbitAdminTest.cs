@@ -24,7 +24,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
 [Trait("Category", "Integration")]
-public class RabbitAdminTest : AbstractTest
+public sealed class RabbitAdminTest : AbstractTest
 {
     [Fact]
     public void TestSettingOfNullConnectionFactory()

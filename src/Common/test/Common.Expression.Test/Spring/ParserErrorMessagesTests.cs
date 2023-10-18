@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class ParserErrorMessagesTests : AbstractExpressionTests
+public sealed class ParserErrorMessagesTests : AbstractExpressionTests
 {
     [Fact]
     public void TestBrokenExpression01()

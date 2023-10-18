@@ -9,7 +9,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class MessageHeadersInputConfiguration
+public sealed class MessageHeadersInputConfiguration
 {
     [StreamListener(ISink.InputName)]
     [SendTo(ISource.OutputName)]

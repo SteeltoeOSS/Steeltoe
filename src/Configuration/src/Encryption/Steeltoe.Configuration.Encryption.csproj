@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <Description>Configuration provider for resolving property encryptions in configuration values</Description>
+    <PackageTags>configuration;encryptions;spring boot</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\shared.props" />
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.NetCore" Version="$(BouncyCastleVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+  </ItemGroup>
+</Project>

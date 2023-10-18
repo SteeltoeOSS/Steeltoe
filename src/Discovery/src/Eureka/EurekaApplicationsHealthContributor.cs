@@ -25,8 +25,10 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
     {
     }
 
-    public HealthCheckResult Health()
+    public Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var result = new HealthCheckResult
         {
             Status = HealthStatus.Up,
@@ -47,7 +49,8 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
 
         result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         result.Details.Add("statusDescription", result.Description);
-        return result;
+
+        return Task.FromResult(result);
     }
 
     internal void AddApplicationHealthStatus(string appName, Application app, HealthCheckResult result)
@@ -70,7 +73,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
         }
     }
 
-    internal IList<string> GetMonitoredApplications(IEurekaClientConfiguration clientConfiguration)
+    private IList<string> GetMonitoredApplications(IEurekaClientConfiguration clientConfiguration)
     {
         IList<string> configApps = GetApplicationsFromConfig(clientConfiguration);
 

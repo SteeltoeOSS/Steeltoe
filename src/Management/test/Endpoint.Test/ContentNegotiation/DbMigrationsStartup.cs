@@ -3,22 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public class DbMigrationsStartup
+public sealed class DbMigrationsStartup
 {
-    public IConfiguration Configuration { get; }
-
-    public DbMigrationsStartup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();

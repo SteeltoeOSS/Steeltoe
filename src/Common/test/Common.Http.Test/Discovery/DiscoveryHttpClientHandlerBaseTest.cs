@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Http.Test.Discovery;
 
-public class DiscoveryHttpClientHandlerBaseTest
+public sealed class DiscoveryHttpClientHandlerBaseTest
 {
     [Fact]
     public void Constructor_ThrowsIfClientNull()
@@ -20,46 +20,13 @@ public class DiscoveryHttpClientHandlerBaseTest
     }
 
     [Fact]
-    public void LookupService_NonDefaultPort_ReturnsOriginalURI()
-    {
-        IDiscoveryClient client = new TestDiscoveryClient();
-        var handler = new DiscoveryHttpClientHandlerBase(client);
-        var uri = new Uri("https://foo:8080/test");
-
-        Uri result = handler.LookupService(uri);
-        Assert.Equal(uri, result);
-    }
-
-    [Fact]
-    public void LookupService_DoesNotFindService_ReturnsOriginalURI()
-    {
-        IDiscoveryClient client = new TestDiscoveryClient();
-        var handler = new DiscoveryHttpClientHandlerBase(client);
-        var uri = new Uri("https://foo/test");
-
-        Uri result = handler.LookupService(uri);
-        Assert.Equal(uri, result);
-    }
-
-    [Fact]
-    public void LookupService_FindsService_ReturnsURI()
-    {
-        IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("https://foundit:5555")));
-        var handler = new DiscoveryHttpClientHandlerBase(client);
-        var uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
-
-        Uri result = handler.LookupService(uri);
-        Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
-    }
-
-    [Fact]
     public async Task LookupServiceAsync_NonDefaultPort_ReturnsOriginalURI()
     {
         IDiscoveryClient client = new TestDiscoveryClient();
         var handler = new DiscoveryHttpClientHandlerBase(client);
         var uri = new Uri("https://foo:8080/test");
 
-        Uri result = await handler.LookupServiceAsync(uri);
+        Uri result = await handler.LookupServiceAsync(uri, CancellationToken.None);
         Assert.Equal(uri, result);
     }
 
@@ -70,7 +37,7 @@ public class DiscoveryHttpClientHandlerBaseTest
         var handler = new DiscoveryHttpClientHandlerBase(client);
         var uri = new Uri("https://foo/test");
 
-        Uri result = await handler.LookupServiceAsync(uri);
+        Uri result = await handler.LookupServiceAsync(uri, CancellationToken.None);
         Assert.Equal(uri, result);
     }
 
@@ -81,7 +48,7 @@ public class DiscoveryHttpClientHandlerBaseTest
         var handler = new DiscoveryHttpClientHandlerBase(client);
         var uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
 
-        Uri result = await handler.LookupServiceAsync(uri);
+        Uri result = await handler.LookupServiceAsync(uri, CancellationToken.None);
         Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
     }
 }

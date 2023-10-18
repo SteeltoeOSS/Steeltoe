@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Support.Converter;
 
-public class ContentTypeDelegatingMessageConverterTest
+public sealed class ContentTypeDelegatingMessageConverterTest
 {
     [Fact]
     public void TestDelegationOutbound()
@@ -60,7 +60,7 @@ public class ContentTypeDelegatingMessageConverterTest
         }
     }
 
-    public class Foo
+    public sealed class Foo
     {
         public string FooString { get; set; }
     }

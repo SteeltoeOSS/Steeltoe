@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Util;
 
-public class MimeTypeTest
+public sealed class MimeTypeTest
 {
     [Fact]
     public void SlashInSubtype()

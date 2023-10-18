@@ -18,7 +18,7 @@ using static Steeltoe.Stream.TestBinder.TestChannelBinderProvisioner;
 
 namespace Steeltoe.Stream.TestBinder;
 
-public class TestChannelBinder : AbstractPollableMessageSourceBinder
+public sealed class TestChannelBinder : AbstractPollableMessageSourceBinder
 {
     private readonly ILogger _logger;
 
@@ -85,11 +85,11 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
         return new PolledConsumerResources(MessageSourceDelegate, RegisterErrorInfrastructure(destination, group, consumerOptions, _logger));
     }
 
-    public class ErrorMessageHandler : ILastSubscriberMessageHandler
+    public sealed class ErrorMessageHandler : ILastSubscriberMessageHandler
     {
         public TestChannelBinder Binder { get; }
 
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public ErrorMessageHandler(TestChannelBinder binder)
         {
@@ -103,7 +103,7 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
         }
     }
 
-    public class MessageSource : IMessageSource
+    public sealed class MessageSource : IMessageSource
     {
         public IMessage Receive()
         {
@@ -116,9 +116,9 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
         }
     }
 
-    public class TestMessageListeningContainer : IMessageHandler
+    public sealed class TestMessageListeningContainer : IMessageHandler
     {
-        public virtual string ServiceName { get; set; }
+        public string ServiceName { get; set; }
 
         public Action<IMessage> MessageListener { get; set; }
 
@@ -133,7 +133,7 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
         }
     }
 
-    public class TestMessageProducerSupportEndpoint : MessageProducerSupportEndpoint
+    public sealed class TestMessageProducerSupportEndpoint : MessageProducerSupportEndpoint
     {
         private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new();
         private readonly TestMessageListeningContainer _messageListenerContainer;
@@ -167,7 +167,7 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
             _messageListenerContainer.MessageListener = m => messageListener.Accept(m);
         }
 
-        protected class Listener : IRetryListener
+        private sealed class Listener : IRetryListener
         {
             private readonly TestMessageProducerSupportEndpoint _adapter;
 

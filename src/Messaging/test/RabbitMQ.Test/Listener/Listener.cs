@@ -7,7 +7,7 @@ using Steeltoe.Messaging.RabbitMQ.Attributes;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Listener;
 
-public class Listener
+public sealed class Listener
 {
     public CountdownEvent Latch { get; set; } = new(2);
 

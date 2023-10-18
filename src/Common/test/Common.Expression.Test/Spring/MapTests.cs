@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class MapTests : AbstractExpressionTests
+public sealed class MapTests : AbstractExpressionTests
 {
     // if the list is full of literals then it will be of the type unmodifiableClass
     // rather than HashMap (or similar)
@@ -173,7 +173,7 @@ public class MapTests : AbstractExpressionTests
         }
     }
 
-    public class MapHolder
+    public sealed class MapHolder
     {
         public IDictionary Foo { get; }
 

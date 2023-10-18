@@ -8,20 +8,13 @@ using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 
-public class TracingBaseHostBuilderExtensionsTest : TestBase
+public sealed class TracingBaseHostBuilderExtensionsTest : TestBase
 {
-    [Fact]
-    public void AddDistributedTracing_ThrowsOnNulls()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => TracingBaseServiceCollectionExtensions.AddDistributedTracing(null));
-        Assert.Equal("services", ex.ParamName);
-    }
-
     [Fact]
     public void AddDistributedTracing_ConfiguresExpectedDefaults()
     {
         var hostBuilder = new HostBuilder();
-        IServiceCollection services = null;
+        IServiceCollection? services = null;
 
         hostBuilder.ConfigureServices(svc =>
         {
@@ -31,7 +24,7 @@ public class TracingBaseHostBuilderExtensionsTest : TestBase
         });
 
         hostBuilder.Build();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services!.BuildServiceProvider();
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceCollectionBase(serviceProvider);
     }

@@ -4,9 +4,11 @@
 
 using System.Text.Json.Serialization;
 
+#pragma warning disable S4004 // Collection properties should be readonly
+
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-public class ThreadInfo
+public sealed class ThreadInfo
 {
     [JsonPropertyName("blockedCount")]
     public long BlockedCount { get; set; } // Not available
@@ -15,31 +17,31 @@ public class ThreadInfo
     public long BlockedTime { get; set; } = -1; // Not available
 
     [JsonPropertyName("lockedMonitors")]
-    public List<MonitorInfo> LockedMonitors { get; set; }
+    public IList<object>? LockedMonitors { get; } // Not available
 
     [JsonPropertyName("lockedSynchronizers")]
-    public List<LockInfo> LockedSynchronizers { get; set; }
+    public IList<object>? LockedSynchronizers { get; } // Not available
 
     [JsonPropertyName("lockInfo")]
-    public LockInfo LockInfo { get; set; }
+    public object? LockInfo { get; set; }
 
     [JsonPropertyName("lockName")]
-    public string LockName { get; set; }
+    public string? LockName { get; set; }
 
     [JsonPropertyName("lockOwnerId")]
     public long LockOwnerId { get; set; } = -1;
 
     [JsonPropertyName("lockOwnerName")]
-    public string LockOwnerName { get; set; }
+    public string? LockOwnerName { get; set; }
 
     [JsonPropertyName("stackTrace")]
-    public List<StackTraceElement> StackTrace { get; set; }
+    public IList<StackTraceElement> StackTrace { get; set; } = new List<StackTraceElement>();
 
     [JsonPropertyName("threadId")]
     public long ThreadId { get; set; }
 
     [JsonPropertyName("threadName")]
-    public string ThreadName { get; set; }
+    public string? ThreadName { get; set; }
 
     [JsonPropertyName("threadState")]
     public State ThreadState { get; set; }

@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
-public class DestinationVariableMethodArgumentResolverTest
+public sealed class DestinationVariableMethodArgumentResolverTest
 {
     private readonly DestinationVariableMethodArgumentResolver _resolver = new(new DefaultConversionService());
     private readonly ResolvableMethod _resolvable = ResolvableMethod.On<DestinationVariableMethodArgumentResolverTest>().Named(nameof(HandleMessage)).Build();

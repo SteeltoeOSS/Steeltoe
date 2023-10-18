@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class TestClock : ISystemClock
+public sealed class TestClock : ISystemClock
 {
     public DateTimeOffset UtcNow { get; set; }
 

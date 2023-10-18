@@ -4,10 +4,11 @@
 
 using System.Net;
 using System.Text.Json.Serialization;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public class SecurityResult
+internal sealed class SecurityResult
 {
     [JsonIgnore]
     public HttpStatusCode Code { get; }
@@ -27,6 +28,8 @@ public class SecurityResult
 
     public SecurityResult(HttpStatusCode code, string message)
     {
+        ArgumentGuard.NotNull(message);
+
         Code = code;
         Message = message;
         Permissions = Permissions.None;

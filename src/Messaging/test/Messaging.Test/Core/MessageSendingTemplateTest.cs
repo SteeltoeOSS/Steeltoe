@@ -12,7 +12,7 @@ using HeadersDictionary = System.Collections.Generic.IDictionary<string, object>
 
 namespace Steeltoe.Messaging.Test.Core;
 
-public class MessageSendingTemplateTest
+public sealed class MessageSendingTemplateTest
 {
     private readonly TestMessageSendingTemplate _template;
 
@@ -56,7 +56,7 @@ public class MessageSendingTemplateTest
     public async Task SendAsyncMissingDestination()
     {
         IMessage<string> message = Message.Create("payload");
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _template.SendAsync(message));
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await _template.SendAsync(message));
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class MessageSendingTemplateTest
         _template.MessageConverter = converter;
 
         _headers.Add(MessageHeaders.ContentType, MimeTypeUtils.ApplicationXml);
-        await Assert.ThrowsAsync<MessageConversionException>(() => _template.ConvertAndSendAsync("home", "payload", new MessageHeaders(_headers)));
+        await Assert.ThrowsAsync<MessageConversionException>(async () => await _template.ConvertAndSendAsync("home", "payload", new MessageHeaders(_headers)));
     }
 
     [Fact]

@@ -4,10 +4,6 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
-using Steeltoe.Management.Endpoint.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Services;
 internal class ServiceDescriptorConverter : JsonConverter<ServiceContextDescriptor>

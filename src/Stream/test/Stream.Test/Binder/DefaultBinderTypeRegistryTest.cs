@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class DefaultBinderTypeRegistryTest : AbstractTest
+public sealed class DefaultBinderTypeRegistryTest : AbstractTest
 {
     [Fact]
     public void LoadAndCheckAssembly_WithValidPath_ReturnsBinderType()

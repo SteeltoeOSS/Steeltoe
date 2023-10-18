@@ -27,7 +27,6 @@ jobs:
       Windows:
         imageName: windows-latest
         skipFilter: '--filter "Category!=Integration"'
-        package: true
   pool:
     vmImage: $(imageName)
   steps:
@@ -39,9 +38,23 @@ jobs:
       version: 6.0.x
       includePreviewVersions: true
   - task: DotNetCoreCLI@2
+    displayName: Install Nerdbank.GitVersioning tool
+    condition: eq(variables['imageName'], 'macOS-latest')
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install --global nbgv
+  - task: PowerShell@2
+    displayName: Set package version
+    inputs:
+      targetType: 'inline'
+      script: |
+        nbgv cloud
+  - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
       command: restore
+      verbosityRestore: Minimal
       projects: src/Steeltoe.All.sln
       feedsToUse: config
       nugetConfigPath: nuget.config
@@ -61,7 +74,7 @@ jobs:
     inputs:
       command: build
       projects: src/Steeltoe.All.sln
-      arguments: --no-restore -c $(buildConfiguration) -v n
+      arguments: --no-restore -c $(buildConfiguration) -v minimal
   - script: |
       docker run -d --name configserver -p 8888:8888 steeltoeoss/config-server --spring.cloud.config.server.git.default-label=main
       docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management

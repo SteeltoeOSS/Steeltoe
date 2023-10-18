@@ -9,7 +9,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class MapPayloadConfiguration
+public sealed class MapPayloadConfiguration
 {
     [StreamListener(ISink.InputName)]
     [SendTo(ISource.OutputName)]

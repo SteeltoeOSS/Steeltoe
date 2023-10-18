@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.TestResources;
 
-public class ArrayContainer
+public sealed class ArrayContainer
 {
     public int[] Integers { get; } = new int[3];
     public long[] Longs { get; } = new long[3];

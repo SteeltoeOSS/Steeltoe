@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Services;
 
-public class ServicesEndpointOptions: EndpointOptionsBase
+public class ServicesEndpointOptions : EndpointOptions
 {
 }

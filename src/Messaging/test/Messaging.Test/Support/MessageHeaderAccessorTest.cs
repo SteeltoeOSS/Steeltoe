@@ -9,7 +9,7 @@ using HeadersDictionary = System.Collections.Generic.IDictionary<string, object>
 
 namespace Steeltoe.Messaging.Test.Support;
 
-public class MessageHeaderAccessorTest
+public sealed class MessageHeaderAccessorTest
 {
     [Fact]
     public void NewEmptyHeaders()

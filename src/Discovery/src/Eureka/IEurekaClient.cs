@@ -10,5 +10,5 @@ public interface IEurekaClient : ILookupService
 {
     IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure);
 
-    Task ShutdownAsync();
+    Task ShutdownAsync(CancellationToken cancellationToken);
 }

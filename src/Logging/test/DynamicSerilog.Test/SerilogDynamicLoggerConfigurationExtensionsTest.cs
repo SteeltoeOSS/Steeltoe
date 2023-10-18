@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
-public class SerilogDynamicLoggerConfigurationExtensionsTest
+public sealed class SerilogDynamicLoggerConfigurationExtensionsTest
 {
     [Fact]
     public void SerilogOptions_Set_Correctly()

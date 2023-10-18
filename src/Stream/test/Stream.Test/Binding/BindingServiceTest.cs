@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binding;
 
-public class BindingServiceTest : AbstractTest
+public sealed class BindingServiceTest : AbstractTest
 {
     [Fact]
     public void TestDefaultGroup()

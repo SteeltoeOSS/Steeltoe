@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Common.Http.Serialization;
 
-public class BoolStringJsonConverter : JsonConverter<bool>
+public sealed class BoolStringJsonConverter : JsonConverter<bool>
 {
     public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

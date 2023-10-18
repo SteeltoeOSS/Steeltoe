@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class SourceBindingWithGlobalPropertiesTest : AbstractTest
+public sealed class SourceBindingWithGlobalPropertiesTest : AbstractTest
 {
     [Fact]
     public async Task TestGlobalPropertiesSet()

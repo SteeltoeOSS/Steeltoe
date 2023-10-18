@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Binder;
 
-public class PollableConsumerTest : AbstractTest
+public sealed class PollableConsumerTest : AbstractTest
 {
     [Fact]
     public void TestSimple()
@@ -596,12 +596,8 @@ public class PollableConsumerTest : AbstractTest
         }
     }
 
-    private sealed class FooType
+    internal sealed class FooType
     {
-#pragma warning disable S1144 // Unused private types or members should be removed
-#pragma warning disable S3459 // Unassigned members should be removed
         public string Foo { get; set; }
-#pragma warning restore S3459 // Unassigned members should be removed
-#pragma warning restore S1144 // Unused private types or members should be removed
     }
 }

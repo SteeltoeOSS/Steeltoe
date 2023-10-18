@@ -11,30 +11,16 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Services;
 
-public class ServicesEndpointMiddleware : EndpointMiddleware<ServiceContextDescriptor>
+public class ServicesEndpointMiddleware : EndpointMiddleware<object?, ServiceContextDescriptor>
 {
-    public ServicesEndpointMiddleware(IServicesEndpoint endpoint, IOptionsMonitor<ManagementEndpointOptions> managementOptions,
-        ILogger<ServicesEndpointMiddleware> logger)
-        : base(endpoint, managementOptions, logger)
+    public ServicesEndpointMiddleware(IServicesEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptions,
+        ILoggerFactory logger)
+        : base(endpointHandler, managementOptions, logger)
     {
     }
 
-    public override Task InvokeAsync(HttpContext context, RequestDelegate next)
+    protected override async Task<ServiceContextDescriptor> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
-        if (Endpoint.Options.ShouldInvoke(managementOptions, context, logger))
-        {
-            return HandleServicesRequestAsync(context);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    protected internal Task HandleServicesRequestAsync(HttpContext context)
-    {
-        string serialInfo = HandleRequest();
-        logger.LogDebug("Returning: {info}", serialInfo);
-
-        context.HandleContentNegotiation(logger);
-        return context.Response.WriteAsync(serialInfo);
+        return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }
 }

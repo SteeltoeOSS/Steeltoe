@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 
-public class LeaseInfoTest : AbstractBaseTest
+public sealed class LeaseInfoTest : AbstractBaseTest
 {
     [Fact]
     public void Constructor_Defaults()

@@ -19,9 +19,9 @@ public class ServicesEndpointTest: BaseTest
 
         IOptionsMonitor<ServicesEndpointOptions> options1 = null;
 
-        Assert.Throws<ArgumentNullException>(() => new ServicesEndpoint(options1, serviceCollection, NullLogger<ServicesEndpoint>.Instance));
+        Assert.Throws<ArgumentNullException>(() => new ServicesEndpointHandler(options1, serviceCollection, NullLogger<ServicesEndpointHandler>.Instance));
         IOptionsMonitor<ServicesEndpointOptions> options = GetOptionsMonitorFromSettings<ServicesEndpointOptions, ConfigureServicesEndpointOptions>();
 
-        Assert.Throws<ArgumentNullException>(() => new ServicesEndpoint(options, serviceCollection, NullLogger<ServicesEndpoint>.Instance));
+        Assert.Throws<ArgumentNullException>(() => new ServicesEndpointHandler(options, serviceCollection, NullLogger<ServicesEndpointHandler>.Instance));
     }
 }

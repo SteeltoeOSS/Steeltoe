@@ -8,6 +8,7 @@ pr:
     - stylecop.json
     - '*.props'
     - '*.ruleset'
+    - .config/dotnet-tools.json
     - build/templates
     - build/security.yml
     - src/Security

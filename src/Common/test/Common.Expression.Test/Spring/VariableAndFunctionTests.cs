@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class VariableAndFunctionTests : AbstractExpressionTests
+public sealed class VariableAndFunctionTests : AbstractExpressionTests
 {
     [Fact]
     public void TestVariableAccess01()

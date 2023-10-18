@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
 
-public class DiscoveryHostBuilderExtensionsTest
+public sealed class DiscoveryHostBuilderExtensionsTest
 {
     private static readonly Dictionary<string, string> EurekaSettings = new()
     {

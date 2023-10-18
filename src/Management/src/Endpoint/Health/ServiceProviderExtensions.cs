@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 
 namespace Steeltoe.Management.Endpoint.Health;
@@ -18,11 +19,13 @@ public static class ServiceProviderExtensions
     /// </param>
     public static IServiceProvider InitializeAvailability(this IServiceProvider serviceProvider)
     {
+        ArgumentGuard.NotNull(serviceProvider);
+
         var availability = serviceProvider.GetService<ApplicationAvailability>();
 
         if (availability != null)
         {
-            var lifetime = serviceProvider.GetService<IHostApplicationLifetime>();
+            var lifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
 
             lifetime.ApplicationStarted.Register(() =>
             {

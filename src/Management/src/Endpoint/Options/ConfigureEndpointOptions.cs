@@ -4,31 +4,36 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
-public class ConfigureEndpointOptions<T> : IConfigureOptions<T>
-    where T : EndpointOptionsBase
+internal abstract class ConfigureEndpointOptions<T> : IConfigureOptions<T>
+    where T : EndpointOptions
 {
     private readonly string _prefix;
     private readonly string _id;
-    protected readonly IConfiguration _configuration;
 
-    public ConfigureEndpointOptions(IConfiguration configuration, string prefix, string id)
+    protected IConfiguration Configuration { get; }
+
+    protected ConfigureEndpointOptions(IConfiguration configuration, string prefix, string id)
     {
-        _configuration = configuration;
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(prefix);
+        ArgumentGuard.NotNull(id);
+
+        Configuration = configuration;
         _prefix = prefix;
         _id = id;
     }
 
     public virtual void Configure(T options)
     {
-        _configuration.GetSection(_prefix).Bind(options);
+        ArgumentGuard.NotNull(options);
 
-        if (options.Id == null)
-        {
-            options.Id = _id;
-        }
+        Configuration.GetSection(_prefix).Bind(options);
+
+        options.Id ??= _id;
 
         if (options.RequiredPermissions == Permissions.Undefined)
         {

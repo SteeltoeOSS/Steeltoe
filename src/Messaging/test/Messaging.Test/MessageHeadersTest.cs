@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test;
 
-public class MessageHeadersTest
+public sealed class MessageHeadersTest
 {
     [Fact]
     public void TestTimestamp()

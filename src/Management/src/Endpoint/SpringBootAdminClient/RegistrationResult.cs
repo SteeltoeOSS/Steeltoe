@@ -6,5 +6,5 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
 internal sealed class RegistrationResult
 {
-    public string Id { get; set; }
+    public string? Id { get; set; }
 }

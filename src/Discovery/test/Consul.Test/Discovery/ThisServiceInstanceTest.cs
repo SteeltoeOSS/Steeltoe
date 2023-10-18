@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
-public class ThisServiceInstanceTest
+public sealed class ThisServiceInstanceTest
 {
     [Fact]
     public void Constructor_Initializes()
@@ -20,9 +20,9 @@ public class ThisServiceInstanceTest
             Name = "foobar",
             Address = "test.foo.bar",
             Port = 1234,
-            Tags = new[]
+            Meta = new Dictionary<string, string>
             {
-                "foo=bar"
+                ["foo"] = "bar"
             }
         };
 

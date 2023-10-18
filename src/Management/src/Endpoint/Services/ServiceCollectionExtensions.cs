@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
 
         services.ConfigureEndpointOptions<ServicesEndpointOptions, ConfigureServicesEndpointOptions>();
         services.AddSingleton(services);
-        services.TryAddSingleton<IServicesEndpoint, ServicesEndpoint>();
+        services.TryAddSingleton<IServicesEndpointHandler, ServicesEndpointHandler>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, ServicesEndpointMiddleware>());
         services.AddSingleton<ServicesEndpointMiddleware>();
 

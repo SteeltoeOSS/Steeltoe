@@ -10,6 +10,6 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 public interface IHealthRegistrationsAggregator : IHealthAggregator
 {
-    HealthCheckResult Aggregate(IList<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations,
-        IServiceProvider serviceProvider);
+    Task<HealthCheckResult> AggregateAsync(ICollection<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations,
+        IServiceProvider serviceProvider, CancellationToken cancellationToken);
 }

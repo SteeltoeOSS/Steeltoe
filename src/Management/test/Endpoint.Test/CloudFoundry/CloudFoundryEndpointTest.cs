@@ -4,15 +4,15 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public class CloudFoundryEndpointTest : BaseTest
+public sealed class CloudFoundryEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
@@ -22,103 +22,100 @@ public class CloudFoundryEndpointTest : BaseTest
     }
 
     [Fact]
-    public void Invoke_ReturnsExpectedLinks()
+    public async Task Invoke_ReturnsExpectedLinks()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddInfoActuatorServices();
             services.AddCloudFoundryActuatorServices();
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
+        var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
 
-        Links info = ep.Invoke("http://localhost:5000/foobar");
-        Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.True(info._links.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-        Assert.True(info._links.ContainsKey("info"));
-        Assert.Equal("http://localhost:5000/foobar/info", info._links["info"].Href);
-        Assert.Equal(2, info._links.Count);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Assert.NotNull(links);
+        Assert.NotNull(links.Entries);
+        Assert.True(links.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", links.Entries["self"].Href);
+        Assert.True(links.Entries.ContainsKey("info"));
+        Assert.Equal("http://localhost:5000/foobar/info", links.Entries["info"].Href);
+        Assert.Equal(2, links.Entries.Count);
     }
 
     [Fact]
-    public void Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
+    public async Task Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddCloudFoundryActuatorServices();
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
+        var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
 
-        Links info = ep.Invoke("http://localhost:5000/foobar");
-        Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.True(info._links.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-        Assert.Single(info._links);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Assert.NotNull(links);
+        Assert.NotNull(links.Entries);
+        Assert.True(links.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", links.Entries["self"].Href);
+        Assert.Single(links.Entries);
     }
 
     [Fact]
-    public void Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
+    public async Task Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddCloudFoundryActuatorServices();
             services.AddInfoActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(new Dictionary<string, string>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "management:endpoints:enabled", "true" }
             });
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
+        var handler = testContext.GetRequiredService<ICloudFoundryEndpointHandler>();
 
-        Links info = ep.Invoke("http://localhost:5000/foobar");
-        Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.True(info._links.ContainsKey("self"));
-        Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
-        Assert.True(info._links.ContainsKey("info"));
-        Assert.Equal(2, info._links.Count);
+        Links links = await handler.InvokeAsync("http://localhost:5000/foobar", CancellationToken.None);
+        Assert.NotNull(links);
+        Assert.NotNull(links.Entries);
+        Assert.True(links.Entries.ContainsKey("self"));
+        Assert.Equal("http://localhost:5000/foobar", links.Entries["self"].Href);
+        Assert.True(links.Entries.ContainsKey("info"));
+        Assert.Equal(2, links.Entries.Count);
     }
 
     [Fact]
-    public void Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
+    public void Invoke_CloudFoundryDisable_DoesNotInvoke()
     {
-        using var tc = new TestContext(_output);
+        using var testContext = new TestContext(_output);
 
-        tc.AdditionalServices = (services, configuration) =>
+        testContext.AdditionalServices = (services, _) =>
         {
             services.AddCloudFoundryActuatorServices();
             services.AddInfoActuatorServices();
         };
 
-        tc.AdditionalConfiguration = configuration =>
+        testContext.AdditionalConfiguration = configuration =>
         {
-            configuration.AddInMemoryCollection(new Dictionary<string, string>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "management:cloudfoundry:enabled", "false" },
                 { "management:endpoints:info:enabled", "true" }
             });
         };
 
-        var ep = tc.GetService<ICloudFoundryEndpoint>();
-
-        Links info = ep.Invoke("http://localhost:5000/foobar");
-        Assert.NotNull(info);
-        Assert.NotNull(info._links);
-        Assert.Empty(info._links);
+        var middleware = testContext.GetRequiredService<CloudFoundryEndpointMiddleware>();
+        bool shouldInvoke = middleware.ShouldInvoke("/cloudfoundryapplication/info");
+        Assert.False(shouldInvoke);
     }
 }

@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Common.Expression.Test.Spring.SPR10210;
 
-public class D : A
+public sealed class D : A
 {
 }

@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class MapAccessTests : AbstractExpressionTests
+public sealed class MapAccessTests : AbstractExpressionTests
 {
     [Fact]
     public void TestMapAccessThroughIndexer()
@@ -98,7 +98,7 @@ public class MapAccessTests : AbstractExpressionTests
         Assert.True(s.ElapsedMilliseconds < 500L);
     }
 
-    public class TestBean
+    public sealed class TestBean
     {
         public string Name { get; set; }
 
@@ -120,7 +120,7 @@ public class MapAccessTests : AbstractExpressionTests
         }
     }
 
-    public class MapAccessor : IPropertyAccessor
+    public sealed class MapAccessor : IPropertyAccessor
     {
         public bool CanRead(IEvaluationContext context, object target, string name)
         {

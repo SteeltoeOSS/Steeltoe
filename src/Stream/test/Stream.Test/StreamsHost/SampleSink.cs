@@ -8,7 +8,7 @@ using Steeltoe.Stream.Messaging;
 namespace Steeltoe.Stream.Test.StreamsHost;
 
 [EnableBinding(typeof(ISink))]
-public class SampleSink
+public sealed class SampleSink
 {
     [StreamListener("input")]
     public void HandleInputMessage(string foo)

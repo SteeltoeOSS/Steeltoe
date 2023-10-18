@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class DiscoveryManagerTest : AbstractBaseTest
+public sealed class DiscoveryManagerTest : AbstractBaseTest
 {
     [Fact]
     public void DiscoveryManager_IsSingleton()

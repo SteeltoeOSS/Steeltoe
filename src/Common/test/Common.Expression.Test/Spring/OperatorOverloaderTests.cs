@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Common.Expression.Test.Spring;
 
-public class OperatorOverloaderTests : AbstractExpressionTests
+public sealed class OperatorOverloaderTests : AbstractExpressionTests
 {
     [Fact]
     public void TestSimpleOperations()
@@ -31,7 +31,7 @@ public class OperatorOverloaderTests : AbstractExpressionTests
         Assert.Equal("abcnull", expr.GetValue(eContext));
     }
 
-    public class StringAndBooleanAddition : IOperatorOverloader
+    public sealed class StringAndBooleanAddition : IOperatorOverloader
     {
         public object Operate(Operation operation, object leftOperand, object rightOperand)
         {

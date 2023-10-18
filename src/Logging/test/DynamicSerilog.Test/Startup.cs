@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
-public class Startup
+public sealed class Startup
 {
     private readonly ILogger<Startup> _logger;
 

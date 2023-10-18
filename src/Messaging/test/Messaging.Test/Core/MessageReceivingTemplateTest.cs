@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Core;
 
-public class MessageReceivingTemplateTest
+public sealed class MessageReceivingTemplateTest
 {
     private readonly TestMessagingTemplate _template;
 
@@ -45,7 +45,7 @@ public class MessageReceivingTemplateTest
     [Fact]
     public async Task ReceiveAsyncMissingDefaultDestination()
     {
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _template.ReceiveAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await _template.ReceiveAsync());
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class MessageReceivingTemplateTest
         IMessage expected = Message.Create("not a number test");
         _template.ReceiveMessage = expected;
         _template.MessageConverter = new GenericMessageConverter();
-        var ext = await Assert.ThrowsAsync<MessageConversionException>(() => _template.ReceiveAndConvertAsync<int>("somewhere"));
+        var ext = await Assert.ThrowsAsync<MessageConversionException>(async () => await _template.ReceiveAndConvertAsync<int>("somewhere"));
         Assert.IsType<ConversionFailedException>(ext.InnerException);
     }
 

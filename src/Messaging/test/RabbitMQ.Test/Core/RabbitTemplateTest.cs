@@ -20,7 +20,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Core;
 
-public class RabbitTemplateTest
+public sealed class RabbitTemplateTest
 {
     [Fact]
     public void ReturnConnectionAfterCommit()

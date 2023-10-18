@@ -16,7 +16,7 @@ using AbstractMessageChannel = Steeltoe.Integration.Channel.AbstractMessageChann
 
 namespace Steeltoe.Integration.Test.Channel.Interceptor;
 
-public class ChannelInterceptorTest
+public sealed class ChannelInterceptorTest
 {
     private readonly QueueChannel _channel;
     private readonly IServiceProvider _provider;
@@ -209,7 +209,7 @@ public class ChannelInterceptorTest
         Assert.False(interceptor2.AfterCompletionInvoked);
     }
 
-    public class TestPostReceiveInterceptorInterceptor : AbstractChannelInterceptor
+    public sealed class TestPostReceiveInterceptorInterceptor : AbstractChannelInterceptor
     {
         private int _counter;
 
@@ -223,7 +223,7 @@ public class ChannelInterceptorTest
         }
     }
 
-    public class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
+    public sealed class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
     {
         internal AfterCompletionWithSendExceptionChannel(IApplicationContext context, ILogger logger = null)
             : base(context, logger)
@@ -236,7 +236,7 @@ public class ChannelInterceptorTest
         }
     }
 
-    public class TestPostSendInterceptorWithUnsentMessageInterceptor : AbstractChannelInterceptor
+    public sealed class TestPostSendInterceptorWithUnsentMessageInterceptor : AbstractChannelInterceptor
     {
         private int _invokedCounter;
         private int _sentCounter;

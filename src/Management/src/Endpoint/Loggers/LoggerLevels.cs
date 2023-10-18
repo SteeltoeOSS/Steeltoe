@@ -7,21 +7,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
-public class LoggerLevels
+public sealed class LoggerLevels
 {
     [JsonPropertyName("configuredLevel")]
-    public string ConfiguredLevel { get; }
+    public string? ConfiguredLevel { get; }
 
     [JsonPropertyName("effectiveLevel")]
     public string EffectiveLevel { get; }
 
     public LoggerLevels(LogLevel? configured, LogLevel effective)
     {
-        ConfiguredLevel = configured.HasValue ? MapLogLevel(configured.Value) : null;
-        EffectiveLevel = MapLogLevel(effective);
+        ConfiguredLevel = configured.HasValue ? LogLevelToString(configured.Value) : null;
+        EffectiveLevel = LogLevelToString(effective);
     }
 
-    public static string MapLogLevel(LogLevel level)
+    internal static string LogLevelToString(LogLevel level)
     {
         return level switch
         {
@@ -36,7 +36,7 @@ public class LoggerLevels
         };
     }
 
-    public static LogLevel? MapLogLevel(string level)
+    internal static LogLevel? StringToLogLevel(string? level)
     {
         return level switch
         {

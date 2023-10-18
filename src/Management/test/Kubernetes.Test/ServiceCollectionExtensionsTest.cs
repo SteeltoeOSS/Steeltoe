@@ -4,65 +4,39 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Kubernetes;
 using Steeltoe.Management.Info;
 using Xunit;
 
 namespace Steeltoe.Management.Kubernetes.Test;
 
-public class ServiceCollectionExtensionsTest
+public sealed class ServiceCollectionExtensionsTest
 {
-    [Fact]
-    public void AddKubernetesInfoContributorThrowsOnNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesInfoContributor(null));
-        Assert.Equal("services", ex.ParamName);
-    }
-
     [Fact]
     public void AddKubernetesInfoContributorAddsContributor()
     {
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-
+        services.AddLogging();
         services.AddKubernetesInfoContributor();
-        var contributor = services.BuildServiceProvider().GetRequiredService<IInfoContributor>();
 
+        using ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+        var contributor = serviceProvider.GetService<IInfoContributor>();
         Assert.NotNull(contributor);
-    }
-
-    [Fact]
-    public void AddKubernetesInfoContributorAddsContributorWithCustomUtilities()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-
-        services.AddKubernetesInfoContributor(new FakePodUtilities(null));
-        ServiceProvider provider = services.BuildServiceProvider();
-        var contributor = provider.GetRequiredService<IInfoContributor>();
-        var podUtils = provider.GetRequiredService<IPodUtilities>();
-
-        Assert.NotNull(contributor);
-        Assert.NotNull(podUtils);
-        Assert.IsType<FakePodUtilities>(podUtils);
     }
 
     [Fact]
     public void AddKubernetesActuators()
     {
         var services = new ServiceCollection();
-        var appSettings = new Dictionary<string, string>();
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        services.AddSingleton<IConfiguration>(configurationBuilder.Build());
-        var utils = new FakePodUtilities(FakePodUtilities.SamplePod);
-
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging();
-        services.AddKubernetesActuators(null, utils);
-        ServiceProvider provider = services.BuildServiceProvider();
+        services.AddKubernetesActuators();
 
-        IEnumerable<IInfoContributor> contributors = provider.GetServices<IInfoContributor>();
-        Assert.Equal(4, contributors.Count());
+        using ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+        IInfoContributor[] contributors = serviceProvider.GetServices<IInfoContributor>().ToArray();
+        Assert.Equal(4, contributors.Length);
         Assert.Equal(1, contributors.Count(contributor => contributor.GetType().IsAssignableFrom(typeof(KubernetesInfoContributor))));
     }
 }

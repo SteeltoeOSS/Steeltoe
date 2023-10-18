@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Test.Channel;
 
-public class DataTypeChannelTest
+public sealed class DataTypeChannelTest
 {
     [Fact]
     public void SupportedType()

@@ -7,7 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Lifecycle;
-using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Connectors;
+using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Hosting;
 using Xunit;
@@ -15,7 +16,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Host;
 
-public class RabbitMQHostTest
+public sealed class RabbitMQHostTest
 {
     [Fact]
     public void HostCanBeStarted()
@@ -91,11 +92,15 @@ public class RabbitMQHostTest
     }
 
     [Fact]
-    public void ShouldWorkWithRabbitMQConnection()
+    public void ShouldWorkWithRabbitMQConnector()
     {
-        using IHost host = RabbitMQHost.CreateDefaultBuilder().ConfigureServices(svc => svc.AddRabbitMQConnection(new ConfigurationBuilder().Build())).Start();
-        var connectionFactory = host.Services.GetRequiredService<RC.IConnectionFactory>();
+        IHostBuilder builder = RabbitMQHost.CreateDefaultBuilder();
+        builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.ConfigureRabbitMQ());
+        builder.ConfigureServices((context, services) => services.AddRabbitMQ(context.Configuration));
 
-        Assert.NotNull(connectionFactory);
+        using IHost host = builder.Start();
+        var connectorFactory = host.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, RC.IConnection>>();
+
+        Assert.NotNull(connectorFactory);
     }
 }

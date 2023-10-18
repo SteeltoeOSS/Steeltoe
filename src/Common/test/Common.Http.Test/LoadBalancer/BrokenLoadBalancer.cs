@@ -13,12 +13,12 @@ internal sealed class BrokenLoadBalancer : ILoadBalancer
     /// <summary>
     /// Throws exceptions when you try to resolve services.
     /// </summary>
-    public Task<Uri> ResolveServiceInstanceAsync(Uri request)
+    public Task<Uri> ResolveServiceInstanceAsync(Uri request, CancellationToken cancellationToken)
     {
         throw new Exception("(╯°□°）╯︵ ┻━┻");
     }
 
-    public Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception)
+    public Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception, CancellationToken cancellationToken)
     {
         Stats.Add(new Tuple<Uri, Uri, TimeSpan, Exception>(originalUri, resolvedUri, responseTime, exception));
         return Task.CompletedTask;

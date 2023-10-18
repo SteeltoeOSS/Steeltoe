@@ -53,11 +53,11 @@ public class EndpointMiddlewareTest:BaseTest
         IServiceCollection serviceCollection= new ServiceCollection();
 
         // Add some known services 
-        serviceCollection.AddSingleton<ServicesEndpoint>(); 
+        serviceCollection.AddSingleton<ServicesEndpointHandler>(); 
         serviceCollection.AddTransient<ServicesEndpointOptions>();
         serviceCollection.AddScoped<Startup>();
 
-        var ep = new ServicesEndpoint(opts, serviceCollection, NullLogger<ServicesEndpoint>.Instance);
+        var ep = new ServicesEndpointHandler(opts, serviceCollection, NullLogger<ServicesEndpointHandler>.Instance);
         var middle = new ServicesEndpointMiddleware(ep, managementOptions, NullLogger<ServicesEndpointMiddleware>.Instance);
 
         HttpContext context = CreateRequest("GET", "/beans");

@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public class TestServerJwtStartup
+public sealed class TestServerJwtStartup
 {
     public static CloudFoundryJwtBearerOptions CloudFoundryOptions { get; set; }
 

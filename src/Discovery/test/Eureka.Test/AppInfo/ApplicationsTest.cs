@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 
-public class ApplicationsTest : AbstractBaseTest
+public sealed class ApplicationsTest : AbstractBaseTest
 {
     [Fact]
     public void ApplicationListConstructor__ThrowsIfListNull()

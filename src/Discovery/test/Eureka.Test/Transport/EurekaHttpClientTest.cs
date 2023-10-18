@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.Transport;
 
-public class EurekaHttpClientTest : AbstractBaseTest
+public sealed class EurekaHttpClientTest : AbstractBaseTest
 {
     [Fact]
     public void Constructor_Throws_IfConfigNull()
@@ -49,7 +49,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.RegisterAsync(null));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.RegisterAsync(null, CancellationToken.None));
         Assert.Contains("info", ex.Message, StringComparison.Ordinal);
     }
 
@@ -63,7 +63,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(configuration);
-        await Assert.ThrowsAsync<EurekaTransportException>(() => client.RegisterAsync(new InstanceInfo()));
+        await Assert.ThrowsAsync<EurekaTransportException>(async () => await client.RegisterAsync(new InstanceInfo(), CancellationToken.None));
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
 
         var client = new EurekaHttpClient(clientConfig, server.CreateClient());
 
-        EurekaHttpResponse resp = await client.RegisterAsync(info);
+        EurekaHttpResponse resp = await client.RegisterAsync(info, CancellationToken.None);
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.NoContent, resp.StatusCode);
         Assert.NotNull(resp.Headers);
@@ -118,7 +118,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(clientConfig, server.CreateClient());
-        await client.RegisterAsync(info);
+        await client.RegisterAsync(info, CancellationToken.None);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal("POST", TestConfigServerStartup.LastRequest.Method);
@@ -126,15 +126,17 @@ public class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("/apps/FOOBAR", TestConfigServerStartup.LastRequest.Path.Value);
 
         // Check JSON payload
-        var receivedJson = JsonSerializer.Deserialize<JsonInstanceInfoRoot>(new StreamReader(TestConfigServerStartup.LastRequest.Body).ReadToEnd());
-        Assert.NotNull(receivedJson);
-        Assert.NotNull(receivedJson.Instance);
+        using var streamReader = new StreamReader(TestConfigServerStartup.LastRequest.Body);
+        string receivedJsonText = await streamReader.ReadToEndAsync();
+        var receivedJsonInstanceRoot = JsonSerializer.Deserialize<JsonInstanceInfoRoot>(receivedJsonText);
+        Assert.NotNull(receivedJsonInstanceRoot);
+        Assert.NotNull(receivedJsonInstanceRoot.Instance);
 
         // Compare a few random values
         JsonInstanceInfo sentJsonObj = info.ToJsonInstance();
-        Assert.Equal(sentJsonObj.ActionType, receivedJson.Instance.ActionType);
-        Assert.Equal(sentJsonObj.AppName, receivedJson.Instance.AppName);
-        Assert.Equal(sentJsonObj.HostName, receivedJson.Instance.HostName);
+        Assert.Equal(sentJsonObj.ActionType, receivedJsonInstanceRoot.Instance.ActionType);
+        Assert.Equal(sentJsonObj.AppName, receivedJsonInstanceRoot.Instance.AppName);
+        Assert.Equal(sentJsonObj.HostName, receivedJsonInstanceRoot.Instance.HostName);
     }
 
     [Fact]
@@ -142,7 +144,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.SendHeartBeatAsync(null, "bar", new InstanceInfo(), InstanceStatus.Down));
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await client.SendHeartBeatAsync(null, "bar", new InstanceInfo(), InstanceStatus.Down, CancellationToken.None));
+
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
 
@@ -151,7 +156,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.SendHeartBeatAsync("foo", null, new InstanceInfo(), InstanceStatus.Down));
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await client.SendHeartBeatAsync("foo", null, new InstanceInfo(), InstanceStatus.Down, CancellationToken.None));
+
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
     }
 
@@ -160,7 +168,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.SendHeartBeatAsync("foo", "bar", null, InstanceStatus.Down));
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await client.SendHeartBeatAsync("foo", "bar", null, InstanceStatus.Down, CancellationToken.None));
+
         Assert.Contains("info", ex.Message, StringComparison.Ordinal);
     }
 
@@ -190,7 +201,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(clientConfig, server.CreateClient());
-        EurekaHttpResponse<InstanceInfo> resp = await client.SendHeartBeatAsync("foo", "id1", info, InstanceStatus.Unknown);
+        EurekaHttpResponse<InstanceInfo> resp = await client.SendHeartBeatAsync("foo", "id1", info, InstanceStatus.Unknown, CancellationToken.None);
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.NotNull(resp.Headers);
@@ -253,7 +264,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(clientConfig, server.CreateClient());
-        EurekaHttpResponse<Applications> resp = await client.GetApplicationsAsync();
+        EurekaHttpResponse<Applications> resp = await client.GetApplicationsAsync(CancellationToken.None);
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -287,7 +298,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetVipAsync(null));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetVipAsync(null, CancellationToken.None));
         Assert.Contains("vipAddress", ex.Message, StringComparison.Ordinal);
     }
 
@@ -296,7 +307,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetSecureVipAsync(null));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetSecureVipAsync(null, CancellationToken.None));
         Assert.Contains("secureVipAddress", ex.Message, StringComparison.Ordinal);
     }
 
@@ -305,7 +316,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetApplicationAsync(null));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetApplicationAsync(null, CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
 
@@ -356,7 +367,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(clientConfig, server.CreateClient());
-        EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo");
+        EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo", CancellationToken.None);
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -430,7 +441,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(clientConfig, server.CreateClient());
-        EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo");
+        EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo", CancellationToken.None);
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -461,7 +472,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetInstanceAsync(null, "id"));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync(null, "id", CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
 
@@ -470,7 +481,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetInstanceAsync("appName", null));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync("appName", null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
     }
 
@@ -479,7 +490,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetInstanceAsync(null));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync(null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
     }
 
@@ -532,7 +543,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(clientConfig, server.CreateClient());
-        EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
+        EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT", CancellationToken.None);
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -599,7 +610,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(clientConfig, server.CreateClient());
-        EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
+        EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT", CancellationToken.None);
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -621,7 +632,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.CancelAsync(null, "id"));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.CancelAsync(null, "id", CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
 
@@ -630,7 +641,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.CancelAsync("appName", null));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.CancelAsync("appName", null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
     }
 
@@ -652,7 +663,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(clientConfig, server.CreateClient());
-        EurekaHttpResponse resp = await client.CancelAsync("foo", "bar");
+        EurekaHttpResponse resp = await client.CancelAsync("foo", "bar", CancellationToken.None);
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.NotNull(resp.Headers);
@@ -668,7 +679,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.StatusUpdateAsync(null, "id", InstanceStatus.Up, null));
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await client.StatusUpdateAsync(null, "id", InstanceStatus.Up, null, CancellationToken.None));
+
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
 
@@ -677,7 +691,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.StatusUpdateAsync("appName", null, InstanceStatus.Up, null));
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await client.StatusUpdateAsync("appName", null, InstanceStatus.Up, null, CancellationToken.None));
+
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
     }
 
@@ -686,7 +703,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.StatusUpdateAsync("appName", "bar", InstanceStatus.Up, null));
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await client.StatusUpdateAsync("appName", "bar", InstanceStatus.Up, null, CancellationToken.None));
+
         Assert.Contains("info", ex.Message, StringComparison.Ordinal);
     }
 
@@ -714,7 +734,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         EurekaHttpResponse resp = await client.StatusUpdateAsync("foo", "bar", InstanceStatus.Down, new InstanceInfo
         {
             LastDirtyTimestamp = now
-        });
+        }, CancellationToken.None);
 
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -732,7 +752,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.DeleteStatusOverrideAsync(null, "id", null));
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DeleteStatusOverrideAsync(null, "id", null, CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
 
@@ -741,7 +761,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.DeleteStatusOverrideAsync("appName", null, null));
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await client.DeleteStatusOverrideAsync("appName", null, null, CancellationToken.None));
+
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
     }
 
@@ -750,7 +773,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
     {
         var configuration = new EurekaClientConfiguration();
         var client = new EurekaHttpClient(configuration);
-        var ex = await Assert.ThrowsAsync<ArgumentNullException>(() => client.DeleteStatusOverrideAsync("appName", "bar", null));
+
+        var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            await client.DeleteStatusOverrideAsync("appName", "bar", null, CancellationToken.None));
+
         Assert.Contains("info", ex.Message, StringComparison.Ordinal);
     }
 
@@ -778,7 +804,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         EurekaHttpResponse resp = await client.DeleteStatusOverrideAsync("foo", "bar", new InstanceInfo
         {
             LastDirtyTimestamp = now
-        });
+        }, CancellationToken.None);
 
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -813,7 +839,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void GetRequestMessage_ReturnsCorrectMessage_WithAdditionalHeaders()
+    public async Task GetRequestMessage_ReturnsCorrectMessage_WithAdditionalHeaders()
     {
         var headers = new Dictionary<string, string>
         {
@@ -826,14 +852,14 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(configuration, headers);
-        HttpRequestMessage result = client.GetRequestMessage(HttpMethod.Post, new Uri("http://boo:123/eureka/"));
+        HttpRequestMessage result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri("http://boo:123/eureka/"), CancellationToken.None);
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.True(result.Headers.Contains("foo"));
     }
 
     [Fact]
-    public void GetRequestMessage_No_Auth_When_Credentials_Not_In_Url()
+    public async Task GetRequestMessage_No_Auth_When_Credentials_Not_In_Url()
     {
         var configuration = new EurekaClientConfiguration
         {
@@ -841,7 +867,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(configuration);
-        HttpRequestMessage result = client.GetRequestMessage(HttpMethod.Post, new Uri(configuration.EurekaServerServiceUrls));
+
+        HttpRequestMessage result =
+            await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(configuration.EurekaServerServiceUrls), CancellationToken.None);
+
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.False(result.Headers.Contains("Authorization"));
@@ -854,7 +883,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
         client = new EurekaHttpClient(optionsMonitor);
 
-        result = client.GetRequestMessage(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls));
+        result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
@@ -862,7 +891,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void GetRequestMessage_Adds_Auth_When_Credentials_In_Url()
+    public async Task GetRequestMessage_Adds_Auth_When_Credentials_In_Url()
     {
         var configuration = new EurekaClientConfiguration
         {
@@ -870,7 +899,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(configuration);
-        HttpRequestMessage result = client.GetRequestMessage(HttpMethod.Post, new Uri(configuration.EurekaServerServiceUrls));
+
+        HttpRequestMessage result =
+            await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(configuration.EurekaServerServiceUrls), CancellationToken.None);
+
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.True(result.Headers.Contains("Authorization"));
@@ -883,7 +915,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
         client = new EurekaHttpClient(optionsMonitor);
 
-        result = client.GetRequestMessage(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls));
+        result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
@@ -891,7 +923,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void GetRequestMessage_Adds_Auth_When_JustPassword_In_Url()
+    public async Task GetRequestMessage_Adds_Auth_When_JustPassword_In_Url()
     {
         var configuration = new EurekaClientConfiguration
         {
@@ -899,7 +931,10 @@ public class EurekaHttpClientTest : AbstractBaseTest
         };
 
         var client = new EurekaHttpClient(configuration);
-        HttpRequestMessage result = client.GetRequestMessage(HttpMethod.Post, new Uri(configuration.EurekaServerServiceUrls));
+
+        HttpRequestMessage result =
+            await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(configuration.EurekaServerServiceUrls), CancellationToken.None);
+
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.True(result.Headers.Contains("Authorization"));
@@ -912,7 +947,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
         client = new EurekaHttpClient(optionsMonitor);
 
-        result = client.GetRequestMessage(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls));
+        result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);

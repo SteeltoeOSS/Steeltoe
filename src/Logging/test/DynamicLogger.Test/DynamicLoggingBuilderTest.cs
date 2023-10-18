@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Logging.DynamicLogger.Test;
@@ -232,26 +233,19 @@ public sealed class DynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_DisablesColorOnPivotalPlatform()
     {
-        try
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
+
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
         {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "not empty");
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
 
-            IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+        var formatterOptions = services.GetRequiredService<IOptionsMonitor<SimpleConsoleFormatterOptions>>();
 
-            ServiceProvider services = new ServiceCollection().AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            }).BuildServiceProvider();
-
-            var formatterOptions = services.GetRequiredService<IOptionsMonitor<SimpleConsoleFormatterOptions>>();
-
-            formatterOptions.CurrentValue.ColorBehavior.Should().Be(LoggerColorBehavior.Disabled);
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
-        }
+        formatterOptions.CurrentValue.ColorBehavior.Should().Be(LoggerColorBehavior.Disabled);
     }
 
     [Fact]
@@ -286,10 +280,11 @@ public sealed class DynamicLoggingBuilderTest
 
         string log = console.ToString();
 
-        log.Should().Be($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
+        // Casting to object as workaround, see https://github.com/fluentassertions/fluentassertions/issues/2339.
+        ((object)log).Should().BeEquivalentTo($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
       => Outer Scope => InnerScopeKey=InnerScopeValue
       Something bad.
-");
+", options => options.Using(IgnoreLineEndingsComparer.Instance));
     }
 
     [Fact]
@@ -325,9 +320,10 @@ public sealed class DynamicLoggingBuilderTest
 
         string log = console.ToString();
 
-        log.Should().Be($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
+        // Casting to object as workaround, see https://github.com/fluentassertions/fluentassertions/issues/2339.
+        ((object)log).Should().BeEquivalentTo($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
       => Outer Scope => InnerScopeKey=InnerScopeValue
       Something bad.
-");
+", options => options.Using(IgnoreLineEndingsComparer.Instance));
     }
 }

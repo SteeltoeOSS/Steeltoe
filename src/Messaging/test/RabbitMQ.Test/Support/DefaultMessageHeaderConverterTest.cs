@@ -4,6 +4,6 @@
 
 namespace Steeltoe.Messaging.RabbitMQ.Test.Support;
 
-public class DefaultMessageHeaderConverterTest
+public sealed class DefaultMessageHeaderConverterTest
 {
 }

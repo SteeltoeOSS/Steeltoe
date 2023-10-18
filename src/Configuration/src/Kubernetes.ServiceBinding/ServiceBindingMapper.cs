@@ -12,7 +12,7 @@ internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
     public string BindingName { get; }
     public string BindingType { get; }
 
-    public ServiceBindingMapper(IDictionary<string, string> configurationData, string bindingKey, params string[] toPrefix)
+    public ServiceBindingMapper(IDictionary<string, string?> configurationData, string bindingKey, params string[] toPrefix)
         : base(configurationData, bindingKey, toPrefix)
     {
         BindingProvider = GetBindingProvider($"{BindingKey}provider");
@@ -22,11 +22,11 @@ internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
 
     private string GetBindingProvider(string providerKey)
     {
-        return ConfigurationData.TryGetValue(providerKey, out string result) ? result : string.Empty;
+        return !ConfigurationData.TryGetValue(providerKey, out string? result) || result == null ? string.Empty : result;
     }
 
     private string GetBindingType(string typeKey)
     {
-        return ConfigurationData.TryGetValue(typeKey, out string result) ? result : string.Empty;
+        return !ConfigurationData.TryGetValue(typeKey, out string? result) || result == null ? string.Empty : result;
     }
 }

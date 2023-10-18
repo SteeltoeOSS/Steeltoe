@@ -7,17 +7,18 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
-public class AppSettingsInfoContributor : AbstractConfigurationContributor, IInfoContributor
+internal sealed class AppSettingsInfoContributor : ConfigurationContributor, IInfoContributor
 {
     private const string AppsettingsPrefix = "info";
 
-    public AppSettingsInfoContributor(IConfiguration configuration)
+    public AppSettingsInfoContributor(IConfiguration? configuration)
         : base(configuration)
     {
     }
 
-    public void Contribute(IInfoBuilder builder)
+    public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
         Contribute(builder, AppsettingsPrefix, false);
+        return Task.CompletedTask;
     }
 }

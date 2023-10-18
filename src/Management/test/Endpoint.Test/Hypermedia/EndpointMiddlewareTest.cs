@@ -4,20 +4,17 @@
 
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private readonly Dictionary<string, string> _appSettings = new()
+    private readonly Dictionary<string, string?> _appSettings = new()
     {
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:info:enabled"] = "true",
@@ -30,21 +27,6 @@ public class EndpointMiddlewareTest : BaseTest
         ["info:NET:ASPNET:type"] = "Core",
         ["info:NET:ASPNET:version"] = "2.0.0"
     };
-
-    [Fact]
-    public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
-    {
-        IOptionsMonitor<HypermediaEndpointOptions> opts = GetOptionsMonitorFromSettings<HypermediaEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        var ep = new TestHypermediaEndpoint(opts, managementOptions, NullLogger<ActuatorEndpoint>.Instance);
-        var middle = new ActuatorHypermediaEndpointMiddleware(ep, managementOptions, NullLogger<ActuatorHypermediaEndpointMiddleware>.Instance);
-        HttpContext context = CreateRequest("GET", "/");
-        await middle.InvokeAsync(context, null);
-        context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var rdr = new StreamReader(context.Response.Body);
-        string json = await rdr.ReadToEndAsync();
-        Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
-    }
 
     [Theory]
     [InlineData("http://somehost:1234", "https://somehost:1234", "https")]
@@ -61,10 +43,10 @@ public class EndpointMiddlewareTest : BaseTest
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", xForwarded);
         var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator");
         Assert.NotNull(links);
-        Assert.True(links._links.ContainsKey("self"));
-        Assert.Equal($"{calculatedHost}/actuator", links._links["self"].Href);
-        Assert.True(links._links.ContainsKey("info"));
-        Assert.Equal($"{calculatedHost}/actuator/info", links._links["info"].Href);
+        Assert.True(links.Entries.ContainsKey("self"));
+        Assert.Equal($"{calculatedHost}/actuator", links.Entries["self"].Href);
+        Assert.True(links.Entries.ContainsKey("info"));
+        Assert.Equal($"{calculatedHost}/actuator/info", links.Entries["info"].Href);
     }
 
     [Fact]
@@ -78,8 +60,8 @@ public class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         // send the request
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator"));
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator"));
+        string json = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(
             "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false}}}",
@@ -99,8 +81,8 @@ public class EndpointMiddlewareTest : BaseTest
         HttpClient client = server.CreateClient();
 
         // send the request
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/"));
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/"));
+        string json = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(
             "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/\",\"templated\":false}}}",
@@ -110,25 +92,10 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        HypermediaEndpointOptions options = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions, ConfigureManagementEndpointOptions>();
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator", options.GetContextPath(mgmtOptions.Get(ActuatorContext.Name)));
-        Assert.Contains("Get", options.AllowedVerbs);
-    }
-
-    private HttpContext CreateRequest(string method, string path)
-    {
-        HttpContext context = new DefaultHttpContext
-        {
-            TraceIdentifier = Guid.NewGuid().ToString()
-        };
-
-        context.Response.Body = new MemoryStream();
-        context.Request.Method = method;
-        context.Request.Path = new PathString(path);
-        context.Request.Scheme = "http";
-        context.Request.Host = new HostString("localhost");
-        return context;
+        HypermediaEndpointOptions endpointOptions = GetOptionsFromSettings<HypermediaEndpointOptions, ConfigureHypermediaEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions, ConfigureManagementOptions>().CurrentValue;
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
+        Assert.Contains("Get", endpointOptions.AllowedVerbs);
     }
 }

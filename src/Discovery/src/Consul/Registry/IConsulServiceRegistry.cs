@@ -17,10 +17,13 @@ public interface IConsulServiceRegistry : IServiceRegistry<IConsulRegistration>
     /// <param name="registration">
     /// the registration to register.
     /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     /// <returns>
     /// the task.
     /// </returns>
-    Task RegisterAsync(IConsulRegistration registration);
+    Task RegisterAsync(IConsulRegistration registration, CancellationToken cancellationToken);
 
     /// <summary>
     /// Deregister the provided registration in Consul.
@@ -28,10 +31,13 @@ public interface IConsulServiceRegistry : IServiceRegistry<IConsulRegistration>
     /// <param name="registration">
     /// the registration to register.
     /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     /// <returns>
     /// the task.
     /// </returns>
-    Task DeregisterAsync(IConsulRegistration registration);
+    Task DeregisterAsync(IConsulRegistration registration, CancellationToken cancellationToken);
 
     /// <summary>
     /// Set the status of the registration in Consul.
@@ -42,10 +48,13 @@ public interface IConsulServiceRegistry : IServiceRegistry<IConsulRegistration>
     /// <param name="status">
     /// the status value to set.
     /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     /// <returns>
     /// the task.
     /// </returns>
-    Task SetStatusAsync(IConsulRegistration registration, string status);
+    Task SetStatusAsync(IConsulRegistration registration, string status, CancellationToken cancellationToken);
 
     /// <summary>
     /// Get the status of the registration in Consul.
@@ -53,8 +62,11 @@ public interface IConsulServiceRegistry : IServiceRegistry<IConsulRegistration>
     /// <param name="registration">
     /// the registration to register.
     /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     /// <returns>
     /// the status value.
     /// </returns>
-    Task<object> GetStatusAsync(IConsulRegistration registration);
+    Task<object> GetStatusAsync(IConsulRegistration registration, CancellationToken cancellationToken);
 }

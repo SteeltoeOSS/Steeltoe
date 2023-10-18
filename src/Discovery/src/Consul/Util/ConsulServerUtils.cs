@@ -48,38 +48,4 @@ public static class ConsulServerUtils
 
         return address;
     }
-
-    public static IDictionary<string, string> GetMetadata(ServiceEntry healthService)
-    {
-        return GetMetadata(healthService.Service.Tags);
-    }
-
-    public static IDictionary<string, string> GetMetadata(IList<string> tags)
-    {
-        var metadata = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        if (tags != null)
-        {
-            foreach (string tag in tags)
-            {
-                int index = tag.IndexOf('=');
-                string key;
-                string value;
-
-                if (index == -1 || Equals(index + 1, tag.Length))
-                {
-                    key = value = tag;
-                }
-                else
-                {
-                    key = tag.Substring(0, index);
-                    value = tag.Substring(index + 1);
-                }
-
-                metadata[key] = value;
-            }
-        }
-
-        return metadata;
-    }
 }

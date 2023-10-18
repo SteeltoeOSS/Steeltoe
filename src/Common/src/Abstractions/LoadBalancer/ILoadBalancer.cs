@@ -12,10 +12,13 @@ public interface ILoadBalancer
     /// <param name="request">
     /// A URI containing a service name that can be resolved into one or more service instances.
     /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     /// <returns>
     /// The original URI, with serviceName replaced by the host:port of a service instance.
     /// </returns>
-    Task<Uri> ResolveServiceInstanceAsync(Uri request);
+    Task<Uri> ResolveServiceInstanceAsync(Uri request, CancellationToken cancellationToken);
 
     /// <summary>
     /// A mechanism for tracking statistics for service instances.
@@ -30,8 +33,10 @@ public interface ILoadBalancer
     /// The amount of time taken for a remote call to complete.
     /// </param>
     /// <param name="exception">
-    /// Any exception called during calls to a resolved service instance.
+    /// Any exception thrown during calls to a resolved service instance.
     /// </param>
-    /// <returns>A task.</returns>
-    Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception);
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception, CancellationToken cancellationToken);
 }

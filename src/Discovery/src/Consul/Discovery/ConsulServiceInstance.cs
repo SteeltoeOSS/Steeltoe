@@ -28,6 +28,8 @@ public class ConsulServiceInstance : IServiceInstance
     /// <inheritdoc />
     public Uri Uri { get; }
 
+    public string[] Tags { get; }
+
     /// <inheritdoc />
     public IDictionary<string, string> Metadata { get; }
 
@@ -40,12 +42,22 @@ public class ConsulServiceInstance : IServiceInstance
     public ConsulServiceInstance(ServiceEntry serviceEntry)
     {
         Host = ConsulServerUtils.FindHost(serviceEntry);
-        IDictionary<string, string> metadata = ConsulServerUtils.GetMetadata(serviceEntry);
-        IsSecure = metadata.TryGetValue("secure", out string secureString) && bool.Parse(secureString);
+        Tags = serviceEntry.Service.Tags;
+        Metadata = serviceEntry.Service.Meta;
+        IsSecure = GetIsSecure(serviceEntry);
         ServiceId = serviceEntry.Service.Service;
         Port = serviceEntry.Service.Port;
-        Metadata = metadata;
         string scheme = IsSecure ? "https" : "http";
         Uri = new Uri($"{scheme}://{Host}:{Port}");
+    }
+
+    private static bool GetIsSecure(ServiceEntry serviceEntry)
+    {
+        if (serviceEntry.Service.Meta == null)
+        {
+            return false;
+        }
+
+        return serviceEntry.Service.Meta.TryGetValue("secure", out string secureString) && bool.Parse(secureString);
     }
 }

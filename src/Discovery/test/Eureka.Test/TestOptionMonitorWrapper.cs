@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class TestOptionMonitorWrapper<T> : IOptionsMonitor<T>
+public sealed class TestOptionMonitorWrapper<T> : IOptionsMonitor<T>
 {
     public T CurrentValue { get; }
 

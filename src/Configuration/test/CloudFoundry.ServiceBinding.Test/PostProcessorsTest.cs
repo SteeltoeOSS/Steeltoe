@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
+using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Xunit;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
@@ -10,28 +11,38 @@ namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.Test;
 public sealed class PostProcessorsTest : BasePostProcessorsTest
 {
     [Fact]
-    public void PostgreSqlTest_BindingTypeDisabled()
+    public void Processes_MySql_configuration()
     {
-        var postProcessor = new PostgreSqlPostProcessor();
+        var postProcessor = new MySqlCloudFoundryPostProcessor();
 
         var secrets = new[]
         {
-            Tuple.Create("credentials:username", "test-username")
+            Tuple.Create("credentials:hostname", "test-host"),
+            Tuple.Create("credentials:port", "test-port"),
+            Tuple.Create("credentials:name", "test-database"),
+            Tuple.Create("credentials:username", "test-username"),
+            Tuple.Create("credentials:password", "test-password")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(PostgreSqlPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingType, false);
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(MySqlCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:username");
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlCloudFoundryPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
     }
 
     [Fact]
-    public void PostgreSqlTest_BindingTypeEnabled()
+    public void Processes_PostgreSql_configuration()
     {
-        var postProcessor = new PostgreSqlPostProcessor();
+        var postProcessor = new PostgreSqlCloudFoundryPostProcessor();
 
         var secrets = new[]
         {
@@ -45,12 +56,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:sslrootcert", "test-ssl-root-cert")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(PostgreSqlPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, PostgreSqlPostProcessor.BindingType, true);
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(PostgreSqlCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlPostProcessor.BindingType);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlCloudFoundryPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
@@ -62,200 +75,9 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     }
 
     [Fact]
-    public void MySqlTest_BindingTypeDisabled()
+    public void Processes_RabbitMQ_configuration()
     {
-        var postProcessor = new MySqlPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("credentials:username", "test-username")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(MySqlPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingType, false);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:username");
-    }
-
-    [Fact]
-    public void MySqlTest_BindingTypeEnabled()
-    {
-        var postProcessor = new MySqlPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("credentials:hostname", "test-host"),
-            Tuple.Create("credentials:port", "test-port"),
-            Tuple.Create("credentials:name", "test-database"),
-            Tuple.Create("credentials:username", "test-username"),
-            Tuple.Create("credentials:password", "test-password")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(MySqlPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MySqlPostProcessor.BindingType, true);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MySqlPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
-        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
-    }
-
-    [Fact]
-    public void SqlServerTest_BindingTypeDisabled()
-    {
-        var postProcessor = new SqlServerPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("credentials:password", "test-password")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(SqlServerPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingType, false);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:password");
-    }
-
-    [Fact]
-    public void SqlServerTest_BindingTypeEnabled()
-    {
-        var postProcessor = new SqlServerPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("credentials:hostname", "test-host"),
-            Tuple.Create("credentials:port", "test-port"),
-            Tuple.Create("credentials:name", "test-database"),
-            Tuple.Create("credentials:username", "test-username"),
-            Tuple.Create("credentials:password", "test-password")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(SqlServerPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, SqlServerPostProcessor.BindingType, true);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:Data Source"].Should().Be("test-host,test-port");
-        configurationData[$"{keyPrefix}:Initial Catalog"].Should().Be("test-database");
-        configurationData[$"{keyPrefix}:User ID"].Should().Be("test-username");
-        configurationData[$"{keyPrefix}:Password"].Should().Be("test-password");
-    }
-
-    [Fact]
-    public void MongoDbTest_BindingTypeDisabled()
-    {
-        var postProcessor = new MongoDbPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("credentials:uri", "test-uri")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(MongoDbPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingType, false);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:url");
-    }
-
-    [Fact]
-    public void MongoDbTest_BindingTypeEnabled()
-    {
-        var postProcessor = new MongoDbPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("credentials:uri", "mongodb://localhost:27017/auth-db?appname=sample")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(MongoDbPostProcessor.BindingType, "csb-azure-mongodb", TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingType, true);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:url"].Should().Be("mongodb://localhost:27017/auth-db?appname=sample");
-        configurationData[$"{keyPrefix}:database"].Should().Be("auth-db");
-    }
-
-    [Fact]
-    public void CosmosDbTest_BindingTypeDisabled()
-    {
-        var postProcessor = new CosmosDbPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpoint")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(CosmosDbPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CosmosDbPostProcessor.BindingType, false);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CosmosDbPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:accountEndpoint");
-    }
-
-    [Fact]
-    public void CosmosDbTest_BindingTypeEnabled()
-    {
-        var postProcessor = new CosmosDbPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpoint"),
-            Tuple.Create("credentials:cosmosdb_master_key", "test-key"),
-            Tuple.Create("credentials:cosmosdb_database_id", "test-database")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(CosmosDbPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, CosmosDbPostProcessor.BindingType, true);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CosmosDbPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:accountEndpoint"].Should().Be("test-endpoint");
-        configurationData[$"{keyPrefix}:accountKey"].Should().Be("test-key");
-        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
-    }
-
-    [Fact]
-    public void RabbitMQTest_BindingTypeDisabled()
-    {
-        var postProcessor = new RabbitMQPostProcessor();
-
-        var secrets = new[]
-        {
-            Tuple.Create("credentials:ssl", "false")
-        };
-
-        Dictionary<string, string> configurationData = GetConfigurationData(RabbitMQPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingType, false);
-
-        postProcessor.PostProcessConfiguration(provider, configurationData);
-
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingType);
-        configurationData.Should().NotContainKey($"{keyPrefix}:useTls");
-    }
-
-    [Fact]
-    public void RabbitMQTest_BindingTypeEnabled()
-    {
-        var postProcessor = new RabbitMQPostProcessor();
+        var postProcessor = new RabbitMQCloudFoundryPostProcessor();
 
         var secrets = new[]
         {
@@ -267,12 +89,14 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("credentials:protocols:amqp:vhost", "test-vhost")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(RabbitMQPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingType, true);
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(RabbitMQCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingType);
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQCloudFoundryPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:useTls"].Should().Be("false");
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
@@ -282,31 +106,128 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     }
 
     [Fact]
-    public void RabbitMQTest_BindingTypeEnabled_Tls()
+    public void Processes_Redis_configuration()
     {
-        var postProcessor = new RabbitMQPostProcessor();
+        var postProcessor = new RedisCloudFoundryPostProcessor();
 
         var secrets = new[]
         {
-            Tuple.Create("credentials:ssl", "true"),
-            Tuple.Create("credentials:protocols:amqp+ssl:host", "test-host"),
-            Tuple.Create("credentials:protocols:amqp+ssl:port", "test-port"),
-            Tuple.Create("credentials:protocols:amqp+ssl:username", "test-username"),
-            Tuple.Create("credentials:protocols:amqp+ssl:password", "test-password"),
-            Tuple.Create("credentials:protocols:amqp+ssl:vhost", "test-vhost")
+            Tuple.Create("credentials:host", "test-host"),
+            Tuple.Create("credentials:port", "test-port"),
+            Tuple.Create("credentials:password", "test-password")
         };
 
-        Dictionary<string, string> configurationData = GetConfigurationData(RabbitMQPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingType, true);
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(RedisCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
-        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RabbitMQPostProcessor.BindingType);
-        configurationData[$"{keyPrefix}:useTls"].Should().Be("true");
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisCloudFoundryPostProcessor.BindingType);
         configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
         configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
-        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
         configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
-        configurationData[$"{keyPrefix}:virtualHost"].Should().Be("test-vhost");
+    }
+
+    [Fact]
+    public void Processes_Redis_configuration_AzureBroker()
+    {
+        var postProcessor = new RedisCloudFoundryPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:host", "test-host"),
+            Tuple.Create("credentials:tls_port", "test-port"),
+            Tuple.Create("credentials:password", "test-password")
+        };
+
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(RedisCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, RedisCloudFoundryPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:ssl"].Should().Be("true");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+    }
+
+    [Fact]
+    public void Processes_SqlServer_configuration()
+    {
+        var postProcessor = new SqlServerCloudFoundryPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:hostname", "test-host"),
+            Tuple.Create("credentials:port", "test-port"),
+            Tuple.Create("credentials:name", "test-database"),
+            Tuple.Create("credentials:username", "test-username"),
+            Tuple.Create("credentials:password", "test-password")
+        };
+
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(SqlServerCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, SqlServerCloudFoundryPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:Data Source"].Should().Be("test-host,test-port");
+        configurationData[$"{keyPrefix}:Initial Catalog"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:User ID"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:Password"].Should().Be("test-password");
+    }
+
+    [Fact]
+    public void Processes_MongoDb_configuration()
+    {
+        var postProcessor = new MongoDbCloudFoundryPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:uri", "mongodb://localhost:27017/auth-db?appname=sample")
+        };
+
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(MongoDbCloudFoundryPostProcessor.BindingType, "csb-azure-mongodb", TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, MongoDbCloudFoundryPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:url"].Should().Be("mongodb://localhost:27017/auth-db?appname=sample");
+        configurationData[$"{keyPrefix}:database"].Should().Be("auth-db");
+    }
+
+    [Fact]
+    public void Processes_CosmosDb_configuration()
+    {
+        var postProcessor = new CosmosDbCloudFoundryPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:cosmosdb_host_endpoint", "test-endpoint"),
+            Tuple.Create("credentials:cosmosdb_master_key", "test-key"),
+            Tuple.Create("credentials:cosmosdb_database_id", "test-database")
+        };
+
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(CosmosDbCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, CosmosDbCloudFoundryPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:accountEndpoint"].Should().Be("test-endpoint");
+        configurationData[$"{keyPrefix}:accountKey"].Should().Be("test-key");
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
     }
 }

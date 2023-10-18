@@ -21,7 +21,7 @@ using RC = RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Test.Attributes;
 
 [Trait("Category", "Integration")]
-public class RabbitListenerAttributeProcessorTest
+public sealed class RabbitListenerAttributeProcessorTest
 {
     [Fact]
     public async Task SimpleMessageListener()
@@ -34,13 +34,13 @@ public class RabbitListenerAttributeProcessorTest
 
         ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(SimpleMessageListenerTestBean));
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
         IRabbitListenerEndpoint endpoint = container.Endpoint;
         Assert.IsType<MethodRabbitListenerEndpoint>(endpoint);
-        var methodEndpoint = endpoint as MethodRabbitListenerEndpoint;
+        var methodEndpoint = (MethodRabbitListenerEndpoint)endpoint;
         Assert.NotNull(methodEndpoint.Instance);
         Assert.NotNull(methodEndpoint.Method);
 
@@ -48,7 +48,7 @@ public class RabbitListenerAttributeProcessorTest
         methodEndpoint.SetupListenerContainer(listenerContainer);
         Assert.NotNull(listenerContainer.MessageListener);
         Assert.True(container.IsStarted);
-        provider.Dispose();
+        await provider.DisposeAsync();
         Assert.True(container.IsStopped);
     }
 
@@ -74,13 +74,13 @@ public class RabbitListenerAttributeProcessorTest
             await Configuration.CreateAndStartServicesAsync(configurationRoot, queues, typeof(SimpleMessageListenerWithMixedAnnotationsTestBean));
 
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
         IRabbitListenerEndpoint endpoint = container.Endpoint;
         Assert.IsType<MethodRabbitListenerEndpoint>(endpoint);
-        var methodEndpoint = endpoint as MethodRabbitListenerEndpoint;
+        var methodEndpoint = (MethodRabbitListenerEndpoint)endpoint;
         Assert.NotNull(methodEndpoint.Instance);
         Assert.NotNull(methodEndpoint.Method);
 
@@ -92,7 +92,7 @@ public class RabbitListenerAttributeProcessorTest
         methodEndpoint.SetupListenerContainer(listenerContainer);
         Assert.NotNull(listenerContainer.MessageListener);
         Assert.True(container.IsStarted);
-        provider.Dispose();
+        await provider.DisposeAsync();
         Assert.True(container.IsStopped);
     }
 
@@ -107,7 +107,7 @@ public class RabbitListenerAttributeProcessorTest
 
         ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(MultipleQueueNamesTestBean));
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
@@ -135,7 +135,7 @@ public class RabbitListenerAttributeProcessorTest
 
         ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(MultipleQueuesTestBean));
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
@@ -162,7 +162,7 @@ public class RabbitListenerAttributeProcessorTest
 
         ServiceProvider provider = await Configuration.CreateAndStartServicesAsync(null, queues, typeof(MixedQueuesAndQueueNamesTestBean));
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
@@ -201,7 +201,7 @@ public class RabbitListenerAttributeProcessorTest
             await Configuration.CreateAndStartServicesAsync(configurationRoot, queues, typeof(PropertyPlaceholderResolvingToQueueTestBean));
 
         var context = provider.GetService<IApplicationContext>();
-        var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
+        var factory = (RabbitListenerContainerTestFactory)context.GetService<IRabbitListenerContainerFactory>();
         Assert.Single(factory.GetListenerContainers());
         MessageListenerTestContainer container = factory.GetListenerContainers()[0];
 
@@ -227,7 +227,8 @@ public class RabbitListenerAttributeProcessorTest
             queue2
         };
 
-        await Assert.ThrowsAsync<ExpressionException>(() => Configuration.CreateAndStartServicesAsync(null, queues, typeof(InvalidValueInAnnotationTestBean)));
+        await Assert.ThrowsAsync<ExpressionException>(async () =>
+            await Configuration.CreateAndStartServicesAsync(null, queues, typeof(InvalidValueInAnnotationTestBean)));
     }
 
     [Fact]
@@ -236,7 +237,7 @@ public class RabbitListenerAttributeProcessorTest
         var services = new ServiceCollection();
 
         RabbitListenerDeclareAttributeProcessor.ProcessDeclareAttributes(services, null, typeof(TestTarget));
-        IEnumerable<IExchange> exchanges = services.BuildServiceProvider().GetServices<IExchange>();
+        IExchange[] exchanges = services.BuildServiceProvider().GetServices<IExchange>().ToArray();
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Direct);
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Topic);
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.FanOut);
@@ -293,7 +294,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class TestTarget
+    public sealed class TestTarget
     {
         [DeclareExchange(Name = "test", Type = ExchangeType.Direct)]
         [DeclareExchange(Name = "test", Type = ExchangeType.Topic)]
@@ -305,7 +306,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class SimpleMessageListenerTestBean
+    public sealed class SimpleMessageListenerTestBean
     {
         [RabbitListener("testQueue")]
         public void HandleIt(string body)
@@ -313,7 +314,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class SimpleMessageListenerWithMixedAnnotationsTestBean
+    public sealed class SimpleMessageListenerWithMixedAnnotationsTestBean
     {
         [RabbitListener("testQueue", "${rabbit.myQueue}")]
         public void HandleIt(string body)
@@ -321,7 +322,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class MultipleQueueNamesTestBean
+    public sealed class MultipleQueueNamesTestBean
     {
         [RabbitListener("metaTestQueue", "metaTestQueue2")]
         public void HandleIt(string body)
@@ -329,7 +330,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class MultipleQueuesTestBean
+    public sealed class MultipleQueuesTestBean
     {
         [RabbitListener("#{@queue1}", "#{@queue2}")]
         public void HandleIt(string body)
@@ -337,7 +338,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class MixedQueuesAndQueueNamesTestBean
+    public sealed class MixedQueuesAndQueueNamesTestBean
     {
         [RabbitListener("metaTestQueue2", "#{@queue1}")]
         public void HandleIt(string body)
@@ -345,7 +346,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class PropertyPlaceholderResolvingToQueueTestBean
+    public sealed class PropertyPlaceholderResolvingToQueueTestBean
     {
         [RabbitListener("${rabbit:myQueue}", "#{@queue2}")]
         public void HandleIt(string body)
@@ -353,7 +354,7 @@ public class RabbitListenerAttributeProcessorTest
         }
     }
 
-    public class InvalidValueInAnnotationTestBean
+    public sealed class InvalidValueInAnnotationTestBean
     {
         [RabbitListener("#{@testFactory}")]
         public void HandleIt(string body)

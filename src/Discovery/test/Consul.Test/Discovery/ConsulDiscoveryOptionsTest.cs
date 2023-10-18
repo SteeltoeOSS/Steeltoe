@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
-public class ConsulDiscoveryOptionsTest
+public sealed class ConsulDiscoveryOptionsTest
 {
     [Fact]
     public void Constructor_InitializesDefaults()

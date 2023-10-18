@@ -11,7 +11,7 @@ using Steeltoe.Stream.Messaging;
 
 namespace Steeltoe.Stream.Test.Tck;
 
-public class ByteArrayMessageToStringJsonMessageServiceActivator
+public sealed class ByteArrayMessageToStringJsonMessageServiceActivator
 {
     [ServiceActivator(InputChannel = ISink.InputName, OutputChannel = ISource.OutputName)]
     public IMessage<string> Echo(IMessage<byte[]> value)

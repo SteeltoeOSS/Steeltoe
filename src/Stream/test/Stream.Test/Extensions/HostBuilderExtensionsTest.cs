@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Test.Extensions;
 
-public class HostBuilderExtensionsTest
+public sealed class HostBuilderExtensionsTest
 {
     [Fact]
     public void HostBuilderExtensionTest()

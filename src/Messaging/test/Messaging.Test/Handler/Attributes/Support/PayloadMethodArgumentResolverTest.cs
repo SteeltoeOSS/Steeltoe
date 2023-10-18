@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Test.Handler.Attributes.Support;
 
-public class PayloadMethodArgumentResolverTest
+public sealed class PayloadMethodArgumentResolverTest
 {
     private readonly PayloadMethodArgumentResolver _resolver;
 

@@ -6,15 +6,15 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.Utils.IO;
-using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public class EurekaInstanceOptionsTest : AbstractBaseTest
+public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
 {
     [Fact]
     public void Constructor_Initializes_Defaults()
@@ -247,7 +247,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
 
         var instOpts = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
+        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
 
         Assert.Equal("myapp", instOpts.HostName);
         Assert.Equal(1233, instOpts.Port);
@@ -265,7 +265,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
 
         var instOpts = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
+        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
 
         Assert.Equal("myapp", instOpts.HostName);
         Assert.Equal(1234, instOpts.SecurePort);
@@ -284,7 +284,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
 
         var instOpts = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
+        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
 
         Assert.Equal(80, instOpts.Port);
         Assert.Equal(443, instOpts.SecurePort);
@@ -298,7 +298,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
         var instOpts = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
+        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
 
         Assert.Equal(80, instOpts.Port);
         Assert.False(instOpts.SecurePortEnabled);

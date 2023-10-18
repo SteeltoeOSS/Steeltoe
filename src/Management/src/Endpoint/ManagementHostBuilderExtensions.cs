@@ -7,23 +7,24 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Services;
+using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
@@ -38,7 +39,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddDbMigrationsActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddDbMigrationsActuator();
             ActivateActuatorEndpoints(collection);
@@ -51,11 +54,13 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    public static IHostBuilder AddEnvActuator(this IHostBuilder hostBuilder)
+    public static IHostBuilder AddEnvironmentActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
-            collection.AddEnvActuator();
+            collection.AddEnvironmentActuator();
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -68,7 +73,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddHealthActuator();
             ActivateActuatorEndpoints(collection);
@@ -81,14 +88,17 @@ public static class ManagementHostBuilderExtensions
     /// <param name="hostBuilder">
     /// Your HostBuilder.
     /// </param>
-    /// <param name="contributors">
+    /// <param name="contributorTypes">
     /// Types that contribute to the overall health of the app.
     /// </param>
-    public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder, Type[] contributors)
+    public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder, params Type[] contributorTypes)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(contributorTypes);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
-            collection.AddHealthActuator(contributors);
+            collection.AddHealthActuator(contributorTypes);
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -102,14 +112,18 @@ public static class ManagementHostBuilderExtensions
     /// <param name="aggregator">
     /// Custom health aggregator.
     /// </param>
-    /// <param name="contributors">
+    /// <param name="contributorTypes">
     /// Types that contribute to the overall health of the app.
     /// </param>
-    public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder, IHealthAggregator aggregator, Type[] contributors)
+    public static IHostBuilder AddHealthActuator(this IHostBuilder hostBuilder, IHealthAggregator aggregator, params Type[] contributorTypes)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(aggregator);
+        ArgumentGuard.NotNull(contributorTypes);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
-            collection.AddHealthActuator(aggregator, contributors);
+            collection.AddHealthActuator(aggregator, contributorTypes);
             ActivateActuatorEndpoints(collection);
         });
     }
@@ -122,7 +136,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddHeapDumpActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddHeapDumpActuator();
             ActivateActuatorEndpoints(collection);
@@ -137,7 +153,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddHypermediaActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddHypermediaActuator();
             ActivateActuatorEndpoints(collection);
@@ -152,7 +170,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddInfoActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddInfoActuator();
             ActivateActuatorEndpoints(collection);
@@ -168,9 +188,12 @@ public static class ManagementHostBuilderExtensions
     /// <param name="contributors">
     /// Contributors to application information.
     /// </param>
-    public static IHostBuilder AddInfoActuator(this IHostBuilder hostBuilder, IInfoContributor[] contributors)
+    public static IHostBuilder AddInfoActuator(this IHostBuilder hostBuilder, params IInfoContributor[] contributors)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(contributors);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddInfoActuator(contributors);
             ActivateActuatorEndpoints(collection);
@@ -185,7 +208,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddLoggersActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().AddDynamicLogging().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().AddDynamicLogging().ConfigureServices((_, collection) =>
         {
             collection.AddLoggersActuator();
             ActivateActuatorEndpoints(collection);
@@ -200,7 +225,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddMappingsActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddMappingsActuator();
             ActivateActuatorEndpoints(collection);
@@ -215,7 +242,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddMetricsActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddMetricsActuator();
             ActivateActuatorEndpoints(collection);
@@ -230,7 +259,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddRefreshActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddRefreshActuator();
             ActivateActuatorEndpoints(collection);
@@ -246,13 +277,26 @@ public static class ManagementHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddThreadDumpActuator(mediaTypeVersion);
             ActivateActuatorEndpoints(collection);
         });
+    }
+
+    /// <summary>
+    /// Adds the ThreadDump actuator to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder)
+    {
+        return hostBuilder.AddThreadDumpActuator(MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -264,9 +308,11 @@ public static class ManagementHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddTraceActuator(mediaTypeVersion);
             ActivateActuatorEndpoints(collection);
@@ -288,6 +334,17 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
+    /// Adds the Trace actuator to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder)
+    {
+        return AddTraceActuator(hostBuilder, MediaTypeVersion.V2);
+    }
+
+    /// <summary>
     /// Adds the Cloud Foundry actuator to the application.
     /// </summary>
     /// <param name="hostBuilder">
@@ -295,7 +352,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddCloudFoundryActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddCloudFoundryActuator();
             ActivateActuatorEndpoints(collection);
@@ -320,15 +379,69 @@ public static class ManagementHostBuilderExtensions
     /// <remarks>
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
-    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null,
-        MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder>? configureEndpoints,
+        MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
-        return hostBuilder.AddDynamicLogging().AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddDynamicLogging().AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddAllActuators(mediaTypeVersion, buildCorsPolicy);
             IEndpointConventionBuilder endpointConventionBuilder = ActivateActuatorEndpoints(collection);
             configureEndpoints?.Invoke(endpointConventionBuilder);
         });
+    }
+
+    /// <summary>
+    /// Adds all standard actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <remarks>
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
+    /// </remarks>
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder)
+    {
+        return AddAllActuators(hostBuilder, null);
+    }
+
+    /// <summary>
+    /// Adds all standard actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
+    /// </param>
+    /// <param name="mediaTypeVersion">
+    /// Specify the media type version to use in the response.
+    /// </param>
+    /// <remarks>
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
+    /// </remarks>
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder>? configureEndpoints,
+        MediaTypeVersion mediaTypeVersion)
+    {
+        return AddAllActuators(hostBuilder, configureEndpoints, mediaTypeVersion, null);
+    }
+
+    /// <summary>
+    /// Adds all standard actuators to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// Customize endpoint behavior. Useful for tailoring auth requirements.
+    /// </param>
+    /// <remarks>
+    /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
+    /// </remarks>
+    public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder>? configureEndpoints)
+    {
+        return AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
     }
 
     /// <summary>
@@ -339,15 +452,18 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection collection)
     {
+        ArgumentGuard.NotNull(collection);
+
         // check for existing AllActuatorsStartupFilter
-        IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(t =>
-            t.ImplementationType == typeof(AllActuatorsStartupFilter) || t.ImplementationFactory?.Method?.ReturnType == typeof(AllActuatorsStartupFilter));
+        IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(descriptor =>
+            descriptor.ImplementationType == typeof(AllActuatorsStartupFilter) ||
+            descriptor.ImplementationFactory?.Method.ReturnType == typeof(AllActuatorsStartupFilter));
 
         var actuatorConventionBuilder = new ActuatorConventionBuilder();
 
         if (!existingStartupFilters.Any())
         {
-            collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(actuatorConventionBuilder));
+            collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(_ => new AllActuatorsStartupFilter(actuatorConventionBuilder));
         }
 
         return actuatorConventionBuilder;
@@ -355,13 +471,13 @@ public static class ManagementHostBuilderExtensions
 
     private static IHostBuilder AddManagementPort(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureWebHost(webhostBuilder =>
+        return hostBuilder.ConfigureWebHost(webHostBuilder =>
         {
-            webhostBuilder.GetManagementUrl(out int? httpPort, out int? httpsPort);
+            (int? httpPort, int? httpsPort) = webHostBuilder.GetManagementPorts();
 
             if (httpPort.HasValue || httpsPort.HasValue)
             {
-                webhostBuilder.UseCloudHosting(httpPort, httpsPort);
+                webHostBuilder.UseCloudHosting(httpPort, httpsPort);
             }
         });
     }

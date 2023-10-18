@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Common.TestResources;
 
-public class XunitLogger : ILogger
+public sealed class XunitLogger : ILogger
 {
     private readonly ITestOutputHelper _output;
 
@@ -19,7 +19,7 @@ public class XunitLogger : ILogger
 
     public IDisposable BeginScope<TState>(TState state)
     {
-        throw new NotImplementedException();
+        return EmptyDisposable.Instance;
     }
 
     public bool IsEnabled(LogLevel logLevel)

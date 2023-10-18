@@ -15,17 +15,15 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Options;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
-public class EndpointMiddlewareTest : BaseTest
+public sealed class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string> AppSettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
@@ -38,50 +36,41 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
     {
-        IOptionsMonitor<DbMigrationsEndpointOptions> opts = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        managementOptions.Get(ActuatorContext.Name).EndpointOptions.Add(opts.CurrentValue);
+        IOptionsMonitor<DbMigrationsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
+        IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
+
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
-        var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
-        helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
+        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
+        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
 
-        helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
+        scanner.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
         {
             "pending"
         });
 
-        helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
+        scanner.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
         {
             "applied"
         });
 
-        var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper, NullLogger<DbMigrationsEndpoint>.Instance);
+        var handler = new DbMigrationsEndpointHandler(endpointOptionsMonitor, container.BuildServiceProvider(), scanner, NullLoggerFactory.Instance);
 
-        var middle = new DbMigrationsEndpointMiddleware(ep, managementOptions, NullLogger<DbMigrationsEndpointMiddleware>.Instance);
+        var middleware = new DbMigrationsEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/dbmigrations");
-        await middle.HandleEntityFrameworkRequestAsync(context);
+        await middleware.InvokeAsync(context, null);
 
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadToEndAsync();
+        var descriptor = new DbMigrationsDescriptor();
+        descriptor.AppliedMigrations.Add("applied");
+        descriptor.PendingMigrations.Add("pending");
 
         string expected = Serialize(new Dictionary<string, DbMigrationsDescriptor>
         {
-            {
-                nameof(MockDbContext), new DbMigrationsDescriptor
-                {
-                    AppliedMigrations = new List<string>
-                    {
-                        "applied"
-                    },
-                    PendingMigrations = new List<string>
-                    {
-                        "pending"
-                    }
-                }
-            }
+            { nameof(MockDbContext), descriptor }
         });
 
         Assert.Equal(expected, json);
@@ -100,25 +89,16 @@ public class EndpointMiddlewareTest : BaseTest
 
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
-        HttpResponseMessage result = await client.GetAsync(new Uri("http://localhost/actuator/dbmigrations"));
-        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        string json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/dbmigrations"));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        string json = await response.Content.ReadAsStringAsync();
+        var descriptor = new DbMigrationsDescriptor();
+        descriptor.AppliedMigrations.Add("applied");
+        descriptor.PendingMigrations.Add("pending");
 
         string expected = Serialize(new Dictionary<string, DbMigrationsDescriptor>
         {
-            {
-                nameof(MockDbContext), new DbMigrationsDescriptor
-                {
-                    AppliedMigrations = new List<string>
-                    {
-                        "applied"
-                    },
-                    PendingMigrations = new List<string>
-                    {
-                        "pending"
-                    }
-                }
-            }
+            { nameof(MockDbContext), descriptor }
         });
 
         Assert.Equal(expected, json);
@@ -127,15 +107,11 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public void RoutesByPathAndVerb()
     {
-        var options = GetOptionsFromSettings<DbMigrationsEndpointOptions>();
-        IOptionsMonitor<ManagementEndpointOptions> mgmtOptions = GetOptionsMonitorFromSettings<ManagementEndpointOptions>();
-        ManagementEndpointOptions actuatorMgmtOptions = mgmtOptions.Get(ActuatorContext.Name);
-        Assert.True(options.ExactMatch);
-        Assert.Equal("/actuator/dbmigrations", options.GetContextPath(actuatorMgmtOptions));
+        var endpointOptions = GetOptionsFromSettings<DbMigrationsEndpointOptions>();
+        ManagementOptions managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>().CurrentValue;
 
-        ManagementEndpointOptions cfMgmtOptions = mgmtOptions.Get(CFContext.Name);
-        Assert.Equal("/cloudfoundryapplication/dbmigrations", options.GetContextPath(cfMgmtOptions));
-        Assert.Contains("Get", options.AllowedVerbs);
+        Assert.True(endpointOptions.RequiresExactMatch());
+        Assert.Equal("/actuator/dbmigrations", endpointOptions.GetPathMatchPattern(managementOptions, managementOptions.Path));
     }
 
     private HttpContext CreateRequest(string method, string path)
@@ -147,7 +123,7 @@ public class EndpointMiddlewareTest : BaseTest
 
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
-        context.Request.Path = new PathString(path);
+        context.Request.Path = path;
         context.Request.Scheme = "http";
         context.Request.Host = new HostString("localhost");
         return context;
