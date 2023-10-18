@@ -4,6 +4,7 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Services;
 internal class ServiceDescriptorConverter : JsonConverter<ServiceContextDescriptor>
@@ -21,34 +22,14 @@ internal class ServiceDescriptorConverter : JsonConverter<ServiceContextDescript
      
         foreach (var contextKey in value.Keys)
         {
-           
             writer.WritePropertyName(contextKey);
             writer.WriteStartObject();
             writer.WritePropertyName("beans");
             writer.WriteStartObject();
-            foreach (var (key, serviceDescriptor) in value[contextKey])
+            foreach (var (_, service) in value[contextKey])
             {
-                var name = serviceDescriptor.ServiceType.Name;
-             
-                writer.WritePropertyName(name);
-                writer.WriteStartObject();
-                writer.WriteString("scope", serviceDescriptor.Lifetime.ToString());
-                writer.WriteString("type", key);
-                writer.WriteString("resource", serviceDescriptor.ServiceType.AssemblyQualifiedName);
-                writer.WritePropertyName("dependencies");
-                
-                writer.WriteStartArray();
-                if (serviceDescriptor.ImplementationType != null)
-                {
-                    foreach (var constructor in serviceDescriptor.ImplementationType.GetConstructors())
-                    {
-                       
-                        writer.WriteStringValue(constructor.ToString());
-                    }
-
-                }
-                writer.WriteEndArray();
-                writer.WriteEndObject();
+                writer.WritePropertyName(service.Name);
+                JsonSerializer.Serialize(writer, service, options);
             }
 
             writer.WriteEndObject();

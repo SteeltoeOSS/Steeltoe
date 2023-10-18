@@ -395,6 +395,12 @@ Steeltoe.Management.Endpoint.Security.EndpointClaim.Type.set -> void
 Steeltoe.Management.Endpoint.Security.EndpointClaim.Value.get -> string?
 Steeltoe.Management.Endpoint.Security.EndpointClaim.Value.set -> void
 Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler
+Steeltoe.Management.Endpoint.Services.Service
+Steeltoe.Management.Endpoint.Services.Service.AssemblyName.get -> string!
+Steeltoe.Management.Endpoint.Services.Service.Dependencies.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Management.Endpoint.Services.Service.Scope.get -> string!
+Steeltoe.Management.Endpoint.Services.Service.Service(Microsoft.Extensions.DependencyInjection.ServiceDescriptor! descriptor) -> void
+Steeltoe.Management.Endpoint.Services.Service.Type.get -> string!
 Steeltoe.Management.Endpoint.Services.ServicesEndpointMiddleware
 Steeltoe.Management.Endpoint.Services.ServicesEndpointMiddleware.ServicesEndpointMiddleware(Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions!>! managementOptions, Microsoft.Extensions.Logging.ILoggerFactory! logger) -> void
 Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions

@@ -15,7 +15,7 @@ internal class ServicesEndpointHandler : IServicesEndpointHandler
     private readonly ILogger<ServicesEndpointHandler> _logger;
      
     public EndpointOptions Options => _options.CurrentValue;
-
+    
     public ServicesEndpointHandler(IOptionsMonitor<ServicesEndpointOptions> options, IServiceCollection serviceCollection, ILogger<ServicesEndpointHandler> logger)
     {
         ArgumentGuard.NotNull(options);
@@ -36,12 +36,11 @@ internal class ServicesEndpointHandler : IServicesEndpointHandler
 
         foreach (ServiceDescriptor serviceDescriptor in _serviceCollection)
         {
-
             var key = serviceDescriptor.ToString();
 
             if (!applicationContext.ContainsKey(key))
             {
-                applicationContext.Add(key, serviceDescriptor);
+                applicationContext.Add(key, new Service(serviceDescriptor));
             }
             else
             {
