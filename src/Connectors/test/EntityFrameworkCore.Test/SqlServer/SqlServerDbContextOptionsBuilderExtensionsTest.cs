@@ -33,7 +33,8 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
 
         await using WebApplication app = builder.Build();
 
-        await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Data Source=localhost;Initial Catalog=myDb;User ID=steeltoe;Password=steeltoe;Max Pool Size=50;Encrypt=false");
@@ -56,7 +57,8 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
 
         await using WebApplication app = builder.Build();
 
-        await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Data Source=localhost;Initial Catalog=myDb;User ID=steeltoe;Password=steeltoe;Max Pool Size=50;Encrypt=false");

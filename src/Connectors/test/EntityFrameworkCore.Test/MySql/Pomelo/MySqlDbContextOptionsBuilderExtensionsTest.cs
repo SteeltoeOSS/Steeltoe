@@ -35,7 +35,8 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 
         await using WebApplication app = builder.Build();
 
-        await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be(
@@ -60,7 +61,8 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 
         await using WebApplication app = builder.Build();
 
-        await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be(
@@ -77,8 +79,9 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
             MySqlEntityFrameworkCorePackageResolver.PomeloOnly));
 
         await using WebApplication app = builder.Build();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
 
-        Action action = () => app.Services.GetRequiredService<GoodDbContext>();
+        Action action = () => _ = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
 
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Server version must be specified when no connection string is provided.");
     }

@@ -31,7 +31,8 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
 
         await using WebApplication app = builder.Build();
 
-        await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True;Include Error Detail=true");
@@ -53,7 +54,8 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
 
         await using WebApplication app = builder.Build();
 
-        await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True;Include Error Detail=true");
