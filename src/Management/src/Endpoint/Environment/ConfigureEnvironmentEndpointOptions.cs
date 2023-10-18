@@ -3,12 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Environment;
 
-internal sealed class ConfigureEnvironmentEndpointOptions : IConfigureOptions<EnvironmentEndpointOptions>
+internal sealed class ConfigureEnvironmentEndpointOptions : ConfigureEndpointOptions<EnvironmentEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:env";
 
@@ -22,27 +22,16 @@ internal sealed class ConfigureEnvironmentEndpointOptions : IConfigureOptions<En
         "vcap_services"
     };
 
-    private readonly IConfiguration _configuration;
-
     public ConfigureEnvironmentEndpointOptions(IConfiguration configuration)
+        : base(configuration, ManagementInfoPrefix, "env")
     {
-        ArgumentGuard.NotNull(configuration);
-
-        _configuration = configuration;
     }
 
-    public void Configure(EnvironmentEndpointOptions options)
+    public override void Configure(EnvironmentEndpointOptions options)
     {
         ArgumentGuard.NotNull(options);
 
-        _configuration.GetSection(ManagementInfoPrefix).Bind(options);
-
-        options.Id ??= "env";
-
-        if (options.RequiredPermissions == Permissions.Undefined)
-        {
-            options.RequiredPermissions = Permissions.Restricted;
-        }
+        base.Configure(options);
 
         // It's not possible to distinguish between null and an empty list in configuration.
         // See https://github.com/dotnet/extensions/issues/1341.

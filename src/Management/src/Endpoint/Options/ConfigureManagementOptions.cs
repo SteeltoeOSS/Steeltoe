@@ -4,14 +4,13 @@
 
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
-internal sealed class ConfigureManagementOptions : IConfigureOptions<ManagementOptions>
+internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<ManagementOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints";
     private const string CloudFoundryEnabledPrefix = "management:cloudfoundry:enabled";
@@ -19,6 +18,8 @@ internal sealed class ConfigureManagementOptions : IConfigureOptions<ManagementO
     internal const string DefaultCloudFoundryPath = "/cloudfoundryapplication";
 
     private readonly IConfiguration _configuration;
+
+    public string ConfigurationKey => ManagementInfoPrefix;
 
     public ConfigureManagementOptions(IConfiguration configuration)
     {

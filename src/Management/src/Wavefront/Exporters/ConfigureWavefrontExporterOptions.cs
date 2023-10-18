@@ -3,13 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Net;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Wavefront.Exporters;
 
-internal sealed class ConfigureWavefrontExporterOptions : IConfigureOptions<WavefrontExporterOptions>
+internal sealed class ConfigureWavefrontExporterOptions : IConfigureOptionsWithKey<WavefrontExporterOptions>
 {
     private const string WavefrontApplicationPrefix = "wavefront:application";
 
@@ -17,6 +17,8 @@ internal sealed class ConfigureWavefrontExporterOptions : IConfigureOptions<Wave
     private const string WavefrontMetricsPrefix = "management:metrics:export:wavefront";
 
     private readonly IConfiguration _configuration;
+
+    public string ConfigurationKey => WavefrontMetricsPrefix;
 
     public ConfigureWavefrontExporterOptions(IConfiguration configuration)
     {
