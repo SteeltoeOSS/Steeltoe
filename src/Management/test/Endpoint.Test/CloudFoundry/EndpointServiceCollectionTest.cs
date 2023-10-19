@@ -32,7 +32,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddLogging();
         services.AddCloudFoundryActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
         Assert.Equal(string.Empty, options.CurrentValue.Id);
         var handler = serviceProvider.GetService<ICloudFoundryEndpointHandler>();

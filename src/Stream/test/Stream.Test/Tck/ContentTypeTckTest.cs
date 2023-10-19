@@ -37,7 +37,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task StringToMapStreamListener()
     {
         _container.AddStreamListeners<StringToMapStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -54,7 +54,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task StringToMapMessageStreamListener()
     {
         _container.AddStreamListeners<StringToMapMessageStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -72,7 +72,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task StringToMapMessageStreamListenerOriginalContentType()
     {
         _container.AddStreamListeners<StringToMapMessageStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -99,7 +99,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     {
         _container.AddStreamListeners<InternalPipeLine>();
         _container.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "internalchannel"));
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -117,7 +117,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task PojoToPojo()
     {
         _container.AddStreamListeners<PojoToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -136,7 +136,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task PojoToString()
     {
         _container.AddStreamListeners<PojoToStringStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -157,7 +157,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.bindings.output.contentType=text/plain");
         _container.AddStreamListeners<PojoToStringStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -177,7 +177,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task PojoToByteArray()
     {
         _container.AddStreamListeners<PojoToByteArrayStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -198,7 +198,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.bindings.output.contentType=text/plain");
         _container.AddStreamListeners<PojoToByteArrayStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -219,7 +219,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.bindings.input.contentType=text/plain");
         _container.AddStreamListeners<StringToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -241,7 +241,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.bindings.input.contentType=text/plain");
         _container.AddStreamListeners<TypelessToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -263,7 +263,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.bindings.input.contentType=application/json");
         _container.AddStreamListeners<TypelessToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -284,7 +284,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.bindings.input.contentType=text/plain");
         _container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -305,7 +305,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.bindings.input.contentType=application/json");
         _container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -324,7 +324,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task TypelessToPojoWithTextHeaderContentTypeBinding()
     {
         _container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -347,7 +347,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.bindings.output.contentType=text/plain");
         _container.AddStreamListeners<TypelessToMessageStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -368,7 +368,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task OutboundMessageWithTextContentTypeOnly()
     {
         _container.AddStreamListeners<TypelessToMessageTextOnlyContentTypeStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -388,7 +388,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task StringToPojoInboundContentTypeHeader()
     {
         _container.AddStreamListeners<StringToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -409,7 +409,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.bindings.input.contentType=text/plain");
         _container.AddStreamListeners<ByteArrayToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -428,7 +428,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task ByteArrayToPojoInboundContentTypeHeader()
     {
         _container.AddStreamListeners<StringToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -453,7 +453,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task ByteArrayToByteArray()
     {
         _container.AddStreamListeners<ByteArrayToByteArrayStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -476,7 +476,7 @@ public sealed class ContentTypeTckTest : AbstractTest
             "spring.cloud.stream.bindings.output.contentType=text/plain");
 
         _container.AddStreamListeners<ByteArrayToByteArrayStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -494,7 +494,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task PojoMessageToStringMessage()
     {
         _container.AddStreamListeners<PojoMessageToStringMessageStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -514,7 +514,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     {
         _container.AddServiceActivators<PojoMessageToStringMessageServiceActivator>();
 
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
         activatorProcessor.Initialize();
@@ -534,7 +534,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task ByteArrayMessageToStringJsonMessageServiceActivator()
     {
         _container.AddServiceActivators<ByteArrayMessageToStringJsonMessageServiceActivator>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
         activatorProcessor.Initialize();
@@ -554,7 +554,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task ByteArrayMessageToStringMessageServiceActivator()
     {
         _container.AddServiceActivators<StringMessageToStringMessageServiceActivator>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
         activatorProcessor.Initialize();
@@ -577,7 +577,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.default.contentType=application/x-java-object");
         _container.AddStreamListeners<StringToStringStreamListener>();
         _container.AddSingleton<IMessageConverter, AlwaysStringMessageConverter>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -599,7 +599,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.default.contentType=foo/bar");
         _container.AddStreamListeners<StringToStringStreamListener>();
         _container.AddSingleton<IMessageConverter, FooBarMessageConverter>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -620,7 +620,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.default.contentType=text/plain");
         _container.AddStreamListeners<PojoToPojoStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -636,7 +636,7 @@ public sealed class ContentTypeTckTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.default.contentType=foo/bar");
         _container.AddStreamListeners<StringToStringStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -650,7 +650,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task ToCollectionWithParameterizedType()
     {
         _container.AddStreamListeners<CollectionWithParameterizedTypesStreamListener>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -679,7 +679,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task TestWithMapInputParameter()
     {
         _container.AddStreamListeners<MapInputConfiguration>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -697,7 +697,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task TestWithMapPayloadParameter()
     {
         _container.AddStreamListeners<MapPayloadConfiguration>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -715,7 +715,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task TestWithListInputParameter()
     {
         _container.AddStreamListeners<ListInputConfiguration>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -733,7 +733,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task TestWithMessageHeadersInputParameter()
     {
         _container.AddStreamListeners<MessageHeadersInputConfiguration>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -753,7 +753,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task TestWithTypelessInputParameterAndOctetStream()
     {
         _container.AddStreamListeners<TypelessPayloadConfiguration>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
@@ -775,7 +775,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task TestWithTypelessInputParameterAndServiceActivator()
     {
         _container.AddServiceActivators<TypelessPayloadConfigurationServiceActivator>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
         streamProcessor.Initialize();
@@ -795,7 +795,7 @@ public sealed class ContentTypeTckTest : AbstractTest
     public async Task TestWithTypelessMessageInputParameterAndServiceActivator()
     {
         _container.AddServiceActivators<TypelessMessageConfigurationServiceActivator>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
         streamProcessor.Initialize();

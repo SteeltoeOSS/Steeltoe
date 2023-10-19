@@ -32,10 +32,10 @@ public sealed class ServiceCollectionExtensionsTest
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        Assert.NotNull(serviceCollection.BuildServiceProvider().GetService<IApplicationInstanceInfo>());
+        Assert.NotNull(serviceCollection.BuildServiceProvider(true).GetService<IApplicationInstanceInfo>());
 
         serviceCollection.AddKubernetesApplicationInstanceInfo();
-        ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+        ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider(true);
 
         IEnumerable<IApplicationInstanceInfo> appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>();
         Assert.Single(appInfos);
@@ -57,7 +57,7 @@ public sealed class ServiceCollectionExtensionsTest
         serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         serviceCollection.AddKubernetesClient();
-        ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+        ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider(true);
         var client = serviceProvider.GetService<IKubernetes>();
         IEnumerable<IApplicationInstanceInfo> appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>();
 

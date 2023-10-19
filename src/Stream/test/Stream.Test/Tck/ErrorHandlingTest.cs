@@ -27,7 +27,7 @@ public sealed class ErrorHandlingTest : AbstractTest
     public async Task TestGlobalErrorWithMessage()
     {
         _container.AddStreamListeners<GlobalErrorHandlerWithErrorMessageConfiguration>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -44,7 +44,7 @@ public sealed class ErrorHandlingTest : AbstractTest
     public async Task TestGlobalErrorWithThrowable()
     {
         _container.AddStreamListeners<GlobalErrorHandlerWithExceptionConfig>();
-        ServiceProvider provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 

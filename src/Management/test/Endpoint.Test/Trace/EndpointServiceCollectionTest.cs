@@ -36,7 +36,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         services.AddTraceActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetService<IOptionsMonitor<TraceEndpointOptions>>();
         Assert.NotNull(options);
         var handler = serviceProvider.GetService<IHttpTraceEndpointHandler>();

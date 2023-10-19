@@ -18,7 +18,7 @@ public sealed class DispatcherHasNoSubscribersTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 
         try
@@ -37,7 +37,7 @@ public sealed class DispatcherHasNoSubscribersTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var subscribedChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 

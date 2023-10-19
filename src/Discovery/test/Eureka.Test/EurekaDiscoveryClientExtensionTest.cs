@@ -27,7 +27,7 @@ public sealed class EurekaDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         ext.ConfigureEurekaServices(services);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
@@ -48,7 +48,7 @@ public sealed class EurekaDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         ext.ConfigureEurekaServices(services);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.False(clientOptions.Value.Enabled);
@@ -70,7 +70,7 @@ public sealed class EurekaDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         ext.ConfigureEurekaServices(services);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
@@ -92,7 +92,7 @@ public sealed class EurekaDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddSingleton<IHttpClientHandlerProvider, TestClientHandlerProvider>();
         ext.ApplyServices(services);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         _ = provider.GetRequiredService<IHttpClientFactory>().CreateClient("Eureka");
         var handlerProvider = provider.GetRequiredService<IHttpClientHandlerProvider>();
 

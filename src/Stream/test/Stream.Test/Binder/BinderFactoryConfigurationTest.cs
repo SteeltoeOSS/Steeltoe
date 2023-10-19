@@ -16,7 +16,7 @@ public sealed class BinderFactoryConfigurationTest : AbstractTest
     public void LoadBinderTypeRegistryWithOneBinder()
     {
         List<string> searchDirectories = GetSearchDirectories("StubBinder1");
-        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:defaultBinder=binder1").BuildServiceProvider();
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:defaultBinder=binder1").BuildServiceProvider(true);
         var typeRegistry = provider.GetService<IBinderTypeRegistry>();
         Assert.Single(typeRegistry.GetAll());
 
@@ -34,7 +34,7 @@ public sealed class BinderFactoryConfigurationTest : AbstractTest
     public void LoadBinderTypeRegistryWithOneBinderWithBinderSpecificConfigurationData()
     {
         List<string> searchDirectories = GetSearchDirectories("StubBinder1");
-        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "binder1:name=foo").BuildServiceProvider();
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "binder1:name=foo").BuildServiceProvider(true);
 
         var factory = provider.GetService<IBinderFactory>();
 
@@ -48,7 +48,7 @@ public sealed class BinderFactoryConfigurationTest : AbstractTest
     public void LoadBinderTypeRegistryWithTwoBinders()
     {
         List<string> searchDirectories = GetSearchDirectories("StubBinder1", "StubBinder2");
-        ServiceProvider provider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories).BuildServiceProvider(true);
 
         var typeRegistry = provider.GetService<IBinderTypeRegistry>();
 
@@ -75,7 +75,7 @@ public sealed class BinderFactoryConfigurationTest : AbstractTest
         ServiceProvider provider = CreateStreamsContainer(searchDirectories,
             "spring.cloud.stream.binders.custom.configureclass=" + "Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder",
             "spring.cloud.stream.binders.custom.defaultCandidate=false", "spring.cloud.stream.binders.custom.inheritEnvironment=false",
-            "spring.cloud.stream.defaultbinder=binder1").BuildServiceProvider();
+            "spring.cloud.stream.defaultbinder=binder1").BuildServiceProvider(true);
 
         var typeRegistry = provider.GetService<IBinderTypeRegistry>();
         Assert.NotNull(typeRegistry);
@@ -99,7 +99,7 @@ public sealed class BinderFactoryConfigurationTest : AbstractTest
     public void LoadDefaultBinderWithTwoBinders()
     {
         List<string> searchDirectories = GetSearchDirectories("StubBinder1", "StubBinder2");
-        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.defaultBinder=binder2").BuildServiceProvider();
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.defaultBinder=binder2").BuildServiceProvider(true);
         var typeRegistry = provider.GetService<IBinderTypeRegistry>();
         Assert.NotNull(typeRegistry);
         Assert.Equal(2, typeRegistry.GetAll().Count);

@@ -38,7 +38,7 @@ public sealed class Program
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var directChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new CounterHandler();
 
@@ -62,7 +62,7 @@ public sealed class Program
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var directChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new CounterHandler();
 
@@ -86,7 +86,7 @@ public sealed class Program
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         var count1 = new CounterHandler();
         var count2 = new CounterHandler();
@@ -115,7 +115,7 @@ public sealed class Program
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         var count1 = new CounterHandler();
         var count2 = new CounterHandler();
@@ -158,7 +158,7 @@ public sealed class Program
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         var handler = new CounterHandler();
 
@@ -182,7 +182,7 @@ public sealed class Program
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         var handler1 = new CounterHandler();
         var handler2 = new CounterHandler();

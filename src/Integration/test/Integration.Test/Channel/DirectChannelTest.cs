@@ -22,7 +22,7 @@ public sealed class DirectChannelTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
     }
 
     [Fact]

@@ -19,7 +19,7 @@ public sealed class KubernetesDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
-        ServiceProvider? provider = services.BuildServiceProvider();
+        ServiceProvider? provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
@@ -38,7 +38,7 @@ public sealed class KubernetesDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
-        ServiceProvider? provider = services.BuildServiceProvider();
+        ServiceProvider? provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
         Assert.False(clientOptions.Value.Enabled);
@@ -58,7 +58,7 @@ public sealed class KubernetesDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
-        ServiceProvider? provider = services.BuildServiceProvider();
+        ServiceProvider? provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);

@@ -30,7 +30,7 @@ public sealed class ChannelInterceptorTest
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
         _channel = new QueueChannel(_provider.GetService<IApplicationContext>());
     }
 

@@ -31,7 +31,7 @@ public sealed class ConsulDiscoveryClientBuilderExtensionsTest
         serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.AddServiceDiscovery(options => options.UseConsul());
 
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
 
         var client = provider.GetRequiredService<IDiscoveryClient>();
         Assert.NotNull(client);

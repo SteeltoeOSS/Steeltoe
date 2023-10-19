@@ -25,7 +25,7 @@ public sealed class FailOverDispatcherTest
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
     }
 
     [Fact]

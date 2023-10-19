@@ -23,7 +23,7 @@ public sealed class MessageHandlerTest
         var services = new ServiceCollection();
         services.AddRabbitServices();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var bpp = provider.GetService<IRabbitListenerAttributeProcessor>() as RabbitListenerAttributeProcessor;
         bpp.Initialize();
         IMessageHandlerMethodFactory factory = bpp.MessageHandlerMethodFactory;

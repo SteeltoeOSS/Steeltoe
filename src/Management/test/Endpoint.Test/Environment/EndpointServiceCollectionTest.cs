@@ -34,7 +34,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddLogging();
         services.AddEnvironmentActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetService<IOptionsMonitor<EnvironmentEndpointOptions>>();
         Assert.NotNull(options);
         var handler = serviceProvider.GetService<IEnvironmentEndpointHandler>();

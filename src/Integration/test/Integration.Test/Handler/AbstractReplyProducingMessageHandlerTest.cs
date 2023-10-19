@@ -30,7 +30,7 @@ public sealed class AbstractReplyProducingMessageHandlerTest
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
         _handler = new TestAbstractReplyProducingMessageHandler(_provider.GetService<IApplicationContext>());
         _mockChannel = new Mock<IMessageChannel>();
         _message = IntegrationMessageBuilder.WithPayload("test").Build();

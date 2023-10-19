@@ -14,7 +14,7 @@ public sealed class TracingCoreHostBuilderExtensionsTest : TestBase
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
-        ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider(true);
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceContainerCore(serviceProvider);

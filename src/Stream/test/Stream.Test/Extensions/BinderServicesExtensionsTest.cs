@@ -25,7 +25,7 @@ public sealed class BinderServicesExtensionsTest
         container.AddSingleton<IConfiguration>(configurationRoot);
         container.AddSingleton<IApplicationContext, GenericApplicationContext>();
         container.AddBinderServices(configurationRoot);
-        ServiceProvider serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider(true);
 
         Assert.NotNull(serviceProvider.GetService<IBinderFactory>());
         Assert.NotNull(serviceProvider.GetService<IBinderTypeRegistry>());

@@ -27,7 +27,7 @@ public sealed class ServiceFactoryAccessorTests
         collection.AddSingleton<IApplicationContext>(p => new GenericApplicationContext(p, configurationRoot));
         collection.AddSingleton(typeof(Car));
         collection.AddSingleton(typeof(Boat));
-        _serviceProvider = collection.BuildServiceProvider();
+        _serviceProvider = collection.BuildServiceProvider(true);
     }
 
     [Fact]

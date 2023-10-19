@@ -337,7 +337,7 @@ public sealed class DynamicLoggerProviderTest
     {
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
                 builder.AddConfiguration(configuration.GetSection("Logging")).AddDynamicConsole().AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace))
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         return serviceProvider.GetRequiredService<ILoggerProvider>();
     }

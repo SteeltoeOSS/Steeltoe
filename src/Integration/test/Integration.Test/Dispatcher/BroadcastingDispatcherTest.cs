@@ -33,7 +33,7 @@ public sealed class BroadcastingDispatcherTest
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
     }
 
     [Fact]

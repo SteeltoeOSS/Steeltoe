@@ -314,7 +314,7 @@ public sealed class EnableRabbitTest
             services.AddSingleton<ClassLevelListenersBean>();
             services.AddRabbitListeners(configurationRoot, typeof(RabbitListenersBean), typeof(ClassLevelListenersBean));
 
-            ServiceProvider container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider(true);
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -374,7 +374,7 @@ public sealed class EnableRabbitTest
             services.AddSingleton<Listener>();
 
             services.AddRabbitListeners(configurationRoot, listenerBeanType, typeof(Listener));
-            ServiceProvider container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider(true);
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -425,7 +425,7 @@ public sealed class EnableRabbitTest
 
             services.AddSingleton<FullBean>();
             services.AddRabbitListeners<FullBean>();
-            ServiceProvider container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider(true);
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -481,7 +481,7 @@ public sealed class EnableRabbitTest
 
             services.AddSingleton<FullBean>();
             services.AddRabbitListeners<FullBean>();
-            ServiceProvider container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider(true);
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -517,7 +517,7 @@ public sealed class EnableRabbitTest
             }
 
             services.AddRabbitListeners(configurationRoot, listeners);
-            ServiceProvider container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider(true);
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -571,7 +571,7 @@ public sealed class EnableRabbitTest
             services.AddRabbitQueues(queue1);
 
             services.AddRabbitListeners<CustomBean>();
-            ServiceProvider container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider(true);
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -624,7 +624,7 @@ public sealed class EnableRabbitTest
             services.AddRabbitQueues(queue1);
 
             services.AddRabbitListeners<DefaultBean>();
-            ServiceProvider container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider(true);
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }

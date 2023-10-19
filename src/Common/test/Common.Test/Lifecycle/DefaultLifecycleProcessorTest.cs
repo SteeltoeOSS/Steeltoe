@@ -353,7 +353,7 @@ public sealed class DefaultLifecycleProcessorTest
             serviceCollection.AddSingleton(lifeCycle);
         }
 
-        return new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configurationRoot);
+        return new GenericApplicationContext(serviceCollection.BuildServiceProvider(true), configurationRoot);
     }
 
     private static int GetPhase(ILifecycle lifecycle)

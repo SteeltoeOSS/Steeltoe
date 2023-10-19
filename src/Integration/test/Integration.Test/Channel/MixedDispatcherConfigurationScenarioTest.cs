@@ -37,7 +37,7 @@ public sealed class MixedDispatcherConfigurationScenarioTest
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
 
         _handlerA = new Mock<IMessageHandler>();
         _handlerB = new Mock<IMessageHandler>();

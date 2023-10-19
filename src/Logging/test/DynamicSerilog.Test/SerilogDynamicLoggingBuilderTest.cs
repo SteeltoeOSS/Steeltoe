@@ -38,7 +38,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
         ServiceProvider services = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
         {
             builder.AddDynamicSerilog();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var logger = services.GetService(typeof(ILogger<TestClass>)) as ILogger<TestClass>;
 
@@ -55,7 +55,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
         ServiceProvider services = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
         {
             builder.AddDynamicSerilog();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var logger = services.GetService(typeof(ILogger<TestClass>)) as ILogger<TestClass>;
 
@@ -86,7 +86,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
         services.AddSingleton<IConfiguration>(configuration).AddSingleton<ConsoleLoggerProvider>().AddLogging(builder =>
         {
             builder.AddDynamicSerilog(true);
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         Assert.Contains(services, d => d.ImplementationType == typeof(ConsoleLoggerProvider));
     }
@@ -99,7 +99,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
         ServiceProvider services = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
         {
             builder.AddDynamicSerilog();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
         ILoggerProvider[] logProviders = services.GetServices<ILoggerProvider>().ToArray();
@@ -118,7 +118,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
         ServiceProvider services = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
         {
             builder.AddDynamicSerilog();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var dynamicLoggerProvider = services.GetRequiredService<IDynamicLoggerProvider>();
 
@@ -134,7 +134,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
         ServiceProvider services = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder => builder.AddDynamicSerilog())
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
         ILoggerProvider[] logProviders = services.GetServices<ILoggerProvider>().ToArray();

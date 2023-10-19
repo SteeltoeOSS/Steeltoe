@@ -237,7 +237,7 @@ public sealed class RabbitListenerAttributeProcessorTest
         var services = new ServiceCollection();
 
         RabbitListenerDeclareAttributeProcessor.ProcessDeclareAttributes(services, null, typeof(TestTarget));
-        IExchange[] exchanges = services.BuildServiceProvider().GetServices<IExchange>().ToArray();
+        IExchange[] exchanges = services.BuildServiceProvider(true).GetServices<IExchange>().ToArray();
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Direct);
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.Topic);
         Assert.Contains(exchanges, ex => ex.Type == ExchangeType.FanOut);
@@ -288,7 +288,7 @@ public sealed class RabbitListenerAttributeProcessorTest
 
             services.AddRabbitListeners(effectiveConfiguration, listeners);
 
-            ServiceProvider provider = services.BuildServiceProvider();
+            ServiceProvider provider = services.BuildServiceProvider(true);
             await provider.GetRequiredService<IHostedService>().StartAsync(default);
             return provider;
         }

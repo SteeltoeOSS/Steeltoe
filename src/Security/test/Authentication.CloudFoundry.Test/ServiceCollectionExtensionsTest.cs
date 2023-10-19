@@ -31,7 +31,7 @@ public sealed class ServiceCollectionExtensionsTest
         services.AddLogging();
 
         services.AddCloudFoundryCertificateAuth();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
 
         Assert.NotNull(provider.GetRequiredService<IOptions<CertificateOptions>>());
         Assert.NotNull(provider.GetRequiredService<ICertificateRotationService>());
