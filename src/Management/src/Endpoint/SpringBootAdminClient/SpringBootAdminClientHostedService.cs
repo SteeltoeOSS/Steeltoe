@@ -67,7 +67,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
         if (response is { IsSuccessStatusCode: true })
         {
-            RegistrationResult = await response.Content.ReadFromJsonAsync<RegistrationResult>(cancellationToken: cancellationToken);
+            RegistrationResult = await response.Content.ReadFromJsonAsync<RegistrationResult>(cancellationToken);
         }
         else
         {
