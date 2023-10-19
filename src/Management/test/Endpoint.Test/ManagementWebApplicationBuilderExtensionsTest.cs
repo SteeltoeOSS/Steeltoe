@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.TestResources;
@@ -70,8 +71,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
         await using WebApplication host = hostBuilder.AddHealthActuator().Build();
+        await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
 
-        Assert.Single(host.Services.GetServices<IHealthEndpointHandler>());
+        Assert.Single(scope.ServiceProvider.GetServices<IHealthEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 
@@ -81,8 +83,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
         await using WebApplication host = hostBuilder.AddHealthActuator(typeof(DownContributor)).Build();
+        await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
 
-        Assert.Single(host.Services.GetServices<IHealthEndpointHandler>());
+        Assert.Single(scope.ServiceProvider.GetServices<IHealthEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 
@@ -92,8 +95,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
         await using WebApplication host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor)).Build();
+        await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
 
-        Assert.Single(host.Services.GetServices<IHealthEndpointHandler>());
+        Assert.Single(scope.ServiceProvider.GetServices<IHealthEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
     }
 
@@ -342,6 +346,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "some"); // Allow routing to /cloudfoundryapplication
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         hostBuilder.WebHost.UseTestServer();
 
         await using WebApplication host = hostBuilder.AddCloudFoundryActuator().Build();

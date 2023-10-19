@@ -37,6 +37,7 @@ public sealed class EmptyAutoConfigurationTest
     public void Loads_without_any_Steeltoe_references_using_WebApplicationBuilder()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         Action action = () => builder.AddSteeltoe();
 

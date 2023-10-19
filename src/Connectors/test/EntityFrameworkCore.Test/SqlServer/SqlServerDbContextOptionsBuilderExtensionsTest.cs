@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
 using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
@@ -20,6 +21,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
     public async Task Registers_connection_string_for_default_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -44,6 +46,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
     public async Task Registers_connection_string_for_named_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

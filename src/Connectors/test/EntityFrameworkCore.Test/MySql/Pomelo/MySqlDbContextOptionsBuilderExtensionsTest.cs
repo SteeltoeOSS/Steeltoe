@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 using Steeltoe.Connectors.MySql;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
@@ -21,6 +22,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
     public async Task Registers_connection_string_for_default_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -47,6 +49,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
     public async Task Registers_connection_string_for_named_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -73,6 +76,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
     public async Task Throws_for_missing_connection_string_with_version_detection()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly);
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,

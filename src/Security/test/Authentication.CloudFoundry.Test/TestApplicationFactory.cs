@@ -30,13 +30,9 @@ public sealed class TestApplicationFactory<TStartup> : WebApplicationFactory<TSt
 
     protected override IHostBuilder CreateHostBuilder()
     {
-        IHostBuilder builder = Host.CreateDefaultBuilder().ConfigureWebHostDefaults(webHostBuilder =>
-        {
-            webHostBuilder.UseStartup<TStartup>().UseTestServer();
-        }).ConfigureAppConfiguration((_, configuration) =>
-        {
-            configuration.AddInMemoryCollection(_configuration);
-        });
+        IHostBuilder builder = Host.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true)
+            .ConfigureWebHostDefaults(webHostBuilder => webHostBuilder.UseStartup<TStartup>().UseTestServer())
+            .ConfigureAppConfiguration(configuration => configuration.AddInMemoryCollection(_configuration));
 
         return builder;
     }

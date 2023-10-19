@@ -49,6 +49,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
     public void AddDiscoveryClient_WebApplicationBuilder_AddsServiceDiscovery_Consul()
     {
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
+        webApplicationBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         webApplicationBuilder.Configuration.AddInMemoryCollection(ConsulSettings);
         webApplicationBuilder.AddDiscoveryClient();
         WebApplication host = webApplicationBuilder.Build();

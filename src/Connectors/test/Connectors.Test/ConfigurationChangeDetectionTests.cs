@@ -20,6 +20,7 @@ public sealed class ConfigurationChangeDetectionTests
     public async Task Applies_local_configuration_changes_using_WebApplicationBuilder()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         const string fileName = "appsettings.json";
 

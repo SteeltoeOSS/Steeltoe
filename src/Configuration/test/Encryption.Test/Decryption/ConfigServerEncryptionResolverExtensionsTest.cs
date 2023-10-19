@@ -55,6 +55,7 @@ public sealed class ConfigServerEncryptionResolverExtensionsTest
     {
         const WebApplicationBuilder nullWebApplicationBuilder = null;
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
+        webApplicationBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         var loggerFactory = NullLoggerFactory.Instance;
 
         Assert.Throws<ArgumentNullException>(() => nullWebApplicationBuilder.AddEncryptionResolver(loggerFactory));

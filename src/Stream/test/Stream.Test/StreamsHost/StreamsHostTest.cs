@@ -19,7 +19,7 @@ public sealed class StreamsHostTest
     {
         FakeHostedService service;
 
-        using (IHost host = StreamHost.StreamHost.CreateDefaultBuilder<SampleSink>()
+        using (IHost host = StreamHost.StreamHost.CreateDefaultBuilder<SampleSink>().UseDefaultServiceProvider(options => options.ValidateScopes = true)
             .ConfigureServices(svc => svc.AddSingleton<IHostedService, FakeHostedService>()).Start())
         {
             Assert.NotNull(host);
@@ -38,7 +38,7 @@ public sealed class StreamsHostTest
     [Fact]
     public void HostConfiguresRabbitOptions()
     {
-        IHostBuilder builder = StreamHost.StreamHost.CreateDefaultBuilder<SampleSink>();
+        IHostBuilder builder = StreamHost.StreamHost.CreateDefaultBuilder<SampleSink>().UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
