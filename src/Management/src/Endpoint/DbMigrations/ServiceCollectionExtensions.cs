@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
 
         services.ConfigureEndpointOptions<DbMigrationsEndpointOptions, ConfigureDbMigrationsEndpointOptions>();
         services.TryAddSingleton<IDbMigrationsEndpointHandler, DbMigrationsEndpointHandler>();
+        services.TryAddSingleton<IDatabaseMigrationScanner, DatabaseMigrationScanner>();
         services.AddSingleton<DbMigrationsEndpointMiddleware>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IEndpointMiddleware, DbMigrationsEndpointMiddleware>());
 

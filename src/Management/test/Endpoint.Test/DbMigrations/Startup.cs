@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 
@@ -18,21 +16,8 @@ public sealed class Startup
         services.AddDbContext<MockDbContext>();
         services.AddCloudFoundryActuator();
         services.AddEntityFrameworkInMemoryDatabase().AddDbContext<MockDbContext>();
+        services.AddSingleton<IDatabaseMigrationScanner, TestDatabaseMigrationScanner>();
         services.AddDbMigrationsActuator();
-        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
-
-        scanner.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
-        {
-            "pending"
-        });
-
-        scanner.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
-        {
-            "applied"
-        });
-
-        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
-        services.AddSingleton(scanner);
         services.AddRouting();
     }
 

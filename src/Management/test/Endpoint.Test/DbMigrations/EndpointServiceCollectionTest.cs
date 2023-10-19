@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddEntityFrameworkActuator_AddsCorrectServices()
+    public void AddEntityFrameworkCoreActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 

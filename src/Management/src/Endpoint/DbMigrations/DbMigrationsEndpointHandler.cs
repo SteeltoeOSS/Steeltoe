@@ -14,36 +14,15 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 
 internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 {
-    private static readonly Type? MigrationsExtensionsType =
-        Type.GetType("Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions,Microsoft.EntityFrameworkCore.Relational");
-
-    internal static readonly Type? DbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
-
-    internal static readonly MethodInfo? GetDatabaseMethod = DbContextType?.GetProperty("Database", BindingFlags.Public | BindingFlags.Instance)?.GetMethod;
-
-    internal static readonly MethodInfo? GetPendingMigrationsMethod =
-        MigrationsExtensionsType?.GetMethod("GetPendingMigrations", BindingFlags.Static | BindingFlags.Public);
-
-    internal static readonly MethodInfo? GetAppliedMigrationsMethod =
-        MigrationsExtensionsType?.GetMethod("GetAppliedMigrations", BindingFlags.Static | BindingFlags.Public);
-
-    internal static readonly MethodInfo? GetMigrationsMethod = MigrationsExtensionsType?.GetMethod("GetMigrations", BindingFlags.Static | BindingFlags.Public);
-
     private readonly IOptionsMonitor<DbMigrationsEndpointOptions> _optionsMonitor;
     private readonly IServiceProvider _serviceProvider;
-    private readonly DatabaseMigrationScanner _scanner;
+    private readonly IDatabaseMigrationScanner _scanner;
     private readonly ILogger<DbMigrationsEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
     public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> optionsMonitor, IServiceProvider serviceProvider,
-        ILoggerFactory loggerFactory)
-        : this(optionsMonitor, serviceProvider, new DatabaseMigrationScanner(), loggerFactory)
-    {
-    }
-
-    public DbMigrationsEndpointHandler(IOptionsMonitor<DbMigrationsEndpointOptions> optionsMonitor, IServiceProvider serviceProvider,
-        DatabaseMigrationScanner scanner, ILoggerFactory loggerFactory)
+        IDatabaseMigrationScanner scanner, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(serviceProvider);
@@ -56,33 +35,34 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
         _logger = loggerFactory.CreateLogger<DbMigrationsEndpointHandler>();
     }
 
-    public Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object? argument, CancellationToken cancellationToken)
+    public async Task<Dictionary<string, DbMigrationsDescriptor>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         var result = new Dictionary<string, DbMigrationsDescriptor>();
+        Type? dbContextType = DatabaseMigrationScanner.DbContextType;
 
-        if (DbContextType is null)
+        if (dbContextType is null)
         {
             _logger.LogCritical("DbMigrations endpoint was invoked but no DbContext was found.");
         }
         else
         {
             // @formatter:wrap_chained_method_calls chop_always
-            // @formatter:keep_existing_linebreaks true
+            // @formatter:wrap_after_property_in_chained_method_calls true
 
-            List<Type> knownDbContextTypes = _scanner.ScanRootAssembly
+            List<Type> knownDbContextTypes = _scanner.AssemblyToScan
                 .GetReferencedAssemblies()
                 .Select(Assembly.Load)
                 .SelectMany(assembly => assembly.DefinedTypes)
-                .Union(_scanner.ScanRootAssembly.DefinedTypes)
-                .Where(type => !type.IsAbstract && type.AsType() != DbContextType && DbContextType.GetTypeInfo()
+                .Union(_scanner.AssemblyToScan.DefinedTypes)
+                .Where(type => !type.IsAbstract && type.AsType() != dbContextType && dbContextType.GetTypeInfo()
                     .IsAssignableFrom(type.AsType()))
                 .Select(typeInfo => typeInfo.AsType())
                 .ToList();
 
-            // @formatter:keep_existing_linebreaks restore
+            // @formatter:wrap_after_property_in_chained_method_calls restore
             // @formatter:wrap_chained_method_calls restore
 
-            using IServiceScope scope = _serviceProvider.CreateScope();
+            await using AsyncServiceScope scope = _serviceProvider.CreateAsyncScope();
 
             foreach (Type contextType in knownDbContextTypes)
             {
@@ -110,45 +90,6 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
             }
         }
 
-        return Task.FromResult(result);
-    }
-
-    /// <summary>
-    /// Hacky class to allow mocking migration methods in unit tests.
-    /// </summary>
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-    internal class DatabaseMigrationScanner
-    {
-        internal virtual Assembly ScanRootAssembly => Assembly.GetEntryAssembly()!;
-
-        internal virtual IEnumerable<string> GetPendingMigrations(object context)
-        {
-            return GetMigrationsReflectively(context, GetPendingMigrationsMethod);
-        }
-
-        internal virtual IEnumerable<string> GetAppliedMigrations(object context)
-        {
-            return GetMigrationsReflectively(context, GetAppliedMigrationsMethod);
-        }
-
-        internal virtual IEnumerable<string> GetMigrations(object context)
-        {
-            return GetMigrationsReflectively(context, GetMigrationsMethod);
-        }
-
-        private IEnumerable<string> GetMigrationsReflectively(object dbContext, MethodInfo? method)
-        {
-            if (GetDatabaseMethod == null || method == null)
-            {
-                return Array.Empty<string>();
-            }
-
-            object? dbFacade = GetDatabaseMethod.Invoke(dbContext, null);
-
-            return (IEnumerable<string>)method.Invoke(null, new[]
-            {
-                dbFacade
-            })!;
-        }
+        return result;
     }
 }
