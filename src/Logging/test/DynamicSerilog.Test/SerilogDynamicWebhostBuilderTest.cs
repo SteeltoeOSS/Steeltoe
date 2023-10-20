@@ -21,7 +21,7 @@ public sealed class SerilogDynamicWebHostBuilderTest
     }
 
     [Fact]
-    public void OnlyApplicableFilters_AreApplied()
+    public async Task OnlyApplicableFilters_AreApplied()
     {
         var testSink = new TestSink();
 
@@ -31,7 +31,7 @@ public sealed class SerilogDynamicWebHostBuilderTest
                 .Sink(testSink);
         }).Build();
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         List<string> logs = testSink.GetLogs();
 

@@ -123,7 +123,7 @@ public static class ReflectionHelper
             throw new InvalidOperationException("Expected arguments must at least include one array (the varargs parameter)");
         }
 
-        if (!expectedArgTypes[expectedArgTypes.Count - 1].IsArray)
+        if (!expectedArgTypes[^1].IsArray)
         {
             throw new InvalidOperationException("Final expected argument should be array type (the varargs parameter)");
         }
@@ -176,7 +176,7 @@ public static class ReflectionHelper
             return null;
         }
 
-        if (suppliedArgTypes.Count == expectedArgTypes.Count && expectedArgTypes[expectedArgTypes.Count - 1] == suppliedArgTypes[suppliedArgTypes.Count - 1])
+        if (suppliedArgTypes.Count == expectedArgTypes.Count && expectedArgTypes[^1] == suppliedArgTypes[^1])
         {
             // Special case: there is one parameter left and it is an array and it matches the varargs
             // expected argument - that is a match, the caller has already built the array. Proceed with it.
@@ -185,7 +185,7 @@ public static class ReflectionHelper
         {
             // Now... we have the final argument in the method we are checking as a match and we have 0
             // or more other arguments left to pass to it.
-            Type varargsDesc = expectedArgTypes[expectedArgTypes.Count - 1];
+            Type varargsDesc = expectedArgTypes[^1];
 
             if (!varargsDesc.HasElementType)
             {
@@ -276,7 +276,7 @@ public static class ReflectionHelper
                 repackagedArgs.SetValue(args[parameterCount - 1 + i], i);
             }
 
-            newArgs[newArgs.Length - 1] = repackagedArgs;
+            newArgs[^1] = repackagedArgs;
             return newArgs;
         }
 

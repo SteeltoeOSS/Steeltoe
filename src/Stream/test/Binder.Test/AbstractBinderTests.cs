@@ -54,7 +54,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
     }
 
     [Fact]
-    public void TestClean()
+    public async Task TestClean()
     {
         var bindingsOptions = new RabbitBindingsOptions();
         TTestBinder binder = GetBinder();
@@ -75,24 +75,24 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IBinding foo2ProducerBinding = binder.BindProducer($"foo{delimiter}2", CreateBindableChannel("output", GetDefaultBindingOptions()),
             GetProducerOptions("output2", bindingsOptions));
 
-        foo0ProducerBinding.UnbindAsync();
+        await foo0ProducerBinding.UnbindAsync();
         Assert.False(foo0ProducerBinding.IsRunning);
 
-        foo0ConsumerBinding.UnbindAsync();
-        foo1ProducerBinding.UnbindAsync();
+        await foo0ConsumerBinding.UnbindAsync();
+        await foo1ProducerBinding.UnbindAsync();
 
         Assert.False(foo0ConsumerBinding.IsRunning);
         Assert.False(foo1ProducerBinding.IsRunning);
 
-        foo1ConsumerBinding.UnbindAsync();
-        foo2ProducerBinding.UnbindAsync();
+        await foo1ConsumerBinding.UnbindAsync();
+        await foo2ProducerBinding.UnbindAsync();
 
         Assert.False(foo1ConsumerBinding.IsRunning);
         Assert.False(foo2ProducerBinding.IsRunning);
     }
 
     [Fact]
-    public void TestSendAndReceive()
+    public async Task TestSendAndReceive()
     {
         var bindingsOptions = new RabbitBindingsOptions();
         TTestBinder binder = GetBinder(bindingsOptions);
@@ -127,12 +127,12 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IMessage actual = inboundMessageRef.Value;
         Assert.Equal("foo".GetBytes(), actual.Payload);
         Assert.Equal("text/plain", actual.Headers.ContentType());
-        producerBinding.UnbindAsync();
-        consumerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestSendAndReceiveMultipleTopics()
+    public async Task TestSendAndReceiveMultipleTopics()
     {
         TTestBinder binder = GetBinder();
 
@@ -172,14 +172,14 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         Assert.Contains(messages, m => ((byte[])m.Payload).GetString() == testPayload1);
         Assert.Contains(messages, m => ((byte[])m.Payload).GetString() == testPayload2);
 
-        producerBinding1.UnbindAsync();
-        producerBinding2.UnbindAsync();
-        consumerBinding1.UnbindAsync();
-        consumerBinding2.UnbindAsync();
+        await producerBinding1.UnbindAsync();
+        await producerBinding2.UnbindAsync();
+        await consumerBinding1.UnbindAsync();
+        await consumerBinding2.UnbindAsync();
     }
 
     [Fact]
-    public void TestSendAndReceiveNoOriginalContentType()
+    public async Task TestSendAndReceiveNoOriginalContentType()
     {
         TTestBinder binder = GetBinder();
 
@@ -219,12 +219,12 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         Assert.Equal("foo", ((byte[])inboundMessageRef.Value.Payload).GetString());
         Assert.Equal("text/plain", inboundMessageRef.Value.Headers.ContentType());
 
-        producerBinding.UnbindAsync();
-        consumerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestSendPojoReceivePojoWithStreamListenerDefaultContentType()
+    public async Task TestSendPojoReceivePojoWithStreamListenerDefaultContentType()
     {
         StreamListenerMessageHandler handler = BuildStreamListener(GetType(), "EchoStation", typeof(Station));
         TTestBinder binder = GetBinder();
@@ -250,12 +250,12 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IMessage replyMessage = replyChannel.Receive(5000);
 
         Assert.IsType<Station>(replyMessage.Payload);
-        producerBinding.UnbindAsync();
-        consumerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestSendJsonReceivePojoWithStreamListener()
+    public async Task TestSendJsonReceivePojoWithStreamListener()
     {
         StreamListenerMessageHandler handler = BuildStreamListener(GetType(), "EchoStation", typeof(Station));
         TTestBinder binder = GetBinder();
@@ -284,12 +284,12 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
         Assert.NotNull(reply);
         Assert.IsType<Station>(reply.Payload);
-        producerBinding.UnbindAsync();
-        consumerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestSendJsonReceiveJsonWithStreamListener()
+    public async Task TestSendJsonReceiveJsonWithStreamListener()
     {
         StreamListenerMessageHandler handler = BuildStreamListener(GetType(), "EchoStationString", typeof(string));
         TTestBinder binder = GetBinder();
@@ -318,12 +318,12 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IMessage reply = channel.Receive(5000);
         Assert.NotNull(reply);
         Assert.IsType<string>(reply.Payload);
-        producerBinding.UnbindAsync();
-        consumerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
     }
 
     [Fact]
-    public void TestSendPojoReceivePojoWithStreamListener()
+    public async Task TestSendPojoReceivePojoWithStreamListener()
     {
         StreamListenerMessageHandler handler = BuildStreamListener(GetType(), "EchoStation", typeof(Station));
         TTestBinder binder = GetBinder();
@@ -369,8 +369,8 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IMessage reply = channel.Receive(5000);
         Assert.NotNull(reply);
         Assert.IsType<Station>(reply.Payload);
-        producerBinding.UnbindAsync();
-        consumerBinding.UnbindAsync();
+        await producerBinding.UnbindAsync();
+        await consumerBinding.UnbindAsync();
     }
 
     protected CachingConnectionFactory GetResource()

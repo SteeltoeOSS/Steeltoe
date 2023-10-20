@@ -204,7 +204,7 @@ public sealed class CloudFoundryOAuthHandlerTest
 
         testHandler.InitializeAsync(
             new AuthenticationScheme(CloudFoundryDefaults.AuthenticationScheme, CloudFoundryDefaults.AuthenticationScheme, typeof(CloudFoundryOAuthHandler)),
-            new DefaultHttpContext()).Wait();
+            new DefaultHttpContext()).GetAwaiter().GetResult();
 
         return testHandler;
     }

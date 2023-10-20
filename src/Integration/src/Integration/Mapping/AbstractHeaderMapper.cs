@@ -121,11 +121,11 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
                 if (negate)
                 {
                     // negative matchers get priority
-                    matchers.Insert(0, new SinglePatternBasedHeaderMatcher(thePattern, negate));
+                    matchers.Insert(0, new SinglePatternBasedHeaderMatcher(thePattern, true));
                 }
                 else
                 {
-                    matchers.Add(new SinglePatternBasedHeaderMatcher(thePattern, negate));
+                    matchers.Add(new SinglePatternBasedHeaderMatcher(thePattern, false));
                 }
             }
         }

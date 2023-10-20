@@ -18,7 +18,7 @@ public sealed class BinderFactoryConfigurationTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("StubBinder1");
         ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:defaultBinder=binder1").BuildServiceProvider();
         var typeRegistry = provider.GetService<IBinderTypeRegistry>();
-        Assert.Equal(1, typeRegistry.GetAll().Count);
+        Assert.Single(typeRegistry.GetAll());
 
         Assert.Contains("binder1", typeRegistry.GetAll().Keys);
         var factory = provider.GetService<IBinderFactory>();

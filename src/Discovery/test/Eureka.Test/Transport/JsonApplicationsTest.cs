@@ -50,7 +50,7 @@ public sealed class JsonApplicationsTest : AbstractBaseTest
         Assert.Equal("UP_1_", result.AppsHashCode);
         Assert.Equal(1, result.VersionDelta);
         Assert.NotNull(result.Applications);
-        Assert.Equal(1, result.Applications.Count);
+        Assert.Single(result.Applications);
 
         // Rest is validated by JsonApplicationTest
     }

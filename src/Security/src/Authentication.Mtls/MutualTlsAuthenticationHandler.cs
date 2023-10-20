@@ -112,11 +112,15 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
 
             await Events.CertificateValidated(certificateValidatedContext);
 
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // https://github.com/dotnet/aspnetcore/issues/45594
             if (certificateValidatedContext.Result != null)
             {
                 return certificateValidatedContext.Result;
             }
 
+            // ReSharper disable once HeuristicUnreachableCode
+            // https://github.com/dotnet/aspnetcore/issues/45594
             certificateValidatedContext.Success();
             return certificateValidatedContext.Result;
         }
@@ -129,6 +133,8 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
 
             await Events.AuthenticationFailed(authenticationFailedContext);
 
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // https://github.com/dotnet/aspnetcore/issues/45594
             if (authenticationFailedContext.Result != null)
             {
                 return authenticationFailedContext.Result;
@@ -168,9 +174,9 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
         bool isValid = chain.Build(certificate);
 
         // allow root cert to be side loaded without installing into X509Store Root store
-        if (!isValid && chain.ChainStatus.All(x =>
-            x.Status == X509ChainStatusFlags.UntrustedRoot || x.Status == X509ChainStatusFlags.PartialChain ||
-            x.Status == X509ChainStatusFlags.OfflineRevocation || x.Status == X509ChainStatusFlags.RevocationStatusUnknown))
+        if (!isValid && Array.TrueForAll(chain.ChainStatus,
+            x => x.Status == X509ChainStatusFlags.UntrustedRoot || x.Status == X509ChainStatusFlags.PartialChain ||
+                x.Status == X509ChainStatusFlags.OfflineRevocation || x.Status == X509ChainStatusFlags.RevocationStatusUnknown))
         {
             Logger.LogInformation("Certificate not valid by standard rules, trying custom validation");
             isValid = Options.IssuerChain.Intersect(ToGenericEnumerable(chain.ChainElements).Select(c => c.Certificate)).Any();

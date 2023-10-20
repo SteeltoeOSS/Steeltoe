@@ -47,10 +47,12 @@ public sealed class EventCounterListenerTest : BaseTest
     {
         var options = new MetricsObserverOptions
         {
-            EventCounterEvents = true
+            EventCounterEvents = true,
+            EventCounterIntervalSec = 1
         };
 
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
+
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
@@ -85,7 +87,8 @@ public sealed class EventCounterListenerTest : BaseTest
         var options = new MetricsObserverOptions
         {
             ExcludedMetrics = exclusions,
-            EventCounterEvents = true
+            EventCounterEvents = true,
+            EventCounterIntervalSec = 1
         };
 
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
@@ -104,12 +107,11 @@ public sealed class EventCounterListenerTest : BaseTest
 
             if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty, StringComparison.Ordinal)))
             {
-                Assert.NotNull(summary);
                 Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
             }
             else
             {
-                Assert.True(summary == null || summary.Count == 0, $"Expected no metrics for {metric}");
+                Assert.True(summary.Count == 0, $"Expected no metrics for {metric}");
             }
         }
     }
@@ -127,7 +129,8 @@ public sealed class EventCounterListenerTest : BaseTest
         var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(new MetricsObserverOptions
         {
             IncludedMetrics = inclusions,
-            EventCounterEvents = true
+            EventCounterEvents = true,
+            EventCounterIntervalSec = 1
         });
 
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
@@ -145,12 +148,11 @@ public sealed class EventCounterListenerTest : BaseTest
 
             if (inclusions.Contains(metric.Substring("System.Runtime.".Length)))
             {
-                Assert.NotNull(summary);
                 Assert.True(summary.Count > 0, $"Expected metrics for {metric}");
             }
             else
             {
-                Assert.True(summary == null || summary.Count == 0, $"Expected no metrics for {metric}");
+                Assert.True(summary.Count == 0, $"Expected no metrics for {metric}");
             }
         }
     }

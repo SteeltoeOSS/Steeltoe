@@ -34,8 +34,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>();
 
         services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
-        services.ConfigureOptions<ConfigureSpringBootAdminClientOptions>();
-
+        services.ConfigureOptionsWithChangeTokenSource<SpringBootAdminClientOptions, ConfigureSpringBootAdminClientOptions>();
         services.AddHostedService<SpringBootAdminClientHostedService>();
         return services;
     }

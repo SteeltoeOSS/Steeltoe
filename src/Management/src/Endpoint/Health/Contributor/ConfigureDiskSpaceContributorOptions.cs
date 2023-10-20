@@ -3,15 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor;
 
-internal sealed class ConfigureDiskSpaceContributorOptions : IConfigureOptions<DiskSpaceContributorOptions>
+internal sealed class ConfigureDiskSpaceContributorOptions : IConfigureOptionsWithKey<DiskSpaceContributorOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:health:diskspace";
     private readonly IConfiguration _configuration;
+
+    public string ConfigurationKey => ManagementInfoPrefix;
 
     public ConfigureDiskSpaceContributorOptions(IConfiguration configuration)
     {

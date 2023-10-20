@@ -66,6 +66,8 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
             throw new ArgumentException($"{nameof(endpoint.Id)} in {nameof(endpoint)} must not be null or empty.", nameof(endpoint));
         }
 
+        Task task = null;
+
         lock (_listenerContainers)
         {
             if (_listenerContainers.ContainsKey(endpoint.Id))
@@ -84,9 +86,11 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
             if (startImmediately && container.IsAutoStartup)
             {
-                container.StartAsync();
+                task = container.StartAsync();
             }
         }
+
+        task?.GetAwaiter().GetResult();
     }
 
     public IMessageListenerContainer UnregisterListenerContainer(string id)

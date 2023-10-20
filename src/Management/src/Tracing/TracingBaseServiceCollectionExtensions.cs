@@ -16,6 +16,7 @@ using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Logging;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Wavefront.Exporters;
 using B3Propagator = OpenTelemetry.Extensions.Propagators.B3Propagator;
 
@@ -139,11 +140,11 @@ public static class TracingBaseServiceCollectionExtensions
                 AddOpenTelemetryProtocolExporter(builder);
             }
 
-            services.ConfigureOptions<ConfigureWavefrontExporterOptions>();
+            services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
             AddWavefrontExporter(builder);
 
             action?.Invoke(builder);
-        }).StartWithHost();
+        });
 
         return services;
     }

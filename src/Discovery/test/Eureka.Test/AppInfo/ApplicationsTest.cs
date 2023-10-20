@@ -470,7 +470,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         result = apps.GetInstancesBySecureVirtualHostName("foobar");
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -527,7 +527,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -603,7 +603,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -680,7 +680,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(registered);
         Assert.Equal("app3", registered.Name);
         Assert.NotNull(registered.Instances);
-        Assert.Equal(1, registered.Instances.Count);
+        Assert.Single(registered.Instances);
 
         IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
@@ -697,12 +697,12 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         result = apps.GetInstancesByVirtualHostName("vapp3");
         Assert.NotNull(result);
-        Assert.Equal(1, result.Count);
+        Assert.Single(result);
         Assert.True(result.Contains(app3.GetInstance("id1")));
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -791,7 +791,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -887,7 +887,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -960,7 +960,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(registered);
         Assert.Equal("app2", registered.Name);
         Assert.NotNull(registered.Instances);
-        Assert.Equal(1, registered.Instances.Count);
+        Assert.Single(registered.Instances);
 
         foreach (InstanceInfo inst in registered.Instances)
         {
@@ -976,13 +976,13 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         result = apps.GetInstancesByVirtualHostName("vapp2");
         Assert.NotNull(result);
-        Assert.Equal(1, result.Count);
+        Assert.Single(result);
         Assert.True(result.Contains(app2.GetInstance("id1")));
         Assert.False(result.Contains(app2.GetInstance("id2")));
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
-        Assert.Equal(0, result.Count);
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -1129,7 +1129,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.Equal("myApp", app.Name);
         Assert.NotNull(app.Instances);
         Assert.Equal(1, app.Count);
-        Assert.Equal(1, app.Instances.Count);
+        Assert.Single(app.Instances);
         Assert.NotNull(app.GetInstance("InstanceId"));
         InstanceInfo info = app.GetInstance("InstanceId");
 
@@ -1247,7 +1247,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.Equal("myApp", app.Name);
         Assert.NotNull(app.Instances);
         Assert.Equal(1, app.Count);
-        Assert.Equal(1, app.Instances.Count);
+        Assert.Single(app.Instances);
         Assert.Null(app.GetInstance("InstanceId"));
     }
 }

@@ -371,7 +371,7 @@ public sealed class ClientCertificateAuthenticationTests
 
         XElement responseAsXml = null;
 
-        if (response.Content != null && response.Content.Headers.ContentType != null && response.Content.Headers.ContentType.MediaType == "text/xml")
+        if (response.Content.Headers.ContentType != null && response.Content.Headers.ContentType.MediaType == "text/xml")
         {
             string responseContent = await response.Content.ReadAsStringAsync();
             responseAsXml = XElement.Parse(responseContent);
@@ -499,7 +499,7 @@ public sealed class ClientCertificateAuthenticationTests
 
         XElement responseAsXml = null;
 
-        if (response.Content != null && response.Content.Headers.ContentType != null && response.Content.Headers.ContentType.MediaType == "text/xml")
+        if (response.Content.Headers.ContentType != null && response.Content.Headers.ContentType.MediaType == "text/xml")
         {
             string responseContent = await response.Content.ReadAsStringAsync();
             responseAsXml = XElement.Parse(responseContent);

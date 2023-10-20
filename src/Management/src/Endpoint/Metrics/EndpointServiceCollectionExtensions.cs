@@ -32,7 +32,7 @@ public static class EndpointServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.ConfigureOptions<ConfigureMetricsObserverOptions>();
+        services.ConfigureOptionsWithChangeTokenSource<MetricsObserverOptions, ConfigureMetricsObserverOptions>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());

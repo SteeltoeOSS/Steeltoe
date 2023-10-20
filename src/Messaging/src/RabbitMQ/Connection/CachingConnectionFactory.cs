@@ -892,7 +892,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
     private long CurrentTimeMillis()
     {
-        return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+        return DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
     }
 
     private IConnection GetConnectionFromCache()

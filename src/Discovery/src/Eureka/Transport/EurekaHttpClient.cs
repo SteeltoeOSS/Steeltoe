@@ -31,7 +31,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     private readonly IOptionsMonitor<EurekaClientOptions> _configurationOptions;
 
-    protected object @lock = new();
+    private readonly object _lock = new();
     protected IList<string> failingServiceUrls = new List<string>();
 
     protected IDictionary<string, string> headers;
@@ -528,7 +528,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         // Get latest set of Eureka server urls
         IList<string> candidateServiceUrls = MakeServiceUrls(Configuration.EurekaServerServiceUrls);
 
-        lock (@lock)
+        lock (_lock)
         {
             // Keep any existing failing service urls still in the candidate list
             failingServiceUrls = failingServiceUrls.Intersect(candidateServiceUrls).ToList();
@@ -571,7 +571,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             return;
         }
 
-        lock (@lock)
+        lock (_lock)
         {
             if (!failingServiceUrls.Contains(serviceUrl))
             {

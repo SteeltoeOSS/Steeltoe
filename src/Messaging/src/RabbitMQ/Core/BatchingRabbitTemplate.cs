@@ -85,7 +85,7 @@ public class BatchingRabbitTemplate : RabbitTemplate
                 if (next != null && _scheduledTask == null)
                 {
                     _cancellationTokenSource = new CancellationTokenSource();
-                    TimeSpan delay = next.Value - DateTime.Now;
+                    TimeSpan delay = next.Value - DateTime.UtcNow;
                     _scheduledTask = Task.Run(() => ReleaseBatchesAsync(delay, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
                 }
             }
@@ -94,7 +94,7 @@ public class BatchingRabbitTemplate : RabbitTemplate
 
     public void Flush()
     {
-        FlushAsync(default).Wait();
+        FlushAsync(default).GetAwaiter().GetResult();
     }
 
     public async Task FlushAsync(CancellationToken cancellationToken)

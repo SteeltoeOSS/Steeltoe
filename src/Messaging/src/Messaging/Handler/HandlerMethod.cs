@@ -178,7 +178,10 @@ public class HandlerMethod
             // Load argument from incoming array
             generator.Emit(OpCodes.Ldarg_1);
 
+            // Rule suppressed due to Sonar bug: https://github.com/SonarSource/sonar-dotnet/issues/8139
+#pragma warning disable S2583 // Conditionally executed code should be reachable
             if (arrayIndex <= 8)
+#pragma warning restore S2583 // Conditionally executed code should be reachable
             {
                 generator.Emit(GetLoadIntConst(arrayIndex++));
             }

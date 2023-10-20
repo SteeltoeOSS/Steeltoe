@@ -363,7 +363,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return start;
         }
 
-        return new CompoundExpression(start.StartPosition, nodes[nodes.Count - 1].EndPosition, nodes.ToArray());
+        return new CompoundExpression(start.StartPosition, nodes[^1].EndPosition, nodes.ToArray());
     }
 
     private SpelNode EatNode()
@@ -845,7 +845,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             throw InternalException(node.StartPos, SpelMessage.NotExpectedToken, "qualified ID", FormatTokenKind(node.Kind));
         }
 
-        return new QualifiedIdentifier(qualifiedIdPieces.First().StartPosition, qualifiedIdPieces.Last().EndPosition, qualifiedIdPieces.ToArray());
+        return new QualifiedIdentifier(qualifiedIdPieces[0].StartPosition, qualifiedIdPieces[^1].EndPosition, qualifiedIdPieces.ToArray());
     }
 
     private static string FormatTokenKind(TokenKind kind)

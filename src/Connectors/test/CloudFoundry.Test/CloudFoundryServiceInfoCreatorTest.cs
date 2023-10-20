@@ -62,6 +62,6 @@ public sealed class CloudFoundryServiceInfoCreatorTest
         var creator = CloudFoundryServiceInfoCreator.Instance(configurationRoot);
 
         Assert.NotNull(creator.ServiceInfos);
-        Assert.Equal(0, creator.ServiceInfos.Count);
+        Assert.Empty(creator.ServiceInfos);
     }
 }

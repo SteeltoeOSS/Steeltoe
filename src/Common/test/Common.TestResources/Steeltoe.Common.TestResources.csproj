@@ -12,12 +12,12 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="$(FluentAssertionsVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(FoundationalVersion)" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="xunit.abstractions" Version="$(XunitAbstractionsVersion)" />
   </ItemGroup>

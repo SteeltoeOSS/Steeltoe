@@ -26,6 +26,8 @@ public sealed class MetricsObserverOptions
 
     public bool EventCounterEvents { get; set; }
 
+    public int? EventCounterIntervalSec { get; set; }
+
     public bool HttpClientCore { get; set; }
 
     public bool HttpClientDesktop { get; set; }

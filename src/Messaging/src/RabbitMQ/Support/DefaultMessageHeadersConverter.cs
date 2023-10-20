@@ -234,6 +234,10 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         {
             value = value.ToString();
         }
+        else if (value is byte[] v)
+        {
+            value = new RC.BinaryTableValue(v);
+        }
         else if (value is object[] array)
         {
             object[] writableList = new object[array.Length];
@@ -270,10 +274,6 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         else if (value is Type type)
         {
             value = type.ToString();
-        }
-        else if (value is byte[] v)
-        {
-            value = new RC.BinaryTableValue(v);
         }
 
         return value;

@@ -36,11 +36,6 @@ public sealed class SnakeCaseAllCapsEnumMemberTypeConverter<TEnum> : TypeConvert
     /// <inheritdoc />
     public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
-        if (value == null)
-        {
-            return null;
-        }
-
         string snakeCaseText = (string)value;
 
         var converter = new SnakeCaseEnumConverter<TEnum>(SnakeCaseStyle.AllCaps);

@@ -110,7 +110,7 @@ public static class HostBuilderExtensions
 
     private static bool WireIfLoaded(this IHostBuilder hostBuilder, Action<IHostBuilder> action, params string[] assembly)
     {
-        if (assembly.All(AssemblyExtensions.IsAssemblyLoaded))
+        if (Array.TrueForAll(assembly, AssemblyExtensions.IsAssemblyLoaded))
         {
             action(hostBuilder);
             return true;
@@ -122,7 +122,7 @@ public static class HostBuilderExtensions
     private static void WireIfAnyLoaded(this IHostBuilder hostBuilder, Action<IHostBuilder> action, IReadOnlySet<string> assemblyNamesToExclude,
         params PackageResolver[] packageResolvers)
     {
-        if (packageResolvers.Any(packageResolver => packageResolver.IsAvailable(assemblyNamesToExclude)))
+        if (Array.Exists(packageResolvers, packageResolver => packageResolver.IsAvailable(assemblyNamesToExclude)))
         {
             action(hostBuilder);
         }

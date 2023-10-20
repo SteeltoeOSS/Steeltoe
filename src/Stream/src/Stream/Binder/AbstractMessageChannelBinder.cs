@@ -78,7 +78,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
         if (producerOptions.AutoStartup && producerMessageHandler is ILifecycle producerMsgHandlerLifecycle)
         {
-            producerMsgHandlerLifecycle.StartAsync();
+            producerMsgHandlerLifecycle.StartAsync().GetAwaiter().GetResult();
         }
 
         PostProcessOutputChannel(subscribableChannel, producerOptions);
@@ -137,7 +137,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
             if (consumerOptions.AutoStartup && consumerEndpoint is ILifecycle lifecycle)
             {
-                lifecycle.StartAsync();
+                lifecycle.StartAsync().GetAwaiter().GetResult();
             }
 
             IBinding binding = new DefaultConsumerMessageChannelBinding(this, name, group, inputTarget, consumerEndpoint as ILifecycle, consumerOptions,
@@ -149,7 +149,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         {
             if (consumerEndpoint is ILifecycle lifecycle)
             {
-                lifecycle.StopAsync();
+                lifecycle.StopAsync().GetAwaiter().GetResult();
             }
 
             if (e is BinderException)

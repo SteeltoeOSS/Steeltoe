@@ -9,10 +9,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Wavefront.Exporters;
@@ -37,14 +37,14 @@ public static class WavefrontExtensions
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticsService>());
 
-        services.ConfigureOptions<ConfigureWavefrontExporterOptions>();
+        services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
         services.AddMetricsObservers();
 
         services.AddOpenTelemetry().WithMetrics(builder =>
         {
             builder.AddMeter(SteeltoeMetrics.InstrumentationName);
             builder.AddWavefrontExporter();
-        }).StartWithHost();
+        });
 
         return services;
     }

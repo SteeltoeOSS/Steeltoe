@@ -222,7 +222,7 @@ public class ConsulRegistration : IConsulRegistration
 
     internal static string NormalizeForConsul(string serviceId)
     {
-        if (serviceId == null || !char.IsLetter(serviceId[0]) || !char.IsLetterOrDigit(serviceId[serviceId.Length - 1]))
+        if (serviceId == null || !char.IsLetter(serviceId[0]) || !char.IsLetterOrDigit(serviceId[^1]))
         {
             throw new ArgumentException(
                 $"Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {serviceId}",

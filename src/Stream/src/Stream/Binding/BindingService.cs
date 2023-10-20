@@ -149,7 +149,7 @@ public class BindingService : IBindingService
         if (ProducerBindings.TryGetValue(outputName, out IBinding binding))
         {
             ProducerBindings.Remove(outputName);
-            binding.UnbindAsync();
+            binding.UnbindAsync().GetAwaiter().GetResult();
         }
     }
 
@@ -161,7 +161,7 @@ public class BindingService : IBindingService
 
             foreach (IBinding binding in bindings)
             {
-                binding.UnbindAsync();
+                binding.UnbindAsync().GetAwaiter().GetResult();
             }
         }
     }

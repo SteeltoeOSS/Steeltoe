@@ -84,7 +84,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
         var metadata = new Dictionary<string, object>
         {
-            { "startup", DateTime.Now }
+            { "startup", DateTime.UtcNow }
         };
 
         return new Application(applicationName, managementUrl, healthUrl, serviceUrl, metadata);

@@ -156,7 +156,7 @@ public class WindowsNetworkFileShare : IDisposable
     /// </returns>
     internal static string GetErrorForNumber(int errNum)
     {
-        if (!ErrorList.Any(e => e.Num == errNum))
+        if (!Array.Exists(ErrorList, e => e.Num == errNum))
         {
             return $"Error: Unknown, {errNum}";
         }

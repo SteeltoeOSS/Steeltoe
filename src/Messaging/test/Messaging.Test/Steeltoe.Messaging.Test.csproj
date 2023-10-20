@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Moq" Version="$(MoqVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(FoundationalVersion)" />
   </ItemGroup>
 </Project>

@@ -58,7 +58,7 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         {
             List<IConfigurationProvider> providers = root.Providers.ToList();
 
-            if (providers.Any(provider => provider is IPlaceholderResolverProvider))
+            if (providers.Exists(provider => provider is IPlaceholderResolverProvider))
             {
                 IConfigurationProvider placeholderProvider = providers.First(provider => provider is IPlaceholderResolverProvider);
                 providers.InsertRange(0, ((IPlaceholderResolverProvider)placeholderProvider).Providers);

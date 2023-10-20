@@ -9,11 +9,11 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(FoundationalVersion)" />
   </ItemGroup>
 
   <ItemGroup>

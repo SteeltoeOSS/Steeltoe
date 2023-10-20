@@ -122,7 +122,7 @@ public sealed class MessageBuilderTest
     [Fact]
     public void TestCopySameHeaderValuesNotModifiedSameIMessage()
     {
-        DateTime current = DateTime.Now;
+        DateTime current = DateTime.UtcNow;
 
         IDictionary<string, object> originalHeaders = new Dictionary<string, object>
         {

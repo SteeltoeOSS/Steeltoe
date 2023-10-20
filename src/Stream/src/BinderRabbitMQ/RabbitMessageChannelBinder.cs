@@ -400,16 +400,6 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             (delayExpression != null && InterceptorNeededPattern.IsMatch(delayExpression));
     }
 
-    private static string GetDeadLetterExchangeName(RabbitCommonOptions properties)
-    {
-        if (properties.DeadLetterExchange == null)
-        {
-            return ApplyPrefix(properties.Prefix, RabbitCommonOptions.DeadLetterExchangeName);
-        }
-
-        return properties.DeadLetterExchange;
-    }
-
     private void UpdateRoutingKeyExpressionForPartitioned(string destinationName, RabbitOutboundEndpoint endpoint, bool expressionInterceptorNeeded,
         string routingKeyExpression)
     {
@@ -689,6 +679,16 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             }
 
             return cause is not ImmediateAcknowledgeException;
+        }
+
+        private static string GetDeadLetterExchangeName(RabbitCommonOptions properties)
+        {
+            if (properties.DeadLetterExchange == null)
+            {
+                return ApplyPrefix(properties.Prefix, RabbitCommonOptions.DeadLetterExchangeName);
+            }
+
+            return properties.DeadLetterExchange;
         }
     }
 

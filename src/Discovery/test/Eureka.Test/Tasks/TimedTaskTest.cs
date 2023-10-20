@@ -12,15 +12,13 @@ public sealed class TimedTaskTest : AbstractBaseTest
     private volatile int _timerFuncCount;
 
     [Fact]
-    public void Run_Enforces_SingleActiveTask()
+    public async Task Run_Enforces_SingleActiveTask()
     {
         _timerFuncCount = 0;
         var timedTask = new TimedTask("MyTask", TimerFunc);
-        var timer = new Timer(timedTask.Run, null, 10, 100);
-        Thread.Sleep(1000);
+        await using var timer = new Timer(timedTask.Run, null, 10, 100);
+        await Task.Delay(1000);
         Assert.Equal(1, _timerFuncCount);
-
-        timer.Dispose();
     }
 
     private void TimerFunc()

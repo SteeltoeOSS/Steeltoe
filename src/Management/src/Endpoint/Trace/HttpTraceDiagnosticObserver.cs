@@ -61,7 +61,7 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
         string? sessionId = GetSessionId(context);
         Session? session = sessionId == null ? null : new Session(sessionId);
 
-        long timestamp = GetJavaTime(DateTime.Now.Ticks);
+        long timestamp = GetJavaTime(DateTime.UtcNow.Ticks);
 
         return new HttpTrace(request, response, timestamp, principal, session, duration.Milliseconds);
     }

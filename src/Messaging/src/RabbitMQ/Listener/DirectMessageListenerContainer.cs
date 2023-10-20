@@ -322,7 +322,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                 throw new InvalidOperationException("Listener expects queues that the container is not listening on");
             }
 
-            if (!queueNames.Any(name => expectedQueueNames.Contains(name)))
+            if (!Array.Exists(queueNames, expectedQueueNames.Contains))
             {
                 throw new InvalidOperationException("Listener expects queues that the container is not listening on");
             }
@@ -617,11 +617,6 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                     {
                         Logger?.LogError(e, "Exception while sending delayed ack");
                     }
-                }
-
-                if (!open)
-                {
-                    return !open;
                 }
 
                 return !open;

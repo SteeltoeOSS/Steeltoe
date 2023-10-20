@@ -36,7 +36,7 @@ public sealed class MessageListenerTestContainer : IMessageListenerContainer
     {
         if (!StopInvoked)
         {
-            StopAsync().Wait();
+            StopAsync().GetAwaiter().GetResult();
         }
 
         DestroyInvoked = true;

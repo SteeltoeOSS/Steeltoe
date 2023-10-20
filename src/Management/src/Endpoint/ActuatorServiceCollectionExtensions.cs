@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -33,22 +34,37 @@ public static class ActuatorServiceCollectionExtensions
 
         services.TryAddScoped<ActuatorEndpointMapper>();
 
-        // Workaround for services.ConfigureOptions<ConfigureManagementOptions>() registering multiple times,
-        // see https://github.com/dotnet/runtime/issues/42358.
-        services.AddOptions();
-        services.TryAddTransient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>();
+        services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
     }
 
-    public static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
+    internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
         where TOptions : EndpointOptions
-        where TConfigureOptions : class
+        where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
     {
         ArgumentGuard.NotNull(services);
 
-        services.ConfigureOptions<TConfigureOptions>();
+        services.ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>();
 
         services.TryAddEnumerable(
             ServiceDescriptor.Singleton<EndpointOptions, TOptions>(provider => provider.GetRequiredService<IOptionsMonitor<TOptions>>().CurrentValue));
+    }
+
+    internal static void ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>(this IServiceCollection services)
+        where TOptions : class
+        where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
+    {
+        // Workaround for services.ConfigureOptions<TConfigureOptions>() registering multiple times,
+        // see https://github.com/dotnet/runtime/issues/42358.
+
+        services.AddOptions();
+        services.TryAddTransient<IConfigureOptions<TOptions>, TConfigureOptions>();
+
+        services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(provider =>
+        {
+            var configurer = (TConfigureOptions)provider.GetRequiredService<IConfigureOptions<TOptions>>();
+            var configuration = provider.GetRequiredService<IConfiguration>();
+            return new ConfigurationChangeTokenSource<TOptions>(configuration.GetSection(configurer.ConfigurationKey));
+        });
     }
 
     public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)

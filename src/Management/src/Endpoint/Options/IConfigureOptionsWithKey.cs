@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Util;
+using Microsoft.Extensions.Options;
 
-public class ActualTime : ITime
+namespace Steeltoe.Management.Endpoint.Options;
+
+internal interface IConfigureOptionsWithKey<in T> : IConfigureOptions<T>
+    where T : class
 {
-    public long CurrentTimeInMillis => Time.CurrentTimeMillis;
+    string ConfigurationKey { get; }
 }
