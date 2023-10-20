@@ -293,8 +293,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Configuration.Clou
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.EmptyAutoConfiguration.Test", "Bootstrap\test\EmptyAutoConfiguration.Test\Steeltoe.Bootstrap.EmptyAutoConfiguration.Test.csproj", "{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Actuators", "..\..\Samples\Management\src\AllActuators\Actuators\Steeltoe.Actuators.csproj", "{1B121587-4510-4A41-A834-5FC0EFCCCE4A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -713,10 +711,6 @@ Global
 		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C821DCC5-880F-4F85-97B1-6D9A56DAD6F0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1B121587-4510-4A41-A834-5FC0EFCCCE4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B121587-4510-4A41-A834-5FC0EFCCCE4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B121587-4510-4A41-A834-5FC0EFCCCE4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B121587-4510-4A41-A834-5FC0EFCCCE4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
