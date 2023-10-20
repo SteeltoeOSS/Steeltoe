@@ -33,7 +33,7 @@ public class Service
     {
         Name = descriptor.ServiceType.Name;
         Scope = descriptor.Lifetime.ToString();
-        Type = descriptor.ToString();
+        Type = descriptor.ImplementationInstance?.GetType()?.ToString() ?? descriptor.ServiceType.ToString();
         AssemblyName = descriptor.ServiceType.AssemblyQualifiedName ?? string.Empty;
         Dependencies = GetDependencies(descriptor) ?? new List<string>();
     }

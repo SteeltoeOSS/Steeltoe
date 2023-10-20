@@ -11,7 +11,6 @@ public class ServiceContextDescriptor:Dictionary<string, ApplicationContext>
 {
 }
 
-public class ApplicationContext:Dictionary<string, Service>
+public class ApplicationContext:List<Service>
 {
-
 }

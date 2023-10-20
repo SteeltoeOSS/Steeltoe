@@ -20,6 +20,9 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit.Abstractions;
+using FluentAssertions;
+using Steeltoe.Common.TestResources;
+using System.Text.Json;
 
 namespace Steeltoe.Management.Endpoint.Test.Services;
 
@@ -51,14 +54,14 @@ public class EndpointMiddlewareTest:BaseTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings).Build();
 
-        IServiceCollection serviceCollection= new ServiceCollection();
+        IServiceCollection serviceCollection = new ServiceCollection();
 
         // Add some known services 
-        serviceCollection.AddSingleton<ServicesEndpointHandler>(); 
+        serviceCollection.AddSingleton<ServicesEndpointHandler>();
         serviceCollection.AddTransient<ServicesEndpointOptions>();
         serviceCollection.AddScoped<Startup>();
 
-        var ep = new ServicesEndpointHandler(opts, serviceCollection, NullLogger<ServicesEndpointHandler>.Instance);
+        var ep = new ServicesEndpointHandler(opts, serviceCollection, NullLoggerFactory.Instance);
         var middle = new ServicesEndpointMiddleware(ep, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/beans");
@@ -67,21 +70,49 @@ public class EndpointMiddlewareTest:BaseTest
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string? json = await reader.ReadLineAsync();
 
-        const string expected =
-           "{\"contexts\":{\"application\":{\"beans\":{\"ServicesEndpointHandler\":{\"scope\":\"Singleton\",\"type\":\"ServiceType: Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler Lifetime: Singleton ImplementationType: Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler\",\"resource\":\"Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null\",\"dependencies\":[\"Void .ctor(Microsoft.Extensions.Options.IOptionsMonitor\\u00601[Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions], Microsoft.Extensions.DependencyInjection.IServiceCollection, Microsoft.Extensions.Logging.ILogger\\u00601[Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler])\"]},\"ServicesEndpointOptions\":{\"scope\":\"Transient\",\"type\":\"ServiceType: Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions Lifetime: Transient ImplementationType: Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions\",\"resource\":\"Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null\",\"dependencies\":[\"Void .ctor()\"]},\"Startup\":{\"scope\":\"Scoped\",\"type\":\"ServiceType: Steeltoe.Management.Endpoint.Test.Services.Startup Lifetime: Scoped ImplementationType: Steeltoe.Management.Endpoint.Test.Services.Startup\",\"resource\":\"Steeltoe.Management.Endpoint.Test.Services.Startup, Steeltoe.Management.Endpoint.Test, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null\",\"dependencies\":[\"Void .ctor(Microsoft.Extensions.Configuration.IConfiguration)\"]}}}}}";
-        Assert.Equal(expected, json);
+        const string expected = """
+            {
+              "contexts": {
+                "application": {
+                  "beans": {
+                    "ServicesEndpointHandler": {
+                      "scope": "Singleton",
+                      "type": "Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler",
+                      "resource": "Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null",
+                      "dependencies": [
+                        "Microsoft.Extensions.Options.IOptionsMonitor`1[Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions] options",
+                        "Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection",
+                        "Microsoft.Extensions.Logging.ILoggerFactory loggerFactory"
+                      ]
+                    },
+                    "ServicesEndpointOptions": {
+                      "scope": "Transient",
+                      "type": "Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions",
+                      "resource": "Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null",
+                      "dependencies": []
+                    },
+                    "Startup": {
+                      "scope": "Scoped",
+                      "type": "Steeltoe.Management.Endpoint.Test.Services.Startup",
+                      "resource": "Steeltoe.Management.Endpoint.Test.Services.Startup, Steeltoe.Management.Endpoint.Test, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null",
+                      "dependencies": [
+                        "Microsoft.Extensions.Configuration.IConfiguration configuration"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+            """;
+        json.Should().BeJson(expected);
     }
 
     [Fact]
     public async Task ServicesActuator_ReturnsExpectedData()
     {
-        var appSettings = new Dictionary<string, string>(AppSettings)
-        {
-            { "management:endpoints:actuator:exposure:include:0", "*" }
-        };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {
                     loggingBuilder.AddConfiguration(webHostContext.Configuration);
@@ -95,10 +126,28 @@ public class EndpointMiddlewareTest:BaseTest
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             string json = await result.Content.ReadAsStringAsync();
 
-            const string expected = "\"IServicesEndpointHandler\":{\"scope\":\"Singleton\",\"type\":\"ServiceType: Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler Lifetime: Singleton ImplementationType: Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler\"";
-            Assert.Contains(expected, json, StringComparison.OrdinalIgnoreCase);
+            using JsonDocument sourceJson = JsonDocument.Parse(json);
+            var jsonFragment = sourceJson
+                    .RootElement
+                    .GetProperty("contexts")
+                    .GetProperty("application")
+                    .GetProperty("beans")
+                    .GetProperty("IServicesEndpointHandler").ToString();
+            string expected = """
+                {
+                  "scope": "Singleton",
+                  "type": "Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler",
+                  "resource": "Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null",
+                  "dependencies": [
+                    "Microsoft.Extensions.Options.IOptionsMonitor`1[Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions] options",
+                    "Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection",
+                    "Microsoft.Extensions.Logging.ILoggerFactory loggerFactor y"
+                  ]
+                }
+                """;
+            jsonFragment.Should().BeJson(expected);
+          
         }
-
     }
 
     [Fact]

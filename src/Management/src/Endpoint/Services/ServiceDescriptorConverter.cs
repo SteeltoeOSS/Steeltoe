@@ -26,7 +26,7 @@ internal class ServiceDescriptorConverter : JsonConverter<ServiceContextDescript
             writer.WriteStartObject();
             writer.WritePropertyName("beans");
             writer.WriteStartObject();
-            foreach (var (_, service) in value[contextKey])
+            foreach (var service in value[contextKey])
             {
                 writer.WritePropertyName(service.Name);
                 JsonSerializer.Serialize(writer, service, options);

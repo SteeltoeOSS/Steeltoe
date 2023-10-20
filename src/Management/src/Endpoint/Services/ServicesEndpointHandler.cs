@@ -18,15 +18,15 @@ internal class ServicesEndpointHandler : IServicesEndpointHandler
 
     public EndpointOptions Options => _options.CurrentValue;
     
-    public ServicesEndpointHandler(IOptionsMonitor<ServicesEndpointOptions> options, IServiceCollection serviceCollection, ILogger<ServicesEndpointHandler> logger)
+    public ServicesEndpointHandler(IOptionsMonitor<ServicesEndpointOptions> options, IServiceCollection serviceCollection, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(serviceCollection);
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _options = options;
         _serviceCollection = serviceCollection;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<ServicesEndpointHandler>();
         _lazyServiceContextDescriptor = new Lazy<ServiceContextDescriptor>(GetDescriptor);
 
     }
@@ -45,16 +45,7 @@ internal class ServicesEndpointHandler : IServicesEndpointHandler
 
         foreach (ServiceDescriptor serviceDescriptor in _serviceCollection)
         {
-            var key = serviceDescriptor.ToString();
-
-            if (!applicationContext.ContainsKey(key))
-            {
-                applicationContext.Add(key, new Service(serviceDescriptor));
-            }
-            else
-            {
-                _logger.LogInformation("Key already added " + key);
-            }
+            applicationContext.Add(new Service(serviceDescriptor));
         }
 
         descriptor.Add("application", applicationContext);

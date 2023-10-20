@@ -14,8 +14,8 @@ namespace Steeltoe.Management.Endpoint.Services;
 public class ServicesEndpointMiddleware : EndpointMiddleware<object?, ServiceContextDescriptor>
 {
     public ServicesEndpointMiddleware(IServicesEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptions,
-        ILoggerFactory logger)
-        : base(endpointHandler, managementOptions, logger)
+        ILoggerFactory loggerFactory)
+        : base(endpointHandler, managementOptions, loggerFactory)
     {
     }
 
