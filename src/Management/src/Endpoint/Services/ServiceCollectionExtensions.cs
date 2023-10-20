@@ -6,17 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.Endpoint.Refresh;
 
 namespace Steeltoe.Management.Endpoint.Services;
 
 /// <summary>
-/// Add services used by the Refresh actuator.
+/// Add services used by the Services actuator.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the services used by the Refresh actuator.
+    /// Adds the services used by the Services actuator.
     /// </summary>
     /// <param name="services">
     /// Reference to the service collection.
