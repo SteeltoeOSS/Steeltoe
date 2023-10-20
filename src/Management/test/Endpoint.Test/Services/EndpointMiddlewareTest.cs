@@ -141,7 +141,7 @@ public class EndpointMiddlewareTest:BaseTest
                   "dependencies": [
                     "Microsoft.Extensions.Options.IOptionsMonitor`1[Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions] options",
                     "Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection",
-                    "Microsoft.Extensions.Logging.ILoggerFactory loggerFactor y"
+                    "Microsoft.Extensions.Logging.ILoggerFactory loggerFactory"
                   ]
                 }
                 """;

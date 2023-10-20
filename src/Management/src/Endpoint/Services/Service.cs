@@ -44,15 +44,30 @@ public class Service
         var constructorInfos = descriptor.ImplementationType?.GetConstructors();
         if (constructorInfos != null)
         {
-            foreach (ConstructorInfo constructorInfo in constructorInfos)
+            ConstructorInfo? activatorUtilsInfo = constructorInfos.FirstOrDefault(ci => ci.GetCustomAttribute(typeof(ActivatorUtilitiesConstructorAttribute)) != null);
+            if (activatorUtilsInfo != null)
             {
-                foreach (ParameterInfo parameterInfo in constructorInfo.GetParameters())
+                foreach (ParameterInfo parameterInfo in activatorUtilsInfo.GetParameters())
                 {
                     returnValue.Add(parameterInfo.ToString());
+                }
+            }
+            else
+            {
+                foreach (ConstructorInfo constructorInfo in constructorInfos)
+                {
+
+                    foreach (ParameterInfo parameterInfo in constructorInfo.GetParameters())
+                    {
+                        var parameterInfoString = parameterInfo.ToString();
+                        if (!returnValue.Contains(parameterInfoString))
+                        {
+                            returnValue.Add(parameterInfo.ToString());
+                        }
+                    }
                 }
             }
         }
         return returnValue;
     }
-
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Endpoint.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Test.Services;
 
@@ -14,9 +15,15 @@ public class Startup
 {
     public IConfiguration Configuration { get; set; }
 
+    // Test Activator Utils Constructor works 
+    [ActivatorUtilitiesConstructor]
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
+    }
+    public Startup(IConfiguration configuration, ILogger<Startup> logger): this(configuration)
+    {
+
     }
 
     public void ConfigureServices(IServiceCollection services)
