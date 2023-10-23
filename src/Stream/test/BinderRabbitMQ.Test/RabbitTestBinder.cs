@@ -53,7 +53,7 @@ public sealed class RabbitTestBinder : AbstractPollableConsumerTestBinder<Rabbit
     {
         if (_applicationContext == null)
         {
-            ServiceProvider serviceProvider = new ServiceCollection().BuildServiceProvider();
+            ServiceProvider serviceProvider = new ServiceCollection().BuildServiceProvider(true);
             _applicationContext = new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
         }
 

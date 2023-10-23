@@ -31,7 +31,7 @@ public sealed class BinderAwareChannelResolverTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
         ServiceCollection container = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder");
         container.AddSingleton<IChannelInterceptor, ImmutableMessageChannelInterceptor>();
-        _serviceProvider = container.BuildServiceProvider();
+        _serviceProvider = container.BuildServiceProvider(true);
 
         _binder = _serviceProvider.GetServices<IBinder>().OfType<IBinder<IMessageChannel>>().Single();
         _bindingTargetFactory = _serviceProvider.GetServices<IBindingTargetFactory>().OfType<SubscribableChannelBindingTargetFactory>().Single();

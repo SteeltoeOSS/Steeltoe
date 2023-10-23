@@ -24,7 +24,7 @@ public sealed class TracingBaseHostBuilderExtensionsTest : TestBase
         });
 
         hostBuilder.Build();
-        ServiceProvider serviceProvider = services!.BuildServiceProvider();
+        ServiceProvider serviceProvider = services!.BuildServiceProvider(true);
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceCollectionBase(serviceProvider);
     }

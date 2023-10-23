@@ -7,13 +7,11 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using NSubstitute;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Options;
@@ -34,27 +32,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
     };
 
     [Fact]
-    public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
+    public async Task HandleEntityFrameworkCoreRequestAsync_ReturnsExpected()
     {
         IOptionsMonitor<DbMigrationsEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<DbMigrationsEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
 
         var container = new ServiceCollection();
         container.AddScoped<MockDbContext>();
-        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
-        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
 
-        scanner.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
-        {
-            "pending"
-        });
-
-        scanner.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
-        {
-            "applied"
-        });
-
-        var handler = new DbMigrationsEndpointHandler(endpointOptionsMonitor, container.BuildServiceProvider(), scanner, NullLoggerFactory.Instance);
+        var handler = new DbMigrationsEndpointHandler(endpointOptionsMonitor, container.BuildServiceProvider(true), new TestDatabaseMigrationScanner(),
+            NullLoggerFactory.Instance);
 
         var middleware = new DbMigrationsEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 
@@ -77,7 +64,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public async Task EntityFrameworkActuator_ReturnsExpectedData()
+    public async Task EntityFrameworkCoreActuator_ReturnsExpectedData()
     {
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(

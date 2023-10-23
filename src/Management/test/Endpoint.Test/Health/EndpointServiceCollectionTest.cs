@@ -37,17 +37,18 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
         services.AddSingleton<IConfiguration>(configurationRoot);
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using IServiceScope scope = serviceProvider.CreateScope();
+
+        var handler = scope.ServiceProvider.GetService<IHealthEndpointHandler>();
+        Assert.NotNull(handler);
 
         var aggregator = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(aggregator);
-        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
-        Assert.NotNull(contributors);
-        List<IHealthContributor> contributorList = contributors.ToList();
-        Assert.Single(contributorList);
 
-        var handler = serviceProvider.GetService<IHealthEndpointHandler>();
-        Assert.NotNull(handler);
+        IEnumerable<IHealthContributor> contributors = scope.ServiceProvider.GetServices<IHealthContributor>();
+        Assert.Single(contributors);
     }
 
     [Fact]
@@ -71,15 +72,18 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddHealthActuator();
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var handler = serviceProvider.GetService<IHealthEndpointHandler>();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using IServiceScope scope = serviceProvider.CreateScope();
+
+        var handler = scope.ServiceProvider.GetService<IHealthEndpointHandler>();
         Assert.NotNull(handler);
+
         var aggregator = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(aggregator);
-        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
-        Assert.NotNull(contributors);
-        List<IHealthContributor> contributorsList = contributors.ToList();
-        Assert.Equal(3, contributorsList.Count);
+
+        IEnumerable<IHealthContributor> contributors = scope.ServiceProvider.GetServices<IHealthContributor>();
+        Assert.Equal(3, contributors.Count());
+
         var availability = serviceProvider.GetService<ApplicationAvailability>();
         Assert.NotNull(availability);
     }
@@ -89,10 +93,11 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     {
         var services = new ServiceCollection();
         services.AddHealthContributors(typeof(HealthTestContributor));
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
-        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
-        Assert.NotNull(contributors);
-        List<IHealthContributor> contributorsList = contributors.ToList();
-        Assert.Single(contributorsList);
+
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using IServiceScope scope = serviceProvider.CreateScope();
+
+        IEnumerable<IHealthContributor> contributors = scope.ServiceProvider.GetServices<IHealthContributor>();
+        Assert.Single(contributors);
     }
 }

@@ -29,7 +29,7 @@ public sealed class CorrelationIdTest
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
     }
 
     [Fact]

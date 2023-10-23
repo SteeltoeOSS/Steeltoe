@@ -19,7 +19,7 @@ public sealed class ConsulDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         ConsulDiscoveryClientExtension.ConfigureConsulServices(services);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
@@ -38,7 +38,7 @@ public sealed class ConsulDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         ConsulDiscoveryClientExtension.ConfigureConsulServices(services);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
         Assert.False(clientOptions.Value.Enabled);
@@ -58,7 +58,7 @@ public sealed class ConsulDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         ConsulDiscoveryClientExtension.ConfigureConsulServices(services);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);

@@ -21,7 +21,7 @@ public sealed class ArbitraryInterfaceWithBindingTargetsTest : AbstractTest
 
         ServiceProvider provider = CreateStreamsContainerWithBinding(searchDirectories, typeof(IFooChannels), "spring:cloud:stream:defaultBinder=mock",
             "spring:cloud:stream:bindings:Foo:destination=someQueue.0", "spring:cloud:stream:bindings:Bar:destination=someQueue.1",
-            "spring:cloud:stream:bindings:Baz:destination=someQueue.2", "spring:cloud:stream:bindings:Qux:destination=someQueue.3").BuildServiceProvider();
+            "spring:cloud:stream:bindings:Baz:destination=someQueue.2", "spring:cloud:stream:bindings:Qux:destination=someQueue.3").BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 

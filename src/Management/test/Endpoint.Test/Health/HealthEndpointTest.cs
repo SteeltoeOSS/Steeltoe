@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Endpoint.Test.Health;
 public sealed class HealthEndpointTest : BaseTest
 {
     private readonly IHealthAggregator _aggregator = new DefaultHealthAggregator();
-    private readonly ServiceProvider _provider = new ServiceCollection().BuildServiceProvider();
+    private readonly ServiceProvider _provider = new ServiceCollection().BuildServiceProvider(true);
     private readonly ITestOutputHelper _output;
 
     public HealthEndpointTest(ITestOutputHelper output)
@@ -41,7 +41,7 @@ public sealed class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
 
@@ -69,7 +69,7 @@ public sealed class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
         HealthEndpointRequest healthRequest = GetHealthRequest();
         await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
@@ -96,7 +96,7 @@ public sealed class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
 
         var source = new CancellationTokenSource();
         source.Cancel();
@@ -126,7 +126,7 @@ public sealed class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
         HealthEndpointResponse info = await handler.InvokeAsync(healthRequest, CancellationToken.None);
@@ -163,7 +163,7 @@ public sealed class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var handler = (HealthEndpointHandler)testContext.GetRequiredService<IHealthEndpointHandler>();
+        var handler = (HealthEndpointHandler)testContext.GetRequiredScopedService<IHealthEndpointHandler>();
 
         Assert.Equal(503, handler.GetStatusCode(new HealthCheckResult
         {
@@ -205,7 +205,7 @@ public sealed class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
         appAvailability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
 
         var healthRequest = new HealthEndpointRequest("liVeness", true);
@@ -238,7 +238,7 @@ public sealed class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
         appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
         var healthRequest = new HealthEndpointRequest("readiness", true);
@@ -300,7 +300,7 @@ public sealed class HealthEndpointTest : BaseTest
             services.AddHealthActuatorServices();
         };
 
-        var handler = testContext.GetRequiredService<IHealthEndpointHandler>();
+        var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
 
         var healthRequest = new HealthEndpointRequest("iNvaLid", true);
 
@@ -351,6 +351,6 @@ public sealed class HealthEndpointTest : BaseTest
         var services = new ServiceCollection();
         services.AddHealthChecks().AddPrivateMemoryHealthCheck(133_824_512).AddWorkingSetHealthCheck(133_824_512);
 
-        return services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions>>();
+        return services.BuildServiceProvider(true).GetRequiredService<IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions>>();
     }
 }

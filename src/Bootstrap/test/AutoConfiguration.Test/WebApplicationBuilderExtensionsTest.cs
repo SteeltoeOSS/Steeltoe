@@ -133,6 +133,7 @@ public sealed class WebApplicationBuilderExtensionsTest
         exclusions.Add("System.Data.SqlClient");
 
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
+        webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         webAppBuilder.AddSteeltoe(exclusions);
         webAppBuilder.WebHost.UseTestServer();
         WebApplication host = webAppBuilder.Build();
@@ -164,6 +165,7 @@ public sealed class WebApplicationBuilderExtensionsTest
     public async Task WavefrontMetricsExporter_IsAutowired()
     {
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
+        webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.WavefrontConfiguration);
 
         string[] exclusions =
@@ -186,6 +188,7 @@ public sealed class WebApplicationBuilderExtensionsTest
     public async Task WavefrontTraceExporter_IsAutowired()
     {
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
+        webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.WavefrontConfiguration);
 
         string[] exclusions =
@@ -284,6 +287,7 @@ public sealed class WebApplicationBuilderExtensionsTest
     private WebApplication GetWebApplicationWithSteeltoe(params string[] assemblyNamesToInclude)
     {
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
+        webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
         webAppBuilder.AddSteeltoe(SteeltoeAssemblyNames.All.Except(assemblyNamesToInclude));
         webAppBuilder.Services.AddActionDescriptorCollectionProvider();

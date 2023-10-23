@@ -57,7 +57,7 @@ public sealed class ClientCertificateAuthenticationTests
     {
         var services = new ServiceCollection();
         services.AddAuthentication().AddMutualTls();
-        ServiceProvider sp = services.BuildServiceProvider();
+        ServiceProvider sp = services.BuildServiceProvider(true);
         var schemeProvider = sp.GetRequiredService<IAuthenticationSchemeProvider>();
         AuthenticationScheme scheme = await schemeProvider.GetSchemeAsync(CertificateAuthenticationDefaults.AuthenticationScheme);
         Assert.NotNull(scheme);

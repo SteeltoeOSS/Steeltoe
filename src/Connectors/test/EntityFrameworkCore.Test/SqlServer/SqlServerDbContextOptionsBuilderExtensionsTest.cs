@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Connectors.EntityFrameworkCore.SqlServer;
 using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
@@ -20,6 +21,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
     public async Task Registers_connection_string_for_default_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -33,7 +35,8 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
 
         await using WebApplication app = builder.Build();
 
-        await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Data Source=localhost;Initial Catalog=myDb;User ID=steeltoe;Password=steeltoe;Max Pool Size=50;Encrypt=false");
@@ -43,6 +46,7 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
     public async Task Registers_connection_string_for_named_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -56,7 +60,8 @@ public sealed class SqlServerDbContextOptionsBuilderExtensionsTest
 
         await using WebApplication app = builder.Build();
 
-        await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Data Source=localhost;Initial Catalog=myDb;User ID=steeltoe;Password=steeltoe;Max Pool Size=50;Encrypt=false");

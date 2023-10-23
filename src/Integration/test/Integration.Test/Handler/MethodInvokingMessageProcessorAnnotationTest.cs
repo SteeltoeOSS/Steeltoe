@@ -259,7 +259,7 @@ public sealed class MethodInvokingMessageProcessorAnnotationTest
     {
         var serviceCollection = new ServiceCollection();
         var configBuilder = new ConfigurationBuilder();
-        var context = new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configBuilder.Build());
+        var context = new GenericApplicationContext(serviceCollection.BuildServiceProvider(true), configBuilder.Build());
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
         return context;
     }

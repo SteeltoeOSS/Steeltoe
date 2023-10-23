@@ -37,7 +37,7 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
 
         services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
 
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
 
         try
         {
@@ -60,7 +60,7 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
         services.AddRabbitQueue(new Queue(TestMismatch, false, false, true));
         services.AddRabbitAdmin();
 
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
 
         try
         {
@@ -82,7 +82,7 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
         services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
         services.AddRabbitQueue(new Queue(TestMismatch, true, false, false));
         services.AddRabbitAdmin();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
 
         CountdownEvent[] latches = SetUpChannelLatches(_provider);
         await _provider.GetRequiredService<IHostedService>().StartAsync(default);
@@ -117,7 +117,7 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
         services.AddRabbitQueue(new Queue(TestMismatch, true, false, false));
         services.AddRabbitQueue(new Queue(TestMismatch2, true, false, false));
         services.AddRabbitAdmin();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
 
         CountdownEvent[] latches = SetUpChannelLatches(_provider);
         await _provider.GetRequiredService<IHostedService>().StartAsync(default);

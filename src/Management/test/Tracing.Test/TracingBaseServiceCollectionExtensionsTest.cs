@@ -19,7 +19,7 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
         services.AddLogging();
 
-        ServiceProvider serviceProvider = services.AddDistributedTracing().BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracing().BuildServiceProvider(true);
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceCollectionBase(serviceProvider);
@@ -30,7 +30,7 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
-        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
         var hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
@@ -50,7 +50,7 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
         }));
 
         services.AddLogging();
-        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
         var hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
@@ -62,7 +62,7 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
             { "Management:Tracing:NeverSample", "true" }
         }));
 
-        serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider();
+        serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider(true);
         hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
         tracerProvider = serviceProvider.GetService<TracerProvider>();

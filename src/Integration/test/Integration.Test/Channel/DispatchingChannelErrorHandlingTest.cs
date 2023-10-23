@@ -31,7 +31,7 @@ public sealed class DispatchingChannelErrorHandlingTest
     [Fact]
     public void HandlerThrowsExceptionPublishSubscribeWithoutScheduler()
     {
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         var handler = new ThrowingHandler();
         channel.Subscribe(handler);
@@ -45,7 +45,7 @@ public sealed class DispatchingChannelErrorHandlingTest
         _services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         _services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         _services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
 
         var defaultErrorChannel = provider.GetService<IMessageChannel>() as DirectChannel;
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
@@ -70,7 +70,7 @@ public sealed class DispatchingChannelErrorHandlingTest
         _services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         _services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         _services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
 
         var defaultErrorChannel = provider.GetService<IMessageChannel>() as DirectChannel;
         var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);

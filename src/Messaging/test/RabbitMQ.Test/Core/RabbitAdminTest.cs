@@ -46,7 +46,7 @@ public sealed class RabbitAdminTest : AbstractTest
             f.Port = 434343;
         });
 
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
 
@@ -70,7 +70,7 @@ public sealed class RabbitAdminTest : AbstractTest
             f.Host = "localhost";
         });
 
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
         var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory);
@@ -131,7 +131,7 @@ public sealed class RabbitAdminTest : AbstractTest
             f.Host = "localhost";
         });
 
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
 
@@ -194,7 +194,7 @@ public sealed class RabbitAdminTest : AbstractTest
 
         serviceCollection.AddSingleton(ds);
 
-        await using (ServiceProvider provider = serviceCollection.BuildServiceProvider())
+        await using (ServiceProvider provider = serviceCollection.BuildServiceProvider(true))
         {
             RabbitAdmin admin = provider.GetRabbitAdmin();
             RabbitTemplate template = admin.RabbitTemplate;
@@ -216,7 +216,7 @@ public sealed class RabbitAdminTest : AbstractTest
             admin.DeleteExchange("e4");
         }
 
-        await using (ServiceProvider provider = serviceCollection.BuildServiceProvider())
+        await using (ServiceProvider provider = serviceCollection.BuildServiceProvider(true))
         {
             var ctx = provider.GetService<IApplicationContext>();
             var mixedDeclarables = ctx.GetService<Declarables>("ds");
@@ -362,7 +362,7 @@ public sealed class RabbitAdminTest : AbstractTest
 
         var foo = new AnonymousQueue("foo");
         serviceCollection.AddRabbitQueue(foo);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
         _ = provider.GetRabbitAdmin();
         Assert.Throws<RabbitUncategorizedException>(() => ccf.CreateConnection());
 

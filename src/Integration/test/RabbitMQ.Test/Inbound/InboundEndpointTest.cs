@@ -36,7 +36,7 @@ public sealed class InboundEndpointTest
     public void TestInt2809JavaTypePropertiesToRabbit()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider(true);
         var context = new GenericApplicationContext(services, configurationRoot);
 
         var channel = new Mock<RC.IModel>();
@@ -79,7 +79,7 @@ public sealed class InboundEndpointTest
     public void TestInt2809JavaTypePropertiesFromAmqp()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider(true);
         var context = new GenericApplicationContext(services, configurationRoot);
 
         var channel = new Mock<RC.IModel>();
@@ -111,7 +111,7 @@ public sealed class InboundEndpointTest
     public void TestAdapterConversionError()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider(true);
         var context = new GenericApplicationContext(services, configurationRoot);
 
         var channel = new Mock<RC.IModel>();
@@ -161,7 +161,7 @@ public sealed class InboundEndpointTest
     public void TestRetryWithinOnMessageAdapter()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider(true);
         var context = new GenericApplicationContext(services, configurationRoot);
 
         var container = new DirectMessageListenerContainer();
@@ -200,7 +200,7 @@ public sealed class InboundEndpointTest
     public void TestBatchedAdapter()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider(true);
         var context = new GenericApplicationContext(services, configurationRoot);
 
         var container = new DirectMessageListenerContainer();

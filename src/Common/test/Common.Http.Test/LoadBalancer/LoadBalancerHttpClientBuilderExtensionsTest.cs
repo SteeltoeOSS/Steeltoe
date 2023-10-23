@@ -27,7 +27,7 @@ public sealed class LoadBalancerHttpClientBuilderExtensionsTest
         services.AddConfigurationDiscoveryClient(new ConfigurationBuilder().Build());
 
         services.AddHttpClient("test").AddRandomLoadBalancer();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         ServiceDescriptor serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType == typeof(RandomLoadBalancer));
 
         Assert.Single(serviceProvider.GetServices<RandomLoadBalancer>());
@@ -49,7 +49,7 @@ public sealed class LoadBalancerHttpClientBuilderExtensionsTest
         services.AddConfigurationDiscoveryClient(new ConfigurationBuilder().Build());
 
         services.AddHttpClient("test").AddRoundRobinLoadBalancer();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         ServiceDescriptor serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType == typeof(RoundRobinLoadBalancer));
 
         Assert.Single(serviceProvider.GetServices<RoundRobinLoadBalancer>());
@@ -69,7 +69,7 @@ public sealed class LoadBalancerHttpClientBuilderExtensionsTest
         var services = new ServiceCollection();
 
         services.AddHttpClient("test").AddLoadBalancer<FakeLoadBalancer>();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         Assert.Empty(serviceProvider.GetServices<FakeLoadBalancer>());
     }
@@ -81,7 +81,7 @@ public sealed class LoadBalancerHttpClientBuilderExtensionsTest
         services.AddSingleton(typeof(FakeLoadBalancer));
 
         services.AddHttpClient("test").AddLoadBalancer<FakeLoadBalancer>();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         HttpClient client = factory.CreateClient("test");
 
@@ -101,7 +101,7 @@ public sealed class LoadBalancerHttpClientBuilderExtensionsTest
         services.AddHttpClient("testRoundRobin2").AddRoundRobinLoadBalancer();
         services.AddHttpClient("testFake").AddLoadBalancer<FakeLoadBalancer>();
         services.AddHttpClient("testFake2").AddLoadBalancer<FakeLoadBalancer>();
-        var factory = services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
+        var factory = services.BuildServiceProvider(true).GetRequiredService<IHttpClientFactory>();
         HttpClient randomLbClient = factory.CreateClient("testRandom");
         HttpClient randomLbClient2 = factory.CreateClient("testRandom2");
         HttpClient roundRobinLbClient = factory.CreateClient("testRoundRobin");

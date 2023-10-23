@@ -149,7 +149,7 @@ public sealed class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyQueu
         public FixedReplyStartupFixture()
         {
             _services = CreateContainer();
-            Provider = _services.BuildServiceProvider();
+            Provider = _services.BuildServiceProvider(true);
             Provider.GetRequiredService<IHostedService>().StartAsync(default).GetAwaiter().GetResult();
         }
 

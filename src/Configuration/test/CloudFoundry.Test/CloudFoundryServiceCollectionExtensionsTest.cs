@@ -44,7 +44,7 @@ public sealed class CloudFoundryServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
         services.ConfigureCloudFoundryOptions(configurationRoot);
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var app = serviceProvider.GetRequiredService<IOptions<CloudFoundryApplicationOptions>>();
         Assert.NotNull(app.Value);
         Assert.Equal("foo", app.Value.ApplicationName);

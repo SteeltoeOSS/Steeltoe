@@ -115,7 +115,7 @@ public sealed class AsyncListenerTest : IClassFixture<AsyncListenerTest.StartupF
         public StartupFixture()
         {
             _services = CreateContainer();
-            Provider = _services.BuildServiceProvider();
+            Provider = _services.BuildServiceProvider(true);
             Provider.GetRequiredService<IHostedService>().StartAsync(default).GetAwaiter().GetResult();
         }
 

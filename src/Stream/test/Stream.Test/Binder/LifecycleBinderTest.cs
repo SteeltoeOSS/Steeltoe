@@ -18,7 +18,7 @@ public sealed class LifecycleBinderTest : AbstractTest
 
         container.AddSingleton<ILifecycle, SimpleLifecycle>();
 
-        ServiceProvider provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 

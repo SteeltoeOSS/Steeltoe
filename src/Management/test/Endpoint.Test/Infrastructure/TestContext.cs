@@ -34,7 +34,7 @@ internal sealed class TestContext : IDisposable
                 // allow test to customize services
                 AdditionalServices?.Invoke(_serviceCollection, Configuration);
 
-                _serviceProvider = _serviceCollection.BuildServiceProvider();
+                _serviceProvider = _serviceCollection.BuildServiceProvider(true);
             }
 
             return _serviceProvider;
@@ -80,6 +80,13 @@ internal sealed class TestContext : IDisposable
         where T : notnull
     {
         return ServiceProvider.GetRequiredService<T>();
+    }
+
+    public T GetRequiredScopedService<T>()
+        where T : notnull
+    {
+        using IServiceScope scope = ServiceProvider.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<T>();
     }
 
     public IEnumerable<T> GetServices<T>()

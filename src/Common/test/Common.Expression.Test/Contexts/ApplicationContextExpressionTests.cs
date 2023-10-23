@@ -55,7 +55,7 @@ public sealed class ApplicationContextExpressionTests
             return context;
         });
 
-        _serviceProvider = collection.BuildServiceProvider();
+        _serviceProvider = collection.BuildServiceProvider(true);
     }
 
     [Fact]

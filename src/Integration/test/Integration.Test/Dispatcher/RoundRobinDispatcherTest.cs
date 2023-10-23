@@ -32,7 +32,7 @@ public sealed class RoundRobinDispatcherTest
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
 
         _dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>())
         {

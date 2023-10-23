@@ -22,7 +22,9 @@ public sealed class KubernetesHostBuilderExtensionsTest
     public void AddKubernetesConfiguration_DefaultWebHost_AddsConfig()
     {
         using var server = new MockKubeApiServer();
-        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder().UseStartup<TestServerStartup>();
+
+        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true)
+            .UseStartup<TestServerStartup>();
 
         hostBuilder.AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
         IServiceProvider serviceProvider = hostBuilder.Build().Services;
@@ -54,7 +56,9 @@ public sealed class KubernetesHostBuilderExtensionsTest
     public void AddKubernetesConfiguration_DefaultHost_AddsConfig()
     {
         using var server = new MockKubeApiServer();
-        IHostBuilder hostBuilder = Host.CreateDefaultBuilder().ConfigureWebHostDefaults(builder => builder.UseStartup<TestServerStartup>());
+
+        IHostBuilder hostBuilder = Host.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true)
+            .ConfigureWebHostDefaults(builder => builder.UseStartup<TestServerStartup>());
 
         hostBuilder.AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
         IServiceProvider serviceProvider = hostBuilder.Build().Services;

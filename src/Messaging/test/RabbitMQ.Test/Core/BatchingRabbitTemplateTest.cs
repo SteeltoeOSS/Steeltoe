@@ -193,7 +193,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     [Fact]
     public async Task TestDebatchByContainer()
     {
-        ServiceProvider provider = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider provider = new ServiceCollection().BuildServiceProvider(true);
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         var received = new List<IMessage>();
         var latch = new CountdownEvent(2);
@@ -241,7 +241,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     [Fact]
     public async Task TestDebatchByContainerPerformance()
     {
-        ServiceProvider provider = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider provider = new ServiceCollection().BuildServiceProvider(true);
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         var received = new List<IMessage>();
         const int count = 10_000;
@@ -291,7 +291,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     [Fact]
     public async Task TestDebatchByContainerBadMessageRejected()
     {
-        ServiceProvider provider = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider provider = new ServiceCollection().BuildServiceProvider(true);
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         var context = new GenericApplicationContext(provider, configurationRoot);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();

@@ -23,7 +23,7 @@ public sealed class InputOutputBindingOrderTest : AbstractTest
 
         container.AddSingleton<SomeLifecycle>();
         container.AddSingleton<ILifecycle>(p => p.GetService<SomeLifecycle>());
-        ServiceProvider provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 

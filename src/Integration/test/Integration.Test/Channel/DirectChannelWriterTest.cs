@@ -28,7 +28,7 @@ public sealed class DirectChannelWriterTest
     [Fact]
     public async Task TestWriteAsync()
     {
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
@@ -43,7 +43,7 @@ public sealed class DirectChannelWriterTest
     [Fact]
     public void TestTryWrite()
     {
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
@@ -58,7 +58,7 @@ public sealed class DirectChannelWriterTest
     [Fact]
     public async Task TestWaitToWriteAsync()
     {
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
@@ -70,7 +70,7 @@ public sealed class DirectChannelWriterTest
     [Fact]
     public void TestTryComplete()
     {
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         Assert.False(channel.Writer.TryComplete());
     }

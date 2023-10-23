@@ -40,7 +40,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-        var loggerFactory = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
+        var loggerFactory = serviceCollection.BuildServiceProvider(true).GetRequiredService<ILoggerFactory>();
 
         ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
 

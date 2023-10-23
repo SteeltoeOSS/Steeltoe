@@ -20,7 +20,7 @@ public sealed class SourceBindingWithBindingTargetsTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("MockBinder");
 
         ServiceProvider provider = CreateStreamsContainerWithISourceBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock",
-            "spring.cloud.stream.bindings.output.destination=testtock").BuildServiceProvider();
+            "spring.cloud.stream.bindings.output.destination=testtock").BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 

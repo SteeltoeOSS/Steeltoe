@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
@@ -185,6 +186,7 @@ public sealed class PostgreSqlConnectorTests
     public async Task Binds_options_without_service_bindings()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -196,7 +198,8 @@ public sealed class PostgreSqlConnectorTests
         builder.Services.Configure<PostgreSqlOptions>("myPostgreSqlServiceOne", options => options.ConnectionString += ";Include Error Detail=true");
 
         await using WebApplication app = builder.Build();
-        var optionsSnapshot = app.Services.GetRequiredService<IOptionsSnapshot<PostgreSqlOptions>>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<PostgreSqlOptions>>();
 
         PostgreSqlOptions optionsOne = optionsSnapshot.Get("myPostgreSqlServiceOne");
 
@@ -224,6 +227,7 @@ public sealed class PostgreSqlConnectorTests
     public async Task Binds_options_with_CloudFoundry_service_bindings()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -348,6 +352,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
@@ -390,6 +395,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Registers_ConnectorFactory()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -418,6 +424,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Registers_HealthContributors()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -446,6 +453,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Skips_HealthContributors_when_AspNetCore_health_checks_are_registered()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -467,6 +475,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Skips_HealthContributors_when_disabled()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -489,6 +498,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Registers_default_connection_string_when_single_server_binding_and_only_default_client_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -528,6 +538,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
         builder.AddPostgreSql();
@@ -553,6 +564,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -578,6 +590,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Registers_no_default_connection_string_when_only_single_named_client_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -603,6 +616,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Registers_no_default_connection_string_when_multiple_client_bindings_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -629,6 +643,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Registers_no_default_connection_string_when_multiple_server_bindings_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -657,6 +672,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Registers_no_default_connection_string_when_single_server_binding_and_multiple_client_bindings_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -684,6 +700,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public async Task Registers_no_default_connection_string_when_service_and_client_binding_found_with_different_names()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -715,6 +732,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
     public void Subsequent_registrations_are_ignored()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

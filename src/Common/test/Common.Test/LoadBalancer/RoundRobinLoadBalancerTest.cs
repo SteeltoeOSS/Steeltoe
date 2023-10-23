@@ -143,7 +143,7 @@ public sealed class RoundRobinLoadBalancerTest
     {
         var services = new ServiceCollection();
         services.AddDistributedMemoryCache();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         return serviceProvider.GetService<IDistributedCache>();
     }

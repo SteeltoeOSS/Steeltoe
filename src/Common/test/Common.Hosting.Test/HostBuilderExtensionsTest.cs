@@ -162,6 +162,7 @@ public sealed class HostBuilderExtensionsTest
     public void UseCloudHosting_WebApplication_Default8080()
     {
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         hostBuilder.UseCloudHosting();
         using WebApplication host = hostBuilder.Build();
         host.Start();
@@ -178,6 +179,7 @@ public sealed class HostBuilderExtensionsTest
         using var portScope = new EnvironmentVariableScope("PORT", "5042");
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         hostBuilder.UseCloudHosting();
         using WebApplication host = hostBuilder.Build();
@@ -194,6 +196,7 @@ public sealed class HostBuilderExtensionsTest
         using var outerPortScope = new EnvironmentVariableScope("PORT", "5044");
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         hostBuilder.UseCloudHosting();
 

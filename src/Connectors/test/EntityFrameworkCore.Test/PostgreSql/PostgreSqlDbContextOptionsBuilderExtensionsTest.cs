@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Connectors.EntityFrameworkCore.PostgreSql;
 using Steeltoe.Connectors.PostgreSql;
 using Xunit;
@@ -19,6 +20,7 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
     public async Task Registers_connection_string_for_default_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -31,7 +33,8 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
 
         await using WebApplication app = builder.Build();
 
-        await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True;Include Error Detail=true");
@@ -41,6 +44,7 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
     public async Task Registers_connection_string_for_named_service_binding()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -53,7 +57,8 @@ public sealed class PostgreSqlDbContextOptionsBuilderExtensionsTest
 
         await using WebApplication app = builder.Build();
 
-        await using var dbContext = app.Services.GetRequiredService<GoodDbContext>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<GoodDbContext>();
         string? connectionString = dbContext.Database.GetConnectionString();
 
         connectionString.Should().Be("Host=localhost;Database=myDb;Username=myUser;Password=myPass;Log Parameters=True;Include Error Detail=true");

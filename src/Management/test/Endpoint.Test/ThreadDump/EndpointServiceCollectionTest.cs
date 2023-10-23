@@ -32,7 +32,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddThreadDumpActuator();
 
         services.AddSingleton<IConfiguration>(configurationRoot);
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetService<IOptionsMonitor<ThreadDumpEndpointOptions>>();
         Assert.NotNull(options);
         var threadDumper = serviceProvider.GetService<EventPipeThreadDumper>();

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Moq;
 using StackExchange.Redis;
@@ -99,6 +100,7 @@ public sealed class RedisConnectorTests
     public async Task Binds_options_without_service_bindings()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -109,7 +111,8 @@ public sealed class RedisConnectorTests
         builder.AddRedis();
 
         await using WebApplication app = builder.Build();
-        var optionsSnapshot = app.Services.GetRequiredService<IOptionsSnapshot<RedisOptions>>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<RedisOptions>>();
 
         RedisOptions optionsOne = optionsSnapshot.Get("myRedisServiceOne");
         optionsOne.ConnectionString.Should().Be("server1:6380,keepAlive=30");
@@ -122,6 +125,7 @@ public sealed class RedisConnectorTests
     public async Task Binds_options_with_CloudFoundry_service_bindings()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -145,6 +149,7 @@ public sealed class RedisConnectorTests
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
@@ -176,6 +181,7 @@ public sealed class RedisConnectorTests
     public async Task Registers_ConnectorFactory_for_IConnectionMultiplexer()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -216,6 +222,7 @@ public sealed class RedisConnectorTests
     public async Task Registers_ConnectorFactory_for_IDistributedCache()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -258,6 +265,7 @@ public sealed class RedisConnectorTests
     public async Task Registers_HealthContributors()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -295,6 +303,7 @@ public sealed class RedisConnectorTests
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
         builder.AddRedis(null, addOptions =>
@@ -329,6 +338,7 @@ public sealed class RedisConnectorTests
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -369,13 +379,17 @@ public sealed class RedisConnectorTests
         connectionMultiplexerMock.Setup(connectionMultiplexer => connectionMultiplexer.GetDatabase(It.IsAny<int>(), It.IsAny<object>()))
             .Returns(databaseMock.Object);
 
+        databaseMock.Setup(database => database.Multiplexer).Returns(connectionMultiplexerMock.Object);
+
         return connectionMultiplexerMock.Object;
     }
 
     private static async Task<IConnectionMultiplexer> ExtractUnderlyingMultiplexerFromRedisCacheAsync(RedisCache redisCache)
     {
         _ = await redisCache.GetAsync("ignored");
-        FieldInfo connectionField = typeof(RedisCache).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        return (IConnectionMultiplexer)connectionField.GetValue(redisCache)!;
+
+        FieldInfo cacheField = typeof(RedisCache).GetField("_cache", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var database = (IDatabase)cacheField.GetValue(redisCache)!;
+        return database.Multiplexer;
     }
 }

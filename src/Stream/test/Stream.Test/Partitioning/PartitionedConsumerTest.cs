@@ -21,7 +21,7 @@ public sealed class PartitionedConsumerTest : AbstractTest
 
         ServiceProvider provider = CreateStreamsContainerWithISinkBinding(searchDirectories, "spring.cloud.stream.bindings.input.destination=partIn",
                 "spring.cloud.stream.bindings.input.consumer.partitioned=true", "spring.cloud.stream.instanceCount=2", "spring.cloud.stream.instanceIndex=0")
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);

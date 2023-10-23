@@ -40,7 +40,7 @@ public sealed class MethodInvokingMessageProcessorTest
 
         serviceCollection.AddSingleton<IMessageHandlerMethodFactory>(f);
 
-        ServiceProvider container = serviceCollection.BuildServiceProvider();
+        ServiceProvider container = serviceCollection.BuildServiceProvider(true);
         ILifecycleProcessor lifeCycleProcessor = await StartAsync(container);
 
         var appContext = container.GetService<IApplicationContext>();
@@ -58,7 +58,7 @@ public sealed class MethodInvokingMessageProcessorTest
         IServiceCollection serviceCollection = GetDefaultContainer();
 
         serviceCollection.AddServiceActivators<B1>();
-        ServiceProvider container = serviceCollection.BuildServiceProvider();
+        ServiceProvider container = serviceCollection.BuildServiceProvider(true);
         ILifecycleProcessor lifeCycleProcessor = await StartAsync(container);
 
         var appContext = container.GetService<IApplicationContext>();
@@ -77,7 +77,7 @@ public sealed class MethodInvokingMessageProcessorTest
         IServiceCollection serviceCollection = GetDefaultContainer();
 
         serviceCollection.AddServiceActivators<C2>();
-        ServiceProvider container = serviceCollection.BuildServiceProvider();
+        ServiceProvider container = serviceCollection.BuildServiceProvider(true);
         ILifecycleProcessor lifeCycleProcessor = await StartAsync(container);
 
         var appContext = container.GetService<IApplicationContext>();
@@ -96,7 +96,7 @@ public sealed class MethodInvokingMessageProcessorTest
         IServiceCollection serviceCollection = GetDefaultContainer();
 
         serviceCollection.AddServiceActivators<C3>();
-        ServiceProvider container = serviceCollection.BuildServiceProvider();
+        ServiceProvider container = serviceCollection.BuildServiceProvider(true);
         ILifecycleProcessor lifeCycleProcessor = await StartAsync(container);
 
         var appContext = container.GetService<IApplicationContext>();
@@ -341,7 +341,7 @@ public sealed class MethodInvokingMessageProcessorTest
         var serviceCollection = new ServiceCollection();
         var configBuilder = new ConfigurationBuilder();
 
-        var context = new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configBuilder.Build())
+        var context = new GenericApplicationContext(serviceCollection.BuildServiceProvider(true), configBuilder.Build())
         {
             ServiceExpressionResolver = new StandardServiceExpressionResolver()
         };

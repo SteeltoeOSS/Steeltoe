@@ -19,7 +19,7 @@ public sealed class SourceBindingWithGlobalPropertiesOnlyTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
 
         ServiceProvider provider = CreateStreamsContainerWithISourceBinding(searchDirectories, "spring.cloud.stream.default.contentType=application/json",
-            "spring.cloud.stream.default.producer.partitionKeyExpression=key").BuildServiceProvider();
+            "spring.cloud.stream.default.producer.partitionKeyExpression=key").BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 

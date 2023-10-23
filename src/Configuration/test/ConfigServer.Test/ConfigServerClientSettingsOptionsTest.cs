@@ -24,7 +24,7 @@ public sealed class ConfigServerClientSettingsOptionsTest
         services.AddSingleton<IConfiguration>(_ => builder.Build());
 
         services.ConfigureConfigServerClientOptions();
-        var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptions>>();
+        var service = services.BuildServiceProvider(true).GetService<IOptions<ConfigServerClientSettingsOptions>>();
         Assert.NotNull(service);
         ConfigServerClientSettingsOptions options = service.Value;
         Assert.NotNull(options);
@@ -70,7 +70,7 @@ public sealed class ConfigServerClientSettingsOptionsTest
         services.AddSingleton<IConfiguration>(configurationRoot);
 
         services.ConfigureConfigServerClientOptions();
-        var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptions>>();
+        var service = services.BuildServiceProvider(true).GetService<IOptions<ConfigServerClientSettingsOptions>>();
         Assert.NotNull(service);
         ConfigServerClientSettingsOptions options = service.Value;
         Assert.NotNull(options);

@@ -28,7 +28,7 @@ public sealed class ConfigurationAccessorTests
         collection.AddSingleton<IConfiguration>(configurationRoot);
         collection.AddSingleton<IApplicationContext>(p => new GenericApplicationContext(p, configurationRoot));
 
-        _serviceProvider = collection.BuildServiceProvider();
+        _serviceProvider = collection.BuildServiceProvider(true);
     }
 
     [Fact]

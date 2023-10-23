@@ -30,7 +30,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddLogging();
         services.AddRefreshActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetService<IOptionsMonitor<RefreshEndpointOptions>>();
         Assert.NotNull(options);
         var handler = serviceProvider.GetService<IRefreshEndpointHandler>();

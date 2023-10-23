@@ -25,7 +25,7 @@ public sealed class ErrorBindingTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("MockBinder");
 
         ServiceProvider provider = CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock")
-            .BuildServiceProvider();
+            .BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -47,7 +47,7 @@ public sealed class ErrorBindingTest : AbstractTest
             CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:bindings:input:consumer:maxAttempts=1");
 
         container.AddStreamListeners<ErrorConfigurationDefault>();
-        ServiceProvider provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -66,7 +66,7 @@ public sealed class ErrorBindingTest : AbstractTest
             CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:bindings:input:consumer:maxAttempts=1");
 
         container.AddStreamListeners<ErrorConfigurationWithCustomErrorHandler>();
-        ServiceProvider provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
