@@ -140,9 +140,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         }
 
         _settings = settings;
-        _httpClient = httpClient ?? GetHttpClient(_settings);
-
         OnSettingsChanged();
+
+        _httpClient = httpClient ?? GetHttpClient(_settings);
     }
 
     private void OnSettingsChanged()
@@ -960,7 +960,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Creates an appropriatly configured HttpClient that will be used in communicating with the
+    /// Creates an appropriately configured HttpClient that will be used in communicating with the
     /// Spring Cloud Configuration Server
     /// </summary>
     /// <param name="settings">the settings used in configuring the HttpClient</param>
