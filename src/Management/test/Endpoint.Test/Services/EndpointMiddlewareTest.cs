@@ -70,40 +70,39 @@ public class EndpointMiddlewareTest:BaseTest
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string? json = await reader.ReadLineAsync();
 
-        const string expected = """
-            {
-              "contexts": {
-                "application": {
-                  "beans": {
-                    "ServicesEndpointHandler": {
-                      "scope": "Singleton",
-                      "type": "Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler",
-                      "resource": "Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null",
-                      "dependencies": [
-                        "Microsoft.Extensions.Options.IOptionsMonitor`1[Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions] options",
-                        "Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection",
-                        "Microsoft.Extensions.Logging.ILoggerFactory loggerFactory"
+        const string expected = $@"
+            {{
+              ""contexts"": {{
+                ""application"": {{
+                  ""beans"": {{
+                    ""ServicesEndpointHandler"": {{
+                      ""scope"": ""Singleton"",
+                      ""type"": ""Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler"",
+                      ""resource"": ""Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null"",
+                      ""dependencies"": [
+                        ""Microsoft.Extensions.Options.IOptionsMonitor`1[Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions] options"",
+                        ""Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection"",
+                        ""Microsoft.Extensions.Logging.ILoggerFactory loggerFactory""
                       ]
-                    },
-                    "ServicesEndpointOptions": {
-                      "scope": "Transient",
-                      "type": "Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions",
-                      "resource": "Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null",
-                      "dependencies": []
-                    },
-                    "Startup": {
-                      "scope": "Scoped",
-                      "type": "Steeltoe.Management.Endpoint.Test.Services.Startup",
-                      "resource": "Steeltoe.Management.Endpoint.Test.Services.Startup, Steeltoe.Management.Endpoint.Test, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null",
-                      "dependencies": [
-                        "Microsoft.Extensions.Configuration.IConfiguration configuration"
+                    }},
+                    ""ServicesEndpointOptions"": {{
+                      ""scope"": ""Transient"",
+                      ""type"": ""Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions"",
+                      ""resource"": ""Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null"",
+                      ""dependencies"": []
+                    }},
+                    ""Startup"": {{
+                      ""scope"": ""Scoped"",
+                      ""type"": ""Steeltoe.Management.Endpoint.Test.Services.Startup"",
+                      ""resource"": ""Steeltoe.Management.Endpoint.Test.Services.Startup, Steeltoe.Management.Endpoint.Test, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null"",
+                      ""dependencies"": [
+                        ""Microsoft.Extensions.Configuration.IConfiguration configuration""
                       ]
-                    }
-                  }
-                }
-              }
-            }
-            """;
+                    }}
+                  }}
+                }}
+              }}
+            }}";
         json.Should().BeJson(expected);
     }
 
@@ -133,18 +132,17 @@ public class EndpointMiddlewareTest:BaseTest
                     .GetProperty("application")
                     .GetProperty("beans")
                     .GetProperty("IServicesEndpointHandler").ToString();
-            string expected = """
-                {
-                  "scope": "Singleton",
-                  "type": "Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler",
-                  "resource": "Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null",
-                  "dependencies": [
-                    "Microsoft.Extensions.Options.IOptionsMonitor`1[Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions] options",
-                    "Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection",
-                    "Microsoft.Extensions.Logging.ILoggerFactory loggerFactory"
+            string expected = $@"
+                {{
+                  ""scope"": ""Singleton"",
+                  ""type"": ""Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler"",
+                  ""resource"": ""Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler, Steeltoe.Management.Endpoint, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null"",
+                  ""dependencies"": [
+                    ""Microsoft.Extensions.Options.IOptionsMonitor`1[Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions] options"",
+                    ""Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection"",
+                    ""Microsoft.Extensions.Logging.ILoggerFactory loggerFactory""
                   ]
-                }
-                """;
+                }}";
             jsonFragment.Should().BeJson(expected);
           
         }
