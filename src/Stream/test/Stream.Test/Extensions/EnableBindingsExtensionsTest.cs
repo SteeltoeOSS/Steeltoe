@@ -24,7 +24,7 @@ public sealed class EnableBindingsExtensionsTest
         container.AddSingleton<IConfiguration>(configurationRoot);
         container.AddStreamServices(configurationRoot);
         container.AddProcessorStreamBinding();
-        ServiceProvider serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider(true);
 
         var binding = serviceProvider.GetService<IProcessor>();
         Assert.NotNull(binding);
@@ -47,7 +47,7 @@ public sealed class EnableBindingsExtensionsTest
         container.AddSingleton<IConfiguration>(configurationRoot);
         container.AddStreamServices(configurationRoot);
         container.AddSinkStreamBinding();
-        ServiceProvider serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider(true);
 
         var binding = serviceProvider.GetService<ISink>();
         Assert.NotNull(binding);
@@ -69,7 +69,7 @@ public sealed class EnableBindingsExtensionsTest
         container.AddSingleton<IConfiguration>(configurationRoot);
         container.AddStreamServices(configurationRoot);
         container.AddSourceStreamBinding();
-        ServiceProvider serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider(true);
 
         var binding = serviceProvider.GetService<ISource>();
         Assert.NotNull(binding);

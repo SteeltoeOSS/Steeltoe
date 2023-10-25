@@ -7,6 +7,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace Steeltoe.Common.TestResources;
 
@@ -65,6 +66,7 @@ public static class TestHelpers
     public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args)
     {
         WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder(args);
+        webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         webAppBuilder.Configuration.AddInMemoryCollection(FastTestsConfiguration);
         webAppBuilder.WebHost.UseTestServer();
         webAppBuilder.Services.AddActionDescriptorCollectionProvider();

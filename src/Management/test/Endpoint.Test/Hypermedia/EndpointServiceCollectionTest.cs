@@ -29,7 +29,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddHypermediaActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var handler = serviceProvider.GetService<IActuatorEndpointHandler>();
         Assert.NotNull(handler);
     }

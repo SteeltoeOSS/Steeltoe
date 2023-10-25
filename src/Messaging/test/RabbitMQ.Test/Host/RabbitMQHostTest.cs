@@ -23,7 +23,8 @@ public sealed class RabbitMQHostTest
     {
         MockRabbitHostedService hostedService;
 
-        using (IHost host = RabbitMQHost.CreateDefaultBuilder().ConfigureServices(svc => svc.AddSingleton<IHostedService, MockRabbitHostedService>()).Start())
+        using (IHost host = RabbitMQHost.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true)
+            .ConfigureServices(svc => svc.AddSingleton<IHostedService, MockRabbitHostedService>()).Start())
         {
             Assert.NotNull(host);
             hostedService = (MockRabbitHostedService)host.Services.GetRequiredService<IHostedService>();
@@ -41,7 +42,7 @@ public sealed class RabbitMQHostTest
     [Fact]
     public void HostShouldInitializeServices()
     {
-        using IHost host = RabbitMQHost.CreateDefaultBuilder().Start();
+        using IHost host = RabbitMQHost.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true).Start();
         var lifecycleProcessor = host.Services.GetRequiredService<ILifecycleProcessor>();
         var rabbitHostService = (RabbitHostService)host.Services.GetRequiredService<IHostedService>();
 
@@ -52,7 +53,7 @@ public sealed class RabbitMQHostTest
     [Fact]
     public void HostShouldAddRabbitOptionsConfiguration()
     {
-        IHostBuilder hostBuilder = RabbitMQHost.CreateDefaultBuilder();
+        IHostBuilder hostBuilder = RabbitMQHost.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         var appSettings = new Dictionary<string, string>
         {
@@ -83,7 +84,7 @@ public sealed class RabbitMQHostTest
         IHostBuilder hostBuilder = RabbitMQHost.CreateDefaultBuilder(new[]
         {
             "RabbitHostCommandKey=RabbitHostCommandValue"
-        });
+        }).UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         using IHost host = hostBuilder.Start();
         var configuration = host.Services.GetService<IConfiguration>();
@@ -94,7 +95,7 @@ public sealed class RabbitMQHostTest
     [Fact]
     public void ShouldWorkWithRabbitMQConnector()
     {
-        IHostBuilder builder = RabbitMQHost.CreateDefaultBuilder();
+        IHostBuilder builder = RabbitMQHost.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.ConfigureRabbitMQ());
         builder.ConfigureServices((context, services) => services.AddRabbitMQ(context.Configuration));
 

@@ -28,7 +28,7 @@ public sealed class BridgeHandlerTest
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
         _handler = new BridgeHandler(_provider.GetService<IApplicationContext>());
     }
 

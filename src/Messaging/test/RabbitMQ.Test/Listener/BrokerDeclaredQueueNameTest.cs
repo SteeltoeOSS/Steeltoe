@@ -39,7 +39,7 @@ public sealed class BrokerDeclaredQueueNameTest : AbstractTest
         services.AddSingleton(p => CreateDmlcContainer(p, latch3, latch4, message));
         services.AddRabbitAdmin();
         services.AddRabbitTemplate();
-        await using ServiceProvider provider = services.BuildServiceProvider();
+        await using ServiceProvider provider = services.BuildServiceProvider(true);
 
         await provider.GetRequiredService<IHostedService>().StartAsync(default);
 

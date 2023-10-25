@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Steeltoe.Common.HealthChecks;
@@ -101,6 +102,7 @@ public sealed class MongoDbConnectorTests
     public async Task Binds_options_without_service_bindings()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -123,7 +125,8 @@ public sealed class MongoDbConnectorTests
         });
 
         await using WebApplication app = builder.Build();
-        var optionsSnapshot = app.Services.GetRequiredService<IOptionsSnapshot<MongoDbOptions>>();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<MongoDbOptions>>();
 
         MongoDbOptions optionsOne = optionsSnapshot.Get("myMongoDbServiceOne");
         optionsOne.ConnectionString.Should().Be("mongodb://localhost/auth-db?appname=mongodb-test&connectTimeout=5s");
@@ -138,6 +141,7 @@ public sealed class MongoDbConnectorTests
     public async Task Binds_options_with_CloudFoundry_service_bindings()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -170,6 +174,7 @@ public sealed class MongoDbConnectorTests
     public async Task Binds_options_with_Kubernetes_service_bindings()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeDirectory("db");
@@ -207,6 +212,7 @@ public sealed class MongoDbConnectorTests
     public async Task Registers_ConnectorFactory()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -240,6 +246,7 @@ public sealed class MongoDbConnectorTests
     public async Task Registers_HealthContributors()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -268,6 +275,7 @@ public sealed class MongoDbConnectorTests
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
         builder.AddMongoDb();
@@ -295,6 +303,7 @@ public sealed class MongoDbConnectorTests
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

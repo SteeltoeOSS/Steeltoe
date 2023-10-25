@@ -190,7 +190,7 @@ public sealed class EnableRabbitReturnTypesTest
         }
 
         services.AddRabbitListeners(effectiveConfiguration, listeners);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         await provider.GetRequiredService<IHostedService>().StartAsync(default);
         return provider;
     }

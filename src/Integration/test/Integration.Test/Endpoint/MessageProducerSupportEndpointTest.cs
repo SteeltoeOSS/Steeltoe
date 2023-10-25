@@ -34,7 +34,7 @@ public sealed class MessageProducerSupportEndpointTest
     [Fact]
     public async Task ValidateExceptionIfNoErrorChannel()
     {
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
         var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new ExceptionHandler();
         outChannel.Subscribe(handler);
@@ -51,7 +51,7 @@ public sealed class MessageProducerSupportEndpointTest
     [Fact]
     public async Task ValidateExceptionIfSendToErrorChannelFails()
     {
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
         var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new ExceptionHandler();
         outChannel.Subscribe(handler);
@@ -71,7 +71,7 @@ public sealed class MessageProducerSupportEndpointTest
     [Fact]
     public async Task ValidateSuccessfulErrorFlowDoesNotThrowErrors()
     {
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
         var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new ExceptionHandler();
         outChannel.Subscribe(handler);
@@ -99,7 +99,7 @@ public sealed class MessageProducerSupportEndpointTest
     public async Task TestWithChannelName()
     {
         _services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "foo"));
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
 
         var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>())
         {
@@ -114,7 +114,7 @@ public sealed class MessageProducerSupportEndpointTest
     [Fact]
     public async Task CustomDoStop()
     {
-        ServiceProvider provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider(true);
         var endpoint = new CustomEndpoint(provider.GetService<IApplicationContext>());
         Assert.Equal(0, endpoint.Count);
         Assert.False(endpoint.IsRunning);

@@ -37,7 +37,7 @@ public sealed class ConfigurationServiceInstanceProviderServiceCollectionExtensi
         var services = new ServiceCollection();
 
         services.AddConfigurationDiscoveryClient(builder.Build());
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         // by getting the provider, we're confirming that the options are also available in the container
         var serviceInstanceProvider = serviceProvider.GetRequiredService(typeof(IServiceInstanceProvider)) as IServiceInstanceProvider;

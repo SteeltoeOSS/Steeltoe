@@ -18,7 +18,9 @@ public sealed class SinkBindingWithDefaultsTest : AbstractTest
     public async Task TestSourceOutputChannelBound()
     {
         List<string> searchDirectories = GetSearchDirectories("MockBinder");
-        ServiceProvider provider = CreateStreamsContainerWithISinkBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock").BuildServiceProvider();
+
+        ServiceProvider provider = CreateStreamsContainerWithISinkBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock")
+            .BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 

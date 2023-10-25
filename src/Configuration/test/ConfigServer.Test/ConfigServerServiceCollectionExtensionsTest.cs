@@ -32,7 +32,7 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = builder.Build();
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.ConfigureConfigServerClientOptions();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var service = serviceProvider.GetService<IOptions<ConfigServerClientSettingsOptions>>();
         Assert.NotNull(service);
         ConfigServerClientSettingsOptions options = service.Value;
@@ -47,7 +47,7 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
 
         services.ConfigureConfigServerClientOptions();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var app = serviceProvider.GetService<IOptions<CloudFoundryApplicationOptions>>();
         Assert.NotNull(app);
         var service = serviceProvider.GetService<IOptions<CloudFoundryServicesOptions>>();

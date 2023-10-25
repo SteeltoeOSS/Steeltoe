@@ -19,7 +19,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_DefaultWebHost_AddsConfigServer()
     {
-        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder();
+        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true);
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
         hostBuilder.UseStartup<TestConfigServerStartup>();
         hostBuilder.AddConfigServer();

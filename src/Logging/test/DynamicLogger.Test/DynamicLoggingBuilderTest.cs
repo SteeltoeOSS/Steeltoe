@@ -42,7 +42,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var logger = services.GetService(typeof(ILogger<TestClass>)) as ILogger<TestClass>;
 
@@ -60,7 +60,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var logger = services.GetService(typeof(ILogger<TestClass>)) as ILogger<TestClass>;
 
@@ -86,7 +86,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
@@ -104,7 +104,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
@@ -122,7 +122,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
@@ -146,7 +146,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
@@ -168,7 +168,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
         ILoggerProvider[] logProviders = services.GetServices<ILoggerProvider>().ToArray();
@@ -188,7 +188,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var dynamicLoggerProvider = services.GetRequiredService<IDynamicLoggerProvider>();
 
@@ -207,7 +207,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var formatterOptions = services.GetRequiredService<IOptions<SimpleConsoleFormatterOptions>>();
 
@@ -223,9 +223,10 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
-        var formatterOptions = services.GetRequiredService<IOptionsSnapshot<SimpleConsoleFormatterOptions>>();
+        using IServiceScope scope = services.CreateScope();
+        var formatterOptions = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<SimpleConsoleFormatterOptions>>();
 
         formatterOptions.Value.ColorBehavior.Should().NotBe(LoggerColorBehavior.Disabled);
     }
@@ -241,7 +242,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         var formatterOptions = services.GetRequiredService<IOptionsMonitor<SimpleConsoleFormatterOptions>>();
 
@@ -262,7 +263,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         using var console = new ConsoleOutputBorrower();
         var logger = services.GetRequiredService<ILogger<DynamicLoggingBuilderTest>>();
@@ -302,7 +303,7 @@ public sealed class DynamicLoggingBuilderTest
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
-        }).BuildServiceProvider();
+        }).BuildServiceProvider(true);
 
         using var console = new ConsoleOutputBorrower();
         var logger = services.GetRequiredService<ILogger<DynamicLoggingBuilderTest>>();

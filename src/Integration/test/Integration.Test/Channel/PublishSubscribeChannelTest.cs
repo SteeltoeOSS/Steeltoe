@@ -17,7 +17,7 @@ public sealed class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var handler = new CounterHandler();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(handler);
@@ -31,7 +31,7 @@ public sealed class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var handler = new CounterHandler();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(handler);
@@ -45,7 +45,7 @@ public sealed class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var handler = new CounterHandler();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(handler);
@@ -65,7 +65,7 @@ public sealed class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var handler = new CounterHandler();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(handler);
@@ -85,7 +85,7 @@ public sealed class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var handler1 = new CounterHandler();
         var handler2 = new CounterHandler();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());

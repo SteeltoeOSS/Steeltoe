@@ -32,7 +32,7 @@ public sealed class ConnectionFactoryLifecycleTest : AbstractTest
         MyLifecycle myLifecycle;
         CachingConnectionFactory cf;
 
-        await using (ServiceProvider provider = services.BuildServiceProvider())
+        await using (ServiceProvider provider = services.BuildServiceProvider(true))
         {
             var hostService = provider.GetRequiredService<IHostedService>();
             await hostService.StartAsync(default);
@@ -59,7 +59,7 @@ public sealed class ConnectionFactoryLifecycleTest : AbstractTest
         });
 
         services.AddRabbitAdmin();
-        await using ServiceProvider provider = services.BuildServiceProvider();
+        await using ServiceProvider provider = services.BuildServiceProvider(true);
 
         var hostService = provider.GetRequiredService<IHostedService>();
         await hostService.StartAsync(default);

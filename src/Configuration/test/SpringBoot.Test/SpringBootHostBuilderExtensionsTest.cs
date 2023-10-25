@@ -48,7 +48,7 @@ public sealed class SpringBootHostBuilderExtensionsTest
         {
             "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination",
             "Spring.Cloud.Stream.Bindings.Input.Group=testGroup"
-        }).UseStartup<TestServerStartup>().AddSpringBootConfiguration();
+        }).UseDefaultServiceProvider(options => options.ValidateScopes = true).UseStartup<TestServerStartup>().AddSpringBootConfiguration();
 
         using var server = new TestServer(hostBuilder);
 
@@ -82,7 +82,7 @@ public sealed class SpringBootHostBuilderExtensionsTest
         {
             "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination",
             "Spring.Cloud.Stream.Bindings.Input.Group=testGroup"
-        }).AddSpringBootConfiguration();
+        }).UseDefaultServiceProvider(options => options.ValidateScopes = true).AddSpringBootConfiguration();
 
         using IHost host = hostBuilder.Build();
         IConfiguration configuration = host.Services.GetServices<IConfiguration>().SingleOrDefault();

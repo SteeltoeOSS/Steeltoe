@@ -23,7 +23,9 @@ public sealed class AbstractMessageChannelBinderTest : AbstractTest
     public AbstractMessageChannelBinderTest()
     {
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
-        _serviceProvider = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder").BuildServiceProvider();
+
+        _serviceProvider = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder")
+            .BuildServiceProvider(true);
     }
 
     [Fact]

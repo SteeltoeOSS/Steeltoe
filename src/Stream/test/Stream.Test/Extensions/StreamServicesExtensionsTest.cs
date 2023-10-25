@@ -34,7 +34,7 @@ public sealed class StreamServicesExtensionsTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         container.AddStreamConfiguration(configurationRoot);
-        ServiceProvider serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider(true);
         ValidateConfigurationServices(serviceProvider);
     }
 
@@ -51,7 +51,7 @@ public sealed class StreamServicesExtensionsTest
         container.AddIntegrationServices();
         container.AddBinderServices(configurationRoot);
         container.AddStreamCoreServices(configurationRoot);
-        ServiceProvider serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider(true);
         ValidateCoreServices(serviceProvider);
     }
 
@@ -65,7 +65,7 @@ public sealed class StreamServicesExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         container.AddSingleton<IConfiguration>(configurationRoot);
         container.AddStreamServices(configurationRoot);
-        ServiceProvider serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider(true);
         ValidateConfigurationServices(serviceProvider);
         ValidateCoreServices(serviceProvider);
     }
@@ -79,7 +79,7 @@ public sealed class StreamServicesExtensionsTest
         serviceCollection.AddSingleton<IConfiguration>(configuration);
         serviceCollection.AddStreamServices<SampleSink>(configuration);
 
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
 
         Assert.True(provider.GetService<SampleSink>() != null, "SampleSink not found in Container");
 

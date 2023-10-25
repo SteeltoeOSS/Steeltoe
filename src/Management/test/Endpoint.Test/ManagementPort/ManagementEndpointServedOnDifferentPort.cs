@@ -29,6 +29,7 @@ public sealed class ManagementEndpointServedOnDifferentPort
         };
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         hostBuilder.Configuration.AddInMemoryCollection(appsettings);
         hostBuilder.AddAllActuators();
         hostBuilder.WebHost.UseTestServer();
@@ -54,6 +55,7 @@ public sealed class ManagementEndpointServedOnDifferentPort
         };
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         hostBuilder.Configuration.AddInMemoryCollection(appsettings);
         hostBuilder.UseCloudHosting();
         hostBuilder.AddAllActuators();
@@ -84,6 +86,7 @@ public sealed class ManagementEndpointServedOnDifferentPort
         };
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         hostBuilder.Configuration.AddInMemoryCollection(appsettings);
         hostBuilder.AddAllActuators();
 

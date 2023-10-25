@@ -27,7 +27,7 @@ public sealed class PollableConsumerTest : AbstractTest
     public void TestSimple()
     {
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
-        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider(true);
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
 
@@ -60,7 +60,7 @@ public sealed class PollableConsumerTest : AbstractTest
     public void TestConvertSimple()
     {
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
-        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider(true);
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
 
@@ -109,8 +109,8 @@ public sealed class PollableConsumerTest : AbstractTest
     {
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
 
-        IServiceProvider serviceProvider =
-            CreateStreamsContainer(searchDirectories, "spring:cloud:stream:bindings:foo:contentType=text/plain").BuildServiceProvider();
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:bindings:foo:contentType=text/plain")
+            .BuildServiceProvider(true);
 
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
@@ -163,7 +163,7 @@ public sealed class PollableConsumerTest : AbstractTest
     public void TestConvertList()
     {
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
-        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider(true);
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
 
@@ -206,7 +206,7 @@ public sealed class PollableConsumerTest : AbstractTest
     public void TestConvertMap()
     {
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
-        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider(true);
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
 
@@ -251,7 +251,7 @@ public sealed class PollableConsumerTest : AbstractTest
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
 
         IServiceProvider serviceProvider = CreateStreamsContainer(
-            searchDirectories, $"spring:cloud:stream:bindings:foo:consumer:headerMode={HeaderMode.EmbeddedHeaders}").BuildServiceProvider();
+            searchDirectories, $"spring:cloud:stream:bindings:foo:consumer:headerMode={HeaderMode.EmbeddedHeaders}").BuildServiceProvider(true);
 
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
@@ -314,7 +314,7 @@ public sealed class PollableConsumerTest : AbstractTest
     public void TestErrors()
     {
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
-        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider(true);
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
 
@@ -377,7 +377,7 @@ public sealed class PollableConsumerTest : AbstractTest
     public void TestErrorsNoRetry()
     {
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
-        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider(true);
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
 
@@ -418,7 +418,7 @@ public sealed class PollableConsumerTest : AbstractTest
     public void TestRequeue()
     {
         List<string> searchDirectories = GetSearchDirectories("TestBinder");
-        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider(true);
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
 

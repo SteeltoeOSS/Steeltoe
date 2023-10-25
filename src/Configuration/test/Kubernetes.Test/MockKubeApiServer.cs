@@ -27,20 +27,21 @@ internal sealed class MockKubeApiServer : IDisposable
     {
         shouldNext ??= _ => Task.FromResult(true);
 
-        _webHost = WebHost.CreateDefaultBuilder().Configure(app => app.Run(async httpContext =>
-        {
-            if (await shouldNext(httpContext))
+        _webHost = WebHost.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true).Configure(app =>
+            app.Run(async httpContext =>
             {
-                if (httpContext.Request.Path.ToString().StartsWith("/api/v1/namespaces/default/configmaps", StringComparison.Ordinal))
+                if (await shouldNext(httpContext))
                 {
-                    await httpContext.Response.WriteAsync(ConfigMapResponse);
+                    if (httpContext.Request.Path.ToString().StartsWith("/api/v1/namespaces/default/configmaps", StringComparison.Ordinal))
+                    {
+                        await httpContext.Response.WriteAsync(ConfigMapResponse);
+                    }
+                    else if (httpContext.Request.Path.ToString().StartsWith("/api/v1/namespaces/default/secrets", StringComparison.Ordinal))
+                    {
+                        await httpContext.Response.WriteAsync(SecretResponse);
+                    }
                 }
-                else if (httpContext.Request.Path.ToString().StartsWith("/api/v1/namespaces/default/secrets", StringComparison.Ordinal))
-                {
-                    await httpContext.Response.WriteAsync(SecretResponse);
-                }
-            }
-        })).UseKestrel(options =>
+            })).UseKestrel(options =>
         {
             options.Listen(IPAddress.Loopback, 0);
         }).Build();

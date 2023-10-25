@@ -19,7 +19,10 @@ public sealed class TaskRunTest
             "runtask=test"
         };
 
-        Assert.Throws<PassException>(() => WebHost.CreateDefaultBuilder(args).UseStartup<TestServerStartup>().Build().RunWithTasks());
+        IWebHost webHost = WebHost.CreateDefaultBuilder(args).UseDefaultServiceProvider(options => options.ValidateScopes = true)
+            .UseStartup<TestServerStartup>().Build();
+
+        Assert.Throws<PassException>(webHost.RunWithTasks);
     }
 
     [Fact]
@@ -30,9 +33,11 @@ public sealed class TaskRunTest
             "runtask=test"
         };
 
-        WebHost.CreateDefaultBuilder(args).Configure(_ =>
+        IWebHost webHost = WebHost.CreateDefaultBuilder(args).UseDefaultServiceProvider(options => options.ValidateScopes = true).Configure(_ =>
         {
-        }).Build().RunWithTasks();
+        }).Build();
+
+        webHost.RunWithTasks();
 
         Assert.True(true, "If we reached this assertion, the app stopped without throwing anything");
     }
@@ -45,8 +50,10 @@ public sealed class TaskRunTest
             "runtask=test"
         };
 
-        Assert.Throws<PassException>(() =>
-            Host.CreateDefaultBuilder(args).ConfigureWebHost(configure => configure.UseStartup<TestServerStartup>().UseKestrel()).Build().RunWithTasks());
+        IHost host = Host.CreateDefaultBuilder(args).UseDefaultServiceProvider(options => options.ValidateScopes = true)
+            .ConfigureWebHost(configure => configure.UseStartup<TestServerStartup>().UseKestrel()).Build();
+
+        Assert.Throws<PassException>(host.RunWithTasks);
     }
 
     [Fact]
@@ -57,7 +64,7 @@ public sealed class TaskRunTest
             "runtask=test"
         };
 
-        Host.CreateDefaultBuilder(args).Build().RunWithTasks();
+        Host.CreateDefaultBuilder(args).UseDefaultServiceProvider(options => options.ValidateScopes = true).Build().RunWithTasks();
 
         Assert.True(true, "If we reached this assertion, the app stopped without throwing anything");
     }

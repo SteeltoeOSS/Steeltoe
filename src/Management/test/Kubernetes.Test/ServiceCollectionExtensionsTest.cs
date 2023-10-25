@@ -19,7 +19,7 @@ public sealed class ServiceCollectionExtensionsTest
         services.AddLogging();
         services.AddKubernetesInfoContributor();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var contributor = serviceProvider.GetService<IInfoContributor>();
         Assert.NotNull(contributor);
@@ -33,7 +33,7 @@ public sealed class ServiceCollectionExtensionsTest
         services.AddLogging();
         services.AddKubernetesActuators();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IInfoContributor[] contributors = serviceProvider.GetServices<IInfoContributor>().ToArray();
         Assert.Equal(4, contributors.Length);

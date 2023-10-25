@@ -37,7 +37,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         services.AddLoggersActuator();
         services.AddSingleton<IConfiguration>(configurationRoot);
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var handler = serviceProvider.GetService<ILoggersEndpointHandler>();
         Assert.NotNull(handler);

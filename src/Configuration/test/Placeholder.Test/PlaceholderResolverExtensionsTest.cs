@@ -56,6 +56,7 @@ public sealed class PlaceholderResolverExtensionsTest
     {
         const WebApplicationBuilder nullWebApplicationBuilder = null;
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
+        webApplicationBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         var loggerFactory = NullLoggerFactory.Instance;
 
         Assert.Throws<ArgumentNullException>(() => nullWebApplicationBuilder.AddPlaceholderResolver(loggerFactory));
@@ -244,6 +245,7 @@ public sealed class PlaceholderResolverExtensionsTest
         string directory = Path.GetDirectoryName(jsonPath);
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         hostBuilder.Configuration.SetBasePath(directory);
         hostBuilder.Configuration.AddJsonFile(jsonFileName);
         hostBuilder.Configuration.AddXmlFile(xmlFileName);

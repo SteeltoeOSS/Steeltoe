@@ -48,7 +48,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveWithTopicSingleCallback()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
@@ -89,7 +89,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveWithNonDefaultExchange()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
@@ -129,7 +129,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveWithTopicConsumeInBackground()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
@@ -170,7 +170,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveWithTopicTwoCallbacks()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
@@ -227,7 +227,7 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     [Fact]
     public void TestSendAndReceiveWithFanOut()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin admin = _provider.GetRabbitAdmin();
         var exchange = new FanOutExchange("fanout");
         admin.DeclareExchange(exchange);

@@ -21,7 +21,7 @@ public sealed class SourceBindingWithGlobalPropertiesTest : AbstractTest
         ServiceProvider provider = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.default.contentType=application/json",
             "spring.cloud.stream.bindings.output.destination=ticktock", "spring.cloud.stream.default.producer.requiredGroups:0=someGroup",
             "spring.cloud.stream.default.producer.partitionCount=1", "spring.cloud.stream.bindings.output.producer.headerMode=none",
-            "spring.cloud.stream.bindings.output.producer.partitionCount=4", "spring.cloud.stream.defaultBinder=mock").BuildServiceProvider();
+            "spring.cloud.stream.bindings.output.producer.partitionCount=4", "spring.cloud.stream.defaultBinder=mock").BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 

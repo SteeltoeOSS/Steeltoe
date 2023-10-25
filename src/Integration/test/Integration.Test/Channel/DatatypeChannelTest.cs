@@ -77,7 +77,7 @@ public sealed class DataTypeChannelTest
         services.AddSingleton<IConversionService>(convService);
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<DefaultDataTypeChannelMessageConverter>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
 
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel")
         {
@@ -151,7 +151,7 @@ public sealed class DataTypeChannelTest
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
 
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel")
         {

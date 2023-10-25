@@ -32,7 +32,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         services.AddMappingsActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<RouteMappingsEndpointOptions>>();
         Assert.Equal("mappings", options.CurrentValue.Id);
 

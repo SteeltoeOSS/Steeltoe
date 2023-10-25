@@ -26,7 +26,7 @@ public sealed class RabbitMessageSourceTest
     public void TestAck()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider(true);
         var context = new GenericApplicationContext(services, configurationRoot);
         var channel = new Mock<R.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -104,7 +104,7 @@ public sealed class RabbitMessageSourceTest
         props.ContentType = "text/plain";
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider(true);
         var context = new GenericApplicationContext(services, configurationRoot);
         var channel = new Mock<R.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -130,7 +130,7 @@ public sealed class RabbitMessageSourceTest
     private void TestNackOrRequeue(bool requeue)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider(true);
         var context = new GenericApplicationContext(services, configurationRoot);
 
         var channel = new Mock<R.IModel>();

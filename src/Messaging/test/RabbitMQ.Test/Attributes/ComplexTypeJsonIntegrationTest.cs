@@ -138,7 +138,7 @@ public sealed class ComplexTypeJsonIntegrationTest : IClassFixture<ComplexTypeJs
         public StartupFixture()
         {
             IServiceCollection services = CreateContainer();
-            Provider = services.BuildServiceProvider();
+            Provider = services.BuildServiceProvider(true);
             Provider.GetRequiredService<IHostedService>().StartAsync(default).GetAwaiter().GetResult();
         }
 

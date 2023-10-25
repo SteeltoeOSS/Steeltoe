@@ -25,7 +25,7 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);
@@ -49,7 +49,7 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);
@@ -74,7 +74,7 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
 
         var timer = new Stopwatch();
         timer.Start();
@@ -125,7 +125,7 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);
@@ -150,7 +150,7 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);

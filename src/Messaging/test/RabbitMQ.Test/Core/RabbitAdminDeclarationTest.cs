@@ -62,7 +62,7 @@ public sealed class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclar
         services.AddRabbitExchange(exchange);
         var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null);
         services.AddRabbitBinding(binding);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         IApplicationContext context = provider.GetApplicationContext();
         _ = new RabbitAdmin(context, cf.Object);
         Assert.NotNull(listener.Value);
@@ -115,7 +115,7 @@ public sealed class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclar
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection);
         var queue = new Queue("foo");
         services.AddRabbitQueue(queue);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         IApplicationContext context = provider.GetApplicationContext();
         _ = new RabbitAdmin(context, ccf);
         ccf.CreateConnection().Close();
@@ -158,7 +158,7 @@ public sealed class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclar
         services.AddRabbitExchange(exchange);
         var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null);
         services.AddRabbitBinding(binding);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         IApplicationContext context = provider.GetApplicationContext();
         var admin = new RabbitAdmin(context, cf.Object);
 
@@ -209,7 +209,7 @@ public sealed class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclar
         services.AddRabbitExchange(exchange);
         var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null);
         services.AddRabbitBinding(binding);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         IApplicationContext context = provider.GetApplicationContext();
 
         _ = new RabbitAdmin(context, cf.Object);
@@ -276,7 +276,7 @@ public sealed class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclar
         };
 
         services.AddRabbitBinding(binding);
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         IApplicationContext context = provider.GetApplicationContext();
 
         _ = new RabbitAdmin(context, cf.Object);
@@ -388,7 +388,7 @@ public sealed class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclar
         public RabbitAdminDeclarationTestStartupFixture()
         {
             _services = CreateContainer();
-            Provider = _services.BuildServiceProvider();
+            Provider = _services.BuildServiceProvider(true);
             Provider.GetRequiredService<IHostedService>().StartAsync(default).GetAwaiter().GetResult();
         }
 

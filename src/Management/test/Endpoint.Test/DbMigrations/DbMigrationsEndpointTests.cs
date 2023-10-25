@@ -5,8 +5,6 @@
 using System.Reflection;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
@@ -24,45 +22,36 @@ public sealed class DbMigrationsEndpointTests : BaseTest
     }
 
     [Fact]
-    public void DbMigrationsEndpoint_EfMigrationsReflectionTargets_NotNull()
+    public void DbMigrationsEndpoint_MigrationReflectionTargets_NotNull()
     {
-        DbMigrationsEndpointHandler.GetDatabaseMethod.Should().NotBeNull();
-        DbMigrationsEndpointHandler.GetMigrationsMethod.Should().NotBeNull();
-        DbMigrationsEndpointHandler.DbContextType.Should().NotBeNull();
-        DbMigrationsEndpointHandler.GetAppliedMigrationsMethod.Should().NotBeNull();
-        DbMigrationsEndpointHandler.GetPendingMigrationsMethod.Should().NotBeNull();
+        DatabaseMigrationScanner.GetDatabaseMethod.Should().NotBeNull();
+        DatabaseMigrationScanner.GetMigrationsMethod.Should().NotBeNull();
+        DatabaseMigrationScanner.DbContextType.Should().NotBeNull();
+        DatabaseMigrationScanner.GetAppliedMigrationsMethod.Should().NotBeNull();
+        DatabaseMigrationScanner.GetPendingMigrationsMethod.Should().NotBeNull();
     }
 
     [Fact]
     public void DatabaseMigrationScanner_GetDeclaredMigrations_InvokesRealExtensionMethodAndThrows()
     {
-        var sut = new DbMigrationsEndpointHandler.DatabaseMigrationScanner();
+        var scanner = new DatabaseMigrationScanner();
+        var dbContext = new MockDbContext();
 
-        sut.Invoking(scanner => scanner.GetMigrations(new MockDbContext())).Should().ThrowExactly<TargetInvocationException>()
-            .WithInnerException<InvalidOperationException>().WithMessage("*No database provider has been configured for this DbContext*");
+        Action action = () => scanner.GetMigrations(dbContext);
+
+        action.Should().ThrowExactly<TargetInvocationException>().WithInnerException<InvalidOperationException>()
+            .WithMessage("*No database provider has been configured for this DbContext*");
     }
 
     [Fact]
     public async Task Invoke_WhenExistingDatabase_ReturnsExpected()
     {
         using var testContext = new TestContext(_output);
-        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
-        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
-
-        scanner.GetPendingMigrations(Arg.Any<object>()).Returns(new[]
-        {
-            "pending"
-        });
-
-        scanner.GetAppliedMigrations(Arg.Any<object>()).Returns(new[]
-        {
-            "applied"
-        });
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddScoped(_ => new MockDbContext());
-            services.AddScoped(_ => scanner);
+            services.AddScoped<MockDbContext>();
+            services.AddSingleton<IDatabaseMigrationScanner, TestDatabaseMigrationScanner>();
             services.AddDbMigrationsActuatorServices();
         };
 
@@ -79,24 +68,21 @@ public sealed class DbMigrationsEndpointTests : BaseTest
     public async Task Invoke_NonExistingDatabase_ReturnsExpected()
     {
         using var testContext = new TestContext(_output);
-        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
-        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
-        scanner.GetPendingMigrations(Arg.Any<object>()).Throws(new SomeDbException("database doesn't exist"));
 
-        scanner.GetMigrations(Arg.Any<object>()).Returns(new[]
+        var migrationScanner = new TestDatabaseMigrationScanner
         {
-            "migration"
-        });
+            ThrowOnGetPendingMigrations = true
+        };
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddScoped(_ => new MockDbContext());
-            services.AddScoped(_ => scanner);
+            services.AddScoped<MockDbContext>();
+            services.AddSingleton<IDatabaseMigrationScanner>(migrationScanner);
             services.AddDbMigrationsActuatorServices();
         };
 
-        var sut = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
-        Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(null, CancellationToken.None);
+        var handler = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
+        Dictionary<string, DbMigrationsDescriptor> result = await handler.InvokeAsync(null, CancellationToken.None);
 
         const string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
@@ -105,20 +91,18 @@ public sealed class DbMigrationsEndpointTests : BaseTest
     }
 
     [Fact]
-    public async Task Invoke_NonContainerRegistered_ReturnsExpected()
+    public async Task Invoke_NoDbContextRegistered_ReturnsExpected()
     {
         using var testContext = new TestContext(_output);
-        var scanner = Substitute.For<DbMigrationsEndpointHandler.DatabaseMigrationScanner>();
-        scanner.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddScoped(_ => scanner);
+            services.AddSingleton<IDatabaseMigrationScanner, TestDatabaseMigrationScanner>();
             services.AddDbMigrationsActuatorServices();
         };
 
-        var sut = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
-        Dictionary<string, DbMigrationsDescriptor> result = await sut.InvokeAsync(null, CancellationToken.None);
+        var handler = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
+        Dictionary<string, DbMigrationsDescriptor> result = await handler.InvokeAsync(null, CancellationToken.None);
 
         result.Should().BeEmpty();
     }

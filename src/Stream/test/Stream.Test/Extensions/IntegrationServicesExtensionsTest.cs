@@ -21,7 +21,7 @@ public sealed class IntegrationServicesExtensionsTest
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
         container.AddIntegrationServices();
-        ServiceProvider serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider(true);
 
         Assert.NotNull(serviceProvider.GetService<DefaultDataTypeChannelMessageConverter>());
         Assert.NotNull(serviceProvider.GetService<IMessageBuilderFactory>());

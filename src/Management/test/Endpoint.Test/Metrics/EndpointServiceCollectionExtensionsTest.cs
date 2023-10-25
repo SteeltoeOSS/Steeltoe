@@ -27,7 +27,7 @@ public sealed class EndpointServiceCollectionExtensionsTest : BaseTest
         services.AddSingleton(configuration);
         services.AddMetricsActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var diagnosticsManager = serviceProvider.GetService<IDiagnosticsManager>();
         Assert.NotNull(diagnosticsManager);

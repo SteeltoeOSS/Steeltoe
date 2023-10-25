@@ -33,7 +33,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddRabbitConnectionFactory();
         services.AddRabbitDefaultMessageConverter();
         services.AddRabbitTemplate();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         RabbitTemplate template = provider.GetRabbitTemplate();
         Assert.NotNull(template);
         Assert.Equal(RabbitTemplate.DefaultServiceName, template.ServiceName);
@@ -52,7 +52,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddRabbitConnectionFactory();
         services.AddRabbitDefaultMessageConverter();
         services.AddRabbitTemplate("foo");
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         RabbitTemplate template = provider.GetRabbitTemplate("foo");
         Assert.NotNull(template);
         Assert.Equal("foo", template.ServiceName);
@@ -72,7 +72,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddRabbitTemplate();
         services.AddRabbitTemplate("foo");
         services.AddRabbitTemplate("bar");
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var context = provider.GetService<IApplicationContext>();
         RabbitTemplate template = provider.GetRabbitTemplate();
         Assert.NotNull(template);
@@ -107,7 +107,7 @@ public sealed class RabbitServiceExtensionsTest
             t.CorrelationKey = "foobar";
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         RabbitTemplate template = provider.GetRabbitTemplate();
         Assert.NotNull(template);
         Assert.Equal("foobar", template.CorrelationKey);
@@ -122,7 +122,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddRabbitConnectionFactory();
         services.AddRabbitDefaultMessageConverter();
         services.AddRabbitAdmin();
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         RabbitAdmin admin = provider.GetRabbitAdmin();
         Assert.NotNull(admin);
         Assert.Equal(RabbitAdmin.DefaultServiceName, admin.ServiceName);
@@ -140,7 +140,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddRabbitConnectionFactory();
         services.AddRabbitDefaultMessageConverter();
         services.AddRabbitAdmin("foo");
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         RabbitAdmin admin = provider.GetRabbitAdmin("foo");
         Assert.NotNull(admin);
         Assert.Equal("foo", admin.ServiceName);
@@ -160,7 +160,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddRabbitAdmin();
         services.AddRabbitAdmin("foo");
         services.AddRabbitAdmin("bar");
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var context = provider.GetService<IApplicationContext>();
         RabbitAdmin admin = provider.GetRabbitAdmin();
         Assert.NotNull(admin);
@@ -196,7 +196,7 @@ public sealed class RabbitServiceExtensionsTest
             a.RetryDisabled = true;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         RabbitAdmin admin = provider.GetRabbitAdmin();
         Assert.NotNull(admin);
         Assert.True(admin.RetryDisabled);
@@ -209,7 +209,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
         services.AddRabbitQueues(new Queue("1"), new Queue("2"));
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var context = provider.GetService<IApplicationContext>();
         var q1 = context.GetService<IQueue>("1");
         var q2 = context.GetService<IQueue>("2");
@@ -230,7 +230,7 @@ public sealed class RabbitServiceExtensionsTest
             q.ShouldDeclare = false;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var context = provider.GetService<IApplicationContext>();
         var q1 = context.GetService<IQueue>("myQueue");
         Assert.NotNull(q1);
@@ -246,7 +246,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
         services.AddRabbitBindings(new QueueBinding("1"), new ExchangeBinding("2"));
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var context = provider.GetService<IApplicationContext>();
         var b1 = context.GetService<IBinding>("1");
         var b2 = context.GetService<IBinding>("2");
@@ -267,7 +267,7 @@ public sealed class RabbitServiceExtensionsTest
             b.IgnoreDeclarationExceptions = false;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var context = provider.GetService<IApplicationContext>();
         var b1 = context.GetService<IBinding>("myBinding") as QueueBinding;
         Assert.NotNull(b1);
@@ -283,7 +283,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddRabbitHostingServices();
         services.AddRabbitExchanges(new DirectExchange("1"), new FanOutExchange("2"));
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var context = provider.GetService<IApplicationContext>();
         var e1 = context.GetService<IExchange>("1");
         var e2 = context.GetService<IExchange>("2");
@@ -304,7 +304,7 @@ public sealed class RabbitServiceExtensionsTest
             e.ShouldDeclare = false;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var context = provider.GetService<IApplicationContext>();
         var e1 = context.GetService<IExchange>("myExchange") as DirectExchange;
         Assert.NotNull(e1);
@@ -328,7 +328,7 @@ public sealed class RabbitServiceExtensionsTest
             a.Charset = Encoding.UTF32;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var ap = provider.GetService<IRabbitListenerAttributeProcessor>() as RabbitListenerAttributeProcessor;
         Assert.NotNull(ap);
         Assert.Equal(Encoding.UTF32, ap.Charset);
@@ -347,7 +347,7 @@ public sealed class RabbitServiceExtensionsTest
             r.ContainerFactoryServiceName = "foobar";
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var r = provider.GetService<IRabbitListenerEndpointRegistrar>() as RabbitListenerEndpointRegistrar;
         Assert.NotNull(r);
         Assert.Equal("foobar", r.ContainerFactoryServiceName);
@@ -365,7 +365,7 @@ public sealed class RabbitServiceExtensionsTest
             r.Phase = 100;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var r = provider.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
         Assert.NotNull(r);
         Assert.Equal(100, r.Phase);
@@ -385,7 +385,7 @@ public sealed class RabbitServiceExtensionsTest
             f.AckTimeout = 111111;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var f = provider.GetService<IRabbitListenerContainerFactory>() as DirectRabbitListenerContainerFactory;
         Assert.NotNull(f);
         Assert.Equal(111111, f.AckTimeout);
@@ -404,7 +404,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddRabbitListenerContainerFactory("foobar");
         services.AddRabbitListenerContainerFactory("barfoo");
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var context = provider.GetService<IApplicationContext>();
         var f1 = context.GetService<IRabbitListenerContainerFactory>("foobar");
         var f2 = context.GetService<IRabbitListenerContainerFactory>("barfoo");
@@ -433,7 +433,7 @@ public sealed class RabbitServiceExtensionsTest
             f.AckTimeout = 222222;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var context = provider.GetService<IApplicationContext>();
         var f1 = context.GetService<IRabbitListenerContainerFactory>("foobar") as DirectRabbitListenerContainerFactory;
         var f2 = context.GetService<IRabbitListenerContainerFactory>("barfoo") as DirectRabbitListenerContainerFactory;
@@ -456,7 +456,7 @@ public sealed class RabbitServiceExtensionsTest
             f.Port = 9999;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var f = provider.GetService<IConnectionFactory>() as CachingConnectionFactory;
         Assert.NotNull(f);
         Assert.Equal(9999, f.Port);
@@ -474,7 +474,7 @@ public sealed class RabbitServiceExtensionsTest
             c.CreateMessageIds = true;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var c = provider.GetService<ISmartMessageConverter>() as SimpleMessageConverter;
         Assert.NotNull(c);
         Assert.True(c.CreateMessageIds);
@@ -492,7 +492,7 @@ public sealed class RabbitServiceExtensionsTest
             c.AssumeSupportedContentType = false;
         });
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         var c = provider.GetService<ISmartMessageConverter>() as JsonMessageConverter;
         Assert.NotNull(c);
         Assert.False(c.AssumeSupportedContentType);
@@ -521,7 +521,7 @@ public sealed class RabbitServiceExtensionsTest
 
         services.ConfigureRabbitOptions(configuration);
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(true);
         RabbitOptions rabbitOptions = provider.GetService<IOptions<RabbitOptions>>().Value;
 
         Assert.Equal(appsettings[hostPrefix], rabbitOptions.Host);
@@ -551,7 +551,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddRabbitConnectionFactory();
         services.ConfigureRabbitOptions(configuration);
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         RabbitOptions rabbitOptions = serviceProvider.GetRequiredService<IOptions<RabbitOptions>>().Value;
 
@@ -574,7 +574,7 @@ public sealed class RabbitServiceExtensionsTest
         services.AddRabbitMQ(configuration);
         services.AddRabbitConnectionFactory();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var rabbitConnectionFactory = serviceProvider.GetRequiredService<IConnectionFactory>();
 

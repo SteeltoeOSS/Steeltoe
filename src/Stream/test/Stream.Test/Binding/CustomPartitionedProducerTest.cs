@@ -29,7 +29,7 @@ public sealed class CustomPartitionedProducerTest : AbstractTest
         container.AddSingleton<IPartitionKeyExtractorStrategy, CustomPartitionKeyExtractorClass>();
         container.AddSingleton<IPartitionSelectorStrategy, CustomPartitionSelectorClass>();
 
-        ServiceProvider provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -64,7 +64,7 @@ public sealed class CustomPartitionedProducerTest : AbstractTest
         container.AddSingleton<IPartitionKeyExtractorStrategy, CustomPartitionKeyExtractorClass>();
         container.AddSingleton<IPartitionSelectorStrategy, CustomPartitionSelectorClass>();
 
-        ServiceProvider provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -103,7 +103,7 @@ public sealed class CustomPartitionedProducerTest : AbstractTest
         container.AddSingleton<IPartitionKeyExtractorStrategy, CustomPartitionKeyExtractorClassTwo>();
         container.AddSingleton<IPartitionSelectorStrategy, CustomPartitionSelectorClassTwo>();
 
-        ServiceProvider provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider(true);
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
@@ -141,7 +141,7 @@ public sealed class CustomPartitionedProducerTest : AbstractTest
         container.AddSingleton<IPartitionKeyExtractorStrategy, CustomPartitionKeyExtractorClassTwo>();
         container.AddSingleton<IPartitionSelectorStrategy, CustomPartitionSelectorClassTwo>();
 
-        ServiceProvider provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider(true);
 
         bool exceptionThrown = false;
 

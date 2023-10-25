@@ -32,7 +32,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddHeapDumpActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var heapDumper = serviceProvider.GetService<HeapDumper>();
         Assert.NotNull(heapDumper);
         var handler = serviceProvider.GetService<IHeapDumpEndpointHandler>();

@@ -24,7 +24,7 @@ public sealed class ServiceCollectionExtensionsTest
         services.AddSingleton<IConfiguration>(configuration);
         services.AddLogging();
         services.AddSpringBootAdminClient();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         Assert.IsType<SpringBootAdminClientHostedService>(serviceProvider.GetRequiredService<IHostedService>());
     }

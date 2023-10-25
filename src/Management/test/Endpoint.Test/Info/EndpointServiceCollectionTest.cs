@@ -36,7 +36,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         IInfoContributor extra = new TestInfoContributor();
         services.AddSingleton(extra);
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         IEnumerable<IInfoContributor> contributors = serviceProvider.GetServices<IInfoContributor>();
 
         Assert.NotNull(contributors);

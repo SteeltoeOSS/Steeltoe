@@ -21,7 +21,7 @@ public sealed class DlqStartupFixture : IDisposable
     public DlqStartupFixture()
     {
         _services = CreateContainer();
-        Provider = _services.BuildServiceProvider();
+        Provider = _services.BuildServiceProvider(true);
         Provider.GetRequiredService<IHostedService>().StartAsync(default).GetAwaiter().GetResult();
     }
 

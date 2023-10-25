@@ -24,7 +24,7 @@ public sealed class CoreServicesExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         container.AddSingleton<IConfiguration>(configurationRoot);
         container.AddCoreServices();
-        ServiceProvider serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider(true);
         Assert.NotNull(serviceProvider.GetService<IApplicationContext>());
         Assert.NotNull(serviceProvider.GetService<IConversionService>());
         Assert.NotNull(serviceProvider.GetService<ILifecycleProcessor>());

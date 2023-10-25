@@ -28,7 +28,7 @@ public sealed class CollectionAndArrayTest
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        _provider = services.BuildServiceProvider();
+        _provider = services.BuildServiceProvider(true);
         _handler = new TestAbstractReplyProducingMessageHandler(_provider.GetService<IApplicationContext>());
     }
 

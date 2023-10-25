@@ -18,7 +18,7 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
-        ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider(true);
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceContainerCore(serviceProvider);
@@ -29,7 +29,7 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
     {
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
-        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
         var hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
@@ -47,7 +47,7 @@ public sealed class TracingCoreServiceCollectionExtensionsTest : TestBase
             { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
         }));
 
-        ServiceProvider serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider(true);
 
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);

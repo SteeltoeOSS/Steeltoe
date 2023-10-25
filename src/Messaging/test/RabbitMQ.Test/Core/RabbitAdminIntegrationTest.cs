@@ -50,7 +50,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     {
         var queue = new Queue("test.queue");
         _services.AddRabbitQueue(queue);
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
 
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
 
@@ -71,7 +71,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
             f.Host = "localhost";
         });
 
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
 
         var queue = new Queue("test.queue", false, true, true);
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
@@ -100,7 +100,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     {
         var queue = new Queue("test.queue", false, true, true);
         _services.AddRabbitQueue(queue);
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
 
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.Initialize();
@@ -122,7 +122,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     {
         var queue = new Queue("test.queue", false, false, false);
         _services.AddRabbitQueue(queue);
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
 
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.Initialize();
@@ -144,7 +144,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     [Fact]
     public void TestQueueWithoutName()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         var queue = new Queue(string.Empty, true, false, true);
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         string generatedName = rabbitAdmin.DeclareQueue(queue);
@@ -169,7 +169,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     [Fact]
     public void TestDeleteExchangeWithDefaultExchange()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         bool result = rabbitAdmin.DeleteExchange(string.Empty);
         Assert.True(result);
@@ -178,7 +178,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     [Fact]
     public async Task TestDeleteExchangeWithInternalOption()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         const string exchangeName = "test.exchange.internal";
 
@@ -197,7 +197,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     [Fact]
     public void TestDeclareBindingWithDefaultExchangeImplicitBinding()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         var exchange = new DirectExchange(string.Empty);
         const string queueName = "test.queue";
@@ -220,7 +220,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         _services.AddRabbitQueue(queue);
         var binding = new Binding("mybinding", queueName, DestinationType.Queue, exchange.ExchangeName, queueName, null);
         _services.AddRabbitBinding(binding);
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
 
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.Initialize();
@@ -232,7 +232,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     [Fact]
     public void TestDeclareBindingWithDefaultExchangeNonImplicitBinding()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
 
         var exchange = new DirectExchange(string.Empty);
@@ -266,7 +266,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         _services.AddRabbitQueue(queue);
         var binding = new Binding("baz", queueName, DestinationType.Queue, exchange.ExchangeName, "test.routingKey", null);
         _services.AddRabbitBinding(binding);
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.RetryTemplate = null;
         var ex = Assert.Throws<RabbitIOException>(() => rabbitAdmin.DeclareBinding(binding));
@@ -286,7 +286,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     [Fact]
     public void TestQueueDeclareBad()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.IgnoreDeclarationExceptions = true;
         var queue = new AnonymousQueue();
@@ -299,7 +299,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     [Fact]
     public async Task TestDeclareDelayedExchange()
     {
-        _provider = _services.BuildServiceProvider();
+        _provider = _services.BuildServiceProvider(true);
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
 
         var exchange = new DirectExchange("test.delayed.exchange")
