@@ -35,7 +35,7 @@ public class EndpointMiddlewareTest:BaseTest
         _output = output;
     }
 
-    private static readonly Dictionary<string, string> AppSettings = new()
+    private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
@@ -164,7 +164,7 @@ public class EndpointMiddlewareTest:BaseTest
     [Fact]
     public async Task DoInvoke_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",

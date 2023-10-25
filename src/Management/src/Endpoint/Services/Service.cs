@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
 using System.Reflection;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Services;
 public class Service
@@ -31,6 +30,7 @@ public class Service
 
     public Service(ServiceDescriptor descriptor)
     {
+        ArgumentGuard.NotNull(descriptor);
         Name = descriptor.ServiceType.Name;
         Scope = descriptor.Lifetime.ToString();
         Type = descriptor.ImplementationInstance?.GetType()?.ToString() ?? descriptor.ServiceType.ToString();
@@ -44,7 +44,7 @@ public class Service
         var constructorInfos = descriptor.ImplementationType?.GetConstructors();
         if (constructorInfos != null)
         {
-            ConstructorInfo? activatorUtilsInfo = constructorInfos.FirstOrDefault(ci => ci.GetCustomAttribute(typeof(ActivatorUtilitiesConstructorAttribute)) != null);
+            ConstructorInfo? activatorUtilsInfo = Array.Find(constructorInfos, ci => ci.GetCustomAttribute(typeof(ActivatorUtilitiesConstructorAttribute)) != null);
             if (activatorUtilsInfo != null)
             {
                 foreach (ParameterInfo parameterInfo in activatorUtilsInfo.GetParameters())

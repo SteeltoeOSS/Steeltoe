@@ -4,7 +4,6 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Services;
 internal class ServiceDescriptorConverter : JsonConverter<ServiceContextDescriptor>

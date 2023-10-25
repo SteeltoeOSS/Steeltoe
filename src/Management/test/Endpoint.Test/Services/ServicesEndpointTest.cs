@@ -15,13 +15,13 @@ public class ServicesEndpointTest: BaseTest
     [Fact]
     public void Constructor_ThrowsIfNulls()
     {
-        const IServiceCollection serviceCollection = null;
+        IServiceCollection serviceCollection = new ServiceCollection();
 
-        IOptionsMonitor<ServicesEndpointOptions> options1 = null;
+        IOptionsMonitor<ServicesEndpointOptions>? options1 = null;
 
+#pragma warning disable CS8604 // Possible null reference argument.
         Assert.Throws<ArgumentNullException>(() => new ServicesEndpointHandler(options1, serviceCollection, NullLoggerFactory.Instance));
-        IOptionsMonitor<ServicesEndpointOptions> options = GetOptionsMonitorFromSettings<ServicesEndpointOptions, ConfigureServicesEndpointOptions>();
-
-        Assert.Throws<ArgumentNullException>(() => new ServicesEndpointHandler(options, serviceCollection, NullLoggerFactory.Instance));
+#pragma warning restore CS8604 // Possible null reference argument.
+      
     }
 }

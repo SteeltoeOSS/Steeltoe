@@ -318,6 +318,18 @@ public static class ManagementHostBuilderExtensions
             ActivateActuatorEndpoints(collection);
         });
     }
+
+    /// <summary>
+    /// Adds the Trace actuator to the application.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// Your HostBuilder.
+    /// </param>
+    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder)
+    {
+        return AddTraceActuator(hostBuilder, MediaTypeVersion.V2);
+    }
+
     /// <summary>
     /// Adds the Services actuator to the application.
     /// </summary>
@@ -332,18 +344,6 @@ public static class ManagementHostBuilderExtensions
             ActivateActuatorEndpoints(collection);
         });
     }
-
-    /// <summary>
-    /// Adds the Trace actuator to the application.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
-    /// </param>
-    public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder)
-    {
-        return AddTraceActuator(hostBuilder, MediaTypeVersion.V2);
-    }
-
     /// <summary>
     /// Adds the Cloud Foundry actuator to the application.
     /// </summary>

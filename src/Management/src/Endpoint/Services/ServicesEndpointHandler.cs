@@ -43,6 +43,8 @@ internal class ServicesEndpointHandler : IServicesEndpointHandler
         ServiceContextDescriptor descriptor = new ServiceContextDescriptor();
         var applicationContext = new ApplicationContext();
 
+        _logger.LogTrace("Fetching service container services");
+
         foreach (ServiceDescriptor serviceDescriptor in _serviceCollection)
         {
             applicationContext.Add(new Service(serviceDescriptor));

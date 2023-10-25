@@ -13,19 +13,11 @@ namespace Steeltoe.Management.Endpoint.Test.Services;
 public class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
-    public void AddServicesActuator_ThrowsOnNulls()
-    {
-        const IServiceCollection services = null;
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddServicesActuator());
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void AddServicesActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication"

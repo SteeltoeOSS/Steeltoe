@@ -25,8 +25,6 @@ public static class ServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddServicesActuatorServices(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
-
         services.ConfigureEndpointOptions<ServicesEndpointOptions, ConfigureServicesEndpointOptions>();
         services.AddSingleton(services);
         services.TryAddSingleton<IServicesEndpointHandler, ServicesEndpointHandler>();
