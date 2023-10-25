@@ -5,9 +5,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
-using Steeltoe.Management.Endpoint.Services;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.Services;
+using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.Services;
 
@@ -21,9 +21,10 @@ public class Startup
     {
         Configuration = configuration;
     }
-    public Startup(IConfiguration configuration, ILogger<Startup> logger): this(configuration)
-    {
 
+    public Startup(IConfiguration configuration, ILogger<Startup> logger)
+        : this(configuration)
+    {
     }
 
     public void ConfigureServices(IServiceCollection services)

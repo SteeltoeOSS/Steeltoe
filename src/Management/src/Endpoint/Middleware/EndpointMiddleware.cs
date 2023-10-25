@@ -10,7 +10,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Options;
-using Steeltoe.Management.Endpoint.Services;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 

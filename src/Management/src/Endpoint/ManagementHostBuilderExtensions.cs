@@ -20,8 +20,8 @@ using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
-using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.RouteMappings;
+using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
@@ -344,6 +344,7 @@ public static class ManagementHostBuilderExtensions
             ActivateActuatorEndpoints(collection);
         });
     }
+
     /// <summary>
     /// Adds the Cloud Foundry actuator to the application.
     /// </summary>

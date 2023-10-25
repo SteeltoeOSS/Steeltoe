@@ -4,37 +4,28 @@
 
 using System.Net;
 using System.Text;
+using System.Text.Json;
+using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Logging.DynamicLogger;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
+using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Services;
-using Xunit;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
+using Xunit;
 using Xunit.Abstractions;
-using FluentAssertions;
-using Steeltoe.Common.TestResources;
-using System.Text.Json;
 
 namespace Steeltoe.Management.Endpoint.Test.Services;
 
-public class EndpointMiddlewareTest:BaseTest
+public class EndpointMiddlewareTest : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    public EndpointMiddlewareTest(ITestOutputHelper output)
-    {
-        _output = output;
-    }
-
     private static readonly Dictionary<string, string?> AppSettings = new()
     {
         ["Logging:Console:IncludeScopes"] = "false",
@@ -44,6 +35,13 @@ public class EndpointMiddlewareTest:BaseTest
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:actuator:exposure:include:0"] = "beans"
     };
+
+    private readonly ITestOutputHelper _output;
+
+    public EndpointMiddlewareTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
 
     [Fact]
     public async Task HandleServicesRequestAsync_ReturnsExpected()
@@ -103,13 +101,13 @@ public class EndpointMiddlewareTest:BaseTest
                 }}
               }}
             }}";
+
         json.Should().BeJson(expected);
     }
 
     [Fact]
     public async Task ServicesActuator_ReturnsExpectedData()
     {
-
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
@@ -143,8 +141,8 @@ public class EndpointMiddlewareTest:BaseTest
                     ""Microsoft.Extensions.Logging.ILoggerFactory loggerFactory""
                   ]
                 }}";
+
             jsonFragment.Should().BeJson(expected);
-          
         }
     }
 
@@ -156,9 +154,10 @@ public class EndpointMiddlewareTest:BaseTest
         Assert.True(options.RequiresExactMatch());
         Assert.Equal("/actuator/beans", options.GetPathMatchPattern(mgmtOptions, mgmtOptions.Path));
 
-        Assert.Equal("/cloudfoundryapplication/beans",options.GetPathMatchPattern(mgmtOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
+        Assert.Equal("/cloudfoundryapplication/beans", options.GetPathMatchPattern(mgmtOptions, ConfigureManagementOptions.DefaultCloudFoundryPath));
         Assert.Contains("Get", options.AllowedVerbs);
     }
+
     [Fact]
     public async Task DoInvoke_ReturnsExpected()
     {
@@ -194,8 +193,8 @@ public class EndpointMiddlewareTest:BaseTest
         string result = await reader.ReadToEndAsync();
 
         Assert.StartsWith("{\"contexts\":{\"application\":{\"beans\":{", result, StringComparison.OrdinalIgnoreCase);
-
     }
+
     private HttpContext CreateRequest(string method, string path)
     {
         HttpContext context = new DefaultHttpContext
