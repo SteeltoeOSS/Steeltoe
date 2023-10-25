@@ -83,6 +83,21 @@ public class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
+    public void SourceConstructor_WithTimeoutConfigured_InitializesHttpClientWithConfiguredTimeout()
+    {
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "spring:cloud:config:timeout", "30000" }
+            })
+            .Build();
+        var source = new ConfigServerConfigurationSource(configuration);
+        var provider = new TestConfigServerConfigurationProvider(source);
+
+        Assert.Equal(TimeSpan.FromMilliseconds(30000), provider.TheConfiguredClient.Timeout);
+    }
+
+    [Fact]
     public void SourceConstructor_WithDefaults_ThrowsIfHttpClientNull()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
@@ -1157,6 +1172,11 @@ public class ConfigServerConfigurationProviderTest
     {
         public TestConfigServerConfigurationProvider(ConfigServerClientSettings settings)
             : base(settings)
+        {
+        }
+
+        public TestConfigServerConfigurationProvider(ConfigServerConfigurationSource source)
+            : base(source)
         {
         }
 
