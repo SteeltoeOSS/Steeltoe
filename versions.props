@@ -8,7 +8,8 @@
     <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
     <EasyNetQVersion>2.0.*</EasyNetQVersion>
-    <EntityFrameworkCoreTestVersion>7.0.5</EntityFrameworkCoreTestVersion>
+    <EntityFrameworkCoreTestVersion>7.0.*</EntityFrameworkCoreTestVersion>
+    <MySqlEntityFrameworkCoreTestVersion>7.0.5</MySqlEntityFrameworkCoreTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.35.*</MicrosoftAzureCosmosVersion>
