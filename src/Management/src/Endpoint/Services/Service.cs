@@ -8,19 +8,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Services;
+
 public class Service
 {
-
     [JsonIgnore]
     internal string Name { get; }
 
     [JsonPropertyName("scope")]
     public string Scope { get; }
 
-
     [JsonPropertyName("type")]
     public string Type { get; }
-
 
     [JsonPropertyName("resource")]
     public string AssemblyName { get; }
@@ -41,10 +39,13 @@ public class Service
     private IList<string>? GetDependencies(ServiceDescriptor descriptor)
     {
         var returnValue = new List<string>();
-        var constructorInfos = descriptor.ImplementationType?.GetConstructors();
+        ConstructorInfo[]? constructorInfos = descriptor.ImplementationType?.GetConstructors();
+
         if (constructorInfos != null)
         {
-            ConstructorInfo? activatorUtilsInfo = Array.Find(constructorInfos, ci => ci.GetCustomAttribute(typeof(ActivatorUtilitiesConstructorAttribute)) != null);
+            ConstructorInfo? activatorUtilsInfo =
+                Array.Find(constructorInfos, ci => ci.GetCustomAttribute(typeof(ActivatorUtilitiesConstructorAttribute)) != null);
+
             if (activatorUtilsInfo != null)
             {
                 foreach (ParameterInfo parameterInfo in activatorUtilsInfo.GetParameters())
@@ -56,10 +57,10 @@ public class Service
             {
                 foreach (ConstructorInfo constructorInfo in constructorInfos)
                 {
-
                     foreach (ParameterInfo parameterInfo in constructorInfo.GetParameters())
                     {
-                        var parameterInfoString = parameterInfo.ToString();
+                        string parameterInfoString = parameterInfo.ToString();
+
                         if (!returnValue.Contains(parameterInfoString))
                         {
                             returnValue.Add(parameterInfo.ToString());
@@ -68,6 +69,7 @@ public class Service
                 }
             }
         }
+
         return returnValue;
     }
 }

@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Services;
+
 internal class ServicesEndpointHandler : IServicesEndpointHandler
 {
     private readonly IOptionsMonitor<ServicesEndpointOptions> _options;
@@ -17,7 +17,7 @@ internal class ServicesEndpointHandler : IServicesEndpointHandler
     private readonly Lazy<ServiceContextDescriptor> _lazyServiceContextDescriptor;
 
     public EndpointOptions Options => _options.CurrentValue;
-    
+
     public ServicesEndpointHandler(IOptionsMonitor<ServicesEndpointOptions> options, IServiceCollection serviceCollection, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
@@ -28,19 +28,17 @@ internal class ServicesEndpointHandler : IServicesEndpointHandler
         _serviceCollection = serviceCollection;
         _logger = loggerFactory.CreateLogger<ServicesEndpointHandler>();
         _lazyServiceContextDescriptor = new Lazy<ServiceContextDescriptor>(GetDescriptor);
-
     }
 
     public async Task<ServiceContextDescriptor> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        var serviceContextDescriptor = _lazyServiceContextDescriptor.Value;
+        ServiceContextDescriptor serviceContextDescriptor = _lazyServiceContextDescriptor.Value;
         return await Task.FromResult(serviceContextDescriptor);
-
     }
 
     private ServiceContextDescriptor GetDescriptor()
     {
-        ServiceContextDescriptor descriptor = new ServiceContextDescriptor();
+        var descriptor = new ServiceContextDescriptor();
         var applicationContext = new ApplicationContext();
 
         _logger.LogTrace("Fetching service container services");
@@ -54,5 +52,4 @@ internal class ServicesEndpointHandler : IServicesEndpointHandler
 
         return descriptor;
     }
-
 }

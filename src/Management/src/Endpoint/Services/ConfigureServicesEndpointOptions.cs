@@ -10,6 +10,7 @@ namespace Steeltoe.Management.Endpoint.Services;
 internal sealed class ConfigureServicesEndpointOptions : ConfigureEndpointOptions<ServicesEndpointOptions>
 {
     private const string ManagementInfoPrefix = "management:endpoints:services";
+
     public ConfigureServicesEndpointOptions(IConfiguration configuration)
         : base(configuration, ManagementInfoPrefix, "beans")
     {
