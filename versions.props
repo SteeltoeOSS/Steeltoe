@@ -17,6 +17,10 @@
     <MongoDbDriverVersion>2.22.*</MongoDbDriverVersion>
     <MoqVersion>4.20.69</MoqVersion>
     <MySqlConnectorVersion>2.2.*</MySqlConnectorVersion>
+    <MySqlEntityFrameworkCoreTestVersion>
+      <!-- Temporary workaround because net6.0 target has disappeared in v7.0.10. -->
+      7.0.5
+    </MySqlEntityFrameworkCoreTestVersion>
     <MySqlDataVersion>8.1.*</MySqlDataVersion>
     <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
     <NpgsqlVersion>7.0.*</NpgsqlVersion>
