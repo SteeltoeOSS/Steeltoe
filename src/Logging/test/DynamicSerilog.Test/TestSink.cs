@@ -7,10 +7,9 @@ using Serilog.Events;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
-public sealed class TestSink : ILogEventSink
+internal sealed class TestSink : ILogEventSink
 {
-    private static TestSink _currentSink;
-
+    private static TestSink? _currentSink;
     private readonly List<string> _logs = new();
 
     internal static TestSink GetCurrentSink(bool createNew = false)
@@ -25,7 +24,8 @@ public sealed class TestSink : ILogEventSink
 
     public void Emit(LogEvent logEvent)
     {
-        _logs.Add(logEvent.RenderMessage());
+        string message = logEvent.RenderMessage();
+        _logs.Add(message);
     }
 
     public List<string> GetLogs()

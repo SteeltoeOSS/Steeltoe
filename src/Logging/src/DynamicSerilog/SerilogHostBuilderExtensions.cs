@@ -4,43 +4,91 @@
 
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
 public static class SerilogHostBuilderExtensions
 {
     /// <summary>
-    /// Configure Serilog as the <see cref="IDynamicLoggerProvider" /> to enable dynamically controlling log levels via management endpoints.
+    /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// The <see cref="IHostBuilder" /> to configure.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IHostBuilder AddDynamicSerilog(this IHostBuilder hostBuilder)
+    {
+        return AddDynamicSerilog(hostBuilder, null, false);
+    }
+
+    /// <summary>
+    /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
     /// </summary>
     /// <param name="hostBuilder">
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <param name="configureLogger">
-    /// The delegate for configuring the <see cref="DynamicLoggerConfiguration" /> that will be used to construct a <see cref="Serilog.Core.Logger" />.
-    /// </param>
-    /// <param name="preserveStaticLogger">
-    /// Indicates whether to preserve the value of <see cref="Log.Logger" />.
-    /// </param>
-    /// <param name="preserveDefaultConsole">
-    /// When true, do not remove Microsoft's ConsoleLoggerProvider.
+    /// Enables to configure Serilog from code instead of configuration.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostBuilder" />.
+    /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static IHostBuilder AddDynamicSerilog(this IHostBuilder hostBuilder, Action<HostBuilderContext, LoggerConfiguration> configureLogger = null,
-        bool preserveStaticLogger = false, bool preserveDefaultConsole = false)
+    public static IHostBuilder AddDynamicSerilog(this IHostBuilder hostBuilder, Action<HostBuilderContext, LoggerConfiguration>? configureLogger)
     {
-        return hostBuilder.ConfigureLogging((hostContext, logBuilder) =>
+        return AddDynamicSerilog(hostBuilder, configureLogger, false);
+    }
+
+    /// <summary>
+    /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// The <see cref="IHostBuilder" /> to configure.
+    /// </param>
+    /// <param name="preserveDefaultConsole">
+    /// When set to <c>true</c>, does not remove existing logger providers.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IHostBuilder AddDynamicSerilog(this IHostBuilder hostBuilder, bool preserveDefaultConsole)
+    {
+        return AddDynamicSerilog(hostBuilder, null, preserveDefaultConsole);
+    }
+
+    /// <summary>
+    /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
+    /// </summary>
+    /// <param name="hostBuilder">
+    /// The <see cref="IHostBuilder" /> to configure.
+    /// </param>
+    /// <param name="configureLogger">
+    /// Enables to configure Serilog from code instead of configuration.
+    /// </param>
+    /// <param name="preserveDefaultConsole">
+    /// When set to <c>true</c>, does not remove existing logger providers.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IHostBuilder AddDynamicSerilog(this IHostBuilder hostBuilder, Action<HostBuilderContext, LoggerConfiguration>? configureLogger,
+        bool preserveDefaultConsole)
+    {
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.ConfigureLogging((hostContext, loggingBuilder) =>
         {
-            LoggerConfiguration loggerConfiguration = null;
+            LoggerConfiguration? loggerConfiguration = null;
 
             if (configureLogger != null)
             {
-                loggerConfiguration = new LoggerConfiguration().ReadFrom.Configuration(hostContext.Configuration);
+                loggerConfiguration = new LoggerConfiguration();
                 configureLogger(hostContext, loggerConfiguration);
             }
 
-            logBuilder.AddDynamicSerilog(loggerConfiguration, preserveDefaultConsole);
+            loggingBuilder.AddDynamicSerilog(loggerConfiguration, preserveDefaultConsole);
         });
     }
 }

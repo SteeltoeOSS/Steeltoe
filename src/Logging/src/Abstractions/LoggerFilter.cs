@@ -6,11 +6,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Logging;
 
-public interface ILoggerConfiguration
-{
-    string Name { get; }
-
-    LogLevel? ConfiguredLevel { get; }
-
-    LogLevel EffectiveLevel { get; }
-}
+/// <summary>
+/// Determines if logging is enabled, based on the <see cref="ILogger" /> level.
+/// </summary>
+/// <param name="level">
+/// The log level.
+/// </param>
+public delegate bool LoggerFilter(LogLevel level);

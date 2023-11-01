@@ -4,26 +4,21 @@
 
 using Serilog;
 using Serilog.Events;
+using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
 internal static class SerilogConfigurationExtensions
 {
     /// <summary>
-    /// Clear all the levels from serilog configuration. This extension is used to clear the levels in serilog, after capturing them into steeltoe config and
-    /// using steeltoe configuration to control the verbosity.
+    /// Clears all the levels from Serilog configuration. This extension is used to clear the levels in Serilog, after capturing them into Steeltoe
+    /// configuration and using Steeltoe configuration to control the verbosity.
     /// </summary>
-    /// <param name="loggerConfiguration">
-    /// The <see cref="LoggerConfiguration" />.
-    /// </param>
-    /// <param name="minimumLevel">
-    /// The Steeltoe <see cref="MinimumLevel" />.
-    /// </param>
-    /// <returns>
-    /// The <see cref="LoggerConfiguration" /> that is cleared.
-    /// </returns>
-    internal static LoggerConfiguration ClearLevels(this LoggerConfiguration loggerConfiguration, MinimumLevel minimumLevel)
+    public static LoggerConfiguration ClearLevels(this LoggerConfiguration loggerConfiguration, MinimumLevel minimumLevel)
     {
+        ArgumentGuard.NotNull(loggerConfiguration);
+        ArgumentGuard.NotNull(minimumLevel);
+
         foreach (KeyValuePair<string, LogEventLevel> overrideLevel in minimumLevel.Override)
         {
             loggerConfiguration.MinimumLevel.Override(overrideLevel.Key, LogEventLevel.Verbose);

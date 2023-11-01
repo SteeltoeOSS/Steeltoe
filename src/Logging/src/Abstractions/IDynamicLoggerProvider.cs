@@ -6,24 +6,24 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Logging;
 
-public interface IDynamicLoggerProvider : ILoggerProvider, ISupportExternalScope
+/// <summary>
+/// Provides access to <see cref="ILogger" /> categories and their minimum log levels.
+/// </summary>
+public interface IDynamicLoggerProvider : ILoggerProvider
 {
     /// <summary>
-    /// Get a list of all known namespaces and loggers.
+    /// Gets the list of logger categories in use, with their minimum log levels.
     /// </summary>
-    /// <returns>
-    /// A collection of all known namespaces and loggers with their configurations.
-    /// </returns>
-    ICollection<ILoggerConfiguration> GetLoggerConfigurations();
+    ICollection<DynamicLoggerConfiguration> GetLoggerConfigurations();
 
     /// <summary>
-    /// Set the logging threshold for a logger.
+    /// Changes the minimum log level for the specified logger category and its descendants.
     /// </summary>
-    /// <param name="category">
-    /// A namespace or fully qualified logger name to adjust.
+    /// <param name="categoryName">
+    /// The logger category name, which is typically a namespace or fully-qualified type name.
     /// </param>
-    /// <param name="level">
-    /// The minimum level that should be logged.
+    /// <param name="minLevel">
+    /// The minimum log level to use, or <c>null</c> to reset to the level that was originally configured at application startup.
     /// </param>
-    void SetLogLevel(string category, LogLevel? level);
+    void SetLogLevel(string categoryName, LogLevel? minLevel);
 }

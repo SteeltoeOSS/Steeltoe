@@ -318,7 +318,8 @@ public sealed class ManagementHostBuilderExtensionsTest
     public async Task AddLoggers_IHostBuilder_MultipleLoggersScenarios()
     {
         // Add Serilog + DynamicConsole = runs OK
-        IHostBuilder hostBuilder = new HostBuilder().AddDynamicSerilog().AddDynamicLogging().ConfigureWebHost(_testServerWithRouting);
+        IHostBuilder hostBuilder = new HostBuilder().AddDynamicSerilog().ConfigureLogging(builder => builder.AddDynamicConsole())
+            .ConfigureWebHost(_testServerWithRouting);
 
         using IHost host = await hostBuilder.AddLoggersActuator().StartAsync();
 
@@ -327,7 +328,7 @@ public sealed class ManagementHostBuilderExtensionsTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         // Add DynamicConsole + Serilog = throws exception
-        hostBuilder = new HostBuilder().AddDynamicLogging().AddDynamicSerilog().ConfigureWebHost(_testServerWithRouting);
+        hostBuilder = new HostBuilder().ConfigureLogging(builder => builder.AddDynamicConsole()).AddDynamicSerilog().ConfigureWebHost(_testServerWithRouting);
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await hostBuilder.AddLoggersActuator().StartAsync());
 

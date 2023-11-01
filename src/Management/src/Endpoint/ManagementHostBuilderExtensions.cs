@@ -209,7 +209,7 @@ public static class ManagementHostBuilderExtensions
     {
         ArgumentGuard.NotNull(hostBuilder);
 
-        return hostBuilder.AddManagementPort().AddDynamicLogging().ConfigureServices((_, collection) =>
+        return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((_, collection) =>
         {
             collection.AddLoggersActuator();
             ActivateActuatorEndpoints(collection);
@@ -369,7 +369,7 @@ public static class ManagementHostBuilderExtensions
     {
         ArgumentGuard.NotNull(hostBuilder);
 
-        return hostBuilder.AddDynamicLogging().AddManagementPort().ConfigureServices((_, collection) =>
+        return hostBuilder.ConfigureLogging(builder => builder.AddDynamicConsole()).AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddAllActuators(mediaTypeVersion, buildCorsPolicy);
             IEndpointConventionBuilder endpointConventionBuilder = ActivateActuatorEndpoints(collection);

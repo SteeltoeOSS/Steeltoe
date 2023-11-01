@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,38 +17,45 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
     [Fact]
     public void AddDynamicLogging_IHostBuilder_AddsDynamicLogging()
     {
-        IHostBuilder hostBuilder = new HostBuilder().AddDynamicLogging();
+        IHostBuilder hostBuilder = new HostBuilder().ConfigureLogging(builder => builder.AddDynamicConsole());
 
         IHost host = hostBuilder.Build();
-        IEnumerable<ILoggerProvider> loggerProviders = host.Services.GetServices<ILoggerProvider>();
+        ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
 
-        Assert.Single(loggerProviders);
-        Assert.IsType<DynamicConsoleLoggerProvider>(loggerProviders.First());
+        loggerProviders.Should().HaveCount(1);
+        loggerProviders[0].Should().BeOfType<DynamicConsoleLoggerProvider>();
     }
 
     [Fact]
     public void AddDynamicLogging_IHostBuilder_RemovesConsoleLogging()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureLogging(ilb => ilb.AddConsole()).AddDynamicLogging();
+        IHostBuilder hostBuilder = new HostBuilder().ConfigureLogging(builder =>
+        {
+            builder.AddConsole();
+            builder.AddDynamicConsole();
+        });
 
         IHost host = hostBuilder.Build();
-        IEnumerable<ILoggerProvider> loggerProviders = host.Services.GetServices<ILoggerProvider>();
+        ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
 
-        Assert.Single(loggerProviders);
-        Assert.IsType<DynamicConsoleLoggerProvider>(loggerProviders.First());
+        loggerProviders.Should().HaveCount(1);
+        loggerProviders[0].Should().BeOfType<DynamicConsoleLoggerProvider>();
     }
 
     [Fact]
     public void AddDynamicLogging_IHostBuilder_RemovesConsoleLoggingDefaultBuilder()
     {
-        IHostBuilder hostBuilder = Host.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true)
-            .ConfigureLogging(ilb => ilb.AddConsole()).AddDynamicLogging();
+        IHostBuilder hostBuilder = Host.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true).ConfigureLogging(builder =>
+        {
+            builder.AddConsole();
+            builder.AddDynamicConsole();
+        });
 
         IHost host = hostBuilder.Build();
-        IEnumerable<ILoggerProvider> loggerProviders = host.Services.GetServices<ILoggerProvider>();
+        ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
 
-        Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
-        Assert.Contains(loggerProviders, lp => lp is DynamicConsoleLoggerProvider);
+        loggerProviders.Should().NotContain(provider => provider is ConsoleLoggerProvider);
+        loggerProviders.Should().ContainSingle(provider => provider is DynamicConsoleLoggerProvider);
     }
 
     [Fact]
@@ -55,11 +63,12 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
     {
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
-        hostBuilder.AddDynamicLogging();
+        hostBuilder.Logging.AddDynamicConsole();
         WebApplication host = hostBuilder.Build();
-        IEnumerable<ILoggerProvider> loggerProviders = host.Services.GetServices<ILoggerProvider>();
 
-        Assert.Single(loggerProviders.Where(provider => provider is DynamicConsoleLoggerProvider));
+        ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
+
+        loggerProviders.Should().ContainSingle(provider => provider is DynamicConsoleLoggerProvider);
     }
 
     [Fact]
@@ -68,12 +77,12 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         hostBuilder.Logging.AddConsole();
-        hostBuilder.AddDynamicLogging();
-
+        hostBuilder.Logging.AddDynamicConsole();
         WebApplication host = hostBuilder.Build();
-        IEnumerable<ILoggerProvider> loggerProviders = host.Services.GetServices<ILoggerProvider>();
 
-        Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
-        Assert.Single(loggerProviders.Where(provider => provider is DynamicConsoleLoggerProvider));
+        ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
+
+        loggerProviders.Should().NotContain(provider => provider is ConsoleLoggerProvider);
+        loggerProviders.Should().ContainSingle(provider => provider is DynamicConsoleLoggerProvider);
     }
 }

@@ -5,19 +5,18 @@
 namespace Steeltoe.Logging;
 
 /// <summary>
-/// Provides the ability to process each log message before it is sent to the Console.
+/// Provides the ability to decorate log messages before they are sent downstream.
 /// </summary>
 public interface IDynamicMessageProcessor
 {
     /// <summary>
-    /// Called for each log message just after the parameters have been formatted into the log string but before the time stamp, category, and level have
-    /// been applied.
+    /// Replaces the contents of an incoming log message.
     /// </summary>
-    /// <param name="inputLogMessage">
-    /// The incoming log message.
+    /// <param name="message">
+    /// The incoming message text, just after formatting its parameters, but before the time stamp, category, level, exception and scopes are added.
     /// </param>
     /// <returns>
-    /// The updated log message.
+    /// The decorated log message text.
     /// </returns>
-    string Process(string inputLogMessage);
+    string Process(string message);
 }

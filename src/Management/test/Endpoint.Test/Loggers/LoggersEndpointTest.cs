@@ -97,7 +97,7 @@ public sealed class LoggersEndpointTest : BaseTest
         response.Data.Should().BeEmpty();
 
         provider.Category.Should().Be("foobar");
-        provider.Level.Should().Be(LogLevel.Warning);
+        provider.MinLevel.Should().Be(LogLevel.Warning);
     }
 
     [Fact]

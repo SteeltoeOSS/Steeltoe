@@ -45,6 +45,11 @@ internal sealed class InstanceAccessor : ReflectionAccessor
         return new InstanceAccessor(typeAccessor, Instance);
     }
 
+    public T GetPrivateFieldValue<T>(string name)
+    {
+        return GetPrivateFieldValue<T>(name, Instance);
+    }
+
     public T GetPropertyValue<T>(string name)
     {
         return GetPropertyValue<T>(name, Instance);

@@ -53,14 +53,14 @@
   </Target>
 
   <ItemGroup
-    Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Management')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Connectors'))">
+    Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Management')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Connectors')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Logging'))">
 
     <!-- Widen the condition above as we're completing more public API reviews -->
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
   </ItemGroup>
 
   <PropertyGroup
-    Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Management')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Connectors'))">
+    Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Management')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Connectors')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Logging'))">
 
     <!-- Narrow the condition above as we're completing more public API reviews -->
     <NoWarn>$(NoWarn);SA1401;S1168;S2360;S3900;S3956;S4004;S4023</NoWarn>

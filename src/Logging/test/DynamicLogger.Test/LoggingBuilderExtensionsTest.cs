@@ -14,9 +14,9 @@ using Xunit;
 
 namespace Steeltoe.Logging.DynamicLogger.Test;
 
-public sealed class DynamicLoggingBuilderTest
+public sealed class LoggingBuilderExtensionsTest
 {
-    private static readonly Dictionary<string, string> Appsettings = new()
+    private static readonly Dictionary<string, string?> Appsettings = new()
     {
         ["Logging:Console:IncludeScopes"] = "false",
         ["Logging:Console:LogLevel:Default"] = "Information",
@@ -29,26 +29,29 @@ public sealed class DynamicLoggingBuilderTest
     [Fact]
     public void OnlyApplicableFilters_AreApplied()
     {
-        var appsettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
-            ["Logging:Console:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Information",
             ["Logging:foo:LogLevel:A.B.C.D.TestClass"] = "None"
         };
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
-        var logger = services.GetService(typeof(ILogger<TestClass>)) as ILogger<TestClass>;
+        var logger = serviceProvider.GetRequiredService<ILogger<TestClass>>();
 
-        Assert.NotNull(logger);
-        Assert.True(logger.IsEnabled(LogLevel.Information), "Information level should be enabled");
-        Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Error).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Warning).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Information).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Debug).Should().BeFalse();
+        logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
+        logger.IsEnabled(LogLevel.None).Should().BeFalse();
     }
 
     [Fact]
@@ -56,25 +59,33 @@ public sealed class DynamicLoggingBuilderTest
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
-        var logger = services.GetService(typeof(ILogger<TestClass>)) as ILogger<TestClass>;
+        var logger = serviceProvider.GetRequiredService<ILogger<TestClass>>();
 
-        Assert.NotNull(logger);
-        Assert.True(logger.IsEnabled(LogLevel.Critical), "Critical level should be enabled");
-        Assert.False(logger.IsEnabled(LogLevel.Error), "Error level should NOT be enabled");
-        Assert.False(logger.IsEnabled(LogLevel.Warning), "Warning level should NOT be enabled");
-        Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
-        Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should NOT be enabled yet");
+        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Error).Should().BeFalse();
+        logger.IsEnabled(LogLevel.Warning).Should().BeFalse();
+        logger.IsEnabled(LogLevel.Information).Should().BeFalse();
+        logger.IsEnabled(LogLevel.Debug).Should().BeFalse();
+        logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
+        logger.IsEnabled(LogLevel.None).Should().BeFalse();
 
         // change the log level and confirm it worked
-        var provider = (DynamicConsoleLoggerProvider)services.GetRequiredService(typeof(ILoggerProvider));
+        var provider = (DynamicConsoleLoggerProvider)serviceProvider.GetRequiredService(typeof(ILoggerProvider));
         provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
-        Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
+
+        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Error).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Warning).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Information).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Debug).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Trace).Should().BeTrue();
+        logger.IsEnabled(LogLevel.None).Should().BeFalse();
     }
 
     [Fact]
@@ -82,17 +93,21 @@ public sealed class DynamicLoggingBuilderTest
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddConsole();
         }).BuildServiceProvider(true);
 
-        var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
+        var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
 
-        Assert.NotNull(logger);
-        Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
-        Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Error).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Warning).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Information).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Debug).Should().BeFalse();
+        logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
+        logger.IsEnabled(LogLevel.None).Should().BeFalse();
     }
 
     [Fact]
@@ -100,17 +115,21 @@ public sealed class DynamicLoggingBuilderTest
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
-        var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
+        var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
 
-        Assert.NotNull(logger);
-        Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
-        Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
+        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Error).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Warning).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Information).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Debug).Should().BeFalse();
+        logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
+        logger.IsEnabled(LogLevel.None).Should().BeFalse();
     }
 
     [Fact]
@@ -118,45 +137,55 @@ public sealed class DynamicLoggingBuilderTest
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
-        var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
+        var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
 
-        Assert.NotNull(logger);
-        Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
-        Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
-        Assert.False(logger.IsEnabled(LogLevel.Trace), "Trace level should not be enabled yet");
+        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Error).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Warning).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Information).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Debug).Should().BeFalse();
+        logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
+        logger.IsEnabled(LogLevel.None).Should().BeFalse();
 
         // change the log level and confirm it worked
-        var provider = (DynamicConsoleLoggerProvider)services.GetRequiredService(typeof(ILoggerProvider));
+        var provider = (DynamicConsoleLoggerProvider)serviceProvider.GetRequiredService(typeof(ILoggerProvider));
         provider.SetLogLevel("Steeltoe.Logging.DynamicLogger.Test", LogLevel.Trace);
-        Assert.True(logger.IsEnabled(LogLevel.Trace), "Trace level should have been enabled");
+
+        logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Error).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Warning).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Information).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Debug).Should().BeTrue();
+        logger.IsEnabled(LogLevel.Trace).Should().BeTrue();
+        logger.IsEnabled(LogLevel.None).Should().BeFalse();
     }
 
     [Fact]
-    public void AddDynamicConsole_WithIDynamicMessageProcessor_CallsProcessMessage()
+    public async Task AddDynamicConsole_WithDynamicMessageProcessor_CallsProcessMessage()
     {
+        using var console = new ConsoleOutputBorrower();
+
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider services = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
-        var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
-
-        Assert.NotNull(logger);
-
+        var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
         logger.LogInformation("This is a test");
 
-        var processor = services.GetService<IDynamicMessageProcessor>() as TestDynamicMessageProcessor;
-        Assert.NotNull(processor);
-        Assert.True(processor.ProcessCalled);
+        // ConsoleLogger writes messages to a queue, it takes a bit of time for the background thread to write them to Console.Out.
+        await Task.Delay(100);
+
+        console.ToString().Should().Contain("TEST: This is a test");
     }
 
     [Fact]
@@ -164,19 +193,18 @@ public sealed class DynamicLoggingBuilderTest
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider services = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
-        var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
-        ILoggerProvider[] logProviders = services.GetServices<ILoggerProvider>().ToArray();
+        var dynamicLoggerProvider = serviceProvider.GetService<IDynamicLoggerProvider>();
+        dynamicLoggerProvider.Should().NotBeNull();
 
-        Assert.NotNull(dynamicLoggerProvider);
-        Assert.NotEmpty(logProviders);
-        Assert.Single(logProviders);
-        Assert.IsType<DynamicConsoleLoggerProvider>(logProviders.SingleOrDefault());
+        ILoggerProvider[] loggerProviders = serviceProvider.GetServices<ILoggerProvider>().ToArray();
+        loggerProviders.Should().HaveCount(1);
+        loggerProviders[0].Should().BeOfType<DynamicConsoleLoggerProvider>();
     }
 
     [Fact]
@@ -184,15 +212,15 @@ public sealed class DynamicLoggingBuilderTest
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider services = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
-        var dynamicLoggerProvider = services.GetRequiredService<IDynamicLoggerProvider>();
+        var dynamicLoggerProvider = serviceProvider.GetRequiredService<IDynamicLoggerProvider>();
 
-        services.Dispose();
+        serviceProvider.Dispose();
 
         Action action = () => dynamicLoggerProvider.Dispose();
         action.Should().NotThrow();
@@ -203,13 +231,13 @@ public sealed class DynamicLoggingBuilderTest
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
-        var formatterOptions = services.GetRequiredService<IOptions<SimpleConsoleFormatterOptions>>();
+        var formatterOptions = serviceProvider.GetRequiredService<IOptions<SimpleConsoleFormatterOptions>>();
 
         formatterOptions.Value.ColorBehavior.Should().Be(LoggerColorBehavior.Disabled);
     }
@@ -217,15 +245,15 @@ public sealed class DynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_DoesNotSetColorLocal()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
 
-        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
-        using IServiceScope scope = services.CreateScope();
+        using IServiceScope scope = serviceProvider.CreateScope();
         var formatterOptions = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<SimpleConsoleFormatterOptions>>();
 
         formatterOptions.Value.ColorBehavior.Should().NotBe(LoggerColorBehavior.Disabled);
@@ -236,15 +264,15 @@ public sealed class DynamicLoggingBuilderTest
     {
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
 
-        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
-        var formatterOptions = services.GetRequiredService<IOptionsMonitor<SimpleConsoleFormatterOptions>>();
+        var formatterOptions = serviceProvider.GetRequiredService<IOptionsMonitor<SimpleConsoleFormatterOptions>>();
 
         formatterOptions.CurrentValue.ColorBehavior.Should().Be(LoggerColorBehavior.Disabled);
     }
@@ -252,21 +280,21 @@ public sealed class DynamicLoggingBuilderTest
     [Fact]
     public async Task AddDynamicConsole_ObsoleteIncludesScopes()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Logging:LogLevel:Default"] = "Information",
             ["Logging:Console:IncludeScopes"] = "true",
             ["Logging:Console:DisableColors"] = "true"
         }).Build();
 
-        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
         using var console = new ConsoleOutputBorrower();
-        var logger = services.GetRequiredService<ILogger<DynamicLoggingBuilderTest>>();
+        var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
 
         using (logger.BeginScope("Outer Scope"))
         {
@@ -277,12 +305,12 @@ public sealed class DynamicLoggingBuilderTest
         }
 
         // ConsoleLogger writes messages to a queue, it takes a bit of time for the background thread to write them to Console.Out.
-        await Task.Delay(250);
+        await Task.Delay(100);
 
         string log = console.ToString();
 
         // Casting to object as workaround, see https://github.com/fluentassertions/fluentassertions/issues/2339.
-        ((object)log).Should().BeEquivalentTo($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
+        ((object)log).Should().BeEquivalentTo($@"fail: {typeof(LoggingBuilderExtensionsTest).FullName}[0]
       => Outer Scope => InnerScopeKey=InnerScopeValue
       Something bad.
 ", options => options.Using(IgnoreLineEndingsComparer.Instance));
@@ -291,7 +319,7 @@ public sealed class DynamicLoggingBuilderTest
     [Fact]
     public async Task AddDynamicConsole_IncludesScopes()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Logging:LogLevel:Default"] = "Information",
             ["Logging:Console:FormatterName"] = "Simple",
@@ -299,14 +327,14 @@ public sealed class DynamicLoggingBuilderTest
             ["Logging:Console:FormatterOptions:ColorBehavior"] = "Disabled"
         }).Build();
 
-        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDynamicConsole();
         }).BuildServiceProvider(true);
 
         using var console = new ConsoleOutputBorrower();
-        var logger = services.GetRequiredService<ILogger<DynamicLoggingBuilderTest>>();
+        var logger = serviceProvider.GetRequiredService<ILogger<LoggingBuilderExtensionsTest>>();
 
         using (logger.BeginScope("Outer Scope"))
         {
@@ -317,14 +345,22 @@ public sealed class DynamicLoggingBuilderTest
         }
 
         // ConsoleLogger writes messages to a queue, it takes a bit of time for the background thread to write them to Console.Out.
-        await Task.Delay(250);
+        await Task.Delay(100);
 
         string log = console.ToString();
 
         // Casting to object as workaround, see https://github.com/fluentassertions/fluentassertions/issues/2339.
-        ((object)log).Should().BeEquivalentTo($@"fail: {typeof(DynamicLoggingBuilderTest).FullName}[0]
+        ((object)log).Should().BeEquivalentTo($@"fail: {typeof(LoggingBuilderExtensionsTest).FullName}[0]
       => Outer Scope => InnerScopeKey=InnerScopeValue
       Something bad.
 ", options => options.Using(IgnoreLineEndingsComparer.Instance));
+    }
+
+    private sealed class TestDynamicMessageProcessor : IDynamicMessageProcessor
+    {
+        public string Process(string message)
+        {
+            return $"TEST: {message}";
+        }
     }
 }

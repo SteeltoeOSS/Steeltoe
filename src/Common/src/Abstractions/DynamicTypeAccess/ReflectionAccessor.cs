@@ -22,6 +22,33 @@ internal abstract class ReflectionAccessor
         _type = type;
     }
 
+    protected T GetPrivateFieldValue<T>(string name, object? instance)
+    {
+        ArgumentGuard.NotNullOrEmpty(name);
+
+        object? value = GetPrivateFieldValue(name, instance);
+        return (T)value!;
+    }
+
+    private object? GetPrivateFieldValue(string name, object? instance)
+    {
+        FieldInfo fieldInfo = GetField(name, false, instance == null);
+        return fieldInfo.GetValue(instance);
+    }
+
+    private FieldInfo GetField(string name, bool isPublic, bool isStatic)
+    {
+        BindingFlags bindingFlags = CreateBindingFlags(isPublic, isStatic);
+        FieldInfo? fieldInfo = _type.GetField(name, bindingFlags);
+
+        if (fieldInfo == null)
+        {
+            throw new InvalidOperationException($"Field '{_type}.{name}' does not exist.");
+        }
+
+        return fieldInfo;
+    }
+
     protected T GetPropertyValue<T>(string name, object? instance)
     {
         ArgumentGuard.NotNullOrEmpty(name);

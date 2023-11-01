@@ -12,14 +12,17 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicLogger;
 
-public static class DynamicLoggingBuilder
+public static class LoggingBuilderExtensions
 {
     /// <summary>
-    /// Adds Dynamic Console Logger Provider.
+    /// Replaces the built-in <see cref="ConsoleLoggerProvider" /> with <see cref="DynamicConsoleLoggerProvider" />.
     /// </summary>
     /// <param name="builder">
-    /// Your ILoggingBuilder.
+    /// The <see cref="ILoggingBuilder" /> to configure.
     /// </param>
+    /// <returns>
+    /// The incoming <see cref="ILoggingBuilder" />, so that additional calls can be chained.
+    /// </returns>
     public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
@@ -31,7 +34,7 @@ public static class DynamicLoggingBuilder
 
             builder.AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace);
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicConsoleLoggerProvider>());
-            builder.Services.AddSingleton(p => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
+            builder.Services.AddSingleton(provider => provider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single());
 
             DisableConsoleColorsOnCloudPlatform(builder);
         }
@@ -41,7 +44,7 @@ public static class DynamicLoggingBuilder
 
     private static bool IsDynamicLoggerProviderAlreadyRegistered(ILoggingBuilder builder)
     {
-        return builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider));
+        return builder.Services.Any(descriptor => descriptor.ServiceType == typeof(IDynamicLoggerProvider));
     }
 
     private static void EnsureConsoleLoggingIsRegistered(ILoggingBuilder builder)
@@ -55,7 +58,7 @@ public static class DynamicLoggingBuilder
     private static void UpdateConsoleLoggerProviderRegistration(IServiceCollection services)
     {
         // Remove the original ConsoleLoggerProvider registration as ILoggerProvider to prevent duplicate logging.
-        ServiceDescriptor descriptor = services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
+        ServiceDescriptor? descriptor = services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
 
         if (descriptor != null)
         {

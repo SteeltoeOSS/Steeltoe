@@ -6,9 +6,8 @@ using Serilog.Events;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
-public class MinimumLevel
+public sealed class MinimumLevel
 {
     public LogEventLevel Default { get; set; } = (LogEventLevel)(-1);
-
-    public Dictionary<string, LogEventLevel> Override { get; set; }
+    public Dictionary<string, LogEventLevel> Override { get; } = new();
 }
