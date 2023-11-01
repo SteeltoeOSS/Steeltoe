@@ -13,7 +13,7 @@ internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
 
     public abstract void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData);
 
-    protected IEnumerable<string> FilterKeys(IDictionary<string, string?> configurationData, string tagValueToFind)
+    protected ICollection<string> FilterKeys(IDictionary<string, string?> configurationData, string tagValueToFind)
     {
         List<string> keys = new();
 

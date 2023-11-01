@@ -75,6 +75,37 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     }
 
     [Fact]
+    public void Processes_PostgreSql_High_Availability_configuration()
+    {
+        var postProcessor = new PostgreSqlCloudFoundryPostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:hosts:0", "test-host1"),
+            Tuple.Create("credentials:hosts:1", "test-host2"),
+            Tuple.Create("credentials:port", "test-port"),
+            Tuple.Create("credentials:db", "test-database"),
+            Tuple.Create("credentials:user", "test-username"),
+            Tuple.Create("credentials:password", "test-password")
+        };
+
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(PostgreSqlCloudFoundryPostProcessor.AlternateInputBindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        string keyPrefix = GetOutputKeyPrefix(TestBindingName, PostgreSqlCloudFoundryPostProcessor.BindingType);
+        configurationData[$"{keyPrefix}:host"].Should().Be("test-host1,test-host2");
+        configurationData[$"{keyPrefix}:Target Session Attributes"].Should().Be("primary");
+        configurationData[$"{keyPrefix}:port"].Should().Be("test-port");
+        configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+        configurationData[$"{keyPrefix}:username"].Should().Be("test-username");
+        configurationData[$"{keyPrefix}:password"].Should().Be("test-password");
+    }
+
+    [Fact]
     public void Processes_RabbitMQ_configuration()
     {
         var postProcessor = new RabbitMQCloudFoundryPostProcessor();
