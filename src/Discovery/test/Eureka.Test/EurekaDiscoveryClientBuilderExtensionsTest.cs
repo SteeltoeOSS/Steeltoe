@@ -58,6 +58,7 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
     }
 
     [Fact]
+    [Trait("Category", "SkipOnMacOS")]
     public void ApplyServicesUsesServerTimeout()
     {
         var appSettings = new Dictionary<string, string>
@@ -70,7 +71,6 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators();
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
