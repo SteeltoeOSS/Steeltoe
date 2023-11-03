@@ -11,23 +11,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test;
 public class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
 {
     [Fact]
-    public void RabbitMQTest_BindingTypeEnabled()
-    {
-        var postProcessor = new RabbitMQLegacyConnectorPostProcessor();
-
-        Dictionary<string, string> configData = GetConfigData(_testBindingName, RabbitMQPostProcessor.BindingTypeKey, Tuple.Create("addresses", "test-addresses"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"), Tuple.Create("username", "test-username"), Tuple.Create("virtual-host", "test-virtual-host"));
-
-        // BindingType enabled
-        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, true), configData);
-        Assert.Equal("test-addresses", configData["rabbitmq:client:uri"]);
-        Assert.Equal("test-host", configData["rabbitmq:client:server"]);
-        Assert.Equal("test-password", configData["rabbitmq:client:password"]);
-        Assert.Equal("test-port", configData["rabbitmq:client:port"]);
-        Assert.Equal("test-username", configData["rabbitmq:client:username"]);
-        Assert.Equal("test-virtual-host", configData["rabbitmq:client:virtualhost"]);
-    }
-
-    [Fact]
     public void MySqlTest_BindingTypeEnabled()
     {
         var postProcessor = new MySqlLegacyConnectorPostProcessor();
@@ -62,5 +45,22 @@ public class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("verify-full", configData["postgres:client:sslmode"]);
         Assert.Equal("root.cert", configData["postgres:client:sslrootcert"]);
         Assert.Equal("--cluster=routing-id&opt=val1", configData["postgres:client:options"]);
+    }
+
+    [Fact]
+    public void RabbitMQTest_BindingTypeEnabled()
+    {
+        var postProcessor = new RabbitMQLegacyConnectorPostProcessor();
+
+        Dictionary<string, string> configData = GetConfigData(_testBindingName, RabbitMQPostProcessor.BindingTypeKey, Tuple.Create("addresses", "test-addresses"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"), Tuple.Create("username", "test-username"), Tuple.Create("virtual-host", "test-virtual-host"));
+
+        // BindingType enabled
+        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RabbitMQPostProcessor.BindingTypeKey, true), configData);
+        Assert.Equal("test-addresses", configData["rabbitmq:client:uri"]);
+        Assert.Equal("test-host", configData["rabbitmq:client:server"]);
+        Assert.Equal("test-password", configData["rabbitmq:client:password"]);
+        Assert.Equal("test-port", configData["rabbitmq:client:port"]);
+        Assert.Equal("test-username", configData["rabbitmq:client:username"]);
+        Assert.Equal("test-virtual-host", configData["rabbitmq:client:virtualhost"]);
     }
 }

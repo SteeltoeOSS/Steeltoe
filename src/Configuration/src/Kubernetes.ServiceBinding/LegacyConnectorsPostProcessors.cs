@@ -6,33 +6,6 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding;
 
-internal sealed class RabbitMQLegacyConnectorPostProcessor : IConfigurationPostProcessor
-{
-    internal const string BindingTypeKey = "rabbitmq";
-
-    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
-    {
-        if (!provider.IsBindingTypeEnabled(BindingTypeKey))
-        {
-            return;
-        }
-
-        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
-            bindingNameKey =>
-            {
-                // Spring -> spring.rabbitmq....
-                // Steeltoe -> rabbitmq:client:....
-                var mapper = new ServiceBindingMapper(configData, bindingNameKey, "rabbitmq", "client");
-                mapper.MapFromTo("addresses", "uri");
-                mapper.MapFromTo("host", "server");
-                mapper.MapFromTo("password", "password");
-                mapper.MapFromTo("port", "port");
-                mapper.MapFromTo("username", "username");
-                mapper.MapFromTo("virtual-host", "virtualhost");
-            });
-    }
-}
-
 internal sealed class MySqlLegacyConnectorPostProcessor : IConfigurationPostProcessor
 {
     internal const string BindingTypeKey = "mysql";
@@ -97,6 +70,33 @@ internal sealed class PostgreSqlLegacyConnectorPostProcessor : IConfigurationPos
                 mapper.MapFromTo("jdbc-url", "jdbcUrl");
 
                 // Note: Spring also adds spring.r2dbc.... properties as well
+            });
+    }
+}
+
+internal sealed class RabbitMQLegacyConnectorPostProcessor : IConfigurationPostProcessor
+{
+    internal const string BindingTypeKey = "rabbitmq";
+
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
+    {
+        if (!provider.IsBindingTypeEnabled(BindingTypeKey))
+        {
+            return;
+        }
+
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
+            {
+                // Spring -> spring.rabbitmq....
+                // Steeltoe -> rabbitmq:client:....
+                var mapper = new ServiceBindingMapper(configData, bindingNameKey, "rabbitmq", "client");
+                mapper.MapFromTo("addresses", "uri");
+                mapper.MapFromTo("host", "server");
+                mapper.MapFromTo("password", "password");
+                mapper.MapFromTo("port", "port");
+                mapper.MapFromTo("username", "username");
+                mapper.MapFromTo("virtual-host", "virtualhost");
             });
     }
 }
