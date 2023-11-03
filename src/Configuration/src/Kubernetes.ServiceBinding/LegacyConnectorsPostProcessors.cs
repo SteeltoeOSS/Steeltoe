@@ -6,6 +6,33 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding;
 
+internal sealed class MongoDbLegacyConnectorPostProcessor : IConfigurationPostProcessor
+{
+    internal const string BindingTypeKey = "mongodb";
+
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
+    {
+        if (!provider.IsBindingTypeEnabled(BindingTypeKey))
+        {
+            return;
+        }
+
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
+        {
+            var mapper = new ServiceBindingMapper(configData, bindingNameKey, "mongodb", "client");
+
+            // Spring -> spring.data.mongodb....
+            // Steeltoe -> mongodb:client:...
+            mapper.MapFromTo("host", "server");
+            mapper.MapFromTo("port", "port");
+            mapper.MapFromTo("database", "database");
+            mapper.MapFromTo("username", "username");
+            mapper.MapFromTo("password", "password");
+        });
+    }
+}
+
 internal sealed class MySqlLegacyConnectorPostProcessor : IConfigurationPostProcessor
 {
     internal const string BindingTypeKey = "mysql";
@@ -97,6 +124,31 @@ internal sealed class RabbitMQLegacyConnectorPostProcessor : IConfigurationPostP
                 mapper.MapFromTo("port", "port");
                 mapper.MapFromTo("username", "username");
                 mapper.MapFromTo("virtual-host", "virtualhost");
+            });
+    }
+}
+
+internal sealed class RedisLegacyConnectorPostProcessor : IConfigurationPostProcessor
+{
+    internal const string BindingTypeKey = "redis";
+
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configData)
+    {
+        if (!provider.IsBindingTypeEnabled(BindingTypeKey))
+        {
+            return;
+        }
+
+        configData.Filter(ServiceBindingConfigurationProvider.KubernetesBindingsPrefix, ServiceBindingConfigurationProvider.TypeKey, BindingTypeKey).ForEach(
+            bindingNameKey =>
+            {
+                var mapper = new ServiceBindingMapper(configData, bindingNameKey, "redis", "client");
+
+                mapper.MapFromTo("host", "host");
+                mapper.MapFromTo("port", "port");
+                mapper.MapFromTo("ssl", "ssl");
+                mapper.MapFromTo("password", "password");
+                mapper.MapFromTo("client-name", "clientName");
             });
     }
 }

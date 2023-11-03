@@ -11,6 +11,22 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test;
 public class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
 {
     [Fact]
+    public void MongoDbTest_BindingTypeEnabled()
+    {
+        var postProcessor = new MongoDbLegacyConnectorPostProcessor();
+
+        Dictionary<string, string> configData = GetConfigData(_testBindingName, MongoDbPostProcessor.BindingTypeKey, Tuple.Create("database", "test-database"), Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"), Tuple.Create("username", "test-username"));
+
+        // BindingType enabled
+        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, MongoDbPostProcessor.BindingTypeKey, true), configData);
+        Assert.Equal("test-host", configData["mongodb:client:server"]);
+        Assert.Equal("test-port", configData["mongodb:client:port"]);
+        Assert.Equal("test-database", configData["mongodb:client:database"]);
+        Assert.Equal("test-username", configData["mongodb:client:username"]);
+        Assert.Equal("test-password", configData["mongodb:client:password"]);
+    }
+
+    [Fact]
     public void MySqlTest_BindingTypeEnabled()
     {
         var postProcessor = new MySqlLegacyConnectorPostProcessor();
@@ -62,5 +78,21 @@ public class LegacyConnectorsPostProcessorsTest : BasePostProcessorsTest
         Assert.Equal("test-port", configData["rabbitmq:client:port"]);
         Assert.Equal("test-username", configData["rabbitmq:client:username"]);
         Assert.Equal("test-virtual-host", configData["rabbitmq:client:virtualhost"]);
+    }
+
+    [Fact]
+    public void RedisTest_BindingTypeEnabled()
+    {
+        var postProcessor = new RedisLegacyConnectorPostProcessor();
+
+        Dictionary<string, string> configData = GetConfigData(_testBindingName, RedisPostProcessor.BindingTypeKey, Tuple.Create("host", "test-host"), Tuple.Create("password", "test-password"), Tuple.Create("port", "test-port"), Tuple.Create("username", "test-username"), Tuple.Create("client-name", "test-client"), Tuple.Create("ssl", "true"));
+
+        // BindingType enabled
+        postProcessor.PostProcessConfiguration(GetConfigurationProvider(postProcessor, RedisPostProcessor.BindingTypeKey, true), configData);
+        Assert.Equal("test-host", configData["redis:client:host"]);
+        Assert.Equal("test-port", configData["redis:client:port"]);
+        Assert.Equal("true", configData["redis:client:ssl"]);
+        Assert.Equal("test-password", configData["redis:client:password"]);
+        Assert.Equal("test-client", configData["redis:client:clientName"]);
     }
 }
