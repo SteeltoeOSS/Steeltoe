@@ -137,9 +137,11 @@ public static class ConfigurationBuilderExtensions
         source.RegisterPostProcessor(new WavefrontPostProcessor());
 
         // Legacy Connector Post Processors
-        source.RegisterPostProcessor(new RabbitMQLegacyConnectorPostProcessor());
+        source.RegisterPostProcessor(new MongoDbLegacyConnectorPostProcessor());
         source.RegisterPostProcessor(new MySqlLegacyConnectorPostProcessor());
         source.RegisterPostProcessor(new PostgreSqlLegacyConnectorPostProcessor());
+        source.RegisterPostProcessor(new RabbitMQLegacyConnectorPostProcessor());
+        source.RegisterPostProcessor(new RedisLegacyConnectorPostProcessor());
         builder.Add(source);
         return builder;
     }
