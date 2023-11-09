@@ -22,7 +22,7 @@ public static class CloudFoundryHostBuilderExtensions
         ArgumentGuard.NotNull(hostBuilder);
 
         hostBuilder.ConfigureAppConfiguration((_, builder) => builder.AddCloudFoundry());
-        hostBuilder.ConfigureServices((_, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
+        hostBuilder.ConfigureServices(serviceCollection => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
 
         return hostBuilder;
     }
@@ -38,7 +38,7 @@ public static class CloudFoundryHostBuilderExtensions
         ArgumentGuard.NotNull(hostBuilder);
 
         hostBuilder.ConfigureAppConfiguration((_, builder) => builder.AddCloudFoundry());
-        hostBuilder.ConfigureServices((_, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
+        hostBuilder.ConfigureServices(serviceCollection => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
 
         return hostBuilder;
     }

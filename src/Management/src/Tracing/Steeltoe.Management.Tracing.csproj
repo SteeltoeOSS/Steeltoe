@@ -27,6 +27,7 @@
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\Abstractions\Steeltoe.Logging.Abstractions.csproj" />
+    <ProjectReference Include="..\Prometheus\Steeltoe.Management.Prometheus.csproj" />
     <ProjectReference Include="..\Wavefront\Steeltoe.Management.Wavefront.csproj" />
   </ItemGroup>
 </Project>

@@ -45,7 +45,7 @@ public static class ConfigServerHostBuilderExtensions
         ArgumentGuard.NotNull(loggerFactory);
 
         hostBuilder.ConfigureAppConfiguration((context, builder) => builder.AddConfigServer(context.HostingEnvironment, loggerFactory));
-        hostBuilder.ConfigureServices((_, services) => services.AddConfigServerServices());
+        hostBuilder.ConfigureServices(services => services.AddConfigServerServices());
 
         return hostBuilder;
     }
@@ -82,7 +82,7 @@ public static class ConfigServerHostBuilderExtensions
         ArgumentGuard.NotNull(loggerFactory);
 
         hostBuilder.ConfigureAppConfiguration((context, builder) => builder.AddConfigServer(context.HostingEnvironment, loggerFactory));
-        hostBuilder.ConfigureServices((_, services) => services.AddConfigServerServices());
+        hostBuilder.ConfigureServices(services => services.AddConfigServerServices());
 
         return hostBuilder;
     }
