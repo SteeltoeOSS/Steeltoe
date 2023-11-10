@@ -44,7 +44,7 @@ public class Service
         if (constructorInfos != null)
         {
             ConstructorInfo? activatorUtilsInfo =
-                Array.Find(constructorInfos, ci => ci.GetCustomAttribute(typeof(ActivatorUtilitiesConstructorAttribute)) != null);
+                Array.Find(constructorInfos, info => info.GetCustomAttribute(typeof(ActivatorUtilitiesConstructorAttribute)) != null);
 
             if (activatorUtilsInfo != null)
             {

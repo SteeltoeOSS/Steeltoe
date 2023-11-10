@@ -13,18 +13,17 @@ namespace Steeltoe.Management.Endpoint.Test.Services;
 
 public class Startup
 {
-    public IConfiguration Configuration { get; set; }
-
-    // Test Activator Utils Constructor works 
+    // Test Activator Utils Constructor works.
     [ActivatorUtilitiesConstructor]
     public Startup(IConfiguration configuration)
     {
-        Configuration = configuration;
+        _ = configuration;
     }
 
     public Startup(IConfiguration configuration, ILogger<Startup> logger)
         : this(configuration)
     {
+        _ = logger
     }
 
     public void ConfigureServices(IServiceCollection services)

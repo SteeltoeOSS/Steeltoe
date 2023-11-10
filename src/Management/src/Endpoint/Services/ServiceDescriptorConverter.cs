@@ -38,7 +38,6 @@ internal class ServiceDescriptorConverter : JsonConverter<ServiceContextDescript
         }
 
         writer.WriteEndObject();
-
         writer.WriteEndObject();
     }
 }

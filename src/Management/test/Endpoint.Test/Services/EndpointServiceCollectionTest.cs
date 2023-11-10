@@ -33,7 +33,7 @@ public class EndpointServiceCollectionTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsMonitor<ServicesEndpointOptions>>();
         Assert.NotNull(options);
-        var ep = serviceProvider.GetService<IServicesEndpointHandler>();
-        Assert.NotNull(ep);
+        var handler = serviceProvider.GetService<IServicesEndpointHandler>();
+        Assert.NotNull(handler);
     }
 }
