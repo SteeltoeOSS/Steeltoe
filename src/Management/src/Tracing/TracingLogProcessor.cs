@@ -20,9 +20,9 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
         _options = options;
     }
 
-    public string Process(string inputLogMessage)
+    public string Process(string message)
     {
-        ArgumentGuard.NotNull(inputLogMessage);
+        ArgumentGuard.NotNull(message);
 
         TelemetrySpan? currentSpan = GetCurrentSpan();
 
@@ -53,12 +53,12 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
             sb.Append(currentSpan.IsRecording ? "true" : "false");
 
             sb.Append("] ");
-            sb.Append(inputLogMessage);
+            sb.Append(message);
 
             return sb.ToString();
         }
 
-        return inputLogMessage;
+        return message;
     }
 
     private TelemetrySpan? GetCurrentSpan()

@@ -2,42 +2,49 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using Steeltoe.Common;
+using Steeltoe.Logging.DynamicSerilog.DynamicTypeAccess;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
 /// <summary>
-/// Implements a subset of the Serilog Options needed for SerilogDynamicProvider.
+/// Contains the subset of Serilog options that <see cref="DynamicSerilogLoggerProvider" /> needs.
 /// </summary>
-public class SerilogOptions : ISerilogOptions
+public sealed class SerilogOptions
 {
-    private LoggerConfiguration _serilogConfiguration;
-
-    public string ConfigurationPath => "Serilog";
+    private LoggerConfiguration? _serilogConfiguration;
 
     /// <summary>
     /// Gets or sets the minimum level for the root logger (and the "Default"). Limits the verbosity of all other overrides to this setting.
     /// </summary>
-    public MinimumLevel MinimumLevel { get; set; }
+    public MinimumLevel? MinimumLevel { get; set; }
 
-    public void SetSerilogOptions(IConfiguration configuration)
+    /// <summary>
+    /// Enables to bind from configuration.
+    /// </summary>
+    /// <param name="configuration">
+    /// The configuration to bind from.
+    /// </param>
+    internal void SetSerilogOptions(IConfiguration configuration)
     {
-        IConfigurationSection section = configuration.GetSection(ConfigurationPath);
+        ArgumentGuard.NotNull(configuration);
+
+        IConfigurationSection section = configuration.GetSection("Serilog");
         section.Bind(this);
 
         if (MinimumLevel == null || MinimumLevel.Default == (LogEventLevel)(-1))
         {
             var defaultLevel = LogEventLevel.Information;
 
-            string strMinLevel = section.GetValue<string>("MinimumLevel");
+            string? minLevelText = section.GetValue<string>("MinimumLevel");
 
-            if (!string.IsNullOrEmpty(strMinLevel))
+            if (!string.IsNullOrEmpty(minLevelText))
             {
-                Enum.TryParse(strMinLevel, out defaultLevel);
+                Enum.TryParse(minLevelText, out defaultLevel);
             }
 
             MinimumLevel = new MinimumLevel
@@ -46,38 +53,49 @@ public class SerilogOptions : ISerilogOptions
             };
         }
 
-        MinimumLevel.Override ??= new Dictionary<string, LogEventLevel>();
         _serilogConfiguration = new LoggerConfiguration().ReadFrom.Configuration(configuration).ClearLevels(MinimumLevel);
     }
 
-    // Capture Serilog configuration provided programmatically using reflection
-    public void SetSerilogOptions(LoggerConfiguration loggerConfiguration)
+    /// <summary>
+    /// Enables to configure programmatically.
+    /// </summary>
+    /// <param name="loggerConfiguration">
+    /// The instance to obtain settings from.
+    /// </param>
+    internal void SetSerilogOptions(LoggerConfiguration loggerConfiguration)
     {
-        FieldInfo minLevelProperty = loggerConfiguration.GetType().GetField("_minimumLevel", BindingFlags.NonPublic | BindingFlags.Instance);
-        var minimumLevel = (LogEventLevel)minLevelProperty.GetValue(loggerConfiguration);
+        ArgumentGuard.NotNull(loggerConfiguration);
 
-        FieldInfo overridesProperty = loggerConfiguration.GetType().GetField("_overrides", BindingFlags.NonPublic | BindingFlags.Instance);
-        var overrideSwitches = (Dictionary<string, LoggingLevelSwitch>)overridesProperty.GetValue(loggerConfiguration);
+        var shim = new LoggerConfigurationShim(loggerConfiguration);
 
         Dictionary<string, LogEventLevel> overrideLevels = new();
 
-        foreach (KeyValuePair<string, LoggingLevelSwitch> overrideSwitch in overrideSwitches)
+        foreach (KeyValuePair<string, LoggingLevelSwitch> overrideSwitch in shim.Overrides)
         {
             overrideLevels.Add(overrideSwitch.Key, overrideSwitch.Value.MinimumLevel);
         }
 
         MinimumLevel = new MinimumLevel
         {
-            Default = minimumLevel,
-            Override = overrideLevels
+            Default = shim.MinimumLevel
         };
+
+        foreach ((string? name, LogEventLevel level) in overrideLevels)
+        {
+            MinimumLevel.Override.Add(name, level);
+        }
 
         _serilogConfiguration = loggerConfiguration.ClearLevels(MinimumLevel);
     }
 
-    public LoggerConfiguration GetSerilogConfiguration()
+    // Provided as method, so it won't bind to configuration.
+    internal LoggerConfiguration GetSerilogConfiguration()
     {
-        // Method, so it won't `Bind` to anything
+        if (_serilogConfiguration == null)
+        {
+            throw new InvalidOperationException("Ensure that SetSerilogOptions() is called first.");
+        }
+
         return _serilogConfiguration;
     }
 }

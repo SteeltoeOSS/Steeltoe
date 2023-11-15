@@ -17,7 +17,7 @@ public sealed class Startup
         _logger = logger;
     }
 
-    public void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection? services)
     {
         _logger.LogError("error");
         _logger.LogInformation("info");

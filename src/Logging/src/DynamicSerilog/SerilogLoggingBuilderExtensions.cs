@@ -13,60 +13,99 @@ namespace Steeltoe.Logging.DynamicSerilog;
 
 public static class SerilogLoggingBuilderExtensions
 {
-    public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, LoggerConfiguration serilogConfiguration, bool preserveDefaultConsole = false)
+    /// <summary>
+    /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="ILoggingBuilder" /> to configure.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="ILoggingBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
-
-        if (builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider)))
-        {
-            throw new InvalidOperationException(
-                "An IDynamicLoggerProvider has already been configured! Call 'AddDynamicSerilog' earlier in program.cs (before adding Actuators) or remove duplicate IDynamicLoggerProvider entries.");
-        }
-
-        builder.AddFilter<SerilogDynamicProvider>(null, LogLevel.Trace);
-
-        // only run if an IDynamicLoggerProvider hasn't already been added
-        if (!builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider)))
-        {
-            if (!preserveDefaultConsole)
-            {
-                builder.ClearProviders();
-            }
-
-            if (serilogConfiguration != null)
-            {
-                builder.Services.AddSingleton(serilogConfiguration);
-
-                builder.Services.AddOptions<SerilogOptions>()
-                    .Configure<LoggerConfiguration>((options, serilogConfiguration) => options.SetSerilogOptions(serilogConfiguration));
-            }
-            else
-            {
-                builder.Services.AddOptions<SerilogOptions>().Configure<IConfiguration>((options, configuration) => options.SetSerilogOptions(configuration));
-            }
-
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, SerilogDynamicProvider>());
-            builder.Services.AddSingleton(p => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
-        }
-
-        return builder;
+        return AddDynamicSerilog(builder, null, false);
     }
 
     /// <summary>
-    /// Add Serilog with Console sink, wrapped in a <see cref="IDynamicLoggerProvider" /> that supports dynamically controlling the minimum log level via
-    /// management endpoints.
+    /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="ILoggingBuilder" /> for configuring the LoggerFactory.
+    /// The <see cref="ILoggingBuilder" /> to configure.
     /// </param>
-    /// <param name="preserveDefaultConsole">
-    /// When true, do not remove Microsoft's ConsoleLoggerProvider.
+    /// <param name="serilogConfiguration">
+    /// Enables to configure Serilog from code instead of configuration.
     /// </param>
     /// <returns>
-    /// The configured <see cref="ILoggingBuilder" />.
+    /// The incoming <see cref="ILoggingBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, bool preserveDefaultConsole = false)
+    public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, LoggerConfiguration? serilogConfiguration)
     {
-        return builder.AddDynamicSerilog(null, preserveDefaultConsole);
+        return AddDynamicSerilog(builder, serilogConfiguration, false);
+    }
+
+    /// <summary>
+    /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="ILoggingBuilder" /> to configure.
+    /// </param>
+    /// <param name="preserveDefaultConsole">
+    /// When set to <c>true</c>, does not remove existing logger providers.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="ILoggingBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, bool preserveDefaultConsole)
+    {
+        return AddDynamicSerilog(builder, null, preserveDefaultConsole);
+    }
+
+    /// <summary>
+    /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="ILoggingBuilder" /> to configure.
+    /// </param>
+    /// <param name="serilogConfiguration">
+    /// Enables to configure Serilog from code instead of configuration.
+    /// </param>
+    /// <param name="preserveDefaultConsole">
+    /// When set to <c>true</c>, does not remove existing logger providers.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="ILoggingBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, LoggerConfiguration? serilogConfiguration, bool preserveDefaultConsole)
+    {
+        ArgumentGuard.NotNull(builder);
+
+        if (builder.Services.Any(descriptor => descriptor.ServiceType == typeof(IDynamicLoggerProvider)))
+        {
+            throw new InvalidOperationException(
+                "An IDynamicLoggerProvider has already been configured! Call 'AddDynamicSerilog' earlier in program startup (before adding Actuators) or remove duplicate IDynamicLoggerProvider entries.");
+        }
+
+        builder.AddFilter<DynamicSerilogLoggerProvider>(null, LogLevel.Trace);
+
+        if (!preserveDefaultConsole)
+        {
+            builder.ClearProviders();
+        }
+
+        if (serilogConfiguration != null)
+        {
+            builder.Services.AddSingleton(serilogConfiguration);
+            builder.Services.AddOptions<SerilogOptions>().Configure<LoggerConfiguration>((options, configuration) => options.SetSerilogOptions(configuration));
+        }
+        else
+        {
+            builder.Services.AddOptions<SerilogOptions>().Configure<IConfiguration>((options, configuration) => options.SetSerilogOptions(configuration));
+        }
+
+        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicSerilogLoggerProvider>());
+        builder.Services.AddSingleton(provider => provider.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().Single());
+
+        return builder;
     }
 }

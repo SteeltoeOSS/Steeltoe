@@ -6,5 +6,5 @@ static Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions.AddDis
 Steeltoe.Management.Tracing.TracingBaseServiceCollectionExtensions
 Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions
 Steeltoe.Management.Tracing.TracingLogProcessor
-Steeltoe.Management.Tracing.TracingLogProcessor.Process(string! inputLogMessage) -> string!
+Steeltoe.Management.Tracing.TracingLogProcessor.Process(string! message) -> string!
 Steeltoe.Management.Tracing.TracingLogProcessor.TracingLogProcessor(Steeltoe.Common.ITracingOptions! options) -> void

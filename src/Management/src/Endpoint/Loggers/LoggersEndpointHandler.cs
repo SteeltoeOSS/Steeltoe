@@ -69,14 +69,14 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
             { "levels", Levels }
         };
 
-        ICollection<ILoggerConfiguration> configurations = _dynamicLoggerProvider.GetLoggerConfigurations();
+        ICollection<DynamicLoggerConfiguration> configurations = _dynamicLoggerProvider.GetLoggerConfigurations();
         var loggers = new Dictionary<string, LoggerLevels>();
 
-        foreach (ILoggerConfiguration configuration in configurations.OrderBy(entry => entry.Name))
+        foreach (DynamicLoggerConfiguration configuration in configurations.OrderBy(entry => entry.CategoryName))
         {
             _logger.LogTrace("Adding {configuration}", configuration);
-            var levels = new LoggerLevels(configuration.ConfiguredLevel, configuration.EffectiveLevel);
-            loggers.Add(configuration.Name, levels);
+            var levels = new LoggerLevels(configuration.ConfigurationMinLevel, configuration.EffectiveMinLevel);
+            loggers.Add(configuration.CategoryName, levels);
         }
 
         result.Add("loggers", loggers);

@@ -260,7 +260,7 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireKubernetesActuators(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.AddDynamicLogging();
+        webApplicationBuilder.Logging.AddDynamicConsole();
         webApplicationBuilder.Services.AddKubernetesActuators();
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
         Log(LogMessages.WireKubernetesActuators);
@@ -269,7 +269,7 @@ public static class WebApplicationBuilderExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireAllActuators(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.AddDynamicLogging();
+        webApplicationBuilder.Logging.AddDynamicConsole();
         webApplicationBuilder.Services.AddAllActuators();
         webApplicationBuilder.Services.ActivateActuatorEndpoints();
         Log(LogMessages.WireAllActuators);

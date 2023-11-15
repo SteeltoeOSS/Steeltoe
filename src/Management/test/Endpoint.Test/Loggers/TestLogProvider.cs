@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Test.Loggers;
 internal sealed class TestLogProvider : IDynamicLoggerProvider
 {
     public string? Category { get; private set; }
-    public LogLevel Level { get; private set; }
+    public LogLevel MinLevel { get; private set; }
     public bool GetLoggerConfigurationsCalled { get; private set; }
 
     public ILogger CreateLogger(string categoryName)
@@ -23,16 +23,16 @@ internal sealed class TestLogProvider : IDynamicLoggerProvider
     {
     }
 
-    public ICollection<ILoggerConfiguration> GetLoggerConfigurations()
+    public ICollection<DynamicLoggerConfiguration> GetLoggerConfigurations()
     {
         GetLoggerConfigurationsCalled = true;
-        return new List<ILoggerConfiguration>();
+        return new List<DynamicLoggerConfiguration>();
     }
 
-    public void SetLogLevel(string category, LogLevel? level)
+    public void SetLogLevel(string categoryName, LogLevel? minLevel)
     {
-        Category = category;
-        Level = level ?? LogLevel.None;
+        Category = categoryName;
+        MinLevel = minLevel ?? LogLevel.None;
     }
 
     public void SetScopeProvider(IExternalScopeProvider scopeProvider)

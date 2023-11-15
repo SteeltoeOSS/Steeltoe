@@ -220,7 +220,7 @@ public sealed class WebHostBuilderExtensionsTest
 
         var loggerProvider = host.Services.GetRequiredService<IDynamicLoggerProvider>();
 
-        Assert.IsType<SerilogDynamicProvider>(loggerProvider);
+        Assert.IsType<DynamicSerilogLoggerProvider>(loggerProvider);
     }
 
     [Fact]

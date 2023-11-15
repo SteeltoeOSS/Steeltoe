@@ -5,64 +5,63 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
-using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
+using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicLogger;
 
+/// <summary>
+/// Implements <see cref="DynamicLoggerProvider" /> for logging to the console.
+/// </summary>
 [ProviderAlias("Dynamic")]
-public class DynamicConsoleLoggerProvider : DynamicLoggerProviderBase
+public sealed class DynamicConsoleLoggerProvider : DynamicLoggerProvider, ISupportExternalScope
 {
-    protected readonly IOptionsMonitor<LoggerFilterOptions> FilterOptions;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DynamicConsoleLoggerProvider" /> class.
-    /// </summary>
-    /// <param name="filterOptions">
-    /// Logger filters.
-    /// </param>
-    /// <param name="consoleLoggerProvider">
-    /// The system console logger provider, used for delegation.
-    /// </param>
-    /// <param name="messageProcessors">
-    /// message processors to apply to message.
-    /// </param>
-    public DynamicConsoleLoggerProvider(IOptionsMonitor<LoggerFilterOptions> filterOptions, ConsoleLoggerProvider consoleLoggerProvider,
+    public DynamicConsoleLoggerProvider(IOptionsMonitor<LoggerFilterOptions> filterOptionsMonitor, ConsoleLoggerProvider consoleLoggerProvider,
         IEnumerable<IDynamicMessageProcessor> messageProcessors)
-        : base(() => consoleLoggerProvider, GetInitialLevelsFromOptions(filterOptions), messageProcessors)
+        : base(consoleLoggerProvider, GetMinimumLevelsFromOptions(filterOptionsMonitor), messageProcessors)
     {
     }
 
-    public DynamicConsoleLoggerProvider(IOptionsMonitor<LoggerFilterOptions> filterOptions, ConsoleLoggerProvider consoleLoggerProvider)
-        : this(filterOptions, consoleLoggerProvider, null)
+    private static LoggerFilterConfiguration GetMinimumLevelsFromOptions(IOptionsMonitor<LoggerFilterOptions> filterOptionsMonitor)
     {
-    }
+        ArgumentGuard.NotNull(filterOptionsMonitor);
 
-    private static InitialLevels GetInitialLevelsFromOptions(IOptionsMonitor<LoggerFilterOptions> filterOptions)
-    {
-        var runningLevelFilters = new Dictionary<string, Filter>();
-        var originalLevels = new Dictionary<string, LogLevel>();
-        Filter filter = null;
+        var effectiveFilters = new Dictionary<string, LoggerFilter>();
+        var configurationMinLevels = new Dictionary<string, LogLevel>();
+        LoggerFilter defaultFilter = level => level >= DefaultLogLevel;
 
-        foreach (LoggerFilterRule rule in filterOptions.CurrentValue.Rules.Where(p =>
-            string.IsNullOrEmpty(p.ProviderName) || p.ProviderName == "Console" || p.ProviderName == "Logging"))
+        foreach (LoggerFilterRule rule in filterOptionsMonitor.CurrentValue.Rules.Where(IsConsoleProvider))
         {
-            originalLevels[rule.CategoryName ?? "Default"] = rule.LogLevel ?? LogLevel.None;
+            string ruleCategoryName = rule.CategoryName ?? DefaultCategoryName;
 
-            if (rule.CategoryName == "Default" || string.IsNullOrEmpty(rule.CategoryName))
+            if (ruleCategoryName.Contains('*'))
             {
-                filter = (_, level) => level >= (rule.LogLevel ?? LogLevel.None);
+                throw new NotSupportedException("Logger categories with wildcards are not supported.");
+            }
+
+            configurationMinLevels[ruleCategoryName] = rule.LogLevel ?? DefaultLogLevel;
+
+            if (ruleCategoryName == DefaultCategoryName)
+            {
+                defaultFilter = level => level >= (rule.LogLevel ?? DefaultLogLevel);
             }
             else
             {
-                runningLevelFilters[rule.CategoryName] = (_, level) => level >= (rule.LogLevel ?? LogLevel.None);
+                effectiveFilters[ruleCategoryName] = level => level >= (rule.LogLevel ?? DefaultLogLevel);
             }
         }
 
-        return new InitialLevels
-        {
-            DefaultLevelFilter = filter,
-            OriginalLevels = originalLevels,
-            RunningLevelFilters = runningLevelFilters
-        };
+        return new LoggerFilterConfiguration(configurationMinLevels, effectiveFilters, defaultFilter);
+    }
+
+    private static bool IsConsoleProvider(LoggerFilterRule rule)
+    {
+        return string.IsNullOrEmpty(rule.ProviderName) || rule.ProviderName == "Console" || rule.ProviderName == "Logging";
+    }
+
+    void ISupportExternalScope.SetScopeProvider(IExternalScopeProvider scopeProvider)
+    {
+        ArgumentGuard.NotNull(scopeProvider);
+
+        ((ConsoleLoggerProvider)InnerLoggerProvider).SetScopeProvider(scopeProvider);
     }
 }

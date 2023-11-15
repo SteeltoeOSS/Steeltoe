@@ -4,47 +4,76 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 
 namespace Steeltoe.Logging;
 
+/// <summary>
+/// Wraps an <see cref="ILogger" /> with the ability to change its minimum log level at runtime. Decorates log messages using
+/// <see cref="IDynamicMessageProcessor" />.
+/// </summary>
 public class MessageProcessingLogger : ILogger
 {
-    private protected readonly IEnumerable<IDynamicMessageProcessor> MessageProcessors;
+    private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
+    private LoggerFilter _filter;
 
-    public ILogger Delegate { get; }
-
-    public Filter Filter { get; internal set; }
-
-    public string Name { get; internal set; }
+    protected internal ILogger InnerLogger { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MessageProcessingLogger" /> class. Wraps an ILogger and decorates log messages via
-    /// <see cref="IDynamicMessageProcessor" />.
+    /// Initializes a new instance of the <see cref="MessageProcessingLogger" /> class.
     /// </summary>
-    /// <param name="logger">
-    /// The <see cref="ILogger" /> being wrapped.
+    /// <param name="innerLogger">
+    /// The <see cref="ILogger" /> to wrap.
+    /// </param>
+    /// <param name="filter">
+    /// The filter, which determines whether logging is enabled.
     /// </param>
     /// <param name="messageProcessors">
-    /// The list of <see cref="IDynamicMessageProcessor" />s.
+    /// The message processors to decorate log messages with.
     /// </param>
-    public MessageProcessingLogger(ILogger logger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
+    public MessageProcessingLogger(ILogger innerLogger, LoggerFilter filter, IEnumerable<IDynamicMessageProcessor> messageProcessors)
     {
-        MessageProcessors = messageProcessors;
-        Delegate = logger;
+        ArgumentGuard.NotNull(innerLogger);
+        ArgumentGuard.NotNull(filter);
+        ArgumentGuard.NotNull(messageProcessors);
+
+        InnerLogger = innerLogger;
+        _filter = filter;
+        _messageProcessors = messageProcessors;
     }
 
-    public IDisposable BeginScope<TState>(TState state)
+    /// <summary>
+    /// Changes the log level filter at runtime.
+    /// </summary>
+    /// <param name="filter">
+    /// The updated filter, which determines whether logging is enabled.
+    /// </param>
+    public void ChangeFilter(LoggerFilter filter)
     {
-        return Delegate.BeginScope(state);
+        ArgumentGuard.NotNull(filter);
+
+        _filter = filter;
     }
 
+    /// <inheritdoc />
+    public IDisposable? BeginScope<TState>(TState state)
+        where TState : notnull
+    {
+        return InnerLogger.BeginScope(state);
+    }
+
+    /// <inheritdoc />
     public bool IsEnabled(LogLevel logLevel)
     {
-        return Filter.Invoke(Name, logLevel);
+        if (logLevel == LogLevel.None)
+        {
+            return false;
+        }
+
+        return _filter.Invoke(logLevel);
     }
 
-    public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    /// <inheritdoc />
+    public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         ArgumentGuard.NotNull(formatter);
 
@@ -53,23 +82,20 @@ public class MessageProcessingLogger : ILogger
             return;
         }
 
-        Func<TState, Exception, string> compositeFormatter = (innerState, innerException) =>
-            ApplyMessageProcessors(innerState, innerException, formatter, MessageProcessors);
+        Func<TState, Exception?, string> compositeFormatter = (innerState, innerException) =>
+            ApplyMessageProcessors(innerState, innerException, formatter, _messageProcessors);
 
-        Delegate.Log(logLevel, eventId, state, exception, compositeFormatter);
+        InnerLogger.Log(logLevel, eventId, state, exception, compositeFormatter);
     }
 
-    private static string ApplyMessageProcessors<TState>(TState state, Exception exception, Func<TState, Exception, string> formatter,
+    private static string ApplyMessageProcessors<TState>(TState state, Exception? exception, Func<TState, Exception?, string> formatter,
         IEnumerable<IDynamicMessageProcessor> processors)
     {
         string message = formatter(state, exception);
 
-        if (processors != null)
+        foreach (IDynamicMessageProcessor processor in processors)
         {
-            foreach (IDynamicMessageProcessor processor in processors)
-            {
-                message = processor.Process(message);
-            }
+            message = processor.Process(message);
         }
 
         return message;

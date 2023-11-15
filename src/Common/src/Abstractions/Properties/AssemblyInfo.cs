@@ -7,3 +7,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.EntityFrameworkCore")]
+[assembly: InternalsVisibleTo("Steeltoe.Logging.DynamicSerilog")]
