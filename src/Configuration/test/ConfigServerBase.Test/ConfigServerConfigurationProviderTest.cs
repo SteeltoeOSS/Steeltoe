@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -404,6 +404,50 @@ public class ConfigServerConfigurationProviderTest
         settings.Label = "label,testlabel";
         using var client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client);
+        Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
+        Assert.True(TestConfigServerStartup.RequestCount >= 1);
+        await Task.Delay(1000);
+        Assert.NotNull(TestConfigServerStartup.LastRequest);
+        Assert.True(TestConfigServerStartup.RequestCount >= 2);
+        Assert.False(provider.GetReloadToken().HasChanged);
+    }
+
+    [Fact]
+    public async Task Create_FailFastEnabledAndExceptionThrownDuringPolling_DoesNotCrash()
+    {
+        // Arrange
+        var environment = @"
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": [ 
+   
+                    ]
+                }";
+        var envir = HostingHelpers.GetHostingEnvironment();
+        TestConfigServerStartup.Reset();
+        TestConfigServerStartup.Response = environment;
+
+        // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
+        TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100)).ToArray();
+        TestConfigServerStartup.Label = "testlabel";
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        var settings = new ConfigServerClientSettings()
+        {
+            Name = "myName",
+            PollingInterval = TimeSpan.FromMilliseconds(300),
+            FailFast = true
+        };
+        settings.Label = "testlabel";
+        using var client = server.CreateClient();
+
+        // Act
+        var provider = new ConfigServerConfigurationProvider(settings, client);
+
+        // Assert
         Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
         Assert.True(TestConfigServerStartup.RequestCount >= 1);
         await Task.Delay(1000);
