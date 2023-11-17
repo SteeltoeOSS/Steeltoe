@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -454,6 +454,43 @@ public class ConfigServerConfigurationProviderTest
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.True(TestConfigServerStartup.RequestCount >= 2);
         Assert.False(provider.GetReloadToken().HasChanged);
+    }
+
+    [Fact]
+    public void Create_WithNonZeroPollingIntervalAndClientDisabled_PollingDisabled()
+    {
+        // Arrange
+        var environment = @"
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": [ 
+   
+                    ]
+                }";
+        var envir = HostingHelpers.GetHostingEnvironment();
+        TestConfigServerStartup.Reset();
+        TestConfigServerStartup.Response = environment;
+        TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
+        TestConfigServerStartup.Label = "testlabel";
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+        var settings = new ConfigServerClientSettings()
+        {
+            Name = "myName",
+            Enabled = false,
+            PollingInterval = TimeSpan.FromMilliseconds(300)
+        };
+        settings.Label = "label,testlabel";
+        using var client = server.CreateClient();
+
+        // Act
+        var provider = new ConfigServerConfigurationProvider(settings, client);
+
+        // Assert
+        Assert.False(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(2)));
     }
 
     [Fact]
