@@ -140,9 +140,15 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         }
 
         _settings = settings;
+
+        if (httpClient != null)
+        {
+            _httpClient = httpClient;
+        }
+
         OnSettingsChanged();
 
-        _httpClient = httpClient ?? GetHttpClient(_settings);
+        _httpClient ??= GetHttpClient(_settings);
     }
 
     private void OnSettingsChanged()
@@ -154,17 +160,35 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             _configuration.GetReloadToken().RegisterChangeCallback(_ => OnSettingsChanged(), null);
         }
 
-        if (_settings.PollingInterval == TimeSpan.Zero)
+        if (_settings.PollingInterval == TimeSpan.Zero || !_settings.Enabled)
         {
             _refreshTimer?.Dispose();
         }
-        else if (_refreshTimer == null)
+        else if (_settings.Enabled)
         {
-            _refreshTimer = new Timer(_ => DoLoad(), null, TimeSpan.Zero, _settings.PollingInterval);
+            if (_refreshTimer == null)
+            {
+                _refreshTimer = new Timer(_ => DoPolledLoad(), null, TimeSpan.Zero, _settings.PollingInterval);
+            }
+            else if (existingPollingInterval != _settings.PollingInterval)
+            {
+                _refreshTimer.Change(TimeSpan.Zero, _settings.PollingInterval);
+            }
         }
-        else if (existingPollingInterval != _settings.PollingInterval)
+    }
+
+    /// <remarks>
+    /// DoPolledLoad is called by a Timer callback, so must catch all exceptions
+    /// </remarks>
+    private void DoPolledLoad()
+    {
+        try
         {
-            _refreshTimer.Change(TimeSpan.Zero, _settings.PollingInterval);
+            DoLoad();
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning("Could not reload configuration during polling" + e);
         }
     }
 
