@@ -188,7 +188,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         }
         catch (Exception e)
         {
-            _logger.LogWarning("Could not reload configuration during polling" + e);
+            _logger.LogWarning(e, "Could not reload configuration during polling");
         }
     }
 
