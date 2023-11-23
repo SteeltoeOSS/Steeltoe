@@ -60,7 +60,7 @@ internal sealed class ManagementPortMiddleware
         _logger.LogError("ManagementMiddleWare Error: Access denied on {port} since Management Port is set to {managementPort}", context.Request.Host.Port,
             managementPort);
 
-        context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
+        context.Response.Headers.Append("Content-Type", "application/json;charset=UTF-8");
         context.Response.StatusCode = StatusCodes.Status404NotFound;
 
         return context.Response.WriteAsJsonAsync(errorResponse);

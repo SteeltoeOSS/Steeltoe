@@ -38,6 +38,14 @@
     <XunitVersion>2.5.*</XunitVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <AspNetCoreHealthChecksVersion>7.0.*</AspNetCoreHealthChecksVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <AspNetCoreHealthChecksVersion>6.0.*</AspNetCoreHealthChecksVersion>
+  </PropertyGroup>
+
   <PropertyGroup>
     <!--
       Exposed dependencies, observable by Steeltoe consumers.
@@ -57,19 +65,11 @@
         Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
         For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
       -->
-      7.0.*
+      8.0.*
     </FoundationalVersion>
     <JsonNetVersion>13.0.*</JsonNetVersion>
     <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
-    <MatchTargetFrameworkVersion>
-      <!--
-        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
-        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
-        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
-      -->
-      6.0.*
-    </MatchTargetFrameworkVersion>
     <OpenIdConnectVersion>7.0.*</OpenIdConnectVersion>
     <OpenTelemetryExporterJaegerVersion>1.5.*</OpenTelemetryExporterJaegerVersion>
     <OpenTelemetryExporterPrometheusVersion>1.4.0-rc.3</OpenTelemetryExporterPrometheusVersion>
@@ -85,5 +85,27 @@
     <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
     <SymReaderVersion>2.0.*</SymReaderVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      8.0.*
+    </MatchTargetFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      6.0.*
+    </MatchTargetFrameworkVersion>
   </PropertyGroup>
 </Project>

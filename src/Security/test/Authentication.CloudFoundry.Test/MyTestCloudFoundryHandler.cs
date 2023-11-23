@@ -11,10 +11,15 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
-public sealed class MyTestCloudFoundryHandler : CloudFoundryOAuthHandler
+internal sealed class MyTestCloudFoundryHandler : CloudFoundryOAuthHandler
 {
+#if NET6_0
     public MyTestCloudFoundryHandler(IOptionsMonitor<CloudFoundryOAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
+#else
+    public MyTestCloudFoundryHandler(IOptionsMonitor<CloudFoundryOAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+        : base(options, logger, encoder)
+#endif
     {
     }
 

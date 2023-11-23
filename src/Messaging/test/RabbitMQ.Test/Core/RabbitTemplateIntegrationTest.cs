@@ -955,10 +955,10 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
                     ContentType = MessageHeaders.ContentTypeDotNetSerializedObject
                 };
 
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                 var formatter = new BinaryFormatter();
                 using var requestStream = new MemoryStream(512);
 
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
                 formatter.Serialize(requestStream, request);
                 byte[] bytes = requestStream.ToArray();
                 IMessage reply = rabbitTemplate.SendAndReceive(Message.Create(bytes, messageHeaders.MessageHeaders));

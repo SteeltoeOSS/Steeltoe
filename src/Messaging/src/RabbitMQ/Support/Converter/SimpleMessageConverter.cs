@@ -56,10 +56,9 @@ public class SimpleMessageConverter : AbstractMessageConverter
             {
                 try
                 {
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                     var formatter = new BinaryFormatter();
                     using var stream = new MemoryStream(bytesMessage.Payload);
-
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
                     content = formatter.Deserialize(stream);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
                 }
@@ -111,7 +110,9 @@ public class SimpleMessageConverter : AbstractMessageConverter
                 break;
             }
             default:
+#pragma warning disable SYSLIB0050 // Type or member is obsolete
                 if (payload != null && payload.GetType().IsSerializable)
+#pragma warning restore SYSLIB0050 // Type or member is obsolete
                 {
                     bytes = SerializeObject(payload);
                     accessor.ContentType = MessageHeaders.ContentTypeDotNetSerializedObject;
@@ -136,10 +137,9 @@ public class SimpleMessageConverter : AbstractMessageConverter
     {
         try
         {
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
             var formatter = new BinaryFormatter();
             using var stream = new MemoryStream(512);
-
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
             formatter.Serialize(stream, payload);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
             return stream.ToArray();

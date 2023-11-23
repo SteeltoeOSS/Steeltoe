@@ -21,7 +21,10 @@ jobs:
     displayName: Install .NET 6
     inputs:
       version: 6.0.x
-      includePreviewVersions: true
+  - task: UseDotNet@2
+    displayName: Install .NET 8
+    inputs:
+      version: 8.0.x
   - task: DotNetCoreCLI@2
     displayName: Install Nerdbank.GitVersioning tool
     condition: eq('${{parameters.OS}}', 'macOS')
@@ -61,6 +64,13 @@ jobs:
       command: test
       projects: $(SolutionFile)
       arguments: -f net6.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test 8.0
+    inputs:
+      command: test
+      projects: $(SolutionFile)
+      arguments: -f net8.0 ${{parameters.skipFilter}} $(CommonTestArgs)
       publishTestResults: false
   - task: CopyFiles@2
     condition: failed()

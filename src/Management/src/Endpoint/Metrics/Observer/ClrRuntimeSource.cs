@@ -33,7 +33,10 @@ internal static class ClrRuntimeSource
         public readonly IList<long> CollectionCounts = CollectionCounts;
     }
 
-    public record struct ThreadMetrics(long AvailableThreadPoolWorkers, long AvailableThreadCompletionPort, long MaxThreadPoolWorkers,
+    public record struct ThreadMetrics(
+        long AvailableThreadPoolWorkers,
+        long AvailableThreadCompletionPort,
+        long MaxThreadPoolWorkers,
         long MaxThreadCompletionPort)
     {
         public readonly long AvailableThreadPoolWorkers = AvailableThreadPoolWorkers;

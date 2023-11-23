@@ -53,7 +53,7 @@ public sealed class TestConfigServerStartup
 
             if (context.Response.StatusCode == 200)
             {
-                context.Response.Headers.Add("content-type", "application/json");
+                context.Response.Headers.Append("content-type", "application/json");
                 await context.Response.WriteAsync(Response);
             }
 
