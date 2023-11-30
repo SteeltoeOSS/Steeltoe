@@ -3,53 +3,34 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Services;
 
-internal class ServicesEndpointHandler : IServicesEndpointHandler
+internal sealed class ServicesEndpointHandler : IServicesEndpointHandler
 {
-    private readonly IOptionsMonitor<ServicesEndpointOptions> _options;
-    private readonly IServiceCollection _serviceCollection;
-    private readonly ILogger<ServicesEndpointHandler> _logger;
-    private readonly Lazy<ServiceContextDescriptor> _lazyServiceContextDescriptor;
+    private readonly IOptionsMonitor<ServicesEndpointOptions> _optionsMonitor;
+    private readonly Lazy<IList<ServiceRegistration>> _lazyServiceRegistrations;
 
-    public EndpointOptions Options => _options.CurrentValue;
+    public EndpointOptions Options => _optionsMonitor.CurrentValue;
 
-    public ServicesEndpointHandler(IOptionsMonitor<ServicesEndpointOptions> options, IServiceCollection serviceCollection, ILoggerFactory loggerFactory)
+    public ServicesEndpointHandler(IOptionsMonitor<ServicesEndpointOptions> optionsMonitor, IServiceCollection services)
     {
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(serviceCollection);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(services);
 
-        _options = options;
-        _serviceCollection = serviceCollection;
-        _logger = loggerFactory.CreateLogger<ServicesEndpointHandler>();
-        _lazyServiceContextDescriptor = new Lazy<ServiceContextDescriptor>(GetDescriptor);
+        _optionsMonitor = optionsMonitor;
+        _lazyServiceRegistrations = new Lazy<IList<ServiceRegistration>>(() => ConvertToRegistrations(services), LazyThreadSafetyMode.PublicationOnly);
     }
 
-    public async Task<ServiceContextDescriptor> InvokeAsync(object? argument, CancellationToken cancellationToken)
+    private static List<ServiceRegistration> ConvertToRegistrations(IServiceCollection services)
     {
-        ServiceContextDescriptor serviceContextDescriptor = _lazyServiceContextDescriptor.Value;
-        return await Task.FromResult(serviceContextDescriptor);
+        return services.Select(descriptor => new ServiceRegistration(descriptor)).ToList();
     }
 
-    private ServiceContextDescriptor GetDescriptor()
+    public Task<IList<ServiceRegistration>> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
-        var descriptor = new ServiceContextDescriptor();
-        var applicationContext = new ApplicationContext();
-
-        _logger.LogTrace("Fetching service container services");
-
-        foreach (ServiceDescriptor serviceDescriptor in _serviceCollection)
-        {
-            applicationContext.Add(new Service(serviceDescriptor));
-        }
-
-        descriptor.Add("application", applicationContext);
-
-        return descriptor;
+        return Task.FromResult(_lazyServiceRegistrations.Value);
     }
 }

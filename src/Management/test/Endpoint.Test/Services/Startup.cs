@@ -11,9 +11,8 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.Test.Services;
 
-public class Startup
+public sealed class Startup
 {
-    // Test Activator Utils Constructor works.
     [ActivatorUtilitiesConstructor]
     public Startup(IConfiguration configuration)
     {
@@ -36,10 +35,6 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapAllActuators();
-        });
+        app.UseEndpoints(endpoints => endpoints.MapAllActuators());
     }
 }

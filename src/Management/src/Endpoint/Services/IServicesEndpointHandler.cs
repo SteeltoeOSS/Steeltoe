@@ -4,8 +4,6 @@
 
 namespace Steeltoe.Management.Endpoint.Services;
 
-#pragma warning disable S4023 // Interfaces should not be empty
-public interface IServicesEndpointHandler : IEndpointHandler<object?, ServiceContextDescriptor>
-#pragma warning restore S4023 // Interfaces should not be empty
+public interface IServicesEndpointHandler : IEndpointHandler<object?, IList<ServiceRegistration>>
 {
 }

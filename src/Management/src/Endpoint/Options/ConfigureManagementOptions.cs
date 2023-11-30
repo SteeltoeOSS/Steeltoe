@@ -79,9 +79,9 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
             options.SerializerOptions.Converters.Add(new HttpTraceResultConverter());
         }
 
-        if (!options.SerializerOptions.Converters.Any(c => c is ServiceDescriptorConverter))
+        if (!options.SerializerOptions.Converters.Any(converter => converter is ServiceRegistrationsJsonConverter))
         {
-            options.SerializerOptions.Converters.Add(new ServiceDescriptorConverter());
+            options.SerializerOptions.Converters.Add(new ServiceRegistrationsJsonConverter());
         }
     }
 

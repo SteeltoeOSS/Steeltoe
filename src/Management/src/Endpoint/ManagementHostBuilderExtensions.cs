@@ -338,7 +338,9 @@ public static class ManagementHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddServicesActuator(this IHostBuilder hostBuilder)
     {
-        return hostBuilder.AddManagementPort().ConfigureServices((context, collection) =>
+        ArgumentGuard.NotNull(hostBuilder);
+
+        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
         {
             collection.AddServicesActuator();
             ActivateActuatorEndpoints(collection);

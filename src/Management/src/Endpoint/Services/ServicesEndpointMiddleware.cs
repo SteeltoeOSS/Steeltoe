@@ -10,15 +10,15 @@ using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Services;
 
-public class ServicesEndpointMiddleware : EndpointMiddleware<object?, ServiceContextDescriptor>
+public sealed class ServicesEndpointMiddleware : EndpointMiddleware<object?, IList<ServiceRegistration>>
 {
-    public ServicesEndpointMiddleware(IServicesEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptions,
+    public ServicesEndpointMiddleware(IServicesEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
-        : base(endpointHandler, managementOptions, loggerFactory)
+        : base(endpointHandler, managementOptionsMonitor, loggerFactory)
     {
     }
 
-    protected override async Task<ServiceContextDescriptor> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
+    protected override async Task<IList<ServiceRegistration>> InvokeEndpointHandlerAsync(HttpContext context, CancellationToken cancellationToken)
     {
         return await EndpointHandler.InvokeAsync(null, cancellationToken);
     }

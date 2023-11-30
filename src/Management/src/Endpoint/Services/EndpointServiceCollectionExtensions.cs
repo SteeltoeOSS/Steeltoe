@@ -15,11 +15,13 @@ public static class EndpointServiceCollectionExtensions
     /// <param name="services">
     /// Service collection to add actuator to.
     /// </param>
-    public static void AddServicesActuator(this IServiceCollection services)
+    public static IServiceCollection AddServicesActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
 
         services.AddCommonActuatorServices();
         services.AddServicesActuatorServices();
+
+        return services;
     }
 }

@@ -7,14 +7,14 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Services;
 
-public class ServicesEndpointOptionsTest : BaseTest
+public sealed class ServicesEndpointOptionsTest : BaseTest
 {
     [Fact]
     public void Constructor_InitializesWithDefaults()
     {
-        var opts = GetOptionsFromSettings<ServicesEndpointOptions>();
-        Assert.Null(opts.Enabled);
-        Assert.Equal("beans", opts.Id);
-        Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
+        var options = GetOptionsFromSettings<ServicesEndpointOptions>();
+        Assert.Null(options.Enabled);
+        Assert.Equal("beans", options.Id);
+        Assert.Equal(Permissions.Restricted, options.RequiredPermissions);
     }
 }

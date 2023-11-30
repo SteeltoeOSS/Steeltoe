@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Services;
 
-public class EndpointServiceCollectionTest : BaseTest
+public sealed class EndpointServiceCollectionTest : BaseTest
 {
     [Fact]
     public void AddServicesActuator_AddsCorrectServices()
@@ -30,7 +30,7 @@ public class EndpointServiceCollectionTest : BaseTest
         services.AddLogging();
         services.AddServicesActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var options = serviceProvider.GetService<IOptionsMonitor<ServicesEndpointOptions>>();
         Assert.NotNull(options);
         var handler = serviceProvider.GetService<IServicesEndpointHandler>();
