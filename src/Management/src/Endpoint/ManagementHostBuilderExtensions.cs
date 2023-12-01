@@ -351,7 +351,7 @@ public static class ManagementHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Services actuator to the application.
+    /// Adds an actuator endpoint that lists all injectable services that are registered in the IoC container.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IHostBuilder" /> to configure.
