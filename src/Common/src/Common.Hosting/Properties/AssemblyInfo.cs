@@ -4,5 +4,8 @@
 
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Logging.DynamicSerilog")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Kubernetes")]

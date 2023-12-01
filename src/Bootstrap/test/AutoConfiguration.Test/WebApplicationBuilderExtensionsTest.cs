@@ -27,6 +27,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.ConfigServer;
@@ -58,85 +59,81 @@ public sealed class WebApplicationBuilderExtensionsTest
     [Fact]
     public void ConfigServerConfiguration_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.ConfigurationConfigServer);
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ConfigurationConfigServer);
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        var configurationRoot = (IConfigurationRoot)(ConfigurationManager)host.Services.GetRequiredService<IConfiguration>();
-
-        Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
-        Assert.Single(configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>());
+        configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>().Should().NotBeNull();
+        configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>().Should().NotBeNull();
     }
 
     [Fact]
     public void CloudFoundryConfiguration_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.ConfigurationCloudFoundry);
-        var configurationRoot = (IConfigurationRoot)(ConfigurationManager)host.Services.GetRequiredService<IConfiguration>();
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ConfigurationCloudFoundry);
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Single(configurationRoot.Providers.OfType<CloudFoundryConfigurationProvider>());
+        configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>().Should().NotBeNull();
     }
 
-    [Fact(Skip = "Requires Kubernetes")]
+    [Fact]
     public void KubernetesConfiguration_IsAutowired()
     {
-        using var scope = new EnvironmentVariableScope("KUBERNETES_SERVICE_HOST", "TEST");
+        using var hostScope = new EnvironmentVariableScope("KUBERNETES_SERVICE_HOST", "TEST");
+        using var testScope = new EnvironmentVariableScope("STEELTOE_USE_KUBERNETES_FAKE_CLIENT_FOR_TEST", "true");
 
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.ConfigurationKubernetes);
-        var configurationRoot = (IConfigurationRoot)(ConfigurationManager)host.Services.GetRequiredService<IConfiguration>();
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ConfigurationKubernetes);
+        var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Equal(2, configurationRoot.Providers.OfType<KubernetesConfigMapProvider>().Count());
-        Assert.Equal(2, configurationRoot.Providers.OfType<KubernetesSecretProvider>().Count());
+        configurationRoot.Providers.OfType<KubernetesConfigMapProvider>().Should().HaveCount(2);
+        configurationRoot.Providers.OfType<KubernetesSecretProvider>().Should().HaveCount(2);
     }
 
     [Fact]
     public void RandomValueConfiguration_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.ConfigurationRandomValue);
-        var configurationRoot = (IConfigurationRoot)(ConfigurationManager)host.Services.GetRequiredService<IConfiguration>();
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ConfigurationRandomValue);
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Single(configurationRoot.Providers.OfType<RandomValueProvider>());
+        configuration.FindConfigurationProvider<RandomValueProvider>().Should().NotBeNull();
     }
 
     [Fact]
     public void PlaceholderResolver_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.ConfigurationPlaceholder);
-        var configurationRoot = (IConfigurationRoot)(ConfigurationManager)host.Services.GetRequiredService<IConfiguration>();
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ConfigurationPlaceholder);
+        var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Single(configurationRoot.Providers.OfType<PlaceholderResolverProvider>());
+        configurationRoot.Providers.OfType<PlaceholderResolverProvider>().Should().HaveCount(1);
     }
 
     [Fact]
     public void Connectors_AreAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.Connectors);
-        var configurationRoot = (IConfigurationRoot)(ConfigurationManager)host.Services.GetRequiredService<IConfiguration>();
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.Connectors);
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        configurationRoot.Providers.Should().ContainSingle(provider => provider is KubernetesServiceBindingConfigurationProvider);
-        configurationRoot.Providers.Should().ContainSingle(provider => provider is CloudFoundryServiceBindingConfigurationProvider);
+        configuration.FindConfigurationProvider<KubernetesServiceBindingConfigurationProvider>().Should().NotBeNull();
+        configuration.FindConfigurationProvider<CloudFoundryServiceBindingConfigurationProvider>().Should().NotBeNull();
 
-        host.Services.GetRequiredService<ConnectorFactory<CosmosDbOptions, CosmosClient>>().Should().NotBeNull();
-        host.Services.GetRequiredService<ConnectorFactory<MongoDbOptions, IMongoClient>>().Should().NotBeNull();
-        host.Services.GetRequiredService<ConnectorFactory<MySqlOptions, MySqlConnection>>().Should().NotBeNull();
-        host.Services.GetRequiredService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>().Should().NotBeNull();
-        host.Services.GetRequiredService<ConnectorFactory<RabbitMQOptions, IConnection>>().Should().NotBeNull();
-        host.Services.GetRequiredService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>().Should().NotBeNull();
-        host.Services.GetRequiredService<ConnectorFactory<RedisOptions, IDistributedCache>>().Should().NotBeNull();
-        host.Services.GetRequiredService<ConnectorFactory<SqlServerOptions, SqlConnection>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<CosmosDbOptions, CosmosClient>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<MongoDbOptions, IMongoClient>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<MySqlOptions, MySqlConnection>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<PostgreSqlOptions, NpgsqlConnection>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<RabbitMQOptions, IConnection>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<RedisOptions, IConnectionMultiplexer>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<RedisOptions, IDistributedCache>>().Should().NotBeNull();
+        host.Services.GetService<ConnectorFactory<SqlServerOptions, SqlConnection>>().Should().NotBeNull();
     }
 
     [Fact]
-    public void SqlServerConnector_NotAutowiredIfExcluded()
+    public void SqlServerConnector_NotAutowiredIfDependenciesExcluded()
     {
         var exclusions = new HashSet<string>(SteeltoeAssemblyNames.All);
         exclusions.Remove(SteeltoeAssemblyNames.Connectors);
         exclusions.Add("Microsoft.Data.SqlClient");
         exclusions.Add("System.Data.SqlClient");
 
-        WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
-        webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
-        webAppBuilder.AddSteeltoe(exclusions);
-        webAppBuilder.WebHost.UseTestServer();
-        WebApplication host = webAppBuilder.Build();
+        using WebApplication host = GetWebApplicationExcluding(exclusions);
 
         host.Services.GetService<ConnectorFactory<SqlServerOptions, SqlConnection>>().Should().BeNull();
     }
@@ -144,174 +141,165 @@ public sealed class WebApplicationBuilderExtensionsTest
     [Fact]
     public void DynamicSerilog_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.LoggingDynamicSerilog);
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.LoggingDynamicSerilog);
 
         var loggerProvider = host.Services.GetRequiredService<IDynamicLoggerProvider>();
 
-        Assert.IsType<DynamicSerilogLoggerProvider>(loggerProvider);
+        loggerProvider.Should().BeOfType<DynamicSerilogLoggerProvider>();
     }
 
     [Fact]
     public void ServiceDiscovery_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.DiscoveryClient);
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.DiscoveryClient);
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
 
-        Assert.Single(discoveryClients);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
+        discoveryClients.Should().HaveCount(1);
+        discoveryClients[0].Should().BeOfType<EurekaDiscoveryClient>();
+    }
+
+    [Fact]
+    public void Prometheus_IsAutowired()
+    {
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ManagementPrometheus);
+
+        host.Services.GetService<MeterProvider>().Should().NotBeNull();
     }
 
     [Fact]
     public async Task WavefrontMetricsExporter_IsAutowired()
     {
-        WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
-        webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
-        webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.WavefrontConfiguration);
+        await using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ManagementWavefront);
 
-        string[] exclusions =
-        {
-            SteeltoeAssemblyNames.ManagementWavefront
-        };
-
-        webAppBuilder.AddSteeltoe(SteeltoeAssemblyNames.All.Except(exclusions));
-        webAppBuilder.WebHost.UseTestServer();
-        WebApplication webApp = webAppBuilder.Build();
-
-        webApp.UseRouting();
-        await webApp.StartAsync();
-
-        var meterProvider = webApp.Services.GetRequiredService<MeterProvider>();
-        Assert.NotNull(meterProvider);
+        host.Services.GetService<MeterProvider>().Should().NotBeNull();
     }
 
     [Fact]
     public async Task WavefrontTraceExporter_IsAutowired()
     {
-        WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
-        webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
-        webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.WavefrontConfiguration);
+        await using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ManagementTracing);
 
-        string[] exclusions =
-        {
-            SteeltoeAssemblyNames.ManagementTracing
-        };
+        var tracerProvider = host.Services.GetRequiredService<TracerProvider>();
 
-        webAppBuilder.AddSteeltoe(SteeltoeAssemblyNames.All.Except(exclusions));
-        webAppBuilder.WebHost.UseTestServer();
-        WebApplication webApp = webAppBuilder.Build();
+        PropertyInfo? processorProperty = tracerProvider.GetType().GetProperty("Processor", BindingFlags.NonPublic | BindingFlags.Instance);
+        processorProperty.Should().NotBeNull();
 
-        webApp.UseRouting();
-        await webApp.StartAsync();
+        object? processor = processorProperty!.GetValue(tracerProvider);
+        processor.Should().NotBeNull();
 
-        var tracerProvider = webApp.Services.GetRequiredService<TracerProvider>();
+        FieldInfo? exporterField = processor!.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance);
+        exporterField.Should().NotBeNull();
 
-        PropertyInfo processorProperty =
-            tracerProvider.GetType().GetProperty("Processor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-        Assert.NotNull(processorProperty);
-
-        object processor = processorProperty.GetValue(tracerProvider);
-        Assert.NotNull(processor);
-
-        FieldInfo exporterField = processor.GetType().GetField("exporter", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(exporterField);
-
-        object exporter = exporterField.GetValue(processor);
-        Assert.IsType<WavefrontTraceExporter>(exporter);
+        object? exporter = exporterField!.GetValue(processor);
+        exporter.Should().BeOfType<WavefrontTraceExporter>();
     }
 
     [Fact]
     public async Task KubernetesActuators_AreAutowired()
     {
-        WebApplication webApp = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.ManagementKubernetes);
-        webApp.UseRouting();
-        await webApp.StartAsync();
+        await using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ManagementKubernetes);
+        await host.StartAsync();
 
-        IEnumerable<IActuatorEndpointHandler> handlers = webApp.Services.GetServices<IActuatorEndpointHandler>();
-        Assert.Single(handlers);
+        IActuatorEndpointHandler[] handlers = host.Services.GetServices<IActuatorEndpointHandler>().ToArray();
+        handlers.Should().HaveCount(1);
 
-        _ = webApp.Services.GetRequiredService<IStartupFilter>();
+        var filter = host.Services.GetRequiredService<IStartupFilter>();
+        filter.Should().BeOfType<AllActuatorsStartupFilter>();
 
-        await ActuatorTestAsync(webApp.GetTestClient());
+        using HttpClient testClient = host.GetTestClient();
+        await AssertActuatorEndpointsSucceedAsync(testClient);
     }
 
     [Fact]
     public async Task AllActuators_AreAutowired()
     {
-        WebApplication webApp = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.ManagementEndpoint);
-        webApp.UseRouting();
-        await webApp.StartAsync();
+        await using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ManagementEndpoint);
+        await host.StartAsync();
 
-        IEnumerable<IActuatorEndpointHandler> handlers = webApp.Services.GetServices<IActuatorEndpointHandler>();
-        Assert.Single(handlers);
+        IActuatorEndpointHandler[] handlers = host.Services.GetServices<IActuatorEndpointHandler>().ToArray();
+        handlers.Should().HaveCount(1);
 
-        var filter = webApp.Services.GetRequiredService<IStartupFilter>();
-        Assert.IsType<AllActuatorsStartupFilter>(filter);
+        var filter = host.Services.GetRequiredService<IStartupFilter>();
+        filter.Should().BeOfType<AllActuatorsStartupFilter>();
 
-        await ActuatorTestAsync(webApp.GetTestClient());
+        using HttpClient testClient = host.GetTestClient();
+        await AssertActuatorEndpointsSucceedAsync(testClient);
     }
 
     [Fact]
     public void Tracing_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.ManagementTracing);
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.ManagementTracing);
         var tracerProvider = host.Services.GetRequiredService<TracerProvider>();
 
-        Assert.NotNull(host.Services.GetRequiredService<IHostedService>());
-        Assert.NotNull(host.Services.GetRequiredService<ITracingOptions>());
-        Assert.NotNull(host.Services.GetRequiredService<IDynamicMessageProcessor>());
+        host.Services.GetService<IHostedService>().Should().NotBeNull();
+        host.Services.GetService<ITracingOptions>().Should().NotBeNull();
+        host.Services.GetService<IDynamicMessageProcessor>().Should().NotBeNull();
 
-        // confirm instrumentation(s) were added as expected
-        FieldInfo instrumentationsField = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance);
-        Assert.NotNull(instrumentationsField);
+        FieldInfo? instrumentationsField = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance);
+        instrumentationsField.Should().NotBeNull();
 
-        var instrumentations = (List<object>)instrumentationsField.GetValue(tracerProvider);
-        Assert.NotNull(instrumentations);
-        Assert.Equal(2, instrumentations.Count);
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http", StringComparison.Ordinal));
-        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore", StringComparison.Ordinal));
+        var instrumentations = (List<object>?)instrumentationsField!.GetValue(tracerProvider);
+
+        instrumentations.Should().HaveCount(2);
+        instrumentations.Should().ContainSingle(instance => instance.GetType().Name == "HttpClientInstrumentation");
+        instrumentations.Should().ContainSingle(instance => instance.GetType().Name == "AspNetCoreInstrumentation");
     }
 
     [Fact]
     public void CloudFoundryContainerSecurity_IsAutowired()
     {
-        WebApplication host = GetWebApplicationWithSteeltoe(SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
-        var configurationRoot = (IConfigurationRoot)(ConfigurationManager)host.Services.GetRequiredService<IConfiguration>();
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        Assert.Single(configurationRoot.Providers.OfType<PemCertificateProvider>());
-        Assert.NotNull(host.Services.GetRequiredService<IOptions<CertificateOptions>>());
-        Assert.NotNull(host.Services.GetRequiredService<ICertificateRotationService>());
-        Assert.NotNull(host.Services.GetRequiredService<IAuthorizationHandler>());
+        configuration.FindConfigurationProvider<PemCertificateProvider>().Should().NotBeNull();
+
+        host.Services.GetService<IOptions<CertificateOptions>>().Should().NotBeNull();
+        host.Services.GetService<ICertificateRotationService>().Should().NotBeNull();
+        host.Services.GetService<IAuthorizationHandler>().Should().NotBeNull();
     }
 
-    private WebApplication GetWebApplicationWithSteeltoe(params string[] assemblyNamesToInclude)
+    private static WebApplication GetWebApplicationForOnly(string assemblyNameToInclude)
     {
-        WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder();
-        webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
-        webAppBuilder.Configuration.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
-        webAppBuilder.AddSteeltoe(SteeltoeAssemblyNames.All.Except(assemblyNamesToInclude));
-        webAppBuilder.Services.AddActionDescriptorCollectionProvider();
-        webAppBuilder.WebHost.UseTestServer();
-        return webAppBuilder.Build();
+        IReadOnlySet<string> exclusions = SteeltoeAssemblyNames.Only(assemblyNameToInclude);
+        return GetWebApplicationExcluding(exclusions);
     }
 
-    private async Task ActuatorTestAsync(HttpClient testClient)
+    private static WebApplication GetWebApplicationExcluding(IReadOnlySet<string> assemblyNamesToExclude)
     {
-        HttpResponseMessage response = await testClient.GetAsync(new Uri("/actuator", UriKind.Relative));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        builder.Configuration.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
+        builder.Services.AddActionDescriptorCollectionProvider();
+        builder.WebHost.UseTestServer();
 
-        response = await testClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        builder.AddSteeltoe(assemblyNamesToExclude);
 
-        response = await testClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        WebApplication host = builder.Build();
+        host.UseRouting();
 
-        response = await testClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+        return host;
+    }
 
-        response = await testClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+    internal static async Task AssertActuatorEndpointsSucceedAsync(HttpClient httpClient)
+    {
+        HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        response = await httpClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        string responseContent = await response.Content.ReadAsStringAsync();
+        responseContent.Should().Contain(@"""LivenessState"":""CORRECT""");
+
+        response = await httpClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        responseContent = await response.Content.ReadAsStringAsync();
+        responseContent.Should().Contain(@"""ReadinessState"":""ACCEPTING_TRAFFIC""");
     }
 }

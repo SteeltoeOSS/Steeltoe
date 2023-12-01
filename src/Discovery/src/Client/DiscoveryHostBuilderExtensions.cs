@@ -55,6 +55,6 @@ public static class DiscoveryHostBuilderExtensions
     /// </exception>
     public static IHostBuilder AddServiceDiscovery(this IHostBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction)
     {
-        return hostBuilder.ConfigureServices((_, collection) => collection.AddServiceDiscovery(optionsAction));
+        return hostBuilder.ConfigureServices(collection => collection.AddServiceDiscovery(optionsAction));
     }
 }

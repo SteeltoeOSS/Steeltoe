@@ -4,6 +4,7 @@
 
 #nullable enable
 
+using System.Collections.Immutable;
 using System.Reflection;
 
 namespace Steeltoe.Common.DynamicTypeAccess;
@@ -13,7 +14,7 @@ namespace Steeltoe.Common.DynamicTypeAccess;
 /// </summary>
 internal abstract class PackageResolver
 {
-    private static readonly IReadOnlySet<string> EmptySet = new HashSet<string>();
+    private static readonly IReadOnlySet<string> EmptySet = ImmutableHashSet<string>.Empty;
 
     private readonly IReadOnlyList<string> _assemblyNames;
     private readonly IReadOnlyList<string> _packageNames;
