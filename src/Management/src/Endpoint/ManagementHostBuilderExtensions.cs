@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
-using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
