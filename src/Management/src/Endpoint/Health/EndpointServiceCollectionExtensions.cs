@@ -46,7 +46,7 @@ public static class EndpointServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(contributorTypes);
 
-        services.AddHealthActuator(new HealthRegistrationsAggregator(), contributorTypes);
+        AddHealthActuator(services, new HealthRegistrationsAggregator(), contributorTypes);
     }
 
     /// <summary>

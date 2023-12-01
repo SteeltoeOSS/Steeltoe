@@ -56,7 +56,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };
 
-        return new HostBuilder().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((_, services) =>
+        return new HostBuilder().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices(services =>
         {
             services.AddAllActuators();
             services.AddRouting();

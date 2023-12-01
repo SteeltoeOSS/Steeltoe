@@ -4,9 +4,9 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
+using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint;
 
@@ -38,12 +38,10 @@ public static class HostBuilderExtensions
     {
         ArgumentGuard.NotNull(hostBuilder);
 
-        return hostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((_, collection) =>
-        {
-            collection.AddKubernetesActuators();
-            IEndpointConventionBuilder epBuilder = collection.ActivateActuatorEndpoints();
-            configureEndpoints?.Invoke(epBuilder);
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(hostBuilder);
+        wrapper.AddKubernetesActuators(configureEndpoints);
+
+        return hostBuilder;
     }
 
     /// <summary>
@@ -70,12 +68,10 @@ public static class HostBuilderExtensions
     {
         ArgumentGuard.NotNull(webHostBuilder);
 
-        return webHostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole()).ConfigureServices((_, collection) =>
-        {
-            collection.AddKubernetesActuators();
-            IEndpointConventionBuilder epBuilder = collection.ActivateActuatorEndpoints();
-            configureEndpoints?.Invoke(epBuilder);
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(webHostBuilder);
+        wrapper.AddKubernetesActuators(configureEndpoints);
+
+        return webHostBuilder;
     }
 
     /// <summary>
@@ -103,12 +99,22 @@ public static class HostBuilderExtensions
     {
         ArgumentGuard.NotNull(webApplicationBuilder);
 
-        webApplicationBuilder.Logging.AddDynamicConsole();
-
-        IServiceCollection services = webApplicationBuilder.Services.AddKubernetesActuators();
-        IEndpointConventionBuilder epBuilder = services.ActivateActuatorEndpoints();
-        configureEndpoints?.Invoke(epBuilder);
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(webApplicationBuilder);
+        wrapper.AddKubernetesActuators(configureEndpoints);
 
         return webApplicationBuilder;
+    }
+
+    internal static void AddKubernetesActuators(this HostBuilderWrapper wrapper, Action<IEndpointConventionBuilder>? configureEndpoints)
+    {
+        wrapper.ConfigureLogging(loggingBuilder => loggingBuilder.AddDynamicConsole());
+
+        wrapper.ConfigureServices(services =>
+        {
+            services.AddKubernetesActuators();
+
+            IEndpointConventionBuilder endpointBuilder = services.ActivateActuatorEndpoints();
+            configureEndpoints?.Invoke(endpointBuilder);
+        });
     }
 }

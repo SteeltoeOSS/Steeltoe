@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using k8s;
 using k8s.Exceptions;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,12 @@ public static class KubernetesClientHelpers
     public static IKubernetes GetKubernetesClient(KubernetesApplicationOptions appInfo,
         Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILogger logger = null)
     {
+        if (Environment.GetEnvironmentVariable("STEELTOE_USE_KUBERNETES_FAKE_CLIENT_FOR_TEST") == "true")
+        {
+            // Used for testing Bootstrap, where we can't inject a custom service.
+            return UseKubernetesFakeClientForTest();
+        }
+
         KubernetesClientConfiguration configuration = null;
 
         try
@@ -48,5 +55,27 @@ public static class KubernetesClientHelpers
         kubernetesClientConfiguration?.Invoke(configuration);
 
         return new k8s.Kubernetes(configuration);
+    }
+
+    private static IKubernetes UseKubernetesFakeClientForTest()
+    {
+        var delegatingHandler = new TestDelegatingHandler();
+
+        return new k8s.Kubernetes(new KubernetesClientConfiguration
+        {
+            Host = "http://localhost:8080"
+        }, delegatingHandler);
+    }
+
+    private sealed class TestDelegatingHandler : DelegatingHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+            responseMessage.RequestMessage = request;
+            responseMessage.Content = new StringContent("{}");
+
+            return Task.FromResult(responseMessage);
+        }
     }
 }

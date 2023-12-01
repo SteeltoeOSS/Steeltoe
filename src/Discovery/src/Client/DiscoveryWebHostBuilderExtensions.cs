@@ -30,7 +30,7 @@ public static class DiscoveryWebHostBuilderExtensions
     /// </exception>
     public static IWebHostBuilder AddDiscoveryClient(this IWebHostBuilder hostBuilder)
     {
-        return hostBuilder.ConfigureServices((_, collection) => collection.AddDiscoveryClient());
+        return hostBuilder.ConfigureServices(collection => collection.AddDiscoveryClient());
     }
 
     /// <summary>
@@ -55,6 +55,6 @@ public static class DiscoveryWebHostBuilderExtensions
     /// </exception>
     public static IWebHostBuilder AddServiceDiscovery(this IWebHostBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction)
     {
-        return hostBuilder.ConfigureServices((_, collection) => collection.AddServiceDiscovery(optionsAction));
+        return hostBuilder.ConfigureServices(collection => collection.AddServiceDiscovery(optionsAction));
     }
 }

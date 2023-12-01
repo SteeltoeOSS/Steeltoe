@@ -42,7 +42,7 @@ internal sealed class ManagementPortMiddleware
 
         if (!allowRequest)
         {
-            await ReturnErrorAsync(context, managementOptions.Port);
+            SetResponseError(context, managementOptions.Port);
         }
         else
         {
@@ -53,16 +53,18 @@ internal sealed class ManagementPortMiddleware
         }
     }
 
-    private Task ReturnErrorAsync(HttpContext context, string? managementPort)
+    private void SetResponseError(HttpContext context, string? managementPort)
     {
-        var errorResponse = new ErrorResponse(DateTime.UtcNow, StatusCodes.Status404NotFound, "Not Found", "Path not found at port", context.Request.Path);
+        int? defaultPort = null;
 
-        _logger.LogError("ManagementMiddleWare Error: Access denied on {port} since Management Port is set to {managementPort}", context.Request.Host.Port,
-            managementPort);
+        if (context.Request.Host.Port == null)
+        {
+            defaultPort = context.Request.Scheme == "http" ? 80 : 443;
+        }
 
-        context.Response.Headers.Append("Content-Type", "application/json;charset=UTF-8");
+        _logger.LogError("ManagementMiddleWare Error: Access denied on {port} since Management Port is set to {managementPort}",
+            defaultPort ?? context.Request.Host.Port, managementPort);
+
         context.Response.StatusCode = StatusCodes.Status404NotFound;
-
-        return context.Response.WriteAsJsonAsync(errorResponse);
     }
 }

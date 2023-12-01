@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -20,14 +21,15 @@ public sealed class EmptyAutoConfigurationTest
         var whitelist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "Steeltoe.Bootstrap.AutoConfiguration.dll",
-            "Steeltoe.Common.Abstractions.dll",
             "Steeltoe.Common.dll",
+            "Steeltoe.Common.Abstractions.dll",
+            "Steeltoe.Common.Hosting.dll",
 
             "Steeltoe.Bootstrap.EmptyAutoConfiguration.Test.dll",
             "Steeltoe.Common.TestResources.dll"
         };
 
-        string[] files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Steeltoe*.dll").Select(Path.GetFileName)
+        string[] files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Steeltoe*.dll").Select(Path.GetFileName).Select(fileName => fileName!)
             .Where(fileName => !whitelist.Contains(fileName)).ToArray();
 
         files.Should().BeEmpty();
@@ -37,7 +39,7 @@ public sealed class EmptyAutoConfigurationTest
     public void Loads_without_any_Steeltoe_references_using_WebApplicationBuilder()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         Action action = () => builder.AddSteeltoe();
 
@@ -47,9 +49,8 @@ public sealed class EmptyAutoConfigurationTest
     [Fact]
     public void Loads_without_any_Steeltoe_references_using_WebHostBuilder()
     {
-        IWebHostBuilder builder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder builder = WebHost.CreateDefaultBuilder();
+        builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         Action action = () => builder.AddSteeltoe();
 
@@ -59,7 +60,8 @@ public sealed class EmptyAutoConfigurationTest
     [Fact]
     public void Loads_without_any_Steeltoe_references_using_HostBuilder()
     {
-        var builder = new HostBuilder();
+        IHostBuilder builder = new HostBuilder();
+        builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         Action action = () => builder.AddSteeltoe();
 

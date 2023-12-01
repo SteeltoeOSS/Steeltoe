@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Steeltoe.Common;
+using Steeltoe.Common.Hosting;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
@@ -79,15 +80,9 @@ public static class SerilogWebApplicationBuilderExtensions
     {
         ArgumentGuard.NotNull(hostBuilder);
 
-        LoggerConfiguration? loggerConfiguration = null;
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(hostBuilder);
+        wrapper.AddDynamicSerilog(HostBuilderContextWrapper.WrapAction(configureLogger), preserveDefaultConsole);
 
-        if (configureLogger != null)
-        {
-            loggerConfiguration = new LoggerConfiguration();
-            configureLogger(hostBuilder, loggerConfiguration);
-        }
-
-        hostBuilder.Logging.AddDynamicSerilog(loggerConfiguration, preserveDefaultConsole);
         return hostBuilder;
     }
 }
