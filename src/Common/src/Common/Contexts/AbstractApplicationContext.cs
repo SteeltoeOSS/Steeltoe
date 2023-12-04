@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Configuration;
-using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Services;
 
 namespace Steeltoe.Common.Contexts;
@@ -18,8 +17,6 @@ public abstract class AbstractApplicationContext : IApplicationContext
     public IConfiguration Configuration { get; private set; }
 
     public IServiceProvider ServiceProvider { get; private set; }
-
-    public IServiceExpressionResolver ServiceExpressionResolver { get; set; }
 
     protected AbstractApplicationContext(IServiceProvider serviceProvider, IConfiguration configuration, IEnumerable<NameToTypeMapping> nameToTypeMappings)
     {
@@ -261,7 +258,6 @@ public abstract class AbstractApplicationContext : IApplicationContext
             _instances.Clear();
             Configuration = null;
             ServiceProvider = null;
-            ServiceExpressionResolver = null;
         }
     }
 
@@ -292,7 +288,7 @@ public abstract class AbstractApplicationContext : IApplicationContext
         return found;
     }
 
-    public class NameToTypeMapping
+    public sealed class NameToTypeMapping
     {
         public string Name { get; }
 

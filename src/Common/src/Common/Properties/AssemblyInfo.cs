@@ -4,11 +4,9 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Common.Expression")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Messaging")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]

@@ -3,7 +3,6 @@
     "path": "Steeltoe.All.sln",
     "projects": [
       "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
-      "Common\\src\\Common.Expression\\Steeltoe.Common.Expression.csproj",
       "Common\\src\\Common.Hosting\\Steeltoe.Common.Hosting.csproj",
       "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
       "Common\\src\\Common.Kubernetes\\Steeltoe.Common.Kubernetes.csproj",
@@ -12,7 +11,6 @@
       "Common\\src\\Common.Security\\Steeltoe.Common.Security.csproj",
       "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
-      "Common\\test\\Common.Expression.Test\\Steeltoe.Common.Expression.Test.csproj",
       "Common\\test\\Common.Hosting.Test\\Steeltoe.Common.Hosting.Test.csproj",
       "Common\\test\\Common.Http.Test\\Steeltoe.Common.Http.Test.csproj",
       "Common\\test\\Common.Kubernetes.Test\\Steeltoe.Common.Kubernetes.Test.csproj",

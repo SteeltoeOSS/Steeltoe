@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Expression.Internal.Contexts;
 
 namespace Steeltoe.Common.Contexts;
 
@@ -12,8 +11,6 @@ public interface IApplicationContext : IDisposable
     IConfiguration Configuration { get; }
 
     IServiceProvider ServiceProvider { get; }
-
-    IServiceExpressionResolver ServiceExpressionResolver { get; set; }
 
     object GetService(string name);
 
