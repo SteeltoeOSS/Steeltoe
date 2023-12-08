@@ -4,8 +4,10 @@
 
 using System.Globalization;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Net.Sockets;
+using System.Runtime;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -145,9 +147,9 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         }
 
         Settings = settings;
-        HttpClient = httpClient ?? GetConfiguredHttpClient(Settings);
-
         OnSettingsChanged();
+
+        HttpClient = httpClient ?? GetConfiguredHttpClient(Settings);
     }
 
     private void OnSettingsChanged()
