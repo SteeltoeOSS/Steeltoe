@@ -14,6 +14,7 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
 {
     private const string SpringApplicationJson = "SPRING_APPLICATION_JSON";
     private readonly string _springApplicationJson;
+    private bool _loaded = false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpringBootEnvironmentVariableProvider" /> class that reads from the SPRING_APPLICATION_JSON environment
@@ -41,6 +42,11 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
     /// </summary>
     public override void Load()
     {
+        if (_loaded)
+        {
+            return;
+        }
+
         string json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SpringApplicationJson);
 
         if (!string.IsNullOrEmpty(json))
@@ -60,6 +66,8 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
                 }
             }
         }
+
+        _loaded = true;
     }
 
     private static Stream GetStream(string json)
