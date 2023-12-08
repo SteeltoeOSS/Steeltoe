@@ -79,19 +79,15 @@ public sealed class SpringBootHostBuilderExtensionsTest
     [Fact]
     public void GenericHostConfiguresIConfiguration_Spring_Application_Json_Works_With_Placeholder()
     {
-        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
+        using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
-        var hostBuilder = new HostBuilder()
-            .AddSpringBootConfiguration()
-            .AddPlaceholderResolver();
+        IHostBuilder hostBuilder = new HostBuilder().AddSpringBootConfiguration().AddPlaceholderResolver();
 
-        var host = hostBuilder.Build();
-        var config = host.Services.GetServices<IConfiguration>().SingleOrDefault();
+        IHost host = hostBuilder.Build();
+        IConfiguration configuration = host.Services.GetServices<IConfiguration>().SingleOrDefault();
 
-        Assert.NotNull(config["foo:bar"]);
-        Assert.Equal("value", config["foo:bar"]);
-
-        Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", string.Empty);
+        Assert.NotNull(configuration["foo:bar"]);
+        Assert.Equal("value", configuration["foo:bar"]);
     }
 
     [Fact]

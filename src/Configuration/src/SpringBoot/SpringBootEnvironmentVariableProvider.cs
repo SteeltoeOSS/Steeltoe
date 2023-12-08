@@ -14,7 +14,7 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
 {
     private const string SpringApplicationJson = "SPRING_APPLICATION_JSON";
     private readonly string _springApplicationJson;
-    private bool _loaded = false;
+    private bool _loaded;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpringBootEnvironmentVariableProvider" /> class that reads from the SPRING_APPLICATION_JSON environment

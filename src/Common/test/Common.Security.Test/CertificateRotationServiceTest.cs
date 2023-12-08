@@ -2,14 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Utils.IO;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using Xunit;
 
 namespace Steeltoe.Common.Security.Test;
@@ -20,65 +20,61 @@ public class CertificateRotationServiceTest
     [Trait("Category", "SkipOnMacOS")]
     public async Task ServiceLoadsCertificate()
     {
-        using var personalCertStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
-        personalCertStore.Open(OpenFlags.ReadWrite);
-        personalCertStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false).Should().BeEmpty();
+        using var personalCertificateStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+        personalCertificateStore.Open(OpenFlags.ReadWrite);
+        personalCertificateStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false).Should().BeEmpty();
 
         using var sandbox = new Sandbox();
-        var filename = sandbox.CreateFile("fakeCertificate.p12");
+        string filename = sandbox.CreateFile("fakeCertificate.p12");
         File.Copy("instance.p12", filename, true);
 
-        var config = new ConfigurationBuilder()
-            .AddCertificateFile(filename)
-            .Build();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificateFile(filename).Build();
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(config);
+        services.AddSingleton<IConfiguration>(configuration);
         services.AddOptions();
         services.AddSingleton<IConfigureOptions<CertificateOptions>, ConfigureCertificateOptions>();
         services.AddSingleton<ICertificateRotationService, CertificateRotationService>();
 
-        using var serviceProvider = services.BuildServiceProvider();
+        using ServiceProvider serviceProvider = services.BuildServiceProvider();
         var service = serviceProvider.GetRequiredService<ICertificateRotationService>();
 
         service.Start();
 
-        var collection = personalCertStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false);
+        X509Certificate2Collection collection =
+            personalCertificateStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false);
+
         collection.Should().NotBeNull();
 
-#if NET6_0_OR_GREATER
         if (!File.Exists(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
         {
             var orgId = Guid.NewGuid();
             var spaceId = Guid.NewGuid();
-            var certWriter = new LocalCertificateWriter();
+            var certificateWriter = new LocalCertificateWriter();
 
-            certWriter.Write(orgId, spaceId);
+            certificateWriter.Write(orgId, spaceId);
         }
 
-        var cert = GetX509FromCertKeyPair(
-            Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"),
-            Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"));
-        await File.WriteAllBytesAsync(filename, cert.Export(X509ContentType.Pkcs12));
+        X509Certificate2 certificate =
+            GetX509FromCertKeyPair(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"),
+                Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"));
+
+        await File.WriteAllBytesAsync(filename, certificate.Export(X509ContentType.Pkcs12));
         await Task.Delay(2000);
 
-        var newCollection = personalCertStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false);
-        newCollection.Should().NotIntersectWith(collection);
-#else
-        // avoid warning about missing await for .NET Core 3.1 target
-        await Task.Yield();
-#endif
+        X509Certificate2Collection newCollection =
+            personalCertificateStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false);
 
-        personalCertStore.Close();
+        newCollection.Should().NotIntersectWith(collection);
+
+        personalCertificateStore.Close();
     }
 
-#if NET6_0_OR_GREATER
     private X509Certificate2 GetX509FromCertKeyPair(string certFile, string keyFile)
     {
-        using var cert = new X509Certificate2(certFile);
+        using var certificate = new X509Certificate2(certFile);
         using var key = RSA.Create();
         key.ImportFromPem(File.ReadAllText(keyFile));
 
-        return cert.CopyWithPrivateKey(key);
+        return certificate.CopyWithPrivateKey(key);
     }
-#endif
 }
