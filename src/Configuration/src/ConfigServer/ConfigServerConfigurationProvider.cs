@@ -163,6 +163,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         if (Settings.PollingInterval == TimeSpan.Zero)
         {
             _refreshTimer?.Dispose();
+            _refreshTimer = null;
         }
         else if (_refreshTimer == null)
         {
@@ -858,10 +859,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     public void Dispose()
     {
-        if (_refreshTimer != null)
-        {
-            _refreshTimer.Dispose();
-            _refreshTimer = null;
-        }
+        _refreshTimer?.Dispose();
+        _refreshTimer = null;
     }
 }
