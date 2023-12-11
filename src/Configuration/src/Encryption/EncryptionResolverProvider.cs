@@ -17,7 +17,7 @@ namespace Steeltoe.Configuration.Encryption;
 /// ${some:config:reference?default_if_not_present}
 /// ]]></code>
 /// </summary>
-internal sealed class EncryptionResolverProvider : IConfigurationProvider
+internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisposable
 {
     // regex for matching {cipher}{key:keyAlias} at the start of the string
     private readonly Regex _cipherRegex = new("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)");
@@ -189,5 +189,34 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider
     private void EnsureInitialized()
     {
         Configuration ??= new ConfigurationRoot(Providers);
+    }
+
+    public void Dispose()
+    {
+        HashSet<IDisposable> disposables = new();
+
+        foreach (IConfigurationProvider provider in Providers)
+        {
+            if (provider is IDisposable disposable)
+            {
+                disposables.Add(disposable);
+            }
+        }
+
+        if (Configuration != null)
+        {
+            foreach (IConfigurationProvider provider in Configuration.Providers)
+            {
+                if (provider is IDisposable disposable)
+                {
+                    disposables.Add(disposable);
+                }
+            }
+        }
+
+        foreach (IDisposable disposable in disposables)
+        {
+            disposable.Dispose();
+        }
     }
 }
