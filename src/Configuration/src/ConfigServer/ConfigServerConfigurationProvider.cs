@@ -24,7 +24,7 @@ namespace Steeltoe.Configuration.ConfigServer;
 /// <summary>
 /// A Spring Cloud Config Server based <see cref="ConfigurationProvider" />.
 /// </summary>
-internal class ConfigServerConfigurationProvider : ConfigurationProvider
+internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider, IDisposable
 {
     private const string VaultRenewPath = "vault/v1/auth/token/renew-self";
     private const string VaultTokenHeader = "X-Vault-Token";
@@ -163,6 +163,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         if (Settings.PollingInterval == TimeSpan.Zero)
         {
             _refreshTimer?.Dispose();
+            _refreshTimer = null;
         }
         else if (_refreshTimer == null)
         {
@@ -447,7 +448,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
     /// <summary>
     /// Adds the client settings for the Configuration Server to the Data dictionary.
     /// </summary>
-    protected internal void AddConfigServerClientSettings()
+    internal void AddConfigServerClientSettings()
     {
         Dictionary<string, string> data = Data.ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.OrdinalIgnoreCase);
 
@@ -498,7 +499,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         data["spring:cloud:config:health:timeToLive"] = Settings.HealthTimeToLive.ToString(culture);
     }
 
-    protected internal async Task<ConfigEnvironment> RemoteLoadAsync(IEnumerable<string> requestUris, string label, CancellationToken cancellationToken)
+    internal async Task<ConfigEnvironment> RemoteLoadAsync(IEnumerable<string> requestUris, string label, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(requestUris);
 
@@ -584,7 +585,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
     /// <returns>
     /// The request URI for the Configuration Server.
     /// </returns>
-    protected internal string GetConfigServerUri(string baseRawUri, string label)
+    internal string GetConfigServerUri(string baseRawUri, string label)
     {
         ArgumentGuard.NotNullOrEmpty(baseRawUri);
 
@@ -642,7 +643,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         }
     }
 
-    protected internal string ConvertKey(string key)
+    internal string ConvertKey(string key)
     {
         if (string.IsNullOrEmpty(key))
         {
@@ -701,7 +702,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         }
     }
 
-    protected internal string ConvertArrayKey(string key)
+    internal string ConvertArrayKey(string key)
     {
         return ArrayRegex.Replace(key, match => match.Value.Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal));
     }
@@ -723,7 +724,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
     /// <returns>
     /// Encoded username with password.
     /// </returns>
-    protected internal string GetEncoded(string user, string password)
+    internal string GetEncoded(string user, string password)
     {
         return HttpClientHelper.GetEncodedUserPassword(user, password);
     }
@@ -812,7 +813,7 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
         return request;
     }
 
-    protected internal bool IsDiscoveryFirstEnabled()
+    internal bool IsDiscoveryFirstEnabled()
     {
         IConfigurationSection clientConfigSection = _configuration.GetSection(ConfigurationPrefix);
         return clientConfigSection.GetValue("discovery:enabled", Settings.DiscoveryEnabled);
@@ -854,5 +855,11 @@ internal class ConfigServerConfigurationProvider : ConfigurationProvider
     private static bool IsSocketError(Exception exception)
     {
         return exception is HttpRequestException && exception.InnerException is SocketException;
+    }
+
+    public void Dispose()
+    {
+        _refreshTimer?.Dispose();
+        _refreshTimer = null;
     }
 }
