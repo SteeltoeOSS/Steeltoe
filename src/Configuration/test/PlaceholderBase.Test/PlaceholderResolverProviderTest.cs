@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Utils.IO;
 using System;
 using System.Collections.Generic;
@@ -329,5 +330,47 @@ public class PlaceholderResolverProviderTest
 
         // for comparison, keys not defined return null values
         config["undefinedKey"].Should().BeNull();
+    }
+
+    [Fact]
+    public void ConstructorWithConfiguration_Dispose_DisposesChildren()
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder().Add(new DisposableConfigurationSource()).Build();
+        DisposableConfigurationProvider disposableConfigurationProvider = configuration.Providers.OfType<DisposableConfigurationProvider>().Single();
+
+        var placeholderResolverProvider = new PlaceholderResolverProvider(configuration, NullLoggerFactory.Instance);
+
+        placeholderResolverProvider.Dispose();
+
+        disposableConfigurationProvider.IsDisposed.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ConstructorWithProviders_Dispose_DisposesChildren()
+    {
+        var disposableConfigurationProvider = new DisposableConfigurationProvider();
+        var placeholderResolverProvider = new PlaceholderResolverProvider([disposableConfigurationProvider], NullLoggerFactory.Instance);
+
+        placeholderResolverProvider.Dispose();
+
+        disposableConfigurationProvider.IsDisposed.Should().BeTrue();
+    }
+
+    private sealed class DisposableConfigurationSource : IConfigurationSource
+    {
+        public IConfigurationProvider Build(IConfigurationBuilder builder)
+        {
+            return new DisposableConfigurationProvider();
+        }
+    }
+
+    private sealed class DisposableConfigurationProvider : ConfigurationProvider, IDisposable
+    {
+        public bool IsDisposed { get; private set; }
+
+        public void Dispose()
+        {
+            IsDisposed = true;
+        }
     }
 }

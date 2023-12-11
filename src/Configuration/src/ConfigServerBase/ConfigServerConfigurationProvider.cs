@@ -28,7 +28,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 /// <summary>
 /// A Spring Cloud Config Server based <see cref="ConfigurationProvider"/>.
 /// </summary>
-public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigurationSource
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigurationSource, IDisposable
+#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     /// <summary>
     /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server
@@ -1033,5 +1035,13 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         }
 
         return false;
+    }
+
+#pragma warning disable SA1202 // Elements should be ordered by access
+    public void Dispose()
+#pragma warning restore SA1202 // Elements should be ordered by access
+    {
+        _refreshTimer?.Dispose();
+        _refreshTimer = null;
     }
 }

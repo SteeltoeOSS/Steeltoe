@@ -16,7 +16,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder;
 /// Configuration provider that resolves placeholders
 /// A placeholder takes the form of <code> ${some:config:reference?default_if_not_present}></code>
 /// </summary>
-public class PlaceholderResolverProvider : IPlaceholderResolverProvider
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+public class PlaceholderResolverProvider : IPlaceholderResolverProvider, IDisposable
+#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
     internal ILogger<PlaceholderResolverProvider> _logger;
@@ -142,6 +144,37 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
         if (Configuration == null)
         {
             _configuration = new ConfigurationRoot(_providers);
+        }
+    }
+
+#pragma warning disable SA1202 // Elements should be ordered by access
+    public void Dispose()
+#pragma warning restore SA1202 // Elements should be ordered by access
+    {
+        HashSet<IDisposable> disposables = new ();
+
+        foreach (IConfigurationProvider provider in Providers)
+        {
+            if (provider is IDisposable disposable)
+            {
+                disposables.Add(disposable);
+            }
+        }
+
+        if (Configuration != null)
+        {
+            foreach (IConfigurationProvider provider in _configuration.Providers)
+            {
+                if (provider is IDisposable disposable)
+                {
+                    disposables.Add(disposable);
+                }
+            }
+        }
+
+        foreach (IDisposable disposable in disposables)
+        {
+            disposable.Dispose();
         }
     }
 }
