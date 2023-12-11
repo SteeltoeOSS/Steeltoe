@@ -349,7 +349,9 @@ public class PlaceholderResolverProviderTest
     public void ConstructorWithProviders_Dispose_DisposesChildren()
     {
         var disposableConfigurationProvider = new DisposableConfigurationProvider();
-        var placeholderResolverProvider = new PlaceholderResolverProvider([disposableConfigurationProvider], NullLoggerFactory.Instance);
+        var placeholderResolverProvider = new PlaceholderResolverProvider(
+            providers: new List<IConfigurationProvider>() { disposableConfigurationProvider },
+            NullLoggerFactory.Instance);
 
         placeholderResolverProvider.Dispose();
 
