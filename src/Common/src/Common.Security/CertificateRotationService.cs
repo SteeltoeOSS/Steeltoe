@@ -52,7 +52,7 @@ public class CertificateRotationService : IDisposable, ICertificateRotationServi
         personalCertStore.Open(OpenFlags.ReadWrite);
         authorityCertStore.Open(OpenFlags.ReadWrite);
 
-        if (_lastValue != null)
+        if (_lastValue != null && personalCertStore.Certificates.Contains(_lastValue.Certificate))
         {
             personalCertStore.Certificates.Remove(_lastValue.Certificate);
 

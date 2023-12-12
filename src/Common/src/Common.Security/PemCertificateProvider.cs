@@ -24,11 +24,6 @@ public class PemCertificateProvider : ConfigurationProvider
         // for future use
     }
 
-    public override void Set(string key, string value)
-    {
-        throw new InvalidOperationException();
-    }
-
     public override bool TryGet(string key, out string value)
     {
         value = _certFileProvider[key];

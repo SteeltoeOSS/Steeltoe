@@ -145,9 +145,15 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         }
 
         Settings = settings;
-        HttpClient = httpClient ?? GetConfiguredHttpClient(Settings);
+
+        if (httpClient != null)
+        {
+            HttpClient = httpClient;
+        }
 
         OnSettingsChanged();
+
+        HttpClient ??= GetConfiguredHttpClient(Settings);
     }
 
     private void OnSettingsChanged()
@@ -160,18 +166,36 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             _configuration.GetReloadToken().RegisterChangeCallback(_ => OnSettingsChanged(), null);
         }
 
-        if (Settings.PollingInterval == TimeSpan.Zero)
+        if (Settings.PollingInterval == TimeSpan.Zero || !Settings.Enabled)
         {
             _refreshTimer?.Dispose();
             _refreshTimer = null;
         }
-        else if (_refreshTimer == null)
+        else if (Settings.Enabled)
         {
-            _refreshTimer = new Timer(_ => DoLoadAsync(true, CancellationToken.None).GetAwaiter().GetResult(), null, TimeSpan.Zero, Settings.PollingInterval);
+            if (_refreshTimer == null)
+            {
+                _refreshTimer = new Timer(_ => DoPolledLoadAsync().GetAwaiter().GetResult(), null, TimeSpan.Zero, Settings.PollingInterval);
+            }
+            else if (existingPollingInterval != Settings.PollingInterval)
+            {
+                _refreshTimer.Change(TimeSpan.Zero, Settings.PollingInterval);
+            }
         }
-        else if (existingPollingInterval != Settings.PollingInterval)
+    }
+
+    /// <remarks>
+    /// DoPolledLoad is called by a Timer callback, so must catch all exceptions.
+    /// </remarks>
+    private async Task DoPolledLoadAsync()
+    {
+        try
         {
-            _refreshTimer.Change(TimeSpan.Zero, Settings.PollingInterval);
+            await DoLoadAsync(true, CancellationToken.None);
+        }
+        catch (Exception e)
+        {
+            Logger.LogWarning(e, "Could not reload configuration during polling");
         }
     }
 

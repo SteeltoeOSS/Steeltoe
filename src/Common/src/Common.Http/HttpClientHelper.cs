@@ -62,7 +62,11 @@ public static class HttpClientHelper
             client = handler == null ? new HttpClient() : new HttpClient(handler);
         }
 
-        client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
+        if (timeoutMillis > 0)
+        {
+            client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
+        }
+
         client.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
         return client;
     }

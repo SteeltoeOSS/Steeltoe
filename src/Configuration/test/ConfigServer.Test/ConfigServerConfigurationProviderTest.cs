@@ -75,6 +75,21 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
+    public void SourceConstructor_WithTimeoutConfigured_InitializesHttpClientWithConfiguredTimeout()
+    {
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:cloud:config:timeout", "30000" }
+        }).Build();
+
+        var settings = new ConfigServerClientSettings();
+        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
+
+        Assert.Equal(TimeSpan.FromMilliseconds(30000), provider.HttpClient.Timeout);
+    }
+
+    [Fact]
     public void GetConfigServerUri_NoBaseUri_Throws()
     {
         var settings = new ConfigServerClientSettings
@@ -443,6 +458,97 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.True(TestConfigServerStartup.RequestCount >= 2);
         Assert.False(provider.GetReloadToken().HasChanged);
+    }
+
+    [Fact]
+    public async Task Create_FailFastEnabledAndExceptionThrownDuringPolling_DoesNotCrash()
+    {
+        // Arrange
+        const string environment = @"
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": []
+                }";
+
+        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        TestConfigServerStartup.Reset();
+        TestConfigServerStartup.Response = environment;
+
+        // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
+        TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100)).ToArray();
+        TestConfigServerStartup.Label = "testlabel";
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+
+        using var server = new TestServer(builder)
+        {
+            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
+        };
+
+        var settings = new ConfigServerClientSettings
+        {
+            Name = "myName",
+            PollingInterval = TimeSpan.FromMilliseconds(300),
+            FailFast = true,
+            Label = "testlabel"
+        };
+
+        using HttpClient client = server.CreateClient();
+
+        // Act
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+
+        // Assert
+        Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
+        Assert.True(TestConfigServerStartup.RequestCount >= 1);
+        await Task.Delay(1000);
+        Assert.NotNull(TestConfigServerStartup.LastRequest);
+        Assert.True(TestConfigServerStartup.RequestCount >= 2);
+        Assert.False(provider.GetReloadToken().HasChanged);
+    }
+
+    [Fact]
+    public void Create_WithNonZeroPollingIntervalAndClientDisabled_PollingDisabled()
+    {
+        // Arrange
+        const string environment = @"
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": []
+                }";
+
+        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        TestConfigServerStartup.Reset();
+        TestConfigServerStartup.Response = environment;
+        TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
+        TestConfigServerStartup.Label = "testlabel";
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+
+        using var server = new TestServer(builder)
+        {
+            BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri)
+        };
+
+        var settings = new ConfigServerClientSettings
+        {
+            Name = "myName",
+            Enabled = false,
+            PollingInterval = TimeSpan.FromMilliseconds(300),
+            Label = "label,testlabel"
+        };
+
+        using HttpClient client = server.CreateClient();
+
+        // Act
+        _ = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+
+        // Assert
+        Assert.False(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(2)));
     }
 
     [Fact]
