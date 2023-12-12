@@ -28,9 +28,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 /// <summary>
 /// A Spring Cloud Config Server based <see cref="ConfigurationProvider"/>.
 /// </summary>
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
 public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigurationSource, IDisposable
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 {
     /// <summary>
     /// The prefix (<see cref="IConfigurationSection"/> under which all Spring Cloud Config Server
@@ -199,6 +197,12 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// </summary>
     public virtual ConfigServerClientSettings Settings => _settings;
 
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
     internal JsonSerializerOptions SerializerOptions { get; private set; } =
         new JsonSerializerOptions
         {
@@ -211,6 +215,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     internal ILogger Logger => _logger;
 
     internal ConfigServerDiscoveryService _configServerDiscoveryService;
+    private bool _disposedValue;
 
     /// <summary>
     /// Loads configuration data from the Spring Cloud Configuration Server as specified by
@@ -1011,6 +1016,20 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         return client;
     }
 
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _refreshTimer?.Dispose();
+                _refreshTimer = null;
+            }
+
+            _disposedValue = true;
+        }
+    }
+
     private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration)
     {
         var root = configuration as IConfigurationRoot;
@@ -1035,13 +1054,5 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         }
 
         return false;
-    }
-
-#pragma warning disable SA1202 // Elements should be ordered by access
-    public void Dispose()
-#pragma warning restore SA1202 // Elements should be ordered by access
-    {
-        _refreshTimer?.Dispose();
-        _refreshTimer = null;
     }
 }
