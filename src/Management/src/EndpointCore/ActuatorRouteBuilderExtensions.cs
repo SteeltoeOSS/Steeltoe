@@ -92,7 +92,7 @@ public static class ActuatorRouteBuilderExtensions
         foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
         {
             // Some actuators only work on some platforms. i.e. Windows and Linux
-            // Some actuators have different implemenation depending on the MediaTypeVersion
+            // Some actuators have different implementation depending on the MediaTypeVersion
 
             // Previously those checks where performed here and when adding things to the IServiceCollection
             // Now all that logic is handled in the IServiceCollection setup; no need to keep code in two different places in sync
@@ -117,7 +117,7 @@ public static class ActuatorRouteBuilderExtensions
         foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
         {
             // Some actuators only work on some platforms. i.e. Windows and Linux
-            // Some actuators have different implemenation depending on the MediaTypeVersion
+            // Some actuators have different implementation depending on the MediaTypeVersion
             // Previously those checks where performed here and when adding things to the IServiceCollection
             // Now all that logic is handled in the IServiceCollection setup; no need to keep code in two different places in sync
 
@@ -127,6 +127,16 @@ public static class ActuatorRouteBuilderExtensions
         }
 
         return conventionBuilder;
+    }
+#else
+
+    /// <summary>
+    /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
+    /// </summary>
+    /// <param name="endpoints">The endpoint builder</param>
+    public static void MapAllActuators(this IEndpointRouteBuilder endpoints)
+    {
+        MapAllActuators(endpoints, null);
     }
 #endif
 
