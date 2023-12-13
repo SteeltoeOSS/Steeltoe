@@ -4,15 +4,27 @@
 
 using Microsoft.AspNetCore.DataProtection.StackExchangeRedis;
 using StackExchange.Redis;
+using Steeltoe.Common;
+using Steeltoe.Connectors;
+using Steeltoe.Connectors.Redis;
 
 namespace Steeltoe.Security.DataProtection.Redis;
 
-public class CloudFoundryRedisXmlRepository : RedisXmlRepository
+internal sealed class CloudFoundryRedisXmlRepository : RedisXmlRepository
 {
-    private const string DataProtectionKeysName = "DataProtection-Keys";
+    private static readonly RedisKey DataProtectionKey = "Steeltoe-DataProtection-Key";
 
-    public CloudFoundryRedisXmlRepository(IConnectionMultiplexer redis)
-        : base(() => redis.GetDatabase(), DataProtectionKeysName)
+    public CloudFoundryRedisXmlRepository(ConnectorFactory<RedisOptions, IConnectionMultiplexer> connectorFactory)
+        : base(() => GetDatabase(connectorFactory), DataProtectionKey)
     {
+    }
+
+    private static IDatabase GetDatabase(ConnectorFactory<RedisOptions, IConnectionMultiplexer> connectorFactory)
+    {
+        ArgumentGuard.NotNull(connectorFactory);
+
+        Connector<RedisOptions, IConnectionMultiplexer> connector = connectorFactory.Get();
+        IConnectionMultiplexer connectionMultiplexer = connector.GetConnection();
+        return connectionMultiplexer.GetDatabase();
     }
 }

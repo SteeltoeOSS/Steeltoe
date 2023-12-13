@@ -106,7 +106,7 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
 
                 if (_singletonSnapshot == null)
                 {
-                    TOptions? optionsSnapshot = _optionsMonitor.Get(_serviceBindingName);
+                    TOptions optionsSnapshot = _optionsMonitor.Get(_serviceBindingName);
                     TConnection connection = CreateConnection();
                     _singletonSnapshot = new ConnectionWithOptionsSnapshot(connection, optionsSnapshot);
                 }
