@@ -23,7 +23,7 @@
     <CodeAnalysisRuleSet>..\..\..\..\Steeltoe.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <EnablePreviewFeatures>false</EnablePreviewFeatures>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BUILD_PACKAGES)' == 'true'">

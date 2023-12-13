@@ -16,12 +16,13 @@ namespace Steeltoe.Extensions.Configuration.Placeholder;
 /// Configuration provider that resolves placeholders
 /// A placeholder takes the form of <code> ${some:config:reference?default_if_not_present}></code>
 /// </summary>
-public class PlaceholderResolverProvider : IPlaceholderResolverProvider
+public class PlaceholderResolverProvider : IPlaceholderResolverProvider, IDisposable
 {
     internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
     internal ILogger<PlaceholderResolverProvider> _logger;
 
     private IConfigurationRoot _configuration;
+    private bool _disposedValue;
 
     /// <summary>
     /// Gets the configuration this placeholder resolver wraps
@@ -135,6 +136,49 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
         keys.AddRange(children.Select(c => c.Key));
         return keys.Concat(earlierKeys)
             .OrderBy(k => k, ConfigurationKeyComparer.Instance);
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                HashSet<IDisposable> disposables = new ();
+
+                foreach (IConfigurationProvider provider in Providers)
+                {
+                    if (provider is IDisposable disposable)
+                    {
+                        disposables.Add(disposable);
+                    }
+                }
+
+                if (Configuration != null)
+                {
+                    foreach (IConfigurationProvider provider in _configuration.Providers)
+                    {
+                        if (provider is IDisposable disposable)
+                        {
+                            disposables.Add(disposable);
+                        }
+                    }
+                }
+
+                foreach (IDisposable disposable in disposables)
+                {
+                    disposable.Dispose();
+                }
+            }
+
+            _disposedValue = true;
+        }
     }
 
     private void EnsureInitialized()
