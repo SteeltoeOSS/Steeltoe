@@ -21,6 +21,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
 {
     // regex for matching {cipher}{key:keyAlias} at the start of the string
     private readonly Regex _cipherRegex = new("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)");
+    private bool _isDisposed;
     internal ILogger<EncryptionResolverProvider> Logger { get; }
 
     /// <summary>
@@ -188,35 +189,45 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
 
     private void EnsureInitialized()
     {
+        if (_isDisposed)
+        {
+            throw new ObjectDisposedException(nameof(EncryptionResolverProvider));
+        }
+
         Configuration ??= new ConfigurationRoot(Providers);
     }
 
     public void Dispose()
     {
-        HashSet<IDisposable> disposables = new();
-
-        foreach (IConfigurationProvider provider in Providers)
+        if (!_isDisposed)
         {
-            if (provider is IDisposable disposable)
-            {
-                disposables.Add(disposable);
-            }
-        }
+            HashSet<IDisposable> disposables = new();
 
-        if (Configuration != null)
-        {
-            foreach (IConfigurationProvider provider in Configuration.Providers)
+            foreach (IConfigurationProvider provider in Providers)
             {
                 if (provider is IDisposable disposable)
                 {
                     disposables.Add(disposable);
                 }
             }
-        }
 
-        foreach (IDisposable disposable in disposables)
-        {
-            disposable.Dispose();
+            if (Configuration != null)
+            {
+                foreach (IConfigurationProvider provider in Configuration.Providers)
+                {
+                    if (provider is IDisposable disposable)
+                    {
+                        disposables.Add(disposable);
+                    }
+                }
+            }
+
+            foreach (IDisposable disposable in disposables)
+            {
+                disposable.Dispose();
+            }
+
+            _isDisposed = true;
         }
     }
 }
