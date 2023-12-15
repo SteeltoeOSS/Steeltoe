@@ -1403,14 +1403,10 @@ public sealed class ConfigServerConfigurationProviderTest
 
     private sealed class TestServiceInfo : IServiceInstance
     {
-        public string ServiceId => throw new NotImplementedException();
-
-        public string Host => throw new NotImplementedException();
-
-        public int Port => throw new NotImplementedException();
-
-        public bool IsSecure => throw new NotImplementedException();
-
+        public string ServiceId { get; }
+        public string Host { get; }
+        public int Port { get; }
+        public bool IsSecure { get; }
         public Uri Uri { get; }
 
         public IDictionary<string, string> Metadata { get; }
