@@ -12,6 +12,6 @@ public sealed class TestInnerDelegatingHandlerBrokenServer : DelegatingHandler
     {
         var responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
         responseMessage.Headers.Add("requestUri", request.RequestUri.AbsoluteUri);
-        return Task.Factory.StartNew(() => responseMessage, cancellationToken);
+        return Task.FromResult(responseMessage);
     }
 }
