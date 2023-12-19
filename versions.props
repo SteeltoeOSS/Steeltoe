@@ -29,13 +29,17 @@
     <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>9.11.*</SonarAnalyzerVersion>
-    <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
+    <SourceLinkGitHubVersion>8.0.*</SourceLinkGitHubVersion>
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
     <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
-    <TestSdkVersion>17.7.*</TestSdkVersion>
+    <TestSdkVersion>17.8.*</TestSdkVersion>
     <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
-    <XunitVersion>2.5.*</XunitVersion>
+    <XunitVersion>2.6.*</XunitVersion>
+    <XunitVisualStudioVersion>
+      <!-- Pinned version to workaround https://github.com/xunit/visualstudio.xunit/issues/396 -->
+      2.5.4
+    </XunitVisualStudioVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
