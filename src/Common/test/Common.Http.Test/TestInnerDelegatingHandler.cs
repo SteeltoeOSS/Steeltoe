@@ -12,6 +12,6 @@ public sealed class TestInnerDelegatingHandler : DelegatingHandler
     {
         var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
         responseMessage.Headers.Add("requestUri", request.RequestUri.AbsoluteUri);
-        return Task.Factory.StartNew(() => responseMessage, cancellationToken);
+        return Task.FromResult(responseMessage);
     }
 }

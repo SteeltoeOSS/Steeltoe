@@ -6,6 +6,7 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" />
     <ProjectReference Include="..\..\src\SpringBoot\Steeltoe.Configuration.SpringBoot.csproj" />
   </ItemGroup>
 </Project>

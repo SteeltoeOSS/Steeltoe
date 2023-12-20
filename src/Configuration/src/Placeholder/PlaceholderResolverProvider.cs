@@ -17,8 +17,9 @@ namespace Steeltoe.Configuration.Placeholder;
 /// ${some:config:reference?default_if_not_present}
 /// ]]></code>
 /// </summary>
-internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
+internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider, IDisposable
 {
+    private bool _isDisposed;
     internal ILogger<PlaceholderResolverProvider> Logger { get; }
 
     public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
@@ -161,6 +162,45 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
 
     private void EnsureInitialized()
     {
+        if (_isDisposed)
+        {
+            throw new ObjectDisposedException(nameof(PlaceholderResolverProvider));
+        }
+
         Configuration ??= new ConfigurationRoot(Providers);
+    }
+
+    public void Dispose()
+    {
+        if (!_isDisposed)
+        {
+            HashSet<IDisposable> disposables = new();
+
+            foreach (IConfigurationProvider provider in Providers)
+            {
+                if (provider is IDisposable disposable)
+                {
+                    disposables.Add(disposable);
+                }
+            }
+
+            if (Configuration != null)
+            {
+                foreach (IConfigurationProvider provider in Configuration.Providers)
+                {
+                    if (provider is IDisposable disposable)
+                    {
+                        disposables.Add(disposable);
+                    }
+                }
+            }
+
+            foreach (IDisposable disposable in disposables)
+            {
+                disposable.Dispose();
+            }
+
+            _isDisposed = true;
+        }
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Configuration.Placeholder;
 using Xunit;
 
 namespace Steeltoe.Configuration.SpringBoot.Test;
@@ -68,6 +69,20 @@ public sealed class SpringBootHostBuilderExtensionsTest
         using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
         IHostBuilder hostBuilder = new HostBuilder().AddSpringBootConfiguration();
+        IHost host = hostBuilder.Build();
+        IConfiguration configuration = host.Services.GetServices<IConfiguration>().SingleOrDefault();
+
+        Assert.NotNull(configuration["foo:bar"]);
+        Assert.Equal("value", configuration["foo:bar"]);
+    }
+
+    [Fact]
+    public void GenericHostConfiguresIConfiguration_Spring_Application_Json_Works_With_Placeholder()
+    {
+        using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
+
+        IHostBuilder hostBuilder = new HostBuilder().AddSpringBootConfiguration().AddPlaceholderResolver();
+
         IHost host = hostBuilder.Build();
         IConfiguration configuration = host.Services.GetServices<IConfiguration>().SingleOrDefault();
 

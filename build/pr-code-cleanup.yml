@@ -70,7 +70,7 @@ jobs:
 
         if ($baseCommitHash -ne $headCommitHash) {
           Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
-          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
+          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
         }
   - task: PowerShell@2
     displayName: Detect changes

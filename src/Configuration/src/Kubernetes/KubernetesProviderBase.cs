@@ -48,7 +48,15 @@ internal abstract class KubernetesProviderBase : ConfigurationProvider
             {
                 Thread.Sleep(TimeSpan.FromSeconds(interval));
                 Logger.LogTrace("Interval completed for {namespace}.{name}, beginning reload", Settings.Namespace, Settings.Name);
-                Load();
+
+                try
+                {
+                    Load();
+                }
+                catch (Exception exception) when (!exception.IsCancellation())
+                {
+                    Logger.LogError("Failed to load configuration.");
+                }
 
                 if (_cancellationToken.IsCancellationRequested)
                 {

@@ -444,7 +444,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         {
             Uri = "https://uri-from-settings",
             RetryEnabled = false,
-            Timeout = 10
+            Timeout = 10,
+            Enabled = false
         };
 
         configurationBuilder.AddEnvironmentVariables().AddConfigServer(settings);
