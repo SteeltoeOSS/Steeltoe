@@ -41,9 +41,9 @@ internal sealed class ConfigServerDiscoveryService
     // Create a discovery client to be used (hopefully only) during startup
     private void SetupDiscoveryClient()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton(LoggerFactory);
-        services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
+        var tempServices = new ServiceCollection();
+        tempServices.AddSingleton(LoggerFactory);
+        tempServices.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
 
         // force settings to make sure we don't register the app here
         IConfigurationBuilder builder = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(new Dictionary<string, string>
@@ -52,11 +52,11 @@ internal sealed class ConfigServerDiscoveryService
             { "Consul:Discovery:Register", "false" }
         });
 
-        services.AddSingleton<IConfiguration>(builder.Build());
-        services.AddDiscoveryClient(_configuration);
+        tempServices.AddSingleton<IConfiguration>(builder.Build());
+        tempServices.AddDiscoveryClient(_configuration);
 
-        using ServiceProvider startupServiceProvider = services.BuildServiceProvider();
-        DiscoveryClient = startupServiceProvider.GetRequiredService<IDiscoveryClient>();
+        using ServiceProvider tempServiceProvider = tempServices.BuildServiceProvider();
+        DiscoveryClient = tempServiceProvider.GetRequiredService<IDiscoveryClient>();
         _logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", DiscoveryClient.GetType());
     }
 
