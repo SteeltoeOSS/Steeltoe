@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Attributes;
+using Steeltoe.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -304,29 +305,36 @@ public static class ReflectionHelpers
         where T : AssemblyContainsTypeAttribute
     {
         var runtimeAssemblies = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
-        using var loadContext = new MetadataLoadContext(new PathAssemblyResolver(AllRelevantPaths(runtimeAssemblies, typeof(T))));
-        var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-        var assemblypaths = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory).Where(f => f.EndsWith("dll", StringComparison.InvariantCultureIgnoreCase));
-        foreach (var assembly in assemblypaths)
+        try
         {
-            var filename = Path.GetFileNameWithoutExtension(assembly);
-            if (!loadedAssemblies.Any(a => a.FullName.StartsWith(filename, StringComparison.InvariantCultureIgnoreCase)))
+            using var loadContext = new MetadataLoadContext(new PathAssemblyResolver(AllRelevantPaths(runtimeAssemblies, typeof(T))));
+            var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var assemblypaths = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory).Where(f => f.EndsWith("dll", StringComparison.InvariantCultureIgnoreCase));
+            foreach (var assembly in assemblypaths)
             {
-                try
+                var filename = Path.GetFileNameWithoutExtension(assembly);
+                if (!loadedAssemblies.Any(a => a.FullName.StartsWith(filename, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    var assemblyRef = loadContext.LoadFromAssemblyPath(assembly);
-
-                    // haven't been able to get actual type comparison to work (assembly of the attribute not found?), falling back on matching the type name
-                    if (CustomAttributeData.GetCustomAttributes(assemblyRef).Any(attr => attr.AttributeType.FullName.Equals(typeof(T).FullName)))
+                    try
                     {
-                        FindAssembly(filename);
+                        var assemblyRef = loadContext.LoadFromAssemblyPath(assembly);
+
+                        // haven't been able to get actual type comparison to work (assembly of the attribute not found?), falling back on matching the type name
+                        if (CustomAttributeData.GetCustomAttributes(assemblyRef).Any(attr => attr.AttributeType.FullName.Equals(typeof(T).FullName)))
+                        {
+                            FindAssembly(filename);
+                        }
+                    }
+                    catch
+                    {
+                        // most failures here are situations that aren't relevant, so just fail silently
                     }
                 }
-                catch
-                {
-                    // most failures here are situations that aren't relevant, so just fail silently
-                }
             }
+        }
+        catch (SingleFilePublishedException exc)
+        {
+            Console.WriteLine(exc.Message );
         }
     }
 
@@ -349,8 +357,8 @@ public static class ReflectionHelpers
                 baseDirectory = baseDirectory.Substring(0, baseDirectory.Length - 1);
             }
 
-            toReturn.Add(baseDirectory);
-            Console.WriteLine("File path path information for the assembly containing {0} is missing. Some Steeltoe functionality may not work with PublishSingleFile=true", attributeType.Name);
+            //toReturn.Add(baseDirectory);
+            throw new SingleFilePublishedException($"File path path information for the assembly containing {attributeType.Name} is missing. Some Steeltoe functionality may not work with PublishSingleFile=true");
         }
         else
         {
