@@ -19,14 +19,14 @@
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
     <KubernetesClientVersion>5.0.13</KubernetesClientVersion>
-    <MongoDbClientVersion>2.5.0</MongoDbClientVersion>
+    <MongoDbClientVersion>2.19.0</MongoDbClientVersion>
 
     <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
     <MySqlV8>8.0.23</MySqlV8>
     <NpgsqlVersion>4.0.0</NpgsqlVersion>
-    <SqlClientVersion>4.8.1</SqlClientVersion>
-    <MicrosoftSqlClientVersion>5.0.1</MicrosoftSqlClientVersion>
+    <SqlClientVersion>4.8.5</SqlClientVersion>
+    <MicrosoftSqlClientVersion>5.0.2</MicrosoftSqlClientVersion>
     <StackExchangeVersion>2.0.593</StackExchangeVersion>
 
     <AutofacVersion>4.6.1</AutofacVersion>
@@ -41,7 +41,7 @@
     <MockHttpVersion>6.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
     
-    <OpenTelemetryVersion>[1.2.0,1.3.2]</OpenTelemetryVersion>
+    <OpenTelemetryVersion>[1.3.1,1.3.2]</OpenTelemetryVersion>
     <OpenTelemetryInstrumentationVersion>[1.0.0-rc9.2,1.0.0-rc9.9]</OpenTelemetryInstrumentationVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
     
@@ -78,7 +78,7 @@
     <UnsafeCompilerServicesVersion>5.0.0</UnsafeCompilerServicesVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
+    <AspNetCoreVersion>3.1.18</AspNetCoreVersion>
     <EFCoreTestVersion>3.1.6</EFCoreTestVersion>
     <EF6Version>6.3.0</EF6Version>
     <ExtensionsVersion>3.1.0</ExtensionsVersion>

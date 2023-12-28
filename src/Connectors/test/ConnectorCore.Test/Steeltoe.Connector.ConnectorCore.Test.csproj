@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0;netcoreapp3.1;</TargetFrameworks>
   </PropertyGroup>
@@ -26,7 +26,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="$(HealthChecksRabbitmqVersion)" />
     <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="$(HealthChecksRedisVersion)" />
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(HealthChecksSqlServerVersion)" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.180" />
 
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <!--<PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />-->
