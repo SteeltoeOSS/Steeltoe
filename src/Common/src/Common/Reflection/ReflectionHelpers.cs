@@ -334,7 +334,7 @@ public static class ReflectionHelpers
         }
         catch (SingleFilePublishedException exc)
         {
-            Console.WriteLine(exc.Message );
+            Console.WriteLine(exc.Message);
         }
     }
 
@@ -351,13 +351,6 @@ public static class ReflectionHelpers
         var typeAssemblyLocation = attributeType.Assembly.Location;
         if (string.IsNullOrEmpty(executingAssemblyLocation) || string.IsNullOrEmpty(typeAssemblyLocation))
         {
-            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            if (baseDirectory.EndsWith("\\"))
-            {
-                baseDirectory = baseDirectory.Substring(0, baseDirectory.Length - 1);
-            }
-
-            //toReturn.Add(baseDirectory);
             throw new SingleFilePublishedException($"File path path information for the assembly containing {attributeType.Name} is missing. Some Steeltoe functionality may not work with PublishSingleFile=true");
         }
         else

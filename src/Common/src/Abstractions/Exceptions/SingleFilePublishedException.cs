@@ -10,12 +10,11 @@ public class SingleFilePublishedException : Exception
 {
     public SingleFilePublishedException()
     {
-
     }
 
-    public SingleFilePublishedException(string message) : base(message)
+    public SingleFilePublishedException(string message)
+        : base(message)
     {
-
     }
 
     public string BaseDirectory { get; set; }
