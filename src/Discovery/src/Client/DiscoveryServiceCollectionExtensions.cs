@@ -30,9 +30,27 @@ public static class DiscoveryServiceCollectionExtensions
     /// <param name="configuration">
     /// Application configuration.
     /// </param>
-    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration = null)
+    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration)
     {
-        return services.AddDiscoveryClient(configuration, null);
+        return AddDiscoveryClient(services, configuration, null, null);
+    }
+
+    /// <summary>
+    /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured. If no clients are available or
+    /// configured, a <see cref="NoOpDiscoveryClient" /> will be configured.
+    /// </summary>
+    /// <param name="services">
+    /// <see cref="IServiceCollection" /> to configure.
+    /// </param>
+    /// <param name="configuration">
+    /// Application configuration.
+    /// </param>
+    /// <param name="serviceName">
+    /// Specify the name of a service binding to use.
+    /// </param>
+    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, string serviceName)
+    {
+        return AddDiscoveryClient(services, configuration, serviceName, null);
     }
 
     /// <summary>
@@ -48,9 +66,9 @@ public static class DiscoveryServiceCollectionExtensions
     /// <param name="lifecycle">
     /// Add custom code for app shutdown events.
     /// </param>
-    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, IDiscoveryLifecycle lifecycle = null)
+    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, IDiscoveryLifecycle lifecycle)
     {
-        return services.AddDiscoveryClient(configuration, null, lifecycle);
+        return AddDiscoveryClient(services, configuration, null, lifecycle);
     }
 
     /// <summary>
@@ -69,12 +87,13 @@ public static class DiscoveryServiceCollectionExtensions
     /// <param name="lifecycle">
     /// Add custom code for app shutdown events.
     /// </param>
-    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, string serviceName = null,
-        IDiscoveryLifecycle lifecycle = null)
+    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, string serviceName,
+        IDiscoveryLifecycle lifecycle)
     {
-        Action<DiscoveryClientBuilder> builderAction = null;
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(configuration);
 
-        configuration ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        Action<DiscoveryClientBuilder> builderAction = null;
 
         IServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? GetSingletonDiscoveryServiceInfo(configuration)
@@ -97,13 +116,13 @@ public static class DiscoveryServiceCollectionExtensions
         else if (implementations.Count > 1)
         {
             // if none configured, that's ok because AddServiceDiscovery has a plan
-            IEnumerable<IDiscoveryClientExtension> configured = implementations.Where(client => client.IsConfigured(configuration, info));
+            IDiscoveryClientExtension[] configured = implementations.Where(client => client.IsConfigured(configuration, info)).ToArray();
 
-            if (configured.Count() == 1)
+            if (configured.Length == 1)
             {
                 builderAction = builder => builder.Extensions.Add(configured.Single());
             }
-            else if (configured.Count() > 1)
+            else if (configured.Length > 1)
             {
                 throw new AmbiguousMatchException(
                     "Multiple IDiscoveryClient implementations have been added and configured! This is not supported, please only configure a single client type.");
@@ -115,15 +134,18 @@ public static class DiscoveryServiceCollectionExtensions
             services.AddSingleton(lifecycle);
         }
 
-        return services.AddServiceDiscovery(builderAction);
+        return AddServiceDiscovery(services, configuration, builderAction);
     }
 
     /// <summary>
     /// Adds service discovery to your application. If <paramref name="builderAction" /> is not provided, a <see cref="NoOpDiscoveryClient" /> will be
     /// configured.
     /// </summary>
-    /// <param name="serviceCollection">
+    /// <param name="services">
     /// <see cref="IServiceCollection" /> to configure.
+    /// </param>
+    /// <param name="configuration">
+    /// Application configuration.
     /// </param>
     /// <param name="builderAction">
     /// Provided by the desired <see cref="IDiscoveryClient" /> implementation.
@@ -137,21 +159,23 @@ public static class DiscoveryServiceCollectionExtensions
     /// <exception cref="ConnectorException">
     /// Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected.
     /// </exception>
-    public static IServiceCollection AddServiceDiscovery(this IServiceCollection serviceCollection, Action<DiscoveryClientBuilder> builderAction = null)
+    public static IServiceCollection AddServiceDiscovery(this IServiceCollection services, IConfiguration configuration,
+        Action<DiscoveryClientBuilder> builderAction = null)
     {
-        ArgumentGuard.NotNull(serviceCollection);
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(configuration);
 
         builderAction ??= builder => builder.Extensions.Add(new NoOpDiscoveryClientExtension());
 
-        serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        ApplyDiscoveryOptions(serviceCollection, builderAction);
+        services.RegisterDefaultApplicationInstanceInfo();
+        ApplyDiscoveryOptions(services, configuration, builderAction);
 
-        serviceCollection.TryAddTransient<DiscoveryHttpMessageHandler>();
-        serviceCollection.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
-        serviceCollection.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
-        serviceCollection.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
-        serviceCollection.AddSingleton<IHostedService, DiscoveryClientService>();
-        return serviceCollection;
+        services.TryAddTransient<DiscoveryHttpMessageHandler>();
+        services.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
+        services.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
+        services.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
+        services.AddSingleton<IHostedService, DiscoveryClientService>();
+        return services;
     }
 
     /// <summary>
@@ -168,6 +192,8 @@ public static class DiscoveryServiceCollectionExtensions
     /// </exception>
     public static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration configuration, string serviceName)
     {
+        ArgumentGuard.NotNull(configuration);
+
         IServiceInfo info = configuration.GetServiceInfo(serviceName);
 
         if (info == null)
@@ -194,23 +220,25 @@ public static class DiscoveryServiceCollectionExtensions
     /// </exception>
     public static IServiceInfo GetSingletonDiscoveryServiceInfo(IConfiguration configuration)
     {
+        ArgumentGuard.NotNull(configuration);
+
         // Note: Could be other discovery type services in future
-        IEnumerable<EurekaServiceInfo> eurekaInfos = configuration.GetServiceInfos<EurekaServiceInfo>();
+        EurekaServiceInfo[] eurekaInfos = configuration.GetServiceInfos<EurekaServiceInfo>().ToArray();
 
         if (eurekaInfos.Any())
         {
-            if (eurekaInfos.Count() != 1)
+            if (eurekaInfos.Length != 1)
             {
                 throw new ConnectorException("Multiple discovery service types bound to application.");
             }
 
-            return eurekaInfos.First();
+            return eurekaInfos[0];
         }
 
         return null;
     }
 
-    private static void ApplyDiscoveryOptions(IServiceCollection serviceCollection, Action<DiscoveryClientBuilder> builderAction)
+    private static void ApplyDiscoveryOptions(IServiceCollection services, IConfiguration configuration, Action<DiscoveryClientBuilder> builderAction)
     {
         var builder = new DiscoveryClientBuilder();
 
@@ -218,12 +246,10 @@ public static class DiscoveryServiceCollectionExtensions
 
         if (builder.Extensions.Count > 1)
         {
-            var configuration = serviceCollection.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            IDiscoveryClientExtension[] configured = builder.Extensions
+                .Where(extension => extension.IsConfigured(configuration, GetSingletonDiscoveryServiceInfo(configuration))).ToArray();
 
-            IEnumerable<IDiscoveryClientExtension> configured =
-                builder.Extensions.Where(ext => ext.IsConfigured(configuration, GetSingletonDiscoveryServiceInfo(configuration)));
-
-            if (!configured.Any() || configured.Count() > 1)
+            if (!configured.Any() || configured.Length > 1)
             {
                 throw new AmbiguousMatchException(
                     "Multiple IDiscoveryClient implementations have been registered and 0 or more than 1 have been configured! This is not supported, please only use a single client type.");
@@ -234,7 +260,7 @@ public static class DiscoveryServiceCollectionExtensions
 
         foreach (IDiscoveryClientExtension ext in builder.Extensions)
         {
-            ext.ApplyServices(serviceCollection);
+            ext.ApplyServices(services);
         }
     }
 

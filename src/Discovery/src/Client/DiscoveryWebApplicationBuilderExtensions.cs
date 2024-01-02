@@ -56,7 +56,7 @@ public static class DiscoveryWebApplicationBuilderExtensions
     /// </exception>
     public static WebApplicationBuilder AddServiceDiscovery(this WebApplicationBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction)
     {
-        hostBuilder.Services.AddServiceDiscovery(optionsAction);
+        hostBuilder.Services.AddServiceDiscovery(hostBuilder.Configuration, optionsAction);
         return hostBuilder;
     }
 }

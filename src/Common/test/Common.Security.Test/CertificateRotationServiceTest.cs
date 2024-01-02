@@ -35,7 +35,7 @@ public class CertificateRotationServiceTest
         services.AddSingleton<IConfigureOptions<CertificateOptions>, ConfigureCertificateOptions>();
         services.AddSingleton<ICertificateRotationService, CertificateRotationService>();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var service = serviceProvider.GetRequiredService<ICertificateRotationService>();
 
         service.Start();
