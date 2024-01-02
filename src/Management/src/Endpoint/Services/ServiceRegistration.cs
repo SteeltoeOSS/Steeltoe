@@ -31,11 +31,16 @@ public sealed class ServiceRegistration
     {
         ArgumentGuard.NotNull(descriptor);
 
-        Name = descriptor.ServiceType.Name;
+        Name = descriptor.ServiceType.FullName!;
         Scope = descriptor.Lifetime.ToString();
-        Type = descriptor.ImplementationInstance?.GetType().ToString() ?? descriptor.ServiceType.ToString();
-        AssemblyName = descriptor.ServiceType.AssemblyQualifiedName!;
+        Type = GetImplementationType(descriptor).ToString();
+        AssemblyName = descriptor.ServiceType.Assembly.FullName!;
         Dependencies = GetDependencies(descriptor);
+    }
+
+    private static Type GetImplementationType(ServiceDescriptor descriptor)
+    {
+        return descriptor.ImplementationInstance?.GetType() ?? descriptor.ImplementationType ?? descriptor.ServiceType;
     }
 
     private static ISet<string> GetDependencies(ServiceDescriptor descriptor)

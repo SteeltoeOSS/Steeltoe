@@ -45,9 +45,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<ServicesEndpointHandler>();
+        services.AddScoped<IServicesEndpointHandler, ServicesEndpointHandler>();
         services.AddTransient<ServicesEndpointOptions>();
-        services.AddScoped<Startup>();
+        services.AddSingleton<Startup>();
 
         var handler = new ServicesEndpointHandler(endpointOptionsMonitor, services);
         var middleware = new ServicesEndpointMiddleware(handler, managementOptionsMonitor, NullLoggerFactory.Instance);
@@ -64,25 +64,25 @@ public sealed class EndpointMiddlewareTest : BaseTest
               "contexts": {
                 "application": {
                   "beans": {
-                    "ServicesEndpointHandler": {
-                      "scope": "Singleton",
+                    "Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler": {
+                      "scope": "Scoped",
                       "type": "Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler",
-                      "resource": "Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler, Steeltoe.Management.Endpoint, Version={{SteeltoeVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint, Version={{SteeltoeVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": [
                         "Microsoft.Extensions.Options.IOptionsMonitor`1[Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions]",
                         "Microsoft.Extensions.DependencyInjection.IServiceCollection"
                       ]
                     },
-                    "ServicesEndpointOptions": {
+                    "Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions": {
                       "scope": "Transient",
                       "type": "Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions",
-                      "resource": "Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions, Steeltoe.Management.Endpoint, Version={{SteeltoeVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint, Version={{SteeltoeVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": []
                     },
-                    "Startup": {
-                      "scope": "Scoped",
+                    "Steeltoe.Management.Endpoint.Test.Services.Startup": {
+                      "scope": "Singleton",
                       "type": "Steeltoe.Management.Endpoint.Test.Services.Startup",
-                      "resource": "Steeltoe.Management.Endpoint.Test.Services.Startup, Steeltoe.Management.Endpoint.Test, Version={{SteeltoeVersion}}, Culture=neutral, PublicKeyToken=null",
+                      "resource": "Steeltoe.Management.Endpoint.Test, Version={{SteeltoeVersion}}, Culture=neutral, PublicKeyToken=null",
                       "dependencies": [
                         "Microsoft.Extensions.Configuration.IConfiguration"
                       ]
@@ -111,13 +111,13 @@ public sealed class EndpointMiddlewareTest : BaseTest
         using JsonDocument sourceJson = JsonDocument.Parse(json);
 
         string jsonFragment = sourceJson.RootElement.GetProperty("contexts").GetProperty("application").GetProperty("beans")
-            .GetProperty("IServicesEndpointHandler").ToString();
+            .GetProperty(typeof(IServicesEndpointHandler).FullName!).ToString();
 
         jsonFragment.Should().BeJson($$"""
             {
               "scope": "Singleton",
-              "type": "Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler",
-              "resource": "Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler, Steeltoe.Management.Endpoint, Version={{SteeltoeVersion}}, Culture=neutral, PublicKeyToken=null",
+              "type": "Steeltoe.Management.Endpoint.Services.ServicesEndpointHandler",
+              "resource": "Steeltoe.Management.Endpoint, Version={{SteeltoeVersion}}, Culture=neutral, PublicKeyToken=null",
               "dependencies": [
                 "Microsoft.Extensions.Options.IOptionsMonitor`1[Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions]",
                 "Microsoft.Extensions.DependencyInjection.IServiceCollection"
