@@ -25,6 +25,7 @@ using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.RouteMappings;
+using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
@@ -285,6 +286,21 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         Assert.Single(host.Services.GetServices<IHttpTraceEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
         HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/httptrace", UriKind.Relative));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task AddServicesActuator_WebApplicationBuilder_IStartupFilterFires()
+    {
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+
+        await using WebApplication host = hostBuilder.AddServicesActuator().Build();
+        host.UseRouting();
+        await host.StartAsync();
+
+        Assert.Single(host.Services.GetServices<IServicesEndpointHandler>());
+        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
+        HttpResponseMessage response = await host.GetTestClient().GetAsync(new Uri("/actuator/beans", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 

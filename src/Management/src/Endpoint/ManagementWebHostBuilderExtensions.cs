@@ -350,6 +350,25 @@ public static class ManagementWebHostBuilderExtensions
     }
 
     /// <summary>
+    /// Adds an actuator endpoint that lists all injectable services that are registered in the IoC container.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddServicesActuator(this IWebHostBuilder builder)
+    {
+        ArgumentGuard.NotNull(builder);
+
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddServicesActuator();
+
+        return builder;
+    }
+
+    /// <summary>
     /// Adds the Cloud Foundry actuator to the application.
     /// </summary>
     /// <param name="builder">

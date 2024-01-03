@@ -18,6 +18,7 @@ using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.RouteMappings;
+using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
@@ -123,6 +124,12 @@ internal static class HostBuilderWrapperExtensions
     public static void AddTraceActuator(this HostBuilderWrapper wrapper, MediaTypeVersion mediaTypeVersion)
     {
         wrapper.ConfigureServices(services => services.AddTraceActuator(mediaTypeVersion));
+        RegisterActuatorEndpoints(wrapper, null);
+    }
+
+    public static void AddServicesActuator(this HostBuilderWrapper wrapper)
+    {
+        wrapper.ConfigureServices(services => services.AddServicesActuator());
         RegisterActuatorEndpoints(wrapper, null);
     }
 
