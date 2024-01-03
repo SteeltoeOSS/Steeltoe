@@ -5,27 +5,27 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Configuration.Encryption;
+using Steeltoe.Configuration.Placeholder;
 
-namespace Steeltoe.Configuration.Placeholder.Test;
+namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 
-public sealed class StartupForConfigurePlaceholderResolver
+public sealed class PlaceholderBeforeEncryptionStartup
 {
     private readonly IConfiguration _configuration;
 
-    internal static IServiceProvider ServiceProvider { get; private set; }
-
-    public StartupForConfigurePlaceholderResolver(IConfiguration configuration)
+    public PlaceholderBeforeEncryptionStartup(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.ConfigurePlaceholderResolver(_configuration);
+        IConfiguration configuration = services.ConfigurePlaceholderResolver(_configuration);
+        services.ConfigureEncryptionResolver(configuration);
     }
 
     public void Configure(IApplicationBuilder app)
     {
-        ServiceProvider = app.ApplicationServices;
     }
 }

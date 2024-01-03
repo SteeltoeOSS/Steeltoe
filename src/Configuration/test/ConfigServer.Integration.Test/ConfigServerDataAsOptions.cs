@@ -6,9 +6,7 @@ namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 
 public sealed class ConfigServerDataAsOptions
 {
-    public string Bar { get; set; }
-
-    public string Foo { get; set; }
-
-    public Info Info { get; set; }
+    public string? Bar { get; set; }
+    public string? Foo { get; set; }
+    public Info? Info { get; set; }
 }

@@ -12,7 +12,7 @@ using Steeltoe.Common;
 namespace Steeltoe.Configuration.Encryption;
 
 /// <summary>
-/// Configuration provider that resolves encryptions. A encryption takes the form of:
+/// Configuration provider that resolves encryptions. An encryption takes the form of:
 /// <code><![CDATA[
 /// ${some:config:reference?default_if_not_present}
 /// ]]></code>
@@ -27,11 +27,11 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// <summary>
     /// Gets the configuration this encryption resolver wraps.
     /// </summary>
-    internal IConfigurationRoot Configuration { get; private set; }
+    internal IConfigurationRoot? Configuration { get; private set; }
 
     public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
 
-    public ITextDecryptor Decriptor { get; set; }
+    public ITextDecryptor Decryptor { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EncryptionResolverProvider" /> class. The new encryption resolver wraps the provided configuration root.
@@ -39,13 +39,13 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// <param name="root">
     /// The configuration the provider uses when resolving encryptions.
     /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
     /// </param>
-    public EncryptionResolverProvider(IConfigurationRoot root, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    public EncryptionResolverProvider(IConfigurationRoot root, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(root);
         ArgumentGuard.NotNull(loggerFactory);
@@ -53,7 +53,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
 
         Configuration = root;
         Logger = loggerFactory.CreateLogger<EncryptionResolverProvider>();
-        Decriptor = textDecryptor;
+        Decryptor = textDecryptor;
     }
 
     /// <summary>
@@ -63,13 +63,13 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// <param name="providers">
     /// The configuration providers the resolver uses when resolving encryptions.
     /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
     /// </param>
-    public EncryptionResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    public EncryptionResolverProvider(IList<IConfigurationProvider> providers, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(providers);
         ArgumentGuard.NotNull(loggerFactory);
@@ -77,11 +77,11 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
 
         Providers = providers;
         Logger = loggerFactory.CreateLogger<EncryptionResolverProvider>();
-        Decriptor = textDecryptor;
+        Decryptor = textDecryptor;
     }
 
     /// <summary>
-    /// Tries to get a configuration value for the specified key. If the value is a encryption, it will try to resolve the encryption before returning it.
+    /// Tries to get a configuration value for the specified key. If the value is an encryption, it will try to resolve the encryption before returning it.
     /// </summary>
     /// <param name="key">
     /// The configuration key.
@@ -92,12 +92,12 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// <returns>
     /// <c>true</c> if a value for the specified key was found, otherwise <c>false</c>.
     /// </returns>
-    public bool TryGet(string key, out string value)
+    public bool TryGet(string key, out string? value)
     {
         ArgumentGuard.NotNull(key);
         EnsureInitialized();
 
-        string originalValue = Configuration[key];
+        string? originalValue = Configuration![key];
         value = originalValue;
 
         if (!string.IsNullOrEmpty(originalValue))
@@ -109,14 +109,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
                 string alias = match.Groups["alias"].Value;
                 string cipher = match.Groups["cipher"].Value;
 
-                if (!string.IsNullOrEmpty(alias))
-                {
-                    value = Decriptor.Decrypt(cipher, alias);
-                }
-                else
-                {
-                    value = Decriptor.Decrypt(cipher);
-                }
+                value = !string.IsNullOrEmpty(alias) ? Decryptor.Decrypt(cipher, alias) : Decryptor.Decrypt(cipher);
             }
         }
 
@@ -132,12 +125,12 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// <param name="value">
     /// The configuration value to set at the specified key.
     /// </param>
-    public void Set(string key, string value)
+    public void Set(string key, string? value)
     {
         ArgumentGuard.NotNull(key);
         EnsureInitialized();
 
-        Configuration[key] = value;
+        Configuration![key] = value;
     }
 
     /// <summary>
@@ -150,7 +143,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     {
         EnsureInitialized();
 
-        return Configuration.GetReloadToken();
+        return Configuration!.GetReloadToken();
     }
 
     /// <summary>
@@ -161,7 +154,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     {
         EnsureInitialized();
 
-        Configuration.Reload();
+        Configuration!.Reload();
     }
 
     /// <summary>
@@ -177,11 +170,11 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// <returns>
     /// The child keys.
     /// </returns>
-    public IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
+    public IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string? parentPath)
     {
         EnsureInitialized();
 
-        IConfiguration section = parentPath == null ? Configuration : Configuration.GetSection(parentPath);
+        IConfiguration section = parentPath == null ? Configuration! : Configuration!.GetSection(parentPath);
         IEnumerable<IConfigurationSection> children = section.GetChildren();
 
         return children.Select(childSection => childSection.Key).Concat(earlierKeys).OrderBy(key => key, ConfigurationKeyComparer.Instance);
@@ -201,7 +194,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     {
         if (!_isDisposed)
         {
-            HashSet<IDisposable> disposables = new();
+            HashSet<IDisposable> disposables = [];
 
             foreach (IConfigurationProvider provider in Providers)
             {

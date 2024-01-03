@@ -33,7 +33,7 @@ internal sealed class SpringBootCommandLineProvider : ConfigurationProvider
 
     public override void Load()
     {
-        foreach (KeyValuePair<string, string> pair in _configuration.AsEnumerable())
+        foreach (KeyValuePair<string, string?> pair in _configuration.AsEnumerable())
         {
             string key = pair.Key;
 

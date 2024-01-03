@@ -6,17 +6,11 @@ namespace Steeltoe.Configuration.CloudFoundry;
 
 public interface ICloudFoundrySettingsReader
 {
-    string ApplicationJson { get; }
-
-    string InstanceId { get; }
-
-    string InstanceIndex { get; }
-
-    string InstanceInternalIP { get; }
-
-    string InstanceIP { get; }
-
-    string InstancePort { get; }
-
-    string ServicesJson { get; }
+    string? ApplicationJson { get; }
+    string? InstanceId { get; }
+    string? InstanceIndex { get; }
+    string? InstanceInternalIP { get; }
+    string? InstanceIP { get; }
+    string? InstancePort { get; }
+    string? ServicesJson { get; }
 }

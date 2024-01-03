@@ -13,8 +13,8 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 {
     private readonly ILogger<ConfigServerHealthContributor> _logger;
 
-    internal ConfigServerConfigurationProvider Provider { get; }
-    internal ConfigEnvironment Cached { get; set; }
+    internal ConfigServerConfigurationProvider? Provider { get; }
+    internal ConfigEnvironment? Cached { get; set; }
     internal long LastAccess { get; set; }
     public string Id => "config-server";
 
@@ -32,7 +32,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         }
     }
 
-    public async Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
+    public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         var health = new HealthCheckResult();
 
@@ -52,7 +52,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
             return health;
         }
 
-        IList<PropertySource> sources = await GetPropertySourcesAsync(cancellationToken);
+        IList<PropertySource>? sources = await GetPropertySourcesAsync(Provider, cancellationToken);
 
         if (sources == null || sources.Count == 0)
         {
@@ -71,7 +71,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         _logger.LogDebug("Config Server health check returning UP");
 
         health.Status = HealthStatus.Up;
-        var names = new List<string>();
+        var names = new List<string?>();
 
         foreach (PropertySource source in sources)
         {
@@ -82,7 +82,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         health.Details.Add("propertySources", names);
     }
 
-    internal async Task<IList<PropertySource>> GetPropertySourcesAsync(CancellationToken cancellationToken)
+    internal async Task<IList<PropertySource>?> GetPropertySourcesAsync(ConfigServerConfigurationProvider provider, CancellationToken cancellationToken)
     {
         long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
@@ -90,7 +90,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
         {
             LastAccess = currentTime;
             _logger.LogDebug("Cache stale, fetching config server health");
-            Cached = await Provider.LoadInternalAsync(false, cancellationToken);
+            Cached = await provider.LoadInternalAsync(false, cancellationToken);
         }
 
         return Cached?.PropertySources;
@@ -108,11 +108,11 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
     internal bool IsEnabled()
     {
-        return Provider.Settings.HealthEnabled;
+        return Provider is { Settings.HealthEnabled: true };
     }
 
     internal long GetTimeToLive()
     {
-        return Provider.Settings.HealthTimeToLive;
+        return Provider != null ? Provider.Settings.HealthTimeToLive : long.MaxValue;
     }
 }

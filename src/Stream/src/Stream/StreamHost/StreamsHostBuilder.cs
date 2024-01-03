@@ -18,7 +18,11 @@ public class StreamsHostBuilder<T> : IHostBuilder
 
     public StreamsHostBuilder(IHostBuilder hostBuilder)
     {
-        _hostBuilder = hostBuilder.AddSpringBootConfiguration().ConfigureServices((context, services) => services.AddStreamServices<T>(context.Configuration));
+        _hostBuilder = hostBuilder.ConfigureAppConfiguration((context, configurationBuilder) =>
+        {
+            configurationBuilder.AddSpringBootFromEnvironmentVariable();
+            configurationBuilder.AddSpringBootFromCommandLine(context.Configuration);
+        }).ConfigureServices((context, services) => services.AddStreamServices<T>(context.Configuration));
     }
 
     public IHost Build()

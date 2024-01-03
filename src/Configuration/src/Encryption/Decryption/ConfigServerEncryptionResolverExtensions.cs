@@ -2,12 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
@@ -61,144 +58,13 @@ internal static class ConfigServerEncryptionResolverExtensions
 
         ITextDecryptor textDecryptor = GetTextDecryptor(configuration);
 
-        IConfiguration newConfiguration = configuration.AddEncryptionResolver(loggerFactory, textDecryptor);
+        IConfiguration newConfiguration = configuration.AddEncryptionResolver(textDecryptor, loggerFactory);
         services.Replace(ServiceDescriptor.Singleton(typeof(IConfiguration), newConfiguration));
 
         return newConfiguration;
     }
 
-    /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
-    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
-    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
-    /// all of the applications' configuration sources with encryption resolution.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// The host builder.
-    /// </param>
-    /// <returns>
-    /// The provided host builder.
-    /// </returns>
-    public static IWebHostBuilder AddEncryptionResolver(this IWebHostBuilder hostBuilder)
-    {
-        return AddEncryptionResolver(hostBuilder, NullLoggerFactory.Instance);
-    }
-
-    /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
-    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
-    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
-    /// all of the applications' configuration sources with encryption resolution.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// The host builder.
-    /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    /// <returns>
-    /// The provided host builder.
-    /// </returns>
-    public static IWebHostBuilder AddEncryptionResolver(this IWebHostBuilder hostBuilder, ILoggerFactory loggerFactory)
-    {
-        ArgumentGuard.NotNull(hostBuilder);
-        ArgumentGuard.NotNull(loggerFactory);
-
-        return hostBuilder.ConfigureAppConfiguration((context, builder) =>
-        {
-            ITextDecryptor textDecryptor = GetTextDecryptor(context.Configuration);
-            builder.AddEncryptionResolver(loggerFactory, textDecryptor);
-        });
-    }
-
-    /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
-    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
-    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
-    /// all of the applications configuration sources with encryption resolution.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// The host builder.
-    /// </param>
-    /// <returns>
-    /// The provided host builder.
-    /// </returns>
-    public static IHostBuilder AddEncryptionResolver(this IHostBuilder hostBuilder)
-    {
-        return AddEncryptionResolver(hostBuilder, NullLoggerFactory.Instance);
-    }
-
-    /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
-    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
-    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
-    /// all of the applications configuration sources with encryption resolution.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// The host builder.
-    /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    /// <returns>
-    /// The provided host builder.
-    /// </returns>
-    public static IHostBuilder AddEncryptionResolver(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory)
-    {
-        ArgumentGuard.NotNull(hostBuilder);
-        ArgumentGuard.NotNull(loggerFactory);
-
-        return hostBuilder.ConfigureAppConfiguration((context, builder) =>
-        {
-            ITextDecryptor textDecryptor = GetTextDecryptor(context.Configuration);
-            builder.AddEncryptionResolver(loggerFactory, textDecryptor);
-        });
-    }
-
-    /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
-    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
-    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
-    /// all of the applications configuration sources with encryption resolution.
-    /// </summary>
-    /// <param name="applicationBuilder">
-    /// The application builder.
-    /// </param>
-    /// <returns>
-    /// The provided application builder.
-    /// </returns>
-    public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder applicationBuilder)
-    {
-        return AddEncryptionResolver(applicationBuilder, NullLoggerFactory.Instance);
-    }
-
-    /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
-    /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
-    /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
-    /// all of the applications configuration sources with encryption resolution.
-    /// </summary>
-    /// <param name="applicationBuilder">
-    /// The application builder.
-    /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    /// <returns>
-    /// The provided application builder.
-    /// </returns>
-    public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder applicationBuilder, ILoggerFactory loggerFactory)
-    {
-        ArgumentGuard.NotNull(applicationBuilder);
-        ArgumentGuard.NotNull(loggerFactory);
-
-        ITextDecryptor textDecryptor = GetTextDecryptor(applicationBuilder.Configuration);
-
-        applicationBuilder.Configuration.AddEncryptionResolver(loggerFactory, textDecryptor);
-        return applicationBuilder;
-    }
-
-    private static ITextDecryptor GetTextDecryptor(IConfiguration configuration)
+    internal static ITextDecryptor GetTextDecryptor(IConfiguration configuration)
     {
         var settings = new ConfigServerEncryptionSettings();
         ConfigurationSettingsHelper.Initialize(settings, configuration);

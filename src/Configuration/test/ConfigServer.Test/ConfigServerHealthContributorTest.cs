@@ -14,16 +14,9 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed class ConfigServerHealthContributorTest
 {
     [Fact]
-    public void Constructor_ThrowsOnNull()
-    {
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerHealthContributor(null, NullLogger<ConfigServerHealthContributor>.Instance));
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerHealthContributor(new ConfigurationBuilder().Build(), null));
-    }
-
-    [Fact]
     public void Constructor_FindsConfigServerProvider()
     {
-        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -45,7 +38,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void FindProvider_FindsProvider()
     {
-        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -66,7 +59,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void GetTimeToLive_ReturnsExpected()
     {
-        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -88,7 +81,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void IsEnabled_ReturnsExpected()
     {
-        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -110,7 +103,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void IsCacheStale_ReturnsExpected()
     {
-        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -138,7 +131,7 @@ public sealed class ConfigServerHealthContributorTest
     public async Task GetPropertySources_ReturnsExpected()
     {
         // this test does NOT expect to find a running Config Server
-        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8887/" },
             { "spring:cloud:config:name", "myName" },
@@ -160,7 +153,7 @@ public sealed class ConfigServerHealthContributorTest
         };
 
         long lastAccess = contributor.LastAccess = DateTimeOffset.Now.ToUnixTimeMilliseconds() - 100;
-        IList<PropertySource> sources = await contributor.GetPropertySourcesAsync(CancellationToken.None);
+        IList<PropertySource>? sources = await contributor.GetPropertySourcesAsync(contributor.Provider!, CancellationToken.None);
 
         Assert.NotEqual(lastAccess, contributor.LastAccess);
         Assert.Null(sources);
@@ -170,7 +163,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public async Task Health_NoProvider_ReturnsExpected()
     {
-        var values = new Dictionary<string, string>
+        var values = new Dictionary<string, string?>
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -186,7 +179,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.Null(contributor.Provider);
-        HealthCheckResult health = await contributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? health = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));
@@ -195,7 +188,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public async Task Health_NotEnabled_ReturnsExpected()
     {
-        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -212,7 +205,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
-        HealthCheckResult health = await contributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? health = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
     }
@@ -221,7 +214,7 @@ public sealed class ConfigServerHealthContributorTest
     public async Task Health_NoPropertySources_ReturnsExpected()
     {
         // this test does NOT expect to find a running Config Server
-        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8887/" },
             { "spring:cloud:config:name", "myName" },
@@ -238,7 +231,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
-        HealthCheckResult health = await contributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? health = await contributor.CheckHealthAsync(CancellationToken.None);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));
@@ -247,7 +240,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void UpdateHealth_WithPropertySources_ReturnsExpected()
     {
-        var values = new Dictionary<string, string>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -265,11 +258,17 @@ public sealed class ConfigServerHealthContributorTest
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         var health = new HealthCheckResult();
 
-        var sources = new List<PropertySource>
-        {
-            new("foo", new Dictionary<string, object>()),
-            new("bar", new Dictionary<string, object>())
-        };
+        List<PropertySource> sources =
+        [
+            new PropertySource
+            {
+                Name = "foo"
+            },
+            new PropertySource
+            {
+                Name = "bar"
+            }
+        ];
 
         contributor.UpdateHealth(health, sources);
 

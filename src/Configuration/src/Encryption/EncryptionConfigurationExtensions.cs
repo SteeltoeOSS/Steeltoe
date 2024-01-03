@@ -9,10 +9,10 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption;
 
-public static class EncryptionResolverConfigurationExtensions
+public static class EncryptionConfigurationExtensions
 {
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// Adds an encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
     /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
     /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
     /// all of the applications configuration sources with encryption resolution.
@@ -28,11 +28,11 @@ public static class EncryptionResolverConfigurationExtensions
     /// </returns>
     public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder, ITextDecryptor textDecryptor)
     {
-        return AddEncryptionResolver(builder, NullLoggerFactory.Instance, textDecryptor);
+        return AddEncryptionResolver(builder, textDecryptor, NullLoggerFactory.Instance);
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// Adds an encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
     /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
     /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
     /// all of the applications configuration sources with encryption resolution.
@@ -40,16 +40,16 @@ public static class EncryptionResolverConfigurationExtensions
     /// <param name="builder">
     /// The configuration builder.
     /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="builder" />.
     /// </returns>
-    public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
+    public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(loggerFactory);
@@ -57,11 +57,11 @@ public static class EncryptionResolverConfigurationExtensions
 
         if (builder is IConfigurationRoot configuration)
         {
-            builder.Add(new EncryptionResolverSource(configuration, loggerFactory, textDecryptor));
+            builder.Add(new EncryptionResolverSource(configuration, textDecryptor, loggerFactory));
         }
         else
         {
-            var resolver = new EncryptionResolverSource(builder.Sources, loggerFactory, textDecryptor);
+            var resolver = new EncryptionResolverSource(builder.Sources, textDecryptor, loggerFactory);
             builder.Sources.Clear();
             builder.Add(resolver);
         }
@@ -85,7 +85,7 @@ public static class EncryptionResolverConfigurationExtensions
     /// </returns>
     public static IConfiguration AddEncryptionResolver(this IConfiguration configuration, ITextDecryptor textDecryptor)
     {
-        return AddEncryptionResolver(configuration, NullLoggerFactory.Instance, textDecryptor);
+        return AddEncryptionResolver(configuration, textDecryptor, NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -96,16 +96,16 @@ public static class EncryptionResolverConfigurationExtensions
     /// <param name="configuration">
     /// The configuration to wrap.
     /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
     /// A new configuration.
     /// </returns>
-    public static IConfiguration AddEncryptionResolver(this IConfiguration configuration, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
+    public static IConfiguration AddEncryptionResolver(this IConfiguration configuration, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(loggerFactory);
@@ -118,12 +118,12 @@ public static class EncryptionResolverConfigurationExtensions
 
         return new ConfigurationRoot(new List<IConfigurationProvider>
         {
-            new EncryptionResolverProvider(new List<IConfigurationProvider>(root.Providers), loggerFactory, textDecryptor)
+            new EncryptionResolverProvider(new List<IConfigurationProvider>(root.Providers), textDecryptor, loggerFactory)
         });
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// Adds an encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
     /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
     /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
     /// all of the applications configuration sources with encryption resolution.
@@ -139,11 +139,11 @@ public static class EncryptionResolverConfigurationExtensions
     /// </returns>
     public static ConfigurationManager AddEncryptionResolver(this ConfigurationManager configurationManager, ITextDecryptor textDecryptor)
     {
-        return AddEncryptionResolver(configurationManager, NullLoggerFactory.Instance, textDecryptor);
+        return AddEncryptionResolver(configurationManager, textDecryptor, NullLoggerFactory.Instance);
     }
 
     /// <summary>
-    /// Adds a encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
+    /// Adds an encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
     /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
     /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
     /// all of the applications configuration sources with encryption resolution.
@@ -151,23 +151,23 @@ public static class EncryptionResolverConfigurationExtensions
     /// <param name="configurationManager">
     /// The configuration manager.
     /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="configurationManager" />.
     /// </returns>
-    public static ConfigurationManager AddEncryptionResolver(this ConfigurationManager configurationManager, ILoggerFactory loggerFactory,
-        ITextDecryptor textDecryptor)
+    public static ConfigurationManager AddEncryptionResolver(this ConfigurationManager configurationManager, ITextDecryptor textDecryptor,
+        ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configurationManager);
         ArgumentGuard.NotNull(loggerFactory);
         ArgumentGuard.NotNull(textDecryptor);
 
-        ((IConfigurationBuilder)configurationManager).AddEncryptionResolver(loggerFactory, textDecryptor);
+        ((IConfigurationBuilder)configurationManager).AddEncryptionResolver(textDecryptor, loggerFactory);
 
         return configurationManager;
     }

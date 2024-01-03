@@ -13,17 +13,19 @@ namespace Steeltoe.Configuration.Kubernetes.Test;
 
 internal sealed class MockKubeApiServer : IDisposable
 {
-    private const string ConfigMapResponse =
-        "{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"TestKey\":\"TestValue\"}}\n";
+    private const string ConfigMapResponse = """
+        {"kind":"ConfigMap","apiVersion":"v1","metadata":{"name":"testconfigmap","namespace":"default","selfLink":"/api/v1/namespaces/default/configmaps/testconfigmap","uid":"8582b94c-f4fa-47fa-bacc-47019223775c","resourceVersion":"1320622","creationTimestamp":"2020-04-15T18:33:49Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"v1\",\"data\":{\"ConfigMapName\":\"testconfigmap\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"kubernetes1\",\"namespace\":\"default\"}}\n"}},"data":{"TestKey":"TestValue"}}
+        """;
 
-    private const string SecretResponse =
-        "{\"kind\":\"Secret\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testsecret\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/secrets/testsecret\",\"uid\":\"04a256d5-5480-4e6a-ab1a-81b1df2b1f15\",\"resourceVersion\":\"724153\",\"creationTimestamp\":\"2020-04-17T14:32:42Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"testKey\\\":\\\"dGVzdFZhbHVl\\\"},\\\"kind\\\":\\\"Secret\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"testsecret\\\",\\\"namespace\\\":\\\"default\\\"},\\\"type\\\":\\\"Opaque\\\"}\\n\"}},\"data\":{\"testKey\":\"dGVzdFZhbHVl\"},\"type\":\"Opaque\"}\n";
+    private const string SecretResponse = """
+        {"kind":"Secret","apiVersion":"v1","metadata":{"name":"testsecret","namespace":"default","selfLink":"/api/v1/namespaces/default/secrets/testsecret","uid":"04a256d5-5480-4e6a-ab1a-81b1df2b1f15","resourceVersion":"724153","creationTimestamp":"2020-04-17T14:32:42Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"v1\",\"data\":{\"testKey\":\"dGVzdFZhbHVl\"},\"kind\":\"Secret\",\"metadata\":{\"annotations\":{},\"name\":\"testsecret\",\"namespace\":\"default\"},\"type\":\"Opaque\"}\n"}},"data":{"testKey":"dGVzdFZhbHVl"},"type":"Opaque"}
+        """;
 
     private readonly IWebHost _webHost;
 
-    public Uri Uri => _webHost.ServerFeatures.Get<IServerAddressesFeature>().Addresses.Select(a => new Uri(a)).First();
+    public Uri Uri => _webHost.ServerFeatures.Get<IServerAddressesFeature>()!.Addresses.Select(a => new Uri(a)).First();
 
-    public MockKubeApiServer(Func<HttpContext, Task<bool>> shouldNext = null)
+    public MockKubeApiServer(Func<HttpContext, Task<bool>>? shouldNext = null)
     {
         shouldNext ??= _ => Task.FromResult(true);
 

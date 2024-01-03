@@ -49,10 +49,7 @@ internal sealed class RedisCacheOptionsShim : Shim
         MethodInfo assignMethod = GetType().GetMethod(nameof(AssignConnectionMultiplexerFactory), BindingFlags.Static | BindingFlags.NonPublic)!;
         MethodInfo assignGenericMethod = assignMethod.MakeGenericMethod(connectionMultiplexer.DeclaredType);
 
-        return assignGenericMethod.Invoke(null, new object[]
-        {
-            connectionMultiplexer.Instance
-        })!;
+        return assignGenericMethod.Invoke(null, [connectionMultiplexer.Instance])!;
     }
 
     private static Func<Task<TConnectionMultiplexer>> AssignConnectionMultiplexerFactory<TConnectionMultiplexer>(TConnectionMultiplexer connectionMultiplexer)

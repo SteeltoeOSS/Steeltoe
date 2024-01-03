@@ -13,8 +13,6 @@ public sealed class StartupForConfigureConfigServerEncryptionResolver
 {
     private readonly IConfiguration _configuration;
 
-    internal static IServiceProvider ServiceProvider { get; private set; }
-
     public StartupForConfigureConfigServerEncryptionResolver(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -27,6 +25,5 @@ public sealed class StartupForConfigureConfigServerEncryptionResolver
 
     public void Configure(IApplicationBuilder app)
     {
-        ServiceProvider = app.ApplicationServices;
     }
 }

@@ -15,28 +15,6 @@ namespace Steeltoe.Configuration.Placeholder.Test;
 public sealed class PlaceholderResolverProviderTest
 {
     [Fact]
-    public void Constructor_WithConfiguration_ThrowsIfNulls()
-    {
-        const IConfigurationRoot nullConfiguration = null;
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(nullConfiguration, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(configuration, null));
-    }
-
-    [Fact]
-    public void Constructor_WithProviders_ThrowsIfNulls()
-    {
-        const IList<IConfigurationProvider> nullProviders = null;
-        var providers = new List<IConfigurationProvider>();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(nullProviders, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverProvider(providers, null));
-    }
-
-    [Fact]
     public void Constructor_WithConfiguration()
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().Build();
@@ -75,7 +53,7 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public void TryGet_ReturnsResolvedValues()
     {
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
@@ -103,7 +81,7 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public void Set_SetsValues_ReturnsResolvedValues()
     {
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
@@ -167,7 +145,7 @@ public sealed class PlaceholderResolverProviderTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings1);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -198,7 +176,7 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public void Load_CreatesConfiguration()
     {
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
@@ -250,7 +228,7 @@ public sealed class PlaceholderResolverProviderTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings1);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -275,7 +253,7 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public void GetChildKeys_ReturnsResolvableSection()
     {
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "spring:bar:name", "myName" },
             { "spring:cloud:name", "${spring:bar:name?noname}" }
@@ -301,17 +279,17 @@ public sealed class PlaceholderResolverProviderTest
     {
         var manager = new ConfigurationManager();
 
-        var template = new Dictionary<string, string>
+        var template = new Dictionary<string, string?>
         {
             { "placeholder", "${value}" }
         };
 
-        var valueProviderA = new Dictionary<string, string>
+        var valueProviderA = new Dictionary<string, string?>
         {
             { "value", "a" }
         };
 
-        var valueProviderB = new Dictionary<string, string>
+        var valueProviderB = new Dictionary<string, string?>
         {
             { "value", "b" }
         };
@@ -320,14 +298,14 @@ public sealed class PlaceholderResolverProviderTest
         manager.AddInMemoryCollection(valueProviderA);
         manager.AddInMemoryCollection(valueProviderB);
         manager.AddPlaceholderResolver();
-        string result = manager.GetValue<string>("placeholder");
+        string? result = manager.GetValue<string>("placeholder");
         Assert.Equal("b", result);
     }
 
     [Fact]
     public void EmptyValuesHandledAsExpected()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "valueIsEmptyString", string.Empty }
         }).AddPlaceholderResolver();

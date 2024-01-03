@@ -19,10 +19,10 @@ internal sealed class TestDiscoveryClientExtension : IDiscoveryClientExtension
             .Configure<IConfiguration>((options, configuration) => configuration.GetSection("testdiscovery").Bind(options));
 
         services.AddSingleton<TestDiscoveryClient>();
-        services.TryAddSingleton<IDiscoveryClient>(isp => isp.GetRequiredService<TestDiscoveryClient>());
+        services.TryAddSingleton<IDiscoveryClient>(serviceProvider => serviceProvider.GetRequiredService<TestDiscoveryClient>());
     }
 
-    public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
+    public bool IsConfigured(IConfiguration configuration, IServiceInfo? serviceInfo = null)
     {
         return configuration.GetValue<bool>("testdiscovery:enabled");
     }

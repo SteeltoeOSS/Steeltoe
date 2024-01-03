@@ -15,7 +15,7 @@ namespace Steeltoe.Configuration.Kubernetes;
 internal sealed class KubernetesHostedService : IHostedService
 {
     private readonly IEnumerable<KubernetesConfigMapProvider> _configMapProviders;
-    private readonly IEnumerable<KubernetesSecretProvider> _configSecretProviders;
+    private readonly IEnumerable<KubernetesSecretProvider> _secretProviders;
     private readonly ILoggerFactory _loggerFactory;
 
     public KubernetesHostedService(IConfiguration configuration, ILoggerFactory loggerFactory)
@@ -24,14 +24,14 @@ internal sealed class KubernetesHostedService : IHostedService
         ArgumentGuard.NotNull(loggerFactory);
 
         _configMapProviders = ((IConfigurationRoot)configuration).Providers.OfType<KubernetesConfigMapProvider>();
-        _configSecretProviders = ((IConfigurationRoot)configuration).Providers.OfType<KubernetesSecretProvider>();
+        _secretProviders = ((IConfigurationRoot)configuration).Providers.OfType<KubernetesSecretProvider>();
         _loggerFactory = loggerFactory;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _configMapProviders.ToList().ForEach(p => p.ProvideRuntimeReplacements(_loggerFactory));
-        _configSecretProviders.ToList().ForEach(p => p.ProvideRuntimeReplacements(_loggerFactory));
+        _configMapProviders.ToList().ForEach(provider => provider.ProvideRuntimeReplacements(_loggerFactory));
+        _secretProviders.ToList().ForEach(provider => provider.ProvideRuntimeReplacements(_loggerFactory));
 
         return Task.CompletedTask;
     }

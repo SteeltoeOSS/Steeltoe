@@ -14,13 +14,11 @@ public static class CloudFoundryConfigurationBuilderExtensions
         return AddCloudFoundry(configurationBuilder, null);
     }
 
-    public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader settingsReader)
+    public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader? settingsReader)
     {
         ArgumentGuard.NotNull(configurationBuilder);
 
-        return configurationBuilder.Add(new CloudFoundryConfigurationSource
-        {
-            SettingsReader = settingsReader
-        });
+        var source = new CloudFoundryConfigurationSource(settingsReader);
+        return configurationBuilder.Add(source);
     }
 }

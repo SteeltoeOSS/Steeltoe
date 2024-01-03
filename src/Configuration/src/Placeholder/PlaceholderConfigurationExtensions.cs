@@ -9,7 +9,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Placeholder;
 
-public static class PlaceholderResolverConfigurationExtensions
+public static class PlaceholderConfigurationExtensions
 {
     /// <summary>
     /// Adds a placeholder resolver configuration source to the <see cref="ConfigurationBuilder" />. The placeholder resolver source will capture and wrap

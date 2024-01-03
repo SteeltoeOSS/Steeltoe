@@ -11,7 +11,7 @@ internal sealed class JsonStreamConfigurationProvider : JsonConfigurationProvide
 {
     private readonly JsonStreamConfigurationSource _source;
 
-    internal JsonStreamConfigurationProvider(JsonStreamConfigurationSource source)
+    public JsonStreamConfigurationProvider(JsonStreamConfigurationSource source)
         : base(source)
     {
         ArgumentGuard.NotNull(source);

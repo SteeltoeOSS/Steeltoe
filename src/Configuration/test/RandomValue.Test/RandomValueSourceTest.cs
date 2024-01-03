@@ -12,18 +12,7 @@ namespace Steeltoe.Configuration.RandomValue.Test;
 public sealed class RandomValueSourceTest
 {
     [Fact]
-    public void Constructor_ThrowsIfNulls()
-    {
-        const ILoggerFactory nullLoggerFactory = null;
-        const string nullPrefix = null;
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => new RandomValueSource(nullLoggerFactory));
-        Assert.Throws<ArgumentNullException>(() => new RandomValueSource(nullPrefix, loggerFactory));
-    }
-
-    [Fact]
-    public void Constructors__InitializesDefaults()
+    public void Constructors_InitializesDefaults()
     {
         ILoggerFactory factory = new LoggerFactory();
 
@@ -39,7 +28,7 @@ public sealed class RandomValueSourceTest
     }
 
     [Fact]
-    public void Build__ReturnsProvider()
+    public void Build_ReturnsProvider()
     {
         var source = new RandomValueSource(NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());

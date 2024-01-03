@@ -13,12 +13,12 @@ public sealed class ConfigServerException : Exception
     {
     }
 
-    public ConfigServerException(string message)
+    public ConfigServerException(string? message)
         : base(message)
     {
     }
 
-    public ConfigServerException(string message, Exception innerException)
+    public ConfigServerException(string? message, Exception? innerException)
         : base(message, innerException)
     {
     }

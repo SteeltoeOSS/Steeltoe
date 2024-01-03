@@ -42,22 +42,22 @@ internal sealed class ConfigServerEncryptionSettings
     /// <summary>
     /// Gets or sets the location of the keystore.
     /// </summary>
-    public string EncryptionKeyStoreLocation { get; set; }
+    public string? EncryptionKeyStoreLocation { get; set; }
 
     /// <summary>
     /// Gets or sets the keystore password.
     /// </summary>
-    public string EncryptionKeyStorePassword { get; set; }
+    public string? EncryptionKeyStorePassword { get; set; }
 
     /// <summary>
     /// Gets or sets the alias of the key in the keystore.
     /// </summary>
-    public string EncryptionKeyStoreAlias { get; set; }
+    public string? EncryptionKeyStoreAlias { get; set; }
 
     /// <summary>
     /// Gets or sets the key of the simple encryption.
     /// </summary>
-    public string EncryptionKey { get; set; }
+    public string? EncryptionKey { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerEncryptionSettings" /> class.

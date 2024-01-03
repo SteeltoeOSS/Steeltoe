@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 
@@ -16,6 +18,9 @@ public sealed class HomeController : Controller
 
     public HomeController(IOptions<ConfigServerDataAsOptions> options, IHealthContributor healthContributor)
     {
+        ArgumentGuard.NotNull(healthContributor);
+        ArgumentGuard.NotNull(options);
+
         _options = options.Value;
         _healthContributor = healthContributor;
     }
@@ -23,42 +28,32 @@ public sealed class HomeController : Controller
     [HttpGet]
     public string VerifyAsInjectedOptions()
     {
-        if (_options != null)
-        {
-            return _options.Bar + _options.Foo + _options.Info?.Description + _options.Info?.Url;
-        }
-
-        return string.Empty;
+        return _options.Bar + _options.Foo + _options.Info?.Description + _options.Info?.Url;
     }
 
     [HttpGet]
     public async Task<string> HealthAsync()
     {
-        if (_healthContributor != null)
+        HealthCheckResult? health = await _healthContributor.CheckHealthAsync(HttpContext.RequestAborted);
+
+        if (health != null && health.Details.TryGetValue("propertySources", out object? sourceObject) && sourceObject is IList<string> sourceList)
         {
-            HealthCheckResult health = await _healthContributor.CheckHealthAsync(HttpContext.RequestAborted);
-
-            if (health != null)
-            {
-                health.Details.TryGetValue("propertySources", out object sourceList);
-
-                object nameList = ToCsv(sourceList as IList<string>);
-                return $"{health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)},{nameList}";
-            }
+            string names = ToCsv(sourceList);
+            return $"{health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)},{names}";
         }
 
         return string.Empty;
     }
 
-    private object ToCsv(IList<string> list)
+    private static string ToCsv(IEnumerable<string> list)
     {
-        string result = string.Empty;
+        var builder = new StringBuilder();
 
         foreach (string name in list)
         {
-            result += $"{name},";
+            builder.Append($"{name},");
         }
 
-        return result;
+        return builder.ToString();
     }
 }

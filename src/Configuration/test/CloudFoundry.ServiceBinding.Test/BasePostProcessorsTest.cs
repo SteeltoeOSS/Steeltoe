@@ -65,7 +65,5 @@ public abstract class BasePostProcessorsTest
         }
     }
 
-    private sealed class TestPostProcessorConfigurationSource : PostProcessorConfigurationSource
-    {
-    }
+    private sealed class TestPostProcessorConfigurationSource : PostProcessorConfigurationSource;
 }

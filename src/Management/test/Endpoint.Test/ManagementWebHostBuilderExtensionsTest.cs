@@ -60,9 +60,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddDbMigrationsActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddDbMigrationsActuator().Build();
         var handler = host.Services.GetService<IDbMigrationsEndpointHandler>();
@@ -88,9 +86,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddEnvironmentActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddEnvironmentActuator().Build();
         IEnumerable<IEnvironmentEndpointHandler> handlers = host.Services.GetServices<IEnvironmentEndpointHandler>();
@@ -116,9 +112,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddHealthActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddHealthActuator().Build();
         IEnumerable<IHealthEndpointHandler> handlers = host.Services.GetServices<IHealthEndpointHandler>();
@@ -132,9 +126,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddHealthActuator_IWebHostBuilder_WithTypes()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddHealthActuator(typeof(DownContributor)).Build();
 
@@ -149,9 +141,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddHealthActuator_IWebHostBuilder_WithAggregator()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor)).Build();
 
@@ -204,9 +194,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         if (Platform.IsWindows)
         {
-            IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-            {
-            });
+            IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
             using IWebHost host = hostBuilder.AddHeapDumpActuator().Build();
             IEnumerable<IHeapDumpEndpointHandler> handlers = host.Services.GetServices<IHeapDumpEndpointHandler>();
@@ -236,9 +224,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddHypermediaActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddHypermediaActuator().Build();
         IEnumerable<IActuatorEndpointHandler> handlers = host.Services.GetServices<IActuatorEndpointHandler>();
@@ -264,9 +250,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddInfoActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddInfoActuator().Build();
         var handler = host.Services.GetService<IInfoEndpointHandler>();
@@ -280,9 +264,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddInfoActuator_IWebHostBuilder_WithTypes()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddInfoActuator(new AppSettingsInfoContributor(new ConfigurationBuilder().Build())).Build();
 
@@ -309,9 +291,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddLoggersActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddLoggersActuator().Build();
         IEnumerable<ILoggersEndpointHandler> handlers = host.Services.GetServices<ILoggersEndpointHandler>();
@@ -361,9 +341,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddMappingsActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddMappingsActuator().Build();
         IEnumerable<RouterMappings> mappings = host.Services.GetServices<RouterMappings>();
@@ -389,9 +367,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddMetricsActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddMetricsActuator().Build();
         IEnumerable<IMetricsEndpointHandler> handlers = host.Services.GetServices<IMetricsEndpointHandler>();
@@ -417,9 +393,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddRefreshActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddRefreshActuator().Build();
         IEnumerable<IRefreshEndpointHandler> handlers = host.Services.GetServices<IRefreshEndpointHandler>();
@@ -447,9 +421,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         if (Platform.IsWindows)
         {
-            IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-            {
-            });
+            IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
             using IWebHost host = hostBuilder.AddThreadDumpActuator().Build();
             IEnumerable<IThreadDumpEndpointHandler> handlers = host.Services.GetServices<IThreadDumpEndpointHandler>();
@@ -479,9 +451,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddTraceActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddTraceActuator().Build();
         IEnumerable<IHttpTraceEndpointHandler> handlers = host.Services.GetServices<IHttpTraceEndpointHandler>();
@@ -507,9 +477,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddServicesActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddServicesActuator().Build();
         IEnumerable<IServicesEndpointHandler> handlers = host.Services.GetServices<IServicesEndpointHandler>();
@@ -535,9 +503,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddCloudFoundryActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddCloudFoundryActuator().Build();
         IEnumerable<ICloudFoundryEndpointHandler> handlers = host.Services.GetServices<ICloudFoundryEndpointHandler>();
@@ -583,9 +549,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddAllActuators_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
         using IWebHost host = hostBuilder.AddAllActuators().Build();
         IEnumerable<IActuatorEndpointHandler> handlers = host.Services.GetServices<IActuatorEndpointHandler>();

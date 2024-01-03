@@ -77,7 +77,7 @@ public sealed class SerilogDynamicLoggingBuilderTest
         logger.IsEnabled(LogLevel.None).Should().BeFalse();
 
         // change the log level and confirm it worked
-        var provider = (DynamicSerilogLoggerProvider)serviceProvider.GetRequiredService(typeof(ILoggerProvider));
+        var provider = (DynamicSerilogLoggerProvider)serviceProvider.GetRequiredService<ILoggerProvider>();
         provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
 
         LogLevel[] levels = provider.GetLoggerConfigurations().Where(entry => entry.CategoryName.StartsWith("A.B.C.D", StringComparison.Ordinal))

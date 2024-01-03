@@ -76,7 +76,7 @@ public sealed class LoggingBuilderExtensionsTest
         logger.IsEnabled(LogLevel.None).Should().BeFalse();
 
         // change the log level and confirm it worked
-        var provider = (DynamicConsoleLoggerProvider)serviceProvider.GetRequiredService(typeof(ILoggerProvider));
+        var provider = (DynamicConsoleLoggerProvider)serviceProvider.GetRequiredService<ILoggerProvider>();
         provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();
@@ -154,7 +154,7 @@ public sealed class LoggingBuilderExtensionsTest
         logger.IsEnabled(LogLevel.None).Should().BeFalse();
 
         // change the log level and confirm it worked
-        var provider = (DynamicConsoleLoggerProvider)serviceProvider.GetRequiredService(typeof(ILoggerProvider));
+        var provider = (DynamicConsoleLoggerProvider)serviceProvider.GetRequiredService<ILoggerProvider>();
         provider.SetLogLevel("Steeltoe.Logging.DynamicLogger.Test", LogLevel.Trace);
 
         logger.IsEnabled(LogLevel.Critical).Should().BeTrue();

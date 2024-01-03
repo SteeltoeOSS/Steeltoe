@@ -7,8 +7,6 @@ namespace Steeltoe.Configuration.CloudFoundry;
 public sealed class Limits
 {
     public int Disk { get; set; } = -1;
-
     public int Fds { get; set; } = -1;
-
     public int Mem { get; set; } = -1;
 }

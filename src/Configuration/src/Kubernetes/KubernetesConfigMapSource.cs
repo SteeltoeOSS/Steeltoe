@@ -4,23 +4,26 @@
 
 using k8s;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Kubernetes;
 
 internal sealed class KubernetesConfigMapSource : IConfigurationSource
 {
-    private IKubernetes KubernetesClient { get; }
+    private readonly IKubernetes _kubernetesClient;
+    private readonly KubernetesConfigSourceSettings _settings;
 
-    private KubernetesConfigSourceSettings ConfigurationSettings { get; }
-
-    internal KubernetesConfigMapSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings)
+    public KubernetesConfigMapSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings)
     {
-        KubernetesClient = kubernetesClient;
-        ConfigurationSettings = settings;
+        ArgumentGuard.NotNull(kubernetesClient);
+        ArgumentGuard.NotNull(settings);
+
+        _kubernetesClient = kubernetesClient;
+        _settings = settings;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new KubernetesConfigMapProvider(KubernetesClient, ConfigurationSettings);
+        return new KubernetesConfigMapProvider(_kubernetesClient, _settings, CancellationToken.None);
     }
 }

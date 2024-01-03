@@ -15,7 +15,11 @@ public static class HostBuilderExtensions
 {
     public static IHostBuilder AddStreamServices<T>(this IHostBuilder builder)
     {
-        return builder.AddSpringBootConfiguration().ConfigureServices((context, services) =>
+        return builder.ConfigureAppConfiguration((context, configurationBuilder) =>
+        {
+            configurationBuilder.AddSpringBootFromEnvironmentVariable();
+            configurationBuilder.AddSpringBootFromCommandLine(context.Configuration);
+        }).ConfigureServices((context, services) =>
         {
             services.AddStreamServices<T>(context.Configuration);
             services.AddHostedService<StreamLifeCycleService>();
@@ -24,7 +28,11 @@ public static class HostBuilderExtensions
 
     public static IWebHostBuilder AddStreamServices<T>(this IWebHostBuilder builder)
     {
-        return builder.AddSpringBootConfiguration().ConfigureServices((context, services) =>
+        return builder.ConfigureAppConfiguration((context, configurationBuilder) =>
+        {
+            configurationBuilder.AddSpringBootFromEnvironmentVariable();
+            configurationBuilder.AddSpringBootFromCommandLine(context.Configuration);
+        }).ConfigureServices((context, services) =>
         {
             services.AddStreamServices<T>(context.Configuration);
             services.AddHostedService<StreamLifeCycleService>();
@@ -33,7 +41,8 @@ public static class HostBuilderExtensions
 
     public static WebApplicationBuilder AddStreamServices<T>(this WebApplicationBuilder builder)
     {
-        builder.AddSpringBootConfiguration();
+        builder.Configuration.AddSpringBootFromEnvironmentVariable();
+        builder.Configuration.AddSpringBootFromCommandLine(builder.Configuration);
         builder.Services.AddStreamServices<T>(builder.Configuration);
         builder.Services.AddHostedService<StreamLifeCycleService>();
         return builder;

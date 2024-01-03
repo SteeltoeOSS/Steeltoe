@@ -9,5 +9,5 @@ namespace Steeltoe.Logging.DynamicSerilog;
 public sealed class MinimumLevel
 {
     public LogEventLevel Default { get; set; } = (LogEventLevel)(-1);
-    public Dictionary<string, LogEventLevel> Override { get; } = new();
+    public IDictionary<string, LogEventLevel> Override { get; } = new Dictionary<string, LogEventLevel>();
 }

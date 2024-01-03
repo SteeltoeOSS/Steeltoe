@@ -6,17 +6,11 @@ namespace Steeltoe.Configuration.CloudFoundry;
 
 internal sealed class CloudFoundryMemorySettingsReader : ICloudFoundrySettingsReader
 {
-    public string ApplicationJson { get; set; }
-
-    public string InstanceId { get; set; }
-
-    public string InstanceIndex { get; set; }
-
-    public string InstanceInternalIP { get; set; }
-
-    public string InstanceIP { get; set; }
-
-    public string InstancePort { get; set; }
-
-    public string ServicesJson { get; set; }
+    public string? ApplicationJson { get; set; }
+    public string? InstanceId { get; set; }
+    public string? InstanceIndex { get; set; }
+    public string? InstanceInternalIP { get; set; }
+    public string? InstanceIP { get; set; }
+    public string? InstancePort { get; set; }
+    public string? ServicesJson { get; set; }
 }

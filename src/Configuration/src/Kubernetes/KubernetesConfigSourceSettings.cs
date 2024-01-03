@@ -3,22 +3,23 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 
 namespace Steeltoe.Configuration.Kubernetes;
 
 internal sealed class KubernetesConfigSourceSettings
 {
-    internal string Name { get; set; }
+    public string Name { get; }
+    public string Namespace { get; }
+    public ReloadSettings ReloadSettings { get; }
+    public ILoggerFactory? LoggerFactory { get; set; }
 
-    internal string Namespace { get; set; }
-
-    internal ReloadSettings ReloadSettings { get; set; }
-
-    internal ILoggerFactory LoggerFactory { get; set; }
-
-    internal KubernetesConfigSourceSettings(string @namespace, string name, ReloadSettings reloadSettings, ILoggerFactory loggerFactory = null)
+    public KubernetesConfigSourceSettings(string? @namespace, string name, ReloadSettings reloadSettings, ILoggerFactory? loggerFactory = null)
     {
+        ArgumentGuard.NotNull(name);
+        ArgumentGuard.NotNull(reloadSettings);
+
         Namespace = @namespace ?? "default";
         Name = name;
         ReloadSettings = reloadSettings;

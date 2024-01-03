@@ -12,43 +12,14 @@ namespace Steeltoe.Configuration.Encryption.Test;
 
 public sealed class EncryptionResolverProviderTest
 {
-    private readonly Mock<ITextDecryptor> _decryptorMock;
-
-    public EncryptionResolverProviderTest()
-    {
-        _decryptorMock = new Mock<ITextDecryptor>();
-    }
-
-    [Fact]
-    public void Constructor_WithConfiguration_ThrowsIfNulls()
-    {
-        const IConfigurationRoot nullConfiguration = null;
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverProvider(nullConfiguration, loggerFactory, _decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverProvider(configuration, null, _decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverProvider(configuration, loggerFactory, null));
-    }
-
-    [Fact]
-    public void Constructor_WithProviders_ThrowsIfNulls()
-    {
-        const IList<IConfigurationProvider> nullProviders = null;
-        var providers = new List<IConfigurationProvider>();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverProvider(nullProviders, loggerFactory, _decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverProvider(providers, null, _decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverProvider(providers, loggerFactory, null));
-    }
+    private readonly Mock<ITextDecryptor> _decryptorMock = new();
 
     [Fact]
     public void Constructor_WithConfiguration()
     {
         IConfigurationRoot configuration = new ConfigurationBuilder().Build();
 
-        var provider = new EncryptionResolverProvider(configuration, NullLoggerFactory.Instance, _decryptorMock.Object);
+        var provider = new EncryptionResolverProvider(configuration, _decryptorMock.Object, NullLoggerFactory.Instance);
 
         Assert.NotNull(provider.Configuration);
         Assert.Empty(provider.Providers);
@@ -59,7 +30,7 @@ public sealed class EncryptionResolverProviderTest
     {
         var providers = new List<IConfigurationProvider>();
 
-        var provider = new EncryptionResolverProvider(providers, NullLoggerFactory.Instance, _decryptorMock.Object);
+        var provider = new EncryptionResolverProvider(providers, _decryptorMock.Object, NullLoggerFactory.Instance);
 
         Assert.Null(provider.Configuration);
         Assert.Same(providers, provider.Providers);
@@ -72,10 +43,10 @@ public sealed class EncryptionResolverProviderTest
         IConfigurationRoot configuration = new ConfigurationBuilder().Build();
         var loggerFactory = new LoggerFactory();
 
-        var provider = new EncryptionResolverProvider(providers, loggerFactory, _decryptorMock.Object);
+        var provider = new EncryptionResolverProvider(providers, _decryptorMock.Object, loggerFactory);
         Assert.NotNull(provider.Logger);
 
-        provider = new EncryptionResolverProvider(configuration, loggerFactory, _decryptorMock.Object);
+        provider = new EncryptionResolverProvider(configuration, _decryptorMock.Object, loggerFactory);
         Assert.NotNull(provider.Logger);
     }
 
@@ -84,7 +55,7 @@ public sealed class EncryptionResolverProviderTest
     {
         _decryptorMock.Setup(x => x.Decrypt("something")).Returns("DECRYPTED");
 
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "key1", "value1" },
             { "key2", "{cipher}something" }
@@ -94,9 +65,9 @@ public sealed class EncryptionResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new EncryptionResolverProvider(providers, NullLoggerFactory.Instance, _decryptorMock.Object);
+        var holder = new EncryptionResolverProvider(providers, _decryptorMock.Object, NullLoggerFactory.Instance);
 
-        Assert.False(holder.TryGet("nokey", out string val));
+        Assert.False(holder.TryGet("nokey", out string? val));
         Assert.True(holder.TryGet("key1", out val));
         Assert.Equal("value1", val);
         Assert.True(holder.TryGet("key2", out val));
@@ -109,7 +80,7 @@ public sealed class EncryptionResolverProviderTest
         _decryptorMock.Setup(x => x.Decrypt("something")).Returns("DECRYPTED");
         _decryptorMock.Setup(x => x.Decrypt("something2")).Returns("DECRYPTED2");
 
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "key1", "value1" },
             { "key2", "{cipher}something" }
@@ -119,9 +90,9 @@ public sealed class EncryptionResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new EncryptionResolverProvider(providers, NullLoggerFactory.Instance, _decryptorMock.Object);
+        var holder = new EncryptionResolverProvider(providers, _decryptorMock.Object, NullLoggerFactory.Instance);
 
-        Assert.False(holder.TryGet("nokey", out string val));
+        Assert.False(holder.TryGet("nokey", out string? val));
         Assert.True(holder.TryGet("key1", out val));
         Assert.Equal("value1", val);
         Assert.True(holder.TryGet("key2", out val));
@@ -139,7 +110,7 @@ public sealed class EncryptionResolverProviderTest
     [Fact]
     public void Load_CreatesConfiguration()
     {
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "key1", "value1" },
             { "key2", "{cipher}encrypted" }
@@ -149,7 +120,7 @@ public sealed class EncryptionResolverProviderTest
         builder.AddInMemoryCollection(settings);
         List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
-        var holder = new EncryptionResolverProvider(providers, NullLoggerFactory.Instance, _decryptorMock.Object);
+        var holder = new EncryptionResolverProvider(providers, _decryptorMock.Object, NullLoggerFactory.Instance);
         Assert.Null(holder.Configuration);
         holder.Load();
         Assert.NotNull(holder.Configuration);
@@ -163,12 +134,12 @@ public sealed class EncryptionResolverProviderTest
 
         var manager = new ConfigurationManager();
 
-        var valueProviderA = new Dictionary<string, string>
+        var valueProviderA = new Dictionary<string, string?>
         {
             { "value", "a" }
         };
 
-        var encryption = new Dictionary<string, string>
+        var encryption = new Dictionary<string, string?>
         {
             { "value", "{cipher}encrypted" }
         };
@@ -176,7 +147,7 @@ public sealed class EncryptionResolverProviderTest
         manager.AddInMemoryCollection(valueProviderA);
         manager.AddInMemoryCollection(encryption);
         manager.AddEncryptionResolver(_decryptorMock.Object);
-        string result = manager.GetValue<string>("value");
+        string? result = manager.GetValue<string>("value");
         Assert.Equal("DECRYPTED", result);
 
         _decryptorMock.Verify(x => x.Decrypt("encrypted"));

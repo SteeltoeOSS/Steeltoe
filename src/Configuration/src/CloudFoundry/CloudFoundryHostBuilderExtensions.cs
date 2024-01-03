@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
+using Steeltoe.Common.Hosting;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
@@ -14,48 +15,48 @@ public static class CloudFoundryHostBuilderExtensions
     /// <summary>
     /// Adds the Cloud Foundry configuration provider.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The host builder.
     /// </param>
-    public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder hostBuilder)
+    public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        hostBuilder.ConfigureAppConfiguration((_, builder) => builder.AddCloudFoundry());
-        hostBuilder.ConfigureServices(serviceCollection => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddCloudFoundryConfiguration();
 
-        return hostBuilder;
+        return builder;
     }
 
     /// <summary>
     /// Adds the Cloud Foundry configuration provider.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The host builder.
     /// </param>
-    public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder hostBuilder)
+    public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        hostBuilder.ConfigureAppConfiguration((_, builder) => builder.AddCloudFoundry());
-        hostBuilder.ConfigureServices(serviceCollection => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddCloudFoundryConfiguration();
 
-        return hostBuilder;
+        return builder;
     }
 
     /// <summary>
     /// Adds the Cloud Foundry configuration provider.
     /// </summary>
-    /// <param name="applicationBuilder">
+    /// <param name="builder">
     /// The application builder.
     /// </param>
-    public static WebApplicationBuilder AddCloudFoundryConfiguration(this WebApplicationBuilder applicationBuilder)
+    public static WebApplicationBuilder AddCloudFoundryConfiguration(this WebApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(applicationBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        applicationBuilder.Configuration.AddCloudFoundry();
-        applicationBuilder.Services.RegisterCloudFoundryApplicationInstanceInfo();
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddCloudFoundryConfiguration();
 
-        return applicationBuilder;
+        return builder;
     }
 }

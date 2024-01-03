@@ -159,13 +159,13 @@ public sealed class ContentNegotiationTests
             {
                 foreach (var negotiation in negotiations)
                 {
-                    yield return new object[]
-                    {
+                    yield return
+                    [
                         endpoint.Name,
                         endpoint.Path,
                         negotiation.Accepts,
                         negotiation.ContentType
-                    };
+                    ];
                 }
             }
         }

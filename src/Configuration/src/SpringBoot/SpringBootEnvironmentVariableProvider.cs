@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration.Json;
+using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.SpringBoot;
 
@@ -13,7 +14,7 @@ namespace Steeltoe.Configuration.SpringBoot;
 internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigurationProvider
 {
     private const string SpringApplicationJson = "SPRING_APPLICATION_JSON";
-    private readonly string _springApplicationJson;
+    private readonly string? _springApplicationJson;
     private bool _loaded;
 
     /// <summary>
@@ -34,6 +35,8 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
     public SpringBootEnvironmentVariableProvider(string springApplicationJson)
         : base(new JsonStreamConfigurationSource())
     {
+        ArgumentGuard.NotNull(springApplicationJson);
+
         _springApplicationJson = springApplicationJson;
     }
 
@@ -47,7 +50,7 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
             return;
         }
 
-        string json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SpringApplicationJson);
+        string? json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SpringApplicationJson);
 
         if (!string.IsNullOrEmpty(json))
         {
@@ -57,7 +60,7 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
 
             foreach (string key in keys)
             {
-                string value = Data[key];
+                string? value = Data[key];
 
                 if (key.Contains('.') && value != null)
                 {

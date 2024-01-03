@@ -9,10 +9,10 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.RandomValue;
 
-public static class RandomValueExtensions
+public static class RandomValueConfigurationBuilderExtensions
 {
     /// <summary>
-    /// Add a random value configuration source to the <see cref="ConfigurationBuilder" />.
+    /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" />.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -26,7 +26,7 @@ public static class RandomValueExtensions
     }
 
     /// <summary>
-    /// Add a random value configuration source to the <see cref="ConfigurationBuilder" />.
+    /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" />.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -49,7 +49,7 @@ public static class RandomValueExtensions
     }
 
     /// <summary>
-    /// Add a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
+    /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -66,7 +66,7 @@ public static class RandomValueExtensions
     }
 
     /// <summary>
-    /// Add a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
+    /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.

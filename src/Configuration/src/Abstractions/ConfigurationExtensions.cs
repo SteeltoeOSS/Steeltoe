@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+#if NET6_0
+using System.Reflection;
+#endif
 
 namespace Steeltoe.Configuration;
 
@@ -72,7 +72,7 @@ internal static class ConfigurationExtensions
     private static TProvider? FindConfigurationProvider<TProvider>(ChainedConfigurationProvider provider)
         where TProvider : class, IConfigurationProvider
     {
-        // ChainedConfigurationProvider.Configuration is publicly exposed in .NET 8.
+#if NET6_0
         FieldInfo? field = typeof(ChainedConfigurationProvider).GetField("_config", BindingFlags.Instance | BindingFlags.NonPublic);
 
         if (field != null)
@@ -86,5 +86,8 @@ internal static class ConfigurationExtensions
         }
 
         return null;
+#else
+        return FindConfigurationProvider<TProvider>(provider.Configuration);
+#endif
     }
 }

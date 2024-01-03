@@ -9,15 +9,10 @@ namespace Steeltoe.Configuration.ConfigServer;
 
 public sealed class ConfigEnvironment
 {
-    public string Name { get; set; }
-
-    public string Label { get; set; }
-
-    public IList<string> Profiles { get; set; }
-
-    public IList<PropertySource> PropertySources { get; set; }
-
-    public string Version { get; set; }
-
-    public string State { get; set; }
+    public string? Name { get; set; }
+    public string? Label { get; set; }
+    public IList<string> Profiles { get; set; } = new List<string>();
+    public IList<PropertySource> PropertySources { get; set; } = new List<PropertySource>();
+    public string? Version { get; set; }
+    public string? State { get; set; }
 }

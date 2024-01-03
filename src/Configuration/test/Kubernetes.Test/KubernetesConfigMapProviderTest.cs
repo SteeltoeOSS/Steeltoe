@@ -16,20 +16,6 @@ namespace Steeltoe.Configuration.Kubernetes.Test;
 public sealed class KubernetesConfigMapProviderTest
 {
     [Fact]
-    public void KubernetesConfigMapProvider_ThrowsOnNulls()
-    {
-        var configuration = KubernetesClientConfiguration.BuildDefaultConfig();
-        var client = new k8s.Kubernetes(configuration);
-        var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
-
-        var ex1 = Assert.Throws<ArgumentNullException>(() => new KubernetesConfigMapProvider(null, settings));
-        var ex2 = Assert.Throws<ArgumentNullException>(() => new KubernetesConfigMapProvider(client, null));
-
-        Assert.Equal("kubernetes", ex1.ParamName);
-        Assert.Equal("settings", ex2.ParamName);
-    }
-
-    [Fact]
     public void KubernetesConfigMapProvider_ThrowsOn403()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
@@ -42,11 +28,11 @@ public sealed class KubernetesConfigMapProviderTest
         }, delegatingHandler);
 
         var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
-        var provider = new KubernetesConfigMapProvider(client, settings);
+        var provider = new KubernetesConfigMapProvider(client, settings, CancellationToken.None);
 
-        var ex = Assert.Throws<HttpOperationException>(() => provider.Load());
+        var exception = Assert.Throws<HttpOperationException>(provider.Load);
 
-        Assert.Equal(HttpStatusCode.Forbidden, ex.Response.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, exception.Response.StatusCode);
     }
 
     [Fact]
@@ -67,7 +53,7 @@ public sealed class KubernetesConfigMapProviderTest
             Period = 0
         });
 
-        var provider = new KubernetesConfigMapProvider(client, settings);
+        var provider = new KubernetesConfigMapProvider(client, settings, CancellationToken.None);
 
         provider.Load();
         await Task.Delay(50);
@@ -80,8 +66,9 @@ public sealed class KubernetesConfigMapProviderTest
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
-        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent(
-            "{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\"}},\"data\":{\"TestKey\":\"TestValue\"}}"));
+        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent("""
+            {"kind":"ConfigMap","apiVersion":"v1","metadata":{"name":"testconfigmap","namespace":"default","selfLink":"/api/v1/namespaces/default/configmaps/testconfigmap","uid":"8582b94c-f4fa-47fa-bacc-47019223775c","resourceVersion":"1320622","creationTimestamp":"2020-04-15T18:33:49Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"v1\",\"data\":{\"ConfigMapName\":\"testconfigmap\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"kubernetes1\",\"namespace\":\"default\"}}"}},"data":{"TestKey":"TestValue"}}
+            """));
 
         using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
@@ -91,11 +78,11 @@ public sealed class KubernetesConfigMapProviderTest
         }, delegatingHandler);
 
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
-        var provider = new KubernetesConfigMapProvider(client, settings);
+        var provider = new KubernetesConfigMapProvider(client, settings, CancellationToken.None);
 
         provider.Load();
 
-        Assert.True(provider.TryGet("TestKey", out string testValue));
+        Assert.True(provider.TryGet("TestKey", out string? testValue));
         Assert.Equal("TestValue", testValue);
     }
 
@@ -104,8 +91,9 @@ public sealed class KubernetesConfigMapProviderTest
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
-        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent(
-            "{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\"}},\"data\":{\"several__layers__deep__TestKey\":\"TestValue\"}}"));
+        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent("""
+            {"kind":"ConfigMap","apiVersion":"v1","metadata":{"name":"testconfigmap","namespace":"default","selfLink":"/api/v1/namespaces/default/configmaps/testconfigmap","uid":"8582b94c-f4fa-47fa-bacc-47019223775c","resourceVersion":"1320622","creationTimestamp":"2020-04-15T18:33:49Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"v1\",\"data\":{\"ConfigMapName\":\"testconfigmap\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"kubernetes1\",\"namespace\":\"default\"}}"}},"data":{"several__layers__deep__TestKey":"TestValue"}}
+            """));
 
         using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
@@ -115,11 +103,11 @@ public sealed class KubernetesConfigMapProviderTest
         }, delegatingHandler);
 
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
-        var provider = new KubernetesConfigMapProvider(client, settings);
+        var provider = new KubernetesConfigMapProvider(client, settings, CancellationToken.None);
 
         provider.Load();
 
-        Assert.True(provider.TryGet("several:layers:deep:TestKey", out string testValue));
+        Assert.True(provider.TryGet("several:layers:deep:TestKey", out string? testValue));
         Assert.Equal("TestValue", testValue);
     }
 
@@ -129,14 +117,17 @@ public sealed class KubernetesConfigMapProviderTest
         bool foundKey = false;
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
-        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent(
-            "{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\"}},\"data\":{\"TestKey\":\"TestValue\"}}"));
+        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent("""
+            {"kind":"ConfigMap","apiVersion":"v1","metadata":{"name":"testconfigmap","namespace":"default","selfLink":"/api/v1/namespaces/default/configmaps/testconfigmap","uid":"8582b94c-f4fa-47fa-bacc-47019223775c","resourceVersion":"1320622","creationTimestamp":"2020-04-15T18:33:49Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"v1\",\"data\":{\"ConfigMapName\":\"testconfigmap\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"kubernetes1\",\"namespace\":\"default\"}}"}},"data":{"TestKey":"TestValue"}}
+            """));
 
-        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent(
-            "{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\"}},\"data\":{\"TestKey2\":\"UpdatedValue\"}}"));
+        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent("""
+            {"kind":"ConfigMap","apiVersion":"v1","metadata":{"name":"testconfigmap","namespace":"default","selfLink":"/api/v1/namespaces/default/configmaps/testconfigmap","uid":"8582b94c-f4fa-47fa-bacc-47019223775c","resourceVersion":"1320622","creationTimestamp":"2020-04-15T18:33:49Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"v1\",\"data\":{\"ConfigMapName\":\"testconfigmap\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"kubernetes1\",\"namespace\":\"default\"}}"}},"data":{"TestKey2":"UpdatedValue"}}
+            """));
 
-        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent(
-            "{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\"}},\"data\":{\"TestKey3\":\"UpdatedAgain\"}}"));
+        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent("""
+            {"kind":"ConfigMap","apiVersion":"v1","metadata":{"name":"testconfigmap","namespace":"default","selfLink":"/api/v1/namespaces/default/configmaps/testconfigmap","uid":"8582b94c-f4fa-47fa-bacc-47019223775c","resourceVersion":"1320622","creationTimestamp":"2020-04-15T18:33:49Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"v1\",\"data\":{\"ConfigMapName\":\"testconfigmap\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"kubernetes1\",\"namespace\":\"default\"}}"}},"data":{"TestKey3":"UpdatedAgain"}}
+            """));
 
         using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
@@ -155,13 +146,13 @@ public sealed class KubernetesConfigMapProviderTest
 
         provider.Load();
 
-        Assert.True(provider.TryGet("TestKey", out string testValue), "TryGet TestKey");
+        Assert.True(provider.TryGet("TestKey", out string? testValue), "TryGet TestKey");
         Assert.Equal("TestValue", testValue);
 
         while (!foundKey)
         {
             await Task.Delay(100);
-            foundKey = provider.TryGet("TestKey2", out string testValue2);
+            foundKey = provider.TryGet("TestKey2", out string? testValue2);
 
             if (foundKey)
             {
@@ -174,7 +165,7 @@ public sealed class KubernetesConfigMapProviderTest
         while (!foundKey)
         {
             await Task.Delay(100);
-            foundKey = provider.TryGet("TestKey3", out string testValue3);
+            foundKey = provider.TryGet("TestKey3", out string? testValue3);
 
             if (foundKey)
             {
@@ -191,8 +182,9 @@ public sealed class KubernetesConfigMapProviderTest
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
-        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent(
-            "{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\"}},\"data\":{\"appsettings.json\": \"{\\\"Test0\\\": \\\"Value0\\\",\\\"Test1\\\": [{\\\"Test2\\\": \\\"Value1\\\"}]}\"}}"));
+        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent("""
+            {"kind":"ConfigMap","apiVersion":"v1","metadata":{"name":"testconfigmap","namespace":"default","selfLink":"/api/v1/namespaces/default/configmaps/testconfigmap","uid":"8582b94c-f4fa-47fa-bacc-47019223775c","resourceVersion":"1320622","creationTimestamp":"2020-04-15T18:33:49Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"v1\",\"data\":{\"ConfigMapName\":\"testconfigmap\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"kubernetes1\",\"namespace\":\"default\"}}"}},"data":{"appsettings.json": "{\"Test0\": \"Value0\",\"Test1\": [{\"Test2\": \"Value1\"}]}"}}
+            """));
 
         using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
@@ -202,14 +194,14 @@ public sealed class KubernetesConfigMapProviderTest
         }, delegatingHandler);
 
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
-        var provider = new KubernetesConfigMapProvider(client, settings);
+        var provider = new KubernetesConfigMapProvider(client, settings, CancellationToken.None);
 
         provider.Load();
 
-        Assert.True(provider.TryGet("Test0", out string testValue));
+        Assert.True(provider.TryGet("Test0", out string? testValue));
         Assert.Equal("Value0", testValue);
 
-        Assert.True(provider.TryGet("Test1:0:Test2", out string testValue2));
+        Assert.True(provider.TryGet("Test1:0:Test2", out string? testValue2));
         Assert.Equal("Value1", testValue2);
     }
 
@@ -218,8 +210,9 @@ public sealed class KubernetesConfigMapProviderTest
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
-        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent(
-            "{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\"}},\"data\":{\"appsettings.demo.json\": \"{\\\"Test0\\\": \\\"Value0\\\",\\\"Test1\\\": [{\\\"Test2\\\": \\\"Value1\\\"}]}\"}}"));
+        mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(new StringContent("""
+            {"kind":"ConfigMap","apiVersion":"v1","metadata":{"name":"testconfigmap","namespace":"default","selfLink":"/api/v1/namespaces/default/configmaps/testconfigmap","uid":"8582b94c-f4fa-47fa-bacc-47019223775c","resourceVersion":"1320622","creationTimestamp":"2020-04-15T18:33:49Z","annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"v1\",\"data\":{\"ConfigMapName\":\"testconfigmap\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"kubernetes1\",\"namespace\":\"default\"}}"}},"data":{"appsettings.demo.json": "{\"Test0\": \"Value0\",\"Test1\": [{\"Test2\": \"Value1\"}]}"}}
+            """));
 
         using var delegatingHandler = new HttpClientDelegatingHandler(mockHttpMessageHandler.ToHttpClient());
 
@@ -229,14 +222,14 @@ public sealed class KubernetesConfigMapProviderTest
         }, delegatingHandler);
 
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
-        var provider = new KubernetesConfigMapProvider(client, settings);
+        var provider = new KubernetesConfigMapProvider(client, settings, CancellationToken.None);
 
         provider.Load();
 
-        Assert.True(provider.TryGet("Test0", out string testValue));
+        Assert.True(provider.TryGet("Test0", out string? testValue));
         Assert.Equal("Value0", testValue);
 
-        Assert.True(provider.TryGet("Test1:0:Test2", out string testValue2));
+        Assert.True(provider.TryGet("Test1:0:Test2", out string? testValue2));
         Assert.Equal("Value1", testValue2);
     }
 
@@ -250,8 +243,8 @@ public sealed class KubernetesConfigMapProviderTest
         });
 
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
-        var provider = new KubernetesConfigMapProvider(client, settings);
-        ILoggerFactory originalLoggerFactory = settings.LoggerFactory;
+        var provider = new KubernetesConfigMapProvider(client, settings, CancellationToken.None);
+        ILoggerFactory? originalLoggerFactory = settings.LoggerFactory;
         var newFactory = new LoggerFactory();
         provider.ProvideRuntimeReplacements(newFactory);
 
@@ -269,7 +262,7 @@ public sealed class KubernetesConfigMapProviderTest
         });
 
         var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
-        var provider = new KubernetesConfigMapProvider(client, settings);
+        var provider = new KubernetesConfigMapProvider(client, settings, CancellationToken.None);
         settings.LoggerFactory ??= new LoggerFactory();
         ILogger<KubernetesConfigMapProviderTest> firstLogger = settings.LoggerFactory.CreateLogger<KubernetesConfigMapProviderTest>();
 

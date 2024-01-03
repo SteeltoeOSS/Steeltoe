@@ -61,7 +61,7 @@ public sealed class ConfigServerClientSettingsOptionsTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);

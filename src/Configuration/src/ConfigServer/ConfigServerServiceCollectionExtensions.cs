@@ -21,9 +21,7 @@ public static class ConfigServerServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.AddOptions<ConfigServerClientSettingsOptions>().Configure<IConfiguration>((options, configuration) =>
-        {
-            configuration.GetSection(ConfigServerClientSettingsOptions.ConfigurationPrefix).Bind(options);
-        });
+            configuration.GetSection(ConfigServerClientSettingsOptions.ConfigurationPrefix).Bind(options));
 
         return services;
     }
@@ -58,7 +56,7 @@ public static class ConfigServerServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.ConfigureConfigServerClientOptions();
-        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IConfiguration>() as IConfigurationRoot);
+        services.TryAddSingleton(serviceProvider => (IConfigurationRoot)serviceProvider.GetRequiredService<IConfiguration>());
         services.TryAddSingleton<IHostedService, ConfigServerHostedService>();
         services.AddConfigServerHealthContributor();
     }

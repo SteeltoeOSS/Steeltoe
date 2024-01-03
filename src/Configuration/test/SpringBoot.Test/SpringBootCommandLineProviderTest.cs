@@ -12,21 +12,13 @@ public sealed class SpringBootCommandLineProviderTest
     [Fact]
     public void TryGet_Key()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine(new[]
-        {
-            "spring.cloud.stream.bindings.input=test"
-        }).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCommandLine(["spring.cloud.stream.bindings.input=test"]).Build();
 
-        var prov = new SpringBootCommandLineProvider(configurationRoot);
-        prov.Load();
-        prov.TryGet("spring:cloud:stream:bindings:input", out string value);
+        var provider = new SpringBootCommandLineProvider(configurationRoot);
+        provider.Load();
+        provider.TryGet("spring:cloud:stream:bindings:input", out string? value);
+
         Assert.NotNull(value);
         Assert.Equal("test", value);
-    }
-
-    [Fact]
-    public void Throws_When_ArgumentsNull()
-    {
-        Assert.Throws<ArgumentNullException>(() => new SpringBootCommandLineProvider(null));
     }
 }

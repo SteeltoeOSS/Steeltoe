@@ -4,47 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
 namespace Steeltoe.Configuration.Placeholder.Test;
 
-public sealed class PlaceholderResolverConfigurationExtensionsTest
+public sealed class PlaceholderConfigurationExtensionsTest
 {
-    [Fact]
-    public void AddPlaceholderResolver_WithConfigurationBuilder_ThrowsIfNulls()
-    {
-        const IConfigurationBuilder nullConfigurationBuilder = null;
-        var configurationBuilder = new ConfigurationBuilder();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => nullConfigurationBuilder.AddPlaceholderResolver(loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddPlaceholderResolver(null));
-    }
-
-    [Fact]
-    public void AddPlaceholderResolver_WithConfiguration_ThrowsIfNulls()
-    {
-        const IConfiguration nullConfiguration = null;
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => nullConfiguration.AddPlaceholderResolver(loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => configuration.AddPlaceholderResolver(null));
-    }
-
-    [Fact]
-    public void AddPlaceholderResolver_WithConfigurationManager_ThrowsIfNulls()
-    {
-        const ConfigurationManager nullConfigurationManager = null;
-        var configurationManager = new ConfigurationManager();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => nullConfigurationManager.AddPlaceholderResolver(loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => configurationManager.AddPlaceholderResolver(null));
-    }
-
     [Fact]
     public void AddPlaceholderResolver_AddsPlaceholderResolverSourceToList()
     {
@@ -52,7 +18,7 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
 
         configurationBuilder.AddPlaceholderResolver();
 
-        PlaceholderResolverSource placeholderSource = configurationBuilder.Sources.OfType<PlaceholderResolverSource>().SingleOrDefault();
+        PlaceholderResolverSource? placeholderSource = configurationBuilder.Sources.OfType<PlaceholderResolverSource>().SingleOrDefault();
         Assert.NotNull(placeholderSource);
     }
 
@@ -65,7 +31,7 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
         configurationBuilder.AddPlaceholderResolver(loggerFactory);
         IConfigurationRoot configuration = configurationBuilder.Build();
 
-        PlaceholderResolverProvider provider = configuration.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
+        PlaceholderResolverProvider? provider = configuration.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
 
         Assert.NotNull(provider);
         Assert.NotNull(provider.Logger);
@@ -90,7 +56,7 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -122,7 +88,7 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -147,7 +113,7 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -164,10 +130,10 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
     public void AddPlaceholderResolver_CommandLineAppSettingsResolvesPlaceholders()
     {
         string[] appsettings =
-        {
+        [
             "spring:bar:name=myName",
             "--spring:cloud:config:name=${spring:bar:name?noName}"
-        };
+        ];
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCommandLine(appsettings);
@@ -209,10 +175,7 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
     name=${spring:line:name?noName}
 ";
 
-        string[] appsettingsLine =
-        {
-            "--spring:line:name=${spring:json:name?noName}"
-        };
+        string[] appsettingsLine = ["--spring:line:name=${spring:json:name?noName}"];
 
         using var sandbox = new Sandbox();
         string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
@@ -222,7 +185,7 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
         string iniPath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
         string iniFileName = Path.GetFileName(iniPath);
 
-        string directory = Path.GetDirectoryName(jsonPath);
+        string directory = Path.GetDirectoryName(jsonPath)!;
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
@@ -240,7 +203,7 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_ClearsSources()
     {
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
@@ -263,7 +226,7 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_WithConfiguration_ReturnsNewConfiguration()
     {
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
@@ -278,7 +241,7 @@ public sealed class PlaceholderResolverConfigurationExtensionsTest
         IConfiguration config2 = config1.AddPlaceholderResolver();
         Assert.NotSame(config1, config2);
 
-        var root2 = config2 as IConfigurationRoot;
+        var root2 = (IConfigurationRoot)config2;
         Assert.Single(root2.Providers);
         IConfigurationProvider provider = root2.Providers.ToList()[0];
         Assert.IsType<PlaceholderResolverProvider>(provider);

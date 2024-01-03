@@ -13,69 +13,40 @@ namespace Steeltoe.Configuration.Encryption.Test;
 
 public sealed class EncryptionResolverSourceTest
 {
-    private readonly Mock<ITextDecryptor> _decryptorMock;
-
-    public EncryptionResolverSourceTest()
-    {
-        _decryptorMock = new Mock<ITextDecryptor>();
-    }
-
-    [Fact]
-    public void Constructor_WithSources_ThrowsIfNulls()
-    {
-        const IList<IConfigurationSource> nullSources = null;
-        var sources = new List<IConfigurationSource>();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(nullSources, loggerFactory, _decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(sources, null, _decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(sources, loggerFactory, null));
-    }
-
-    [Fact]
-    public void Constructor_WithConfiguration_ThrowsIfNulls()
-    {
-        const IConfigurationRoot nullConfiguration = null;
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(nullConfiguration, loggerFactory, _decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(configuration, null, _decryptorMock.Object));
-        Assert.Throws<ArgumentNullException>(() => new EncryptionResolverSource(configuration, loggerFactory, null));
-    }
+    private readonly Mock<ITextDecryptor> _decryptorMock = new();
 
     [Fact]
     public void Constructors_InitializesProperties()
     {
-        var memSource = new MemoryConfigurationSource();
+        var memorySource = new MemoryConfigurationSource();
 
         var sources = new List<IConfigurationSource>
         {
-            memSource
+            memorySource
         };
 
         var factory = new LoggerFactory();
 
-        var source = new EncryptionResolverSource(sources, factory, _decryptorMock.Object);
-        Assert.Equal(factory, source.LoggerFactory);
-        Assert.NotNull(source.Sources);
-        Assert.Single(source.Sources);
-        Assert.NotSame(sources, source.Sources);
-        Assert.Contains(memSource, source.Sources);
+        var encryptionSource = new EncryptionResolverSource(sources, _decryptorMock.Object, factory);
+        Assert.Equal(factory, encryptionSource.LoggerFactory);
+        Assert.NotNull(encryptionSource.Sources);
+        Assert.Single(encryptionSource.Sources);
+        Assert.NotSame(sources, encryptionSource.Sources);
+        Assert.Contains(memorySource, encryptionSource.Sources);
     }
 
     [Fact]
     public void Build_ReturnsProvider()
     {
-        var memSource = new MemoryConfigurationSource();
+        var memorySource = new MemoryConfigurationSource();
 
         IList<IConfigurationSource> sources = new List<IConfigurationSource>
         {
-            memSource
+            memorySource
         };
 
-        var source = new EncryptionResolverSource(sources, NullLoggerFactory.Instance, _decryptorMock.Object);
-        IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
+        var encryptionSource = new EncryptionResolverSource(sources, _decryptorMock.Object, NullLoggerFactory.Instance);
+        IConfigurationProvider provider = encryptionSource.Build(new ConfigurationBuilder());
         Assert.IsType<EncryptionResolverProvider>(provider);
     }
 }
