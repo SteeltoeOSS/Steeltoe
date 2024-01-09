@@ -25,8 +25,10 @@
       "Management\\src\\Wavefront\\Steeltoe.Management.Wavefront.csproj",
       "Management\\test\\Endpoint.Test\\Steeltoe.Management.Endpoint.Test.csproj",
       "Management\\test\\Kubernetes.Test\\Steeltoe.Management.Kubernetes.Test.csproj",
+      "Management\\test\\Prometheus.Test\\Steeltoe.Management.Prometheus.Test.csproj",
       "Management\\test\\Task.Test\\Steeltoe.Management.Task.Test.csproj",
-      "Management\\test\\Tracing.Test\\Steeltoe.Management.Tracing.Test.csproj"
+      "Management\\test\\Tracing.Test\\Steeltoe.Management.Tracing.Test.csproj",
+      "Management\\test\\Wavefront.Test\\Steeltoe.Management.Wavefront.Test.csproj"
     ]
   }
 }
