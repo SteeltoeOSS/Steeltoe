@@ -74,7 +74,6 @@
     <JsonNetVersion>13.0.*</JsonNetVersion>
     <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
     <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
-    <OpenIdConnectVersion>7.0.*</OpenIdConnectVersion>
     <OpenTelemetryExporterJaegerVersion>1.5.*</OpenTelemetryExporterJaegerVersion>
     <OpenTelemetryExporterPrometheusVersion>1.4.0-rc.3</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
