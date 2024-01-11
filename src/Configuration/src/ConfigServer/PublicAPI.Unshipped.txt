@@ -175,7 +175,6 @@ Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Validate_C
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Validate_Certificates.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions
 Steeltoe.Configuration.ConfigServer.ConfigServerException
-Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException() -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(string? message) -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(string? message, System.Exception? innerException) -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions

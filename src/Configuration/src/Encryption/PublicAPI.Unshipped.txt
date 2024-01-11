@@ -15,6 +15,8 @@ static Steeltoe.Configuration.Encryption.EncryptionServiceCollectionExtensions.C
 static Steeltoe.Configuration.Encryption.EncryptionServiceCollectionExtensions.ConfigureEncryptionResolver(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, Steeltoe.Configuration.Encryption.ITextDecryptor! textDecryptor) -> Microsoft.Extensions.Configuration.IConfiguration!
 static Steeltoe.Configuration.Encryption.EncryptionServiceCollectionExtensions.ConfigureEncryptionResolver(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, Steeltoe.Configuration.Encryption.ITextDecryptor! textDecryptor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfiguration!
 Steeltoe.Configuration.Encryption.DecryptionException
+Steeltoe.Configuration.Encryption.DecryptionException.DecryptionException(string? message) -> void
+Steeltoe.Configuration.Encryption.DecryptionException.DecryptionException(string? message, System.Exception? innerException) -> void
 Steeltoe.Configuration.Encryption.EncryptionConfigurationExtensions
 Steeltoe.Configuration.Encryption.EncryptionHostBuilderExtensions
 Steeltoe.Configuration.Encryption.EncryptionServiceCollectionExtensions

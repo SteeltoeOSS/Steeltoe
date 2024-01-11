@@ -9,10 +9,6 @@ namespace Steeltoe.Configuration.ConfigServer;
 /// </summary>
 public sealed class ConfigServerException : Exception
 {
-    public ConfigServerException()
-    {
-    }
-
     public ConfigServerException(string? message)
         : base(message)
     {

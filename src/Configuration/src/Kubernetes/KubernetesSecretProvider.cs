@@ -16,7 +16,7 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
 {
     private Watcher<V1Secret>? _secretWatcher;
 
-    internal KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken)
+    public KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken)
         : base(kubernetes, settings, cancellationToken)
     {
     }
