@@ -64,7 +64,7 @@ public static class KubernetesConfigurationBuilderExtensions
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public static IConfigurationBuilder AddKubernetes(this IConfigurationBuilder configurationBuilder, Action<KubernetesClientConfiguration> configureClient,
+    public static IConfigurationBuilder AddKubernetes(this IConfigurationBuilder configurationBuilder, Action<KubernetesClientConfiguration>? configureClient,
         ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configurationBuilder);

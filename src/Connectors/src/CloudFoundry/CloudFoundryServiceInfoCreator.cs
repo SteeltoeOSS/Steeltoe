@@ -49,7 +49,7 @@ internal sealed class CloudFoundryServiceInfoCreator : ServiceInfoCreator
         var appInfo = new CloudFoundryApplicationOptions(Configuration);
         var serviceOptions = new CloudFoundryServicesOptions(Configuration);
 
-        foreach (KeyValuePair<string, IEnumerable<Service>> serviceOption in serviceOptions.Services)
+        foreach (KeyValuePair<string, IList<Service>> serviceOption in serviceOptions.Services)
         {
             foreach (Service s in serviceOption.Value)
             {

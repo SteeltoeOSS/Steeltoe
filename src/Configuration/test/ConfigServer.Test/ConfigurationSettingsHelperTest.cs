@@ -10,21 +10,6 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed class ConfigurationSettingsHelperTest
 {
     [Fact]
-    public void Initialize_ThrowsOnNulls()
-    {
-        const string sectionPrefix = null;
-        const ConfigServerClientSettings settings = null;
-        const IConfiguration configuration = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize(sectionPrefix, settings, configuration));
-        Assert.Contains(nameof(sectionPrefix), ex.Message, StringComparison.Ordinal);
-        ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", settings, configuration));
-        Assert.Contains(nameof(settings), ex.Message, StringComparison.Ordinal);
-        ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", new ConfigServerClientSettings(), configuration));
-        Assert.Contains(nameof(configuration), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void Initialize_WithDefaultSettings()
     {
         const string prefix = "spring:cloud:config";

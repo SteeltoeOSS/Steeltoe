@@ -604,7 +604,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         string[] split = serviceUrls.Split(new[]
         {
             ','
-        }, StringSplitOptions.RemoveEmptyEntries);
+        }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
         foreach (string serviceUrl in split)
         {

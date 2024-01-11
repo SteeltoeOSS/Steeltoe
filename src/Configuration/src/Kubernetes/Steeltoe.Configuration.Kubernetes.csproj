@@ -4,6 +4,7 @@
     <Description>Configuration Provider for reading Cloud Foundry Environment Variables</Description>
     <PackageTags>configuration;Kubernetes</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -14,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.Hosting\Steeltoe.Common.Hosting.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj" />
   </ItemGroup>

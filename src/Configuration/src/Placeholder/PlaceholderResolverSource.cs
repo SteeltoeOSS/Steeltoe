@@ -17,9 +17,9 @@ namespace Steeltoe.Configuration.Placeholder;
 /// </summary>
 internal sealed class PlaceholderResolverSource : IConfigurationSource
 {
-    private readonly IConfigurationRoot _configuration;
+    private readonly IConfigurationRoot? _configuration;
 
-    internal IList<IConfigurationSource> Sources { get; }
+    internal IList<IConfigurationSource>? Sources { get; }
     internal ILoggerFactory LoggerFactory { get; }
 
     /// <summary>
@@ -79,10 +79,13 @@ internal sealed class PlaceholderResolverSource : IConfigurationSource
 
         var providers = new List<IConfigurationProvider>();
 
-        foreach (IConfigurationSource source in Sources)
+        if (Sources != null)
         {
-            IConfigurationProvider provider = source.Build(builder);
-            providers.Add(provider);
+            foreach (IConfigurationSource source in Sources)
+            {
+                IConfigurationProvider provider = source.Build(builder);
+                providers.Add(provider);
+            }
         }
 
         return new PlaceholderResolverProvider(providers, LoggerFactory);

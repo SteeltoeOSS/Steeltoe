@@ -21,24 +21,24 @@ public abstract class BaseServiceOptions : AbstractOptions
     /// <summary>
     /// Gets or sets the name of the service.
     /// </summary>
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets a label describing the type of service.
     /// </summary>
-    public string Label { get; set; }
+    public string? Label { get; set; }
 
     /// <summary>
-    /// Gets or sets a list of tags describing the service.
+    /// Gets a list of tags describing the service.
     /// </summary>
-    public IEnumerable<string> Tags { get; set; }
+    public IList<string> Tags { get; } = new List<string>();
 
     /// <summary>
     /// Gets or sets the plan level at which the service is provisioned.
     /// </summary>
-    public string Plan { get; set; }
+    public string? Plan { get; set; }
 
-    public IDictionary<string, IEnumerable<Service>> Services { get; } = new Dictionary<string, IEnumerable<Service>>();
+    public IDictionary<string, IList<Service>> Services { get; } = new Dictionary<string, IList<Service>>();
 
     // This constructor is for use with IOptions.
     protected BaseServiceOptions()
@@ -50,7 +50,7 @@ public abstract class BaseServiceOptions : AbstractOptions
     {
     }
 
-    protected BaseServiceOptions(IConfiguration configuration, string sectionPrefix)
+    protected BaseServiceOptions(IConfiguration configuration, string? sectionPrefix)
         : base(configuration, sectionPrefix)
     {
     }
@@ -61,11 +61,11 @@ public abstract class BaseServiceOptions : AbstractOptions
     /// <returns>
     /// The complete list of services known to the application.
     /// </returns>
-    public IEnumerable<Service> GetAllServices()
+    public IList<Service> GetAllServices()
     {
         var services = new List<Service>();
 
-        foreach (KeyValuePair<string, IEnumerable<Service>> pair in Services)
+        foreach (KeyValuePair<string, IList<Service>> pair in Services)
         {
             services.AddRange(pair.Value);
         }
@@ -85,12 +85,11 @@ public abstract class BaseServiceOptions : AbstractOptions
     /// <returns>
     /// A list of services configured under the given type.
     /// </returns>
-    public IEnumerable<Service> GetServicesOfType(string serviceType)
+    public IList<Service> GetServicesOfType(string serviceType)
     {
         ArgumentGuard.NotNullOrEmpty(serviceType);
 
-        Services.TryGetValue(serviceType, out IEnumerable<Service> services);
-        return services ?? Array.Empty<Service>();
+        return Services.TryGetValue(serviceType, out IList<Service>? services) ? services : Array.Empty<Service>();
     }
 
     /// <summary>
@@ -108,18 +107,18 @@ public abstract class BaseServiceOptions : AbstractOptions
         ArgumentGuard.NotNullOrEmpty(serviceName);
 
         IConfigurationSection services = configuration.GetSection(ConfigurationPrefix);
-        IConfigurationSection section = FindServiceSection(services, serviceName);
+        IConfigurationSection? section = FindServiceSection(services, serviceName);
 
         section?.Bind(this);
     }
 
-    private IConfigurationSection FindServiceSection(IConfigurationSection section, string serviceName)
+    private IConfigurationSection? FindServiceSection(IConfigurationSection section, string serviceName)
     {
         IConfigurationSection[] children = section.GetChildren().ToArray();
 
         foreach (IConfigurationSection child in children)
         {
-            string name = child.GetValue<string>("name");
+            string? name = child.GetValue<string>("name");
 
             if (serviceName == name)
             {
@@ -129,7 +128,7 @@ public abstract class BaseServiceOptions : AbstractOptions
 
         foreach (IConfigurationSection child in children)
         {
-            IConfigurationSection nestedSection = FindServiceSection(child, serviceName);
+            IConfigurationSection? nestedSection = FindServiceSection(child, serviceName);
 
             if (nestedSection != null)
             {

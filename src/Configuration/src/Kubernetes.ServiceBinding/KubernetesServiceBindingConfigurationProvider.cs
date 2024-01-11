@@ -224,7 +224,7 @@ internal sealed class KubernetesServiceBindingConfigurationProvider : PostProces
             {
                 IDirectoryContents directoryContents = fileProvider.GetDirectoryContents("/");
 
-                foreach (IFileInfo fileInfo in directoryContents.Where(element => element.Exists && element.IsDirectory))
+                foreach (IFileInfo fileInfo in directoryContents.Where(element => element is { Exists: true, IsDirectory: true }))
                 {
                     Bindings.Add(new ServiceBinding(fileInfo.Name, fileProvider));
                 }

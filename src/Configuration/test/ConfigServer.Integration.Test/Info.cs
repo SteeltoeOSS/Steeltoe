@@ -6,7 +6,6 @@ namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 
 public sealed class Info
 {
-    public string Description { get; set; }
-
-    public string Url { get; set; }
+    public string? Description { get; set; }
+    public string? Url { get; set; }
 }

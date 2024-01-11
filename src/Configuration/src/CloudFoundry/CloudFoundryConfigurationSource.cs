@@ -8,10 +8,20 @@ namespace Steeltoe.Configuration.CloudFoundry;
 
 internal sealed class CloudFoundryConfigurationSource : IConfigurationSource
 {
-    public ICloudFoundrySettingsReader SettingsReader { get; set; }
+    private readonly ICloudFoundrySettingsReader _settingsReader;
+
+    public CloudFoundryConfigurationSource()
+        : this(null)
+    {
+    }
+
+    public CloudFoundryConfigurationSource(ICloudFoundrySettingsReader? settingsReader)
+    {
+        _settingsReader = settingsReader ?? new CloudFoundryEnvironmentSettingsReader();
+    }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new CloudFoundryConfigurationProvider(SettingsReader ?? new CloudFoundryEnvironmentSettingsReader());
+        return new CloudFoundryConfigurationProvider(_settingsReader);
     }
 }

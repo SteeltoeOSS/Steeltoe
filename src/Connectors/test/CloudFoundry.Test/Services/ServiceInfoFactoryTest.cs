@@ -44,7 +44,7 @@ public sealed class ServiceInfoFactoryTest
 
         var service1 = new Service
         {
-            Tags = new[]
+            Tags =
             {
                 "bar"
             }
@@ -68,7 +68,7 @@ public sealed class ServiceInfoFactoryTest
 
         var service1 = new Service
         {
-            Tags = new[]
+            Tags =
             {
                 "noMatch"
             }
@@ -92,7 +92,7 @@ public sealed class ServiceInfoFactoryTest
 
         var service1 = new Service
         {
-            Tags = new[]
+            Tags =
             {
                 "noMatch"
             },
@@ -117,7 +117,7 @@ public sealed class ServiceInfoFactoryTest
 
         var service1 = new Service
         {
-            Tags = new[]
+            Tags =
             {
                 "noMatch"
             },
@@ -142,7 +142,7 @@ public sealed class ServiceInfoFactoryTest
 
         var service1 = new Service
         {
-            Tags = new[]
+            Tags =
             {
                 "noMatch"
             },
@@ -171,7 +171,7 @@ public sealed class ServiceInfoFactoryTest
 
         var service1 = new Service
         {
-            Tags = new[]
+            Tags =
             {
                 "noMatch"
             },

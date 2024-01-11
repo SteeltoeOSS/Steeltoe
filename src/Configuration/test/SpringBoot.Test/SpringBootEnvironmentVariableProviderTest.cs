@@ -12,11 +12,12 @@ public sealed class SpringBootEnvironmentVariableProviderTest
     [Fact]
     public void TryGet_Flat()
     {
-        var prov = new SpringBootEnvironmentVariableProvider(
+        var provider = new SpringBootEnvironmentVariableProvider(
             "{\"management.metrics.tags.application.type\":\"${spring.cloud.dataflow.stream.app.type:unknown}\"}");
 
-        prov.Load();
-        prov.TryGet("management:metrics:tags:application:type", out string value);
+        provider.Load();
+        provider.TryGet("management:metrics:tags:application:type", out string? value);
+
         Assert.NotNull(value);
         Assert.Equal("${spring.cloud.dataflow.stream.app.type:unknown}", value);
     }
@@ -35,13 +36,13 @@ public sealed class SpringBootEnvironmentVariableProviderTest
                     ""p"": null
                 }";
 
-        var prov = new SpringBootEnvironmentVariableProvider(configString);
+        var provider = new SpringBootEnvironmentVariableProvider(configString);
 
-        prov.Load();
-        prov.TryGet("a:b:c:e:f:i:j", out string value);
+        provider.Load();
+        provider.TryGet("a:b:c:e:f:i:j", out string? value);
         Assert.NotNull(value);
         Assert.Equal("k", value);
-        prov.TryGet("l:m:n", out value);
+        provider.TryGet("l:m:n", out value);
         Assert.NotNull(value);
         Assert.Equal("o", value);
     }
@@ -49,8 +50,8 @@ public sealed class SpringBootEnvironmentVariableProviderTest
     [Fact]
     public void Provider_Throws_For_Malformed()
     {
-        var prov = new SpringBootEnvironmentVariableProvider("{\"a\":}");
+        var provider = new SpringBootEnvironmentVariableProvider("{\"a\":}");
 
-        Assert.ThrowsAny<JsonException>(() => prov.Load());
+        Assert.ThrowsAny<JsonException>(() => provider.Load());
     }
 }

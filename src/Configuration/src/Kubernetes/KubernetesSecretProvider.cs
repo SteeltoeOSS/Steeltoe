@@ -14,39 +14,42 @@ namespace Steeltoe.Configuration.Kubernetes;
 
 internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDisposable
 {
-    private Watcher<V1Secret> _secretWatcher;
+    private Watcher<V1Secret>? _secretWatcher;
 
-    internal KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
+    public KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken)
         : base(kubernetes, settings, cancellationToken)
     {
-        Settings.Namespace ??= "default";
     }
 
     public override void Load()
     {
-        try
+        if (KubernetesClient != null)
         {
-            HttpOperationResponse<V1Secret> secretResponse = KubernetesClient.CoreV1
-                .ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+            try
+            {
+                HttpOperationResponse<V1Secret> response = KubernetesClient.CoreV1
+                    .ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace, cancellationToken: CancellationToken).GetAwaiter()
+                    .GetResult();
 
-            ProcessData(secretResponse.Body);
-            EnableReloading();
-        }
-        catch (HttpOperationException exception)
-        {
-            if (exception.Response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                Logger.LogCritical(exception,
-                    "Failed to retrieve secret '{SecretName}' in namespace '{SecretNamespace}'. Confirm that your service account has the necessary permissions",
-                    Settings.Name, Settings.Namespace);
-            }
-            else if (exception.Response.StatusCode == HttpStatusCode.NotFound)
-            {
+                ProcessData(response.Body);
                 EnableReloading();
-                return;
             }
+            catch (HttpOperationException exception)
+            {
+                if (exception.Response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    Logger.LogCritical(exception,
+                        "Failed to retrieve secret '{SecretName}' in namespace '{SecretNamespace}'. Confirm that your service account has the necessary permissions",
+                        Settings.Name, Settings.Namespace);
+                }
+                else if (exception.Response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    EnableReloading();
+                    return;
+                }
 
-            throw;
+                throw;
+            }
         }
     }
 
@@ -89,28 +92,33 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
 
     private void EnableEventReloading()
     {
-        Task<HttpOperationResponse<V1SecretList>> resp = KubernetesClient.CoreV1.ListNamespacedSecretWithHttpMessagesAsync(Settings.Namespace, watch: true);
+        if (KubernetesClient != null)
+        {
+            Task<HttpOperationResponse<V1SecretList>> responseTask =
+                KubernetesClient.CoreV1.ListNamespacedSecretWithHttpMessagesAsync(Settings.Namespace, watch: true, cancellationToken: CancellationToken);
 
-        _secretWatcher = resp.Watch<V1Secret, V1SecretList>((eventType, item) =>
-            {
-                Logger.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType, Settings.Name, item?.Data?.Count);
-
-                switch (eventType)
+            _secretWatcher = responseTask.Watch<V1Secret, V1SecretList>((eventType, item) =>
                 {
-                    case WatchEventType.Added:
-                    case WatchEventType.Modified:
-                    case WatchEventType.Deleted:
-                        ProcessData(item);
-                        break;
-                    default:
-                        Logger.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
-                        break;
-                }
-            }, exception => Logger.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
-            () => Logger.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name));
+                    Logger.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType, Settings.Name,
+                        item?.Data?.Count);
+
+                    switch (eventType)
+                    {
+                        case WatchEventType.Added:
+                        case WatchEventType.Modified:
+                        case WatchEventType.Deleted:
+                            ProcessData(item);
+                            break;
+                        default:
+                            Logger.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
+                            break;
+                    }
+                }, exception => Logger.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
+                () => Logger.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name));
+        }
     }
 
-    private void ProcessData(V1Secret item)
+    private void ProcessData(V1Secret? item)
     {
         if (item is null)
         {
@@ -118,7 +126,7 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
             return;
         }
 
-        var secretContents = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var secretContents = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 
         if (item.Data != null)
         {

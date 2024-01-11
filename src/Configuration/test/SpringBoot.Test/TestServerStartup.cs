@@ -9,14 +9,11 @@ namespace Steeltoe.Configuration.SpringBoot.Test;
 
 public sealed class TestServerStartup
 {
-    internal static IServiceProvider ServiceProvider { get; private set; }
-
     public void ConfigureServices(IServiceCollection services)
     {
     }
 
     public void Configure(IApplicationBuilder app)
     {
-        ServiceProvider = app.ApplicationServices;
     }
 }

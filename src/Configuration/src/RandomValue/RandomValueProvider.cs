@@ -49,7 +49,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     /// <returns>
     /// <c>true</c> if a value for the specified key was found, otherwise <c>false</c>.
     /// </returns>
-    public override bool TryGet(string key, out string value)
+    public override bool TryGet(string key, out string? value)
     {
         ArgumentGuard.NotNull(key);
 
@@ -66,7 +66,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     }
 
     /// <summary>
-    /// Sets a configuration value for the specified key. Currently ignored.
+    /// Sets a configuration value for the specified key. This method is currently ignored.
     /// </summary>
     /// <param name="key">
     /// The configuration key.
@@ -74,7 +74,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     /// <param name="value">
     /// The configuration value.
     /// </param>
-    public override void Set(string key, string value)
+    public override void Set(string key, string? value)
     {
         // for future use
     }
@@ -92,7 +92,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     /// <returns>
     /// The child keys.
     /// </returns>
-    public override IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
+    public override IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string? parentPath)
     {
         IEnumerable<string> keys = earlierKeys;
 
@@ -124,7 +124,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
         }
 
         // random:int(10), random:int(10,20), random:int[10], random:int[10,20]
-        string range = GetRange(type, "int");
+        string? range = GetRange(type, "int");
 
         if (range != null)
         {
@@ -153,7 +153,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
         return ((long)Random.Shared.Next() << 32) + Random.Shared.Next();
     }
 
-    private string GetRange(string type, string prefix)
+    private string? GetRange(string type, string prefix)
     {
         if (type.StartsWith(prefix, StringComparison.Ordinal))
         {

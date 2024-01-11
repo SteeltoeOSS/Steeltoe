@@ -12,7 +12,7 @@ internal sealed class JsonStreamConfigurationSource : JsonConfigurationSource
 {
     internal Stream Stream { get; }
 
-    internal JsonStreamConfigurationSource(Stream stream)
+    public JsonStreamConfigurationSource(Stream stream)
     {
         ArgumentGuard.NotNull(stream);
 

@@ -4,6 +4,7 @@
     <Description>Configuration provider for reading from Spring Cloud Config Server</Description>
     <PackageTags>configuration;Spring Cloud;Spring Cloud Config Server</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

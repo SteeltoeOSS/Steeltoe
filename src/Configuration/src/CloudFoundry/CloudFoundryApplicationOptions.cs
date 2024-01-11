@@ -14,21 +14,21 @@ public sealed class CloudFoundryApplicationOptions : ApplicationInstanceInfo
     protected override string PlatformRoot => PlatformConfigurationRoot;
 
     // ReSharper disable once InconsistentNaming
-    public string CF_Api { get; set; }
+    public string? CF_Api { get; set; }
 
     public override string ApplicationName => Name;
 
-    public string Start { get; set; }
+    public string? Start { get; set; }
 
     // ReSharper disable once InconsistentNaming
-    public IEnumerable<string> Application_Uris { get; set; }
+    public IEnumerable<string>? Application_Uris { get; set; }
 
-    public IEnumerable<string> ApplicationUris => Application_Uris;
+    public IEnumerable<string>? ApplicationUris => Application_Uris;
 
     // ReSharper disable once InconsistentNaming
-    public string Application_Version { get; set; }
+    public string? Application_Version { get; set; }
 
-    public override string ApplicationVersion => Application_Version;
+    public override string? ApplicationVersion => Application_Version;
 
     // ReSharper disable once InconsistentNaming
     public int Instance_Index { get; set; } = -1;
@@ -36,26 +36,26 @@ public sealed class CloudFoundryApplicationOptions : ApplicationInstanceInfo
     public override int InstanceIndex => Instance_Index;
 
     // ReSharper disable once InconsistentNaming
-    public string Space_Id { get; set; }
+    public string? Space_Id { get; set; }
 
-    public string SpaceId => Space_Id;
-
-    // ReSharper disable once InconsistentNaming
-    public string Space_Name { get; set; }
-
-    public string SpaceName => Space_Name;
+    public string? SpaceId => Space_Id;
 
     // ReSharper disable once InconsistentNaming
-    public string Instance_IP { get; set; }
+    public string? Space_Name { get; set; }
 
-    public override string InstanceIP => Instance_IP;
+    public string? SpaceName => Space_Name;
 
     // ReSharper disable once InconsistentNaming
-    public string Internal_IP { get; set; }
+    public string? Instance_IP { get; set; }
 
-    public override string InternalIP => Internal_IP;
+    public override string? InstanceIP => Instance_IP;
 
-    public Limits Limits { get; set; }
+    // ReSharper disable once InconsistentNaming
+    public string? Internal_IP { get; set; }
+
+    public override string? InternalIP => Internal_IP;
+
+    public Limits? Limits { get; set; }
 
     public override int DiskLimit => Limits?.Disk ?? -1;
 
@@ -75,22 +75,22 @@ public sealed class CloudFoundryApplicationOptions : ApplicationInstanceInfo
         SetIdPropertiesFromVcap(configuration);
     }
 
-    private void SetIdPropertiesFromVcap(IConfiguration configuration = null)
+    private void SetIdPropertiesFromVcap(IConfiguration? configuration = null)
     {
         if (configuration != null)
         {
-            string vcapInstanceId = configuration.GetValue<string>($"{PlatformConfigurationRoot}:application:instance_id");
+            string? vcapInstanceId = configuration.GetValue<string>($"{PlatformConfigurationRoot}:application:instance_id");
 
             if (!string.IsNullOrEmpty(vcapInstanceId))
             {
                 Instance_Id = vcapInstanceId;
             }
 
-            string vcapAppId = configuration.GetValue<string>($"{PlatformConfigurationRoot}:application:id");
+            string? vcapApplicationId = configuration.GetValue<string>($"{PlatformConfigurationRoot}:application:id");
 
-            if (!string.IsNullOrEmpty(vcapAppId))
+            if (!string.IsNullOrEmpty(vcapApplicationId))
             {
-                Application_Id = vcapAppId;
+                Application_Id = vcapApplicationId;
             }
         }
     }

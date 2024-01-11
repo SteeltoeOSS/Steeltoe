@@ -4,6 +4,7 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Xunit;
 
@@ -36,28 +37,6 @@ public sealed class ConfigurationBuilderExtensionsTest
             }
         }]
     }";
-
-    [Fact]
-    public void AddCloudFoundryServiceBindings_ThrowsOnNulls()
-    {
-        var builder = new ConfigurationBuilder();
-        var reader = new StringServiceBindingsReader(string.Empty);
-
-        Action action1 = () => ((ConfigurationBuilder)null!).AddCloudFoundryServiceBindings();
-        action1.Should().ThrowExactly<ArgumentNullException>().WithParameterName("builder");
-
-        Action action2 = () => builder.AddCloudFoundryServiceBindings((Predicate<string>)null!);
-        action2.Should().ThrowExactly<ArgumentNullException>().WithParameterName("ignoreKeyPredicate");
-
-        Action action3 = () => builder.AddCloudFoundryServiceBindings((IServiceBindingsReader)null!);
-        action3.Should().ThrowExactly<ArgumentNullException>().WithParameterName("serviceBindingsReader");
-
-        Action action4 = () => builder.AddCloudFoundryServiceBindings(null!, reader);
-        action4.Should().ThrowExactly<ArgumentNullException>().WithParameterName("ignoreKeyPredicate");
-
-        Action action5 = () => builder.AddCloudFoundryServiceBindings(_ => false, null!);
-        action5.Should().ThrowExactly<ArgumentNullException>().WithParameterName("serviceBindingsReader");
-    }
 
     [Fact]
     public void AddCloudFoundryServiceBindings_RegistersProcessors()
@@ -102,7 +81,7 @@ public sealed class ConfigurationBuilderExtensionsTest
 
         var reader = new StringServiceBindingsReader(VcapServicesJson);
         var builder = new ConfigurationBuilder();
-        builder.AddCloudFoundryServiceBindings(ignoreKeyPredicate, reader);
+        builder.AddCloudFoundryServiceBindings(ignoreKeyPredicate, reader, NullLoggerFactory.Instance);
         IConfigurationRoot configurationRoot = builder.Build();
 
         configurationRoot.GetValue<string>("vcap:services:elephantsql:0:name").Should().Be("elephantsql-c6c60");

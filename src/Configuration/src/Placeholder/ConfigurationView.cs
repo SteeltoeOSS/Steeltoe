@@ -30,7 +30,7 @@ internal sealed class ConfigurationView : IConfigurationRoot
     /// <returns>
     /// The configuration value.
     /// </returns>
-    public string this[string key]
+    public string? this[string key]
     {
         get => GetConfiguration(_providers, key);
         set => SetConfiguration(_providers, key, value);
@@ -95,13 +95,13 @@ internal sealed class ConfigurationView : IConfigurationRoot
         // Intentionally left empty - this provider is readonly.
     }
 
-    private static string GetConfiguration(IList<IConfigurationProvider> providers, string key)
+    private static string? GetConfiguration(IList<IConfigurationProvider> providers, string key)
     {
         for (int index = providers.Count - 1; index >= 0; index--)
         {
             IConfigurationProvider provider = providers[index];
 
-            if (provider.TryGet(key, out string value))
+            if (provider.TryGet(key, out string? value))
             {
                 return value;
             }
@@ -110,7 +110,7 @@ internal sealed class ConfigurationView : IConfigurationRoot
         return null;
     }
 
-    private static void SetConfiguration(IList<IConfigurationProvider> providers, string key, string value)
+    private static void SetConfiguration(IList<IConfigurationProvider> providers, string key, string? value)
     {
         foreach (IConfigurationProvider provider in providers)
         {

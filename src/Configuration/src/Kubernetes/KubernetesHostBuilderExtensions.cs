@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
+using Steeltoe.Common.Hosting;
+using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Configuration.Kubernetes;
 
@@ -17,190 +19,195 @@ public static class KubernetesHostBuilderExtensions
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The host builder.
     /// </param>
-    public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder)
+    public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder builder)
     {
-        return AddKubernetesConfiguration(hostBuilder, null, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, null, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The host builder.
     /// </param>
     /// <param name="configureClient">
     /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
-    public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder, Action<KubernetesClientConfiguration> configureClient)
+    public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder builder, Action<KubernetesClientConfiguration> configureClient)
     {
-        return AddKubernetesConfiguration(hostBuilder, configureClient, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, configureClient, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The host builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
-    public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder, ILoggerFactory loggerFactory)
+    public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
     {
-        return AddKubernetesConfiguration(hostBuilder, null, loggerFactory);
+        return AddKubernetesConfiguration(builder, null, loggerFactory);
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The host builder.
     /// </param>
     /// <param name="configureClient">
     /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
-    public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder, Action<KubernetesClientConfiguration> configureClient,
+    public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder builder, Action<KubernetesClientConfiguration>? configureClient,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(loggerFactory);
 
-        hostBuilder.ConfigureAppConfiguration(builder => builder.AddKubernetes(configureClient, loggerFactory));
-        hostBuilder.ConfigureServices(services => services.AddKubernetesConfigurationServices());
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddKubernetesConfiguration(configureClient, loggerFactory);
 
-        return hostBuilder;
+        return builder;
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The host builder.
     /// </param>
-    public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder)
+    public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder builder)
     {
-        return AddKubernetesConfiguration(hostBuilder, null, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, null, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The host builder.
     /// </param>
     /// <param name="configureClient">
     /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
-    public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder, Action<KubernetesClientConfiguration> configureClient)
+    public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder builder, Action<KubernetesClientConfiguration> configureClient)
     {
-        return AddKubernetesConfiguration(hostBuilder, configureClient, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, configureClient, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The host builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
-    public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory)
+    public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
-        return AddKubernetesConfiguration(hostBuilder, null, loggerFactory);
+        return AddKubernetesConfiguration(builder, null, loggerFactory);
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The host builder.
     /// </param>
     /// <param name="configureClient">
     /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
-    public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder, Action<KubernetesClientConfiguration> configureClient,
+    public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder builder, Action<KubernetesClientConfiguration>? configureClient,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(loggerFactory);
 
-        hostBuilder.ConfigureAppConfiguration(builder => builder.AddKubernetes(configureClient, loggerFactory));
-        hostBuilder.ConfigureServices(services => services.AddKubernetesConfigurationServices());
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddKubernetesConfiguration(configureClient, loggerFactory);
 
-        return hostBuilder;
+        return builder;
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="applicationBuilder">
+    /// <param name="builder">
     /// The web application builder.
     /// </param>
-    public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder applicationBuilder)
+    public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder builder)
     {
-        return AddKubernetesConfiguration(applicationBuilder, null, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, null, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="applicationBuilder">
+    /// <param name="builder">
     /// The web application builder.
     /// </param>
     /// <param name="configureClient">
     /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
-    public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder applicationBuilder,
-        Action<KubernetesClientConfiguration> configureClient)
+    public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder builder, Action<KubernetesClientConfiguration> configureClient)
     {
-        return AddKubernetesConfiguration(applicationBuilder, configureClient, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, configureClient, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="applicationBuilder">
+    /// <param name="builder">
     /// The web application builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
-    public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder applicationBuilder, ILoggerFactory loggerFactory)
+    public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder builder, ILoggerFactory loggerFactory)
     {
-        return AddKubernetesConfiguration(applicationBuilder, null, loggerFactory);
+        return AddKubernetesConfiguration(builder, null, loggerFactory);
     }
 
     /// <summary>
     /// Adds configuration providers for Kubernetes ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="applicationBuilder">
+    /// <param name="builder">
     /// The web application builder.
     /// </param>
     /// <param name="configureClient">
     /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
-    public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder applicationBuilder,
-        Action<KubernetesClientConfiguration> configureClient, ILoggerFactory loggerFactory)
+    public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder builder, Action<KubernetesClientConfiguration>? configureClient,
+        ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(applicationBuilder);
+        ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(loggerFactory);
 
-        applicationBuilder.Configuration.AddKubernetes(configureClient, loggerFactory);
-        applicationBuilder.Services.AddKubernetesConfigurationServices();
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddKubernetesConfiguration(configureClient, loggerFactory);
 
-        return applicationBuilder;
+        return builder;
     }
 }

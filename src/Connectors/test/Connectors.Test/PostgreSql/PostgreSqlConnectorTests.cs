@@ -365,7 +365,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         fileProvider.IncludeFile("db/database", "my-postgresql-service-qf57l");
 
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
-        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
+        builder.Configuration.AddKubernetesServiceBindings(reader);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

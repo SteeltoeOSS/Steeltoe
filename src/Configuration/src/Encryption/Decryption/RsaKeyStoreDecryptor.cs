@@ -39,15 +39,12 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
     private IBufferedCipher CreateCipher(string algorithm)
     {
-        switch (algorithm.ToUpperInvariant())
+        return algorithm.ToUpperInvariant() switch
         {
-            case "DEFAULT":
-                return CipherUtilities.GetCipher("RSA/NONE/PKCS1Padding");
-            case "OAEP":
-                return CipherUtilities.GetCipher("RSA/ECB/PKCS1");
-            default:
-                throw new ArgumentException("algorithm should be one of DEFAULT or OAEP");
-        }
+            "DEFAULT" => CipherUtilities.GetCipher("RSA/NONE/PKCS1Padding"),
+            "OAEP" => CipherUtilities.GetCipher("RSA/ECB/PKCS1"),
+            _ => throw new ArgumentException("algorithm should be one of DEFAULT or OAEP")
+        };
     }
 
     public string Decrypt(string fullCipher)
@@ -64,7 +61,9 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
     private string Decrypt(byte[] fullCipher, string alias)
     {
-        ICipherParameters key = _keyProvider.GetKey(alias);
+        ArgumentGuard.NotNull(fullCipher);
+
+        ICipherParameters? key = _keyProvider.GetKey(alias);
 
         if (key == null)
         {

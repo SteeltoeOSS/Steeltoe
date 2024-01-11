@@ -18,10 +18,6 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerHostBuilderExtensionsTest
 {
-    private static readonly Action<IApplicationBuilder> EmptyConfigureApp = _ =>
-    {
-    };
-
     [Fact]
     public void AddConfigServer_DefaultWebHost_AddsConfigServer()
     {
@@ -82,7 +78,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_HostBuilder_DisposesTimer()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
         };
@@ -107,7 +103,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_WebHostBuilder_DisposesTimer()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
         };
@@ -116,7 +112,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         webHostBuilder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         webHostBuilder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
         webHostBuilder.AddConfigServer();
-        webHostBuilder.Configure(EmptyConfigureApp);
+        webHostBuilder.Configure(HostingHelpers.EmptyAction);
 
         ConfigServerConfigurationProvider provider;
 
@@ -133,7 +129,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_WebApplicationBuilder_DisposesTimer()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = TimeSpan.FromSeconds(1).ToString()
         };

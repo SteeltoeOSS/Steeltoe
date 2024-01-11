@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
@@ -38,7 +36,7 @@ internal static class ConfigurationBuilderExtensions
                 return matchingSource;
             }
 
-            if (source is PlaceholderResolverSource placeholder)
+            if (source is PlaceholderResolverSource { Sources: not null } placeholder)
             {
                 var nextSource = FindConfigurationSource<TSource>(placeholder.Sources);
 
@@ -81,7 +79,7 @@ internal static class ConfigurationBuilderExtensions
                 foundSources.Add(matchingSource);
             }
 
-            if (source is PlaceholderResolverSource placeholder)
+            if (source is PlaceholderResolverSource { Sources: not null } placeholder)
             {
                 AddConfigurationSources(placeholder.Sources, foundSources);
             }

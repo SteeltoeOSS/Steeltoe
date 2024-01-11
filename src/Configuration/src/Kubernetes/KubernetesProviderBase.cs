@@ -12,24 +12,24 @@ namespace Steeltoe.Configuration.Kubernetes;
 
 internal abstract class KubernetesProviderBase : ConfigurationProvider
 {
-    private readonly CancellationToken _cancellationToken;
     internal bool IsPolling { get; private set; }
 
-    protected IKubernetes KubernetesClient { get; set; }
+    protected IKubernetes? KubernetesClient { get; set; }
     protected KubernetesConfigSourceSettings Settings { get; }
+    protected CancellationToken CancellationToken { get; }
     protected ILogger Logger => Settings.LoggerFactory?.CreateLogger(GetType()) ?? NullLoggerFactory.Instance.CreateLogger(GetType());
 
-    protected KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken token = default)
+    protected KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(kubernetes);
         ArgumentGuard.NotNull(settings);
 
         KubernetesClient = kubernetes;
         Settings = settings;
-        _cancellationToken = token;
+        CancellationToken = cancellationToken;
     }
 
-    internal void ProvideRuntimeReplacements(ILoggerFactory loggerFactory)
+    internal void ProvideRuntimeReplacements(ILoggerFactory? loggerFactory)
     {
         if (loggerFactory is not null)
         {
@@ -58,12 +58,12 @@ internal abstract class KubernetesProviderBase : ConfigurationProvider
                     Logger.LogError("Failed to load configuration.");
                 }
 
-                if (_cancellationToken.IsCancellationRequested)
+                if (CancellationToken.IsCancellationRequested)
                 {
                     Logger.LogTrace("Cancellation requested for {namespace}.{name}, shutting down", Settings.Namespace, Settings.Name);
                     break;
                 }
             }
-        }, _cancellationToken);
+        }, CancellationToken);
     }
 }

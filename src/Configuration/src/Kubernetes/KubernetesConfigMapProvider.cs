@@ -14,39 +14,42 @@ namespace Steeltoe.Configuration.Kubernetes;
 
 internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
 {
-    private Watcher<V1ConfigMap> _configMapWatcher;
+    private Watcher<V1ConfigMap>? _configMapWatcher;
 
-    internal KubernetesConfigMapProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
+    public KubernetesConfigMapProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken)
         : base(kubernetes, settings, cancellationToken)
     {
-        settings.Namespace ??= "default";
     }
 
     public override void Load()
     {
-        try
+        if (KubernetesClient != null)
         {
-            HttpOperationResponse<V1ConfigMap> configMapResponse = KubernetesClient.CoreV1
-                .ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+            try
+            {
+                HttpOperationResponse<V1ConfigMap> response = KubernetesClient.CoreV1
+                    .ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace, cancellationToken: CancellationToken).GetAwaiter()
+                    .GetResult();
 
-            ProcessData(configMapResponse.Body);
-            EnableReloading();
-        }
-        catch (HttpOperationException exception)
-        {
-            if (exception.Response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                Logger.LogCritical(exception,
-                    "Failed to retrieve ConfigMap '{configMapName}' in namespace '{configMapNamespace}'. Confirm that your service account has the necessary permissions",
-                    Settings.Name, Settings.Namespace);
-            }
-            else if (exception.Response.StatusCode == HttpStatusCode.NotFound)
-            {
+                ProcessData(response.Body);
                 EnableReloading();
-                return;
             }
+            catch (HttpOperationException exception)
+            {
+                if (exception.Response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    Logger.LogCritical(exception,
+                        "Failed to retrieve ConfigMap '{configMapName}' in namespace '{configMapNamespace}'. Confirm that your service account has the necessary permissions",
+                        Settings.Name, Settings.Namespace);
+                }
+                else if (exception.Response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    EnableReloading();
+                    return;
+                }
 
-            throw;
+                throw;
+            }
         }
     }
 
@@ -59,7 +62,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
         KubernetesClient = null;
     }
 
-    private static IDictionary<string, string> ParseConfigMapFile(Stream jsonFileContents)
+    private static IDictionary<string, string?> ParseConfigMapFile(Stream jsonFileContents)
     {
         var exposedJsonConfigurationProvider = new ExposedJsonStreamConfigurationParser(new JsonStreamConfigurationSource
         {
@@ -96,30 +99,34 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private void EnableEventReloading()
     {
-        Task<HttpOperationResponse<V1ConfigMapList>> resp =
-            KubernetesClient.CoreV1.ListNamespacedConfigMapWithHttpMessagesAsync(Settings.Namespace, watch: true);
+        if (KubernetesClient != null)
+        {
+            Task<HttpOperationResponse<V1ConfigMapList>> responseTask =
+                KubernetesClient.CoreV1.ListNamespacedConfigMapWithHttpMessagesAsync(Settings.Namespace, watch: true, cancellationToken: CancellationToken);
 
-        _configMapWatcher = resp.Watch<V1ConfigMap, V1ConfigMapList>((eventType, item) =>
-            {
-                Logger.LogInformation("Received {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name,
-                    item?.Data?.Count);
-
-                switch (eventType)
+            _configMapWatcher = responseTask.Watch<V1ConfigMap, V1ConfigMapList>((eventType, item) =>
                 {
-                    case WatchEventType.Added:
-                    case WatchEventType.Modified:
-                    case WatchEventType.Deleted:
-                        ProcessData(item);
-                        break;
-                    default:
-                        Logger.LogDebug("Event type {eventType} is not supported, no action has been taken", eventType);
-                        break;
-                }
-            }, exception => Logger.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
-            () => Logger.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name));
+                    Logger.LogInformation("Received {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name,
+                        item?.Data?.Count);
+
+                    switch (eventType)
+                    {
+                        case WatchEventType.Added:
+                        case WatchEventType.Modified:
+                        case WatchEventType.Deleted:
+                            ProcessData(item);
+                            break;
+                        default:
+                            Logger.LogDebug("Event type {eventType} is not supported, no action has been taken", eventType);
+                            break;
+                    }
+                },
+                exception => Logger.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
+                () => Logger.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name));
+        }
     }
 
-    private void ProcessData(V1ConfigMap item)
+    private void ProcessData(V1ConfigMap? item)
     {
         if (item is null)
         {
@@ -127,7 +134,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
             return;
         }
 
-        var configMapContents = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var configMapContents = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 
         if (item.Data != null)
         {
@@ -136,7 +143,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
                 if (IsAppsettingsKey(data.Key))
                 {
                     using Stream stream = GenerateStreamFromString(data.Value);
-                    IDictionary<string, string> jsonConfiguration = ParseConfigMapFile(stream);
+                    IDictionary<string, string?> jsonConfiguration = ParseConfigMapFile(stream);
 
                     foreach (string jsonKey in jsonConfiguration.Keys)
                     {
@@ -183,7 +190,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
         {
         }
 
-        public IDictionary<string, string> GetData()
+        public IDictionary<string, string?> GetData()
         {
             return Data;
         }

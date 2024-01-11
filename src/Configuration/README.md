@@ -1,6 +1,6 @@
 # .NET Configuration Providers
 
-[Custom configuration providers](https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-config-providers) for use with Microsoft's [application configuration](https://docs.asp.net/en/latest/fundamentals/configuration.html) for accessing configuration settings for an application.
+[Custom configuration providers](https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-configuration-provider) for use with Microsoft's [application configuration](https://docs.asp.net/en/latest/fundamentals/configuration.html) for accessing configuration settings for an application.
 
 Steeltoe configuration providers can:
 

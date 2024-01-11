@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Management.Task.Test;
@@ -33,9 +34,8 @@ public sealed class TaskRunTest
             "runtask=test"
         };
 
-        IWebHost webHost = WebHost.CreateDefaultBuilder(args).UseDefaultServiceProvider(options => options.ValidateScopes = true).Configure(_ =>
-        {
-        }).Build();
+        IWebHost webHost = WebHost.CreateDefaultBuilder(args).UseDefaultServiceProvider(options => options.ValidateScopes = true)
+            .Configure(HostingHelpers.EmptyAction).Build();
 
         webHost.RunWithTasks();
 

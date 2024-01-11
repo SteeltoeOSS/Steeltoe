@@ -9,13 +9,13 @@ namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 
 internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
 {
-    private static readonly Regex TagsConfigurationKeyRegex = new(@"^vcap:services:[^:]+:[0-9]+:tags:[0-9]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex TagsConfigurationKeyRegex = new("^vcap:services:[^:]+:[0-9]+:tags:[0-9]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     public abstract void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData);
 
     protected IEnumerable<string> FilterKeys(IDictionary<string, string?> configurationData, string tagValueToFind)
     {
-        List<string> keys = new();
+        List<string> keys = [];
 
         foreach ((string key, string? value) in configurationData)
         {

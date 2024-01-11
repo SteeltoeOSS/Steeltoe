@@ -506,7 +506,7 @@ public static class ReflectionHelpers
 
             toReturn.Add(baseDirectory);
 
-            ILogger logger = BootstrapLoggerFactory.Instance.CreateLogger(typeof(ReflectionHelpers).FullName!);
+            ILogger logger = BootstrapLoggerFactory.Default.CreateLogger(typeof(ReflectionHelpers).FullName!);
 
             logger.LogWarning(
                 "File path information for the assembly containing '{Name}' is missing. Some Steeltoe functionality may not work with PublishSingleFile=true",

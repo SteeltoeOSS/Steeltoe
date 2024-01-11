@@ -13,12 +13,12 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Try to register a default instance of <see cref="IApplicationInstanceInfo" />.
     /// </summary>
-    /// <param name="serviceCollection">
+    /// <param name="services">
     /// Collection of configured services.
     /// </param>
-    public static void RegisterDefaultApplicationInstanceInfo(this IServiceCollection serviceCollection)
+    public static void RegisterDefaultApplicationInstanceInfo(this IServiceCollection services)
     {
-        serviceCollection.TryAddSingleton<IApplicationInstanceInfo>(services =>
-            new ApplicationInstanceInfo(services.GetRequiredService<IConfiguration>(), true));
+        services.TryAddSingleton<IApplicationInstanceInfo>(serviceProvider =>
+            new ApplicationInstanceInfo(serviceProvider.GetRequiredService<IConfiguration>(), true));
     }
 }

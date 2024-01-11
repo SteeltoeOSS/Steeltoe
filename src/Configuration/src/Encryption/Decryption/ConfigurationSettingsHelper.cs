@@ -20,8 +20,8 @@ internal static class ConfigurationSettingsHelper
 
         settings.EncryptionEnabled = configurationSection.GetValue("enabled", settings.EncryptionEnabled);
         settings.EncryptionRsaStrong = configurationSection.GetValue("rsa:strong", settings.EncryptionRsaStrong);
-        settings.EncryptionRsaSalt = configurationSection.GetValue("rsa:salt", settings.EncryptionRsaSalt);
-        settings.EncryptionRsaAlgorithm = configurationSection.GetValue("rsa:algorithm", settings.EncryptionRsaAlgorithm);
+        settings.EncryptionRsaSalt = configurationSection.GetValue("rsa:salt", settings.EncryptionRsaSalt)!;
+        settings.EncryptionRsaAlgorithm = configurationSection.GetValue("rsa:algorithm", settings.EncryptionRsaAlgorithm)!;
         settings.EncryptionKeyStoreLocation = configurationSection.GetValue("keyStore:location", settings.EncryptionKeyStoreLocation);
         settings.EncryptionKeyStorePassword = configurationSection.GetValue("keyStore:password", settings.EncryptionKeyStorePassword);
         settings.EncryptionKeyStoreAlias = configurationSection.GetValue("keyStore:alias", settings.EncryptionKeyStoreAlias);

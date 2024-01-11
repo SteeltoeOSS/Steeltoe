@@ -9,10 +9,10 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.RandomValue;
 
-public static class RandomValueExtensions
+public static class RandomValueConfigurationBuilderExtensions
 {
     /// <summary>
-    /// Add a random value configuration source to the <see cref="ConfigurationBuilder" />.
+    /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" />.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -22,11 +22,11 @@ public static class RandomValueExtensions
     /// </returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder)
     {
-        return AddRandomValueSource(builder, NullLoggerFactory.Instance);
+        return AddRandomValueSource(builder, null, NullLoggerFactory.Instance);
     }
 
     /// <summary>
-    /// Add a random value configuration source to the <see cref="ConfigurationBuilder" />.
+    /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" />.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -39,17 +39,11 @@ public static class RandomValueExtensions
     /// </returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(loggerFactory);
-
-        var resolver = new RandomValueSource(loggerFactory);
-        builder.Add(resolver);
-
-        return builder;
+        return AddRandomValueSource(builder, null, loggerFactory);
     }
 
     /// <summary>
-    /// Add a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
+    /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -60,13 +54,13 @@ public static class RandomValueExtensions
     /// <returns>
     /// The incoming <paramref name="builder" />.
     /// </returns>
-    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string prefix)
+    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string? prefix)
     {
         return AddRandomValueSource(builder, prefix, NullLoggerFactory.Instance);
     }
 
     /// <summary>
-    /// Add a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
+    /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -80,13 +74,12 @@ public static class RandomValueExtensions
     /// <returns>
     /// The incoming <paramref name="builder" />.
     /// </returns>
-    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string prefix, ILoggerFactory loggerFactory)
+    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string? prefix, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNullOrEmpty(prefix);
         ArgumentGuard.NotNull(loggerFactory);
 
-        if (!prefix.EndsWith(':'))
+        if (prefix != null && !prefix.EndsWith(':'))
         {
             prefix += ':';
         }

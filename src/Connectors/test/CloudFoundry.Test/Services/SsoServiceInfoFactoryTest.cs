@@ -17,7 +17,6 @@ public sealed class SsoServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-identity",
-            Tags = Array.Empty<string>(),
             Name = "mySSO",
             Plan = "sso",
             Credentials =
@@ -38,7 +37,6 @@ public sealed class SsoServiceInfoFactoryTest
         var s = new Service
         {
             Label = "user-provided",
-            Tags = Array.Empty<string>(),
             Name = "mySSO",
             Credentials =
             {
@@ -58,7 +56,7 @@ public sealed class SsoServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mysql",
-            Tags = new[]
+            Tags =
             {
                 "foobar",
                 "relational"
@@ -90,7 +88,6 @@ public sealed class SsoServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-identity",
-            Tags = Array.Empty<string>(),
             Name = "mySSO",
             Plan = "sso",
             Credentials =
@@ -116,7 +113,6 @@ public sealed class SsoServiceInfoFactoryTest
         var s = new Service
         {
             Label = "user-provided",
-            Tags = Array.Empty<string>(),
             Name = "mySSO",
             Credentials =
             {

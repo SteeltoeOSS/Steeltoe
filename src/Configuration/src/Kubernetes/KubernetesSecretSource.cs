@@ -4,26 +4,26 @@
 
 using k8s;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Kubernetes;
 
 internal sealed class KubernetesSecretSource : IConfigurationSource
 {
-    private IKubernetes KubernetesClient { get; }
+    private readonly IKubernetes _kubernetesClient;
+    private readonly KubernetesConfigSourceSettings _settings;
 
-    private KubernetesConfigSourceSettings ConfigurationSettings { get; }
-
-    private CancellationToken CancelToken { get; }
-
-    internal KubernetesSecretSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
+    public KubernetesSecretSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings)
     {
-        KubernetesClient = kubernetesClient;
-        ConfigurationSettings = settings;
-        CancelToken = cancellationToken;
+        ArgumentGuard.NotNull(kubernetesClient);
+        ArgumentGuard.NotNull(settings);
+
+        _kubernetesClient = kubernetesClient;
+        _settings = settings;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new KubernetesSecretProvider(KubernetesClient, ConfigurationSettings, CancelToken);
+        return new KubernetesSecretProvider(_kubernetesClient, _settings, CancellationToken.None);
     }
 }

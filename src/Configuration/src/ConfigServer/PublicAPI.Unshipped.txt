@@ -1,11 +1,12 @@
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultAccessTokenUri = null -> string
+#nullable enable
+const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultAccessTokenUri = null -> string?
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultCertificateValidation = true -> bool
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultClientId = null -> string
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultClientSecret = null -> string
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultConfigserverServiceId = "configserver" -> string
+const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultClientId = null -> string?
+const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultClientSecret = null -> string?
+const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultConfigserverServiceId = "configserver" -> string!
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultDisableTokenRenewal = false -> bool
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultDiscoveryEnabled = false -> bool
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultEnvironment = "Production" -> string
+const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultEnvironment = "Production" -> string!
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultFailFast = false -> bool
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultHealthEnabled = true -> bool
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultHealthTimeToLive = 300000 -> long
@@ -16,78 +17,78 @@ const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultProv
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultRetryEnabled = false -> bool
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultRetryMultiplier = 1.1 -> double
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultTimeoutMilliseconds = 60000 -> int
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultUri = "http://localhost:8888" -> string
+const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultUri = "http://localhost:8888" -> string!
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultVaultTokenRenewRate = 60000 -> int
 const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultVaultTokenTtl = 300000 -> int
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment environment) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment environment, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings clientSettings) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings clientSettings, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, string environment) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, string environment, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, string environment, string applicationName) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder configurationBuilder, string environment, string applicationName, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.AspNetCore.Builder.WebApplicationBuilder applicationBuilder, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Hosting.IHostBuilder hostBuilder, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory) -> Microsoft.Extensions.Hosting.IHostBuilder
-static Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions.AddConfigServerHealthContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
-static Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions.AddConfigServerServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> void
-static Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions.ConfigureConfigServerClientOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment! environment) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment! environment, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings! clientSettings) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings! clientSettings, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, string? environment) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, string? environment, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, string? environment, string? applicationName) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, string? environment, string? applicationName, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Hosting.IHostBuilder! builder, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions.AddConfigServerHealthContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions.AddConfigServerServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+static Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions.ConfigureConfigServerClientOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.ConfigEnvironment() -> void
-Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Label.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Label.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Label.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Name.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Name.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Name.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Profiles.get -> System.Collections.Generic.IList<string>
+Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Profiles.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Profiles.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigEnvironment.PropertySources.get -> System.Collections.Generic.IList<Steeltoe.Configuration.ConfigServer.PropertySource>
+Steeltoe.Configuration.ConfigServer.ConfigEnvironment.PropertySources.get -> System.Collections.Generic.IList<Steeltoe.Configuration.ConfigServer.PropertySource!>!
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.PropertySources.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigEnvironment.State.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigEnvironment.State.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.State.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Version.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Version.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigEnvironment.Version.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.AccessTokenUri.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.AccessTokenUri.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.AccessTokenUri.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ClientCertificate.get -> System.Security.Cryptography.X509Certificates.X509Certificate2
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ClientCertificate.get -> System.Security.Cryptography.X509Certificates.X509Certificate2?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ClientCertificate.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ClientId.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ClientId.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ClientId.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ClientSecret.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ClientSecret.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ClientSecret.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ConfigServerClientSettings() -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DisableTokenRenewal.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DisableTokenRenewal.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryEnabled.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryEnabled.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryServiceId.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryServiceId.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryServiceId.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Enabled.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Enabled.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Environment.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Environment.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Environment.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.FailFast.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.FailFast.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Headers.get -> System.Collections.Generic.Dictionary<string, string>
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Headers.get -> System.Collections.Generic.IDictionary<string!, string!>!
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.HealthEnabled.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.HealthEnabled.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.HealthTimeToLive.get -> long
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.HealthTimeToLive.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Label.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Label.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Label.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Name.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Name.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Name.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Password.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Password.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Password.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.PollingInterval.get -> System.TimeSpan
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.PollingInterval.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RawUris.get -> string[]
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RawUris.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryAttempts.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryAttempts.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryEnabled.get -> bool
@@ -100,96 +101,94 @@ Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryMultiplier.g
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryMultiplier.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Timeout.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Timeout.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Token.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Token.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Token.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.TokenRenewRate.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.TokenRenewRate.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.TokenTtl.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.TokenTtl.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Uri.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Uri.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Uri.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Username.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Username.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Username.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ValidateCertificates.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ValidateCertificates.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.AccessTokenUri.get -> string
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Access_Token_Uri.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.AccessTokenUri.get -> string?
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Access_Token_Uri.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Access_Token_Uri.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ClientId.get -> string
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ClientSecret.get -> string
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Client_Id.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ClientId.get -> string?
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ClientSecret.get -> string?
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Client_Id.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Client_Id.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Client_Secret.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Client_Secret.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Client_Secret.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ConfigServerClientSettingsOptions() -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ConfigServerClientSettingsOptions(Microsoft.Extensions.Configuration.IConfiguration configuration) -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ConfigServerClientSettingsOptions(Microsoft.Extensions.Configuration.IConfigurationRoot root) -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ConfigServerClientSettingsOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration) -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ConfigServerClientSettingsOptions(Microsoft.Extensions.Configuration.IConfigurationRoot! root) -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.DisableTokenRenewal.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.DisableTokenRenewal.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Discovery.get -> Steeltoe.Configuration.ConfigServer.SpringCloudConfigDiscovery
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Discovery.get -> Steeltoe.Configuration.ConfigServer.SpringCloudConfigDiscovery?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Discovery.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.DiscoveryEnabled.get -> bool
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.DiscoveryServiceId.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.DiscoveryServiceId.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Enabled.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Enabled.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Env.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Env.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Env.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Environment.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Environment.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.FailFast.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.FailFast.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Headers.get -> System.Collections.Generic.IDictionary<string, string>
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Health.get -> Steeltoe.Configuration.ConfigServer.SpringCloudConfigHealth
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Headers.get -> System.Collections.Generic.IDictionary<string!, string!>!
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Health.get -> Steeltoe.Configuration.ConfigServer.SpringCloudConfigHealth?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Health.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.HealthEnabled.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.HealthTimeToLive.get -> long
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Label.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Label.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Label.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Name.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Name.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Name.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Password.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Password.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Password.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Retry.get -> Steeltoe.Configuration.ConfigServer.SpringCloudConfigRetry
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Retry.get -> Steeltoe.Configuration.ConfigServer.SpringCloudConfigRetry?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Retry.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.RetryAttempts.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.RetryEnabled.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.RetryInitialInterval.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.RetryMaxInterval.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.RetryMultiplier.get -> double
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Settings.get -> Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Settings.get -> Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings!
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Timeout.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Timeout.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Token.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Token.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Token.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.TokenRenewRate.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.TokenRenewRate.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.TokenTtl.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.TokenTtl.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Uri.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Uri.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Uri.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Username.get -> string
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Username.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Username.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ValidateCertificates.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Validate_Certificates.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Validate_Certificates.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions
 Steeltoe.Configuration.ConfigServer.ConfigServerException
-Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException() -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(string message) -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(string message, System.Exception innerException) -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(string? message) -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(string? message, System.Exception? innerException) -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions
 Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions
 Steeltoe.Configuration.ConfigServer.PropertySource
-Steeltoe.Configuration.ConfigServer.PropertySource.Name.get -> string
+Steeltoe.Configuration.ConfigServer.PropertySource.Name.get -> string?
 Steeltoe.Configuration.ConfigServer.PropertySource.Name.set -> void
 Steeltoe.Configuration.ConfigServer.PropertySource.PropertySource() -> void
-Steeltoe.Configuration.ConfigServer.PropertySource.PropertySource(string name, System.Collections.Generic.IDictionary<string, object> properties) -> void
-Steeltoe.Configuration.ConfigServer.PropertySource.Source.get -> System.Collections.Generic.IDictionary<string, object>
+Steeltoe.Configuration.ConfigServer.PropertySource.Source.get -> System.Collections.Generic.IDictionary<string!, object!>!
 Steeltoe.Configuration.ConfigServer.PropertySource.Source.set -> void
 Steeltoe.Configuration.ConfigServer.SpringCloudConfigDiscovery
 Steeltoe.Configuration.ConfigServer.SpringCloudConfigDiscovery.Enabled.get -> bool
 Steeltoe.Configuration.ConfigServer.SpringCloudConfigDiscovery.Enabled.set -> void
-Steeltoe.Configuration.ConfigServer.SpringCloudConfigDiscovery.ServiceId.get -> string
+Steeltoe.Configuration.ConfigServer.SpringCloudConfigDiscovery.ServiceId.get -> string?
 Steeltoe.Configuration.ConfigServer.SpringCloudConfigDiscovery.ServiceId.set -> void
 Steeltoe.Configuration.ConfigServer.SpringCloudConfigDiscovery.SpringCloudConfigDiscovery() -> void
 Steeltoe.Configuration.ConfigServer.SpringCloudConfigHealth

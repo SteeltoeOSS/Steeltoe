@@ -16,7 +16,7 @@ public sealed class NestedPlaceholderEncryptionIntegrationTest
     [Trait("Category", "Integration")]
     public void ResolveOuterEncryptionInnerPlaceholder_returnsDecryptedValuesInPlaceholder()
     {
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "encrypt:enabled", "true" },
             { "encrypt:keyStore:location", "./server.jks" },
@@ -36,11 +36,10 @@ public sealed class NestedPlaceholderEncryptionIntegrationTest
         builder.AddInMemoryCollection(settings);
         IConfigurationRoot config1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<StartupEncryptionPlaceholderInteraction1>().UseConfiguration(config1);
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<PlaceholderBeforeEncryptionStartup>().UseConfiguration(config1);
 
         using var server = new TestServer(hostBuilder);
-        IServiceProvider services = StartupEncryptionPlaceholderInteraction1.ServiceProvider;
-        IConfiguration config2 = services.GetServices<IConfiguration>().SingleOrDefault();
+        var config2 = server.Services.GetRequiredService<IConfiguration>();
         Assert.NotSame(config1, config2);
 
         Assert.Equal("encrypt the world", config2["encrypted"]);
@@ -51,7 +50,7 @@ public sealed class NestedPlaceholderEncryptionIntegrationTest
     [Trait("Category", "Integration")]
     public void ResolveOuterPlaceholderInnerEncryption_returnsDecryptedValuesInPlaceholder()
     {
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "encrypt:enabled", "true" },
             { "encrypt:keyStore:location", "./server.jks" },
@@ -71,11 +70,10 @@ public sealed class NestedPlaceholderEncryptionIntegrationTest
         builder.AddInMemoryCollection(settings);
         IConfigurationRoot config1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<StartupEncryptionPlaceholderInteraction2>().UseConfiguration(config1);
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<EncryptionBeforePlaceholderStartup>().UseConfiguration(config1);
 
         using var server = new TestServer(hostBuilder);
-        IServiceProvider services = StartupEncryptionPlaceholderInteraction2.ServiceProvider;
-        IConfiguration config2 = services.GetServices<IConfiguration>().SingleOrDefault();
+        var config2 = server.Services.GetRequiredService<IConfiguration>();
         Assert.NotSame(config1, config2);
 
         Assert.Equal("encrypt the world", config2["encrypted"]);

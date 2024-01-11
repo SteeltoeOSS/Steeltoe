@@ -15,58 +15,57 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Removes any existing <see cref="IApplicationInstanceInfo" /> if found. Registers a <see cref="KubernetesApplicationOptions" />.
     /// </summary>
-    /// <param name="serviceCollection">
+    /// <param name="services">
     /// Collection of configured services.
     /// </param>
-    public static IServiceCollection AddKubernetesApplicationInstanceInfo(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddKubernetesApplicationInstanceInfo(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(serviceCollection);
+        ArgumentGuard.NotNull(services);
 
-        ServiceDescriptor appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
+        ServiceDescriptor appInfoDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
 
-        if (appInfo?.ImplementationType?.IsAssignableFrom(typeof(KubernetesApplicationOptions)) != true)
+        if (appInfoDescriptor?.ImplementationType?.IsAssignableFrom(typeof(KubernetesApplicationOptions)) != true)
         {
-            if (appInfo != null)
+            if (appInfoDescriptor != null)
             {
-                serviceCollection.Remove(appInfo);
+                services.Remove(appInfoDescriptor);
             }
 
-            serviceCollection.AddSingleton(typeof(KubernetesApplicationOptions),
+            services.AddSingleton(typeof(KubernetesApplicationOptions),
                 serviceProvider => new KubernetesApplicationOptions(serviceProvider.GetRequiredService<IConfiguration>()));
 
-            serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo),
-                serviceProvider => serviceProvider.GetRequiredService<KubernetesApplicationOptions>());
+            services.AddSingleton(typeof(IApplicationInstanceInfo), serviceProvider => serviceProvider.GetRequiredService<KubernetesApplicationOptions>());
         }
 
-        return serviceCollection;
+        return services;
     }
 
     /// <summary>
     /// Add a <see cref="IKubernetes" /> client to the service collection.
     /// </summary>
-    /// <param name="serviceCollection">
+    /// <param name="services">
     /// <see cref="IServiceCollection" />.
     /// </param>
-    /// <param name="kubernetesClientConfiguration">
-    /// Customization of the Kubernetes Client.
+    /// <param name="configureKubernetesClient">
+    /// Enables to configure the Kubernetes client.
     /// </param>
     /// <returns>
     /// Collection of configured services.
     /// </returns>
-    public static IServiceCollection AddKubernetesClient(this IServiceCollection serviceCollection,
-        Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null)
+    public static IServiceCollection AddKubernetesClient(this IServiceCollection services,
+        Action<KubernetesClientConfiguration> configureKubernetesClient = null)
     {
-        ArgumentGuard.NotNull(serviceCollection);
+        ArgumentGuard.NotNull(services);
 
-        serviceCollection.AddKubernetesApplicationInstanceInfo();
+        services.AddKubernetesApplicationInstanceInfo();
 
-        serviceCollection.TryAddSingleton(serviceProvider =>
+        services.TryAddSingleton(serviceProvider =>
         {
-            ILogger logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Common.KubernetesClientHelpers");
+            ILogger logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger(typeof(KubernetesClientHelpers).FullName!);
             var appInfo = serviceProvider.GetRequiredService<KubernetesApplicationOptions>();
-            return KubernetesClientHelpers.GetKubernetesClient(appInfo, kubernetesClientConfiguration, logger);
+            return KubernetesClientHelpers.GetKubernetesClient(appInfo, configureKubernetesClient, logger);
         });
 
-        return serviceCollection;
+        return services;
     }
 }

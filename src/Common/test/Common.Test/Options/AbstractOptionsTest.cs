@@ -10,12 +10,6 @@ namespace Steeltoe.Common.Test.Options;
 public sealed class AbstractOptionsTest
 {
     [Fact]
-    public void Constructor_ThrowsOnNull()
-    {
-        Assert.Throws<ArgumentNullException>(() => new TestOptions(null, "foobar"));
-    }
-
-    [Fact]
     public void Constructors_BindsValues()
     {
         var builder1 = new ConfigurationBuilder();

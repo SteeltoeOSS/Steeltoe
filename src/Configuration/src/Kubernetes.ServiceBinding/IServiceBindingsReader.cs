@@ -9,7 +9,7 @@ namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 /// <summary>
 /// Provides a method to read the Kubernetes secret files on disk.
 /// </summary>
-internal interface IServiceBindingsReader
+public interface IServiceBindingsReader
 {
     /// <summary>
     /// Returns the root directory to read secret files from.

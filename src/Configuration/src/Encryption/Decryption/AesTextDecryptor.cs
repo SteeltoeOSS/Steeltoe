@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -66,6 +66,8 @@ internal sealed class AesTextDecryptor : ITextDecryptor
 
     public string Decrypt(byte[] fullCipher)
     {
+        ArgumentGuard.NotNull(fullCipher);
+
         byte[] iv = new byte[IvSize / 8];
         byte[] cipherBytes = new byte[fullCipher.Length - iv.Length];
 

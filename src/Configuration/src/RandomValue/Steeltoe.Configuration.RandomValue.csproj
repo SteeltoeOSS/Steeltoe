@@ -4,6 +4,7 @@
     <Description>Configuration provider for generating random values</Description>
     <PackageTags>configuration;random values</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

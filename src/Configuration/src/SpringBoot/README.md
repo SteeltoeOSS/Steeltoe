@@ -18,12 +18,12 @@ internal static class Program
             .CreateDefaultBuilder()
             .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) =>
             {
-                configurationBuilder.AddSpringBootEnv(); // Can be used together or independently
-                configurationBuilder.AddSpringBootCmd(hostBuilderContext.Configuration);
+                configurationBuilder.AddSpringBootFromEnvironmentVariable(); // Can be used together or independently
+                configurationBuilder.AddSpringBootFromCommandLine(hostBuilderContext.Configuration);
             })
             .Build();
 
-        var configuration = (IConfiguration)host.Services.GetService(typeof(IConfiguration));
+        var configuration = host.Services.GetService<IConfiguration>();
 
         Console.WriteLine(configuration.GetValue<string>("spring:cloud:stream:input:binding"));
 

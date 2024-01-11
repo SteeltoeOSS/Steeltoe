@@ -4,6 +4,7 @@
     <Description>Configuration provider for resolving property placeholders in configuration values</Description>
     <PackageTags>configuration;placeholders;spring boot</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

@@ -13,37 +13,7 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed class ConfigServerConfigurationSourceTest
 {
     [Fact]
-    public void Constructors_ThrowsIfNulls()
-    {
-        const IConfiguration nullConfiguration = null;
-        const ConfigServerClientSettings nullConfigServerClientSettings = null;
-        const ILoggerFactory nullLoggerFactory = null;
-        const List<IConfigurationSource> nullSources = null;
-
-        var configServerClientSettings = new ConfigServerClientSettings();
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        var sources = new List<IConfigurationSource>();
-        var properties = new Dictionary<string, object>();
-
-        Assert.Throws<ArgumentNullException>(() =>
-            new ConfigServerConfigurationSource(nullConfigServerClientSettings, configuration, NullLoggerFactory.Instance));
-
-        Assert.Throws<ArgumentNullException>(() =>
-            new ConfigServerConfigurationSource(configServerClientSettings, nullConfiguration, NullLoggerFactory.Instance));
-
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(configServerClientSettings, configuration, nullLoggerFactory));
-
-        Assert.Throws<ArgumentNullException>(() =>
-            new ConfigServerConfigurationSource(nullConfigServerClientSettings, sources, properties, NullLoggerFactory.Instance));
-
-        Assert.Throws<ArgumentNullException>(() =>
-            new ConfigServerConfigurationSource(configServerClientSettings, nullSources, properties, NullLoggerFactory.Instance));
-
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(configServerClientSettings, sources, properties, null));
-    }
-
-    [Fact]
-    public void Constructors__InitializesProperties()
+    public void Constructors_InitializesProperties()
     {
         var settings = new ConfigServerClientSettings();
         var memSource = new MemoryConfigurationSource();
@@ -80,7 +50,7 @@ public sealed class ConfigServerConfigurationSourceTest
     }
 
     [Fact]
-    public void Build__ReturnsProvider()
+    public void Build_ReturnsProvider()
     {
         var settings = new ConfigServerClientSettings();
         var memSource = new MemoryConfigurationSource();

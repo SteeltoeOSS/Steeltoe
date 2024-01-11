@@ -20,7 +20,6 @@ namespace Steeltoe.Configuration.Placeholder;
 internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider, IDisposable
 {
     private bool _isDisposed;
-    internal ILogger<PlaceholderResolverProvider> Logger { get; }
 
     public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
     public IList<string> ResolvedKeys { get; } = new List<string>();
@@ -28,7 +27,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// <summary>
     /// Gets the configuration this placeholder resolver wraps.
     /// </summary>
-    public IConfigurationRoot Configuration { get; private set; }
+    public IConfigurationRoot? Configuration { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaceholderResolverProvider" /> class. The new placeholder resolver wraps the provided configuration
@@ -46,7 +45,6 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
         ArgumentGuard.NotNull(loggerFactory);
 
         Configuration = root;
-        Logger = loggerFactory.CreateLogger<PlaceholderResolverProvider>();
     }
 
     /// <summary>
@@ -65,7 +63,6 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
         ArgumentGuard.NotNull(loggerFactory);
 
         Providers = providers;
-        Logger = loggerFactory.CreateLogger<PlaceholderResolverProvider>();
     }
 
     /// <summary>
@@ -85,7 +82,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
         ArgumentGuard.NotNull(key);
         EnsureInitialized();
 
-        string originalValue = Configuration[key];
+        string? originalValue = Configuration![key];
         value = PropertyPlaceholderHelper.ResolvePlaceholders(originalValue, Configuration);
 
         if (value != originalValue && !ResolvedKeys.Contains(key))
@@ -105,12 +102,12 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// <param name="value">
     /// The configuration value to set at the specified key.
     /// </param>
-    public void Set(string key, string value)
+    public void Set(string key, string? value)
     {
         ArgumentGuard.NotNull(key);
         EnsureInitialized();
 
-        Configuration[key] = value;
+        Configuration![key] = value;
     }
 
     /// <summary>
@@ -123,7 +120,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     {
         EnsureInitialized();
 
-        return Configuration.GetReloadToken();
+        return Configuration!.GetReloadToken();
     }
 
     /// <summary>
@@ -134,7 +131,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     {
         EnsureInitialized();
 
-        Configuration.Reload();
+        Configuration!.Reload();
     }
 
     /// <summary>
@@ -150,11 +147,11 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// <returns>
     /// The child keys.
     /// </returns>
-    public IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
+    public IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string? parentPath)
     {
         EnsureInitialized();
 
-        IConfiguration section = parentPath == null ? Configuration : Configuration.GetSection(parentPath);
+        IConfiguration section = parentPath == null ? Configuration! : Configuration!.GetSection(parentPath);
         IEnumerable<IConfigurationSection> children = section.GetChildren();
 
         return children.Select(childSection => childSection.Key).Concat(earlierKeys).OrderBy(key => key, ConfigurationKeyComparer.Instance);
@@ -174,7 +171,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     {
         if (!_isDisposed)
         {
-            HashSet<IDisposable> disposables = new();
+            HashSet<IDisposable> disposables = [];
 
             foreach (IConfigurationProvider provider in Providers)
             {

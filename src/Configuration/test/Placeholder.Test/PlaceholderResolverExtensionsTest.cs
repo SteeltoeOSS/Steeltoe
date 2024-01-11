@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
@@ -17,69 +16,9 @@ namespace Steeltoe.Configuration.Placeholder.Test;
 public sealed class PlaceholderResolverExtensionsTest
 {
     [Fact]
-    public void ConfigurePlaceholderResolver_WithServiceCollection_ThrowsIfNulls()
-    {
-        const IServiceCollection nullServiceCollection = null;
-        var serviceCollection = new ServiceCollection();
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => nullServiceCollection.ConfigurePlaceholderResolver(configuration, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigurePlaceholderResolver(null, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigurePlaceholderResolver(configuration, null));
-    }
-
-    [Fact]
-    public void AddPlaceholderResolver_WithWebHostBuilder_ThrowsIfNulls()
-    {
-        const IWebHostBuilder nullWebHostBuilder = null;
-        var webHostBuilder = new WebHostBuilder();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => nullWebHostBuilder.AddPlaceholderResolver(loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => webHostBuilder.AddPlaceholderResolver(null));
-    }
-
-    [Fact]
-    public void AddPlaceholderResolver_WithHostBuilder_ThrowsIfNulls()
-    {
-        const IHostBuilder nullHostBuilder = null;
-        var hostBuilder = new HostBuilder();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => nullHostBuilder.AddPlaceholderResolver(loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => hostBuilder.AddPlaceholderResolver(null));
-    }
-
-    [Fact]
-    public void AddPlaceholderResolver_WebApplicationBuilder_ThrowsIfNulls()
-    {
-        const WebApplicationBuilder nullWebApplicationBuilder = null;
-        WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder();
-        webApplicationBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => nullWebApplicationBuilder.AddPlaceholderResolver(loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => webApplicationBuilder.AddPlaceholderResolver(null));
-    }
-
-    [Fact]
-    public void ConfigurePlaceholderResolver_ThrowsIfNulls()
-    {
-        const IServiceCollection nullServices = null;
-        var serviceCollection = new ServiceCollection();
-        var loggerFactory = NullLoggerFactory.Instance;
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-
-        Assert.Throws<ArgumentNullException>(() => nullServices.ConfigurePlaceholderResolver(configuration, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigurePlaceholderResolver(null, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => serviceCollection.ConfigurePlaceholderResolver(configuration, null));
-    }
-
-    [Fact]
     public void ConfigurePlaceholderResolver_ConfiguresIConfiguration_ReplacesExisting()
     {
-        var settings = new Dictionary<string, string>
+        var settings = new Dictionary<string, string?>
         {
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
@@ -91,11 +30,13 @@ public sealed class PlaceholderResolverExtensionsTest
         builder.AddInMemoryCollection(settings);
         IConfigurationRoot config1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<StartupForConfigurePlaceholderResolver>().UseConfiguration(config1);
+        IWebHostBuilder hostBuilder = new WebHostBuilder();
+        hostBuilder.UseStartup<TestServerStartup>();
+        hostBuilder.UseConfiguration(config1);
+        hostBuilder.ConfigureServices((context, services) => services.ConfigurePlaceholderResolver(context.Configuration));
 
         using var server = new TestServer(hostBuilder);
-        IServiceProvider services = StartupForConfigurePlaceholderResolver.ServiceProvider;
-        IConfiguration config2 = services.GetServices<IConfiguration>().SingleOrDefault();
+        var config2 = server.Services.GetRequiredService<IConfiguration>();
         Assert.NotSame(config1, config2);
 
         Assert.Null(config2["nokey"]);
@@ -136,10 +77,7 @@ public sealed class PlaceholderResolverExtensionsTest
     name=${spring:line:name?noName}
 ";
 
-        string[] appsettingsLine =
-        {
-            "--spring:line:name=${spring:json:name?noName}"
-        };
+        string[] appsettingsLine = ["--spring:line:name=${spring:json:name?noName}"];
 
         using var sandbox = new Sandbox();
         string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
@@ -149,20 +87,20 @@ public sealed class PlaceholderResolverExtensionsTest
         string iniPath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
         string iniFileName = Path.GetFileName(iniPath);
 
-        string directory = Path.GetDirectoryName(jsonPath);
+        string directory = Path.GetDirectoryName(jsonPath)!;
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<StartupForAddPlaceholderResolver>().ConfigureAppConfiguration(configurationBuilder =>
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().ConfigureAppConfiguration(configurationBuilder =>
         {
             configurationBuilder.SetBasePath(directory);
             configurationBuilder.AddJsonFile(jsonFileName);
             configurationBuilder.AddXmlFile(xmlFileName);
             configurationBuilder.AddIniFile(iniFileName);
             configurationBuilder.AddCommandLine(appsettingsLine);
-        }).AddPlaceholderResolver();
+            configurationBuilder.AddPlaceholderResolver();
+        });
 
         using var server = new TestServer(hostBuilder);
-        IServiceProvider services = StartupForAddPlaceholderResolver.ServiceProvider;
-        IConfiguration configuration = services.GetServices<IConfiguration>().SingleOrDefault();
+        var configuration = server.Services.GetRequiredService<IConfiguration>();
         Assert.Equal("myName", configuration["spring:cloud:config:name"]);
     }
 
@@ -197,17 +135,18 @@ public sealed class PlaceholderResolverExtensionsTest
         string jsonFileName = Path.GetFileName(jsonPath);
         string xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
         string xmlFileName = Path.GetFileName(xmlPath);
-        string directory = Path.GetDirectoryName(jsonPath);
+        string directory = Path.GetDirectoryName(jsonPath)!;
 
         IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure => configure.UseTestServer()).ConfigureAppConfiguration(configurationBuilder =>
         {
             configurationBuilder.SetBasePath(directory);
             configurationBuilder.AddJsonFile(jsonFileName);
             configurationBuilder.AddXmlFile(xmlFileName);
-        }).AddPlaceholderResolver();
+            configurationBuilder.AddPlaceholderResolver();
+        });
 
         using TestServer server = hostBuilder.Build().GetTestServer();
-        IConfiguration configuration = server.Services.GetServices<IConfiguration>().SingleOrDefault();
+        var configuration = server.Services.GetRequiredService<IConfiguration>();
         Assert.Equal("myName", configuration["spring:cloud:config:name"]);
     }
 
@@ -242,17 +181,17 @@ public sealed class PlaceholderResolverExtensionsTest
         string jsonFileName = Path.GetFileName(jsonPath);
         string xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
         string xmlFileName = Path.GetFileName(xmlPath);
-        string directory = Path.GetDirectoryName(jsonPath);
+        string directory = Path.GetDirectoryName(jsonPath)!;
 
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         hostBuilder.Configuration.SetBasePath(directory);
         hostBuilder.Configuration.AddJsonFile(jsonFileName);
         hostBuilder.Configuration.AddXmlFile(xmlFileName);
-        hostBuilder.AddPlaceholderResolver();
+        hostBuilder.Configuration.AddPlaceholderResolver();
 
         using WebApplication server = hostBuilder.Build();
-        IConfiguration configuration = server.Services.GetServices<IConfiguration>().First();
+        var configuration = server.Services.GetRequiredService<IConfiguration>();
         Assert.Equal("myName", configuration["spring:cloud:config:name"]);
     }
 }

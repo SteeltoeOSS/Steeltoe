@@ -87,17 +87,17 @@ public sealed class ConfigServerClientSettings
     /// <summary>
     /// Default address used by provider to obtain a OAuth Access Token.
     /// </summary>
-    public const string DefaultAccessTokenUri = null;
+    public const string? DefaultAccessTokenUri = null;
 
     /// <summary>
     /// Default client id used by provider to obtain a OAuth Access Token.
     /// </summary>
-    public const string DefaultClientId = null;
+    public const string? DefaultClientId = null;
 
     /// <summary>
     /// Default client secret used by provider to obtain a OAuth Access Token.
     /// </summary>
-    public const string DefaultClientSecret = null;
+    public const string? DefaultClientSecret = null;
 
     /// <summary>
     /// Default discovery first enabled setting.
@@ -119,13 +119,13 @@ public sealed class ConfigServerClientSettings
     /// </summary>
     public const long DefaultHealthTimeToLive = 60 * 5 * 1000;
 
-    private string _username;
-    private string _password;
+    private string? _username;
+    private string? _password;
 
     /// <summary>
     /// Gets or sets the Config Server address.
     /// </summary>
-    public string Uri { get; set; }
+    public string? Uri { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the Config Server provider is enabled.
@@ -135,17 +135,17 @@ public sealed class ConfigServerClientSettings
     /// <summary>
     /// Gets or sets the environment used when accessing configuration data.
     /// </summary>
-    public string Environment { get; set; }
+    public string? Environment { get; set; }
 
     /// <summary>
     /// Gets or sets the application name used when accessing configuration data.
     /// </summary>
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the label used when accessing configuration data.
     /// </summary>
-    public string Label { get; set; }
+    public string? Label { get; set; }
 
     /// <summary>
     /// Gets or sets the frequency with which app should check Config Server for changes in configuration.
@@ -195,7 +195,7 @@ public sealed class ConfigServerClientSettings
     /// <summary>
     /// Gets or sets a value of the service ID used during discovery first behavior.
     /// </summary>
-    public string DiscoveryServiceId { get; set; }
+    public string? DiscoveryServiceId { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether health check is enabled.
@@ -210,12 +210,12 @@ public sealed class ConfigServerClientSettings
     /// <summary>
     /// Gets unescaped <see cref="UriComponents.HttpRequestUrl" />s.
     /// </summary>
-    public string[] RawUris => GetRawUris();
+    public IList<string> RawUris => GetRawUris();
 
     /// <summary>
     /// Gets or sets the token used for Vault.
     /// </summary>
-    public string Token { get; set; }
+    public string? Token { get; set; }
 
     /// <summary>
     /// Gets or sets the request timeout in milliseconds.
@@ -225,19 +225,19 @@ public sealed class ConfigServerClientSettings
     /// <summary>
     /// Gets or sets the address used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public string AccessTokenUri { get; set; } = DefaultAccessTokenUri;
+    public string? AccessTokenUri { get; set; } = DefaultAccessTokenUri;
 
     /// <summary>
     /// Gets or sets the client ID used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public string ClientId { get; set; } = DefaultClientId;
+    public string? ClientId { get; set; } = DefaultClientId;
 
     /// <summary>
     /// Gets or sets the client secret used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public string ClientSecret { get; set; } = DefaultClientSecret;
+    public string? ClientSecret { get; set; } = DefaultClientSecret;
 
-    public X509Certificate2 ClientCertificate { get; set; }
+    public X509Certificate2? ClientCertificate { get; set; }
 
     /// <summary>
     /// Gets or sets the vault token time-to-live in milliseconds.
@@ -254,12 +254,12 @@ public sealed class ConfigServerClientSettings
     /// <summary>
     /// Gets headers that will be added to the Config Server request.
     /// </summary>
-    public Dictionary<string, string> Headers { get; } = new();
+    public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
     /// <summary>
     /// Gets or sets the username used when accessing the Config Server.
     /// </summary>
-    public string Username
+    public string? Username
     {
         get => GetUserName(Uri);
         set => _username = value;
@@ -268,7 +268,7 @@ public sealed class ConfigServerClientSettings
     /// <summary>
     /// Gets or sets the password used when accessing the Config Server.
     /// </summary>
-    public string Password
+    public string? Password
     {
         get => GetPassword(Uri);
         set => _password = value;
@@ -304,7 +304,7 @@ public sealed class ConfigServerClientSettings
         return uris.Contains(CommaDelimiter);
     }
 
-    internal string GetRawUri(string uri)
+    internal static string? GetRawUri(string uri)
     {
         try
         {
@@ -317,41 +317,23 @@ public sealed class ConfigServerClientSettings
         }
     }
 
-    private string[] GetRawUris()
+    private IList<string> GetRawUris()
     {
         if (!string.IsNullOrEmpty(Uri))
         {
-            string[] uris = Uri.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries);
-
-            for (int i = 0; i < uris.Length; i++)
-            {
-                string uri = GetRawUri(uris[i]);
-
-                if (string.IsNullOrEmpty(uri))
-                {
-                    return Array.Empty<string>();
-                }
-
-                uris[i] = uri;
-            }
-
-            return uris;
+            string[] uris = Uri.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            return uris.Select(GetRawUri).Where(uri => !string.IsNullOrEmpty(uri)).Cast<string>().ToList();
         }
 
-        return Array.Empty<string>();
+        return [];
     }
 
-    internal string[] GetUris()
+    internal IList<string> GetUris()
     {
-        if (!string.IsNullOrEmpty(Uri))
-        {
-            return Uri.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        return Array.Empty<string>();
+        return !string.IsNullOrEmpty(Uri) ? Uri.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) : [];
     }
 
-    internal string GetPassword(string uri)
+    internal string? GetPassword(string? uri)
     {
         if (!string.IsNullOrEmpty(_password))
         {
@@ -361,7 +343,7 @@ public sealed class ConfigServerClientSettings
         return GetUserPassElement(uri, 1);
     }
 
-    internal string GetUserName(string uri)
+    internal string? GetUserName(string? uri)
     {
         if (!string.IsNullOrEmpty(_username))
         {
@@ -371,30 +353,19 @@ public sealed class ConfigServerClientSettings
         return GetUserPassElement(uri, 0);
     }
 
-    private static string GetUserInfo(string uri)
+    private static string? GetUserPassElement(string? uri, int index)
     {
-        if (!string.IsNullOrEmpty(uri))
+        if (!string.IsNullOrEmpty(uri) && !IsMultiServerConfiguration(uri))
         {
-            var u = new Uri(uri);
-            return u.UserInfo;
-        }
-
-        return null;
-    }
-
-    private static string GetUserPassElement(string uri, int index)
-    {
-        if (!IsMultiServerConfiguration(uri))
-        {
-            string userInfo = GetUserInfo(uri);
+            string userInfo = new Uri(uri).UserInfo;
 
             if (!string.IsNullOrEmpty(userInfo))
             {
-                string[] info = userInfo.Split(ColonDelimiter);
+                string[] segments = userInfo.Split(ColonDelimiter);
 
-                if (info.Length > index)
+                if (segments.Length > index)
                 {
-                    return info[index];
+                    return segments[index];
                 }
             }
         }

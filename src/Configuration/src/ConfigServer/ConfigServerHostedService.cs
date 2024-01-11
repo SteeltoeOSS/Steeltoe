@@ -4,9 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Discovery;
 
 namespace Steeltoe.Configuration.ConfigServer;
@@ -16,38 +14,31 @@ namespace Steeltoe.Configuration.ConfigServer;
 /// </summary>
 internal sealed class ConfigServerHostedService : IHostedService
 {
-    private readonly ConfigServerConfigurationProvider _configuration;
-    private readonly IDiscoveryClient _discoveryClient;
+    private readonly ConfigServerConfigurationProvider _configurationProvider;
+    private readonly IDiscoveryClient? _discoveryClient;
 
-    public ConfigServerHostedService(IConfigurationRoot configuration, ILoggerFactory loggerFactory)
-        : this(configuration, loggerFactory, null)
+    public ConfigServerHostedService(IConfigurationRoot configuration)
+        : this(configuration, null)
     {
     }
 
-    public ConfigServerHostedService(IConfigurationRoot configuration, ILoggerFactory loggerFactory, IDiscoveryClient discoveryClient)
+    public ConfigServerHostedService(IConfigurationRoot configuration, IDiscoveryClient? discoveryClient)
     {
         ArgumentGuard.NotNull(configuration);
 
-        if (configuration.Providers.Count() == 1 && configuration.Providers.First() is PlaceholderResolverProvider resolverProvider)
-        {
-            _configuration = resolverProvider.Providers.OfType<ConfigServerConfigurationProvider>().First();
-        }
-        else
-        {
-            _configuration = configuration.Providers.OfType<ConfigServerConfigurationProvider>().First();
-        }
+        _configurationProvider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>() ??
+            throw new ArgumentException("ConfigServerConfigurationProvider was not found in configuration.", nameof(configuration));
 
-        _ = loggerFactory;
         _discoveryClient = discoveryClient;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await _configuration.ProvideRuntimeReplacementsAsync(_discoveryClient, cancellationToken);
+        await _configurationProvider.ProvideRuntimeReplacementsAsync(_discoveryClient, cancellationToken);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        await _configuration.ShutdownAsync(cancellationToken);
+        await _configurationProvider.ShutdownAsync(cancellationToken);
     }
 }

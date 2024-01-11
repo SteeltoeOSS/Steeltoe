@@ -201,7 +201,7 @@ public sealed class MySqlConnectorTests
         fileProvider.IncludeFile("db/database", "my-mysql-service-4q5nt");
 
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
-        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
+        builder.Configuration.AddKubernetesServiceBindings(reader);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

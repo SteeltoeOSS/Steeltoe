@@ -37,9 +37,8 @@ public sealed class HostBuilderExtensionsTest
     [Fact]
     public void WebHostBuilderExtensionTest()
     {
-        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true).Configure(_ =>
-        {
-        }).AddStreamServices<SampleSink>();
+        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true)
+            .Configure(HostingHelpers.EmptyAction).AddStreamServices<SampleSink>();
 
         hostBuilder.ConfigureServices(services => services.AddSingleton(isp => isp.GetRequiredService<IConfiguration>() as IConfigurationRoot));
         IWebHost host = hostBuilder.Build();

@@ -13,59 +13,37 @@ namespace Steeltoe.Configuration.Placeholder.Test;
 public sealed class PlaceholderResolverSourceTest
 {
     [Fact]
-    public void Constructor_WithSources_ThrowsIfNulls()
-    {
-        const IList<IConfigurationSource> nullSources = null;
-        var sources = new List<IConfigurationSource>();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(nullSources, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(sources, null));
-    }
-
-    [Fact]
-    public void Constructor_WithConfiguration_ThrowsIfNulls()
-    {
-        const IConfigurationRoot nullConfiguration = null;
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        var loggerFactory = NullLoggerFactory.Instance;
-
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(nullConfiguration, loggerFactory));
-        Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(configuration, null));
-    }
-
-    [Fact]
     public void Constructors_InitializesProperties()
     {
-        var memSource = new MemoryConfigurationSource();
+        var memorySource = new MemoryConfigurationSource();
 
         var sources = new List<IConfigurationSource>
         {
-            memSource
+            memorySource
         };
 
         var factory = new LoggerFactory();
 
-        var source = new PlaceholderResolverSource(sources, factory);
-        Assert.Equal(factory, source.LoggerFactory);
-        Assert.NotNull(source.Sources);
-        Assert.Single(source.Sources);
-        Assert.NotSame(sources, source.Sources);
-        Assert.Contains(memSource, source.Sources);
+        var placeholderSource = new PlaceholderResolverSource(sources, factory);
+        Assert.Equal(factory, placeholderSource.LoggerFactory);
+        Assert.NotNull(placeholderSource.Sources);
+        Assert.Single(placeholderSource.Sources);
+        Assert.NotSame(sources, placeholderSource.Sources);
+        Assert.Contains(memorySource, placeholderSource.Sources);
     }
 
     [Fact]
     public void Build_ReturnsProvider()
     {
-        var memSource = new MemoryConfigurationSource();
+        var memorySource = new MemoryConfigurationSource();
 
         IList<IConfigurationSource> sources = new List<IConfigurationSource>
         {
-            memSource
+            memorySource
         };
 
-        var source = new PlaceholderResolverSource(sources, NullLoggerFactory.Instance);
-        IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
+        var placeholderSource = new PlaceholderResolverSource(sources, NullLoggerFactory.Instance);
+        IConfigurationProvider provider = placeholderSource.Build(new ConfigurationBuilder());
         Assert.IsType<PlaceholderResolverProvider>(provider);
     }
 }
