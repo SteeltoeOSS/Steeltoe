@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Placeholder.Test;
 
-public sealed class PlaceholderServiceCollectionExtensionsTest
+public sealed class PlaceholderResolverExtensionsTest
 {
     [Fact]
     public void ConfigurePlaceholderResolver_ConfiguresIConfiguration_ReplacesExisting()

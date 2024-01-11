@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.SpringBoot.Test;
 
-public sealed class SpringBootHostBuilderExtensionsTest
+public sealed class HostedSpringBootConfigurationTests
 {
     [Fact]
     public void WebHostConfiguresIConfiguration_Spring_Application_Json()
