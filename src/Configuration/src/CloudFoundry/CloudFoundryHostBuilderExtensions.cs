@@ -5,6 +5,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
 
@@ -20,10 +22,24 @@ public static class CloudFoundryHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder builder)
     {
+        return AddCloudFoundryConfiguration(builder, NullLoggerFactory.Instance);
+    }
+
+    /// <summary>
+    /// Adds the Cloud Foundry configuration provider.
+    /// </summary>
+    /// <param name="builder">
+    /// The host builder.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
+    {
         ArgumentGuard.NotNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddCloudFoundryConfiguration();
+        wrapper.AddCloudFoundryConfiguration(loggerFactory);
 
         return builder;
     }
@@ -36,10 +52,24 @@ public static class CloudFoundryHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder builder)
     {
+        return AddCloudFoundryConfiguration(builder, NullLoggerFactory.Instance);
+    }
+
+    /// <summary>
+    /// Adds the Cloud Foundry configuration provider.
+    /// </summary>
+    /// <param name="builder">
+    /// The host builder.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder builder, ILoggerFactory loggerFactory)
+    {
         ArgumentGuard.NotNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddCloudFoundryConfiguration();
+        wrapper.AddCloudFoundryConfiguration(loggerFactory);
 
         return builder;
     }
@@ -52,10 +82,24 @@ public static class CloudFoundryHostBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddCloudFoundryConfiguration(this WebApplicationBuilder builder)
     {
+        return AddCloudFoundryConfiguration(builder, NullLoggerFactory.Instance);
+    }
+
+    /// <summary>
+    /// Adds the Cloud Foundry configuration provider.
+    /// </summary>
+    /// <param name="builder">
+    /// The application builder.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    public static WebApplicationBuilder AddCloudFoundryConfiguration(this WebApplicationBuilder builder, ILoggerFactory loggerFactory)
+    {
         ArgumentGuard.NotNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddCloudFoundryConfiguration();
+        wrapper.AddCloudFoundryConfiguration(loggerFactory);
 
         return builder;
     }

@@ -129,13 +129,13 @@ public static class CloudFoundryServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        ServiceDescriptor? appInfo = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
+        ServiceDescriptor? appInfoDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
 
-        if (appInfo?.ImplementationType?.IsAssignableFrom(typeof(CloudFoundryApplicationOptions)) != true)
+        if (appInfoDescriptor?.ImplementationType?.IsAssignableFrom(typeof(CloudFoundryApplicationOptions)) != true)
         {
-            if (appInfo != null)
+            if (appInfoDescriptor != null)
             {
-                services.Remove(appInfo);
+                services.Remove(appInfoDescriptor);
             }
 
             services.AddSingleton(typeof(CloudFoundryApplicationOptions),
