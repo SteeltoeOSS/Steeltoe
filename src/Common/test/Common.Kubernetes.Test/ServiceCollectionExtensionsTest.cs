@@ -50,7 +50,7 @@ public sealed class ServiceCollectionExtensionsTest
 
         Assert.NotNull(client);
         Assert.Single(appInfos);
-        Assert.IsType<KubernetesApplicationOptions>(appInfos.First());
-        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name, appInfos.First().ApplicationName);
+        Assert.IsType<KubernetesApplicationOptions>(appInfos[0]);
+        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name, appInfos[0].ApplicationName);
     }
 }
