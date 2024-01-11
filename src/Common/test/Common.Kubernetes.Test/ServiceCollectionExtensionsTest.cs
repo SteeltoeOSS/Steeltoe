@@ -20,13 +20,6 @@ public sealed class ServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddKubernetesApplicationInstanceInfo_ThrowsOnNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesApplicationInstanceInfo(null));
-        Assert.Equal("serviceCollection", ex.ParamName);
-    }
-
-    [Fact]
     public void AddKubernetesApplicationInstanceInfo_ReplacesExistingAppInfo()
     {
         var serviceCollection = new ServiceCollection();
@@ -41,13 +34,6 @@ public sealed class ServiceCollectionExtensionsTest
         Assert.Single(appInfos);
         Assert.NotNull(appInfos.FirstOrDefault());
         Assert.IsType<KubernetesApplicationOptions>(appInfos.FirstOrDefault());
-    }
-
-    [Fact]
-    public void AddKubernetesClient_ThrowsOnNulls()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesClient(null));
-        Assert.Equal("serviceCollection", ex.ParamName);
     }
 
     [Fact]

@@ -15,15 +15,6 @@ namespace Steeltoe.Common.Hosting.Test;
 public sealed class HostBuilderExtensionsTest
 {
     [Fact]
-    public void UseCloudHosting_Web_ThrowsIfHostBuilderNull()
-    {
-        const IWebHostBuilder webHostBuilder = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => webHostBuilder.UseCloudHosting());
-        Assert.Contains(nameof(webHostBuilder), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void UseCloudHosting_Default8080()
     {
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseKestrel();

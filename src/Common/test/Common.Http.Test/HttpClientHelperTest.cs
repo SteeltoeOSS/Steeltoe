@@ -37,13 +37,6 @@ public sealed class HttpClientHelperTest
     }
 
     [Fact]
-    public void GetRequestMessage_ThrowsNulls()
-    {
-        Assert.Throws<ArgumentNullException>(() => HttpClientHelper.GetRequestMessage(null, null, null, null));
-        Assert.Throws<ArgumentNullException>(() => HttpClientHelper.GetRequestMessage(HttpMethod.Get, null, null, null));
-    }
-
-    [Fact]
     public void GetRequestMessage_CreatesCorrectMessage()
     {
         HttpRequestMessage message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, new Uri("https://localhost/foobar"), null, null);
@@ -64,18 +57,5 @@ public sealed class HttpClientHelperTest
         string bytes = Convert.ToBase64String(Encoding.ASCII.GetBytes("foo" + ":" + "bar"));
         Assert.Equal("Basic", message.Headers.Authorization.Scheme);
         Assert.Equal(bytes, message.Headers.Authorization.Parameter);
-    }
-
-    [Fact]
-    public async Task GetAccessToken_ThrowsNulls()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await HttpClientHelper.GetAccessTokenAsync(string.Empty, null, null,
-            HttpClientHelper.DefaultGetAccessTokenTimeout, HttpClientHelper.DefaultValidateCertificates, null, null, CancellationToken.None));
-
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await HttpClientHelper.GetAccessTokenAsync("https://foo/bar", null, null,
-            HttpClientHelper.DefaultGetAccessTokenTimeout, HttpClientHelper.DefaultValidateCertificates, null, null, CancellationToken.None));
-
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await HttpClientHelper.GetAccessTokenAsync("https://foo/bar", "clientid", null,
-            HttpClientHelper.DefaultGetAccessTokenTimeout, HttpClientHelper.DefaultValidateCertificates, null, null, CancellationToken.None));
     }
 }

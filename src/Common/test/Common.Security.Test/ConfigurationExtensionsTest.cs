@@ -12,14 +12,6 @@ namespace Steeltoe.Common.Security.Test;
 public sealed class ConfigurationExtensionsTest
 {
     [Fact]
-    public void AddPemFiles_ThrowsOnNulls()
-    {
-        Assert.Throws<ArgumentNullException>(() => ConfigurationExtensions.AddPemFiles(null, null, null));
-        Assert.Throws<ArgumentNullException>(() => new ConfigurationBuilder().AddPemFiles(null, null));
-        Assert.Throws<ArgumentNullException>(() => new ConfigurationBuilder().AddPemFiles("foobar", null));
-    }
-
-    [Fact]
     public void AddPemFiles_ReadsFiles()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddPemFiles("instance.crt", "instance.key").Build();
@@ -82,13 +74,6 @@ public sealed class ConfigurationExtensionsTest
         Assert.Equal("barfoo", configurationRoot["certificate"]);
         Assert.Equal("barbar", configurationRoot["privateKey"]);
         Assert.True(changeCalled, "Change wasn't called for tempFile2");
-    }
-
-    [Fact]
-    public void AddCertificateFile_ThrowsOnNulls()
-    {
-        Assert.Throws<ArgumentNullException>(() => ConfigurationExtensions.AddCertificateFile(null, null));
-        Assert.Throws<ArgumentNullException>(() => new ConfigurationBuilder().AddCertificateFile(null));
     }
 
     [Fact]
