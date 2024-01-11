@@ -22,7 +22,6 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     // regex for matching {cipher}{key:keyAlias} at the start of the string
     private readonly Regex _cipherRegex = new("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)");
     private bool _isDisposed;
-    internal ILogger<EncryptionResolverProvider> Logger { get; }
 
     /// <summary>
     /// Gets the configuration this encryption resolver wraps.
@@ -52,7 +51,6 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
         ArgumentGuard.NotNull(textDecryptor);
 
         Configuration = root;
-        Logger = loggerFactory.CreateLogger<EncryptionResolverProvider>();
         Decryptor = textDecryptor;
     }
 
@@ -76,7 +74,6 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
         ArgumentGuard.NotNull(textDecryptor);
 
         Providers = providers;
-        Logger = loggerFactory.CreateLogger<EncryptionResolverProvider>();
         Decryptor = textDecryptor;
     }
 

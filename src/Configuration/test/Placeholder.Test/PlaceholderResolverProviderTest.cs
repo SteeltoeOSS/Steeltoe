@@ -4,7 +4,6 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Utils.IO;
@@ -34,20 +33,6 @@ public sealed class PlaceholderResolverProviderTest
 
         Assert.Null(provider.Configuration);
         Assert.Same(providers, provider.Providers);
-    }
-
-    [Fact]
-    public void Constructor_WithLoggerFactory()
-    {
-        var providers = new List<IConfigurationProvider>();
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        var loggerFactory = new LoggerFactory();
-
-        var provider = new PlaceholderResolverProvider(providers, loggerFactory);
-        Assert.NotNull(provider.Logger);
-
-        provider = new PlaceholderResolverProvider(configuration, loggerFactory);
-        Assert.NotNull(provider.Logger);
     }
 
     [Fact]

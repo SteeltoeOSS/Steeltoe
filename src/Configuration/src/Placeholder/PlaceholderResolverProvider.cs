@@ -20,7 +20,6 @@ namespace Steeltoe.Configuration.Placeholder;
 internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider, IDisposable
 {
     private bool _isDisposed;
-    internal ILogger<PlaceholderResolverProvider> Logger { get; }
 
     public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
     public IList<string> ResolvedKeys { get; } = new List<string>();
@@ -46,7 +45,6 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
         ArgumentGuard.NotNull(loggerFactory);
 
         Configuration = root;
-        Logger = loggerFactory.CreateLogger<PlaceholderResolverProvider>();
     }
 
     /// <summary>
@@ -65,7 +63,6 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
         ArgumentGuard.NotNull(loggerFactory);
 
         Providers = providers;
-        Logger = loggerFactory.CreateLogger<PlaceholderResolverProvider>();
     }
 
     /// <summary>

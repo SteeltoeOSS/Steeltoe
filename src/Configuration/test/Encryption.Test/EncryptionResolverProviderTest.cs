@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
@@ -34,20 +33,6 @@ public sealed class EncryptionResolverProviderTest
 
         Assert.Null(provider.Configuration);
         Assert.Same(providers, provider.Providers);
-    }
-
-    [Fact]
-    public void Constructor_WithLoggerFactory()
-    {
-        var providers = new List<IConfigurationProvider>();
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        var loggerFactory = new LoggerFactory();
-
-        var provider = new EncryptionResolverProvider(providers, _decryptorMock.Object, loggerFactory);
-        Assert.NotNull(provider.Logger);
-
-        provider = new EncryptionResolverProvider(configuration, _decryptorMock.Object, loggerFactory);
-        Assert.NotNull(provider.Logger);
     }
 
     [Fact]

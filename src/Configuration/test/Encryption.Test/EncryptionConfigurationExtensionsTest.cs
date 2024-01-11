@@ -25,7 +25,7 @@ public sealed class EncryptionConfigurationExtensionsTest
     }
 
     [Fact]
-    public void AddEncryptionResolver_WithLoggerFactorySucceeds()
+    public void AddEncryptionResolver_CreatesProvider()
     {
         var configurationBuilder = new ConfigurationBuilder();
         var loggerFactory = new LoggerFactory();
@@ -36,7 +36,6 @@ public sealed class EncryptionConfigurationExtensionsTest
         EncryptionResolverProvider? provider = configuration.Providers.OfType<EncryptionResolverProvider>().SingleOrDefault();
 
         Assert.NotNull(provider);
-        Assert.NotNull(provider.Logger);
     }
 
     [Fact]
