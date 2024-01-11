@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
+using Steeltoe.Common.Logging;
 using Steeltoe.Configuration.Encryption.Decryption;
 
 namespace Steeltoe.Configuration.Encryption;
@@ -21,6 +22,11 @@ internal static class HostBuilderWrapperExtensions
             ITextDecryptor textDecryptor = ConfigServerEncryptionSettings.CreateTextDecryptor(context.Configuration);
             configurationBuilder.AddEncryptionResolver(textDecryptor, loggerFactory);
         });
+
+        if (loggerFactory is IBootstrapLoggerFactory)
+        {
+            BootstrapLoggerHostedService.Register(loggerFactory, wrapper);
+        }
 
         return wrapper;
     }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 using Steeltoe.Common.Hosting;
+using Steeltoe.Common.Logging;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Kubernetes;
@@ -59,6 +60,11 @@ internal sealed class BootstrapScanner
 
     public void ConfigureSteeltoe()
     {
+        if (_loggerFactory is IBootstrapLoggerFactory)
+        {
+            BootstrapLoggerHostedService.Register(_loggerFactory, _wrapper);
+        }
+
         if (!WireIfLoaded(WireConfigServer, SteeltoeAssemblyNames.ConfigurationConfigServer))
         {
             WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblyNames.ConfigurationCloudFoundry);

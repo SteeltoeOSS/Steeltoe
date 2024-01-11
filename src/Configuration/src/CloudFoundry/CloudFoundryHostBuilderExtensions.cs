@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
+using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
@@ -22,7 +23,7 @@ public static class CloudFoundryHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder builder)
     {
-        return AddCloudFoundryConfiguration(builder, NullLoggerFactory.Instance);
+        return AddCloudFoundryConfiguration(builder, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -32,7 +33,8 @@ public static class CloudFoundryHostBuilderExtensions
     /// The host builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -52,7 +54,7 @@ public static class CloudFoundryHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder builder)
     {
-        return AddCloudFoundryConfiguration(builder, NullLoggerFactory.Instance);
+        return AddCloudFoundryConfiguration(builder, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -62,7 +64,8 @@ public static class CloudFoundryHostBuilderExtensions
     /// The host builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -82,7 +85,7 @@ public static class CloudFoundryHostBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddCloudFoundryConfiguration(this WebApplicationBuilder builder)
     {
-        return AddCloudFoundryConfiguration(builder, NullLoggerFactory.Instance);
+        return AddCloudFoundryConfiguration(builder, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -92,7 +95,8 @@ public static class CloudFoundryHostBuilderExtensions
     /// The application builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     public static WebApplicationBuilder AddCloudFoundryConfiguration(this WebApplicationBuilder builder, ILoggerFactory loggerFactory)
     {

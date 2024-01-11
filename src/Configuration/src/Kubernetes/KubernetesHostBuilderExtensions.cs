@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
+using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Configuration.Kubernetes;
 
@@ -23,7 +24,7 @@ public static class KubernetesHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder builder)
     {
-        return AddKubernetesConfiguration(builder, null, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, null, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -37,7 +38,7 @@ public static class KubernetesHostBuilderExtensions
     /// </param>
     public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder builder, Action<KubernetesClientConfiguration> configureClient)
     {
-        return AddKubernetesConfiguration(builder, configureClient, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, configureClient, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -47,7 +48,8 @@ public static class KubernetesHostBuilderExtensions
     /// The host builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -64,7 +66,8 @@ public static class KubernetesHostBuilderExtensions
     /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder builder, Action<KubernetesClientConfiguration>? configureClient,
         ILoggerFactory loggerFactory)
@@ -86,7 +89,7 @@ public static class KubernetesHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder builder)
     {
-        return AddKubernetesConfiguration(builder, null, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, null, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -100,7 +103,7 @@ public static class KubernetesHostBuilderExtensions
     /// </param>
     public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder builder, Action<KubernetesClientConfiguration> configureClient)
     {
-        return AddKubernetesConfiguration(builder, configureClient, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, configureClient, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -110,7 +113,8 @@ public static class KubernetesHostBuilderExtensions
     /// The host builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -127,7 +131,8 @@ public static class KubernetesHostBuilderExtensions
     /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder builder, Action<KubernetesClientConfiguration>? configureClient,
         ILoggerFactory loggerFactory)
@@ -149,7 +154,7 @@ public static class KubernetesHostBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder builder)
     {
-        return AddKubernetesConfiguration(builder, null, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, null, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -163,7 +168,7 @@ public static class KubernetesHostBuilderExtensions
     /// </param>
     public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder builder, Action<KubernetesClientConfiguration> configureClient)
     {
-        return AddKubernetesConfiguration(builder, configureClient, NullLoggerFactory.Instance);
+        return AddKubernetesConfiguration(builder, configureClient, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -173,7 +178,8 @@ public static class KubernetesHostBuilderExtensions
     /// The web application builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -190,7 +196,8 @@ public static class KubernetesHostBuilderExtensions
     /// Enables customization of the <see cref="KubernetesClientConfiguration" />.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder builder, Action<KubernetesClientConfiguration>? configureClient,
         ILoggerFactory loggerFactory)

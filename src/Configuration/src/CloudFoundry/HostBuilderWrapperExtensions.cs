@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
+using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
@@ -17,6 +18,11 @@ internal static class HostBuilderWrapperExtensions
 
         wrapper.ConfigureAppConfiguration(builder => builder.AddCloudFoundry(null, loggerFactory));
         wrapper.ConfigureServices(services => services.RegisterCloudFoundryApplicationInstanceInfo());
+
+        if (loggerFactory is IBootstrapLoggerFactory)
+        {
+            BootstrapLoggerHostedService.Register(loggerFactory, wrapper);
+        }
 
         return wrapper;
     }

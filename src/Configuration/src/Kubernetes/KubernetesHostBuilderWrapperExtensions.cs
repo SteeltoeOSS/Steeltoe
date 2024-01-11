@@ -6,6 +6,7 @@ using k8s;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
+using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Configuration.Kubernetes;
 
@@ -19,6 +20,11 @@ internal static class KubernetesHostBuilderWrapperExtensions
 
         wrapper.ConfigureAppConfiguration(builder => builder.AddKubernetes(configureClient, loggerFactory));
         wrapper.ConfigureServices(services => services.AddKubernetesConfigurationServices());
+
+        if (loggerFactory is IBootstrapLoggerFactory)
+        {
+            BootstrapLoggerHostedService.Register(loggerFactory, wrapper);
+        }
 
         return wrapper;
     }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
+using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Configuration.Encryption;
 
@@ -29,7 +30,7 @@ public static class EncryptionHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddEncryptionResolver(this IWebHostBuilder builder)
     {
-        return AddEncryptionResolver(builder, NullLoggerFactory.Instance);
+        return AddEncryptionResolver(builder, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -42,7 +43,8 @@ public static class EncryptionHostBuilderExtensions
     /// The host builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
     /// The provided host builder.
@@ -72,7 +74,7 @@ public static class EncryptionHostBuilderExtensions
     /// </returns>
     public static IHostBuilder AddEncryptionResolver(this IHostBuilder builder)
     {
-        return AddEncryptionResolver(builder, NullLoggerFactory.Instance);
+        return AddEncryptionResolver(builder, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -85,7 +87,8 @@ public static class EncryptionHostBuilderExtensions
     /// The host builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
     /// The provided host builder.
@@ -115,7 +118,7 @@ public static class EncryptionHostBuilderExtensions
     /// </returns>
     public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder builder)
     {
-        return AddEncryptionResolver(builder, NullLoggerFactory.Instance);
+        return AddEncryptionResolver(builder, BootstrapLoggerFactory.Default);
     }
 
     /// <summary>
@@ -128,7 +131,8 @@ public static class EncryptionHostBuilderExtensions
     /// The application builder.
     /// </param>
     /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
     /// The provided application builder.
