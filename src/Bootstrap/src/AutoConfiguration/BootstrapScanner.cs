@@ -92,23 +92,21 @@ internal sealed class BootstrapScanner
 
     private void WireConfigServer()
     {
-        _wrapper.ConfigureAppConfiguration((context, configurationBuilder) => configurationBuilder.AddConfigServer(context.HostEnvironment, _loggerFactory));
-        _wrapper.ConfigureServices(services => services.AddConfigServerServices());
+        _wrapper.AddConfigServer(_loggerFactory);
 
         _logger.LogInformation("Configured Config Server configuration provider");
     }
 
     private void WireCloudFoundryConfiguration()
     {
-        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCloudFoundry());
+        _wrapper.AddCloudFoundryConfiguration(_loggerFactory);
 
         _logger.LogInformation("Configured Cloud Foundry configuration provider");
     }
 
     private void WireKubernetesConfiguration()
     {
-        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddKubernetes(_loggerFactory));
-        _wrapper.ConfigureServices(services => services.AddKubernetesConfigurationServices());
+        _wrapper.AddKubernetesConfiguration(null, _loggerFactory);
 
         _logger.LogInformation("Configured Kubernetes configuration provider");
     }
