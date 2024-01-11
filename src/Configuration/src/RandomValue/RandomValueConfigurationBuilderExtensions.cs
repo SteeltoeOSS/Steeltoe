@@ -22,7 +22,7 @@ public static class RandomValueConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder)
     {
-        return AddRandomValueSource(builder, NullLoggerFactory.Instance);
+        return AddRandomValueSource(builder, null, NullLoggerFactory.Instance);
     }
 
     /// <summary>
@@ -39,13 +39,7 @@ public static class RandomValueConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(loggerFactory);
-
-        var resolver = new RandomValueSource(loggerFactory);
-        builder.Add(resolver);
-
-        return builder;
+        return AddRandomValueSource(builder, null, loggerFactory);
     }
 
     /// <summary>
@@ -60,7 +54,7 @@ public static class RandomValueConfigurationBuilderExtensions
     /// <returns>
     /// The incoming <paramref name="builder" />.
     /// </returns>
-    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string prefix)
+    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string? prefix)
     {
         return AddRandomValueSource(builder, prefix, NullLoggerFactory.Instance);
     }
@@ -80,13 +74,12 @@ public static class RandomValueConfigurationBuilderExtensions
     /// <returns>
     /// The incoming <paramref name="builder" />.
     /// </returns>
-    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string prefix, ILoggerFactory loggerFactory)
+    public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string? prefix, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNullOrEmpty(prefix);
         ArgumentGuard.NotNull(loggerFactory);
 
-        if (!prefix.EndsWith(':'))
+        if (prefix != null && !prefix.EndsWith(':'))
         {
             prefix += ':';
         }

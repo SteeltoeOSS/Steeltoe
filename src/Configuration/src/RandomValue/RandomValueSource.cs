@@ -14,7 +14,7 @@ namespace Steeltoe.Configuration.RandomValue;
 /// </summary>
 internal sealed class RandomValueSource : IConfigurationSource
 {
-    private const string RandomPrefix = "random:";
+    private const string DefaultPrefix = "random:";
 
     internal string Prefix { get; }
     internal ILoggerFactory LoggerFactory { get; }
@@ -26,7 +26,7 @@ internal sealed class RandomValueSource : IConfigurationSource
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     public RandomValueSource(ILoggerFactory loggerFactory)
-        : this(RandomPrefix, loggerFactory)
+        : this(null, loggerFactory)
     {
     }
 
@@ -39,12 +39,11 @@ internal sealed class RandomValueSource : IConfigurationSource
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public RandomValueSource(string prefix, ILoggerFactory loggerFactory)
+    public RandomValueSource(string? prefix, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(prefix);
         ArgumentGuard.NotNull(loggerFactory);
 
-        Prefix = prefix;
+        Prefix = prefix ?? DefaultPrefix;
         LoggerFactory = loggerFactory;
     }
 
