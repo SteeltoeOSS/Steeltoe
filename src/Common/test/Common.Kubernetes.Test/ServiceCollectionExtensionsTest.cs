@@ -39,17 +39,18 @@ public sealed class ServiceCollectionExtensionsTest
     [Fact]
     public void AddKubernetesClient_AddsKubernetesOptionsAndClient()
     {
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddKubernetesClient();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        serviceCollection.AddKubernetesClient();
-        ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider(true);
         var client = serviceProvider.GetService<IKubernetes>();
-        IEnumerable<IApplicationInstanceInfo> appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>();
+        IApplicationInstanceInfo[] appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>().ToArray();
 
         Assert.NotNull(client);
         Assert.Single(appInfos);
         Assert.IsType<KubernetesApplicationOptions>(appInfos.First());
-        Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, appInfos.First().ApplicationName);
+        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name, appInfos.First().ApplicationName);
     }
 }
