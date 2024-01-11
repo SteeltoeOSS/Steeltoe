@@ -187,7 +187,7 @@ public sealed class MongoDbConnectorTests
         fileProvider.IncludeFile("db/database", "my-mongodb-service-d8nkz");
 
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
-        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
+        builder.Configuration.AddKubernetesServiceBindings(reader);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

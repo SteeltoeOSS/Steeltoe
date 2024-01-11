@@ -252,7 +252,7 @@ public sealed class RabbitMQConnectorTests
         fileProvider.IncludeFile("db/password", "PZ3kQK91dAYpRte0a9gGmCWYED3ijI0R");
 
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
-        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
+        builder.Configuration.AddKubernetesServiceBindings(reader);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
