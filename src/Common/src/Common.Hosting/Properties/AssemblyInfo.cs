@@ -9,7 +9,5 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Encryption")]
-[assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes")]
 [assembly: InternalsVisibleTo("Steeltoe.Logging.DynamicSerilog")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Kubernetes")]

@@ -23,8 +23,6 @@ using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.Transport;
-using Steeltoe.Discovery.Kubernetes;
-using Steeltoe.Discovery.Kubernetes.Discovery;
 using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
@@ -314,27 +312,6 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.Equal("fromtest", reg.Host);
         Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
-    }
-
-    [Fact]
-    public void AddDiscoveryClient_WithKubernetesConfig_AddsDiscoveryClient()
-    {
-        var appsettings = new Dictionary<string, string>
-        {
-            { "spring:application:name", "myName" },
-            { "spring:cloud:kubernetes:discovery:enabled", "true" },
-            { "spring:cloud:kubernetes:namespace", "notdefault" }
-        };
-
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
-
-        ServiceProvider serviceProvider = services.AddDiscoveryClient(configuration).BuildServiceProvider(true);
-
-        var service = serviceProvider.GetService<IDiscoveryClient>();
-        var options = serviceProvider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
-        Assert.True(service.GetType().IsAssignableFrom(typeof(KubernetesDiscoveryClient)));
-        Assert.Equal("notdefault", options.Value.Namespace);
     }
 
     [Fact]
@@ -784,27 +761,6 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var service = serviceProvider.GetService<IDiscoveryClient>();
         Assert.True(service.GetType().IsAssignableFrom(typeof(EurekaDiscoveryClient)));
-    }
-
-    [Fact]
-    public void AddServiceDiscovery_WithKubernetesConfig_AddsDiscoveryClient()
-    {
-        var appsettings = new Dictionary<string, string>
-        {
-            { "spring:application:name", "myName" },
-            { "spring:cloud:kubernetes:discovery:enabled", "true" },
-            { "spring:cloud:kubernetes:namespace", "notdefault" }
-        };
-
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
-
-        ServiceProvider serviceProvider = services.AddServiceDiscovery(configuration, builder => builder.UseKubernetes()).BuildServiceProvider(true);
-
-        var service = serviceProvider.GetService<IDiscoveryClient>();
-        var options = serviceProvider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
-        Assert.True(service.GetType().IsAssignableFrom(typeof(KubernetesDiscoveryClient)));
-        Assert.Equal("notdefault", options.Value.Namespace);
     }
 
     private object GetInnerHttpHandler(object handler)
