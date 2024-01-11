@@ -18,7 +18,7 @@ internal static class HostBuilderWrapperExtensions
 
         wrapper.ConfigureAppConfiguration((context, configurationBuilder) =>
         {
-            ITextDecryptor textDecryptor = ConfigServerEncryptionResolverExtensions.GetTextDecryptor(context.Configuration);
+            ITextDecryptor textDecryptor = ConfigServerEncryptionSettings.CreateTextDecryptor(context.Configuration);
             configurationBuilder.AddEncryptionResolver(textDecryptor, loggerFactory);
         });
 

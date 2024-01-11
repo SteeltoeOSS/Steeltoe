@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Steeltoe.Configuration.Encryption.Test.Decryption;
 
-public sealed class ConfigServerEncryptionResolverExtensionsTest
+public sealed class EncryptionServiceCollectionForConfigServerExtensionsTest
 {
     [Fact]
     public void ConfigureEncryptionResolver_ConfiguresIConfiguration_ReplacesExisting()

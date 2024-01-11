@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
+
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
 /// <summary>
@@ -69,5 +71,13 @@ internal sealed class ConfigServerEncryptionSettings
     {
         EncryptionRsaAlgorithm = DefaultEncryptionRsaAlgorithm;
         EncryptionRsaSalt = DefaultEncryptionRsaSalt;
+    }
+
+    internal static ITextDecryptor CreateTextDecryptor(IConfiguration configuration)
+    {
+        var settings = new ConfigServerEncryptionSettings();
+        ConfigurationSettingsHelper.Initialize(settings, configuration);
+
+        return EncryptionFactory.CreateEncryptor(settings);
     }
 }

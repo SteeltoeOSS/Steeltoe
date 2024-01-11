@@ -30,10 +30,7 @@ public static class EncryptionServiceCollectionExtensions
     /// </returns>
     public static IConfiguration ConfigureEncryptionResolver(this IServiceCollection services, IConfiguration configuration)
     {
-        var settings = new ConfigServerEncryptionSettings();
-
-        ConfigurationSettingsHelper.Initialize(settings, configuration);
-        ITextDecryptor textDecryptor = EncryptionFactory.CreateEncryptor(settings);
+        ITextDecryptor textDecryptor = ConfigServerEncryptionSettings.CreateTextDecryptor(configuration);
         return ConfigureEncryptionResolver(services, configuration, textDecryptor, NullLoggerFactory.Instance);
     }
 
@@ -90,6 +87,57 @@ public static class EncryptionServiceCollectionExtensions
         IConfiguration newConfiguration = configuration.AddEncryptionResolver(textDecryptor, loggerFactory);
         services.Replace(ServiceDescriptor.Singleton(typeof(IConfiguration), newConfiguration));
         services.Replace(ServiceDescriptor.Singleton(typeof(ITextDecryptor), textDecryptor));
+
+        return newConfiguration;
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="IConfiguration" /> using a <see cref="EncryptionResolverProvider" /> which wraps the provided <see cref="IConfiguration" />
+    /// . The new configuration will then be used to replace the current <see cref="IConfiguration" /> in the service container. All subsequent requests for
+    /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing encryption resolution.
+    /// </summary>
+    /// <param name="services">
+    /// The service container.
+    /// </param>
+    /// <param name="configuration">
+    /// The configuration the encryption resolver will wrap.
+    /// </param>
+    /// <returns>
+    /// The new configuration.
+    /// </returns>
+    public static IConfiguration ConfigureConfigServerEncryptionResolver(this IServiceCollection services, IConfiguration configuration)
+    {
+        return ConfigureConfigServerEncryptionResolver(services, configuration, NullLoggerFactory.Instance);
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="IConfiguration" /> using a <see cref="EncryptionResolverProvider" /> which wraps the provided <see cref="IConfiguration" />
+    /// . The new configuration will then be used to replace the current <see cref="IConfiguration" /> in the service container. All subsequent requests for
+    /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing encryption resolution.
+    /// </summary>
+    /// <param name="services">
+    /// The service container.
+    /// </param>
+    /// <param name="configuration">
+    /// The configuration the encryption resolver will wrap.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    /// <returns>
+    /// The new configuration.
+    /// </returns>
+    public static IConfiguration ConfigureConfigServerEncryptionResolver(this IServiceCollection services, IConfiguration configuration,
+        ILoggerFactory loggerFactory)
+    {
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(loggerFactory);
+
+        ITextDecryptor textDecryptor = ConfigServerEncryptionSettings.CreateTextDecryptor(configuration);
+
+        IConfiguration newConfiguration = configuration.AddEncryptionResolver(textDecryptor, loggerFactory);
+        services.Replace(ServiceDescriptor.Singleton(typeof(IConfiguration), newConfiguration));
 
         return newConfiguration;
     }
