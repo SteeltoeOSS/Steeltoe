@@ -243,6 +243,35 @@ public class ConsulRegistrationTest
         Assert.StartsWith("foobar-", result);
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void CreateCheck_WhenHealthCheckPathIsSet_ThenShouldSetIt(bool heartbeatEnabled)
+    {
+        const string path = "/my/custom/health";
+        var options = new ConsulDiscoveryOptions
+        {
+            HealthCheckPath = path,
+            Heartbeat = new ConsulHeartbeatOptions
+            {
+                Enabled = heartbeatEnabled
+            }
+        };
+
+        var check = ConsulRegistration.CreateCheck(1234, options);
+
+        Assert.Contains(path, check.HTTP);
+    }
+
+    [Fact]
+    public void CreateCheck_WhenPortIsANegativeNumber_ThenShouldThrow()
+    {
+        var options = new ConsulDiscoveryOptions();
+        const int port = -1234;
+
+        Assert.Throws<ArgumentException>(() => ConsulRegistration.CreateCheck(port, options));
+    }
+
     [Fact]
     public void NormalizeForConsul_ReturnsExpected()
     {
