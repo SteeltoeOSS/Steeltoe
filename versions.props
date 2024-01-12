@@ -5,9 +5,7 @@
       It's safe to update these at any time, so wildcards are allowed.
     -->
 
-    <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
-    <EasyNetQVersion>2.0.*</EasyNetQVersion>
     <EntityFrameworkCoreTestVersion>7.0.*</EntityFrameworkCoreTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
@@ -59,7 +57,6 @@
     -->
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
-    <CastleCoreVersion>5.1.*</CastleCoreVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
     <DiagnosticsTracingVersion>3.1.*</DiagnosticsTracingVersion>
@@ -71,17 +68,13 @@
       -->
       8.0.*
     </FoundationalVersion>
-    <JsonNetVersion>13.0.*</JsonNetVersion>
     <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
-    <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
     <OpenTelemetryExporterJaegerVersion>1.5.*</OpenTelemetryExporterJaegerVersion>
     <OpenTelemetryExporterPrometheusVersion>1.4.0-rc.3</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <OpenTelemetryVersion>1.6.*</OpenTelemetryVersion>
     <PollyContribVersion>1.1.*</PollyContribVersion>
     <PollyVersion>8.0.*</PollyVersion>
-    <RabbitClientVersion>5.1.*</RabbitClientVersion>
-    <RuntimeLoaderVersion>4.3.*</RuntimeLoaderVersion>
     <SerilogExtensionsLoggingVersion>7.0.*</SerilogExtensionsLoggingVersion>
     <SerilogSettingsConfigurationVersion>7.0.*</SerilogSettingsConfigurationVersion>
     <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
