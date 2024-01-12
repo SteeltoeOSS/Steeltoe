@@ -7,7 +7,6 @@
       "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
       "Common\\src\\Common.Kubernetes\\Steeltoe.Common.Kubernetes.csproj",
       "Common\\src\\Common.Net\\Steeltoe.Common.Net.csproj",
-      "Common\\src\\Common.RetryPolly\\Steeltoe.Common.RetryPolly.csproj",
       "Common\\src\\Common.Security\\Steeltoe.Common.Security.csproj",
       "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
