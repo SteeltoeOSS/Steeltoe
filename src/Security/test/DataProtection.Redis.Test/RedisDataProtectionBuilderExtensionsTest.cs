@@ -123,7 +123,19 @@ public sealed class RedisDataProtectionBuilderExtensionsTest
 
         RedisValue[] GetRedisValues(RedisKey key)
         {
-            return innerStore.TryGetValue(key!, out byte[]? data) ? [default, default, data] : [default, default, default];
+            return innerStore.TryGetValue(key!, out byte[]? data)
+                ?
+                [
+                    default,
+                    default,
+                    data
+                ]
+                :
+                [
+                    default,
+                    default,
+                    default
+                ];
         }
 
         RedisResult SetRedisValues(RedisKey[]? keys, RedisValue[]? values)

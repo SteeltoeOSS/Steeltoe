@@ -7,6 +7,3 @@ Features include:
 - Service discovery with [Eureka](https://spring.io/projects/spring-cloud-netflix) and [HashiCorp Consul](https://www.consul.io/)
 - External (encrypted) configuration using [Spring Cloud Config Server](https://docs.spring.io/spring-cloud-config/docs/current/reference/html/)
 - Single sign-on with [Cloud Foundry](https://www.cloudfoundry.org/)
-- An easy-to-use API for [RabbitMQ message exchange](https://www.rabbitmq.com/features.html), providing [RabbitTemplate](https://spring.io/guides/gs/messaging-rabbitmq/) and annotation-driven listeners
-- Streaming with [Spring Cloud Data Flow](https://spring.io/projects/spring-cloud-dataflow), enabling orchestration with Java stream apps
-- Steeltoe converts [Spring Expression Language (SpEL)](https://docs.spring.io/spring-framework/docs/3.0.x/reference/expressions.html) to .NET compiled code

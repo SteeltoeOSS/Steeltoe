@@ -10,3 +10,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Management.Prometheus")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Wavefront")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Wavefront.Test")]

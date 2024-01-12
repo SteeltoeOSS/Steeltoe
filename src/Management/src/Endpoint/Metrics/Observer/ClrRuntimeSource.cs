@@ -34,10 +34,7 @@ internal static class ClrRuntimeSource
     }
 
     public record struct ThreadMetrics(
-        long AvailableThreadPoolWorkers,
-        long AvailableThreadCompletionPort,
-        long MaxThreadPoolWorkers,
-        long MaxThreadCompletionPort)
+        long AvailableThreadPoolWorkers, long AvailableThreadCompletionPort, long MaxThreadPoolWorkers, long MaxThreadCompletionPort)
     {
         public readonly long AvailableThreadPoolWorkers = AvailableThreadPoolWorkers;
         public readonly long AvailableThreadCompletionPort = AvailableThreadCompletionPort;
