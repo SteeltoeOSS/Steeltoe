@@ -73,8 +73,6 @@
     <OpenTelemetryExporterPrometheusVersion>1.4.0-rc.3</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <OpenTelemetryVersion>1.6.*</OpenTelemetryVersion>
-    <PollyContribVersion>1.1.*</PollyContribVersion>
-    <PollyVersion>8.0.*</PollyVersion>
     <SerilogExtensionsLoggingVersion>7.0.*</SerilogExtensionsLoggingVersion>
     <SerilogSettingsConfigurationVersion>7.0.*</SerilogSettingsConfigurationVersion>
     <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
