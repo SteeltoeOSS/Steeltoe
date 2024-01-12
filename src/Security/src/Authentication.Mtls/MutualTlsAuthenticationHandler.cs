@@ -29,8 +29,7 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
     private new CertificateAuthenticationEvents Events => (CertificateAuthenticationEvents)base.Events;
 
 #if NET6_0
-    public MutualTlsAuthenticationHandler(IOptionsMonitor<MutualTlsAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder,
-        ISystemClock clock)
+    public MutualTlsAuthenticationHandler(IOptionsMonitor<MutualTlsAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
 #else
     public MutualTlsAuthenticationHandler(IOptionsMonitor<MutualTlsAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder)
