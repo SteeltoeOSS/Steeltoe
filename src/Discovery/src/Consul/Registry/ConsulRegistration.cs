@@ -7,6 +7,7 @@ using System.Text;
 using Consul;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Util;
 
@@ -15,7 +16,7 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// <summary>
 /// The registration to be used when registering with the Consul server.
 /// </summary>
-public class ConsulRegistration : IConsulRegistration
+public class ConsulRegistration : IServiceInstance
 {
     private const char Separator = '-';
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
@@ -34,10 +35,14 @@ public class ConsulRegistration : IConsulRegistration
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the Consul service registration.
+    /// </summary>
     public AgentServiceRegistration Service { get; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the instance id to use for registration.
+    /// </summary>
     public string InstanceId { get; private set; }
 
     /// <inheritdoc />

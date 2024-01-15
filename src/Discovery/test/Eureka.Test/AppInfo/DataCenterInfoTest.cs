@@ -31,7 +31,7 @@ public sealed class DataCenterInfoTest : AbstractBaseTest
     public void FromJson_Correct()
     {
         var info = new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", "MyOwn");
-        IDataCenterInfo result = DataCenterInfo.FromJson(info);
+        DataCenterInfo result = DataCenterInfo.FromJson(info);
         Assert.Equal(DataCenterName.MyOwn, result.Name);
     }
 

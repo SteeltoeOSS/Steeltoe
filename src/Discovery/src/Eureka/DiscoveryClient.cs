@@ -13,7 +13,7 @@ using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class DiscoveryClient : IEurekaClient
+public class DiscoveryClient
 {
     protected readonly ApplicationInfoManager AppInfoManager;
     private int _shutdown;
@@ -21,7 +21,7 @@ public class DiscoveryClient : IEurekaClient
     protected Timer cacheRefreshTimer;
     protected volatile Applications localRegionApps;
     protected long registryFetchCounter;
-    protected IEurekaHttpClient httpClient;
+    protected EurekaHttpClient httpClient;
     protected Random random = new();
     protected ILogger logger;
     protected ILogger regularLogger;
@@ -45,7 +45,7 @@ public class DiscoveryClient : IEurekaClient
 
     public InstanceStatus LastRemoteInstanceStatus { get; private set; } = InstanceStatus.Unknown;
 
-    public IEurekaHttpClient HttpClient => httpClient;
+    public EurekaHttpClient HttpClient => httpClient;
 
     public Applications Applications
     {
@@ -53,13 +53,13 @@ public class DiscoveryClient : IEurekaClient
         internal set => localRegionApps = value;
     }
 
-    public virtual IEurekaClientConfiguration ClientConfiguration { get; }
+    public virtual EurekaClientConfiguration ClientConfiguration { get; }
 
     public IHealthCheckHandler HealthCheckHandler { get; set; }
 
     public event EventHandler<ApplicationsEventArgs> OnApplicationsChange;
 
-    public DiscoveryClient(IEurekaClientConfiguration clientConfiguration, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
+    public DiscoveryClient(EurekaClientConfiguration clientConfiguration, EurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
         : this(ApplicationInfoManager.Instance, logFactory)
     {
         ArgumentGuard.NotNull(clientConfiguration);

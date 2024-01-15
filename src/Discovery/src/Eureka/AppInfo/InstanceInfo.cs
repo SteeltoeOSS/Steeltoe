@@ -56,7 +56,7 @@ public class InstanceInfo
 
     public int CountryId { get; internal set; }
 
-    public IDataCenterInfo DataCenterInfo { get; internal set; }
+    public DataCenterInfo DataCenterInfo { get; internal set; }
 
     public string HostName { get; internal set; }
 
@@ -179,7 +179,7 @@ public class InstanceInfo
         return sb.ToString();
     }
 
-    internal static InstanceInfo FromInstanceConfiguration(IEurekaInstanceConfig instanceConfig)
+    internal static InstanceInfo FromInstanceConfiguration(EurekaInstanceConfiguration instanceConfig)
     {
         var info = new InstanceInfo
         {
@@ -294,7 +294,7 @@ public class InstanceInfo
             VipAddress = VipAddress,
             SecureVipAddress = SecureVipAddress,
             CountryId = CountryId,
-            DataCenterInfo = ((DataCenterInfo)DataCenterInfo)?.ToJson(),
+            DataCenterInfo = DataCenterInfo?.ToJson(),
             HostName = HostName,
             Status = Status,
             OverriddenStatus = OverriddenStatus,

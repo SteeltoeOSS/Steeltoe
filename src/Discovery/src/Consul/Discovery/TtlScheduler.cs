@@ -11,9 +11,9 @@ using Steeltoe.Common;
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// The default scheduler used to issue TTL requests to the Consul server.
+/// Scheduler used to issue TTL requests to the Consul server.
 /// </summary>
-public class TtlScheduler : IScheduler
+public class TtlScheduler : IDisposable
 {
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulDiscoveryOptions _options;
@@ -77,7 +77,12 @@ public class TtlScheduler : IScheduler
         _logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Adds an instances id to be checked.
+    /// </summary>
+    /// <param name="instanceId">
+    /// the instance id.
+    /// </param>
     public void Add(string instanceId)
     {
         ArgumentGuard.NotNullOrWhiteSpace(instanceId);
@@ -108,7 +113,12 @@ public class TtlScheduler : IScheduler
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Remove an instance id from checking.
+    /// </summary>
+    /// <param name="instanceId">
+    /// the instance id.
+    /// </param>
     public void Remove(string instanceId)
     {
         ArgumentGuard.NotNullOrWhiteSpace(instanceId);

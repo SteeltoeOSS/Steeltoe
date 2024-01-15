@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// <summary>
 /// A registrar used to register a service in a Consul server.
 /// </summary>
-public class ConsulServiceRegistrar : IConsulServiceRegistrar
+public class ConsulServiceRegistrar : IDisposable
 {
     private const int NotRunning = 0;
     private const int Running = 1;
@@ -38,8 +38,10 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         }
     }
 
-    /// <inheritdoc />
-    public IConsulRegistration Registration { get; }
+    /// <summary>
+    /// Gets the registration that the registrar is to register with Consul.
+    /// </summary>
+    public ConsulRegistration Registration { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistrar" /> class.
@@ -56,7 +58,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     /// <param name="logger">
     /// optional logger.
     /// </param>
-    public ConsulServiceRegistrar(IConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulRegistration registration,
+    public ConsulServiceRegistrar(IConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulRegistration registration,
         ILogger<ConsulServiceRegistrar> logger = null)
     {
         ArgumentGuard.NotNull(registry);
@@ -84,7 +86,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     /// <param name="logger">
     /// optional logger.
     /// </param>
-    public ConsulServiceRegistrar(IConsulServiceRegistry registry, ConsulDiscoveryOptions options, IConsulRegistration registration,
+    public ConsulServiceRegistrar(IConsulServiceRegistry registry, ConsulDiscoveryOptions options, ConsulRegistration registration,
         ILogger<ConsulServiceRegistrar> logger = null)
     {
         ArgumentGuard.NotNull(registry);
@@ -97,7 +99,9 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         _logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Start the service registrar.
+    /// </summary>
     public void Start()
     {
         if (!Options.Enabled)
@@ -119,7 +123,9 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Register any registrations configured.
+    /// </summary>
     public void Register()
     {
         if (!Options.Register)
@@ -131,7 +137,9 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         _registry.Register(Registration);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Deregister any registrations configured.
+    /// </summary>
     public void Deregister()
     {
         if (!Options.Register || !Options.Deregister)

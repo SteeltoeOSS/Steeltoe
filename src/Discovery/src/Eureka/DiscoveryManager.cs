@@ -18,27 +18,25 @@ public class DiscoveryManager
 
     public virtual DiscoveryClient Client { get; protected internal set; }
 
-    public virtual IEurekaClientConfiguration ClientConfiguration { get; protected internal set; }
+    public virtual EurekaClientConfiguration ClientConfiguration { get; protected internal set; }
 
-    public virtual IEurekaInstanceConfig InstanceConfig { get; protected internal set; }
-
-    public virtual ILookupService LookupService => Client;
+    public virtual EurekaInstanceConfiguration InstanceConfig { get; protected internal set; }
 
     protected DiscoveryManager()
     {
     }
 
-    public virtual void Initialize(IEurekaClientConfiguration clientConfiguration, ILoggerFactory logFactory = null)
+    public virtual void Initialize(EurekaClientConfiguration clientConfiguration, ILoggerFactory logFactory = null)
     {
-        Initialize(clientConfiguration, (IEurekaHttpClient)null, logFactory);
+        Initialize(clientConfiguration, (EurekaHttpClient)null, logFactory);
     }
 
-    public virtual void Initialize(IEurekaClientConfiguration clientConfiguration, IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
+    public virtual void Initialize(EurekaClientConfiguration clientConfiguration, EurekaInstanceConfiguration instanceConfig, ILoggerFactory logFactory = null)
     {
         Initialize(clientConfiguration, instanceConfig, null, logFactory);
     }
 
-    public virtual void Initialize(IEurekaClientConfiguration clientConfiguration, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
+    public virtual void Initialize(EurekaClientConfiguration clientConfiguration, EurekaHttpClient httpClient, ILoggerFactory logFactory = null)
     {
         ArgumentGuard.NotNull(clientConfiguration);
 
@@ -47,7 +45,7 @@ public class DiscoveryManager
         Client = new DiscoveryClient(clientConfiguration, httpClient, logFactory);
     }
 
-    public virtual void Initialize(IEurekaClientConfiguration clientConfiguration, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient,
+    public virtual void Initialize(EurekaClientConfiguration clientConfiguration, EurekaInstanceConfiguration instanceConfig, EurekaHttpClient httpClient,
         ILoggerFactory logFactory = null)
     {
         ArgumentGuard.NotNull(clientConfiguration);

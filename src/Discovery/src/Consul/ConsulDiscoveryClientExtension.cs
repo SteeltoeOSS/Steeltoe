@@ -75,17 +75,17 @@ public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
             return ConsulClientFactory.CreateClient(consulOptions.Value);
         });
 
-        services.AddSingleton<IScheduler, TtlScheduler>();
+        services.AddSingleton<TtlScheduler>();
         services.AddSingleton<IConsulServiceRegistry, ConsulServiceRegistry>();
 
-        services.AddSingleton<IConsulRegistration>(p =>
+        services.AddSingleton(p =>
         {
             var opts = p.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
             var appInfo = p.GetService<IApplicationInstanceInfo>();
             return ConsulRegistration.CreateRegistration(opts.Value, appInfo);
         });
 
-        services.AddSingleton<IConsulServiceRegistrar, ConsulServiceRegistrar>();
+        services.AddSingleton<ConsulServiceRegistrar>();
         services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();
         services.AddSingleton<IHealthContributor, ConsulHealthContributor>();
     }

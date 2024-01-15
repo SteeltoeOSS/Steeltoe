@@ -243,7 +243,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
         ServiceInfoName ??= configuration.GetValue<string>("eureka:serviceInfoName");
 
         IServiceInfo info = string.IsNullOrEmpty(ServiceInfoName)
-            ? GetSingletonDiscoveryServiceInfo(configuration)
+            ? GetSingleDiscoveryServiceInfo(configuration)
             : GetNamedDiscoveryServiceInfo(configuration, ServiceInfoName);
 
         return info as EurekaServiceInfo;

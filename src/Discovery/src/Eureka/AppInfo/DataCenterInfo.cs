@@ -6,7 +6,7 @@ using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
-public class DataCenterInfo : IDataCenterInfo
+public class DataCenterInfo
 {
     public DataCenterName Name { get; }
 
@@ -15,7 +15,7 @@ public class DataCenterInfo : IDataCenterInfo
         Name = name;
     }
 
-    internal static IDataCenterInfo FromJson(JsonInstanceInfo.JsonDataCenterInfo dataCenterInfo)
+    internal static DataCenterInfo FromJson(JsonInstanceInfo.JsonDataCenterInfo dataCenterInfo)
     {
         if (DataCenterName.MyOwn.ToString() == dataCenterInfo.Name)
         {

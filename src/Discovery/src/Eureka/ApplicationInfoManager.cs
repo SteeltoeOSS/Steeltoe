@@ -17,7 +17,7 @@ public class ApplicationInfoManager
 
     public static ApplicationInfoManager Instance => InnerInstance;
 
-    public virtual IEurekaInstanceConfig InstanceConfig { get; protected internal set; }
+    public virtual EurekaInstanceConfiguration InstanceConfig { get; protected internal set; }
 
     public virtual InstanceInfo InstanceInfo { get; protected internal set; }
 
@@ -66,7 +66,7 @@ public class ApplicationInfoManager
     {
     }
 
-    public virtual void Initialize(IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
+    public virtual void Initialize(EurekaInstanceConfiguration instanceConfig, ILoggerFactory logFactory = null)
     {
         ArgumentGuard.NotNull(instanceConfig);
 

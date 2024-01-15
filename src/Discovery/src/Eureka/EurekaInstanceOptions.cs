@@ -7,7 +7,7 @@ using Steeltoe.Common.Net;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaInstanceOptions : EurekaInstanceConfiguration, IDiscoveryRegistrationOptions
+public class EurekaInstanceOptions : EurekaInstanceConfiguration
 {
     public const string EurekaInstanceConfigurationPrefix = "eureka:instance";
     public new const string DefaultStatusPageUrlPath = "/info";
