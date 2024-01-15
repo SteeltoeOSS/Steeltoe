@@ -2,36 +2,37 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Discovery;
 
 namespace Steeltoe.Common.Http.Discovery;
 
-public class DiscoveryHttpClientHandlerBase
+internal sealed class DiscoveryHttpClientHandlerBase
 {
-    protected IDiscoveryClient client;
-    protected ILoadBalancer loadBalancer;
-    protected ILogger logger;
+    private readonly ILoadBalancer _loadBalancer;
+    private readonly ILogger _logger;
 
-    public DiscoveryHttpClientHandlerBase(IDiscoveryClient client, ILogger logger = null, ILoadBalancer loadBalancer = null)
+    public DiscoveryHttpClientHandlerBase(IDiscoveryClient discoveryClient, ILoggerFactory loggerFactory, ILoadBalancer? loadBalancer = null)
     {
-        ArgumentGuard.NotNull(client);
+        ArgumentGuard.NotNull(discoveryClient);
+        ArgumentGuard.NotNull(loggerFactory);
 
-        this.client = client;
-        this.loadBalancer = loadBalancer ?? new RandomLoadBalancer(client);
-        this.logger = logger;
+        _loadBalancer = loadBalancer ?? new RandomLoadBalancer(discoveryClient, loggerFactory.CreateLogger<RandomLoadBalancer>());
+        _logger = loggerFactory.CreateLogger<DiscoveryHttpClientHandlerBase>();
     }
 
-    public virtual async Task<Uri> LookupServiceAsync(Uri current, CancellationToken cancellationToken)
+    public async Task<Uri> LookupServiceAsync(Uri requestUri, CancellationToken cancellationToken)
     {
-        logger?.LogDebug("LookupService({uri})", current);
+        _logger.LogDebug("LookupService({uri})", requestUri);
 
-        if (!current.IsDefaultPort)
+        if (!requestUri.IsDefaultPort)
         {
-            return current;
+            return requestUri;
         }
 
-        return await loadBalancer.ResolveServiceInstanceAsync(current, cancellationToken);
+        return await _loadBalancer.ResolveServiceInstanceAsync(requestUri, cancellationToken);
     }
 }

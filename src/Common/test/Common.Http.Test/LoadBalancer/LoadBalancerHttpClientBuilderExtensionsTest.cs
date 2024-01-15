@@ -14,13 +14,6 @@ namespace Steeltoe.Common.Http.Test.LoadBalancer;
 public sealed class LoadBalancerHttpClientBuilderExtensionsTest
 {
     [Fact]
-    public void AddRandomLoadBalancer_ThrowsIfBuilderNull()
-    {
-        var exception = Assert.Throws<ArgumentNullException>(() => LoadBalancerHttpClientBuilderExtensions.AddRandomLoadBalancer(null));
-        Assert.Equal("httpClientBuilder", exception.ParamName);
-    }
-
-    [Fact]
     public void AddRandomLoadBalancer_AddsRandomLoadBalancerToServices()
     {
         var services = new ServiceCollection();
@@ -36,13 +29,6 @@ public sealed class LoadBalancerHttpClientBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddRoundRobinLoadBalancer_ThrowsIfBuilderNull()
-    {
-        var exception = Assert.Throws<ArgumentNullException>(() => LoadBalancerHttpClientBuilderExtensions.AddRoundRobinLoadBalancer(null));
-        Assert.Equal("httpClientBuilder", exception.ParamName);
-    }
-
-    [Fact]
     public void AddRoundRobinLoadBalancer_AddsRoundRobinLoadBalancerToServices()
     {
         var services = new ServiceCollection();
@@ -54,13 +40,6 @@ public sealed class LoadBalancerHttpClientBuilderExtensionsTest
 
         Assert.Single(serviceProvider.GetServices<RoundRobinLoadBalancer>());
         Assert.Equal(ServiceLifetime.Singleton, serviceEntryInCollection.Lifetime);
-    }
-
-    [Fact]
-    public void AddLoadBalancerT_ThrowsIfBuilderNull()
-    {
-        var exception = Assert.Throws<ArgumentNullException>(() => LoadBalancerHttpClientBuilderExtensions.AddLoadBalancer<FakeLoadBalancer>(null));
-        Assert.Equal("httpClientBuilder", exception.ParamName);
     }
 
     [Fact]

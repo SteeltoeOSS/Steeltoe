@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Net;
 using Steeltoe.Common.Http.LoadBalancer;
 using Xunit;
@@ -11,16 +13,9 @@ namespace Steeltoe.Common.Http.Test.LoadBalancer;
 public sealed class LoadBalancerDelegatingHandlerTest
 {
     [Fact]
-    public void Throws_If_LoadBalancerNull()
+    public async Task ResolvesUri_TracksStatistics_WithProvidedLoadBalancer()
     {
-        var exception = Assert.Throws<ArgumentNullException>(() => new LoadBalancerDelegatingHandler(null));
-        Assert.Equal("loadBalancer", exception.ParamName);
-    }
-
-    [Fact]
-    public async Task ResolvesUri_TracksStats_WithProvidedLoadBalancer()
-    {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replaceme/api"));
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
         var loadBalancer = new FakeLoadBalancer();
 
         var handler = new LoadBalancerDelegatingHandler(loadBalancer)
@@ -32,14 +27,14 @@ public sealed class LoadBalancerDelegatingHandlerTest
 
         HttpResponseMessage result = await invoker.SendAsync(httpRequestMessage, default);
 
-        Assert.Equal("https://someresolvedhost/api", result.Headers.GetValues("requestUri").First());
-        Assert.Single(loadBalancer.Stats);
+        Assert.Equal("https://some-resolved-host:1234/api", result.Headers.GetValues("requestUri").First());
+        Assert.Single(loadBalancer.Statistics);
     }
 
     [Fact]
-    public async Task DoesNotTrackStats_WhenResolutionFails_WithProvidedLoadBalancer()
+    public async Task DoesNotTrackStatistics_WhenResolutionFails_WithProvidedLoadBalancer()
     {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replaceme/api"));
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
         var loadBalancer = new BrokenLoadBalancer();
 
         var handler = new LoadBalancerDelegatingHandler(loadBalancer)
@@ -51,13 +46,13 @@ public sealed class LoadBalancerDelegatingHandlerTest
 
         await Assert.ThrowsAsync<Exception>(async () => await invoker.SendAsync(httpRequestMessage, default));
 
-        Assert.Empty(loadBalancer.Stats);
+        Assert.Empty(loadBalancer.Statistics);
     }
 
     [Fact]
-    public async Task TracksStats_WhenRequestsGoWrong_WithProvidedLoadBalancer()
+    public async Task TracksStatistics_WhenRequestsGoWrong_WithProvidedLoadBalancer()
     {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replaceme/api"));
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
         var loadBalancer = new FakeLoadBalancer();
 
         var handler = new LoadBalancerDelegatingHandler(loadBalancer)
@@ -69,8 +64,8 @@ public sealed class LoadBalancerDelegatingHandlerTest
 
         HttpResponseMessage result = await invoker.SendAsync(httpRequestMessage, default);
 
-        Assert.Single(loadBalancer.Stats);
+        Assert.Single(loadBalancer.Statistics);
         Assert.Equal(HttpStatusCode.InternalServerError, result.StatusCode);
-        Assert.Equal("https://someresolvedhost/api", result.Headers.GetValues("requestUri").First());
+        Assert.Equal("https://some-resolved-host:1234/api", result.Headers.GetValues("requestUri").First());
     }
 }

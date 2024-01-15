@@ -2,100 +2,134 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Common.LoadBalancer;
 
-public class RoundRobinLoadBalancer : ILoadBalancer
+/// <summary>
+/// Returns service instances in round-robin fashion, optionally using distributed caching for service lookups and for determining the next instance.
+/// </summary>
+public sealed class RoundRobinLoadBalancer : ILoadBalancer
 {
-    public const string IndexKeyPrefix = "LoadBalancerIndex-";
-    private readonly DistributedCacheEntryOptions _cacheOptions;
-    private readonly ILogger _logger;
-    internal readonly IServiceInstanceProvider ServiceInstanceProvider;
-    internal readonly IDistributedCache DistributedCache;
-    internal readonly ConcurrentDictionary<string, int> NextIndexForService = new();
+    private const string CacheKeyPrefix = "Steeltoe-LoadBalancerIndex-";
+    private readonly IServiceInstanceProvider _serviceInstanceProvider;
+    private readonly IDistributedCache? _distributedCache;
+    private readonly DistributedCacheEntryOptions _cacheEntryOptions;
+    private readonly ILogger<RoundRobinLoadBalancer> _logger;
+    private readonly ConcurrentDictionary<string, int> _lastUsedIndexPerServiceName = new();
 
-    public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null,
-        DistributedCacheEntryOptions cacheEntryOptions = null, ILogger logger = null)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RoundRobinLoadBalancer" /> class.
+    /// </summary>
+    /// <param name="serviceInstanceProvider">
+    /// Provider of service instance information.
+    /// </param>
+    /// <param name="logger">
+    /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
+    /// </param>
+    public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, ILogger<RoundRobinLoadBalancer> logger)
+        : this(serviceInstanceProvider, null, null, logger)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RoundRobinLoadBalancer" /> class.
+    /// </summary>
+    /// <param name="serviceInstanceProvider">
+    /// Provider of service instance information.
+    /// </param>
+    /// <param name="distributedCache">
+    /// For caching service instances and the last-used instance.
+    /// </param>
+    /// <param name="cacheEntryOptions">
+    /// Configuration for <paramref name="distributedCache" />.
+    /// </param>
+    /// <param name="logger">
+    /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
+    /// </param>
+    public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache? distributedCache,
+        DistributedCacheEntryOptions? cacheEntryOptions, ILogger<RoundRobinLoadBalancer> logger)
     {
         ArgumentGuard.NotNull(serviceInstanceProvider);
+        ArgumentGuard.NotNull(logger);
 
-        ServiceInstanceProvider = serviceInstanceProvider;
-        DistributedCache = distributedCache;
-        _cacheOptions = cacheEntryOptions;
+        _serviceInstanceProvider = serviceInstanceProvider;
+        _distributedCache = distributedCache;
+        _cacheEntryOptions = cacheEntryOptions ?? new DistributedCacheEntryOptions();
         _logger = logger;
-        _logger?.LogDebug("Distributed cache was provided to load balancer: {DistributedCacheIsNull}", DistributedCache == null);
+
+        _logger.LogDebug("Distributed cache was provided to load balancer: {UseDistributedCache}.", _distributedCache == null);
     }
 
-    public virtual async Task<Uri> ResolveServiceInstanceAsync(Uri request, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task<Uri> ResolveServiceInstanceAsync(Uri requestUri, CancellationToken cancellationToken)
     {
-        string serviceName = request.Host;
-        _logger?.LogTrace("ResolveServiceInstance {serviceName}", serviceName);
-        string cacheKey = IndexKeyPrefix + serviceName;
+        ArgumentGuard.NotNull(requestUri);
 
-        // get instances for this service
+        string serviceName = requestUri.Host;
+        _logger.LogTrace("Resolving service instance for '{serviceName}'.", serviceName);
+
         IList<IServiceInstance> availableServiceInstances =
-            await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, cancellationToken, DistributedCache, _cacheOptions);
+            await _serviceInstanceProvider.GetInstancesWithCacheAsync(serviceName, _distributedCache, _cacheEntryOptions, null, cancellationToken);
 
-        if (!availableServiceInstances.Any())
+        if (availableServiceInstances.Count == 0)
         {
-            _logger?.LogError("No service instances available for {serviceName}", serviceName);
-            return request;
+            _logger.LogWarning("No service instances are available for '{serviceName}'.", serviceName);
+            return requestUri;
         }
 
-        // get next instance, or wrap back to first instance if we reach the end of the list
-        int nextInstanceIndex = await GetOrInitNextIndexAsync(cacheKey, 0, cancellationToken);
+        int instanceIndex = await GetNextInstanceIndexAsync(serviceName, availableServiceInstances.Count, cancellationToken);
+        IServiceInstance serviceInstance = availableServiceInstances[instanceIndex];
 
-        if (nextInstanceIndex >= availableServiceInstances.Count)
-        {
-            nextInstanceIndex = 0;
-        }
-
-        // get next instance, or wrap back to first instance if we reach the end of the list
-        IServiceInstance serviceInstance = availableServiceInstances[nextInstanceIndex];
-        _logger?.LogDebug("Resolved {url} to {service}", request.Host, serviceInstance.Host);
-        await SetNextIndexAsync(cacheKey, nextInstanceIndex, cancellationToken);
-        return new Uri(serviceInstance.Uri, request.PathAndQuery);
+        _logger.LogDebug("Resolved '{serviceName}' to '{serviceInstance}'.", serviceName, serviceInstance.Uri);
+        return new Uri(serviceInstance.Uri, requestUri.PathAndQuery);
     }
 
-    public virtual Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception, CancellationToken cancellationToken)
+    private async Task<int> GetNextInstanceIndexAsync(string serviceName, int instanceCount, CancellationToken cancellationToken)
+    {
+        string cacheKey = $"{CacheKeyPrefix}{serviceName}";
+
+        if (_distributedCache == null)
+        {
+            return _lastUsedIndexPerServiceName.AddOrUpdate(cacheKey, _ => CalculateNextIndex(null, instanceCount),
+                (_, lastUsedIndex) => CalculateNextIndex(lastUsedIndex, instanceCount));
+        }
+
+        // IDistributed cache does not provide an atomic increment operation, so this is best-effort.
+        byte[]? cacheEntry = await _distributedCache.GetAsync(cacheKey, cancellationToken);
+        int? lastUsedIndex = cacheEntry is { Length: > 0 } ? BitConverter.ToInt16(cacheEntry) : null;
+
+        int instanceIndex = CalculateNextIndex(lastUsedIndex, instanceCount);
+        await _distributedCache.SetAsync(cacheKey, BitConverter.GetBytes(instanceIndex), _cacheEntryOptions, cancellationToken);
+        return instanceIndex;
+    }
+
+    private static int CalculateNextIndex(int? lastUsedIndex, int instanceCount)
+    {
+        if (lastUsedIndex == null)
+        {
+            return 0;
+        }
+
+        int instanceIndex = lastUsedIndex.Value + 1;
+
+        if (instanceIndex >= instanceCount)
+        {
+            instanceIndex = 0;
+        }
+
+        return instanceIndex;
+    }
+
+    /// <inheritdoc />
+    public Task UpdateStatisticsAsync(Uri requestUri, Uri serviceInstanceUri, TimeSpan? responseTime, Exception? exception, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
-    }
-
-    private async Task<int> GetOrInitNextIndexAsync(string cacheKey, int initValue, CancellationToken cancellationToken)
-    {
-        int index = initValue;
-
-        if (DistributedCache != null)
-        {
-            byte[] cacheEntry = await DistributedCache.GetAsync(cacheKey, cancellationToken);
-
-            if (cacheEntry != null && cacheEntry.Length > 0)
-            {
-                index = BitConverter.ToInt16(cacheEntry, 0);
-            }
-        }
-        else
-        {
-            index = NextIndexForService.GetOrAdd(cacheKey, initValue);
-        }
-
-        return index;
-    }
-
-    private async Task SetNextIndexAsync(string cacheKey, int currentValue, CancellationToken cancellationToken)
-    {
-        if (DistributedCache != null)
-        {
-            await DistributedCache.SetAsync(cacheKey, BitConverter.GetBytes(currentValue + 1), cancellationToken);
-        }
-        else
-        {
-            NextIndexForService[cacheKey] = currentValue + 1;
-        }
     }
 }

@@ -2,15 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.LoadBalancer;
 
 namespace Steeltoe.Common.Http.LoadBalancer;
 
 /// <summary>
-/// Same as <see cref="LoadBalancerHttpClientHandler" /> except is a <see cref="DelegatingHandler" />, for use with HttpClientFactory.
+/// Same as <see cref="LoadBalancerHttpClientHandler" />, except this is a <see cref="DelegatingHandler" />, for use with
+/// <see cref="IHttpClientFactory" />.
 /// </summary>
-public class LoadBalancerDelegatingHandler : DelegatingHandler
+public sealed class LoadBalancerDelegatingHandler : DelegatingHandler
 {
     private readonly ILoadBalancer _loadBalancer;
 
@@ -32,34 +35,8 @@ public class LoadBalancerDelegatingHandler : DelegatingHandler
     /// <inheritdoc />
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        // record the original request
-        Uri originalUri = request.RequestUri;
+        ArgumentGuard.NotNull(request);
 
-        // look up a service instance and update the request
-        Uri resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri, cancellationToken);
-        request.RequestUri = resolvedUri;
-
-        // allow other handlers to operate and the request to continue
-        DateTime startTime = DateTime.UtcNow;
-
-        Exception exception = null;
-
-        try
-        {
-            return await base.SendAsync(request, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            exception = ex;
-
-            throw;
-        }
-        finally
-        {
-            request.RequestUri = originalUri;
-
-            // track stats
-            await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception, cancellationToken);
-        }
+        return await LoadBalancerHttpClientHandler.InternalSendAsync(request, _loadBalancer, base.SendAsync, cancellationToken);
     }
 }

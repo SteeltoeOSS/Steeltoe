@@ -2,16 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Net;
 
 namespace Steeltoe.Common.Http.Test;
 
-public sealed class TestInnerDelegatingHandler : DelegatingHandler
+internal sealed class TestInnerDelegatingHandler : DelegatingHandler
 {
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
-        responseMessage.Headers.Add("requestUri", request.RequestUri.AbsoluteUri);
+        responseMessage.Headers.Add("requestUri", request.RequestUri!.AbsoluteUri);
         return Task.FromResult(responseMessage);
     }
 }

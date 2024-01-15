@@ -2,23 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Steeltoe.Common.Discovery;
 
-public static class ServiceInstanceProviderExtensions
+internal static class ServiceInstanceProviderExtensions
 {
     public static async Task<IList<IServiceInstance>> GetInstancesWithCacheAsync(this IServiceInstanceProvider serviceInstanceProvider, string serviceId,
-        CancellationToken cancellationToken, IDistributedCache distributedCache = null, DistributedCacheEntryOptions cacheOptions = null,
-        string serviceInstancesKeyPrefix = "ServiceInstances:")
+        IDistributedCache? distributedCache, DistributedCacheEntryOptions? cacheEntryOptions, string? serviceInstancesKeyPrefix,
+        CancellationToken cancellationToken)
     {
-        string cacheKey = $"{serviceInstancesKeyPrefix}{serviceId}";
+        ArgumentGuard.NotNull(serviceInstanceProvider);
+        ArgumentGuard.NotNull(serviceId);
+
+        string cacheKey = $"{serviceInstancesKeyPrefix ?? "Steeltoe-ServiceInstances:"}{serviceId}";
 
         if (distributedCache != null)
         {
-            byte[] cacheValue = await distributedCache.GetAsync(cacheKey, cancellationToken);
-            IList<IServiceInstance> instancesFromCache = FromCacheValue(cacheValue);
+            byte[]? cacheValue = await distributedCache.GetAsync(cacheKey, cancellationToken);
+            IList<IServiceInstance>? instancesFromCache = FromCacheValue(cacheValue);
 
             if (instancesFromCache != null)
             {
@@ -28,18 +33,18 @@ public static class ServiceInstanceProviderExtensions
 
         IList<IServiceInstance> instances = await serviceInstanceProvider.GetInstancesAsync(serviceId, cancellationToken);
 
-        if (distributedCache != null && instances != null)
+        if (distributedCache != null)
         {
             byte[] cacheValue = ToCacheValue(instances);
-            await distributedCache.SetAsync(cacheKey, cacheValue, cacheOptions ?? new DistributedCacheEntryOptions(), cancellationToken);
+            await distributedCache.SetAsync(cacheKey, cacheValue, cacheEntryOptions ?? new DistributedCacheEntryOptions(), cancellationToken);
         }
 
         return instances;
     }
 
-    private static IList<IServiceInstance> FromCacheValue(byte[] cacheValue)
+    private static IList<IServiceInstance>? FromCacheValue(byte[]? cacheValue)
     {
-        if (cacheValue != null && cacheValue.Length > 0)
+        if (cacheValue is { Length: > 0 })
         {
             var serializableInstances = JsonSerializer.Deserialize<List<JsonSerializableServiceInstance>>(cacheValue);
 
