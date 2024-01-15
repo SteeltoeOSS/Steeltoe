@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 namespace Steeltoe.Common.LoadBalancer;
 
 public interface ILoadBalancer
@@ -9,24 +11,24 @@ public interface ILoadBalancer
     /// <summary>
     /// Evaluates a URI for a host name that can be resolved into a service instance.
     /// </summary>
-    /// <param name="request">
+    /// <param name="requestUri">
     /// A URI containing a service name that can be resolved into one or more service instances.
     /// </param>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
     /// <returns>
-    /// The original URI, with serviceName replaced by the host:port of a service instance.
+    /// The original URI, with the service name replaced by the host and port of a service instance.
     /// </returns>
-    Task<Uri> ResolveServiceInstanceAsync(Uri request, CancellationToken cancellationToken);
+    Task<Uri> ResolveServiceInstanceAsync(Uri requestUri, CancellationToken cancellationToken);
 
     /// <summary>
     /// A mechanism for tracking statistics for service instances.
     /// </summary>
-    /// <param name="originalUri">
+    /// <param name="requestUri">
     /// The original request URI.
     /// </param>
-    /// <param name="resolvedUri">
+    /// <param name="serviceInstanceUri">
     /// The URI resolved by the load balancer.
     /// </param>
     /// <param name="responseTime">
@@ -38,5 +40,5 @@ public interface ILoadBalancer
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
-    Task UpdateStatsAsync(Uri originalUri, Uri resolvedUri, TimeSpan responseTime, Exception exception, CancellationToken cancellationToken);
+    Task UpdateStatisticsAsync(Uri requestUri, Uri serviceInstanceUri, TimeSpan? responseTime, Exception? exception, CancellationToken cancellationToken);
 }
