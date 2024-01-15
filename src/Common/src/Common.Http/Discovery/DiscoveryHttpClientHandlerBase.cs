@@ -5,8 +5,8 @@
 #nullable enable
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.LoadBalancer;
-using Steeltoe.Discovery;
 
 namespace Steeltoe.Common.Http.Discovery;
 

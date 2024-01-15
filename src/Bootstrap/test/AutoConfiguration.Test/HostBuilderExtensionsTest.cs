@@ -23,6 +23,7 @@ using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using StackExchange.Redis;
 using Steeltoe.Common;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;

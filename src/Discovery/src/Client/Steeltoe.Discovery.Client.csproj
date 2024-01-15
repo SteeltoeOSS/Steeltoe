@@ -20,6 +20,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connectors.CloudFoundry.csproj" />
-    <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
   </ItemGroup>
 </Project>

@@ -5,8 +5,8 @@
 #nullable enable
 
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.Discovery;
-using Steeltoe.Discovery;
 using Xunit;
 
 namespace Steeltoe.Common.Http.Test.Discovery;

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Client;
 

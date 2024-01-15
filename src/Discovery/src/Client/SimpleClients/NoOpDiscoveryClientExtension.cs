@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Connectors.Services;
 
 namespace Steeltoe.Discovery.Client.SimpleClients;
