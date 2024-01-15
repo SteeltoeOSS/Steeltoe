@@ -4,7 +4,6 @@
     "projects": [
       "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
       "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
-      "Common\\src\\Common.Kubernetes\\Steeltoe.Common.Kubernetes.csproj",
       "Common\\src\\Common.Security\\Steeltoe.Common.Security.csproj",
       "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
@@ -15,7 +14,6 @@
       "Configuration\\src\\ConfigServer\\Steeltoe.Configuration.ConfigServer.csproj",
       "Configuration\\src\\Encryption\\Steeltoe.Configuration.Encryption.csproj",
       "Configuration\\src\\Kubernetes.ServiceBinding\\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj",
-      "Configuration\\src\\Kubernetes\\Steeltoe.Configuration.Kubernetes.csproj",
       "Configuration\\src\\Placeholder\\Steeltoe.Configuration.Placeholder.csproj",
       "Configuration\\src\\RandomValue\\Steeltoe.Configuration.RandomValue.csproj",
       "Configuration\\src\\SpringBoot\\Steeltoe.Configuration.SpringBoot.csproj",
@@ -25,7 +23,6 @@
       "Configuration\\test\\ConfigServer.Test\\Steeltoe.Configuration.ConfigServer.Test.csproj",
       "Configuration\\test\\Encryption.Test\\Steeltoe.Configuration.Encryption.Test.csproj",
       "Configuration\\test\\Kubernetes.ServiceBinding.Test\\Steeltoe.Configuration.Kubernetes.ServiceBinding.Test.csproj",
-      "Configuration\\test\\Kubernetes.Test\\Steeltoe.Configuration.Kubernetes.Test.csproj",
       "Configuration\\test\\Placeholder.Test\\Steeltoe.Configuration.Placeholder.Test.csproj",
       "Configuration\\test\\RandomValue.Test\\Steeltoe.Configuration.RandomValue.Test.csproj",
       "Configuration\\test\\SpringBoot.Test\\Steeltoe.Configuration.SpringBoot.Test.csproj",

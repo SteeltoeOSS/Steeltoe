@@ -30,7 +30,6 @@ using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.ConfigServer;
-using Steeltoe.Configuration.Kubernetes;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
@@ -72,19 +71,6 @@ public sealed class HostBuilderExtensionsTest
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
         configuration.FindConfigurationProvider<CloudFoundryConfigurationProvider>().Should().NotBeNull();
-    }
-
-    [Fact]
-    public void KubernetesConfiguration_IsAutowired()
-    {
-        using var hostScope = new EnvironmentVariableScope("KUBERNETES_SERVICE_HOST", "TEST");
-        using var testScope = new EnvironmentVariableScope("STEELTOE_USE_KUBERNETES_FAKE_CLIENT_FOR_TEST", "true");
-
-        using IHost host = GetHostForOnly(SteeltoeAssemblyNames.ConfigurationKubernetes);
-        var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
-
-        configurationRoot.Providers.OfType<KubernetesConfigMapProvider>().Should().HaveCount(2);
-        configurationRoot.Providers.OfType<KubernetesSecretProvider>().Should().HaveCount(2);
     }
 
     [Fact]
@@ -191,22 +177,6 @@ public sealed class HostBuilderExtensionsTest
 
         object? exporter = exporterField!.GetValue(processor);
         exporter.Should().BeOfType<WavefrontTraceExporter>();
-    }
-
-    [Fact]
-    public async Task KubernetesActuators_AreAutowired()
-    {
-        using IHost host = GetHostForOnly(SteeltoeAssemblyNames.ManagementKubernetes);
-        await host.StartAsync();
-
-        IActuatorEndpointHandler[] handlers = host.Services.GetServices<IActuatorEndpointHandler>().ToArray();
-        handlers.Should().HaveCount(1);
-
-        var filter = host.Services.GetRequiredService<IStartupFilter>();
-        filter.Should().BeOfType<AllActuatorsStartupFilter>();
-
-        using HttpClient testClient = host.GetTestClient();
-        await WebApplicationBuilderExtensionsTest.AssertActuatorEndpointsSucceedAsync(testClient);
     }
 
     [Fact]

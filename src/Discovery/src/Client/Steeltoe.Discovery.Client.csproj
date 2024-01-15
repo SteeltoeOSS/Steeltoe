@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Base package for using Steeltoe Service Discovery</Description>
-    <PackageTags>service discovery;service registry;Spring Cloud;eureka;consul;kubernetes</PackageTags>
+    <PackageTags>service discovery;service registry;Spring Cloud;eureka;consul</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

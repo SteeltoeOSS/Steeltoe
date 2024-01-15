@@ -42,8 +42,7 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
         var configurableClients = new List<Tuple<string, string, bool>>
         {
             new("Consul", "consul", true),
-            new("Eureka", "eureka", true),
-            new("Kubernetes", "spring:cloud:kubernetes:discovery", true)
+            new("Eureka", "eureka", true)
         };
 
         // allow for custom discovery client configurations to be discovered

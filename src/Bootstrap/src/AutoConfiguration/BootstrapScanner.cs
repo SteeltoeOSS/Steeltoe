@@ -10,7 +10,6 @@ using Steeltoe.Common.Hosting;
 using Steeltoe.Common.Logging;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
-using Steeltoe.Configuration.Kubernetes;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Configuration.RandomValue;
 using Steeltoe.Connectors.CosmosDb;
@@ -30,7 +29,6 @@ using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Prometheus;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Management.Wavefront;
@@ -70,25 +68,13 @@ internal sealed class BootstrapScanner
             WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblyNames.ConfigurationCloudFoundry);
         }
 
-        if (Platform.IsKubernetes && _loader.IsAssemblyLoaded(SteeltoeAssemblyNames.ConfigurationKubernetes))
-        {
-            WireKubernetesConfiguration();
-        }
-
         WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblyNames.ConfigurationRandomValue);
         WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
         WireIfLoaded(WireConnectors, SteeltoeAssemblyNames.Connectors);
         WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
         WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblyNames.DiscoveryClient);
 
-        if (_loader.IsAssemblyLoaded(SteeltoeAssemblyNames.ManagementKubernetes))
-        {
-            WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblyNames.ManagementKubernetes);
-        }
-        else
-        {
-            WireIfLoaded(WireAllActuators, SteeltoeAssemblyNames.ManagementEndpoint);
-        }
+        WireIfLoaded(WireAllActuators, SteeltoeAssemblyNames.ManagementEndpoint);
 
         WireIfLoaded(WirePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
         WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
@@ -108,13 +94,6 @@ internal sealed class BootstrapScanner
         _wrapper.AddCloudFoundryConfiguration(_loggerFactory);
 
         _logger.LogInformation("Configured Cloud Foundry configuration provider");
-    }
-
-    private void WireKubernetesConfiguration()
-    {
-        _wrapper.AddKubernetesConfiguration(null, _loggerFactory);
-
-        _logger.LogInformation("Configured Kubernetes configuration provider");
     }
 
     private void WireRandomValueProvider()
@@ -216,13 +195,6 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureServices((context, services) => services.AddDiscoveryClient(context.Configuration));
 
         _logger.LogInformation("Configured discovery client");
-    }
-
-    private void WireKubernetesActuators()
-    {
-        _wrapper.AddKubernetesActuators(null);
-
-        _logger.LogInformation("Configured Kubernetes actuators");
     }
 
     private void WireAllActuators()

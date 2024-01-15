@@ -68,7 +68,6 @@
       -->
       8.0.*
     </FoundationalVersion>
-    <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
     <OpenTelemetryExporterJaegerVersion>1.5.*</OpenTelemetryExporterJaegerVersion>
     <OpenTelemetryExporterPrometheusVersion>1.4.0-rc.3</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
