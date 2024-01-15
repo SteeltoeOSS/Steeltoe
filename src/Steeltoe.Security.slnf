@@ -12,7 +12,6 @@
       "Connectors\\src\\Abstractions\\Steeltoe.Connectors.Abstractions.csproj",
       "Connectors\\src\\CloudFoundry\\Steeltoe.Connectors.CloudFoundry.csproj",
       "Connectors\\src\\Connectors\\Steeltoe.Connectors.csproj",
-      "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj",
       "Security\\src\\Authentication.CloudFoundry\\Steeltoe.Security.Authentication.CloudFoundry.csproj",
       "Security\\src\\Authentication.Mtls\\Steeltoe.Security.Authentication.Mtls.csproj",
       "Security\\src\\DataProtection.Redis\\Steeltoe.Security.DataProtection.Redis.csproj",

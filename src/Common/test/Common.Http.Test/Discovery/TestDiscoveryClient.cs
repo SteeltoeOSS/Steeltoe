@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Discovery;
-using Steeltoe.Discovery;
 
 namespace Steeltoe.Common.Http.Test.Discovery;
 

@@ -29,7 +29,6 @@
       "Connectors\\src\\Abstractions\\Steeltoe.Connectors.Abstractions.csproj",
       "Connectors\\src\\CloudFoundry\\Steeltoe.Connectors.CloudFoundry.csproj",
       "Connectors\\src\\Connectors\\Steeltoe.Connectors.csproj",
-      "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj",
       "Discovery\\src\\Client\\Steeltoe.Discovery.Client.csproj",
       "Discovery\\src\\Eureka\\Steeltoe.Discovery.Eureka.csproj"
     ]

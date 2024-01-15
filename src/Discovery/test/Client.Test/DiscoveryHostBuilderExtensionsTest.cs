@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Eureka;
