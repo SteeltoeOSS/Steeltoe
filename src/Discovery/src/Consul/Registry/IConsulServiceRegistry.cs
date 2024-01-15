@@ -2,15 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Discovery;
-
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
 /// A Consul service registry.
 /// </summary>
-public interface IConsulServiceRegistry : IServiceRegistry<IConsulRegistration>
+public interface IConsulServiceRegistry : IDisposable
 {
+    /// <summary>
+    /// Register a service instance in the service registry.
+    /// </summary>
+    /// <param name="registration">
+    /// the service instance to register.
+    /// </param>
+    void Register(ConsulRegistration registration);
+
     /// <summary>
     /// Register the provided registration in Consul.
     /// </summary>
@@ -23,7 +29,15 @@ public interface IConsulServiceRegistry : IServiceRegistry<IConsulRegistration>
     /// <returns>
     /// the task.
     /// </returns>
-    Task RegisterAsync(IConsulRegistration registration, CancellationToken cancellationToken);
+    Task RegisterAsync(ConsulRegistration registration, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Deregister a service instance in the service registry.
+    /// </summary>
+    /// <param name="registration">
+    /// the service instance to register.
+    /// </param>
+    void Deregister(ConsulRegistration registration);
 
     /// <summary>
     /// Deregister the provided registration in Consul.
@@ -37,7 +51,18 @@ public interface IConsulServiceRegistry : IServiceRegistry<IConsulRegistration>
     /// <returns>
     /// the task.
     /// </returns>
-    Task DeregisterAsync(IConsulRegistration registration, CancellationToken cancellationToken);
+    Task DeregisterAsync(ConsulRegistration registration, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Update the registration in the service registry with the provided status.
+    /// </summary>
+    /// <param name="registration">
+    /// the registration to update.
+    /// </param>
+    /// <param name="status">
+    /// the status.
+    /// </param>
+    void SetStatus(ConsulRegistration registration, string status);
 
     /// <summary>
     /// Set the status of the registration in Consul.
@@ -54,7 +79,18 @@ public interface IConsulServiceRegistry : IServiceRegistry<IConsulRegistration>
     /// <returns>
     /// the task.
     /// </returns>
-    Task SetStatusAsync(IConsulRegistration registration, string status, CancellationToken cancellationToken);
+    Task SetStatusAsync(ConsulRegistration registration, string status, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Return the current status of the service registry registration.
+    /// </summary>
+    /// <param name="registration">
+    /// the service registration to obtain status for.
+    /// </param>
+    /// <returns>
+    /// the returned status.
+    /// </returns>
+    string GetStatus(ConsulRegistration registration);
 
     /// <summary>
     /// Get the status of the registration in Consul.
@@ -68,5 +104,5 @@ public interface IConsulServiceRegistry : IServiceRegistry<IConsulRegistration>
     /// <returns>
     /// the status value.
     /// </returns>
-    Task<object> GetStatusAsync(IConsulRegistration registration, CancellationToken cancellationToken);
+    Task<string> GetStatusAsync(ConsulRegistration registration, CancellationToken cancellationToken);
 }

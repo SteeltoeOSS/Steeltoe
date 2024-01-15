@@ -16,12 +16,12 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
     private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
     private readonly IServiceInstance _thisInstance;
 
-    public override IEurekaClientConfiguration ClientConfiguration => _configOptions.CurrentValue;
+    public override EurekaClientConfiguration ClientConfiguration => _configOptions.CurrentValue;
 
     public string Description => "Spring Cloud Eureka Client";
 
     public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
-        EurekaApplicationInfoManager appInfoManager, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null,
+        EurekaApplicationInfoManager appInfoManager, EurekaHttpClient httpClient = null, ILoggerFactory logFactory = null,
         IHttpClientHandlerProvider handlerProvider = null, HttpClient netHttpClient = null)
         : base(appInfoManager, logFactory)
     {
@@ -88,7 +88,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
     {
         private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitorOptions;
 
-        protected override IEurekaClientConfiguration Configuration => _optionsMonitorOptions.CurrentValue;
+        protected override EurekaClientConfiguration Configuration => _optionsMonitorOptions.CurrentValue;
 
         public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILoggerFactory logFactory = null,
             IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)

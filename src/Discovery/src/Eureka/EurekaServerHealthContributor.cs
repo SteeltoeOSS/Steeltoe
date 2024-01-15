@@ -69,7 +69,7 @@ public class EurekaServerHealthContributor : IHealthContributor
         return remoteStatus;
     }
 
-    internal HealthStatus AddHeartbeatStatus(IEurekaClientConfiguration clientConfiguration, IEurekaInstanceConfig instanceConfig, HealthCheckResult result,
+    internal HealthStatus AddHeartbeatStatus(EurekaClientConfiguration clientConfiguration, EurekaInstanceConfiguration instanceConfig, HealthCheckResult result,
         long lastGoodHeartbeatTimeTicks)
     {
         if (clientConfiguration != null && clientConfiguration.ShouldRegisterWithEureka)
@@ -103,7 +103,7 @@ public class EurekaServerHealthContributor : IHealthContributor
         return HealthStatus.Unknown;
     }
 
-    internal HealthStatus AddFetchStatus(IEurekaClientConfiguration clientConfiguration, HealthCheckResult result, long lastGoodFetchTimeTicks)
+    internal HealthStatus AddFetchStatus(EurekaClientConfiguration clientConfiguration, HealthCheckResult result, long lastGoodFetchTimeTicks)
     {
         if (clientConfiguration != null && clientConfiguration.ShouldFetchRegistry)
         {

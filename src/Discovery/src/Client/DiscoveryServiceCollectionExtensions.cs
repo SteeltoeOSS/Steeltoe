@@ -32,7 +32,7 @@ public static class DiscoveryServiceCollectionExtensions
     /// </param>
     public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration)
     {
-        return AddDiscoveryClient(services, configuration, null, null);
+        return AddDiscoveryClient(services, configuration, null);
     }
 
     /// <summary>
@@ -50,53 +50,13 @@ public static class DiscoveryServiceCollectionExtensions
     /// </param>
     public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, string serviceName)
     {
-        return AddDiscoveryClient(services, configuration, serviceName, null);
-    }
-
-    /// <summary>
-    /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured. If no clients are available or
-    /// configured, a <see cref="NoOpDiscoveryClient" /> will be configured.
-    /// </summary>
-    /// <param name="services">
-    /// <see cref="IServiceCollection" /> to configure.
-    /// </param>
-    /// <param name="configuration">
-    /// Application configuration.
-    /// </param>
-    /// <param name="lifecycle">
-    /// Add custom code for app shutdown events.
-    /// </param>
-    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, IDiscoveryLifecycle lifecycle)
-    {
-        return AddDiscoveryClient(services, configuration, null, lifecycle);
-    }
-
-    /// <summary>
-    /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured. If no clients are available or
-    /// configured, a <see cref="NoOpDiscoveryClient" /> will be configured.
-    /// </summary>
-    /// <param name="services">
-    /// <see cref="IServiceCollection" /> to configure.
-    /// </param>
-    /// <param name="configuration">
-    /// Application configuration.
-    /// </param>
-    /// <param name="serviceName">
-    /// Specify the name of a service binding to use.
-    /// </param>
-    /// <param name="lifecycle">
-    /// Add custom code for app shutdown events.
-    /// </param>
-    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, string serviceName,
-        IDiscoveryLifecycle lifecycle)
-    {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
         Action<DiscoveryClientBuilder> builderAction = null;
 
         IServiceInfo info = string.IsNullOrEmpty(serviceName)
-            ? GetSingletonDiscoveryServiceInfo(configuration)
+            ? GetSingleDiscoveryServiceInfo(configuration)
             : GetNamedDiscoveryServiceInfo(configuration, serviceName);
 
         // iterate assemblies for implementations of IDiscoveryClientExtension
@@ -127,11 +87,6 @@ public static class DiscoveryServiceCollectionExtensions
                 throw new AmbiguousMatchException(
                     "Multiple IDiscoveryClient implementations have been added and configured! This is not supported, please only configure a single client type.");
             }
-        }
-
-        if (lifecycle != null)
-        {
-            services.AddSingleton(lifecycle);
         }
 
         return AddServiceDiscovery(services, configuration, builderAction);
@@ -218,7 +173,7 @@ public static class DiscoveryServiceCollectionExtensions
     /// <exception cref="ConnectorException">
     /// Thrown if multiple service infos are found.
     /// </exception>
-    public static IServiceInfo GetSingletonDiscoveryServiceInfo(IConfiguration configuration)
+    public static IServiceInfo GetSingleDiscoveryServiceInfo(IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configuration);
 
@@ -247,7 +202,7 @@ public static class DiscoveryServiceCollectionExtensions
         if (builder.Extensions.Count > 1)
         {
             IDiscoveryClientExtension[] configured = builder.Extensions
-                .Where(extension => extension.IsConfigured(configuration, GetSingletonDiscoveryServiceInfo(configuration))).ToArray();
+                .Where(extension => extension.IsConfigured(configuration, GetSingleDiscoveryServiceInfo(configuration))).ToArray();
 
             if (!configured.Any() || configured.Length > 1)
             {

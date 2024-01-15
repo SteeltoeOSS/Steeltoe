@@ -19,7 +19,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     private const string OutOfService = "OUT_OF_SERVICE";
 
     private readonly IConsulClient _client;
-    private readonly IScheduler _scheduler;
+    private readonly TtlScheduler _scheduler;
     private readonly ILogger<ConsulServiceRegistry> _logger;
 
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
@@ -42,7 +42,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <param name="logger">
     /// an optional logger.
     /// </param>
-    public ConsulServiceRegistry(IConsulClient client, ConsulDiscoveryOptions options, IScheduler scheduler = null,
+    public ConsulServiceRegistry(IConsulClient client, ConsulDiscoveryOptions options, TtlScheduler scheduler = null,
         ILogger<ConsulServiceRegistry> logger = null)
     {
         ArgumentGuard.NotNull(client);
@@ -69,7 +69,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <param name="logger">
     /// an optional logger.
     /// </param>
-    public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IScheduler scheduler = null,
+    public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, TtlScheduler scheduler = null,
         ILogger<ConsulServiceRegistry> logger = null)
     {
         ArgumentGuard.NotNull(client);
@@ -82,14 +82,14 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     }
 
     /// <inheritdoc />
-    public Task RegisterAsync(IConsulRegistration registration, CancellationToken cancellationToken)
+    public Task RegisterAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
 
         return RegisterInternalAsync(registration, cancellationToken);
     }
 
-    private async Task RegisterInternalAsync(IConsulRegistration registration, CancellationToken cancellationToken)
+    private async Task RegisterInternalAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         _logger?.LogInformation("Registering service with consul {serviceId} ", registration.ServiceId);
 
@@ -115,14 +115,14 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     }
 
     /// <inheritdoc />
-    public Task DeregisterAsync(IConsulRegistration registration, CancellationToken cancellationToken)
+    public Task DeregisterAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
 
         return DeregisterInternalAsync(registration);
     }
 
-    private Task DeregisterInternalAsync(IConsulRegistration registration)
+    private Task DeregisterInternalAsync(ConsulRegistration registration)
     {
         if (Options.IsHeartBeatEnabled && _scheduler != null)
         {
@@ -135,14 +135,14 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     }
 
     /// <inheritdoc />
-    public Task SetStatusAsync(IConsulRegistration registration, string status, CancellationToken cancellationToken)
+    public Task SetStatusAsync(ConsulRegistration registration, string status, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
 
         return SetStatusInternalAsync(registration, status, cancellationToken);
     }
 
-    private Task SetStatusInternalAsync(IConsulRegistration registration, string status, CancellationToken cancellationToken)
+    private Task SetStatusInternalAsync(ConsulRegistration registration, string status, CancellationToken cancellationToken)
     {
         if (OutOfService.Equals(status, StringComparison.OrdinalIgnoreCase))
         {
@@ -158,14 +158,14 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     }
 
     /// <inheritdoc />
-    public Task<object> GetStatusAsync(IConsulRegistration registration, CancellationToken cancellationToken)
+    public Task<string> GetStatusAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
 
         return GetStatusInternalAsync(registration, cancellationToken);
     }
 
-    private async Task<object> GetStatusInternalAsync(IConsulRegistration registration, CancellationToken cancellationToken)
+    private async Task<string> GetStatusInternalAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         QueryResult<HealthCheck[]> response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default, cancellationToken);
         HealthCheck[] checks = response.Response;
@@ -182,30 +182,27 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     }
 
     /// <inheritdoc />
-    public void Register(IConsulRegistration registration)
+    public void Register(ConsulRegistration registration)
     {
         RegisterAsync(registration, CancellationToken.None).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc />
-    public void Deregister(IConsulRegistration registration)
+    public void Deregister(ConsulRegistration registration)
     {
         DeregisterAsync(registration, CancellationToken.None).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc />
-    public void SetStatus(IConsulRegistration registration, string status)
+    public void SetStatus(ConsulRegistration registration, string status)
     {
         SetStatusAsync(registration, status, CancellationToken.None).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc />
-    public TStatus GetStatus<TStatus>(IConsulRegistration registration)
-        where TStatus : class
+    public string GetStatus(ConsulRegistration registration)
     {
-        object result = GetStatusAsync(registration, CancellationToken.None).GetAwaiter().GetResult();
-
-        return (TStatus)result;
+        return GetStatusAsync(registration, CancellationToken.None).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc />

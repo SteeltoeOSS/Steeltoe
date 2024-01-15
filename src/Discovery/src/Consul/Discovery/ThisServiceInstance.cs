@@ -27,7 +27,7 @@ internal sealed class ThisServiceInstance : IServiceInstance
     /// <inheritdoc />
     public IDictionary<string, string> Metadata { get; }
 
-    public ThisServiceInstance(IConsulRegistration registration)
+    public ThisServiceInstance(ConsulRegistration registration)
     {
         ServiceId = registration.Service.Name;
         Host = registration.Service.Address;

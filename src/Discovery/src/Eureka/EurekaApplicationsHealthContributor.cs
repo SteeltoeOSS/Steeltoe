@@ -73,7 +73,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
         }
     }
 
-    private IList<string> GetMonitoredApplications(IEurekaClientConfiguration clientConfiguration)
+    private IList<string> GetMonitoredApplications(EurekaClientConfiguration clientConfiguration)
     {
         IList<string> configApps = GetApplicationsFromConfig(clientConfiguration);
 
@@ -86,7 +86,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
         return regApps.Select(app => app.Name).ToList();
     }
 
-    internal IList<string> GetApplicationsFromConfig(IEurekaClientConfiguration clientConfiguration)
+    internal IList<string> GetApplicationsFromConfig(EurekaClientConfiguration clientConfiguration)
     {
         if (clientConfiguration is EurekaClientConfiguration configuration)
         {

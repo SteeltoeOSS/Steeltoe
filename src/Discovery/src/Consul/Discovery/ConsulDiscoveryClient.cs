@@ -18,13 +18,13 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 /// </see>
 /// .
 /// </summary>
-public class ConsulDiscoveryClient : IConsulDiscoveryClient
+public class ConsulDiscoveryClient : IDiscoveryClient, IDisposable
 {
     private readonly IConsulClient _client;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulDiscoveryOptions _options;
     private readonly IServiceInstance _thisServiceInstance;
-    private readonly IConsulServiceRegistrar _registrar;
+    private readonly ConsulServiceRegistrar _registrar;
 
     private ConsulDiscoveryOptions Options => _optionsMonitor != null ? _optionsMonitor.CurrentValue : _options;
 
@@ -46,7 +46,7 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <param name="logger">
     /// optional logger.
     /// </param>
-    public ConsulDiscoveryClient(IConsulClient client, ConsulDiscoveryOptions options, IConsulServiceRegistrar registrar = null,
+    public ConsulDiscoveryClient(IConsulClient client, ConsulDiscoveryOptions options, ConsulServiceRegistrar registrar = null,
         ILogger<ConsulDiscoveryClient> logger = null)
     {
         ArgumentGuard.NotNull(client);
@@ -78,7 +78,7 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <param name="logger">
     /// optional logger.
     /// </param>
-    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulServiceRegistrar registrar = null,
+    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulServiceRegistrar registrar = null,
         ILogger<ConsulDiscoveryClient> logger = null)
     {
         ArgumentGuard.NotNull(client);
@@ -101,7 +101,21 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         return GetInstancesAsync(serviceId, QueryOptions.Default, cancellationToken);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets all service instances for the given service ID.
+    /// </summary>
+    /// <param name="serviceId">
+    /// ID of the service to lookup.
+    /// </param>
+    /// <param name="queryOptions">
+    /// Any Consul query options to use.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// The list of found service instances.
+    /// </returns>
     public async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(serviceId);
@@ -112,7 +126,18 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         return instances;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets all service instances from the Consul catalog.
+    /// </summary>
+    /// <param name="queryOptions">
+    /// Any Consul query options to use.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// The list of found service instances.
+    /// </returns>
     public async Task<IList<IServiceInstance>> GetAllInstancesAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(queryOptions);
@@ -128,7 +153,18 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         return instances;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets all service names from the Consul catalog.
+    /// </summary>
+    /// <param name="queryOptions">
+    /// Any Consul query options to use.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// The list of found service names.
+    /// </returns>
     public async Task<IList<string>> GetServiceNamesAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(queryOptions);

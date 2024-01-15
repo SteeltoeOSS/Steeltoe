@@ -20,7 +20,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public void Constructor_Throws_IfConfigNull()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient((IEurekaClientConfiguration)null));
+        var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient((EurekaClientConfiguration)null));
         Assert.Contains("config", ex.Message, StringComparison.Ordinal);
     }
 

@@ -108,7 +108,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetService<IDiscoveryClient>();
-        var eurekaHttpClient = (EurekaHttpClient)discoveryClient.HttpClient;
+        var eurekaHttpClient = discoveryClient.HttpClient;
 
         var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient);
 
@@ -272,13 +272,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(service);
         var service1 = serviceProvider.GetService<IConsulClient>();
         Assert.NotNull(service1);
-        var service2 = serviceProvider.GetService<IScheduler>();
+        var service2 = serviceProvider.GetService<TtlScheduler>();
         Assert.NotNull(service2);
         var service3 = serviceProvider.GetService<IConsulServiceRegistry>();
         Assert.NotNull(service3);
-        var service4 = serviceProvider.GetService<IConsulRegistration>();
+        var service4 = serviceProvider.GetService<ConsulRegistration>();
         Assert.NotNull(service4);
-        var service5 = serviceProvider.GetService<IConsulServiceRegistrar>();
+        var service5 = serviceProvider.GetService<ConsulServiceRegistrar>();
         Assert.NotNull(service5);
         var service6 = serviceProvider.GetService<IHealthContributor>();
         Assert.NotNull(service6);
@@ -305,12 +305,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         Assert.NotNull(serviceProvider.GetService<IDiscoveryClient>());
         Assert.NotNull(serviceProvider.GetService<IConsulClient>());
-        Assert.NotNull(serviceProvider.GetService<IScheduler>());
+        Assert.NotNull(serviceProvider.GetService<TtlScheduler>());
         Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistry>());
-        var reg = serviceProvider.GetService<IConsulRegistration>();
+        var reg = serviceProvider.GetService<ConsulRegistration>();
         Assert.NotNull(reg);
         Assert.Equal("fromtest", reg.Host);
-        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
+        Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
 
@@ -452,7 +452,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetService<IDiscoveryClient>();
-        var eurekaHttpClient = (EurekaHttpClient)discoveryClient.HttpClient;
+        var eurekaHttpClient = discoveryClient.HttpClient;
 
         var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient);
 
@@ -585,13 +585,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(service);
         var service1 = serviceProvider.GetService<IConsulClient>();
         Assert.NotNull(service1);
-        var service2 = serviceProvider.GetService<IScheduler>();
+        var service2 = serviceProvider.GetService<TtlScheduler>();
         Assert.NotNull(service2);
         var service3 = serviceProvider.GetService<IConsulServiceRegistry>();
         Assert.NotNull(service3);
-        var service4 = serviceProvider.GetService<IConsulRegistration>();
+        var service4 = serviceProvider.GetService<ConsulRegistration>();
         Assert.NotNull(service4);
-        var service5 = serviceProvider.GetService<IConsulServiceRegistrar>();
+        var service5 = serviceProvider.GetService<ConsulServiceRegistrar>();
         Assert.NotNull(service5);
         var service6 = serviceProvider.GetService<IHealthContributor>();
         Assert.NotNull(service6);
@@ -618,12 +618,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         Assert.NotNull(serviceProvider.GetService<IDiscoveryClient>());
         Assert.NotNull(serviceProvider.GetService<IConsulClient>());
-        Assert.NotNull(serviceProvider.GetService<IScheduler>());
+        Assert.NotNull(serviceProvider.GetService<TtlScheduler>());
         Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistry>());
-        var reg = serviceProvider.GetService<IConsulRegistration>();
+        var reg = serviceProvider.GetService<ConsulRegistration>();
         Assert.NotNull(reg);
         Assert.Equal("fromtest", reg.Host);
-        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
+        Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
 
@@ -646,13 +646,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         Assert.NotNull(serviceProvider.GetService<IDiscoveryClient>());
         Assert.NotNull(serviceProvider.GetService<IConsulClient>());
-        Assert.NotNull(serviceProvider.GetService<IScheduler>());
+        Assert.NotNull(serviceProvider.GetService<TtlScheduler>());
         Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistry>());
-        var reg = serviceProvider.GetService<IConsulRegistration>();
+        var reg = serviceProvider.GetService<ConsulRegistration>();
         Assert.NotNull(reg);
         Assert.Equal("myapp", reg.Host);
         Assert.Equal(1234, reg.Port);
-        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
+        Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
 
@@ -673,12 +673,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddOptions().AddDiscoveryClient(configuration)
             .BuildServiceProvider(true);
 
-        var reg = serviceProvider.GetService<IConsulRegistration>();
+        var reg = serviceProvider.GetService<ConsulRegistration>();
 
         Assert.NotNull(reg);
         Assert.NotEqual("myapp", reg.Host);
         Assert.Equal(0, reg.Port);
-        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
+        Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
 
@@ -699,12 +699,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddOptions().AddDiscoveryClient(configuration)
             .BuildServiceProvider(true);
 
-        var reg = serviceProvider.GetService<IConsulRegistration>();
+        var reg = serviceProvider.GetService<ConsulRegistration>();
 
         Assert.NotNull(reg);
         Assert.NotEqual("myapp", reg.Host);
         Assert.Equal(8080, reg.Port);
-        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
+        Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
 

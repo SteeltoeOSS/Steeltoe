@@ -10,7 +10,7 @@ internal sealed class DiscoveryClientService : IHostedService
 {
     private readonly IDiscoveryClient _discoveryClient;
 
-    public DiscoveryClientService(IDiscoveryClient client, IDiscoveryLifecycle applicationLifetime = null)
+    public DiscoveryClientService(IDiscoveryClient client)
     {
         _discoveryClient = client;
     }

@@ -84,7 +84,7 @@ public static class EurekaClientService
 
     internal sealed class LookupClient : DiscoveryClient
     {
-        public LookupClient(IEurekaClientConfiguration clientConfiguration, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
+        public LookupClient(EurekaClientConfiguration clientConfiguration, EurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
             : base(clientConfiguration, httpClient, logFactory)
         {
             if (cacheRefreshTimer != null)

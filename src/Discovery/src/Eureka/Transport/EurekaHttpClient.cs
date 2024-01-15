@@ -18,7 +18,7 @@ using Steeltoe.Discovery.Eureka.Util;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-public class EurekaHttpClient : IEurekaHttpClient
+public class EurekaHttpClient
 {
     private const int DefaultNumberOfRetries = 3;
     private const string HttpXDiscoveryAllowRedirect = "X-Discovery-AllowRedirect";
@@ -36,7 +36,7 @@ public class EurekaHttpClient : IEurekaHttpClient
 
     protected IDictionary<string, string> headers;
 
-    protected IEurekaClientConfiguration configuration;
+    protected EurekaClientConfiguration configuration;
     protected IHttpClientHandlerProvider handlerProvider;
 
     protected HttpClient httpClient;
@@ -49,7 +49,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    protected virtual IEurekaClientConfiguration Configuration => _configurationOptions != null ? _configurationOptions.CurrentValue : configuration;
+    protected virtual EurekaClientConfiguration Configuration => _configurationOptions != null ? _configurationOptions.CurrentValue : configuration;
 
     public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> configuration, IHttpClientHandlerProvider handlerProvider = null,
         ILoggerFactory logFactory = null)
@@ -62,18 +62,18 @@ public class EurekaHttpClient : IEurekaHttpClient
         Initialize(new Dictionary<string, string>(), logFactory);
     }
 
-    public EurekaHttpClient(IEurekaClientConfiguration configuration, HttpClient client, ILoggerFactory logFactory = null)
+    public EurekaHttpClient(EurekaClientConfiguration configuration, HttpClient client, ILoggerFactory logFactory = null)
         : this(configuration, new Dictionary<string, string>(), logFactory)
     {
         httpClient = client;
     }
 
-    public EurekaHttpClient(IEurekaClientConfiguration configuration, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null)
+    public EurekaHttpClient(EurekaClientConfiguration configuration, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null)
         : this(configuration, new Dictionary<string, string>(), logFactory, handlerProvider)
     {
     }
 
-    public EurekaHttpClient(IEurekaClientConfiguration configuration, IDictionary<string, string> headers, ILoggerFactory logFactory = null,
+    public EurekaHttpClient(EurekaClientConfiguration configuration, IDictionary<string, string> headers, ILoggerFactory logFactory = null,
         IHttpClientHandlerProvider handlerProvider = null)
     {
         ArgumentGuard.NotNull(configuration);
@@ -816,13 +816,13 @@ public class EurekaHttpClient : IEurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the DoGetApplicationsAsync request");
     }
 
-    protected virtual HttpClient GetHttpClient(IEurekaClientConfiguration configuration)
+    protected virtual HttpClient GetHttpClient(EurekaClientConfiguration configuration)
     {
         return httpClient ?? HttpClientHelper.GetHttpClient(configuration.ValidateCertificates,
             ConfigureEurekaHttpClientHandler(configuration, handlerProvider?.GetHttpClientHandler()), configuration.EurekaServerConnectTimeoutSeconds * 1000);
     }
 
-    internal static HttpClientHandler ConfigureEurekaHttpClientHandler(IEurekaClientConfiguration configuration, HttpClientHandler handler)
+    internal static HttpClientHandler ConfigureEurekaHttpClientHandler(EurekaClientConfiguration configuration, HttpClientHandler handler)
     {
         handler ??= new HttpClientHandler();
 
@@ -892,7 +892,7 @@ public class EurekaHttpClient : IEurekaHttpClient
         return result;
     }
 
-    private int GetRetryCount(IEurekaClientConfiguration configuration)
+    private int GetRetryCount(EurekaClientConfiguration configuration)
     {
         return configuration is EurekaClientConfiguration clientConfig ? clientConfig.EurekaServerRetryCount : DefaultNumberOfRetries;
     }
