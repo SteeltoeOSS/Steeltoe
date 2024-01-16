@@ -77,7 +77,7 @@ public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
         });
 
         services.AddSingleton<TtlScheduler>();
-        services.AddSingleton<IConsulServiceRegistry, ConsulServiceRegistry>();
+        services.AddSingleton<ConsulServiceRegistry>();
 
         services.AddSingleton(p =>
         {
