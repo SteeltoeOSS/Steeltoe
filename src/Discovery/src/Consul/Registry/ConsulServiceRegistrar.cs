@@ -18,7 +18,7 @@ public class ConsulServiceRegistrar : IDisposable
     private const int Running = 1;
 
     private readonly ILogger<ConsulServiceRegistrar> _logger;
-    private readonly IConsulServiceRegistry _registry;
+    private readonly ConsulServiceRegistry _registry;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulDiscoveryOptions _options;
 
@@ -58,7 +58,7 @@ public class ConsulServiceRegistrar : IDisposable
     /// <param name="logger">
     /// optional logger.
     /// </param>
-    public ConsulServiceRegistrar(IConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulRegistration registration,
+    public ConsulServiceRegistrar(ConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulRegistration registration,
         ILogger<ConsulServiceRegistrar> logger = null)
     {
         ArgumentGuard.NotNull(registry);
@@ -86,7 +86,7 @@ public class ConsulServiceRegistrar : IDisposable
     /// <param name="logger">
     /// optional logger.
     /// </param>
-    public ConsulServiceRegistrar(IConsulServiceRegistry registry, ConsulDiscoveryOptions options, ConsulRegistration registration,
+    public ConsulServiceRegistrar(ConsulServiceRegistry registry, ConsulDiscoveryOptions options, ConsulRegistration registration,
         ILogger<ConsulServiceRegistrar> logger = null)
     {
         ArgumentGuard.NotNull(registry);

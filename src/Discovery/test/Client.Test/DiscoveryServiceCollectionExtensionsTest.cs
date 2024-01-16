@@ -274,7 +274,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(service1);
         var service2 = serviceProvider.GetService<TtlScheduler>();
         Assert.NotNull(service2);
-        var service3 = serviceProvider.GetService<IConsulServiceRegistry>();
+        var service3 = serviceProvider.GetService<ConsulServiceRegistry>();
         Assert.NotNull(service3);
         var service4 = serviceProvider.GetService<ConsulRegistration>();
         Assert.NotNull(service4);
@@ -306,7 +306,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(serviceProvider.GetService<IDiscoveryClient>());
         Assert.NotNull(serviceProvider.GetService<IConsulClient>());
         Assert.NotNull(serviceProvider.GetService<TtlScheduler>());
-        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistry>());
+        Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistry>());
         var reg = serviceProvider.GetService<ConsulRegistration>();
         Assert.NotNull(reg);
         Assert.Equal("fromtest", reg.Host);
@@ -587,7 +587,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(service1);
         var service2 = serviceProvider.GetService<TtlScheduler>();
         Assert.NotNull(service2);
-        var service3 = serviceProvider.GetService<IConsulServiceRegistry>();
+        var service3 = serviceProvider.GetService<ConsulServiceRegistry>();
         Assert.NotNull(service3);
         var service4 = serviceProvider.GetService<ConsulRegistration>();
         Assert.NotNull(service4);
@@ -619,7 +619,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(serviceProvider.GetService<IDiscoveryClient>());
         Assert.NotNull(serviceProvider.GetService<IConsulClient>());
         Assert.NotNull(serviceProvider.GetService<TtlScheduler>());
-        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistry>());
+        Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistry>());
         var reg = serviceProvider.GetService<ConsulRegistration>();
         Assert.NotNull(reg);
         Assert.Equal("fromtest", reg.Host);
@@ -647,7 +647,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(serviceProvider.GetService<IDiscoveryClient>());
         Assert.NotNull(serviceProvider.GetService<IConsulClient>());
         Assert.NotNull(serviceProvider.GetService<TtlScheduler>());
-        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistry>());
+        Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistry>());
         var reg = serviceProvider.GetService<ConsulRegistration>();
         Assert.NotNull(reg);
         Assert.Equal("myapp", reg.Host);

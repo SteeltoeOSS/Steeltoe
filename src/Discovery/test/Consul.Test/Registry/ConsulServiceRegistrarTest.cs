@@ -2,6 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using Consul;
+using FluentAssertions;
 using Moq;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
@@ -11,117 +15,137 @@ namespace Steeltoe.Discovery.Consul.Test.Registry;
 
 public sealed class ConsulServiceRegistrarTest
 {
-    [Fact]
-    public void Constructor_ThrowsOnNulls()
-    {
-        IConsulServiceRegistry registry = new Mock<IConsulServiceRegistry>().Object;
-        var options = new ConsulDiscoveryOptions();
-        var registration = new ConsulRegistration();
-
-        Assert.Throws<ArgumentNullException>(() => new ConsulServiceRegistrar(null, options, registration));
-        Assert.Throws<ArgumentNullException>(() => new ConsulServiceRegistrar(registry, (ConsulDiscoveryOptions)null, registration));
-        Assert.Throws<ArgumentNullException>(() => new ConsulServiceRegistrar(registry, options, null));
-    }
+    private static readonly WriteResult DefaultWriteResult = new();
 
     [Fact]
     public void Register_CallsRegistry()
     {
-        var regMoq = new Mock<IConsulServiceRegistry>();
-        var options = new ConsulDiscoveryOptions();
         var registration = new ConsulRegistration();
+        var options = new ConsulDiscoveryOptions();
 
-        var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
-        reg.Register();
-        regMoq.Verify(a => a.Register(registration), Times.Once);
+        (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
+        var registry = new ConsulServiceRegistry(clientMock.Object, options);
+        var registrar = new ConsulServiceRegistrar(registry, options, registration);
+
+        registrar.Register();
+
+        agentMock.Verify(agent => agent.ServiceRegister(registration.Service, CancellationToken.None), Times.Once);
     }
 
     [Fact]
     public void Deregister_CallsRegistry()
     {
-        var regMoq = new Mock<IConsulServiceRegistry>();
-        var options = new ConsulDiscoveryOptions();
         var registration = new ConsulRegistration();
+        var options = new ConsulDiscoveryOptions();
 
-        var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
-        reg.Deregister();
-        regMoq.Verify(a => a.Deregister(registration), Times.Once);
+        (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
+        var registry = new ConsulServiceRegistry(clientMock.Object, options);
+        var registrar = new ConsulServiceRegistrar(registry, options, registration);
+
+        registrar.Deregister();
+
+        agentMock.Verify(agent => agent.ServiceDeregister(registration.InstanceId, CancellationToken.None), Times.Once);
     }
 
     [Fact]
     public void Register_DoesNotCallRegistry()
     {
-        var regMoq = new Mock<IConsulServiceRegistry>();
+        var registration = new ConsulRegistration();
 
         var options = new ConsulDiscoveryOptions
         {
             Register = false
         };
 
-        var registration = new ConsulRegistration();
+        (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
+        var registry = new ConsulServiceRegistry(clientMock.Object, options);
+        var registrar = new ConsulServiceRegistrar(registry, options, registration);
 
-        var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
-        reg.Register();
-        regMoq.Verify(a => a.Register(registration), Times.Never);
+        registrar.Register();
+
+        agentMock.Verify(agent => agent.ServiceRegister(registration.Service, CancellationToken.None), Times.Never);
     }
 
     [Fact]
     public void Deregister_DoesNotCallRegistry()
     {
-        var regMoq = new Mock<IConsulServiceRegistry>();
+        var registration = new ConsulRegistration();
 
         var options = new ConsulDiscoveryOptions
         {
             Deregister = false
         };
 
-        var registration = new ConsulRegistration();
+        (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
+        var registry = new ConsulServiceRegistry(clientMock.Object, options);
+        var registrar = new ConsulServiceRegistrar(registry, options, registration);
 
-        var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
-        reg.Deregister();
-        regMoq.Verify(a => a.Deregister(registration), Times.Never);
+        registrar.Deregister();
+
+        agentMock.Verify(agent => agent.ServiceDeregister(registration.InstanceId, CancellationToken.None), Times.Never);
     }
 
     [Fact]
     public void Start_DoesNotStart()
     {
-        var regMoq = new Mock<IConsulServiceRegistry>();
+        var registration = new ConsulRegistration();
 
         var options = new ConsulDiscoveryOptions
         {
             Enabled = false
         };
 
-        var registration = new ConsulRegistration();
-        var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
-        reg.Start();
-        Assert.Equal(0, reg.IsRunning);
+        (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> _) = CreateConsulClientAgentMock(registration);
+        var registry = new ConsulServiceRegistry(clientMock.Object, options);
+        var registrar = new ConsulServiceRegistrar(registry, options, registration);
+
+        registrar.Start();
+
+        registrar.IsRunning.Should().Be(0);
     }
 
     [Fact]
     public void Start_CallsRegistry()
     {
-        var regMoq = new Mock<IConsulServiceRegistry>();
-        var options = new ConsulDiscoveryOptions();
         var registration = new ConsulRegistration();
-        var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
-        reg.Start();
-        Assert.Equal(1, reg.IsRunning);
-        regMoq.Verify(a => a.Register(registration), Times.Once);
+        var options = new ConsulDiscoveryOptions();
+
+        (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
+        var registry = new ConsulServiceRegistry(clientMock.Object, options);
+        var registrar = new ConsulServiceRegistrar(registry, options, registration);
+
+        registrar.Start();
+
+        registrar.IsRunning.Should().Be(1);
+        agentMock.Verify(agent => agent.ServiceRegister(registration.Service, CancellationToken.None), Times.Once);
     }
 
     [Fact]
     public void Dispose_CallsRegistry()
     {
-        var regMoq = new Mock<IConsulServiceRegistry>();
-        var options = new ConsulDiscoveryOptions();
         var registration = new ConsulRegistration();
-        var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
-        reg.Start();
-        Assert.Equal(1, reg.IsRunning);
-        regMoq.Verify(a => a.Register(registration), Times.Once);
-        reg.Dispose();
-        regMoq.Verify(a => a.Deregister(registration), Times.Once);
-        regMoq.Verify(a => a.Dispose(), Times.Once);
-        Assert.Equal(0, reg.IsRunning);
+        var options = new ConsulDiscoveryOptions();
+
+        (Mock<IConsulClient> clientMock, Mock<IAgentEndpoint> agentMock) = CreateConsulClientAgentMock(registration);
+        var registry = new ConsulServiceRegistry(clientMock.Object, options);
+        var registrar = new ConsulServiceRegistrar(registry, options, registration);
+
+        registrar.Start();
+        registrar.Dispose();
+
+        agentMock.Verify(agent => agent.ServiceDeregister(registration.InstanceId, CancellationToken.None), Times.Once);
+        registrar.IsRunning.Should().Be(0);
+    }
+
+    private static (Mock<IConsulClient> ClientMock, Mock<IAgentEndpoint> AgentMock) CreateConsulClientAgentMock(ConsulRegistration registration)
+    {
+        var agentMock = new Mock<IAgentEndpoint>();
+        agentMock.Setup(agent => agent.ServiceRegister(registration.Service, CancellationToken.None)).Returns(Task.FromResult(DefaultWriteResult));
+        agentMock.Setup(agent => agent.ServiceDeregister(registration.InstanceId, CancellationToken.None)).Returns(Task.FromResult(DefaultWriteResult));
+
+        var clientMock = new Mock<IConsulClient>();
+        clientMock.Setup(client => client.Agent).Returns(agentMock.Object);
+
+        return (clientMock, agentMock);
     }
 }

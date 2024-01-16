@@ -11,9 +11,9 @@ using Steeltoe.Discovery.Consul.Discovery;
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
-/// An implementation of a Consul service registry.
+/// A service registry that uses Consul.
 /// </summary>
-public class ConsulServiceRegistry : IConsulServiceRegistry
+public class ConsulServiceRegistry : IDisposable
 {
     private const string Up = "UP";
     private const string OutOfService = "OUT_OF_SERVICE";
@@ -81,7 +81,18 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         _logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Register the provided registration in Consul.
+    /// </summary>
+    /// <param name="registration">
+    /// the registration to register.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// the task.
+    /// </returns>
     public Task RegisterAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
@@ -114,7 +125,18 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Deregister the provided registration in Consul.
+    /// </summary>
+    /// <param name="registration">
+    /// the registration to register.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// the task.
+    /// </returns>
     public Task DeregisterAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
@@ -134,7 +156,21 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         return _client.Agent.ServiceDeregister(registration.InstanceId);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Set the status of the registration in Consul.
+    /// </summary>
+    /// <param name="registration">
+    /// the registration to register.
+    /// </param>
+    /// <param name="status">
+    /// the status value to set.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// the task.
+    /// </returns>
     public Task SetStatusAsync(ConsulRegistration registration, string status, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
@@ -157,7 +193,18 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         throw new ArgumentException($"Unknown status: {status}", nameof(status));
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Get the status of the registration in Consul.
+    /// </summary>
+    /// <param name="registration">
+    /// the registration to register.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// the status value.
+    /// </returns>
     public Task<string> GetStatusAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
@@ -181,25 +228,51 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         return Up;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Register a service instance in the service registry.
+    /// </summary>
+    /// <param name="registration">
+    /// the service instance to register.
+    /// </param>
     public void Register(ConsulRegistration registration)
     {
         RegisterAsync(registration, CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Deregister a service instance in the service registry.
+    /// </summary>
+    /// <param name="registration">
+    /// the service instance to register.
+    /// </param>
     public void Deregister(ConsulRegistration registration)
     {
         DeregisterAsync(registration, CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Update the registration in the service registry with the provided status.
+    /// </summary>
+    /// <param name="registration">
+    /// the registration to update.
+    /// </param>
+    /// <param name="status">
+    /// the status.
+    /// </param>
     public void SetStatus(ConsulRegistration registration, string status)
     {
         SetStatusAsync(registration, status, CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Return the current status of the service registry registration.
+    /// </summary>
+    /// <param name="registration">
+    /// the service registration to obtain status for.
+    /// </param>
+    /// <returns>
+    /// the returned status.
+    /// </returns>
     public string GetStatus(ConsulRegistration registration)
     {
         return GetStatusAsync(registration, CancellationToken.None).GetAwaiter().GetResult();
