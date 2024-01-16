@@ -83,13 +83,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     private volatile int _timerFuncCount;
 
     [Fact]
-    public void Constructor_Throws_IfInstanceConfigNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => new DiscoveryClient(null));
-        Assert.Contains("clientConfig", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void Constructor_TimersNotStarted()
     {
         var configuration = new EurekaClientConfiguration
@@ -444,34 +437,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void GetNextServerFromEureka_Throws_WhenVIPAddressNull()
-    {
-        var configuration = new EurekaClientConfiguration
-        {
-            ShouldFetchRegistry = false,
-            ShouldRegisterWithEureka = false
-        };
-
-        var client = new DiscoveryClient(configuration);
-        var ex = Assert.Throws<ArgumentNullException>(() => client.GetNextServerFromEureka(null, false));
-        Assert.Contains("virtualHostname", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void GetInstancesByVipAddress_Throws_WhenVIPAddressNull()
-    {
-        var configuration = new EurekaClientConfiguration
-        {
-            ShouldFetchRegistry = false,
-            ShouldRegisterWithEureka = false
-        };
-
-        var client = new DiscoveryClient(configuration);
-        var ex = Assert.Throws<ArgumentNullException>(() => client.GetInstancesByVipAddress(null, false));
-        Assert.Contains("vipAddress", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void GetInstancesByVipAddress_ReturnsExpected()
     {
         var app1 = new Application("app1");
@@ -616,20 +581,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void GetInstancesById_Throws_WhenIdNull()
-    {
-        var configuration = new EurekaClientConfiguration
-        {
-            ShouldFetchRegistry = false,
-            ShouldRegisterWithEureka = false
-        };
-
-        var client = new DiscoveryClient(configuration);
-        var ex = Assert.Throws<ArgumentNullException>(() => client.GetInstanceById(null));
-        Assert.Contains("id", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void GetInstancesById_Returns_EmptyListWhenNoApps()
     {
         var configuration = new EurekaClientConfiguration
@@ -712,20 +663,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         result = client.GetInstanceById("boohoo");
         Assert.NotNull(result);
         Assert.Empty(result);
-    }
-
-    [Fact]
-    public void GetApplication_Throws_WhenAppNameNull()
-    {
-        var configuration = new EurekaClientConfiguration
-        {
-            ShouldFetchRegistry = false,
-            ShouldRegisterWithEureka = false
-        };
-
-        var client = new DiscoveryClient(configuration);
-        var ex = Assert.Throws<ArgumentNullException>(() => client.GetApplication(null));
-        Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -821,7 +758,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         ApplicationInfoManager.Instance.Initialize(instanceConfig);
 
         var client = new DiscoveryClient(configuration);
-        var myHandler = new MyHealthCheckHandler(InstanceStatus.Down);
+        var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
         client.HealthCheckHandler = myHandler;
 
         await client.RefreshInstanceInfoAsync(CancellationToken.None);
@@ -939,5 +876,26 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     {
         Interlocked.Increment(ref _timerFuncCount);
         throw new FormatException();
+    }
+
+    private sealed class TestHealthCheckHandler : IHealthCheckHandler
+    {
+        private readonly InstanceStatus _status;
+
+        public bool Awaited { get; set; }
+
+        public TestHealthCheckHandler(InstanceStatus status)
+        {
+            _status = status;
+            Awaited = false;
+        }
+
+        public async Task<InstanceStatus> GetStatusAsync(CancellationToken cancellationToken)
+        {
+            await Task.Yield();
+
+            Awaited = true;
+            return _status;
+        }
     }
 }

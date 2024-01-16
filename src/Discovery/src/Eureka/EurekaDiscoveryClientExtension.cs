@@ -191,17 +191,17 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
         services.AddSingleton<EurekaDiscoveryManager>();
         services.AddSingleton<EurekaDiscoveryClient>();
 
-        services.AddSingleton<IDiscoveryClient>(p =>
+        services.AddSingleton<IDiscoveryClient>(serviceProvider =>
         {
-            var eurekaService = p.GetService<EurekaDiscoveryClient>();
+            var eurekaDiscoveryClient = serviceProvider.GetService<EurekaDiscoveryClient>();
 
             // Wire in health checker if present
-            if (eurekaService != null)
+            if (eurekaDiscoveryClient != null)
             {
-                eurekaService.HealthCheckHandler = p.GetService<IHealthCheckHandler>();
+                eurekaDiscoveryClient.HealthCheckHandler = serviceProvider.GetService<IHealthCheckHandler>();
             }
 
-            return eurekaService;
+            return eurekaDiscoveryClient;
         });
 
         services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
