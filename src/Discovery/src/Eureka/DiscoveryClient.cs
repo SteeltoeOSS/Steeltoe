@@ -523,7 +523,7 @@ public class DiscoveryClient
         {
             try
             {
-                status = await HealthCheckHandler.GetStatusAsync(info.Status, cancellationToken);
+                status = await HealthCheckHandler.GetStatusAsync(cancellationToken);
                 logger.LogDebug("RefreshInstanceInfo called, returning {status}", status);
             }
             catch (Exception exception) when (!exception.IsCancellation())

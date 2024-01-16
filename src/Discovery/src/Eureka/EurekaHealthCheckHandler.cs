@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
@@ -10,43 +12,40 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
-/// Computes the Eureka InstanceStatus from all of the Steeltoe Health contributors registered for the application. When this handler is added to the
-/// container it registers with the DiscoveryClient as a IHealthCheckHandler. The DiscoveryClient will then call it each time it is computing the
-/// InstanceStatus of the application.
+/// Computes the Eureka <see cref="InstanceStatus" /> from all Steeltoe <see cref="IHealthContributor" />s registered for the application. When this
+/// handler is added to the container, it registers with the discovery client as a <see cref="IHealthCheckHandler" />. The discovery client will then
+/// call it each time it is computing the instance status of the application.
 /// </summary>
-public class EurekaHealthCheckHandler : IHealthCheckHandler
+public sealed class EurekaHealthCheckHandler : IHealthCheckHandler
 {
     private readonly ILogger _logger;
-    protected internal IList<IHealthContributor> Contributors;
+    private readonly IList<IHealthContributor> _healthContributors;
 
-    public EurekaHealthCheckHandler(ILogger logger = null)
+    public EurekaHealthCheckHandler(IEnumerable<IHealthContributor> healthContributors, ILogger<EurekaHealthCheckHandler> logger)
     {
+        ArgumentGuard.NotNull(healthContributors);
+        ArgumentGuard.NotNull(logger);
+
+        _healthContributors = healthContributors.ToList();
         _logger = logger;
     }
 
-    public EurekaHealthCheckHandler(IEnumerable<IHealthContributor> contributors, ILogger<EurekaHealthCheckHandler> logger = null)
-        : this(logger)
+    public async Task<InstanceStatus> GetStatusAsync(CancellationToken cancellationToken)
     {
-        Contributors = contributors.ToList();
-    }
-
-    public virtual async Task<InstanceStatus> GetStatusAsync(InstanceStatus currentStatus, CancellationToken cancellationToken)
-    {
-        List<HealthCheckResult> results = await DoHealthChecksAsync(Contributors, cancellationToken);
+        List<HealthCheckResult> results = await DoHealthChecksAsync(cancellationToken);
         HealthStatus status = AggregateStatus(results);
         return MapToInstanceStatus(status);
     }
 
-    protected internal virtual async Task<List<HealthCheckResult>> DoHealthChecksAsync(IList<IHealthContributor> contributors,
-        CancellationToken cancellationToken)
+    private async Task<List<HealthCheckResult>> DoHealthChecksAsync(CancellationToken cancellationToken)
     {
         var results = new List<HealthCheckResult>();
 
-        foreach (IHealthContributor contributor in contributors)
+        foreach (IHealthContributor contributor in _healthContributors)
         {
             try
             {
-                HealthCheckResult result = await contributor.CheckHealthAsync(cancellationToken);
+                HealthCheckResult? result = await contributor.CheckHealthAsync(cancellationToken);
 
                 if (result != null)
                 {
@@ -62,7 +61,7 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
         return results;
     }
 
-    protected internal virtual HealthStatus AggregateStatus(List<HealthCheckResult> results)
+    private static HealthStatus AggregateStatus(List<HealthCheckResult> results)
     {
         var considered = new List<HealthStatus>();
 
@@ -95,23 +94,14 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
         return final;
     }
 
-    protected internal virtual InstanceStatus MapToInstanceStatus(HealthStatus status)
+    private static InstanceStatus MapToInstanceStatus(HealthStatus status)
     {
-        if (status == HealthStatus.OutOfService)
+        return status switch
         {
-            return InstanceStatus.OutOfService;
-        }
-
-        if (status == HealthStatus.Down)
-        {
-            return InstanceStatus.Down;
-        }
-
-        if (status == HealthStatus.Up)
-        {
-            return InstanceStatus.Up;
-        }
-
-        return InstanceStatus.Unknown;
+            HealthStatus.OutOfService => InstanceStatus.OutOfService,
+            HealthStatus.Down => InstanceStatus.Down,
+            HealthStatus.Up => InstanceStatus.Up,
+            _ => InstanceStatus.Unknown
+        };
     }
 }
