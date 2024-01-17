@@ -264,9 +264,16 @@ public class ConsulRegistrationTest
     }
 
     [Fact]
-    public void CreateCheck_WhenPortIsANegativeNumber_ThenShouldThrow()
+    public void CreateCheck_WhenHeartbeatIsDisabledAndPortIsANegativeNumber_ThenShouldThrow()
     {
-        var options = new ConsulDiscoveryOptions();
+        var options = new ConsulDiscoveryOptions
+        {
+            Heartbeat = new ConsulHeartbeatOptions()
+            {
+                Enabled = false
+            }
+        };
+
         const int port = -1234;
 
         Assert.Throws<ArgumentException>(() => ConsulRegistration.CreateCheck(port, options));

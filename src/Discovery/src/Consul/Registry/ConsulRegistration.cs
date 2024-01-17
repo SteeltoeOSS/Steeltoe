@@ -284,6 +284,12 @@ public class ConsulRegistration : IConsulRegistration
             check.DeregisterCriticalServiceAfter = DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout);
         }
 
+        if (options.IsHeartBeatEnabled && options.HealthCheckUrl == null && options.HealthCheckPath == ConsulDiscoveryOptions.CONSUL_DEFAULT_HEALTH_PATH)
+        {
+            check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl);
+            return check;
+        }
+
         if (port <= 0)
         {
             throw new ArgumentException("CreateCheck port must be greater than 0");
@@ -297,12 +303,6 @@ public class ConsulRegistration : IConsulRegistration
         {
             var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
             check.HTTP = uri.ToString();
-        }
-
-        if (options.IsHeartBeatEnabled)
-        {
-            check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl);
-            return check;
         }
 
         // check.setHeader(properties.getHealthCheckHeaders());
