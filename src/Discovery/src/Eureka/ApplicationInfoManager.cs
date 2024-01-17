@@ -66,11 +66,11 @@ public class ApplicationInfoManager
     {
     }
 
-    public virtual void Initialize(EurekaInstanceConfiguration instanceConfig, ILoggerFactory logFactory = null)
+    public virtual void Initialize(EurekaInstanceConfiguration instanceConfig, ILoggerFactory loggerFactory = null)
     {
         ArgumentGuard.NotNull(instanceConfig);
 
-        logger = logFactory?.CreateLogger<ApplicationInfoManager>();
+        logger = loggerFactory?.CreateLogger<ApplicationInfoManager>();
         InstanceConfig = instanceConfig;
         InstanceInfo = InstanceInfo.FromInstanceConfiguration(instanceConfig);
     }

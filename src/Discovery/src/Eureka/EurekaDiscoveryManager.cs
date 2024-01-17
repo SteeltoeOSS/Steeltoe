@@ -18,9 +18,9 @@ public class EurekaDiscoveryManager : DiscoveryManager
 
     // Constructor used via Dependency Injection
     public EurekaDiscoveryManager(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
-        EurekaDiscoveryClient client, ILoggerFactory logFactory = null)
+        EurekaDiscoveryClient client, ILoggerFactory loggerFactory = null)
     {
-        logger = logFactory?.CreateLogger<DiscoveryManager>();
+        logger = loggerFactory?.CreateLogger<DiscoveryManager>();
         _clientConfig = clientConfig;
         _instConfig = instConfig;
         Client = client;

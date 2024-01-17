@@ -22,7 +22,7 @@ public static class EurekaClientService
     /// <param name="serviceId">
     /// the Eureka service id to look up all instances of.
     /// </param>
-    /// <param name="logFactory">
+    /// <param name="loggerFactory">
     /// optional log factory to use for logging.
     /// </param>
     /// <param name="cancellationToken">
@@ -31,11 +31,11 @@ public static class EurekaClientService
     /// <returns>
     /// service instances.
     /// </returns>
-    public static async Task<IList<IServiceInstance>> GetInstancesAsync(IConfiguration configuration, string serviceId, ILoggerFactory logFactory,
+    public static async Task<IList<IServiceInstance>> GetInstancesAsync(IConfiguration configuration, string serviceId, ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
         EurekaClientOptions options = ConfigureClientOptions(configuration);
-        LookupClient client = GetLookupClient(options, logFactory);
+        LookupClient client = GetLookupClient(options, loggerFactory);
         IList<IServiceInstance> result = client.GetInstancesInternal(serviceId);
         await client.ShutdownAsync(cancellationToken);
         return result;
@@ -48,7 +48,7 @@ public static class EurekaClientService
     /// <param name="configuration">
     /// configuration values used for configuring the Eureka client.
     /// </param>
-    /// <param name="logFactory">
+    /// <param name="loggerFactory">
     /// optional log factory to use for logging.
     /// </param>
     /// <param name="cancellationToken">
@@ -57,18 +57,18 @@ public static class EurekaClientService
     /// <returns>
     /// all registered services.
     /// </returns>
-    public static async Task<IList<string>> GetServicesAsync(IConfiguration configuration, ILoggerFactory logFactory, CancellationToken cancellationToken)
+    public static async Task<IList<string>> GetServicesAsync(IConfiguration configuration, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
     {
         EurekaClientOptions options = ConfigureClientOptions(configuration);
-        LookupClient client = GetLookupClient(options, logFactory);
+        LookupClient client = GetLookupClient(options, loggerFactory);
         IList<string> result = client.GetServicesInternal();
         await client.ShutdownAsync(cancellationToken);
         return result;
     }
 
-    internal static LookupClient GetLookupClient(EurekaClientOptions options, ILoggerFactory logFactory)
+    internal static LookupClient GetLookupClient(EurekaClientOptions options, ILoggerFactory loggerFactory)
     {
-        return new LookupClient(options, null, logFactory);
+        return new LookupClient(options, null, loggerFactory);
     }
 
     internal static EurekaClientOptions ConfigureClientOptions(IConfiguration configuration)
@@ -84,8 +84,8 @@ public static class EurekaClientService
 
     internal sealed class LookupClient : DiscoveryClient
     {
-        public LookupClient(EurekaClientConfiguration clientConfiguration, EurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
-            : base(clientConfiguration, httpClient, logFactory)
+        public LookupClient(EurekaClientConfiguration clientConfiguration, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null)
+            : base(clientConfiguration, httpClient, loggerFactory)
         {
             if (cacheRefreshTimer != null)
             {

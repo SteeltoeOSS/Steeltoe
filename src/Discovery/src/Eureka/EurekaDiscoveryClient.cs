@@ -21,13 +21,13 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
     public string Description => "Spring Cloud Eureka Client";
 
     public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
-        EurekaApplicationInfoManager appInfoManager, EurekaHttpClient httpClient = null, ILoggerFactory logFactory = null,
+        EurekaApplicationInfoManager appInfoManager, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null,
         IHttpClientHandlerProvider handlerProvider = null, HttpClient netHttpClient = null)
-        : base(appInfoManager, logFactory)
+        : base(appInfoManager, loggerFactory)
     {
         _thisInstance = new ThisServiceInstance(instConfig);
         _configOptions = clientConfig;
-        this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
+        this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, loggerFactory, handlerProvider, netHttpClient);
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
@@ -90,7 +90,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 
         protected override EurekaClientConfiguration Configuration => _optionsMonitorOptions.CurrentValue;
 
-        public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILoggerFactory logFactory = null,
+        public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILoggerFactory loggerFactory = null,
             IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
         {
             ArgumentGuard.NotNull(optionsMonitor);
@@ -98,7 +98,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
             configuration = null;
             _optionsMonitorOptions = optionsMonitor;
             this.handlerProvider = handlerProvider;
-            Initialize(new Dictionary<string, string>(), logFactory);
+            Initialize(new Dictionary<string, string>(), loggerFactory);
             this.httpClient = httpClient;
         }
     }

@@ -59,23 +59,23 @@ public class DiscoveryClient
 
     public event EventHandler<ApplicationsEventArgs> OnApplicationsChange;
 
-    public DiscoveryClient(EurekaClientConfiguration clientConfiguration, EurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
-        : this(ApplicationInfoManager.Instance, logFactory)
+    public DiscoveryClient(EurekaClientConfiguration clientConfiguration, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null)
+        : this(ApplicationInfoManager.Instance, loggerFactory)
     {
         ArgumentGuard.NotNull(clientConfiguration);
 
         ClientConfiguration = clientConfiguration;
-        this.httpClient = httpClient ?? new EurekaHttpClient(clientConfiguration, logFactory);
+        this.httpClient = httpClient ?? new EurekaHttpClient(clientConfiguration, loggerFactory);
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
     // Constructor used by Dependency Injection
-    protected DiscoveryClient(ApplicationInfoManager appInfoManager, ILoggerFactory logFactory = null)
+    protected DiscoveryClient(ApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory = null)
     {
         AppInfoManager = appInfoManager;
-        regularLogger = (ILogger)logFactory?.CreateLogger<DiscoveryClient>() ?? NullLogger.Instance;
-        startupLogger = logFactory?.CreateLogger($"Startup.{GetType().FullName}") ?? NullLogger.Instance;
+        regularLogger = (ILogger)loggerFactory?.CreateLogger<DiscoveryClient>() ?? NullLogger.Instance;
+        startupLogger = loggerFactory?.CreateLogger($"Startup.{GetType().FullName}") ?? NullLogger.Instance;
     }
 
     public Application GetApplication(string appName)

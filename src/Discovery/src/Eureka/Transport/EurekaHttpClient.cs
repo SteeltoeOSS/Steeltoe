@@ -52,35 +52,35 @@ public class EurekaHttpClient
     protected virtual EurekaClientConfiguration Configuration => _configurationOptions != null ? _configurationOptions.CurrentValue : configuration;
 
     public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> configuration, IHttpClientHandlerProvider handlerProvider = null,
-        ILoggerFactory logFactory = null)
+        ILoggerFactory loggerFactory = null)
     {
         ArgumentGuard.NotNull(configuration);
 
         this.configuration = null;
         _configurationOptions = configuration;
         this.handlerProvider = handlerProvider;
-        Initialize(new Dictionary<string, string>(), logFactory);
+        Initialize(new Dictionary<string, string>(), loggerFactory);
     }
 
-    public EurekaHttpClient(EurekaClientConfiguration configuration, HttpClient client, ILoggerFactory logFactory = null)
-        : this(configuration, new Dictionary<string, string>(), logFactory)
+    public EurekaHttpClient(EurekaClientConfiguration configuration, HttpClient client, ILoggerFactory loggerFactory = null)
+        : this(configuration, new Dictionary<string, string>(), loggerFactory)
     {
         httpClient = client;
     }
 
-    public EurekaHttpClient(EurekaClientConfiguration configuration, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null)
-        : this(configuration, new Dictionary<string, string>(), logFactory, handlerProvider)
+    public EurekaHttpClient(EurekaClientConfiguration configuration, ILoggerFactory loggerFactory = null, IHttpClientHandlerProvider handlerProvider = null)
+        : this(configuration, new Dictionary<string, string>(), loggerFactory, handlerProvider)
     {
     }
 
-    public EurekaHttpClient(EurekaClientConfiguration configuration, IDictionary<string, string> headers, ILoggerFactory logFactory = null,
+    public EurekaHttpClient(EurekaClientConfiguration configuration, IDictionary<string, string> headers, ILoggerFactory loggerFactory = null,
         IHttpClientHandlerProvider handlerProvider = null)
     {
         ArgumentGuard.NotNull(configuration);
 
         this.configuration = configuration;
         this.handlerProvider = handlerProvider;
-        Initialize(headers, logFactory);
+        Initialize(headers, loggerFactory);
     }
 
     protected EurekaHttpClient()
@@ -677,11 +677,11 @@ public class EurekaHttpClient
         return new Uri(uri);
     }
 
-    protected void Initialize(IDictionary<string, string> headers, ILoggerFactory logFactory)
+    protected void Initialize(IDictionary<string, string> headers, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(headers);
 
-        logger = logFactory?.CreateLogger<EurekaHttpClient>();
+        logger = loggerFactory?.CreateLogger<EurekaHttpClient>();
         this.headers = headers;
         JsonSerializerOptions.Converters.Add(new JsonInstanceInfoConverter());
 

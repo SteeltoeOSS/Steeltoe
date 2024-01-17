@@ -13,9 +13,9 @@ public class EurekaApplicationInfoManager : ApplicationInfoManager
 
     public override EurekaInstanceConfiguration InstanceConfig => _instConfig.CurrentValue;
 
-    public EurekaApplicationInfoManager(IOptionsMonitor<EurekaInstanceOptions> instConfig, ILoggerFactory logFactory = null)
+    public EurekaApplicationInfoManager(IOptionsMonitor<EurekaInstanceOptions> instConfig, ILoggerFactory loggerFactory = null)
     {
         _instConfig = instConfig;
-        Initialize(InstanceConfig, logFactory);
+        Initialize(InstanceConfig, loggerFactory);
     }
 }
