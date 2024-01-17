@@ -66,7 +66,7 @@ public sealed class ConsulDiscoveryClientTest
         clientMoq.Setup(c => c.Health).Returns(healthMoq.Object);
         healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, default)).Returns(result);
 
-        var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
+        await using var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
         var list = new List<IServiceInstance>();
         await dc.AddInstancesToListAsync(list, "ServiceId", QueryOptions.Default, CancellationToken.None);
         Assert.Equal(2, list.Count);
@@ -128,7 +128,7 @@ public sealed class ConsulDiscoveryClientTest
         clientMoq.Setup(c => c.Catalog).Returns(catMoq.Object);
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(result);
 
-        var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
+        await using var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
         IList<string> services = await dc.GetServiceNamesAsync(QueryOptions.Default, CancellationToken.None);
         Assert.Equal(2, services.Count);
         Assert.Contains("foo", services);
@@ -202,7 +202,7 @@ public sealed class ConsulDiscoveryClientTest
         clientMoq.Setup(c => c.Health).Returns(healthMoq.Object);
         healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, default)).Returns(result2);
 
-        var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
+        await using var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
         IList<IServiceInstance> list = await dc.GetAllInstancesAsync(QueryOptions.Default, CancellationToken.None);
 
         Assert.Equal(2, list.Count);

@@ -18,7 +18,7 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 /// </see>
 /// .
 /// </summary>
-public class ConsulDiscoveryClient : IDiscoveryClient, IDisposable
+public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
 {
     private readonly IConsulClient _client;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
@@ -58,7 +58,7 @@ public class ConsulDiscoveryClient : IDiscoveryClient, IDisposable
 
         if (_registrar != null)
         {
-            _registrar.Start();
+            _registrar.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
             _thisServiceInstance = new ThisServiceInstance(_registrar.Registration);
         }
     }
@@ -90,7 +90,7 @@ public class ConsulDiscoveryClient : IDiscoveryClient, IDisposable
 
         if (_registrar != null)
         {
-            _registrar.Start();
+            _registrar.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
             _thisServiceInstance = new ThisServiceInstance(_registrar.Registration);
         }
     }
@@ -204,20 +204,12 @@ public class ConsulDiscoveryClient : IDiscoveryClient, IDisposable
         }
     }
 
-    /// <summary>
-    /// Dispose of the client and also the Consul service registrar if provided.
-    /// </summary>
-    public void Dispose()
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
+        if (_registrar != null)
         {
-            _registrar?.Dispose();
+            await _registrar.DisposeAsync();
         }
     }
 }

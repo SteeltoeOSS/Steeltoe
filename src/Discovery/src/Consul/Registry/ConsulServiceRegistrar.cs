@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
@@ -12,31 +15,19 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// <summary>
 /// A registrar used to register a service in a Consul server.
 /// </summary>
-public class ConsulServiceRegistrar : IDisposable
+public sealed class ConsulServiceRegistrar : IAsyncDisposable
 {
     private const int NotRunning = 0;
     private const int Running = 1;
 
-    private readonly ILogger<ConsulServiceRegistrar> _logger;
     private readonly ConsulServiceRegistry _registry;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
-    private readonly ConsulDiscoveryOptions _options;
+    private readonly ILogger<ConsulServiceRegistrar> _logger;
 
     private bool _isDisposed;
     internal int IsRunning;
 
-    internal ConsulDiscoveryOptions Options
-    {
-        get
-        {
-            if (_optionsMonitor != null)
-            {
-                return _optionsMonitor.CurrentValue;
-            }
-
-            return _options;
-        }
-    }
+    private ConsulDiscoveryOptions Options => _optionsMonitor.CurrentValue;
 
     /// <summary>
     /// Gets the registration that the registrar is to register with Consul.
@@ -47,23 +38,24 @@ public class ConsulServiceRegistrar : IDisposable
     /// Initializes a new instance of the <see cref="ConsulServiceRegistrar" /> class.
     /// </summary>
     /// <param name="registry">
-    /// the Consul service registry to use when doing registrations.
+    /// The Consul service registry to use when doing registrations.
     /// </param>
     /// <param name="optionsMonitor">
-    /// configuration options to use.
+    /// Provides access to Consul configuration options.
     /// </param>
     /// <param name="registration">
-    /// the registration to register with Consul.
+    /// The registration to register with Consul.
     /// </param>
     /// <param name="logger">
-    /// optional logger.
+    /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
     public ConsulServiceRegistrar(ConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulRegistration registration,
-        ILogger<ConsulServiceRegistrar> logger = null)
+        ILogger<ConsulServiceRegistrar> logger)
     {
         ArgumentGuard.NotNull(registry);
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(registration);
+        ArgumentGuard.NotNull(logger);
 
         _registry = registry;
         _optionsMonitor = optionsMonitor;
@@ -72,90 +64,59 @@ public class ConsulServiceRegistrar : IDisposable
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulServiceRegistrar" /> class.
+    /// Starts the service registrar.
     /// </summary>
-    /// <param name="registry">
-    /// the Consul service registry to use when doing registrations.
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
     /// </param>
-    /// <param name="options">
-    /// configuration options to use.
-    /// </param>
-    /// <param name="registration">
-    /// the registration to register with Consul.
-    /// </param>
-    /// <param name="logger">
-    /// optional logger.
-    /// </param>
-    public ConsulServiceRegistrar(ConsulServiceRegistry registry, ConsulDiscoveryOptions options, ConsulRegistration registration,
-        ILogger<ConsulServiceRegistrar> logger = null)
-    {
-        ArgumentGuard.NotNull(registry);
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(registration);
-
-        _registry = registry;
-        _options = options;
-        Registration = registration;
-        _logger = logger;
-    }
-
-    /// <summary>
-    /// Start the service registrar.
-    /// </summary>
-    public void Start()
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         if (!Options.Enabled)
         {
-            _logger?.LogDebug("Discovery Lifecycle disabled. Not starting");
+            _logger.LogDebug("Discovery Lifecycle disabled. Not starting");
             return;
         }
 
         if (Interlocked.CompareExchange(ref IsRunning, Running, NotRunning) == NotRunning)
         {
-            if (Options.IsRetryEnabled && Options.FailFast)
+            if (Options is { IsRetryEnabled: true, FailFast: true })
             {
-                DoWithRetry(Register, Options.Retry);
+                await DoWithRetryAsync(RegisterAsync, Options.Retry, cancellationToken);
             }
             else
             {
-                Register();
+                await RegisterAsync(cancellationToken);
             }
         }
     }
 
-    /// <summary>
-    /// Register any registrations configured.
-    /// </summary>
-    public void Register()
+    private async Task RegisterAsync(CancellationToken cancellationToken)
     {
         if (!Options.Register)
         {
-            _logger?.LogDebug("Registration disabled");
+            _logger.LogDebug("Registration disabled");
             return;
         }
 
-        _registry.Register(Registration);
+        await _registry.RegisterAsync(Registration, cancellationToken);
     }
 
-    /// <summary>
-    /// Deregister any registrations configured.
-    /// </summary>
-    public void Deregister()
+    private async Task DeregisterAsync(CancellationToken cancellationToken)
     {
         if (!Options.Register || !Options.Deregister)
         {
-            _logger?.LogDebug("Deregistration disabled");
+            _logger.LogDebug("Deregistration disabled");
             return;
         }
 
-        _registry.Deregister(Registration);
+        await _registry.DeregisterAsync(Registration, cancellationToken);
     }
 
-    private void DoWithRetry(Action retryable, ConsulRetryOptions options)
+    private async Task DoWithRetryAsync(Func<CancellationToken, Task> retryable, ConsulRetryOptions options, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(retryable);
 
-        _logger?.LogDebug("Starting retryable action ..");
+        _logger.LogDebug("Starting retryable action ..");
 
         int attempts = 0;
         int backOff = options.InitialInterval;
@@ -164,24 +125,24 @@ public class ConsulServiceRegistrar : IDisposable
         {
             try
             {
-                retryable();
-                _logger?.LogDebug("Finished retryable action ..");
+                await retryable(cancellationToken);
+                _logger.LogDebug("Finished retryable action ..");
                 return;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
                 attempts++;
 
                 if (attempts < options.MaxAttempts)
                 {
-                    _logger?.LogError(e, "Exception during {attempt} attempts of retryable action, will retry", attempts);
+                    _logger.LogError(exception, "Exception during {attempt} attempts of retryable action, will retry", attempts);
                     Thread.CurrentThread.Join(backOff);
                     int nextBackOff = (int)(backOff * options.Multiplier);
                     backOff = Math.Min(nextBackOff, options.MaxInterval);
                 }
                 else
                 {
-                    _logger?.LogError(e, "Exception during {attempt} attempts of retryable action, done with retry", attempts);
+                    _logger.LogError(exception, "Exception during {attempt} attempts of retryable action, done with retry", attempts);
                     throw;
                 }
             }
@@ -190,23 +151,16 @@ public class ConsulServiceRegistrar : IDisposable
     }
 
     /// <inheritdoc />
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing && !_isDisposed)
+        if (!_isDisposed)
         {
             if (Interlocked.CompareExchange(ref IsRunning, NotRunning, Running) == Running)
             {
-                Deregister();
+                await DeregisterAsync(CancellationToken.None);
             }
 
             _registry.Dispose();
-
             _isDisposed = true;
         }
     }
