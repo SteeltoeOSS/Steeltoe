@@ -7,7 +7,7 @@ namespace Steeltoe.Connector.CloudFoundry;
 public static class CloudFoundryConnector
 {
     /// <summary>
-    /// Use this method to ensure Steeltoe.Connector.CloudFoundry is loaded
+    /// Use this method to prevent Steeltoe.Connector.CloudFoundry from being optimized out of the build
     /// </summary>
     public static void EnsureAssemblyIsLoaded()
     {

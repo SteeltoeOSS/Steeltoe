@@ -36,6 +36,14 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
     private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
     private readonly IServiceInstance _thisInstance;
 
+    /// <summary>
+    /// Use this method to prevent Steeltoe.Discovery.Eureka from being optimized out of the build
+    /// </summary>
+    public static void EnsureAssemblyIsLoaded()
+    {
+        // no-op
+    }
+
     public override IEurekaClientConfig ClientConfig => _configOptions.CurrentValue;
 
     public EurekaDiscoveryClient(

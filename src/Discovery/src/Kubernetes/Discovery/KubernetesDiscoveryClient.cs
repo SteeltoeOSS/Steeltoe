@@ -21,6 +21,14 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
     private readonly IOptionsMonitor<KubernetesDiscoveryOptions> _discoveryOptions;
     private readonly DefaultIsServicePortSecureResolver _isServicePortSecureResolver;
 
+    /// <summary>
+    /// Use this method to prevent Steeltoe.Discovery.Kubernetes from being optimized out of the build
+    /// </summary>
+    public static void EnsureAssemblyIsLoaded()
+    {
+        // no-op
+    }
+
     public string Description => "Steeltoe provided Kubernetes native service discovery client";
 
     public IList<string> Services => GetServices(null);

@@ -40,6 +40,14 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     }
 
     /// <summary>
+    /// Use this method to prevent Steeltoe.Discovery.Consul from being optimized out of the build
+    /// </summary>
+    public static void EnsureAssemblyIsLoaded()
+    {
+        // no-op
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ConsulDiscoveryClient"/> class.
     /// </summary>
     /// <param name="client">a Consul client</param>
