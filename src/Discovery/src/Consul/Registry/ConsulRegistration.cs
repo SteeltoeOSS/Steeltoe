@@ -284,7 +284,7 @@ public class ConsulRegistration : IConsulRegistration
             check.DeregisterCriticalServiceAfter = DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout);
         }
 
-        if (options.IsHeartBeatEnabled && options.HealthCheckUrl == null && options.HealthCheckPath == ConsulDiscoveryOptions.CONSUL_DEFAULT_HEALTH_PATH)
+        if (options.IsHeartBeatEnabled)
         {
             check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl);
             return check;

@@ -243,10 +243,8 @@ public class ConsulRegistrationTest
         Assert.StartsWith("foobar-", result);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CreateCheck_WhenHealthCheckPathIsSet_ThenShouldSetIt(bool heartbeatEnabled)
+    [Fact]
+    public void CreateCheck_WhenHealthCheckPathIsSetAndHeartbeatIsDisabled_ThenShouldSetHttp()
     {
         const string path = "/my/custom/health";
         var options = new ConsulDiscoveryOptions
@@ -254,13 +252,31 @@ public class ConsulRegistrationTest
             HealthCheckPath = path,
             Heartbeat = new ConsulHeartbeatOptions
             {
-                Enabled = heartbeatEnabled
+                Enabled = false
             }
         };
 
         var check = ConsulRegistration.CreateCheck(1234, options);
 
         Assert.Contains(path, check.HTTP);
+    }
+
+    [Fact]
+    public void CreateCheck_WhenHealthCheckPathIsSetAndHeartbeatIsEnabled_ThenHttpShouldBeNull()
+    {
+        const string path = "/my/custom/health";
+        var options = new ConsulDiscoveryOptions
+        {
+            HealthCheckPath = path,
+            Heartbeat = new ConsulHeartbeatOptions
+            {
+                Enabled = true
+            }
+        };
+
+        var check = ConsulRegistration.CreateCheck(1234, options);
+
+        Assert.Null(check.HTTP);
     }
 
     [Fact]

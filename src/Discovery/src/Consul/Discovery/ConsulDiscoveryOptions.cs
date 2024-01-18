@@ -15,7 +15,6 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 public class ConsulDiscoveryOptions
 {
     public const string CONSUL_DISCOVERY_CONFIGURATION_PREFIX = "consul:discovery";
-    public const string CONSUL_DEFAULT_HEALTH_PATH = "/actuator/health";
 
     private string _hostName;
     private string _scheme = "http";
@@ -111,7 +110,7 @@ public class ConsulDiscoveryOptions
     /// <summary>
     /// Gets or sets Alternate server path to invoke for health checking
     /// </summary>
-    public string HealthCheckPath { get; set; } = CONSUL_DEFAULT_HEALTH_PATH;
+    public string HealthCheckPath { get; set; } = "/actuator/health";
 
     /// <summary>
     /// Gets or sets How often to perform the health check (e.g. 10s), defaults to 10s.
