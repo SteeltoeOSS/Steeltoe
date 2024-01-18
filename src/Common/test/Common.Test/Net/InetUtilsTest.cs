@@ -14,7 +14,7 @@ public sealed class InetUtilsTest
     [Fact]
     public void TestGetFirstNonLoopbackHostInfo()
     {
-        var utils = new InetUtils(new InetOptions(), NullLogger.Instance);
+        var utils = new InetUtils(new InetOptions(), NullLogger<InetUtils>.Instance);
         Assert.NotNull(utils.FindFirstNonLoopbackHostInfo());
     }
 
@@ -24,7 +24,7 @@ public sealed class InetUtilsTest
         var utils = new InetUtils(new InetOptions
         {
             UseOnlySiteLocalInterfaces = true
-        }, NullLogger.Instance);
+        }, NullLogger<InetUtils>.Instance);
 
         Assert.NotNull(utils.FindFirstNonLoopbackAddress());
     }
@@ -32,14 +32,14 @@ public sealed class InetUtilsTest
     [Fact]
     public void TestConvert()
     {
-        var utils = new InetUtils(new InetOptions(), NullLogger.Instance);
+        var utils = new InetUtils(new InetOptions(), NullLogger<InetUtils>.Instance);
         Assert.NotNull(utils.ConvertAddress(Dns.GetHostEntry("localhost").AddressList[0]));
     }
 
     [Fact]
     public void TestHostInfo()
     {
-        var utils = new InetUtils(new InetOptions(), NullLogger.Instance);
+        var utils = new InetUtils(new InetOptions(), NullLogger<InetUtils>.Instance);
         HostInfo info = utils.FindFirstNonLoopbackHostInfo();
         Assert.NotNull(info.IPAddress);
     }
@@ -52,7 +52,7 @@ public sealed class InetUtilsTest
             IgnoredInterfaces = "docker0,veth.*"
         };
 
-        var inetUtils = new InetUtils(properties);
+        var inetUtils = new InetUtils(properties, NullLogger<InetUtils>.Instance);
 
         Assert.True(inetUtils.IgnoreInterface("docker0"));
         Assert.True(inetUtils.IgnoreInterface("vethAQI2QT"));
@@ -62,7 +62,7 @@ public sealed class InetUtilsTest
     [Fact]
     public void TestDefaultIgnoreInterface()
     {
-        var inetUtils = new InetUtils(new InetOptions(), NullLogger.Instance);
+        var inetUtils = new InetUtils(new InetOptions(), NullLogger<InetUtils>.Instance);
         Assert.False(inetUtils.IgnoreInterface("docker0"));
     }
 
@@ -74,7 +74,7 @@ public sealed class InetUtilsTest
             UseOnlySiteLocalInterfaces = true
         };
 
-        var utils = new InetUtils(properties);
+        var utils = new InetUtils(properties, NullLogger<InetUtils>.Instance);
         Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
         Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
     }
@@ -87,7 +87,7 @@ public sealed class InetUtilsTest
             PreferredNetworks = "192.168.*,10.0.*"
         };
 
-        var utils = new InetUtils(properties, NullLogger.Instance);
+        var utils = new InetUtils(properties, NullLogger<InetUtils>.Instance);
         Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
         Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
         Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.0.10.1")));
@@ -102,7 +102,7 @@ public sealed class InetUtilsTest
             PreferredNetworks = "192,10.0"
         };
 
-        var utils = new InetUtils(properties, NullLogger.Instance);
+        var utils = new InetUtils(properties, NullLogger<InetUtils>.Instance);
         Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
         Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
         Assert.False(utils.IsPreferredAddress(IPAddress.Parse("10.255.10.1")));
@@ -114,7 +114,7 @@ public sealed class InetUtilsTest
     {
         var properties = new InetOptions();
 
-        var utils = new InetUtils(properties, NullLogger.Instance);
+        var utils = new InetUtils(properties, NullLogger<InetUtils>.Instance);
         Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
         Assert.True(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
         Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.255.10.1")));

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
@@ -10,16 +11,15 @@ using Steeltoe.Discovery.Consul.Discovery;
 
 namespace Steeltoe.Discovery.Consul;
 
-public static class ConsulPostConfigurer
+internal static class ConsulPostConfigurer
 {
     /// <summary>
     /// At PostConfigure, confirm that settings are valid for the current environment.
     /// </summary>
-    /// <param name="options">
-    /// ConsulOptions to evaluate.
-    /// </param>
     public static void ValidateConsulOptions(ConsulOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         if ((Platform.IsContainerized || Platform.IsCloudHosted) && options.Host == "localhost")
         {
             throw new InvalidOperationException(
@@ -30,19 +30,17 @@ public static class ConsulPostConfigurer
     /// <summary>
     /// Perform post-configuration on ConsulDiscoveryOptions.
     /// </summary>
-    /// <param name="configuration">
-    /// Application Configuration.
-    /// </param>
-    /// <param name="options">
-    /// ConsulDiscoveryOptions to configure.
-    /// </param>
-    /// <param name="netOptions">
-    /// Optional InetOptions.
-    /// </param>
-    public static void UpdateDiscoveryOptions(IConfiguration configuration, ConsulDiscoveryOptions options, InetOptions netOptions)
+    public static void UpdateDiscoveryOptions(IConfiguration configuration, ConsulDiscoveryOptions discoveryOptions, InetOptions inetOptions,
+        ILoggerFactory loggerFactory)
     {
-        options.NetUtils = new InetUtils(netOptions);
-        options.ApplyNetUtils();
-        options.ApplyConfigUrls(configuration.GetAspNetCoreUrls());
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(discoveryOptions);
+        ArgumentGuard.NotNull(inetOptions);
+        ArgumentGuard.NotNull(loggerFactory);
+
+        ILogger<InetUtils> logger = loggerFactory.CreateLogger<InetUtils>();
+        discoveryOptions.NetUtils = new InetUtils(inetOptions, logger);
+        discoveryOptions.ApplyNetUtils();
+        discoveryOptions.ApplyConfigUrls(configuration.GetAspNetCoreUrls());
     }
 }

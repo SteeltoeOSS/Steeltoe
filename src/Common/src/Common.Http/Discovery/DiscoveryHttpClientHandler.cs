@@ -5,6 +5,7 @@
 #nullable enable
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.LoadBalancer;
 
@@ -25,7 +26,7 @@ public class DiscoveryHttpClientHandler : HttpClientHandler
     /// Service discovery client to use - provided by calling services.AddDiscoveryClient(Configuration).
     /// </param>
     /// <param name="loggerFactory">
-    /// ILoggerFactory for capturing logs from Discovery operations.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="loadBalancer">
     /// The load balancer to use.

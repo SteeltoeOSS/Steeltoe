@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
@@ -76,8 +77,9 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                 {
                     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
                     var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
-                    var inetOptions = configuration.GetSection(InetOptions.Prefix).Get<InetOptions>();
-                    options.NetUtils = new InetUtils(inetOptions);
+                    InetOptions inetOptions = configuration.GetSection(InetOptions.Prefix).Get<InetOptions>() ?? new InetOptions();
+                    var logger = serviceProvider.GetRequiredService<ILogger<InetUtils>>();
+                    options.NetUtils = new InetUtils(inetOptions, logger);
                     options.ApplyNetUtils();
 
                     if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Management.Endpoint") && string.IsNullOrEmpty(

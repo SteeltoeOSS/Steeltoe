@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
@@ -51,10 +52,10 @@ public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
             {
                 options.Enabled = false;
             }
-        }).PostConfigure<IConfiguration>((options, configuration) =>
+        }).PostConfigure<IConfiguration, ILoggerFactory>((discoveryOptions, configuration, loggerFactory) =>
         {
-            var netOptions = configuration.GetSection(InetOptions.Prefix).Get<InetOptions>();
-            ConsulPostConfigurer.UpdateDiscoveryOptions(configuration, options, netOptions);
+            InetOptions inetOptions = configuration.GetSection(InetOptions.Prefix).Get<InetOptions>() ?? new InetOptions();
+            ConsulPostConfigurer.UpdateDiscoveryOptions(configuration, discoveryOptions, inetOptions, loggerFactory);
         });
 
         services.TryAddSingleton(serviceProvider =>
