@@ -2,65 +2,67 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// Configuration options for the ConsulDiscoveryClient.
+/// Configuration options for <see cref="ConsulDiscoveryClient" />.
 /// </summary>
-public class ConsulDiscoveryOptions
+public sealed class ConsulDiscoveryOptions
 {
-    public const string ConsulDiscoveryConfigurationPrefix = "consul:discovery";
+    internal const string ConfigurationPrefix = "consul:discovery";
 
-    private string _hostName;
-    private string _scheme = "http";
+    private string? _hostName;
+    private string? _scheme = "http";
+
+    internal InetUtils? NetUtils { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether Consul Discovery client is enabled.
+    /// Gets or sets a value indicating whether the Consul discovery client is enabled.
     /// </summary>
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets Tags to use when registering service.
+    /// Gets or sets tags to use when registering a service.
     /// </summary>
-    public IList<string> Tags { get; set; }
+    public IList<string>? Tags { get; set; }
 
     /// <summary>
-    /// Gets or sets Metadata to use when registering service.
+    /// Gets or sets metadata to use when registering a service.
     /// </summary>
-    public IDictionary<string, string> Metadata { get; set; }
+    public IDictionary<string, string>? Metadata { get; set; }
 
     public bool UseNetUtils { get; set; }
 
-    internal InetUtils NetUtils { get; set; }
-
     /// <summary>
-    /// Gets or sets values related to Heartbeat.
+    /// Gets or sets values related to heartbeat.
     /// </summary>
-    public ConsulHeartbeatOptions Heartbeat { get; set; } = new();
+    public ConsulHeartbeatOptions? Heartbeat { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets values related to Retrying requests.
+    /// Gets or sets values related to retrying requests.
     /// </summary>
-    public ConsulRetryOptions Retry { get; set; } = new();
+    public ConsulRetryOptions? Retry { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets Tag to query for in service list if one is not listed in serverListQueryTags.
+    /// Gets or sets the tag to query for in the service list, if one is not listed in serverListQueryTags.
     /// </summary>
-    public string DefaultQueryTag { get; set; }
+    public string? DefaultQueryTag { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets Add the 'passing` parameter to /v1/health/service/serviceName. This pushes health check passing
-    /// to the server.
+    /// Gets or sets a value indicating whether to add the "passing" parameter to /v1/health/service/serviceName. This pushes health check passing to the
+    /// server.
     /// </summary>
     public bool QueryPassing { get; set; }
 
     /// <summary>
     /// Gets or sets Whether to register an http or https service.
     /// </summary>
-    public string Scheme
+    public string? Scheme
     {
         get => _scheme;
 #pragma warning disable S4040 // Strings should be normalized to uppercase
@@ -69,34 +71,34 @@ public class ConsulDiscoveryOptions
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets RegisterHealthCheck in consul. Useful during development of a service.
+    /// Gets or sets a value indicating whether to register health checks in Consul. Useful during development of a service.
     /// </summary>
     public bool RegisterHealthCheck { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets Custom health check url to override default.
+    /// Gets or sets a custom health check url, to override the default.
     /// </summary>
-    public string HealthCheckUrl { get; set; }
+    public string? HealthCheckUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets Alternate server path to invoke for health checking.
+    /// Gets or sets an alternate server path to invoke for health checking.
     /// </summary>
-    public string HealthCheckPath { get; set; } = "/actuator/health";
+    public string? HealthCheckPath { get; set; } = "/actuator/health";
 
     /// <summary>
-    /// Gets or sets How often to perform the health check (e.g. 10s), defaults to 10s.
+    /// Gets or sets how often to perform the health check (e.g. 10s), defaults to 10s.
     /// </summary>
-    public string HealthCheckInterval { get; set; } = "10s";
+    public string? HealthCheckInterval { get; set; } = "10s";
 
     /// <summary>
-    /// Gets or sets Timeout for health check (e.g. 10s).
+    /// Gets or sets the timeout for health checks (e.g. 10s), defaults to 10s.
     /// </summary>
-    public string HealthCheckTimeout { get; set; } = "10s";
+    public string? HealthCheckTimeout { get; set; } = "10s";
 
     /// <summary>
-    /// Gets or sets Timeout to deregister services critical for longer than timeout(e.g. 30m). Requires consul version 7.x or higher.
+    /// Gets or sets the timeout to deregister services critical for longer than timeout (e.g. 30m). Requires consul version 7.x or higher.
     /// </summary>
-    public string HealthCheckCriticalTimeout { get; set; } = "30m";
+    public string? HealthCheckCriticalTimeout { get; set; } = "30m";
 
     /// <summary>
     /// Gets or sets a value indicating whether health check verifies TLS.
@@ -104,38 +106,38 @@ public class ConsulDiscoveryOptions
     public bool HealthCheckTlsSkipVerify { get; set; }
 
     /// <summary>
-    /// Gets or sets Hostname to use when accessing server.
+    /// Gets or sets the hostname to use when accessing the Consul server.
     /// </summary>
-    public string HostName
+    public string? HostName
     {
         get => PreferIPAddress ? IPAddress : _hostName;
         set => _hostName = value;
     }
 
     /// <summary>
-    /// Gets or sets IP address to use when accessing service (must also set preferIPAddress to use).
+    /// Gets or sets the IP address to use when accessing the service (must also set <see cref="PreferIPAddress" /> to use).
     /// </summary>
-    public string IPAddress { get; set; }
+    public string? IPAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets Port to register the service under.
+    /// Gets or sets the port to register the service under.
     /// </summary>
     public int Port { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets Use ip address rather than hostname during registration.
+    /// Gets or sets a value indicating whether to use an IP address rather than a hostname during registration.
     /// </summary>
     public bool PreferIPAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets Service name.
+    /// Gets or sets the service name.
     /// </summary>
-    public string ServiceName { get; set; }
+    public string? ServiceName { get; set; }
 
     /// <summary>
-    /// Gets or sets Unique service instance ID.
+    /// Gets or sets the unique service instance ID.
     /// </summary>
-    public string InstanceId { get; set; }
+    public string? InstanceId { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to use agent address or hostname.
@@ -145,43 +147,42 @@ public class ConsulDiscoveryOptions
     /// <summary>
     /// Gets or sets the instance zone to use during registration.
     /// </summary>
-    public string InstanceZone { get; set; }
+    public string? InstanceZone { get; set; }
 
     /// <summary>
     /// Gets or sets the instance group to use during registration.
     /// </summary>
-    public string InstanceGroup { get; set; }
+    public string? InstanceGroup { get; set; }
 
     /// <summary>
     /// Gets or sets the metadata tag name of the zone.
     /// </summary>
-    public string DefaultZoneMetadataName { get; set; } = "zone";
+    public string? DefaultZoneMetadataName { get; set; } = "zone";
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets FailFast Throw exceptions during service registration if true, otherwise, log warnings(defaults
-    /// to true).
+    /// Gets or sets a value indicating whether to throw exceptions during service registration. If false, logs warnings. Defaults to true.
     /// </summary>
     public bool FailFast { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets Register as a service in consul.
+    /// Gets or sets a value indicating whether to register as a service in consul.
     /// </summary>
     public bool Register { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets Deregister automatic de-registration of service in consul.
+    /// Gets or sets a value indicating whether to use automatic de-registration of a service in consul.
     /// </summary>
     public bool Deregister { get; set; } = true;
 
     /// <summary>
-    /// Gets a value indicating whether heart beat is enabled.
+    /// Gets a value indicating whether heart beats are enabled.
     /// </summary>
-    public bool IsHeartBeatEnabled => Heartbeat != null && Heartbeat.Enabled;
+    public bool IsHeartBeatEnabled => Heartbeat is { Enabled: true };
 
     /// <summary>
-    /// Gets a value indicating whether retry is enabled.
+    /// Gets a value indicating whether retries are enabled.
     /// </summary>
-    public bool IsRetryEnabled => Retry != null && Retry.Enabled;
+    public bool IsRetryEnabled => Retry is { Enabled: true };
 
     /// <summary>
     /// Gets or sets the time in seconds that service instance cache records should remain active.
@@ -189,20 +190,21 @@ public class ConsulDiscoveryOptions
     public int CacheTtl { get; set; } = 15;
 
     /// <summary>
-    /// Gets or sets a value indicating whether to register a Url from ASP.NET Core configuration.
+    /// Gets or sets a value indicating whether to register url from ASP.NET Core configuration.
     /// </summary>
     public bool UseAspNetCoreUrls { get; set; } = true;
 
     public ConsulDiscoveryOptions()
     {
-        if (!UseNetUtils)
+        _hostName = DnsTools.ResolveHostName();
+
+        if (_hostName != null)
         {
-            _hostName = DnsTools.ResolveHostName();
             IPAddress = DnsTools.ResolveHostAddress(_hostName);
         }
     }
 
-    public void ApplyNetUtils()
+    internal void ApplyNetUtils()
     {
         if (UseNetUtils && NetUtils != null)
         {
@@ -213,19 +215,19 @@ public class ConsulDiscoveryOptions
     }
 
     /// <summary>
-    /// Set properties from addresses found in configuration.
+    /// Sets properties from addresses found in configuration.
     /// </summary>
     /// <param name="addresses">
     /// A list of addresses the application is listening on.
     /// </param>
-    public void ApplyConfigUrls(List<Uri> addresses)
+    internal void ApplyConfigUrls(IList<Uri> addresses)
     {
         // try to pull some values out of server config to override defaults, but only if not using NetUtils
         // if NetUtils are configured, the user probably wants to define their own behavior
-        if (addresses.Any() && !UseNetUtils && UseAspNetCoreUrls && Port == 0)
+        if (addresses.Count > 0 && !UseNetUtils && UseAspNetCoreUrls && Port == 0)
         {
             // prefer https
-            Uri configAddress = addresses.Find(u => u.Scheme == "https");
+            Uri? configAddress = addresses.FirstOrDefault(uri => uri.Scheme == "https");
 
             if (configAddress == null)
             {

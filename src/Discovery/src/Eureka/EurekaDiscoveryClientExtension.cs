@@ -77,7 +77,7 @@ public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                 {
                     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
                     var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
-                    InetOptions inetOptions = configuration.GetSection(InetOptions.Prefix).Get<InetOptions>() ?? new InetOptions();
+                    InetOptions inetOptions = configuration.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>() ?? new InetOptions();
                     var logger = serviceProvider.GetRequiredService<ILogger<InetUtils>>();
                     options.NetUtils = new InetUtils(inetOptions, logger);
                     options.ApplyNetUtils();

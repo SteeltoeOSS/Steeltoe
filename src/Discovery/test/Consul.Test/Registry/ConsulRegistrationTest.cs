@@ -220,7 +220,7 @@ public sealed class ConsulRegistrationTest
         var options = new ConsulDiscoveryOptions();
         AgentServiceCheck result = ConsulRegistration.CreateCheck(1234, options);
         Assert.NotNull(result);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl), result.TTL);
+        Assert.Equal(DateTimeConversions.ToTimeSpan(options.Heartbeat!.TimeToLive), result.TTL);
         Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout), result.DeregisterCriticalServiceAfter);
 
         options.Heartbeat = null;

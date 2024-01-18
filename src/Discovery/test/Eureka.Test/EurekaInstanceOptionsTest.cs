@@ -216,7 +216,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
 
         var opts = new EurekaInstanceOptions
         {
-            NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.Prefix).Get<InetOptions>(), NullLogger<InetUtils>.Instance)
+            NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>(), NullLogger<InetUtils>.Instance)
         };
 
         configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(opts);

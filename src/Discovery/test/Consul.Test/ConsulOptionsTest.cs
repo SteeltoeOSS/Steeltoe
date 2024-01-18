@@ -11,14 +11,14 @@ public sealed class ConsulOptionsTest
     [Fact]
     public void Constructor_InitializesDefaults()
     {
-        var opts = new ConsulOptions();
-        Assert.Null(opts.Datacenter);
-        Assert.Null(opts.Password);
-        Assert.Null(opts.Username);
-        Assert.Null(opts.WaitTime);
-        Assert.Null(opts.Token);
-        Assert.Equal("localhost", opts.Host);
-        Assert.Equal("http", opts.Scheme);
-        Assert.Equal(8500, opts.Port);
+        var options = new ConsulOptions();
+        Assert.Null(options.Datacenter);
+        Assert.Null(options.Password);
+        Assert.Null(options.Username);
+        Assert.Null(options.WaitTime);
+        Assert.Null(options.Token);
+        Assert.Equal("localhost", options.Host);
+        Assert.Equal("http", options.Scheme);
+        Assert.Equal(8500, options.Port);
     }
 }
