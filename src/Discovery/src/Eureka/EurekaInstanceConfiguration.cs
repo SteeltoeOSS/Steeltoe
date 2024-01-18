@@ -201,7 +201,7 @@ public class EurekaInstanceConfiguration
 
     public bool UseNetUtils { get; set; }
 
-    public InetUtils NetUtils { get; set; }
+    internal InetUtils NetUtils { get; set; }
 
     public EurekaInstanceConfiguration()
     {

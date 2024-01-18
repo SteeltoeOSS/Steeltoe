@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
@@ -158,7 +159,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
     [Fact]
     public void Options_DoNotUseInetUtilsByDefault()
     {
-        var mockNetUtils = new Mock<InetUtils>(null, null);
+        var mockNetUtils = new Mock<InetUtils>(new InetOptions(), NullLogger<InetUtils>.Instance);
 
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
         {
@@ -181,7 +182,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
     [Fact]
     public void Options_CanUseInetUtils()
     {
-        var mockNetUtils = new Mock<InetUtils>(null, null);
+        var mockNetUtils = new Mock<InetUtils>(new InetOptions(), NullLogger<InetUtils>.Instance);
 
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
         {
@@ -223,7 +224,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
 
         var opts = new EurekaInstanceOptions
         {
-            NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.Prefix).Get<InetOptions>())
+            NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.Prefix).Get<InetOptions>(), NullLogger<InetUtils>.Instance)
         };
 
         configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(opts);

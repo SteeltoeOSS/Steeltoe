@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -23,7 +24,7 @@ public static class EurekaClientService
     /// the Eureka service id to look up all instances of.
     /// </param>
     /// <param name="loggerFactory">
-    /// optional log factory to use for logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
@@ -49,7 +50,7 @@ public static class EurekaClientService
     /// configuration values used for configuring the Eureka client.
     /// </param>
     /// <param name="loggerFactory">
-    /// optional log factory to use for logging.
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.

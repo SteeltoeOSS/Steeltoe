@@ -34,7 +34,7 @@ public class ConsulDiscoveryOptions
 
     public bool UseNetUtils { get; set; }
 
-    public InetUtils NetUtils { get; set; }
+    internal InetUtils NetUtils { get; set; }
 
     /// <summary>
     /// Gets or sets values related to Heartbeat.

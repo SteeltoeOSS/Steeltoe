@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -10,71 +12,72 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Common.Net;
 
-public class InetUtils
+internal class InetUtils
 {
     private readonly InetOptions _options;
-    private readonly ILogger _logger;
+    private readonly ILogger<InetUtils> _logger;
 
-    public InetUtils(InetOptions options, ILogger logger = null)
+    public InetUtils(InetOptions options, ILogger<InetUtils> logger)
     {
+        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(logger);
+
         _options = options;
         _logger = logger;
     }
 
     public virtual HostInfo FindFirstNonLoopbackHostInfo()
     {
-        IPAddress address = FindFirstNonLoopbackAddress();
+        IPAddress? address = FindFirstNonLoopbackAddress();
 
         if (address != null)
         {
             return ConvertAddress(address);
         }
 
-        var hostInfo = new HostInfo
+        return new HostInfo
         {
             Hostname = _options.DefaultHostname,
             IPAddress = _options.DefaultIPAddress
         };
-
-        return hostInfo;
     }
 
-    public IPAddress FindFirstNonLoopbackAddress()
+    public IPAddress? FindFirstNonLoopbackAddress()
     {
-        IPAddress result = null;
+        IPAddress? result = null;
 
         try
         {
             int lowest = int.MaxValue;
-            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
 
-            foreach (NetworkInterface @interface in interfaces)
+            foreach (NetworkInterface networkInterface in networkInterfaces)
             {
-                if (@interface.OperationalStatus == OperationalStatus.Up && !@interface.IsReceiveOnly)
+                if (networkInterface is { OperationalStatus: OperationalStatus.Up, IsReceiveOnly: false })
                 {
-                    _logger?.LogTrace("Testing interface: {name}, {id}", @interface.Name, @interface.Id);
+                    _logger.LogTrace("Testing interface: {name}, {id}", networkInterface.Name, networkInterface.Id);
 
-                    IPInterfaceProperties props = @interface.GetIPProperties();
-                    IPv4InterfaceProperties ipProps = props.GetIPv4Properties();
+                    IPInterfaceProperties properties = networkInterface.GetIPProperties();
+                    IPv4InterfaceProperties iPv4Properties = properties.GetIPv4Properties();
 
-                    if (ipProps.Index < lowest || result == null)
+                    if (iPv4Properties.Index < lowest || result == null)
                     {
-                        lowest = ipProps.Index;
+                        lowest = iPv4Properties.Index;
                     }
                     else
                     {
                         continue;
                     }
 
-                    if (!IgnoreInterface(@interface.Name))
+                    if (!IgnoreInterface(networkInterface.Name))
                     {
-                        foreach (UnicastIPAddressInformation addressInfo in props.UnicastAddresses)
+                        foreach (UnicastIPAddressInformation addressInfo in properties.UnicastAddresses)
                         {
                             IPAddress address = addressInfo.Address;
 
                             if (IsInet4Address(address) && !IsLoopbackAddress(address) && IsPreferredAddress(address))
                             {
-                                _logger?.LogTrace("Found non-loopback interface: {name}", @interface.Name);
+                                _logger.LogTrace("Found non-loopback interface: {name}", networkInterface.Name);
                                 result = address;
                             }
                         }
@@ -82,9 +85,9 @@ public class InetUtils
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            _logger?.LogError(ex, "Cannot get first non-loopback address");
+            _logger.LogError(exception, "Cannot get first non-loopback address");
         }
 
         if (result != null)
@@ -95,12 +98,12 @@ public class InetUtils
         return GetHostAddress();
     }
 
-    internal bool IsInet4Address(IPAddress address)
+    private static bool IsInet4Address(IPAddress address)
     {
         return address.AddressFamily == AddressFamily.InterNetwork;
     }
 
-    internal bool IsLoopbackAddress(IPAddress address)
+    private static bool IsLoopbackAddress(IPAddress address)
     {
         return IPAddress.IsLoopback(address);
     }
@@ -113,15 +116,15 @@ public class InetUtils
 
             if (!siteLocalAddress)
             {
-                _logger?.LogTrace("Ignoring address: {address} [UseOnlySiteLocalInterfaces=true, this address is not]", address);
+                _logger.LogTrace("Ignoring address: {address} [UseOnlySiteLocalInterfaces=true, this address is not]", address);
             }
 
             return siteLocalAddress;
         }
 
-        IEnumerable<string> preferredNetworks = _options.GetPreferredNetworks();
+        string[] preferredNetworks = _options.GetPreferredNetworks().ToArray();
 
-        if (!preferredNetworks.Any())
+        if (preferredNetworks.Length == 0)
         {
             return true;
         }
@@ -137,7 +140,7 @@ public class InetUtils
             }
         }
 
-        _logger?.LogTrace("Ignoring address: {address}", address);
+        _logger.LogTrace("Ignoring address: {address}", address);
         return false;
     }
 
@@ -154,7 +157,7 @@ public class InetUtils
 
             if (matcher.IsMatch(interfaceName))
             {
-                _logger?.LogTrace("Ignoring interface: {name}", interfaceName);
+                _logger.LogTrace("Ignoring interface: {name}", interfaceName);
                 return true;
             }
         }
@@ -178,7 +181,7 @@ public class InetUtils
             }
             catch (Exception e)
             {
-                _logger?.LogInformation(e, "Cannot determine local hostname");
+                _logger.LogInformation(e, "Cannot determine local hostname.");
                 hostname = "localhost";
             }
 
@@ -193,9 +196,9 @@ public class InetUtils
         return hostInfo;
     }
 
-    internal IPAddress ResolveHostAddress(string hostName)
+    private IPAddress? ResolveHostAddress(string hostName)
     {
-        IPAddress result = null;
+        IPAddress? result = null;
 
         try
         {
@@ -213,54 +216,39 @@ public class InetUtils
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            _logger?.LogWarning(e, "Unable to resolve host address");
+            _logger.LogWarning(exception, "Unable to resolve host address.");
         }
 
         return result;
     }
 
-    internal string ResolveHostName()
+    private string? ResolveHostName()
     {
-        string result = null;
+        string? result = null;
 
         try
         {
             result = Dns.GetHostName();
-
-            if (!string.IsNullOrEmpty(result))
-            {
-                IPHostEntry response = Dns.GetHostEntry(result);
-                return response.HostName;
-            }
+            IPHostEntry response = Dns.GetHostEntry(result);
+            return response.HostName;
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            _logger?.LogWarning(e, "Unable to resolve hostname");
+            _logger.LogWarning(exception, "Unable to resolve hostname.");
         }
 
         return result;
     }
 
-    internal string GetHostName()
+    private IPAddress? GetHostAddress()
     {
-        return ResolveHostName();
+        string? hostName = ResolveHostName();
+        return !string.IsNullOrEmpty(hostName) ? ResolveHostAddress(hostName) : null;
     }
 
-    internal IPAddress GetHostAddress()
-    {
-        string hostName = GetHostName();
-
-        if (!string.IsNullOrEmpty(hostName))
-        {
-            return ResolveHostAddress(hostName);
-        }
-
-        return null;
-    }
-
-    internal bool IsSiteLocalAddress(IPAddress address)
+    private static bool IsSiteLocalAddress(IPAddress address)
     {
         string text = address.ToString();
 

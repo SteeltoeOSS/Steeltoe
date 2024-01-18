@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Consul.Discovery;
@@ -51,7 +52,7 @@ public sealed class ConsulDiscoveryOptionsTest
     [Fact]
     public void Options_DoNotUseInetUtilsByDefault()
     {
-        var mockNetUtils = new Mock<InetUtils>(null, null);
+        var mockNetUtils = new Mock<InetUtils>(new InetOptions(), NullLogger<InetUtils>.Instance);
 
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
         {
@@ -76,7 +77,7 @@ public sealed class ConsulDiscoveryOptionsTest
     [Fact]
     public void Options_CanUseInetUtils()
     {
-        var mockNetUtils = new Mock<InetUtils>(null, null);
+        var mockNetUtils = new Mock<InetUtils>(new InetOptions(), NullLogger<InetUtils>.Instance);
 
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
         {
@@ -118,7 +119,7 @@ public sealed class ConsulDiscoveryOptionsTest
 
         var opts = new ConsulDiscoveryOptions
         {
-            NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.Prefix).Get<InetOptions>())
+            NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.Prefix).Get<InetOptions>(), NullLogger<InetUtils>.Instance)
         };
 
         configurationRoot.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
