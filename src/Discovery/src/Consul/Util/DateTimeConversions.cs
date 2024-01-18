@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Discovery.Consul.Util;
 
-public static class DateTimeConversions
+internal static class DateTimeConversions
 {
     public static TimeSpan ToTimeSpan(string time)
     {
@@ -19,25 +19,25 @@ public static class DateTimeConversions
 
         if (time.EndsWith("ms", StringComparison.Ordinal))
         {
-            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 2), CultureInfo.InvariantCulture), "ms");
+            return ToTimeSpan(int.Parse(time[..^2], CultureInfo.InvariantCulture), "ms");
         }
 
         if (time.EndsWith('s'))
         {
-            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1), CultureInfo.InvariantCulture), "s");
+            return ToTimeSpan(int.Parse(time[..^1], CultureInfo.InvariantCulture), "s");
         }
 
         if (time.EndsWith('m'))
         {
-            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1), CultureInfo.InvariantCulture), "m");
+            return ToTimeSpan(int.Parse(time[..^1], CultureInfo.InvariantCulture), "m");
         }
 
         if (time.EndsWith('h'))
         {
-            return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1), CultureInfo.InvariantCulture), "h");
+            return ToTimeSpan(int.Parse(time[..^1], CultureInfo.InvariantCulture), "h");
         }
 
-        throw new InvalidOperationException($"Incorrect format:{time}");
+        throw new FormatException($"Incorrect format: '{time}'.");
     }
 
     public static TimeSpan ToTimeSpan(int value, string unit)
@@ -50,7 +50,7 @@ public static class DateTimeConversions
             "s" => TimeSpan.FromSeconds(value),
             "m" => TimeSpan.FromMinutes(value),
             "h" => TimeSpan.FromHours(value),
-            _ => throw new InvalidOperationException($"Incorrect unit:{unit}")
+            _ => throw new FormatException($"Incorrect unit: '{unit}'.")
         };
     }
 }

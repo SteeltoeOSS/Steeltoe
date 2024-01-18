@@ -8,7 +8,7 @@ namespace Steeltoe.Common.Net;
 
 public sealed class InetOptions
 {
-    internal const string Prefix = "spring:cloud:inet";
+    internal const string ConfigurationPrefix = "spring:cloud:inet";
 
     public string? DefaultHostname { get; set; } = "localhost";
     public string? DefaultIPAddress { get; set; } = "127.0.0.1";

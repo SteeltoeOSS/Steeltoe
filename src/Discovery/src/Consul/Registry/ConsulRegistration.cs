@@ -144,8 +144,7 @@ public class ConsulRegistration : IServiceInstance
             service.Address = options.HostName;
         }
 
-        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery,
-            $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
+        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConfigurationPrefix}:serviceName");
 
         service.Name = NormalizeForConsul(appName);
         service.Tags = CreateTags(options);
@@ -212,8 +211,7 @@ public class ConsulRegistration : IServiceInstance
 
     internal static string GetDefaultInstanceId(IApplicationInstanceInfo applicationInfo)
     {
-        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery,
-            $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
+        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConfigurationPrefix}:serviceName");
 
         string instanceId = applicationInfo.InstanceId;
 
@@ -271,7 +269,7 @@ public class ConsulRegistration : IServiceInstance
 
         if (options.IsHeartBeatEnabled)
         {
-            check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl);
+            check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.TimeToLive);
             return check;
         }
 
