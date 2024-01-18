@@ -852,9 +852,9 @@ public class EurekaHttpClient
             logger?.LogDebug($"GetRequestContent generated JSON: {json}");
             return new StringContent(json, Encoding.UTF8, "application/json");
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            logger?.LogError(e, "GetRequestContent Failed");
+            logger?.LogError(exception, "GetRequestContent Failed");
         }
 
         return new StringContent(string.Empty, Encoding.UTF8, "application/json");

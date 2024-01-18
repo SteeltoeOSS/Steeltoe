@@ -207,12 +207,7 @@ public class ConsulDiscoveryOptions
         if (UseNetUtils && NetUtils != null)
         {
             HostInfo host = NetUtils.FindFirstNonLoopbackHostInfo();
-
-            if (host.Hostname != null)
-            {
-                _hostName = host.Hostname;
-            }
-
+            _hostName = host.Hostname;
             IPAddress = host.IPAddress;
         }
     }

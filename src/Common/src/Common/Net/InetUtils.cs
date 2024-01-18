@@ -35,11 +35,7 @@ internal class InetUtils
             return ConvertAddress(address);
         }
 
-        return new HostInfo
-        {
-            Hostname = _options.DefaultHostname,
-            IPAddress = _options.DefaultIPAddress
-        };
+        return new HostInfo(_options.DefaultHostname, _options.DefaultIPAddress);
     }
 
     public IPAddress? FindFirstNonLoopbackAddress()
@@ -167,33 +163,28 @@ internal class InetUtils
 
     internal HostInfo ConvertAddress(IPAddress address)
     {
-        var hostInfo = new HostInfo();
+        string hostname;
 
         if (!_options.SkipReverseDnsLookup)
         {
-            string hostname;
-
             try
             {
                 // warning: this might take a few seconds...
                 IPHostEntry hostEntry = Dns.GetHostEntry(address);
                 hostname = hostEntry.HostName;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                _logger.LogInformation(e, "Cannot determine local hostname.");
+                _logger.LogInformation(exception, "Cannot determine local hostname.");
                 hostname = "localhost";
             }
-
-            hostInfo.Hostname = hostname;
         }
         else
         {
-            hostInfo.Hostname = _options.DefaultHostname;
+            hostname = _options.DefaultHostname;
         }
 
-        hostInfo.IPAddress = address.ToString();
-        return hostInfo;
+        return new HostInfo(hostname, address.ToString());
     }
 
     private IPAddress? ResolveHostAddress(string hostName)

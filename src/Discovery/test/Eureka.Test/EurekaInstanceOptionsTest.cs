@@ -161,11 +161,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
     {
         var mockNetUtils = new Mock<InetUtils>(new InetOptions(), NullLogger<InetUtils>.Instance);
 
-        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
-        {
-            Hostname = "FromMock",
-            IPAddress = "254.254.254.254"
-        }).Verifiable();
+        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
@@ -184,11 +180,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
     {
         var mockNetUtils = new Mock<InetUtils>(new InetOptions(), NullLogger<InetUtils>.Instance);
 
-        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
-        {
-            Hostname = "FromMock",
-            IPAddress = "254.254.254.254"
-        }).Verifiable();
+        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
 
         var appSettings = new Dictionary<string, string>
         {

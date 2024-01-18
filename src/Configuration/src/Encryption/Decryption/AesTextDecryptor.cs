@@ -88,9 +88,9 @@ internal sealed class AesTextDecryptor : ITextDecryptor
             byte[] clearTextBytes = _cipher.DoFinal(cipherBytes);
             return Encoding.Default.GetString(clearTextBytes);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            throw new DecryptionException("Failed to decrypt", ex);
+            throw new DecryptionException("Failed to decrypt", exception);
         }
     }
 

@@ -51,9 +51,9 @@ public class ApplicationInfoManager
                     {
                         StatusChanged?.Invoke(this, new StatusChangedEventArgs(prev, value, InstanceInfo.InstanceId));
                     }
-                    catch (Exception e)
+                    catch (Exception exception)
                     {
-                        logger?.LogError(e, "StatusChanged event exception");
+                        logger?.LogError(exception, "StatusChanged event exception");
                     }
                 }
             }
