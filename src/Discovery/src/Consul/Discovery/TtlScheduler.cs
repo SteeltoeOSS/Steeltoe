@@ -161,9 +161,9 @@ public class TtlScheduler : IDisposable
         {
             await Client.Agent.PassTTL(serviceId, "ttl");
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            _logger?.LogError(e, "Exception sending consul heartbeat for: {serviceId} ", serviceId);
+            _logger?.LogError(exception, "Exception sending consul heartbeat for: {serviceId} ", serviceId);
         }
     }
 }

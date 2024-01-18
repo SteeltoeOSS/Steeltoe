@@ -182,9 +182,9 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         {
             await DoLoadAsync(true, CancellationToken.None);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Logger.LogWarning(e, "Could not reload configuration during polling");
+            Logger.LogWarning(exception, "Could not reload configuration during polling");
         }
     }
 

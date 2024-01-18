@@ -234,12 +234,7 @@ public class EurekaInstanceConfiguration
         if (UseNetUtils && NetUtils != null)
         {
             HostInfo host = NetUtils.FindFirstNonLoopbackHostInfo();
-
-            if (host.Hostname != null)
-            {
-                HostName = host.Hostname;
-            }
-
+            HostName = host.Hostname;
             IPAddress = host.IPAddress;
         }
     }
