@@ -35,7 +35,7 @@ internal class InetUtils
             return ConvertAddress(address);
         }
 
-        return new HostInfo(_options.DefaultHostname, _options.DefaultIPAddress);
+        return new HostInfo(_options.DefaultHostname!, _options.DefaultIPAddress!);
     }
 
     public IPAddress? FindFirstNonLoopbackAddress()
@@ -181,7 +181,7 @@ internal class InetUtils
         }
         else
         {
-            hostname = _options.DefaultHostname;
+            hostname = _options.DefaultHostname!;
         }
 
         return new HostInfo(hostname, address.ToString());
