@@ -14,4 +14,8 @@
     <ProjectReference Include="..\..\src\HttpClients\Steeltoe.Discovery.HttpClients.csproj" />
     <ProjectReference Include="..\..\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>

@@ -11,4 +11,8 @@
     <ProjectReference Include="..\..\src\HttpClients\Steeltoe.Discovery.HttpClients.csproj" />
     <ProjectReference Include="..\..\src\Consul\Steeltoe.Discovery.Consul.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>
