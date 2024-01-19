@@ -70,7 +70,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
     /// a Consul client.
     /// </param>
     /// <param name="optionsMonitor">
-    /// the configuration options.
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     /// <param name="registrar">
     /// a Consul registrar service.

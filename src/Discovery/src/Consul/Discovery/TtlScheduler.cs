@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Concurrent;
 using Consul;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
@@ -13,157 +16,100 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 /// <summary>
 /// Scheduler used to issue TTL requests to the Consul server.
 /// </summary>
-public class TtlScheduler : IDisposable
+public sealed class TtlScheduler : IAsyncDisposable
 {
+    private const string InstancePrefix = "service:";
+
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
-    private readonly ConsulDiscoveryOptions _options;
-    private readonly ILogger<TtlScheduler> _logger;
-    internal readonly ConcurrentDictionary<string, Timer> ServiceHeartbeats = new(StringComparer.OrdinalIgnoreCase);
-
-    internal readonly IConsulClient Client;
-
+    private readonly IConsulClient _client;
+    private readonly ILogger<TtlScheduler> _schedulerLogger;
+    private readonly ILogger<PeriodicHeartbeat> _heartbeatLogger;
+    internal readonly ConcurrentDictionary<string, PeriodicHeartbeat> ServiceHeartbeats = new(StringComparer.OrdinalIgnoreCase);
     private bool _isDisposed;
-
-    internal ConsulDiscoveryOptions Options
-    {
-        get
-        {
-            if (_optionsMonitor != null)
-            {
-                return _optionsMonitor.CurrentValue;
-            }
-
-            return _options;
-        }
-    }
-
-    internal ConsulHeartbeatOptions HeartbeatOptions => Options.Heartbeat;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TtlScheduler" /> class.
     /// </summary>
     /// <param name="optionsMonitor">
-    /// configuration options.
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     /// <param name="client">
-    /// the Consul client.
+    /// The Consul client.
     /// </param>
-    /// <param name="logger">
-    /// optional logger.
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public TtlScheduler(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulClient client, ILogger<TtlScheduler> logger = null)
+    public TtlScheduler(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulClient client, ILoggerFactory loggerFactory)
     {
+        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(client);
+        ArgumentGuard.NotNull(loggerFactory);
+
         _optionsMonitor = optionsMonitor;
-        Client = client;
-        _logger = logger;
+        _client = client;
+        _schedulerLogger = loggerFactory.CreateLogger<TtlScheduler>();
+        _heartbeatLogger = loggerFactory.CreateLogger<PeriodicHeartbeat>();
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TtlScheduler" /> class.
-    /// </summary>
-    /// <param name="options">
-    /// configuration options.
-    /// </param>
-    /// <param name="client">
-    /// the Consul client.
-    /// </param>
-    /// <param name="logger">
-    /// optional logger.
-    /// </param>
-    public TtlScheduler(ConsulDiscoveryOptions options, IConsulClient client, ILogger<TtlScheduler> logger = null)
-    {
-        _options = options;
-        Client = client;
-        _logger = logger;
-    }
-
-    /// <summary>
-    /// Adds an instances id to be checked.
+    /// Adds an instance to be checked.
     /// </summary>
     /// <param name="instanceId">
-    /// the instance id.
+    /// The instance ID.
     /// </param>
     public void Add(string instanceId)
     {
         ArgumentGuard.NotNullOrWhiteSpace(instanceId);
 
-        _logger?.LogDebug("Add {instanceId}", instanceId);
+        ConsulHeartbeatOptions? heartbeatOptions = _optionsMonitor.CurrentValue.Heartbeat;
 
-        if (HeartbeatOptions != null)
+        if (heartbeatOptions != null)
         {
-            TimeSpan interval = HeartbeatOptions.ComputeHeartbeatInterval();
+            _schedulerLogger.LogDebug("Adding instance '{instanceId}'.", instanceId);
 
+            TimeSpan interval = heartbeatOptions.ComputeHeartbeatInterval();
             string checkId = instanceId;
 
-            if (!checkId.StartsWith("service:", StringComparison.Ordinal))
+            if (!checkId.StartsWith(InstancePrefix, StringComparison.Ordinal))
             {
-                checkId = $"service:{checkId}";
+                checkId = $"{InstancePrefix}{checkId}";
             }
 
-            var timer = new Timer(async s =>
-            {
-                await PassTtlAsync(s.ToString());
-            }, checkId, TimeSpan.Zero, interval);
-
-            ServiceHeartbeats.AddOrUpdate(instanceId, timer, (_, oldTimer) =>
-            {
-                oldTimer.Dispose();
-                return timer;
-            });
+            // Not using AddOrUpdate, because .NET 6 lacks support for changing PeriodicTimer.Period (added in .NET 8).
+            _ = ServiceHeartbeats.GetOrAdd(instanceId, _ => new PeriodicHeartbeat(checkId, interval, _client, _heartbeatLogger));
         }
     }
 
     /// <summary>
-    /// Remove an instance id from checking.
+    /// Removes an instance from checking.
     /// </summary>
     /// <param name="instanceId">
-    /// the instance id.
+    /// The instance ID.
     /// </param>
-    public void Remove(string instanceId)
+    public async Task RemoveAsync(string instanceId)
     {
         ArgumentGuard.NotNullOrWhiteSpace(instanceId);
 
-        _logger?.LogDebug("Remove {instanceId}", instanceId);
-
-        if (ServiceHeartbeats.TryRemove(instanceId, out Timer timer))
+        if (ServiceHeartbeats.TryRemove(instanceId, out PeriodicHeartbeat? heartbeat))
         {
-            timer.Dispose();
+            _schedulerLogger.LogDebug("Removing instance '{instanceId}'.", instanceId);
+            await heartbeat.DisposeAsync();
         }
     }
 
     /// <summary>
-    /// Remove all heart beats from scheduler.
+    /// Removes all heartbeats from this scheduler.
     /// </summary>
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing && !_isDisposed)
+        if (!_isDisposed)
         {
-            foreach (string instance in ServiceHeartbeats.Keys)
+            foreach (string instanceId in ServiceHeartbeats.Keys)
             {
-                Remove(instance);
+                await RemoveAsync(instanceId);
             }
 
             _isDisposed = true;
-        }
-    }
-
-    private async Task PassTtlAsync(string serviceId)
-    {
-        _logger?.LogDebug("Sending consul heartbeat for: {serviceId} ", serviceId);
-
-        try
-        {
-            await Client.Agent.PassTTL(serviceId, "ttl");
-        }
-        catch (Exception exception)
-        {
-            _logger?.LogError(exception, "Exception sending consul heartbeat for: {serviceId} ", serviceId);
         }
     }
 }

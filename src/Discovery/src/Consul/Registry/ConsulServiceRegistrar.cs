@@ -41,7 +41,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
     /// The Consul service registry to use when doing registrations.
     /// </param>
     /// <param name="optionsMonitor">
-    /// Provides access to Consul configuration options.
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     /// <param name="registration">
     /// The registration to register with Consul.
@@ -79,7 +79,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
 
         if (Interlocked.CompareExchange(ref IsRunning, Running, NotRunning) == NotRunning)
         {
-            if (Options is { IsRetryEnabled: true, FailFast: true })
+            if (Options is { IsRetryEnabled: true, FailFast: true, Retry: not null })
             {
                 await DoWithRetryAsync(RegisterAsync, Options.Retry, cancellationToken);
             }
@@ -160,7 +160,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
                 await DeregisterAsync(CancellationToken.None);
             }
 
-            _registry.Dispose();
+            await _registry.DisposeAsync();
             _isDisposed = true;
         }
     }

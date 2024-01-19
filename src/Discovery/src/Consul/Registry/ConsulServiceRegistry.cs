@@ -16,7 +16,7 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// <summary>
 /// A service registry that uses Consul.
 /// </summary>
-public sealed class ConsulServiceRegistry : IDisposable
+public sealed class ConsulServiceRegistry : IAsyncDisposable
 {
     private const string Up = "UP";
     private const string OutOfService = "OUT_OF_SERVICE";
@@ -35,7 +35,7 @@ public sealed class ConsulServiceRegistry : IDisposable
     /// The Consul client to use.
     /// </param>
     /// <param name="optionsMonitor">
-    /// Provides access to Consul configuration options.
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     /// <param name="scheduler">
     /// An optional scheduler to use for heartbeats.
@@ -106,7 +106,7 @@ public sealed class ConsulServiceRegistry : IDisposable
 
         if (Options.IsHeartBeatEnabled && _scheduler != null)
         {
-            _scheduler.Remove(registration.InstanceId);
+            await _scheduler.RemoveAsync(registration.InstanceId);
         }
 
         _logger.LogInformation("Deregistering service {instanceId} with consul.", registration.InstanceId);
@@ -170,8 +170,11 @@ public sealed class ConsulServiceRegistry : IDisposable
     }
 
     /// <inheritdoc />
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        _scheduler?.Dispose();
+        if (_scheduler != null)
+        {
+            await _scheduler.DisposeAsync();
+        }
     }
 }

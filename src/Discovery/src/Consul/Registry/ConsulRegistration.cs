@@ -92,7 +92,7 @@ public class ConsulRegistration : IServiceInstance
     /// a Consul service registration to use.
     /// </param>
     /// <param name="optionsMonitor">
-    /// configuration options.
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
