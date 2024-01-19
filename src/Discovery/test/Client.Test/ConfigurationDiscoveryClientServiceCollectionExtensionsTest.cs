@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Utils.IO;
+using Steeltoe.Discovery.Client.SimpleClients;
 using Xunit;
 
-namespace Steeltoe.Common.Test.Discovery;
+namespace Steeltoe.Discovery.Client.Test;
 
 public sealed class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
 {
@@ -39,19 +40,18 @@ public sealed class ConfigurationServiceInstanceProviderServiceCollectionExtensi
         services.AddConfigurationDiscoveryClient(builder.Build());
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        // by getting the provider, we're confirming that the options are also available in the container
-        var serviceInstanceProvider = serviceProvider.GetRequiredService<IServiceInstanceProvider>();
+        // by getting the client, we're confirming that the options are also available in the container
+        var client = serviceProvider.GetRequiredService<IDiscoveryClient>();
 
-        Assert.NotNull(serviceInstanceProvider);
-        Assert.IsType<ConfigurationServiceInstanceProvider>(serviceInstanceProvider);
+        Assert.IsType<ConfigurationDiscoveryClient>(client);
 
-        IList<string> servicesIds = await serviceInstanceProvider.GetServiceIdsAsync(CancellationToken.None);
+        IList<string> servicesIds = await client.GetServiceIdsAsync(CancellationToken.None);
         Assert.Equal(2, servicesIds.Count);
 
-        IList<IServiceInstance> fruitInstances = await serviceInstanceProvider.GetInstancesAsync("fruitService", CancellationToken.None);
+        IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
         Assert.Equal(2, fruitInstances.Count);
 
-        IList<IServiceInstance> vegetableInstances = await serviceInstanceProvider.GetInstancesAsync("vegetableService", CancellationToken.None);
+        IList<IServiceInstance> vegetableInstances = await client.GetInstancesAsync("vegetableService", CancellationToken.None);
         Assert.Equal(2, vegetableInstances.Count);
     }
 }

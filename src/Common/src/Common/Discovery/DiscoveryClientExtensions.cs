@@ -9,13 +9,13 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace Steeltoe.Common.Discovery;
 
-internal static class ServiceInstanceProviderExtensions
+internal static class DiscoveryClientExtensions
 {
-    public static async Task<IList<IServiceInstance>> GetInstancesWithCacheAsync(this IServiceInstanceProvider serviceInstanceProvider, string serviceId,
+    public static async Task<IList<IServiceInstance>> GetInstancesWithCacheAsync(this IDiscoveryClient discoveryClient, string serviceId,
         IDistributedCache? distributedCache, DistributedCacheEntryOptions? cacheEntryOptions, string? serviceInstancesKeyPrefix,
         CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(serviceInstanceProvider);
+        ArgumentGuard.NotNull(discoveryClient);
         ArgumentGuard.NotNull(serviceId);
 
         string cacheKey = $"{serviceInstancesKeyPrefix ?? "Steeltoe-ServiceInstances:"}{serviceId}";
@@ -31,7 +31,7 @@ internal static class ServiceInstanceProviderExtensions
             }
         }
 
-        IList<IServiceInstance> instances = await serviceInstanceProvider.GetInstancesAsync(serviceId, cancellationToken);
+        IList<IServiceInstance> instances = await discoveryClient.GetInstancesAsync(serviceId, cancellationToken);
 
         if (distributedCache != null)
         {

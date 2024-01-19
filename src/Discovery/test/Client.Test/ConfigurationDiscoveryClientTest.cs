@@ -4,11 +4,12 @@
 
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Discovery.Client.SimpleClients;
 using Xunit;
 
-namespace Steeltoe.Common.Test.Discovery;
+namespace Steeltoe.Discovery.Client.Test;
 
-public sealed class ConfigurationServiceInstanceProviderTest
+public sealed class ConfigurationDiscoveryClientTest
 {
     [Fact]
     public async Task Returns_ConfiguredServices()
@@ -56,16 +57,15 @@ public sealed class ConfigurationServiceInstanceProviderTest
         };
 
         var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
+        var client = new ConfigurationDiscoveryClient(serviceOptions);
 
-        var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
-
-        IList<IServiceInstance> fruitInstances = await provider.GetInstancesAsync("fruitService", CancellationToken.None);
+        IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
         Assert.Equal(3, fruitInstances.Count);
 
-        IList<IServiceInstance> vegetableInstances = await provider.GetInstancesAsync("vegetableService", CancellationToken.None);
+        IList<IServiceInstance> vegetableInstances = await client.GetInstancesAsync("vegetableService", CancellationToken.None);
         Assert.Equal(3, vegetableInstances.Count);
 
-        IList<string> servicesIds = await provider.GetServiceIdsAsync(CancellationToken.None);
+        IList<string> servicesIds = await client.GetServiceIdsAsync(CancellationToken.None);
         Assert.Equal(2, servicesIds.Count);
     }
 
@@ -84,9 +84,9 @@ public sealed class ConfigurationServiceInstanceProviderTest
         };
 
         var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
-        var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
+        var client = new ConfigurationDiscoveryClient(serviceOptions);
 
-        IList<IServiceInstance> fruitInstances = await provider.GetInstancesAsync("fruitService", CancellationToken.None);
+        IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
 
         Assert.Single(fruitInstances);
         Assert.Equal("fruitball", fruitInstances[0].Host);

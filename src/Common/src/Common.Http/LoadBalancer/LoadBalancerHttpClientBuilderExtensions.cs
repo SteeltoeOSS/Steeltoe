@@ -21,8 +21,7 @@ public static class LoadBalancerHttpClientBuilderExtensions
     /// The <see cref="IHttpClientBuilder" />.
     /// </param>
     /// <remarks>
-    /// Requires an <see cref="IServiceInstanceProvider" /> or <see cref="IDiscoveryClient" /> in the DI container so the load balancer can send traffic to
-    /// more than one address.
+    /// Requires an <see cref="IDiscoveryClient" /> in the DI container so the load balancer can send traffic to more than one address.
     /// </remarks>
     /// <returns>
     /// An <see cref="IHttpClientBuilder" /> that can be used to configure the client.
@@ -42,8 +41,7 @@ public static class LoadBalancerHttpClientBuilderExtensions
     /// The <see cref="IHttpClientBuilder" />.
     /// </param>
     /// <remarks>
-    /// Requires an <see cref="IServiceInstanceProvider" /> or <see cref="IDiscoveryClient" /> in the DI container so the load balancer can send traffic to
-    /// more than one address.
+    /// Requires an <see cref="IDiscoveryClient" /> in the DI container so the load balancer can send traffic to more than one address.
     /// </remarks>
     /// <returns>
     /// An <see cref="IHttpClientBuilder" /> that can be used to configure the client.

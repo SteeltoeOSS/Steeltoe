@@ -18,7 +18,7 @@ namespace Steeltoe.Common.LoadBalancer;
 public sealed class RoundRobinLoadBalancer : ILoadBalancer
 {
     private const string CacheKeyPrefix = "Steeltoe-LoadBalancerIndex-";
-    private readonly IServiceInstanceProvider _serviceInstanceProvider;
+    private readonly IDiscoveryClient _discoveryClient;
     private readonly IDistributedCache? _distributedCache;
     private readonly DistributedCacheEntryOptions _cacheEntryOptions;
     private readonly ILogger<RoundRobinLoadBalancer> _logger;
@@ -27,22 +27,22 @@ public sealed class RoundRobinLoadBalancer : ILoadBalancer
     /// <summary>
     /// Initializes a new instance of the <see cref="RoundRobinLoadBalancer" /> class.
     /// </summary>
-    /// <param name="serviceInstanceProvider">
-    /// Provider of service instance information.
+    /// <param name="discoveryClient">
+    /// Used to retrieve the available service instances.
     /// </param>
     /// <param name="logger">
     /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, ILogger<RoundRobinLoadBalancer> logger)
-        : this(serviceInstanceProvider, null, null, logger)
+    public RoundRobinLoadBalancer(IDiscoveryClient discoveryClient, ILogger<RoundRobinLoadBalancer> logger)
+        : this(discoveryClient, null, null, logger)
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RoundRobinLoadBalancer" /> class.
     /// </summary>
-    /// <param name="serviceInstanceProvider">
-    /// Provider of service instance information.
+    /// <param name="discoveryClient">
+    /// Used to retrieve the available service instances.
     /// </param>
     /// <param name="distributedCache">
     /// For caching service instances and the last-used instance.
@@ -53,13 +53,13 @@ public sealed class RoundRobinLoadBalancer : ILoadBalancer
     /// <param name="logger">
     /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache? distributedCache,
-        DistributedCacheEntryOptions? cacheEntryOptions, ILogger<RoundRobinLoadBalancer> logger)
+    public RoundRobinLoadBalancer(IDiscoveryClient discoveryClient, IDistributedCache? distributedCache, DistributedCacheEntryOptions? cacheEntryOptions,
+        ILogger<RoundRobinLoadBalancer> logger)
     {
-        ArgumentGuard.NotNull(serviceInstanceProvider);
+        ArgumentGuard.NotNull(discoveryClient);
         ArgumentGuard.NotNull(logger);
 
-        _serviceInstanceProvider = serviceInstanceProvider;
+        _discoveryClient = discoveryClient;
         _distributedCache = distributedCache;
         _cacheEntryOptions = cacheEntryOptions ?? new DistributedCacheEntryOptions();
         _logger = logger;
@@ -76,7 +76,7 @@ public sealed class RoundRobinLoadBalancer : ILoadBalancer
         _logger.LogTrace("Resolving service instance for '{serviceName}'.", serviceName);
 
         IList<IServiceInstance> availableServiceInstances =
-            await _serviceInstanceProvider.GetInstancesWithCacheAsync(serviceName, _distributedCache, _cacheEntryOptions, null, cancellationToken);
+            await _discoveryClient.GetInstancesWithCacheAsync(serviceName, _distributedCache, _cacheEntryOptions, null, cancellationToken);
 
         if (availableServiceInstances.Count == 0)
         {

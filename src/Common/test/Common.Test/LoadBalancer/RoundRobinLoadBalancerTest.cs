@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Discovery.Client.SimpleClients;
 using Xunit;
 
 namespace Steeltoe.Common.Test.LoadBalancer;
@@ -23,8 +24,8 @@ public sealed class RoundRobinLoadBalancerTest
         List<ConfigurationServiceInstance> serviceInstances = CreateTestServiceInstances();
 
         var optionsMonitor = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(serviceInstances);
-        var provider = new ConfigurationServiceInstanceProvider(optionsMonitor);
-        var loadBalancer = new RoundRobinLoadBalancer(provider, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
+        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        var loadBalancer = new RoundRobinLoadBalancer(client, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
         Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
         _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
@@ -53,9 +54,9 @@ public sealed class RoundRobinLoadBalancerTest
         List<ConfigurationServiceInstance> serviceInstances = CreateTestServiceInstances();
 
         var optionsMonitor = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(serviceInstances);
-        var provider = new ConfigurationServiceInstanceProvider(optionsMonitor);
+        var client = new ConfigurationDiscoveryClient(optionsMonitor);
         IDistributedCache distributedCache = GetCache();
-        var loadBalancer = new RoundRobinLoadBalancer(provider, distributedCache, null, NullLogger<RoundRobinLoadBalancer>.Instance);
+        var loadBalancer = new RoundRobinLoadBalancer(client, distributedCache, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
         Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
         _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);

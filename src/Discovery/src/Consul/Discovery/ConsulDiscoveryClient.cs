@@ -29,7 +29,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
     private ConsulDiscoveryOptions Options => _optionsMonitor != null ? _optionsMonitor.CurrentValue : _options;
 
     /// <inheritdoc />
-    public string Description { get; } = "HashiCorp Consul Client";
+    public string Description { get; } = "A discovery client for HashiCorp Consul.";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
@@ -102,10 +102,10 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
     }
 
     /// <summary>
-    /// Gets all service instances for the given service ID.
+    /// Gets all service instances associated with the specified service ID from the Consul catalog.
     /// </summary>
     /// <param name="serviceId">
-    /// ID of the service to lookup.
+    /// The ID of the service to lookup.
     /// </param>
     /// <param name="queryOptions">
     /// Any Consul query options to use.
@@ -114,7 +114,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
     /// The token to monitor for cancellation requests.
     /// </param>
     /// <returns>
-    /// The list of found service instances.
+    /// The list of remote service instances.
     /// </returns>
     public async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions, CancellationToken cancellationToken)
     {
@@ -136,14 +136,14 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
     /// The token to monitor for cancellation requests.
     /// </param>
     /// <returns>
-    /// The list of found service instances.
+    /// The list of remote service instances.
     /// </returns>
     public async Task<IList<IServiceInstance>> GetAllInstancesAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(queryOptions);
 
         var instances = new List<IServiceInstance>();
-        IList<string> serviceIds = await GetServiceNamesAsync(queryOptions, cancellationToken);
+        IList<string> serviceIds = await GetServiceIdsAsync(queryOptions, cancellationToken);
 
         foreach (string serviceId in serviceIds)
         {
@@ -153,8 +153,14 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
         return instances;
     }
 
+    /// <inheritdoc />
+    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
+    {
+        return GetServiceIdsAsync(QueryOptions.Default, cancellationToken);
+    }
+
     /// <summary>
-    /// Gets all service names from the Consul catalog.
+    /// Gets all registered service IDs from the Consul catalog.
     /// </summary>
     /// <param name="queryOptions">
     /// Any Consul query options to use.
@@ -163,21 +169,14 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
     /// The token to monitor for cancellation requests.
     /// </param>
     /// <returns>
-    /// The list of found service names.
+    /// The list of service IDs.
     /// </returns>
-    public async Task<IList<string>> GetServiceNamesAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
+    public async Task<IList<string>> GetServiceIdsAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(queryOptions);
 
         QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(queryOptions, cancellationToken);
-        Dictionary<string, string[]> response = result.Response;
-        return response.Keys.ToList();
-    }
-
-    /// <inheritdoc />
-    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
-    {
-        return GetServiceNamesAsync(QueryOptions.Default, cancellationToken);
+        return result.Response.Keys.ToList();
     }
 
     /// <inheritdoc />
@@ -187,9 +186,18 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
     }
 
     /// <inheritdoc />
-    public Task ShutdownAsync(CancellationToken cancellationToken)
+    public async Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        return Task.CompletedTask;
+        if (_registrar != null)
+        {
+            await _registrar.DisposeAsync();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        await ShutdownAsync(CancellationToken.None);
     }
 
     internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions,
@@ -201,15 +209,6 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
         foreach (ConsulServiceInstance instance in result.Response.Select(entry => new ConsulServiceInstance(entry)))
         {
             instances.Add(instance);
-        }
-    }
-
-    /// <inheritdoc />
-    public async ValueTask DisposeAsync()
-    {
-        if (_registrar != null)
-        {
-            await _registrar.DisposeAsync();
         }
     }
 }
