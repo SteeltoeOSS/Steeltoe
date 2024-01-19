@@ -73,7 +73,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public async Task AddDiscoveryClient_WithEurekaInetConfig_AddsDiscoveryClient()
+    public void AddDiscoveryClient_WithEurekaInetConfig_AddsDiscoveryClient()
     {
         var appsettings = new Dictionary<string, string>(FastEureka)
         {
@@ -90,7 +90,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var client = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
         Assert.NotNull(client);
-        IServiceInstance instanceInfo = await client.GetLocalServiceInstanceAsync(CancellationToken.None);
+        IServiceInstance instanceInfo = client.GetLocalServiceInstance();
         Assert.Equal("fromtest", instanceInfo.Host);
     }
 
@@ -135,7 +135,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         Assert.NotNull(client);
         Assert.IsType<NoOpDiscoveryClient>(client);
-        Assert.Empty(await client.GetServicesAsync(CancellationToken.None));
+        Assert.Empty(await client.GetServiceIdsAsync(CancellationToken.None));
         Assert.Empty(await client.GetInstancesAsync("any", CancellationToken.None));
     }
 
@@ -337,7 +337,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         var client = services.BuildServiceProvider(true).GetRequiredService<IDiscoveryClient>();
         Assert.NotNull(client);
         Assert.IsType<NoOpDiscoveryClient>(client);
-        Assert.Empty(await client.GetServicesAsync(CancellationToken.None));
+        Assert.Empty(await client.GetServiceIdsAsync(CancellationToken.None));
         Assert.Empty(await client.GetInstancesAsync("any", CancellationToken.None));
     }
 
@@ -367,8 +367,8 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         var client = serviceProvider.GetService<IDiscoveryClient>();
         Assert.NotNull(client);
         Assert.IsType<ConfigurationDiscoveryClient>(client);
-        Assert.Contains("fruitService", await client.GetServicesAsync(CancellationToken.None));
-        Assert.Contains("vegetableService", await client.GetServicesAsync(CancellationToken.None));
+        Assert.Contains("fruitService", await client.GetServiceIdsAsync(CancellationToken.None));
+        Assert.Contains("vegetableService", await client.GetServiceIdsAsync(CancellationToken.None));
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
         Assert.Equal(2, fruitInstances.Count);
@@ -415,7 +415,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public async Task AddServiceDiscovery_WithEurekaInetConfig_AddsDiscoveryClient()
+    public void AddServiceDiscovery_WithEurekaInetConfig_AddsDiscoveryClient()
     {
         var appsettings = new Dictionary<string, string>
         {
@@ -434,7 +434,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var client = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
         Assert.NotNull(client);
-        IServiceInstance instanceInfo = await client.GetLocalServiceInstanceAsync(CancellationToken.None);
+        IServiceInstance instanceInfo = client.GetLocalServiceInstance();
         Assert.Equal("fromtest", instanceInfo.Host);
     }
 

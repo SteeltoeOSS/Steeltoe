@@ -17,7 +17,7 @@ internal sealed class TestDiscoveryClient : IDiscoveryClient
         _instance = instance;
     }
 
-    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
+    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
@@ -34,7 +34,7 @@ internal sealed class TestDiscoveryClient : IDiscoveryClient
         return Task.FromResult(instances);
     }
 
-    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    public IServiceInstance GetLocalServiceInstance()
     {
         throw new NotImplementedException();
     }

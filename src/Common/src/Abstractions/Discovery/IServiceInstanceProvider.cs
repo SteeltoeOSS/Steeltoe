@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 namespace Steeltoe.Common.Discovery;
 
 public interface IServiceInstanceProvider
@@ -18,9 +20,9 @@ public interface IServiceInstanceProvider
     /// The token to monitor for cancellation requests.
     /// </param>
     /// <returns>
-    /// The service IDs.
+    /// The list of service IDs.
     /// </returns>
-    Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken);
+    Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Gets all service instances associated with the specified service ID.

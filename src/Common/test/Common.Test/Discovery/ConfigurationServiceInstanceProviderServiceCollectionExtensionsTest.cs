@@ -45,7 +45,7 @@ public sealed class ConfigurationServiceInstanceProviderServiceCollectionExtensi
         Assert.NotNull(serviceInstanceProvider);
         Assert.IsType<ConfigurationServiceInstanceProvider>(serviceInstanceProvider);
 
-        IList<string> servicesIds = await serviceInstanceProvider.GetServicesAsync(CancellationToken.None);
+        IList<string> servicesIds = await serviceInstanceProvider.GetServiceIdsAsync(CancellationToken.None);
         Assert.Equal(2, servicesIds.Count);
 
         IList<IServiceInstance> fruitInstances = await serviceInstanceProvider.GetInstancesAsync("fruitService", CancellationToken.None);

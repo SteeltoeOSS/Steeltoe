@@ -175,15 +175,15 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
     }
 
     /// <inheritdoc />
-    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
+    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
         return GetServiceNamesAsync(QueryOptions.Default, cancellationToken);
     }
 
     /// <inheritdoc />
-    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    public IServiceInstance GetLocalServiceInstance()
     {
-        return Task.FromResult(_thisServiceInstance);
+        return _thisServiceInstance;
     }
 
     /// <inheritdoc />
