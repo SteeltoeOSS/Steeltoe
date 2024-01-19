@@ -16,7 +16,7 @@ namespace Steeltoe.Common.LoadBalancer;
 /// </summary>
 public sealed class RandomLoadBalancer : ILoadBalancer
 {
-    private readonly IServiceInstanceProvider _serviceInstanceProvider;
+    private readonly IDiscoveryClient _discoveryClient;
     private readonly IDistributedCache? _distributedCache;
     private readonly DistributedCacheEntryOptions? _cacheEntryOptions;
     private readonly ILogger<RandomLoadBalancer> _logger;
@@ -24,22 +24,22 @@ public sealed class RandomLoadBalancer : ILoadBalancer
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomLoadBalancer" /> class.
     /// </summary>
-    /// <param name="serviceInstanceProvider">
-    /// Provider of service instance information.
+    /// <param name="discoveryClient">
+    /// Used to retrieve the available service instances.
     /// </param>
     /// <param name="logger">
     /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public RandomLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, ILogger<RandomLoadBalancer> logger)
-        : this(serviceInstanceProvider, null, null, logger)
+    public RandomLoadBalancer(IDiscoveryClient discoveryClient, ILogger<RandomLoadBalancer> logger)
+        : this(discoveryClient, null, null, logger)
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomLoadBalancer" /> class.
     /// </summary>
-    /// <param name="serviceInstanceProvider">
-    /// Provider of service instance information.
+    /// <param name="discoveryClient">
+    /// Used to retrieve the available service instances.
     /// </param>
     /// <param name="distributedCache">
     /// For caching service instance data.
@@ -50,13 +50,13 @@ public sealed class RandomLoadBalancer : ILoadBalancer
     /// <param name="logger">
     /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public RandomLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache? distributedCache,
-        DistributedCacheEntryOptions? cacheEntryOptions, ILogger<RandomLoadBalancer> logger)
+    public RandomLoadBalancer(IDiscoveryClient discoveryClient, IDistributedCache? distributedCache, DistributedCacheEntryOptions? cacheEntryOptions,
+        ILogger<RandomLoadBalancer> logger)
     {
-        ArgumentGuard.NotNull(serviceInstanceProvider);
+        ArgumentGuard.NotNull(discoveryClient);
         ArgumentGuard.NotNull(logger);
 
-        _serviceInstanceProvider = serviceInstanceProvider;
+        _discoveryClient = discoveryClient;
         _distributedCache = distributedCache;
         _cacheEntryOptions = cacheEntryOptions;
         _logger = logger;
@@ -71,7 +71,7 @@ public sealed class RandomLoadBalancer : ILoadBalancer
         _logger.LogTrace("Resolving service instance for '{serviceName}'.", serviceName);
 
         IList<IServiceInstance> availableServiceInstances =
-            await _serviceInstanceProvider.GetInstancesWithCacheAsync(serviceName, _distributedCache, _cacheEntryOptions, null, cancellationToken);
+            await _discoveryClient.GetInstancesWithCacheAsync(serviceName, _distributedCache, _cacheEntryOptions, null, cancellationToken);
 
         if (availableServiceInstances.Count == 0)
         {

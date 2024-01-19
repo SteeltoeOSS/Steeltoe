@@ -4,9 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.LoadBalancer;
 using Steeltoe.Common.LoadBalancer;
+using Steeltoe.Discovery.Client;
 using Xunit;
 
 namespace Steeltoe.Common.Http.Test.LoadBalancer;

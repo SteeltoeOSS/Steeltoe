@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
 
 namespace Steeltoe.Configuration.ConfigServer;
@@ -51,7 +50,12 @@ internal sealed class ConfigServerDiscoveryService
         tempServices.AddSingleton<IConfiguration>(builder.Build());
         tempServices.AddDiscoveryClient(_configuration);
 
-        using ServiceProvider tempServiceProvider = tempServices.BuildServiceProvider();
+        return GetDiscoveryClientFromServiceCollectionAsync(tempServices).GetAwaiter().GetResult();
+    }
+
+    private async Task<IDiscoveryClient> GetDiscoveryClientFromServiceCollectionAsync(ServiceCollection services)
+    {
+        await using ServiceProvider tempServiceProvider = services.BuildServiceProvider();
 
         var discoveryClient = tempServiceProvider.GetRequiredService<IDiscoveryClient>();
         _logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", discoveryClient.GetType());

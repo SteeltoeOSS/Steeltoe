@@ -129,7 +129,7 @@ public sealed class ConsulDiscoveryClientTest
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(result);
 
         await using var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
-        IList<string> services = await dc.GetServiceNamesAsync(QueryOptions.Default, CancellationToken.None);
+        IList<string> services = await dc.GetServiceIdsAsync(QueryOptions.Default, CancellationToken.None);
         Assert.Equal(2, services.Count);
         Assert.Contains("foo", services);
         Assert.Contains("bar", services);

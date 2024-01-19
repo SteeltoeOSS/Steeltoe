@@ -13,7 +13,7 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
 {
     private readonly IList<IServiceInstance> _serviceInstances = new List<IServiceInstance>();
 
-    public string Description => "An IDiscoveryClient that passes through to underlying infrastructure";
+    public string Description => "A discovery client that passes through to underlying infrastructure.";
 
     internal NoOpDiscoveryClient(IConfiguration configuration, ILogger<NoOpDiscoveryClient> logger = null)
     {
@@ -28,7 +28,8 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
 
     public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult<IList<string>>(new List<string>());
+        IList<string> services = _serviceInstances.Select(instance => instance.ServiceId).Distinct().ToList();
+        return Task.FromResult(services);
     }
 
     private Dictionary<string, string> GetConfiguredClients(IConfiguration configuration)
@@ -73,7 +74,7 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
 
     public IServiceInstance GetLocalServiceInstance()
     {
-        throw new NotImplementedException("No known use case for implementing this method");
+        throw new NotSupportedException("Local service instance is not available.");
     }
 
     public Task ShutdownAsync(CancellationToken cancellationToken)

@@ -11,14 +11,21 @@ using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
+/// <summary>
+/// A discovery client for
+/// <see href="https://spring.io/guides/gs/service-registration-and-discovery/">
+/// Spring Cloud Eureka
+/// </see>
+/// .
+/// </summary>
+public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, IAsyncDisposable
 {
     private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
     private readonly IServiceInstance _thisInstance;
 
     public override EurekaClientConfiguration ClientConfiguration => _configOptions.CurrentValue;
 
-    public string Description => "Spring Cloud Eureka Client";
+    public string Description => "A discovery client for Spring Cloud Eureka.";
 
     public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
         EurekaApplicationInfoManager appInfoManager, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null,
@@ -32,6 +39,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc />
     public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
         Applications applications = Applications;
@@ -59,6 +67,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         return Task.FromResult(names);
     }
 
+    /// <inheritdoc />
     public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
         IList<InstanceInfo> infos = GetInstancesByVipAddress(serviceId, false);
@@ -73,15 +82,23 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         return Task.FromResult(instances);
     }
 
+    /// <inheritdoc />
     public IServiceInstance GetLocalServiceInstance()
     {
         return _thisInstance;
     }
 
+    /// <inheritdoc cref="IDiscoveryClient.ShutdownAsync" />
     public override Task ShutdownAsync(CancellationToken cancellationToken)
     {
         AppInfoManager.InstanceStatus = InstanceStatus.Down;
         return base.ShutdownAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        await ShutdownAsync(CancellationToken.None);
     }
 
     private sealed class EurekaHttpClientInternal : EurekaHttpClient
