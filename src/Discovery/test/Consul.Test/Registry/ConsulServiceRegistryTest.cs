@@ -26,8 +26,8 @@ public sealed class ConsulServiceRegistryTest
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
-        using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object);
-        using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -42,7 +42,7 @@ public sealed class ConsulServiceRegistryTest
 
         Assert.Single(scheduler.ServiceHeartbeats);
         Assert.Contains(registration.InstanceId, scheduler.ServiceHeartbeats.Keys);
-        scheduler.Remove(registration.InstanceId);
+        await scheduler.RemoveAsync(registration.InstanceId);
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public sealed class ConsulServiceRegistryTest
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
-        using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object);
-        using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -84,7 +84,7 @@ public sealed class ConsulServiceRegistryTest
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
-        using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -94,7 +94,7 @@ public sealed class ConsulServiceRegistryTest
         IConfigurationRoot configurationRoot = builder.Build();
         var registration = ConsulRegistration.CreateRegistration(optionsMonitor.CurrentValue, new ApplicationInstanceInfo(configurationRoot));
 
-        using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
         await Assert.ThrowsAsync<ArgumentException>(async () => await registry.SetStatusAsync(registration, string.Empty, CancellationToken.None));
     }
 
@@ -106,7 +106,7 @@ public sealed class ConsulServiceRegistryTest
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
-        using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -116,7 +116,7 @@ public sealed class ConsulServiceRegistryTest
         IConfigurationRoot configurationRoot = builder.Build();
         var registration = ConsulRegistration.CreateRegistration(optionsMonitor.CurrentValue, new ApplicationInstanceInfo(configurationRoot));
 
-        using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
         await registry.SetStatusAsync(registration, "Up", CancellationToken.None);
         agentMoq.Verify(endpoint => endpoint.DisableServiceMaintenance(registration.InstanceId, default), Times.Once);
 
@@ -162,8 +162,8 @@ public sealed class ConsulServiceRegistryTest
         clientMoq.Setup(client => client.Health).Returns(healthMoq.Object);
         healthMoq.Setup(endpoint => endpoint.Checks(registration.ServiceId, QueryOptions.Default, default)).Returns(result);
 
-        using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object);
-        using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
         string status = await registry.GetStatusAsync(registration, CancellationToken.None);
         Assert.Equal("OUT_OF_SERVICE", status);

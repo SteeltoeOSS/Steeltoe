@@ -63,7 +63,7 @@ public class ConsulHealthContributor : IHealthContributor
     /// a Consul client to use for health checks.
     /// </param>
     /// <param name="optionsMonitor">
-    /// configuration options.
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     /// <param name="logger">
     /// optional logger.
