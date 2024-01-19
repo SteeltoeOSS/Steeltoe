@@ -14,7 +14,7 @@ public class ConfigurationDiscoveryClient : ConfigurationServiceInstanceProvider
     {
     }
 
-    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    public IServiceInstance GetLocalServiceInstance()
     {
         throw new NotImplementedException("No known use case for implementing this method");
     }

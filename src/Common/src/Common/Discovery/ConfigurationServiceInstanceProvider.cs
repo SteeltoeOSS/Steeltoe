@@ -17,7 +17,7 @@ public class ConfigurationServiceInstanceProvider : IServiceInstanceProvider
         _serviceInstances = serviceInstances;
     }
 
-    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
+    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
         IList<string> services = _serviceInstances.CurrentValue.Select(si => si.ServiceId).Distinct().ToList();
         return Task.FromResult(services);

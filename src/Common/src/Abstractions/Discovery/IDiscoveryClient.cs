@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 namespace Steeltoe.Common.Discovery;
 
 public interface IDiscoveryClient : IServiceInstanceProvider
@@ -9,13 +11,10 @@ public interface IDiscoveryClient : IServiceInstanceProvider
     /// <summary>
     /// Gets the local service instance with information used to register the local service.
     /// </summary>
-    /// <param name="cancellationToken">
-    /// The token to monitor for cancellation requests.
-    /// </param>
     /// <returns>
     /// The service instance.
     /// </returns>
-    Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken);
+    IServiceInstance GetLocalServiceInstance();
 
     Task ShutdownAsync(CancellationToken cancellationToken);
 }

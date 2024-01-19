@@ -31,11 +31,11 @@ public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
         Assert.NotNull(client.HttpClient);
         Assert.NotNull(client.Description);
 
-        IList<string> services = await client.GetServicesAsync(CancellationToken.None);
+        IList<string> services = await client.GetServiceIdsAsync(CancellationToken.None);
         Assert.NotNull(services);
         Assert.Empty(services);
 
-        IServiceInstance thisService = await client.GetLocalServiceInstanceAsync(CancellationToken.None);
+        IServiceInstance thisService = client.GetLocalServiceInstance();
         Assert.NotNull(thisService);
         Assert.Equal(instanceConfig.ResolveHostName(false), thisService.Host);
         Assert.Equal(instanceConfig.SecurePortEnabled, thisService.IsSecure);

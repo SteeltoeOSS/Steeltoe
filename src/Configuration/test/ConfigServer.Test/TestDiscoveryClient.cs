@@ -13,7 +13,7 @@ internal sealed class TestDiscoveryClient : IDiscoveryClient
 
     public string Description => string.Empty;
 
-    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
+    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult<IList<string>>(Array.Empty<string>());
     }
@@ -23,9 +23,9 @@ internal sealed class TestDiscoveryClient : IDiscoveryClient
         return Task.FromResult<IList<IServiceInstance>>(Array.Empty<IServiceInstance>());
     }
 
-    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    public IServiceInstance GetLocalServiceInstance()
     {
-        return Task.FromResult<IServiceInstance>(new JsonSerializableServiceInstance());
+        return new JsonSerializableServiceInstance();
     }
 
     public Task ShutdownAsync(CancellationToken cancellationToken)

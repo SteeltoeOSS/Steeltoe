@@ -26,7 +26,7 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
         }
     }
 
-    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
+    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult<IList<string>>(new List<string>());
     }
@@ -71,7 +71,7 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
         return Task.FromResult(_serviceInstances);
     }
 
-    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    public IServiceInstance GetLocalServiceInstance()
     {
         throw new NotImplementedException("No known use case for implementing this method");
     }

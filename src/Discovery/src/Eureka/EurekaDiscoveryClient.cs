@@ -32,7 +32,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
+    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
         Applications applications = Applications;
 
@@ -73,9 +73,9 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         return Task.FromResult(instances);
     }
 
-    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    public IServiceInstance GetLocalServiceInstance()
     {
-        return Task.FromResult(_thisInstance);
+        return _thisInstance;
     }
 
     public override Task ShutdownAsync(CancellationToken cancellationToken)

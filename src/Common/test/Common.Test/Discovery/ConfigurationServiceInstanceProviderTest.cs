@@ -65,7 +65,7 @@ public sealed class ConfigurationServiceInstanceProviderTest
         IList<IServiceInstance> vegetableInstances = await provider.GetInstancesAsync("vegetableService", CancellationToken.None);
         Assert.Equal(3, vegetableInstances.Count);
 
-        IList<string> servicesIds = await provider.GetServicesAsync(CancellationToken.None);
+        IList<string> servicesIds = await provider.GetServiceIdsAsync(CancellationToken.None);
         Assert.Equal(2, servicesIds.Count);
     }
 
