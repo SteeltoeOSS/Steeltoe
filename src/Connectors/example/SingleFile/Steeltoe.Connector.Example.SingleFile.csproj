@@ -15,6 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Connector.EFCore\Steeltoe.Connector.EFCore.csproj" />
+    <ProjectReference Include="..\..\src\Connector.EFCore\Steeltoe.Connector.EFCore.csproj" />
   </ItemGroup>
 </Project>
