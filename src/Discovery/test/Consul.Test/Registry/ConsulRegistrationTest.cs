@@ -283,7 +283,7 @@ public sealed class ConsulRegistrationTest
 
         var check = ConsulRegistration.CreateCheck(1234, options);
 
-        Assert.Contains(path, check.HTTP);
+        Assert.Contains(path, check.HTTP, StringComparison.InvariantCulture);
     }
 
     [Fact]
