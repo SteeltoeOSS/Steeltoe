@@ -281,7 +281,7 @@ public sealed class ConsulRegistrationTest
             }
         };
 
-        var check = ConsulRegistration.CreateCheck(1234, options);
+        AgentServiceCheck check = ConsulRegistration.CreateCheck(1234, options);
 
         Assert.Contains(path, check.HTTP, StringComparison.InvariantCulture);
     }
