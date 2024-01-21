@@ -290,6 +290,7 @@ public sealed class ConsulRegistrationTest
     public void CreateCheck_WhenHealthCheckPathIsSetAndHeartbeatIsEnabled_ThenHttpShouldBeNull()
     {
         const string path = "/my/custom/health";
+
         var options = new ConsulDiscoveryOptions
         {
             HealthCheckPath = path,
@@ -299,7 +300,7 @@ public sealed class ConsulRegistrationTest
             }
         };
 
-        var check = ConsulRegistration.CreateCheck(1234, options);
+        AgentServiceCheck check = ConsulRegistration.CreateCheck(1234, options);
 
         Assert.Null(check.HTTP);
     }
@@ -309,7 +310,7 @@ public sealed class ConsulRegistrationTest
     {
         var options = new ConsulDiscoveryOptions
         {
-            Heartbeat = new ConsulHeartbeatOptions()
+            Heartbeat = new ConsulHeartbeatOptions
             {
                 Enabled = false
             }
