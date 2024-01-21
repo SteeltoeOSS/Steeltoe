@@ -318,6 +318,6 @@ public sealed class ConsulRegistrationTest
 
         const int port = -1234;
 
-        Assert.Throws<ArgumentException>(() => ConsulRegistration.CreateCheck(port, options));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ConsulRegistration.CreateCheck(port, options));
     }
 }
