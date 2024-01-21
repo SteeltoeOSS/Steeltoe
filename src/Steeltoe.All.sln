@@ -361,8 +361,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test", "Configuration\test\Kubernetes.ServiceBinding.Test\Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test.csproj", "{0D68FC03-7FD4-4280-852B-0E620872CE22}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Example.SingleFile", "Connectors\example\SingleFile\Steeltoe.Connector.Example.SingleFile.csproj", "{C621A42B-C9DA-4392-A884-045337F170B5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -921,10 +919,6 @@ Global
 		{0D68FC03-7FD4-4280-852B-0E620872CE22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D68FC03-7FD4-4280-852B-0E620872CE22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D68FC03-7FD4-4280-852B-0E620872CE22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C621A42B-C9DA-4392-A884-045337F170B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C621A42B-C9DA-4392-A884-045337F170B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C621A42B-C9DA-4392-A884-045337F170B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C621A42B-C9DA-4392-A884-045337F170B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1070,7 +1064,6 @@ Global
 		{FC49CC5C-EFB6-4B08-AE63-05364EB27021} = {656A7881-FE4F-4EE0-81C8-DA1DE6CDF29E}
 		{6A064B5A-21F7-452A-AAFF-3C0A68286FDF} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{0D68FC03-7FD4-4280-852B-0E620872CE22} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
-		{C621A42B-C9DA-4392-A884-045337F170B5} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}
