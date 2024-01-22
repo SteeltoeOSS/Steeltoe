@@ -272,6 +272,7 @@ public sealed class ConsulRegistrationTest
     public void CreateCheck_WhenHealthCheckPathIsSetAndHeartbeatIsDisabled_ThenShouldSetHttp()
     {
         const string path = "/my/custom/health";
+
         var options = new ConsulDiscoveryOptions
         {
             HealthCheckPath = path,
