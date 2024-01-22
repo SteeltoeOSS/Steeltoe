@@ -2,37 +2,39 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 namespace Steeltoe.Common.Discovery;
 
 public interface IServiceInstance
 {
     /// <summary>
-    /// Gets the service id as register by the DiscoveryClient.
+    /// Gets the service ID as registered by the discovery client.
     /// </summary>
     string ServiceId { get; }
 
     /// <summary>
-    /// Gets the hostname of the registered ServiceInstance.
+    /// Gets the hostname of the registered service instance.
     /// </summary>
     string Host { get; }
 
     /// <summary>
-    /// Gets the port of the registered ServiceInstance.
+    /// Gets the port of the registered service instance.
     /// </summary>
     int Port { get; }
 
     /// <summary>
-    /// Gets a value indicating whether if the port of the registered ServiceInstance is https or not.
+    /// Gets a value indicating whether the scheme of the registered service instance is https.
     /// </summary>
     bool IsSecure { get; }
 
     /// <summary>
-    /// Gets the service uri address.
+    /// Gets the address of the registered service instance.
     /// </summary>
     Uri Uri { get; }
 
     /// <summary>
-    /// Gets the key value pair metadata associated with the service instance.
+    /// Gets the key/value metadata associated with this service instance.
     /// </summary>
     IDictionary<string, string> Metadata { get; }
 }
