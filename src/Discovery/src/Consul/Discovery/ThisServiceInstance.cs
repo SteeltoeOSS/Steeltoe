@@ -2,11 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
 
+/// <summary>
+/// Represents the service instance for the currently running app.
+/// </summary>
 internal sealed class ThisServiceInstance : IServiceInstance
 {
     /// <inheritdoc />
@@ -29,8 +35,10 @@ internal sealed class ThisServiceInstance : IServiceInstance
 
     public ThisServiceInstance(ConsulRegistration registration)
     {
-        ServiceId = registration.Service.Name;
-        Host = registration.Service.Address;
+        ArgumentGuard.NotNull(registration);
+
+        ServiceId = registration.ServiceId;
+        Host = registration.Host;
         IsSecure = registration.IsSecure;
         Port = registration.Port;
         Metadata = registration.Metadata;

@@ -35,10 +35,10 @@ public sealed class ConsulServiceRegistryTest
         });
 
         IConfigurationRoot configurationRoot = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(optionsMonitor.CurrentValue, new ApplicationInstanceInfo(configurationRoot));
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configurationRoot));
         await registry.RegisterAsync(registration, CancellationToken.None);
 
-        agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.Service, default), Times.Once);
+        agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, default), Times.Once);
 
         Assert.Single(scheduler.ServiceHeartbeats);
         Assert.Contains(registration.InstanceId, scheduler.ServiceHeartbeats.Keys);
@@ -62,17 +62,17 @@ public sealed class ConsulServiceRegistryTest
         });
 
         IConfigurationRoot configurationRoot = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(optionsMonitor.CurrentValue, new ApplicationInstanceInfo(configurationRoot));
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configurationRoot));
         await registry.RegisterAsync(registration, CancellationToken.None);
 
-        agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.Service, default), Times.Once);
+        agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, default), Times.Once);
 
         Assert.Single(scheduler.ServiceHeartbeats);
         Assert.Contains(registration.InstanceId, scheduler.ServiceHeartbeats.Keys);
 
         await registry.DeregisterAsync(registration, CancellationToken.None);
 
-        agentMoq.Verify(endpoint => endpoint.ServiceDeregister(registration.Service.ID, default), Times.Once);
+        agentMoq.Verify(endpoint => endpoint.ServiceDeregister(registration.InnerRegistration.ID, default), Times.Once);
         Assert.Empty(scheduler.ServiceHeartbeats);
     }
 
@@ -92,7 +92,7 @@ public sealed class ConsulServiceRegistryTest
         });
 
         IConfigurationRoot configurationRoot = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(optionsMonitor.CurrentValue, new ApplicationInstanceInfo(configurationRoot));
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configurationRoot));
 
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
         await Assert.ThrowsAsync<ArgumentException>(async () => await registry.SetStatusAsync(registration, string.Empty, CancellationToken.None));
@@ -114,7 +114,7 @@ public sealed class ConsulServiceRegistryTest
         });
 
         IConfigurationRoot configurationRoot = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(optionsMonitor.CurrentValue, new ApplicationInstanceInfo(configurationRoot));
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configurationRoot));
 
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
         await registry.SetStatusAsync(registration, "Up", CancellationToken.None);
@@ -135,7 +135,7 @@ public sealed class ConsulServiceRegistryTest
         });
 
         IConfigurationRoot configurationRoot = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(optionsMonitor.CurrentValue, new ApplicationInstanceInfo(configurationRoot));
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configurationRoot));
 
         var queryResult = new QueryResult<HealthCheck[]>
         {

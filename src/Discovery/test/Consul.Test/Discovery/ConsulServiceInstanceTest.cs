@@ -38,7 +38,7 @@ public sealed class ConsulServiceInstanceTest
         Assert.Equal("ServiceId", si.ServiceId);
         Assert.True(si.IsSecure);
         Assert.Equal(1234, si.Port);
-        Assert.Equal(2, si.Tags.Length);
+        Assert.Equal(2, si.Tags.Count);
         Assert.Contains("tag1", si.Tags);
         Assert.Contains("tag2", si.Tags);
         Assert.Equal(2, si.Metadata.Count);

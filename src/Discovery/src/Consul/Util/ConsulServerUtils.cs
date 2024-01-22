@@ -9,7 +9,7 @@ using Consul;
 
 namespace Steeltoe.Discovery.Consul.Util;
 
-public static class ConsulServerUtils
+internal static class ConsulServerUtils
 {
     public static string FindHost(ServiceEntry healthService)
     {

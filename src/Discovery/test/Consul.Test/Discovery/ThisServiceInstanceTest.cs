@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Xunit;
@@ -26,9 +27,10 @@ public sealed class ThisServiceInstanceTest
             }
         };
 
-        var opts = new ConsulDiscoveryOptions();
-        var registration = new ConsulRegistration(serviceRegistration, opts);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var registration = new ConsulRegistration(serviceRegistration, optionsMonitor);
         var instance = new ThisServiceInstance(registration);
+
         Assert.Equal("test.foo.bar", instance.Host);
         Assert.Equal("foobar", instance.ServiceId);
         Assert.False(instance.IsSecure);
