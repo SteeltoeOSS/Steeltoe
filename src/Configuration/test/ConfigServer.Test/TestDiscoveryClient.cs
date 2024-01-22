@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Discovery;
-using Steeltoe.Discovery;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -11,21 +10,21 @@ internal sealed class TestDiscoveryClient : IDiscoveryClient
 {
     internal bool HasShutdown { get; private set; }
 
-    public string Description => string.Empty;
+    public string Description => throw new NotImplementedException();
 
     public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult<IList<string>>(Array.Empty<string>());
+        throw new NotImplementedException();
     }
 
     public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
-        return Task.FromResult<IList<IServiceInstance>>(Array.Empty<IServiceInstance>());
+        throw new NotImplementedException();
     }
 
     public IServiceInstance GetLocalServiceInstance()
     {
-        return new JsonSerializableServiceInstance();
+        throw new NotImplementedException();
     }
 
     public Task ShutdownAsync(CancellationToken cancellationToken)
