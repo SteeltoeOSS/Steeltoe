@@ -10,18 +10,18 @@ using Steeltoe.Connectors.Services;
 
 namespace Steeltoe.Discovery.Client.SimpleClients;
 
-public class ConfigurationDiscoveryClientExtension : IDiscoveryClientExtension
+public sealed class ConfigurationDiscoveryClientExtension : IDiscoveryClientExtension
 {
-    public const string ConfigurationPrefix = "discovery:services";
+    private const string ConfigurationPrefix = "discovery";
 
     /// <inheritdoc />
     public void ApplyServices(IServiceCollection services)
     {
-        services.AddOptions<List<ConfigurationServiceInstance>>()
+        services.AddOptions<ConfigurationDiscoveryOptions>()
             .Configure<IConfiguration>((options, configuration) => configuration.GetSection(ConfigurationPrefix).Bind(options));
 
         services.AddSingleton<IDiscoveryClient>(serviceProvider =>
-            new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<List<ConfigurationServiceInstance>>>()));
+            new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<ConfigurationDiscoveryOptions>>()));
     }
 
     public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
