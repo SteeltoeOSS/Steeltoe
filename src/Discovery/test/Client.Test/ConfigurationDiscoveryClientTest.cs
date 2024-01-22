@@ -14,49 +14,52 @@ public sealed class ConfigurationDiscoveryClientTest
     [Fact]
     public async Task Returns_ConfiguredServices()
     {
-        var services = new List<ConfigurationServiceInstance>
+        var options = new ConfigurationDiscoveryOptions
         {
-            new()
+            Services =
             {
-                ServiceId = "fruitService",
-                Host = "fruitball",
-                Port = 443,
-                IsSecure = true
-            },
-            new()
-            {
-                ServiceId = "fruitService",
-                Host = "fruitballer",
-                Port = 8081
-            },
-            new()
-            {
-                ServiceId = "fruitService",
-                Host = "fruitballerz",
-                Port = 8082
-            },
-            new()
-            {
-                ServiceId = "vegetableService",
-                Host = "vegemite",
-                Port = 443,
-                IsSecure = true
-            },
-            new()
-            {
-                ServiceId = "vegetableService",
-                Host = "carrot",
-                Port = 8081
-            },
-            new()
-            {
-                ServiceId = "vegetableService",
-                Host = "beet",
-                Port = 8082
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitService",
+                    Host = "fruitball",
+                    Port = 443,
+                    IsSecure = true
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitService",
+                    Host = "fruitballer",
+                    Port = 8081
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitService",
+                    Host = "fruitballerz",
+                    Port = 8082
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableService",
+                    Host = "vegemite",
+                    Port = 443,
+                    IsSecure = true
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableService",
+                    Host = "carrot",
+                    Port = 8081
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableService",
+                    Host = "beet",
+                    Port = 8082
+                }
             }
         };
 
-        var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
+        var serviceOptions = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
         var client = new ConfigurationDiscoveryClient(serviceOptions);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
@@ -72,18 +75,21 @@ public sealed class ConfigurationDiscoveryClientTest
     [Fact]
     public async Task ReceivesUpdatesTo_ConfiguredServices()
     {
-        var services = new List<ConfigurationServiceInstance>
+        var options = new ConfigurationDiscoveryOptions
         {
-            new()
+            Services =
             {
-                ServiceId = "fruitService",
-                Host = "fruitball",
-                Port = 443,
-                IsSecure = true
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitService",
+                    Host = "fruitball",
+                    Port = 443,
+                    IsSecure = true
+                }
             }
         };
 
-        var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
+        var serviceOptions = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
         var client = new ConfigurationDiscoveryClient(serviceOptions);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
@@ -91,7 +97,7 @@ public sealed class ConfigurationDiscoveryClientTest
         Assert.Single(fruitInstances);
         Assert.Equal("fruitball", fruitInstances[0].Host);
 
-        services[0].Host = "updatedValue";
+        options.Services[0].Host = "updatedValue";
 
         Assert.Equal("updatedValue", fruitInstances[0].Host);
     }

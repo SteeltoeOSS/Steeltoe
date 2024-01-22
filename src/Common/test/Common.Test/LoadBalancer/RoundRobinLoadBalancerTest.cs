@@ -21,9 +21,8 @@ public sealed class RoundRobinLoadBalancerTest
     [Fact]
     public async Task ResolveServiceInstance_ResolvesAndIncrementsServiceIndex()
     {
-        List<ConfigurationServiceInstance> serviceInstances = CreateTestServiceInstances();
-
-        var optionsMonitor = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(serviceInstances);
+        ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
+        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
         var loadBalancer = new RoundRobinLoadBalancer(client, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
@@ -42,7 +41,7 @@ public sealed class RoundRobinLoadBalancerTest
 
         // reset when service has disappeared
         _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
-        serviceInstances.RemoveAt(serviceInstances.Count - 1);
+        options.Services.RemoveAt(options.Services.Count - 1);
 
         vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
         vegetableUri.Port.Should().Be(8010);
@@ -51,9 +50,8 @@ public sealed class RoundRobinLoadBalancerTest
     [Fact]
     public async Task ResolveServiceInstance_ResolvesAndIncrementsServiceIndex_WithDistributedCache()
     {
-        List<ConfigurationServiceInstance> serviceInstances = CreateTestServiceInstances();
-
-        var optionsMonitor = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(serviceInstances);
+        ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
+        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
         IDistributedCache distributedCache = GetCache();
         var loadBalancer = new RoundRobinLoadBalancer(client, distributedCache, null, NullLogger<RoundRobinLoadBalancer>.Instance);
@@ -73,56 +71,66 @@ public sealed class RoundRobinLoadBalancerTest
 
         // reset when service has disappeared
         _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
-        serviceInstances.RemoveAt(serviceInstances.Count - 1);
+        options.Services.RemoveAt(options.Services.Count - 1);
         await distributedCache.RemoveAsync("Steeltoe-LoadBalancerIndex-vegetableservice");
 
         vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
         vegetableUri.Port.Should().Be(8010);
     }
 
-    private static List<ConfigurationServiceInstance> CreateTestServiceInstances()
+    private static ConfigurationDiscoveryOptions CreateTestServiceInstances()
     {
-        return
-        [
-            new ConfigurationServiceInstance
+        return new ConfigurationDiscoveryOptions
+        {
+            Services =
             {
-                ServiceId = "fruitservice",
-                Host = "fruitball",
-                Port = 8000,
-                IsSecure = true
-            },
-            new ConfigurationServiceInstance
-            {
-                ServiceId = "fruitservice",
-                Host = "fruitballer",
-                Port = 8001
-            },
-            new ConfigurationServiceInstance
-            {
-                ServiceId = "fruitservice",
-                Host = "fruitballerz",
-                Port = 8002
-            },
-            new ConfigurationServiceInstance
-            {
-                ServiceId = "vegetableservice",
-                Host = "vegemite",
-                Port = 8010,
-                IsSecure = true
-            },
-            new ConfigurationServiceInstance
-            {
-                ServiceId = "vegetableservice",
-                Host = "carrot",
-                Port = 8011
-            },
-            new ConfigurationServiceInstance
-            {
-                ServiceId = "vegetableservice",
-                Host = "beet",
-                Port = 8012
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitservice",
+                    Host = "fruitball",
+                    Port = 8000,
+                    IsSecure = true
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitservice",
+                    Host = "fruitball",
+                    Port = 8000,
+                    IsSecure = true
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitservice",
+                    Host = "fruitballer",
+                    Port = 8001
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitservice",
+                    Host = "fruitballerz",
+                    Port = 8002
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableservice",
+                    Host = "vegemite",
+                    Port = 8010,
+                    IsSecure = true
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableservice",
+                    Host = "carrot",
+                    Port = 8011
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableservice",
+                    Host = "beet",
+                    Port = 8012
+                }
             }
-        ];
+        };
     }
 
     private static IDistributedCache GetCache()

@@ -362,7 +362,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         IConfiguration configuration = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(path)).AddJsonFile(Path.GetFileName(path)).Build();
         IServiceCollection services = new ServiceCollection().AddOptions().AddSingleton(configuration);
 
-        ServiceProvider serviceProvider = services.AddServiceDiscovery(configuration, builder => builder.UseConfiguredInstances()).BuildServiceProvider(true);
+        ServiceProvider serviceProvider = services.AddServiceDiscovery(configuration, builder => builder.UseConfiguration()).BuildServiceProvider(true);
 
         var client = serviceProvider.GetService<IDiscoveryClient>();
         Assert.NotNull(client);

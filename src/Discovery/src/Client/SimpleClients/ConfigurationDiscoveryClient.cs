@@ -13,21 +13,21 @@ namespace Steeltoe.Discovery.Client.SimpleClients;
 /// </summary>
 public sealed class ConfigurationDiscoveryClient : IDiscoveryClient
 {
-    private readonly IOptionsMonitor<List<ConfigurationServiceInstance>> _serviceInstances;
+    private readonly IOptionsMonitor<ConfigurationDiscoveryOptions> _optionsMonitor;
 
     public string Description => "A discovery client that returns service instances from app configuration.";
 
-    public ConfigurationDiscoveryClient(IOptionsMonitor<List<ConfigurationServiceInstance>> serviceInstances)
+    public ConfigurationDiscoveryClient(IOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(serviceInstances);
+        ArgumentGuard.NotNull(optionsMonitor);
 
-        _serviceInstances = serviceInstances;
+        _optionsMonitor = optionsMonitor;
     }
 
     /// <inheritdoc />
     public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
-        IList<string> services = _serviceInstances.CurrentValue.Select(instance => instance.ServiceId).Distinct().ToList();
+        IList<string> services = _optionsMonitor.CurrentValue.Services.Select(instance => instance.ServiceId).Distinct().ToList();
         return Task.FromResult(services);
     }
 
@@ -36,7 +36,7 @@ public sealed class ConfigurationDiscoveryClient : IDiscoveryClient
     {
         ArgumentGuard.NotNull(serviceId);
 
-        IList<IServiceInstance> instances = _serviceInstances.CurrentValue.Where(instance =>
+        IList<IServiceInstance> instances = _optionsMonitor.CurrentValue.Services.Where(instance =>
             string.Equals(instance.ServiceId, serviceId, StringComparison.OrdinalIgnoreCase)).Cast<IServiceInstance>().ToList();
 
         return Task.FromResult(instances);

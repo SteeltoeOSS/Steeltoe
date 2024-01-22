@@ -32,12 +32,15 @@ public sealed class ConfigurationServiceInstanceProviderServiceCollectionExtensi
         string path = sandbox.CreateFile("appsettings.json", appsettings);
         string directory = Path.GetDirectoryName(path);
         string fileName = Path.GetFileName(path);
-        var builder = new ConfigurationBuilder();
-        builder.SetBasePath(directory);
-        builder.AddJsonFile(fileName);
-        var services = new ServiceCollection();
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.SetBasePath(directory);
+        configurationBuilder.AddJsonFile(fileName);
+        IConfigurationRoot configuration = configurationBuilder.Build();
 
-        services.AddConfigurationDiscoveryClient(builder.Build());
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddServiceDiscovery(configuration, builder => builder.UseConfiguration());
+
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         // by getting the client, we're confirming that the options are also available in the container
