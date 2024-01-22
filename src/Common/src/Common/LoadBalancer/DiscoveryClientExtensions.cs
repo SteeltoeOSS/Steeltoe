@@ -6,8 +6,9 @@
 
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
+using Steeltoe.Common.Discovery;
 
-namespace Steeltoe.Common.Discovery;
+namespace Steeltoe.Common.LoadBalancer;
 
 internal static class DiscoveryClientExtensions
 {
@@ -59,7 +60,34 @@ internal static class DiscoveryClientExtensions
 
     private static byte[] ToCacheValue(IEnumerable<IServiceInstance> instances)
     {
-        List<JsonSerializableServiceInstance> serializableInstances = instances.Select(instance => new JsonSerializableServiceInstance(instance)).ToList();
+        List<JsonSerializableServiceInstance> serializableInstances = instances.Select(JsonSerializableServiceInstance.CopyFrom).ToList();
         return JsonSerializer.SerializeToUtf8Bytes(serializableInstances);
+    }
+
+    private sealed class JsonSerializableServiceInstance : IServiceInstance
+    {
+        // Trust that deserialized instances meet the IServiceInstance contract, so suppress nullability warnings.
+
+        public string ServiceId { get; set; } = null!;
+        public string Host { get; set; } = null!;
+        public int Port { get; set; }
+        public bool IsSecure { get; set; }
+        public Uri Uri { get; set; } = null!;
+        public IDictionary<string, string> Metadata { get; set; } = null!;
+
+        public static JsonSerializableServiceInstance CopyFrom(IServiceInstance instance)
+        {
+            ArgumentGuard.NotNull(instance);
+
+            return new JsonSerializableServiceInstance
+            {
+                ServiceId = instance.ServiceId,
+                Host = instance.Host,
+                Port = instance.Port,
+                IsSecure = instance.IsSecure,
+                Uri = instance.Uri,
+                Metadata = instance.Metadata
+            };
+        }
     }
 }
