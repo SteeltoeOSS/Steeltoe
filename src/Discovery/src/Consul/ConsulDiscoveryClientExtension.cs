@@ -82,9 +82,9 @@ public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
 
         services.AddSingleton(serviceProvider =>
         {
-            var discoveryOptions = serviceProvider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
+            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
             var instanceInfo = serviceProvider.GetService<IApplicationInstanceInfo>();
-            return ConsulRegistration.CreateRegistration(discoveryOptions.Value, instanceInfo);
+            return ConsulRegistration.Create(optionsMonitor, instanceInfo);
         });
 
         services.AddSingleton<ConsulServiceRegistrar>();

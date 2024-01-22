@@ -45,4 +45,19 @@ public sealed class DiscoveryHttpClientHandlerBaseTest
         Uri result = await handler.LookupServiceAsync(uri, CancellationToken.None);
         Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
     }
+
+    private sealed class TestServiceInstance : IServiceInstance
+    {
+        public string ServiceId => throw new NotImplementedException();
+        public string Host => throw new NotImplementedException();
+        public int Port => throw new NotImplementedException();
+        public bool IsSecure => throw new NotImplementedException();
+        public Uri Uri { get; }
+        public IDictionary<string, string> Metadata => throw new NotImplementedException();
+
+        public TestServiceInstance(Uri uri)
+        {
+            Uri = uri;
+        }
+    }
 }
