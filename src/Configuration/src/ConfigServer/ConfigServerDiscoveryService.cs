@@ -67,14 +67,18 @@ internal sealed class ConfigServerDiscoveryService
     {
         int attempts = 0;
         int backOff = _settings.RetryInitialInterval;
-        IList<IServiceInstance> instances;
+        IList<IServiceInstance> instances = [];
 
         do
         {
             try
             {
                 _logger.LogDebug("Locating configserver {serviceId} via discovery", _settings.DiscoveryServiceId);
-                instances = await DiscoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
+
+                if (_settings.DiscoveryServiceId != null)
+                {
+                    instances = await DiscoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
+                }
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
