@@ -7,6 +7,5 @@ using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
 
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Consul.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.Client.Test")]
 
 [assembly: DiscoveryClientAssembly(typeof(ConsulDiscoveryClientExtension))]
