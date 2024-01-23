@@ -267,4 +267,58 @@ public sealed class ConsulRegistrationTest
         Assert.NotNull(reg.Service.Check);
         Assert.NotNull(reg.Service.Tags);
     }
+
+    [Fact]
+    public void CreateCheck_WhenHealthCheckPathIsSetAndHeartbeatIsDisabled_ThenShouldSetHttp()
+    {
+        const string path = "/my/custom/health";
+
+        var options = new ConsulDiscoveryOptions
+        {
+            HealthCheckPath = path,
+            Heartbeat = new ConsulHeartbeatOptions
+            {
+                Enabled = false
+            }
+        };
+
+        AgentServiceCheck check = ConsulRegistration.CreateCheck(1234, options);
+
+        Assert.Contains(path, check.HTTP, StringComparison.InvariantCulture);
+    }
+
+    [Fact]
+    public void CreateCheck_WhenHealthCheckPathIsSetAndHeartbeatIsEnabled_ThenHttpShouldBeNull()
+    {
+        const string path = "/my/custom/health";
+
+        var options = new ConsulDiscoveryOptions
+        {
+            HealthCheckPath = path,
+            Heartbeat = new ConsulHeartbeatOptions
+            {
+                Enabled = true
+            }
+        };
+
+        AgentServiceCheck check = ConsulRegistration.CreateCheck(1234, options);
+
+        Assert.Null(check.HTTP);
+    }
+
+    [Fact]
+    public void CreateCheck_WhenHeartbeatIsDisabledAndPortIsANegativeNumber_ThenShouldThrow()
+    {
+        var options = new ConsulDiscoveryOptions
+        {
+            Heartbeat = new ConsulHeartbeatOptions
+            {
+                Enabled = false
+            }
+        };
+
+        const int port = -1234;
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => ConsulRegistration.CreateCheck(port, options));
+    }
 }
