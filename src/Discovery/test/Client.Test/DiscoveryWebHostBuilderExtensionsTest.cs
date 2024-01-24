@@ -17,14 +17,14 @@ namespace Steeltoe.Discovery.Client.Test;
 
 public sealed class DiscoveryWebHostBuilderExtensionsTest
 {
-    private static readonly Dictionary<string, string> EurekaSettings = new()
+    private static readonly Dictionary<string, string?> EurekaSettings = new()
     {
         ["eureka:client:shouldRegister"] = "true",
         ["eureka:client:eurekaServer:connectTimeoutSeconds"] = "1",
         ["eureka:client:eurekaServer:retryCount"] = "0"
     };
 
-    private static readonly Dictionary<string, string> ConsulSettings = new()
+    private static readonly Dictionary<string, string?> ConsulSettings = new()
     {
         ["consul:discovery:serviceName"] = "testhost",
         ["consul:discovery:enabled"] = "true",
@@ -38,12 +38,14 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction)
             .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
-        IWebHost host = hostBuilder.AddDiscoveryClient().Build();
-        IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
+        hostBuilder.ConfigureServices((context, services) => services.AddDiscoveryClient(context.Configuration));
+
+        IWebHost host = hostBuilder.Build();
+        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         var hostedService = host.Services.GetService<IHostedService>();
 
-        Assert.Single(discoveryClient);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
+        Assert.Single(discoveryClients);
+        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
         Assert.IsType<DiscoveryClientService>(hostedService);
     }
 
@@ -53,12 +55,14 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction)
             .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
 
-        IWebHost host = hostBuilder.AddDiscoveryClient().Build();
-        IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
+        hostBuilder.ConfigureServices((context, services) => services.AddDiscoveryClient(context.Configuration));
+
+        IWebHost host = hostBuilder.Build();
+        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         var hostedService = host.Services.GetService<IHostedService>();
 
-        Assert.Single(discoveryClient);
-        Assert.IsType<ConsulDiscoveryClient>(discoveryClient.First());
+        Assert.Single(discoveryClients);
+        Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
         Assert.IsType<DiscoveryClientService>(hostedService);
     }
 
@@ -68,12 +72,14 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction)
             .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
-        IWebHost host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
-        IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
+        hostBuilder.ConfigureServices((context, services) => services.AddServiceDiscovery(context.Configuration, builder => builder.UseEureka()));
+
+        IWebHost host = hostBuilder.Build();
+        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         var hostedService = host.Services.GetService<IHostedService>();
 
-        Assert.Single(discoveryClient);
-        Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
+        Assert.Single(discoveryClients);
+        Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
         Assert.IsType<DiscoveryClientService>(hostedService);
     }
 
@@ -83,12 +89,14 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction)
             .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
 
-        IWebHost host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();
-        IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
+        hostBuilder.ConfigureServices((context, services) => services.AddServiceDiscovery(context.Configuration, builder => builder.UseConsul()));
+
+        IWebHost host = hostBuilder.Build();
+        IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         var hostedService = host.Services.GetService<IHostedService>();
 
-        Assert.Single(discoveryClient);
-        Assert.IsType<ConsulDiscoveryClient>(discoveryClient.First());
+        Assert.Single(discoveryClients);
+        Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
         Assert.IsType<DiscoveryClientService>(hostedService);
     }
 }

@@ -27,7 +27,7 @@ public sealed class ConfigurationDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
-        IList<string> services = _optionsMonitor.CurrentValue.Services.Select(instance => instance.ServiceId).Distinct().ToList();
+        IList<string> services = _optionsMonitor.CurrentValue.Services.Select(instance => instance.ServiceId!).Distinct().ToList();
         return Task.FromResult(services);
     }
 

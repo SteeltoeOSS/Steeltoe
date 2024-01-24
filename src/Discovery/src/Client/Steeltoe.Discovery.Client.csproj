@@ -4,6 +4,7 @@
     <Description>Base package for using Steeltoe Service Discovery</Description>
     <PackageTags>service discovery;service registry;Spring Cloud;eureka;consul</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
