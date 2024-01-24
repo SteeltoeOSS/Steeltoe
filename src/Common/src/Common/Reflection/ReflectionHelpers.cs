@@ -304,7 +304,13 @@ public static class ReflectionHelpers
         where T : AssemblyContainsTypeAttribute
     {
         var runtimeAssemblies = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
-        using var loadContext = new MetadataLoadContext(new PathAssemblyResolver(AllRelevantPaths(runtimeAssemblies, typeof(T))));
+        var allKnownAssemblyPaths = AllRelevantPaths(runtimeAssemblies, typeof(T));
+        if (!allKnownAssemblyPaths.Any())
+        {
+            return;
+        }
+
+        using var loadContext = new MetadataLoadContext(new PathAssemblyResolver(allKnownAssemblyPaths));
         var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         var assemblypaths = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory).Where(f => f.EndsWith("dll", StringComparison.InvariantCultureIgnoreCase));
         foreach (var assembly in assemblypaths)
@@ -338,26 +344,20 @@ public static class ReflectionHelpers
     /// <returns>A list of paths to the runtime, assembly and requested assembly type</returns>
     private static List<string> AllRelevantPaths(string[] runtimeAssemblies, Type attributeType)
     {
-        var toReturn = new List<string>(runtimeAssemblies);
         var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
         var typeAssemblyLocation = attributeType.Assembly.Location;
         if (string.IsNullOrEmpty(executingAssemblyLocation) || string.IsNullOrEmpty(typeAssemblyLocation))
         {
-            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            if (baseDirectory.EndsWith("\\"))
-            {
-                baseDirectory = baseDirectory.Substring(0, baseDirectory.Length - 1);
-            }
-
-            toReturn.Add(baseDirectory);
             Console.WriteLine("File path path information for the assembly containing {0} is missing. Some Steeltoe functionality may not work with PublishSingleFile=true", attributeType.Name);
+            return new List<string>();
         }
         else
         {
-            toReturn.Add(executingAssemblyLocation);
-            toReturn.Add(attributeType.Assembly.Location);
+            return new List<string>(runtimeAssemblies)
+            {
+                executingAssemblyLocation,
+                attributeType.Assembly.Location
+            };
         }
-
-        return toReturn;
     }
 }
