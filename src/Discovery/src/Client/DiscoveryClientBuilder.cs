@@ -2,15 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using Steeltoe.Common.Discovery;
+
 namespace Steeltoe.Discovery.Client;
 
-public class DiscoveryClientBuilder
+public sealed class DiscoveryClientBuilder
 {
     /// <summary>
-    /// Gets or sets a list of extensions to use to configure an IDiscoveryClient.
+    /// Gets the list of extensions to use when configuring an <see cref="IDiscoveryClient" />.
     /// </summary>
     /// <remarks>
     /// An application should generally only use one extension.
     /// </remarks>
-    public IList<IDiscoveryClientExtension> Extensions { get; set; } = new List<IDiscoveryClientExtension>();
+    public IList<IDiscoveryClientExtension> Extensions { get; } = new List<IDiscoveryClientExtension>();
 }

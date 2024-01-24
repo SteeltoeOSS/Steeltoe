@@ -108,7 +108,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetService<IDiscoveryClient>();
-        var eurekaHttpClient = discoveryClient.HttpClient;
+        EurekaHttpClient eurekaHttpClient = discoveryClient.HttpClient;
 
         var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient);
 
@@ -333,7 +333,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         IConfiguration configuration = new ConfigurationBuilder().Build();
         IServiceCollection services = new ServiceCollection().AddSingleton(configuration);
 
-        services.AddServiceDiscovery(configuration);
+        services.AddServiceDiscovery(configuration, null);
         var client = services.BuildServiceProvider(true).GetRequiredService<IDiscoveryClient>();
         Assert.NotNull(client);
         Assert.IsType<NoOpDiscoveryClient>(client);
@@ -452,7 +452,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetService<IDiscoveryClient>();
-        var eurekaHttpClient = discoveryClient.HttpClient;
+        EurekaHttpClient eurekaHttpClient = discoveryClient.HttpClient;
 
         var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient);
 
@@ -721,13 +721,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         serviceCollection.AddSingleton(configuration);
 
-        var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(configuration, builder =>
+        var exception = Assert.Throws<InvalidOperationException>(() => serviceCollection.AddServiceDiscovery(configuration, builder =>
         {
             builder.UseConsul();
             builder.UseEureka();
         }));
 
-        Assert.Contains("Multiple IDiscoveryClient implementations have been registered", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("None or multiple IDiscoveryClient implementations have been registered and configured.", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -737,13 +737,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         IConfiguration configuration = new ConfigurationBuilder().Build();
         serviceCollection.AddSingleton(configuration);
 
-        var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(configuration, builder =>
+        var exception = Assert.Throws<InvalidOperationException>(() => serviceCollection.AddServiceDiscovery(configuration, builder =>
         {
             builder.UseConsul();
             builder.UseEureka();
         }));
 
-        Assert.Contains("Multiple IDiscoveryClient implementations have been registered", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("None or multiple IDiscoveryClient implementations have been registered and configured.", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]

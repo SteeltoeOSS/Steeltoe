@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Connectors.CloudFoundry;
 using Steeltoe.Discovery.Client.SimpleClients;
@@ -22,7 +21,7 @@ public static class DiscoveryHostBuilderExtensions
     /// <remarks>
     /// Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection.
     /// </remarks>
-    /// <exception cref="AmbiguousMatchException">
+    /// <exception cref="InvalidOperationException">
     /// Thrown if multiple IDiscoveryClient implementations are configured.
     /// </exception>
     /// <exception cref="ConnectorException">
@@ -47,7 +46,7 @@ public static class DiscoveryHostBuilderExtensions
     /// <remarks>
     /// Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection.
     /// </remarks>
-    /// <exception cref="AmbiguousMatchException">
+    /// <exception cref="InvalidOperationException">
     /// Thrown if multiple IDiscoveryClient implementations are configured.
     /// </exception>
     /// <exception cref="ConnectorException">
