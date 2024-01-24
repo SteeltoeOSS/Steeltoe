@@ -29,7 +29,7 @@ namespace Steeltoe.Discovery.Client.Test;
 
 public sealed class DiscoveryServiceCollectionExtensionsTest
 {
-    private static readonly Dictionary<string, string> FastEureka = new()
+    private static readonly Dictionary<string, string?> FastEureka = new()
     {
         { "eureka:client:ShouldRegisterWithEureka", "false" },
         { "eureka:client:ShouldFetchRegistry", "false" }
@@ -56,7 +56,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -75,7 +75,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public void AddDiscoveryClient_WithEurekaInetConfig_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string>(FastEureka)
+        var appsettings = new Dictionary<string, string?>(FastEureka)
         {
             { "spring:application:name", "myName" },
             { "spring:cloud:inet:defaulthostname", "fromtest" },
@@ -97,7 +97,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public void AddDiscoveryClient_WithEurekaClientCertConfig_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string>(FastEureka);
+        var appsettings = new Dictionary<string, string?>(FastEureka);
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPemFiles("instance.crt", "instance.key").Build();
 
@@ -107,13 +107,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         services.AddDiscoveryClient(configuration);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetService<IDiscoveryClient>();
+        var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetRequiredService<IDiscoveryClient>();
         EurekaHttpClient eurekaHttpClient = discoveryClient.HttpClient;
 
-        var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient);
+        var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().First(n => n.Name == "httpClient").GetValue(eurekaHttpClient)!;
 
-        var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name == "_handler").GetValue(httpClient) as DelegatingHandler;
-        object innerHandler = GetInnerHttpHandler(handler);
+        var handler = (DelegatingHandler)httpClient.GetType().BaseType!.GetRuntimeFields().Single(f => f.Name == "_handler").GetValue(httpClient)!;
+        object? innerHandler = GetInnerHttpHandler(handler);
 
         Assert.NotNull(discoveryClient);
         Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
@@ -122,7 +122,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public async Task AddDiscoveryClient_WithNoConfig_AddsNoOpDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" }
         };
@@ -145,8 +145,8 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         IConfiguration configuration = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(configuration, "foobar"));
-        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
+        var exception = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(configuration, "foobar"));
+        Assert.Contains("foobar", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -227,8 +227,8 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         builder.AddCloudFoundry();
         IConfiguration configuration = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(configuration));
-        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
+        var exception = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(configuration));
+        Assert.Contains("Multiple", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -287,7 +287,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public void AddDiscoveryClient_WithConsulInetConfiguration_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "spring:cloud:inet:defaulthostname", "fromtest" },
@@ -307,24 +307,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(serviceProvider.GetService<IConsulClient>());
         Assert.NotNull(serviceProvider.GetService<TtlScheduler>());
         Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistry>());
-        var reg = serviceProvider.GetService<ConsulRegistration>();
-        Assert.NotNull(reg);
-        Assert.Equal("fromtest", reg.Host);
+
+        var registration = serviceProvider.GetService<ConsulRegistration>();
+
+        Assert.NotNull(registration);
+        Assert.Equal("fromtest", registration.Host);
         Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
-    }
-
-    [Fact]
-    public void AddServiceDiscovery_ThrowsIfServiceCollectionNull()
-    {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        const IServiceCollection services = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddServiceDiscovery(configuration, _ =>
-        {
-        }));
-
-        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -334,7 +323,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection().AddSingleton(configuration);
 
         services.AddServiceDiscovery(configuration, null);
-        var client = services.BuildServiceProvider(true).GetRequiredService<IDiscoveryClient>();
+        var client = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
         Assert.NotNull(client);
         Assert.IsType<NoOpDiscoveryClient>(client);
         Assert.Empty(await client.GetServiceIdsAsync(CancellationToken.None));
@@ -359,7 +348,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
 
-        IConfiguration configuration = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(path)).AddJsonFile(Path.GetFileName(path)).Build();
+        IConfiguration configuration = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(path)!).AddJsonFile(Path.GetFileName(path)).Build();
         IServiceCollection services = new ServiceCollection().AddOptions().AddSingleton(configuration);
 
         ServiceProvider serviceProvider = services.AddServiceDiscovery(configuration, builder => builder.UseConfiguration()).BuildServiceProvider(true);
@@ -398,7 +387,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -417,7 +406,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public void AddServiceDiscovery_WithEurekaInetConfig_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "spring:cloud:inet:defaulthostname", "fromtest" },
@@ -441,7 +430,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public void AddServiceDiscovery_WithEurekaClientCertConfig_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string>(FastEureka);
+        var appsettings = new Dictionary<string, string?>(FastEureka);
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPemFiles("instance.crt", "instance.key").Build();
 
@@ -451,13 +440,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         services.AddServiceDiscovery(configuration, builder => builder.UseEureka());
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetService<IDiscoveryClient>();
+        var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetRequiredService<IDiscoveryClient>();
         EurekaHttpClient eurekaHttpClient = discoveryClient.HttpClient;
 
-        var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name == "httpClient").GetValue(eurekaHttpClient);
+        var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().First(n => n.Name == "httpClient").GetValue(eurekaHttpClient)!;
 
-        var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name == "_handler").GetValue(httpClient) as DelegatingHandler;
-        object innerHandler = GetInnerHttpHandler(handler);
+        var handler = (DelegatingHandler)httpClient.GetType().BaseType!.GetRuntimeFields().First(f => f.Name == "_handler").GetValue(httpClient)!;
+        object? innerHandler = GetInnerHttpHandler(handler);
 
         Assert.NotNull(discoveryClient);
         Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
@@ -473,8 +462,8 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         services.AddServiceDiscovery(configuration, builder => builder.UseEureka("foobar"));
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var ex = Assert.Throws<ConnectorException>(() => serviceProvider.GetService<IDiscoveryClient>());
-        Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
+        var exception = Assert.Throws<ConnectorException>(() => serviceProvider.GetService<IDiscoveryClient>());
+        Assert.Contains("foobar", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -557,14 +546,14 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         services.AddServiceDiscovery(configuration, options => options.UseEureka());
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var ex = Assert.Throws<ConnectorException>(() => serviceProvider.GetService<IDiscoveryClient>());
-        Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
+        var exception = Assert.Throws<ConnectorException>(() => serviceProvider.GetService<IDiscoveryClient>());
+        Assert.Contains("Multiple", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public void AddServiceDiscovery_WithConsulConfiguration_AddsDiscoveryClient()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "consul:host", "foo.bar" },
@@ -600,7 +589,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public void AddServiceDiscovery_WithConsulInetConfiguration_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "spring:cloud:inet:defaulthostname", "fromtest" },
@@ -620,9 +609,11 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(serviceProvider.GetService<IConsulClient>());
         Assert.NotNull(serviceProvider.GetService<TtlScheduler>());
         Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistry>());
-        var reg = serviceProvider.GetService<ConsulRegistration>();
-        Assert.NotNull(reg);
-        Assert.Equal("fromtest", reg.Host);
+
+        var registration = serviceProvider.GetService<ConsulRegistration>();
+
+        Assert.NotNull(registration);
+        Assert.Equal("fromtest", registration.Host);
         Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
@@ -630,7 +621,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public void AddDiscoveryClient_WithConsulUrlConfiguration_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
@@ -648,10 +639,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(serviceProvider.GetService<IConsulClient>());
         Assert.NotNull(serviceProvider.GetService<TtlScheduler>());
         Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistry>());
-        var reg = serviceProvider.GetService<ConsulRegistration>();
-        Assert.NotNull(reg);
-        Assert.Equal("myapp", reg.Host);
-        Assert.Equal(1234, reg.Port);
+
+        var registration = serviceProvider.GetService<ConsulRegistration>();
+
+        Assert.NotNull(registration);
+        Assert.Equal("myapp", registration.Host);
+        Assert.Equal(1234, registration.Port);
         Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
@@ -659,7 +652,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public void AddDiscoveryClient_WithConsul_UrlBypassWorks()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
@@ -673,11 +666,11 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddOptions().AddDiscoveryClient(configuration)
             .BuildServiceProvider(true);
 
-        var reg = serviceProvider.GetService<ConsulRegistration>();
+        var registration = serviceProvider.GetService<ConsulRegistration>();
 
-        Assert.NotNull(reg);
-        Assert.NotEqual("myapp", reg.Host);
-        Assert.Equal(0, reg.Port);
+        Assert.NotNull(registration);
+        Assert.NotEqual("myapp", registration.Host);
+        Assert.Equal(0, registration.Port);
         Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
@@ -685,7 +678,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public void AddDiscoveryClient_WithConsul_PreferPortOverUrl()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
@@ -699,11 +692,11 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddOptions().AddDiscoveryClient(configuration)
             .BuildServiceProvider(true);
 
-        var reg = serviceProvider.GetService<ConsulRegistration>();
+        var registration = serviceProvider.GetService<ConsulRegistration>();
 
-        Assert.NotNull(reg);
-        Assert.NotEqual("myapp", reg.Host);
-        Assert.Equal(8080, reg.Port);
+        Assert.NotNull(registration);
+        Assert.NotEqual("myapp", registration.Host);
+        Assert.Equal(8080, registration.Port);
         Assert.NotNull(serviceProvider.GetService<ConsulServiceRegistrar>());
         Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
@@ -713,7 +706,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     {
         var serviceCollection = new ServiceCollection();
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "consul:discovery:cachettl", "1" },
             { "eureka:client:cachettl", "1" }
@@ -759,15 +752,15 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
             builder.UseEureka();
         }).BuildServiceProvider(true);
 
-        var service = serviceProvider.GetService<IDiscoveryClient>();
+        var service = serviceProvider.GetRequiredService<IDiscoveryClient>();
         Assert.True(service.GetType().IsAssignableFrom(typeof(EurekaDiscoveryClient)));
     }
 
-    private object GetInnerHttpHandler(object handler)
+    private static object? GetInnerHttpHandler(object? handler)
     {
         while (handler is not null)
         {
-            handler = handler.GetType().GetProperty("InnerHandler")?.GetValue(handler);
+            handler = handler.GetType().GetProperty(nameof(DelegatingHandler.InnerHandler))!.GetValue(handler);
 
             if (handler is HttpClientHandler)
             {
@@ -776,5 +769,16 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         }
 
         return handler;
+    }
+
+    private sealed class TestApplicationLifetime : IHostApplicationLifetime
+    {
+        public CancellationToken ApplicationStarted => default;
+        public CancellationToken ApplicationStopping => default;
+        public CancellationToken ApplicationStopped => default;
+
+        public void StopApplication()
+        {
+        }
     }
 }

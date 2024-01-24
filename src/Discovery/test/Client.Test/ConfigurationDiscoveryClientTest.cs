@@ -59,8 +59,8 @@ public sealed class ConfigurationDiscoveryClientTest
             }
         };
 
-        var serviceOptions = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
-        var client = new ConfigurationDiscoveryClient(serviceOptions);
+        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
         Assert.Equal(3, fruitInstances.Count);
@@ -89,8 +89,8 @@ public sealed class ConfigurationDiscoveryClientTest
             }
         };
 
-        var serviceOptions = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
-        var client = new ConfigurationDiscoveryClient(serviceOptions);
+        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
 

@@ -94,7 +94,7 @@ public sealed class EurekaHealthCheckHandlerTest
         };
 
         builder.Configuration.AddInMemoryCollection(eurekaSettings);
-        builder.AddServiceDiscovery(options => options.UseEureka());
+        builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
         builder.Services.AddSingleton<IHealthCheckHandler, EurekaHealthCheckHandler>();
 
         WebApplication app = builder.Build();

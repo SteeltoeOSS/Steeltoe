@@ -3,17 +3,20 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Client;
 
 internal sealed class DiscoveryClientService : IHostedService
 {
-    private readonly IDiscoveryClient _discoveryClient;
+    private readonly IDiscoveryClient _client;
 
     public DiscoveryClientService(IDiscoveryClient client)
     {
-        _discoveryClient = client;
+        ArgumentGuard.NotNull(client);
+
+        _client = client;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -23,6 +26,6 @@ internal sealed class DiscoveryClientService : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return _discoveryClient.ShutdownAsync(cancellationToken);
+        return _client.ShutdownAsync(cancellationToken);
     }
 }
