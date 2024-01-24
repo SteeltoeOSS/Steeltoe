@@ -87,28 +87,29 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void ApplyServicesIgnoresCFManagementOptions()
     {
-        const string vcapServices = @"
-                {
-                    ""p-service-registry"": [{
-                        ""credentials"": {
-                            ""uri"": ""https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com"",
-                            ""client_id"": ""p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe"",
-                            ""client_secret"": ""dCsdoiuklicS"",
-                            ""access_token_uri"": ""https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token""
-                            },
-                        ""syslog_drain_url"": null,
-                        ""label"": ""p-service-registry"",
-                        ""provider"": null,
-                        ""plan"": ""standard"",
-                        ""name"": ""myDiscoveryService"",
-                        ""tags"": [
-                            ""eureka"",
-                            ""discovery"",
-                            ""registry"",
-                            ""spring-cloud""
-                        ]
-                    }]
-                }";
+        const string vcapServices = """
+            {
+                "p-service-registry": [{
+                    "credentials": {
+                        "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com",
+                        "client_id": "p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe",
+                        "client_secret": "dCsdoiuklicS",
+                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                        },
+                    "syslog_drain_url": null,
+                    "label": "p-service-registry",
+                    "provider": null,
+                    "plan": "standard",
+                    "name": "myDiscoveryService",
+                    "tags": [
+                        "eureka",
+                        "discovery",
+                        "registry",
+                        "spring-cloud"
+                    ]
+                }]
+            }
+            """;
 
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);

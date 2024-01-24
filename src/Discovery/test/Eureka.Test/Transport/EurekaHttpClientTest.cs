@@ -216,38 +216,39 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetApplicationsAsync_InvokesServer_ReturnsExpectedApplications()
     {
-        const string json = @"
-                { 
-                    ""applications"": { 
-                        ""versions__delta"":""1"",
-                        ""apps__hashcode"":""UP_1_"",
-                        ""application"":[{
-                            ""name"":""FOO"",
-                            ""instance"":[{ 
-                                ""instanceId"":""localhost:foo"",
-                                ""hostName"":""localhost"",
-                                ""app"":""FOO"",
-                                ""ipAddr"":""192.168.56.1"",
-                                ""status"":""UP"",
-                                ""overriddenstatus"":""UNKNOWN"",
-                                ""port"":{""$"":8080,""@enabled"":""true""},
-                                ""securePort"":{""$"":443,""@enabled"":""false""},
-                                ""countryId"":1,
-                                ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                                ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1457714988223,""lastRenewalTimestamp"":1457716158319,""evictionTimestamp"":0,""serviceUpTimestamp"":1457714988223},
-                                ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
-                                ""homePageUrl"":""http://localhost:8080/"",
-                                ""statusPageUrl"":""http://localhost:8080/info"",
-                                ""healthCheckUrl"":""http://localhost:8080/health"",
-                                ""vipAddress"":""foo"",
-                                ""isCoordinatingDiscoveryServer"":""false"",
-                                ""lastUpdatedTimestamp"":""1457714988223"",
-                                ""lastDirtyTimestamp"":""1457714988172"",
-                                ""actionType"":""ADDED""
+        const string json = """
+                {
+                    "applications": {
+                        "versions__delta":"1",
+                        "apps__hashcode":"UP_1_",
+                        "application":[{
+                            "name":"FOO",
+                            "instance":[{
+                                "instanceId":"localhost:foo",
+                                "hostName":"localhost",
+                                "app":"FOO",
+                                "ipAddr":"192.168.56.1",
+                                "status":"UP",
+                                "overriddenstatus":"UNKNOWN",
+                                "port":{"$":8080,"@enabled":"true"},
+                                "securePort":{"$":443,"@enabled":"false"},
+                                "countryId":1,
+                                "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                                "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
+                                "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                                "homePageUrl":"http://localhost:8080/",
+                                "statusPageUrl":"http://localhost:8080/info",
+                                "healthCheckUrl":"http://localhost:8080/health",
+                                "vipAddress":"foo",
+                                "isCoordinatingDiscoveryServer":"false",
+                                "lastUpdatedTimestamp":"1457714988223",
+                                "lastDirtyTimestamp":"1457714988172",
+                                "actionType":"ADDED"
                             }]
                         }]
                     }
-                }";
+                }
+            """;
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
@@ -323,34 +324,35 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetApplicationAsync_InvokesServer_ReturnsExpectedApplications()
     {
-        const string json = @"
-                {
-                    ""application"": {
-                        ""name"":""FOO"",
-                        ""instance"":[ {
-                            ""instanceId"":""localhost:foo"",
-                            ""hostName"":""localhost"",
-                            ""app"":""FOO"",
-                            ""ipAddr"":""192.168.56.1"",
-                            ""status"":""UP"",
-                            ""overriddenstatus"":""UNKNOWN"",
-                            ""port"":{""$"":8080,""@enabled"":""true""},
-                            ""securePort"":{""$"":443,""@enabled"":""false""},
-                            ""countryId"":1,
-                            ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                            ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1458152330783,""lastRenewalTimestamp"":1458243422342,""evictionTimestamp"":0,""serviceUpTimestamp"":1458152330783},
-                            ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
-                            ""homePageUrl"":""http://localhost:8080/"",
-                            ""statusPageUrl"":""http://localhost:8080/info"",
-                            ""healthCheckUrl"":""http://localhost:8080/health"",
-                            ""vipAddress"":""foo"",
-                            ""isCoordinatingDiscoveryServer"":""false"",
-                            ""lastUpdatedTimestamp"":""1458152330783"",
-                            ""lastDirtyTimestamp"":""1458152330696"",
-                            ""actionType"":""ADDED""
-                        }]
-                    }
-                }";
+        const string json = """
+            {
+                "application": {
+                    "name":"FOO",
+                    "instance":[ {
+                        "instanceId":"localhost:foo",
+                        "hostName":"localhost",
+                        "app":"FOO",
+                        "ipAddr":"192.168.56.1",
+                        "status":"UP",
+                        "overriddenstatus":"UNKNOWN",
+                        "port":{"$":8080,"@enabled":"true"},
+                        "securePort":{"$":443,"@enabled":"false"},
+                        "countryId":1,
+                        "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                        "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1458152330783,"lastRenewalTimestamp":1458243422342,"evictionTimestamp":0,"serviceUpTimestamp":1458152330783},
+                        "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                        "homePageUrl":"http://localhost:8080/",
+                        "statusPageUrl":"http://localhost:8080/info",
+                        "healthCheckUrl":"http://localhost:8080/health",
+                        "vipAddress":"foo",
+                        "isCoordinatingDiscoveryServer":"false",
+                        "lastUpdatedTimestamp":"1458152330783",
+                        "lastDirtyTimestamp":"1458152330696",
+                        "actionType":"ADDED"
+                    }]
+                }
+            }
+            """;
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
@@ -396,34 +398,35 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetApplicationAsync__FirstServerFails_InvokesSecondServer_ReturnsExpectedApplications()
     {
-        const string json = @"
-                {
-                    ""application"": {
-                        ""name"":""FOO"",
-                        ""instance"":[{
-                            ""instanceId"":""localhost:foo"",
-                            ""hostName"":""localhost"",
-                            ""app"":""FOO"",
-                            ""ipAddr"":""192.168.56.1"",
-                            ""status"":""UP"",
-                            ""overriddenstatus"":""UNKNOWN"",
-                            ""port"":{""$"":8080,""@enabled"":""true""},
-                            ""securePort"":{""$"":443,""@enabled"":""false""},
-                            ""countryId"":1,
-                            ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                            ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1458152330783,""lastRenewalTimestamp"":1458243422342,""evictionTimestamp"":0,""serviceUpTimestamp"":1458152330783},
-                            ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
-                            ""homePageUrl"":""http://localhost:8080/"",
-                            ""statusPageUrl"":""http://localhost:8080/info"",
-                            ""healthCheckUrl"":""http://localhost:8080/health"",
-                            ""vipAddress"":""foo"",
-                            ""isCoordinatingDiscoveryServer"":""false"",
-                            ""lastUpdatedTimestamp"":""1458152330783"",
-                            ""lastDirtyTimestamp"":""1458152330696"",
-                            ""actionType"":""ADDED""
-                        }]
-                    }
-                }";
+        const string json = """
+            {
+                "application": {
+                    "name":"FOO",
+                    "instance":[{
+                        "instanceId":"localhost:foo",
+                        "hostName":"localhost",
+                        "app":"FOO",
+                        "ipAddr":"192.168.56.1",
+                        "status":"UP",
+                        "overriddenstatus":"UNKNOWN",
+                        "port":{"$":8080,"@enabled":"true"},
+                        "securePort":{"$":443,"@enabled":"false"},
+                        "countryId":1,
+                        "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                        "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1458152330783,"lastRenewalTimestamp":1458243422342,"evictionTimestamp":0,"serviceUpTimestamp":1458152330783},
+                        "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                        "homePageUrl":"http://localhost:8080/",
+                        "statusPageUrl":"http://localhost:8080/info",
+                        "healthCheckUrl":"http://localhost:8080/health",
+                        "vipAddress":"foo",
+                        "isCoordinatingDiscoveryServer":"false",
+                        "lastUpdatedTimestamp":"1458152330783",
+                        "lastDirtyTimestamp":"1458152330696",
+                        "actionType":"ADDED"
+                    }]
+                }
+            }
+            """;
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
@@ -497,36 +500,37 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstanceAsync_InvokesServer_ReturnsExpectedInstances()
     {
-        const string json = @"
-                { 
-                    ""instance"": {
-                        ""instanceId"":""DESKTOP-GNQ5SUT"",
-                        ""app"":""FOOBAR"",
-                        ""appGroupName"":null,
-                        ""ipAddr"":""192.168.0.147"",
-                        ""sid"":""na"",
-                        ""port"":{""@enabled"":true,""$"":80},
-                        ""securePort"":{""@enabled"":false,""$"":443},
-                        ""homePageUrl"":""http://DESKTOP-GNQ5SUT:80/"",
-                        ""statusPageUrl"":""http://DESKTOP-GNQ5SUT:80/Status"",
-                        ""healthCheckUrl"":""http://DESKTOP-GNQ5SUT:80/healthcheck"",
-                        ""secureHealthCheckUrl"":null,
-                        ""vipAddress"":""DESKTOP-GNQ5SUT:80"",
-                        ""secureVipAddress"":""DESKTOP-GNQ5SUT:443"",
-                        ""countryId"":1,
-                        ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                        ""hostName"":""DESKTOP-GNQ5SUT"",
-                        ""status"":""UP"",
-                        ""overriddenstatus"":""UNKNOWN"",
-                        ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":0,""lastRenewalTimestamp"":0,""renewalTimestamp"":0,""evictionTimestamp"":0,""serviceUpTimestamp"":0},
-                        ""isCoordinatingDiscoveryServer"":false,
-                        ""metadata"":{""@class"":""java.util.Collections$EmptyMap"",""metadata"":null},
-                        ""lastUpdatedTimestamp"":1458116137663,
-                        ""lastDirtyTimestamp"":1458116137663,
-                        ""actionType"":""ADDED"",
-                        ""asgName"":null
-                    }
-                }";
+        const string json = """
+            {
+                "instance": {
+                    "instanceId":"DESKTOP-GNQ5SUT",
+                    "app":"FOOBAR",
+                    "appGroupName":null,
+                    "ipAddr":"192.168.0.147",
+                    "sid":"na",
+                    "port":{"@enabled":true,"$":80},
+                    "securePort":{"@enabled":false,"$":443},
+                    "homePageUrl":"http://DESKTOP-GNQ5SUT:80/",
+                    "statusPageUrl":"http://DESKTOP-GNQ5SUT:80/Status",
+                    "healthCheckUrl":"http://DESKTOP-GNQ5SUT:80/healthcheck",
+                    "secureHealthCheckUrl":null,
+                    "vipAddress":"DESKTOP-GNQ5SUT:80",
+                    "secureVipAddress":"DESKTOP-GNQ5SUT:443",
+                    "countryId":1,
+                    "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                    "hostName":"DESKTOP-GNQ5SUT",
+                    "status":"UP",
+                    "overriddenstatus":"UNKNOWN",
+                    "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":0,"lastRenewalTimestamp":0,"renewalTimestamp":0,"evictionTimestamp":0,"serviceUpTimestamp":0},
+                    "isCoordinatingDiscoveryServer":false,
+                    "metadata":{"@class":"java.util.Collections$EmptyMap","metadata":null},
+                    "lastUpdatedTimestamp":1458116137663,
+                    "lastDirtyTimestamp":1458116137663,
+                    "actionType":"ADDED",
+                    "asgName":null
+                }
+            }
+            """;
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
@@ -563,36 +567,37 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstanceAsync_FirstServerFails_InvokesSecondServer_ReturnsExpectedInstances()
     {
-        const string json = @"
-                { 
-                    ""instance"":{
-                        ""instanceId"":""DESKTOP-GNQ5SUT"",
-                        ""app"":""FOOBAR"",
-                        ""appGroupName"":null,
-                        ""ipAddr"":""192.168.0.147"",
-                        ""sid"":""na"",
-                        ""port"":{""@enabled"":true,""$"":80},
-                        ""securePort"":{""@enabled"":false,""$"":443},
-                        ""homePageUrl"":""http://DESKTOP-GNQ5SUT:80/"",
-                        ""statusPageUrl"":""http://DESKTOP-GNQ5SUT:80/Status"",
-                        ""healthCheckUrl"":""http://DESKTOP-GNQ5SUT:80/healthcheck"",
-                        ""secureHealthCheckUrl"":null,
-                        ""vipAddress"":""DESKTOP-GNQ5SUT:80"",
-                        ""secureVipAddress"":""DESKTOP-GNQ5SUT:443"",
-                        ""countryId"":1,
-                        ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                        ""hostName"":""DESKTOP-GNQ5SUT"",
-                        ""status"":""UP"",
-                        ""overriddenstatus"":""UNKNOWN"",
-                        ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":0,""lastRenewalTimestamp"":0,""renewalTimestamp"":0,""evictionTimestamp"":0,""serviceUpTimestamp"":0},
-                        ""isCoordinatingDiscoveryServer"":false,
-                        ""metadata"":{""@class"":""java.util.Collections$EmptyMap"",""metadata"":null},
-                        ""lastUpdatedTimestamp"":1458116137663,
-                        ""lastDirtyTimestamp"":1458116137663,
-                        ""actionType"":""ADDED"",
-                        ""asgName"":null
-                    }
-                }";
+        const string json = """
+            {
+                "instance":{
+                    "instanceId":"DESKTOP-GNQ5SUT",
+                    "app":"FOOBAR",
+                    "appGroupName":null,
+                    "ipAddr":"192.168.0.147",
+                    "sid":"na",
+                    "port":{"@enabled":true,"$":80},
+                    "securePort":{"@enabled":false,"$":443},
+                    "homePageUrl":"http://DESKTOP-GNQ5SUT:80/",
+                    "statusPageUrl":"http://DESKTOP-GNQ5SUT:80/Status",
+                    "healthCheckUrl":"http://DESKTOP-GNQ5SUT:80/healthcheck",
+                    "secureHealthCheckUrl":null,
+                    "vipAddress":"DESKTOP-GNQ5SUT:80",
+                    "secureVipAddress":"DESKTOP-GNQ5SUT:443",
+                    "countryId":1,
+                    "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                    "hostName":"DESKTOP-GNQ5SUT",
+                    "status":"UP",
+                    "overriddenstatus":"UNKNOWN",
+                    "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":0,"lastRenewalTimestamp":0,"renewalTimestamp":0,"evictionTimestamp":0,"serviceUpTimestamp":0},
+                    "isCoordinatingDiscoveryServer":false,
+                    "metadata":{"@class":"java.util.Collections$EmptyMap","metadata":null},
+                    "lastUpdatedTimestamp":1458116137663,
+                    "lastDirtyTimestamp":1458116137663,
+                    "actionType":"ADDED",
+                    "asgName":null
+                }
+            }
+            """;
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;

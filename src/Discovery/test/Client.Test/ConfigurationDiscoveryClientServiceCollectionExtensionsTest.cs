@@ -16,17 +16,18 @@ public sealed class ConfigurationServiceInstanceProviderServiceCollectionExtensi
     [Fact]
     public async Task AddConfigurationDiscoveryClient_AddsClientWithOptions()
     {
-        const string appsettings = @"
-{
-    ""discovery"": {
-        ""services"": [
-            { ""serviceId"": ""fruitService"", ""host"": ""fruitball"", ""port"": 443, ""isSecure"": true },
-            { ""serviceId"": ""fruitService"", ""host"": ""fruitballer"", ""port"": 8081 },
-            { ""serviceId"": ""vegetableService"", ""host"": ""vegemite"", ""port"": 443, ""isSecure"": true },
-            { ""serviceId"": ""vegetableService"", ""host"": ""carrot"", ""port"": 8081 },
-        ]
-    }
-}";
+        const string appsettings = """
+            {
+                "discovery": {
+                    "services": [
+                        { "serviceId": "fruitService", "host": "fruitball", "port": 443, "isSecure": true },
+                        { "serviceId": "fruitService", "host": "fruitballer", "port": 8081 },
+                        { "serviceId": "vegetableService", "host": "vegemite", "port": 443, "isSecure": true },
+                        { "serviceId": "vegetableService", "host": "carrot", "port": 8081 },
+                    ]
+                }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
