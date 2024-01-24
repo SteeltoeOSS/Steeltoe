@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Connectors.Services;
 
@@ -15,8 +14,7 @@ internal sealed class NoOpDiscoveryClientExtension : IDiscoveryClientExtension
     /// <inheritdoc />
     public void ApplyServices(IServiceCollection services)
     {
-        services.AddSingleton<IDiscoveryClient>(services =>
-            new NoOpDiscoveryClient(services.GetRequiredService<IConfiguration>(), services.GetService<ILogger<NoOpDiscoveryClient>>()));
+        services.AddSingleton<IDiscoveryClient, NoOpDiscoveryClient>();
     }
 
     public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)

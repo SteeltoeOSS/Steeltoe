@@ -2,7 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
+#nullable enable
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -25,10 +26,10 @@ public static class DiscoveryServiceCollectionExtensions
     /// configured, a <see cref="NoOpDiscoveryClient" /> will be configured.
     /// </summary>
     /// <param name="services">
-    /// <see cref="IServiceCollection" /> to configure.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
-    /// Application configuration.
+    /// The <see cref="IConfiguration" /> to read application settings from.
     /// </param>
     public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration)
     {
@@ -40,33 +41,32 @@ public static class DiscoveryServiceCollectionExtensions
     /// configured, a <see cref="NoOpDiscoveryClient" /> will be configured.
     /// </summary>
     /// <param name="services">
-    /// <see cref="IServiceCollection" /> to configure.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
-    /// Application configuration.
+    /// The <see cref="IConfiguration" /> to read application settings from.
     /// </param>
     /// <param name="serviceName">
-    /// Specify the name of a service binding to use.
+    /// The name of the service binding to use.
     /// </param>
-    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, string serviceName)
+    public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration configuration, string? serviceName)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
 
-        Action<DiscoveryClientBuilder> builderAction = null;
+        Action<DiscoveryClientBuilder>? builderAction = null;
 
-        IServiceInfo info = string.IsNullOrEmpty(serviceName)
+        IServiceInfo? info = string.IsNullOrEmpty(serviceName)
             ? GetSingleDiscoveryServiceInfo(configuration)
             : GetNamedDiscoveryServiceInfo(configuration, serviceName);
 
         // iterate assemblies for implementations of IDiscoveryClientExtension
         var implementations = new List<IDiscoveryClientExtension>();
-
         IEnumerable<Type> extensions = ReflectionHelpers.FindInterfacedTypesFromAssemblyAttribute<DiscoveryClientAssemblyAttribute>();
 
-        foreach (Type clientExtension in extensions)
+        foreach (Type extension in extensions)
         {
-            implementations.Add(Activator.CreateInstance(clientExtension) as IDiscoveryClientExtension);
+            implementations.Add((IDiscoveryClientExtension)Activator.CreateInstance(extension)!);
         }
 
         if (implementations.Count == 1)
@@ -75,17 +75,17 @@ public static class DiscoveryServiceCollectionExtensions
         }
         else if (implementations.Count > 1)
         {
-            // if none configured, that's ok because AddServiceDiscovery has a plan
+            // If none configured, that's ok because AddServiceDiscovery will add a no-op discovery client.
             IDiscoveryClientExtension[] configured = implementations.Where(client => client.IsConfigured(configuration, info)).ToArray();
 
             if (configured.Length == 1)
             {
-                builderAction = builder => builder.Extensions.Add(configured.Single());
+                builderAction = builder => builder.Extensions.Add(configured[0]);
             }
             else if (configured.Length > 1)
             {
-                throw new AmbiguousMatchException(
-                    "Multiple IDiscoveryClient implementations have been added and configured! This is not supported, please only configure a single client type.");
+                throw new InvalidOperationException(
+                    "Multiple IDiscoveryClient implementations have been registered and configured. This is not supported, please only use a single client type.");
             }
         }
 
@@ -97,25 +97,25 @@ public static class DiscoveryServiceCollectionExtensions
     /// configured.
     /// </summary>
     /// <param name="services">
-    /// <see cref="IServiceCollection" /> to configure.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
-    /// Application configuration.
+    /// The <see cref="IConfiguration" /> to read application settings from.
     /// </param>
     /// <param name="builderAction">
-    /// Provided by the desired <see cref="IDiscoveryClient" /> implementation.
+    /// Used to activate the desired <see cref="IDiscoveryClient" /> implementation.
     /// </param>
     /// <remarks>
     /// Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection.
     /// </remarks>
-    /// <exception cref="AmbiguousMatchException">
-    /// Thrown if multiple IDiscoveryClient implementations are configured.
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if multiple <see cref="IDiscoveryClient" /> implementations are configured.
     /// </exception>
     /// <exception cref="ConnectorException">
-    /// Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected.
+    /// Thrown when no service info with the expected name or type was found, or when multiple service infos were found.
     /// </exception>
     public static IServiceCollection AddServiceDiscovery(this IServiceCollection services, IConfiguration configuration,
-        Action<DiscoveryClientBuilder> builderAction = null)
+        Action<DiscoveryClientBuilder>? builderAction)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(configuration);
@@ -133,22 +133,22 @@ public static class DiscoveryServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Retrieve a single, named <see cref="IServiceInfo" /> that is expected to work with Service Discovery.
+    /// Retrieves a single, named <see cref="IServiceInfo" /> that is expected to work with service discovery.
     /// </summary>
     /// <param name="configuration">
-    /// The <see cref="IConfiguration" /> to search.
+    /// The <see cref="IConfiguration" /> to read application settings from.
     /// </param>
     /// <param name="serviceName">
-    /// Name of service binding to find.
+    /// The name of the service binding to use.
     /// </param>
     /// <exception cref="ConnectorException">
-    /// Thrown if no service info with expected name or type are found.
+    /// Thrown when no service info with the expected name or type was found.
     /// </exception>
     public static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration configuration, string serviceName)
     {
         ArgumentGuard.NotNull(configuration);
 
-        IServiceInfo info = configuration.GetServiceInfo(serviceName);
+        IServiceInfo? info = configuration.GetServiceInfo(serviceName);
 
         if (info == null)
         {
@@ -164,22 +164,22 @@ public static class DiscoveryServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Retrieve a single <see cref="IServiceInfo" /> that is expected to work with Service Discovery.
+    /// Retrieves a single <see cref="IServiceInfo" /> that is expected to work with service discovery.
     /// </summary>
     /// <param name="configuration">
-    /// The <see cref="IConfiguration" /> to search.
+    /// The <see cref="IConfiguration" /> to read application settings from.
     /// </param>
     /// <exception cref="ConnectorException">
-    /// Thrown if multiple service infos are found.
+    /// Thrown when multiple service infos were found.
     /// </exception>
-    public static IServiceInfo GetSingleDiscoveryServiceInfo(IConfiguration configuration)
+    public static IServiceInfo? GetSingleDiscoveryServiceInfo(IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configuration);
 
         // Note: Could be other discovery type services in future
         EurekaServiceInfo[] eurekaInfos = configuration.GetServiceInfos<EurekaServiceInfo>().ToArray();
 
-        if (eurekaInfos.Any())
+        if (eurekaInfos.Length > 0)
         {
             if (eurekaInfos.Length != 1)
             {
@@ -192,7 +192,7 @@ public static class DiscoveryServiceCollectionExtensions
         return null;
     }
 
-    private static void ApplyDiscoveryOptions(IServiceCollection services, IConfiguration configuration, Action<DiscoveryClientBuilder> builderAction)
+    private static void ApplyDiscoveryOptions(IServiceCollection services, IConfiguration configuration, Action<DiscoveryClientBuilder>? builderAction)
     {
         var builder = new DiscoveryClientBuilder();
 
@@ -203,13 +203,14 @@ public static class DiscoveryServiceCollectionExtensions
             IDiscoveryClientExtension[] configured = builder.Extensions
                 .Where(extension => extension.IsConfigured(configuration, GetSingleDiscoveryServiceInfo(configuration))).ToArray();
 
-            if (!configured.Any() || configured.Length > 1)
+            if (configured.Length != 1)
             {
-                throw new AmbiguousMatchException(
-                    "Multiple IDiscoveryClient implementations have been registered and 0 or more than 1 have been configured! This is not supported, please only use a single client type.");
+                throw new InvalidOperationException(
+                    "None or multiple IDiscoveryClient implementations have been registered and configured. This is not supported, please only use a single client type.");
             }
 
-            builder.Extensions = configured.ToList();
+            builder.Extensions.Clear();
+            builder.Extensions.Add(configured[0]);
         }
 
         foreach (IDiscoveryClientExtension ext in builder.Extensions)
