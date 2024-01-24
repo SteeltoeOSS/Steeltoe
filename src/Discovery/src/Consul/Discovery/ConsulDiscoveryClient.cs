@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Consul;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
@@ -22,76 +25,42 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
 {
     private readonly IConsulClient _client;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
-    private readonly ConsulDiscoveryOptions _options;
-    private readonly IServiceInstance _thisServiceInstance;
-    private readonly ConsulServiceRegistrar _registrar;
-
-    private ConsulDiscoveryOptions Options => _optionsMonitor != null ? _optionsMonitor.CurrentValue : _options;
+    private readonly ConsulServiceRegistrar? _registrar;
+    private readonly IServiceInstance? _thisServiceInstance;
 
     /// <inheritdoc />
-    public string Description { get; } = "A discovery client for HashiCorp Consul.";
+    public string Description => "A discovery client for HashiCorp Consul.";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
     /// </summary>
     /// <param name="client">
-    /// a Consul client.
-    /// </param>
-    /// <param name="options">
-    /// the configuration options.
-    /// </param>
-    /// <param name="registrar">
-    /// a Consul registrar service.
-    /// </param>
-    /// <param name="logger">
-    /// optional logger.
-    /// </param>
-    public ConsulDiscoveryClient(IConsulClient client, ConsulDiscoveryOptions options, ConsulServiceRegistrar registrar = null,
-        ILogger<ConsulDiscoveryClient> logger = null)
-    {
-        ArgumentGuard.NotNull(client);
-        ArgumentGuard.NotNull(options);
-
-        _client = client;
-        _options = options;
-        _registrar = registrar;
-
-        if (_registrar != null)
-        {
-            _registrar.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
-            _thisServiceInstance = new ThisServiceInstance(_registrar.Registration);
-        }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
-    /// </summary>
-    /// <param name="client">
-    /// a Consul client.
+    /// The Consul client.
     /// </param>
     /// <param name="optionsMonitor">
     /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     /// <param name="registrar">
-    /// a Consul registrar service.
+    /// The Consul registrar service.
     /// </param>
     /// <param name="logger">
-    /// optional logger.
+    /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulServiceRegistrar registrar = null,
-        ILogger<ConsulDiscoveryClient> logger = null)
+    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulServiceRegistrar? registrar,
+        ILogger<ConsulDiscoveryClient> logger)
     {
         ArgumentGuard.NotNull(client);
         ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(logger);
 
         _client = client;
         _optionsMonitor = optionsMonitor;
         _registrar = registrar;
 
-        if (_registrar != null)
+        if (registrar != null)
         {
-            _registrar.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
-            _thisServiceInstance = new ThisServiceInstance(_registrar.Registration);
+            _thisServiceInstance = new ThisServiceInstance(registrar.Registration);
+            registrar.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
         }
     }
 
@@ -182,6 +151,11 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
     /// <inheritdoc />
     public IServiceInstance GetLocalServiceInstance()
     {
+        if (_thisServiceInstance == null)
+        {
+            throw new NotSupportedException("Local service instance is unavailable.");
+        }
+
         return _thisServiceInstance;
     }
 
@@ -203,8 +177,10 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
     internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions,
         CancellationToken cancellationToken)
     {
+        ConsulDiscoveryOptions options = _optionsMonitor.CurrentValue;
+
         QueryResult<ServiceEntry[]> result =
-            await _client.Health.Service(serviceId, Options.DefaultQueryTag, Options.QueryPassing, queryOptions, cancellationToken);
+            await _client.Health.Service(serviceId, options.DefaultQueryTag, options.QueryPassing, queryOptions, cancellationToken);
 
         foreach (ConsulServiceInstance instance in result.Response.Select(entry => new ConsulServiceInstance(entry)))
         {
