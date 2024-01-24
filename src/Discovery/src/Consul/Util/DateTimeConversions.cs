@@ -42,10 +42,8 @@ internal static class DateTimeConversions
         throw new FormatException($"Incorrect format: '{time}'.");
     }
 
-    public static TimeSpan ToTimeSpan(int value, string unit)
+    public static TimeSpan ToTimeSpan(int value, string? unit)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(unit);
-
         return unit switch
         {
             "ms" => TimeSpan.FromMilliseconds(value),

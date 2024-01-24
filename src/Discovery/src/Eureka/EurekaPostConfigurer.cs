@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Globalization;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
@@ -29,24 +31,22 @@ internal static class EurekaPostConfigurer
     /// <summary>
     /// Update <see cref="EurekaClientOptions" /> with information from the runtime environment.
     /// </summary>
-    /// <param name="si">
+    /// <param name="serviceInfo">
     /// <see cref="EurekaServiceInfo" /> for bound Eureka server(s).
     /// </param>
     /// <param name="clientOptions">
     /// Eureka client configuration (for interacting with the Eureka Server).
     /// </param>
-    public static void UpdateConfiguration(EurekaServiceInfo si, EurekaClientOptions clientOptions)
+    public static void UpdateConfiguration(EurekaServiceInfo? serviceInfo, EurekaClientOptions? clientOptions)
     {
-        EurekaClientOptions clientOpts = clientOptions ?? new EurekaClientOptions();
+        AssertValid(serviceInfo, clientOptions);
 
-        AssertValid(si, clientOpts);
-
-        if (clientOptions == null || si == null)
+        if (clientOptions == null || serviceInfo == null)
         {
             return;
         }
 
-        string uri = si.Uri;
+        string uri = serviceInfo.Uri;
 
         if (!uri.EndsWith(EurekaUriSuffix, StringComparison.Ordinal))
         {
@@ -54,9 +54,9 @@ internal static class EurekaPostConfigurer
         }
 
         clientOptions.EurekaServerServiceUrls = uri;
-        clientOptions.AccessTokenUri = si.TokenUri;
-        clientOptions.ClientId = si.ClientId;
-        clientOptions.ClientSecret = si.ClientSecret;
+        clientOptions.AccessTokenUri = serviceInfo.TokenUri;
+        clientOptions.ClientId = serviceInfo.ClientId;
+        clientOptions.ClientSecret = serviceInfo.ClientSecret;
     }
 
     /// <summary>
@@ -68,21 +68,24 @@ internal static class EurekaPostConfigurer
     /// <param name="options">
     /// Eureka instance information (for identifying the application).
     /// </param>
-    /// <param name="instanceInfo">
+    /// <param name="appInfo">
     /// Information about this application instance.
     /// </param>
-    public static void UpdateConfiguration(IConfiguration configuration, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
+    public static void UpdateConfiguration(IConfiguration configuration, EurekaInstanceOptions options, IApplicationInstanceInfo? appInfo)
     {
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(options);
+
         string defaultIdEnding = $":{EurekaInstanceConfiguration.DefaultAppName}:{EurekaInstanceConfiguration.DefaultNonSecurePort}";
 
         if (options.AppName == EurekaInstanceConfiguration.DefaultAppName)
         {
-            string springAppName = instanceInfo?.GetApplicationNameInContext(SteeltoeComponent.Discovery);
+            string? springAppName = appInfo?.GetApplicationNameInContext(SteeltoeComponent.Discovery);
 
             // this is a bit of a hack, but depending on how we got here, GetApplicationNameInContext may or may not know about VCAP
-            if (Platform.IsCloudFoundry && springAppName == Assembly.GetEntryAssembly().GetName().Name && !string.IsNullOrEmpty(instanceInfo?.ApplicationName))
+            if (Platform.IsCloudFoundry && springAppName == Assembly.GetEntryAssembly()!.GetName().Name && !string.IsNullOrEmpty(appInfo?.ApplicationName))
             {
-                options.AppName = instanceInfo.ApplicationName;
+                options.AppName = appInfo.ApplicationName;
             }
             else if (!string.IsNullOrEmpty(springAppName))
             {
@@ -102,11 +105,11 @@ internal static class EurekaPostConfigurer
 
         if (string.IsNullOrEmpty(options.RegistrationMethod))
         {
-            string springRegMethod = configuration.GetValue<string>(SpringCloudDiscoveryRegistrationMethodKey);
+            string? springRegistrationMethod = configuration.GetValue<string>(SpringCloudDiscoveryRegistrationMethodKey);
 
-            if (!string.IsNullOrEmpty(springRegMethod))
+            if (!string.IsNullOrEmpty(springRegistrationMethod))
             {
-                options.RegistrationMethod = springRegMethod;
+                options.RegistrationMethod = springRegistrationMethod;
             }
         }
 
@@ -114,7 +117,7 @@ internal static class EurekaPostConfigurer
 
         if (options.InstanceId.EndsWith(defaultIdEnding, StringComparison.Ordinal))
         {
-            string springInstanceId = instanceInfo?.InstanceId;
+            string? springInstanceId = appInfo?.InstanceId;
 
             if (!string.IsNullOrEmpty(springInstanceId))
             {
@@ -135,57 +138,59 @@ internal static class EurekaPostConfigurer
     /// <param name="configuration">
     /// Application Configuration.
     /// </param>
-    /// <param name="si">
+    /// <param name="serviceInfo">
     /// <see cref="EurekaServiceInfo" /> for bound Eureka server(s).
     /// </param>
-    /// <param name="instOptions">
+    /// <param name="instanceOptions">
     /// Eureka instance information (for identifying the application).
     /// </param>
     /// <param name="appInfo">
     /// Information about this application instance.
     /// </param>
-    public static void UpdateConfiguration(IConfiguration configuration, EurekaServiceInfo si, EurekaInstanceOptions instOptions,
-        IApplicationInstanceInfo appInfo)
+    public static void UpdateConfiguration(IConfiguration configuration, EurekaServiceInfo? serviceInfo, EurekaInstanceOptions? instanceOptions,
+        IApplicationInstanceInfo? appInfo)
     {
-        if (instOptions == null)
+        ArgumentGuard.NotNull(configuration);
+
+        if (instanceOptions == null)
         {
             return;
         }
 
-        UpdateConfiguration(configuration, instOptions, appInfo);
+        UpdateConfiguration(configuration, instanceOptions, appInfo);
 
-        if (si == null)
+        if (serviceInfo == null)
         {
             return;
         }
 
-        if (instOptions.AppName == EurekaInstanceConfiguration.DefaultAppName)
+        if (instanceOptions.AppName == EurekaInstanceConfiguration.DefaultAppName)
         {
-            instOptions.AppName = si.ApplicationInfo.ApplicationName;
+            instanceOptions.AppName = serviceInfo.ApplicationInfo.ApplicationName;
         }
 
-        if (string.IsNullOrEmpty(instOptions.RegistrationMethod) ||
-            RouteRegistrationMethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrEmpty(instanceOptions.RegistrationMethod) ||
+            RouteRegistrationMethod.Equals(instanceOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
         {
-            UpdateWithDefaultsForRoute(si, instOptions);
+            UpdateWithDefaultsForRoute(serviceInfo, instanceOptions);
             return;
         }
 
-        if (DirectRegistrationMethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
+        if (DirectRegistrationMethod.Equals(instanceOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
         {
-            UpdateWithDefaultsForDirect(si, instOptions);
+            UpdateWithDefaultsForDirect(serviceInfo, instanceOptions);
             return;
         }
 
-        if (HostRegistrationMethod.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
+        if (HostRegistrationMethod.Equals(instanceOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
         {
-            UpdateWithDefaultsForHost(si, instOptions, instOptions.HostName);
+            UpdateWithDefaultsForHost(serviceInfo, instanceOptions, instanceOptions.HostName);
         }
     }
 
-    private static void AssertValid(EurekaServiceInfo serviceInfo, EurekaClientOptions clientOptions)
+    private static void AssertValid(EurekaServiceInfo? serviceInfo, EurekaClientOptions? clientOptions)
     {
-        if (!clientOptions.Enabled)
+        if (clientOptions is not { Enabled: true })
         {
             return;
         }
@@ -205,7 +210,7 @@ internal static class EurekaPostConfigurer
             return;
         }
 
-        if (!clientOptions.ShouldRegisterWithEureka && !clientOptions.ShouldFetchRegistry)
+        if (clientOptions is { ShouldRegisterWithEureka: false, ShouldFetchRegistry: false })
         {
             return;
         }
@@ -214,47 +219,47 @@ internal static class EurekaPostConfigurer
             $"Eureka URL {EurekaClientConfiguration.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
     }
 
-    private static void UpdateWithDefaultsForHost(EurekaServiceInfo si, EurekaInstanceOptions instOptions, string hostName)
+    private static void UpdateWithDefaultsForHost(EurekaServiceInfo serviceInfo, EurekaInstanceOptions instanceOptions, string hostName)
     {
-        UpdateWithDefaults(si, instOptions);
-        instOptions.HostName = hostName;
-        instOptions.InstanceId = $"{hostName}:{si.ApplicationInfo.InstanceId}";
+        UpdateWithDefaults(serviceInfo, instanceOptions);
+        instanceOptions.HostName = hostName;
+        instanceOptions.InstanceId = $"{hostName}:{serviceInfo.ApplicationInfo.InstanceId}";
     }
 
-    private static void UpdateWithDefaultsForDirect(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
+    private static void UpdateWithDefaultsForDirect(EurekaServiceInfo serviceInfo, EurekaInstanceOptions instanceOptions)
     {
-        UpdateWithDefaults(si, instOptions);
-        instOptions.PreferIPAddress = true;
-        instOptions.NonSecurePort = si.ApplicationInfo.Port;
-        instOptions.SecurePort = si.ApplicationInfo.Port;
-        instOptions.InstanceId = $"{si.ApplicationInfo.InternalIP}:{si.ApplicationInfo.InstanceId}";
+        UpdateWithDefaults(serviceInfo, instanceOptions);
+        instanceOptions.PreferIPAddress = true;
+        instanceOptions.NonSecurePort = serviceInfo.ApplicationInfo.Port;
+        instanceOptions.SecurePort = serviceInfo.ApplicationInfo.Port;
+        instanceOptions.InstanceId = $"{serviceInfo.ApplicationInfo.InternalIP}:{serviceInfo.ApplicationInfo.InstanceId}";
     }
 
-    private static void UpdateWithDefaultsForRoute(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
+    private static void UpdateWithDefaultsForRoute(EurekaServiceInfo serviceInfo, EurekaInstanceOptions instanceOptions)
     {
-        UpdateWithDefaults(si, instOptions);
-        instOptions.NonSecurePort = EurekaInstanceConfiguration.DefaultNonSecurePort;
-        instOptions.SecurePort = EurekaInstanceConfiguration.DefaultSecurePort;
+        UpdateWithDefaults(serviceInfo, instanceOptions);
+        instanceOptions.NonSecurePort = EurekaInstanceConfiguration.DefaultNonSecurePort;
+        instanceOptions.SecurePort = EurekaInstanceConfiguration.DefaultSecurePort;
 
-        if (si.ApplicationInfo.Uris?.Any() == true)
+        if (serviceInfo.ApplicationInfo.Uris?.Any() == true)
         {
-            instOptions.InstanceId = $"{si.ApplicationInfo.Uris.First()}:{si.ApplicationInfo.InstanceId}";
+            instanceOptions.InstanceId = $"{serviceInfo.ApplicationInfo.Uris.First()}:{serviceInfo.ApplicationInfo.InstanceId}";
         }
     }
 
-    private static void UpdateWithDefaults(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
+    private static void UpdateWithDefaults(EurekaServiceInfo serviceInfo, EurekaInstanceOptions instanceOptions)
     {
-        if (si.ApplicationInfo.Uris != null && si.ApplicationInfo.Uris.Any())
+        if (serviceInfo.ApplicationInfo.Uris != null && serviceInfo.ApplicationInfo.Uris.Any())
         {
-            instOptions.HostName = si.ApplicationInfo.Uris.First();
+            instanceOptions.HostName = serviceInfo.ApplicationInfo.Uris.First();
         }
 
-        instOptions.IPAddress = si.ApplicationInfo.InternalIP;
+        instanceOptions.IPAddress = serviceInfo.ApplicationInfo.InternalIP;
 
-        IDictionary<string, string> map = instOptions.MetadataMap;
-        map[CFAppGuid] = si.ApplicationInfo.ApplicationId;
-        map[CFInstanceIndex] = si.ApplicationInfo.InstanceIndex.ToString(CultureInfo.InvariantCulture);
-        map[InstanceId] = si.ApplicationInfo.InstanceId;
+        IDictionary<string, string> map = instanceOptions.MetadataMap;
+        map[CFAppGuid] = serviceInfo.ApplicationInfo.ApplicationId;
+        map[CFInstanceIndex] = serviceInfo.ApplicationInfo.InstanceIndex.ToString(CultureInfo.InvariantCulture);
+        map[InstanceId] = serviceInfo.ApplicationInfo.InstanceId;
         map[Zone] = UnknownZone;
     }
 }
