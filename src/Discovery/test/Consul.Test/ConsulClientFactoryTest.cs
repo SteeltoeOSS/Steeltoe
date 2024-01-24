@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using Consul;
 using Xunit;
 
@@ -27,6 +25,7 @@ public sealed class ConsulClientFactoryTest
         };
 
         var client = ConsulClientFactory.CreateClient(options) as ConsulClient;
+
         Assert.NotNull(client);
         Assert.NotNull(client.Config);
         Assert.Equal(options.Datacenter, client.Config.Datacenter);
