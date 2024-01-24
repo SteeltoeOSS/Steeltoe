@@ -38,8 +38,8 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             AppGroupName = "AppGroupName",
             IPAddress = "IPAddress",
             Sid = "Sid",
-            Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
-            SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),
+            Port = JsonPortWrapper.Create(true, 100),
+            SecurePort = JsonPortWrapper.Create(false, 100),
             HomePageUrl = "HomePageUrl",
             StatusPageUrl = "StatusPageUrl",
             HealthCheckUrl = "HealthCheckUrl",
@@ -47,7 +47,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             VipAddress = "VipAddress",
             SecureVipAddress = "SecureVipAddress",
             CountryId = 1,
-            DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo(string.Empty, "MyOwn"),
+            DataCenterInfo = JsonDataCenterInfo.Create(string.Empty, "MyOwn"),
             HostName = "HostName",
             Status = InstanceStatus.Down,
             OverriddenStatus = InstanceStatus.OutOfService,
@@ -252,7 +252,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.NotNull(instanceInfo.Metadata);
         Assert.Single(instanceInfo.Metadata);
         Assert.True(instanceInfo.Metadata.ContainsKey("@class"));
-        Assert.True(instanceInfo.Metadata.ContainsValue("java.util.Collections$EmptyMap"));
+        Assert.Equal("java.util.Collections$EmptyMap", instanceInfo.Metadata["@class"]);
         Assert.Equal(instanceInfo.LastDirtyTimestamp, instanceInfo.LastUpdatedTimestamp);
         Assert.Equal(ActionType.Added, instanceInfo.ActionType);
         Assert.Null(instanceInfo.AsgName);

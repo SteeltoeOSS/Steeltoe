@@ -41,7 +41,8 @@ public sealed class ConsulDiscoveryOptionsTest
         Assert.False(options.QueryPassing);
         Assert.Equal("http", options.Scheme);
         Assert.Null(options.ServiceName);
-        Assert.Null(options.Tags);
+        Assert.Empty(options.Tags);
+        Assert.Empty(options.Metadata);
 
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {

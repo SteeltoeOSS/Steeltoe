@@ -285,8 +285,8 @@ public class InstanceInfo
             AppName = AppName,
             AppGroupName = AppGroupName,
             IPAddress = IPAddress,
-            Port = new JsonInstanceInfo.JsonPortWrapper(IsInsecurePortEnabled, Port),
-            SecurePort = new JsonInstanceInfo.JsonPortWrapper(IsSecurePortEnabled, SecurePort),
+            Port = JsonPortWrapper.Create(IsInsecurePortEnabled, Port),
+            SecurePort = JsonPortWrapper.Create(IsSecurePortEnabled, SecurePort),
             HomePageUrl = HomePageUrl,
             StatusPageUrl = StatusPageUrl,
             HealthCheckUrl = HealthCheckUrl,
@@ -315,7 +315,7 @@ public class InstanceInfo
         return instanceInfo;
     }
 
-    private static Dictionary<string, string> GetMetaDataFromJson(Dictionary<string, string> json)
+    private static Dictionary<string, string> GetMetaDataFromJson(IDictionary<string, string> json)
     {
         if (json == null)
         {

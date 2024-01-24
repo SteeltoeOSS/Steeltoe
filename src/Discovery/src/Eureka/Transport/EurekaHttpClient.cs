@@ -123,12 +123,7 @@ public class EurekaHttpClient
                 {
                     Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
-                    var resp = new EurekaHttpResponse(response.StatusCode)
-                    {
-                        Headers = response.Headers
-                    };
-
-                    return resp;
+                    return new EurekaHttpResponse(response.StatusCode, response.Headers);
                 }
 
                 string jsonError = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -215,12 +210,7 @@ public class EurekaHttpClient
                 {
                     Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
-                    var resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, infoResp)
-                    {
-                        Headers = response.Headers
-                    };
-
-                    return resp;
+                    return new EurekaHttpResponse<InstanceInfo>(response.StatusCode, response.Headers, infoResp);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
@@ -316,12 +306,7 @@ public class EurekaHttpClient
                 {
                     Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
-                    var resp = new EurekaHttpResponse<Application>(response.StatusCode, appResp)
-                    {
-                        Headers = response.Headers
-                    };
-
-                    return resp;
+                    return new EurekaHttpResponse<Application>(response.StatusCode, response.Headers, appResp);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
@@ -373,12 +358,7 @@ public class EurekaHttpClient
                 logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                 Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
-                var resp = new EurekaHttpResponse(response.StatusCode)
-                {
-                    Headers = response.Headers
-                };
-
-                return resp;
+                return new EurekaHttpResponse(response.StatusCode, response.Headers);
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
@@ -430,12 +410,7 @@ public class EurekaHttpClient
                 {
                     Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
-                    var resp = new EurekaHttpResponse(response.StatusCode)
-                    {
-                        Headers = response.Headers
-                    };
-
-                    return resp;
+                    return new EurekaHttpResponse(response.StatusCode, response.Headers);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
@@ -490,12 +465,7 @@ public class EurekaHttpClient
                 {
                     Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
-                    var resp = new EurekaHttpResponse(response.StatusCode)
-                    {
-                        Headers = response.Headers
-                    };
-
-                    return resp;
+                    return new EurekaHttpResponse(response.StatusCode, response.Headers);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
@@ -723,12 +693,7 @@ public class EurekaHttpClient
                 {
                     Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
-                    var resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, infoResp)
-                    {
-                        Headers = response.Headers
-                    };
-
-                    return resp;
+                    return new EurekaHttpResponse<InstanceInfo>(response.StatusCode, response.Headers, infoResp);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
@@ -796,12 +761,7 @@ public class EurekaHttpClient
                 {
                     Interlocked.Exchange(ref ServiceUrl, serviceUrl);
 
-                    var resp = new EurekaHttpResponse<Applications>(response.StatusCode, appsResp)
-                    {
-                        Headers = response.Headers
-                    };
-
-                    return resp;
+                    return new EurekaHttpResponse<Applications>(response.StatusCode, response.Headers, appsResp);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())

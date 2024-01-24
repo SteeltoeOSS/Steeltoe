@@ -57,7 +57,7 @@ public sealed class ConsulRegistrationTest
     {
         var options = new ConsulDiscoveryOptions
         {
-            Tags = new List<string>
+            Tags =
             {
                 "foo",
                 "bar"
@@ -81,7 +81,7 @@ public sealed class ConsulRegistrationTest
     {
         var options = new ConsulDiscoveryOptions
         {
-            Metadata = new Dictionary<string, string>
+            Metadata =
             {
                 ["foo"] = "bar",
                 ["baz"] = "qux"
