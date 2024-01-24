@@ -8,12 +8,20 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal sealed class JsonApplication
+internal sealed class JsonDataCenterInfo
 {
+    [JsonPropertyName("@class")]
+    public string? ClassName { get; set; }
+
     [JsonPropertyName("name")]
     public string? Name { get; set; }
 
-    [JsonPropertyName("instance")]
-    [JsonConverter(typeof(JsonInstanceInfoConverter))]
-    public IList<JsonInstanceInfo>? Instances { get; set; }
+    public static JsonDataCenterInfo Create(string? className, string? name)
+    {
+        return new JsonDataCenterInfo
+        {
+            ClassName = className,
+            Name = name
+        };
+    }
 }

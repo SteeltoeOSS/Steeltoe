@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,32 +13,17 @@ internal sealed class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstan
 {
     public override IList<JsonInstanceInfo> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var result = new List<JsonInstanceInfo>();
-
         if (reader.TokenType == JsonTokenType.StartArray)
         {
-            result = JsonSerializer.Deserialize<List<JsonInstanceInfo>>(ref reader, options);
-        }
-        else
-        {
-            var singleInst = JsonSerializer.Deserialize<JsonInstanceInfo>(ref reader, options);
-
-            if (singleInst != null)
-            {
-                result.Add(singleInst);
-            }
+            return JsonSerializer.Deserialize<List<JsonInstanceInfo>>(ref reader, options)!;
         }
 
-        return result;
+        var instanceInfo = JsonSerializer.Deserialize<JsonInstanceInfo>(ref reader, options);
+        return instanceInfo != null ? [instanceInfo] : [];
     }
 
     public override void Write(Utf8JsonWriter writer, IList<JsonInstanceInfo> value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString());
-    }
-
-    public override bool CanConvert(Type typeToConvert)
-    {
-        return typeToConvert == typeof(IList<JsonInstanceInfo>);
+        throw new NotImplementedException();
     }
 }

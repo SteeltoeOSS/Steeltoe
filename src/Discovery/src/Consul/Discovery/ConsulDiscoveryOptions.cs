@@ -27,14 +27,14 @@ public sealed class ConsulDiscoveryOptions
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets tags to use when registering a service.
+    /// Gets tags to use when registering a service.
     /// </summary>
-    public IList<string>? Tags { get; set; }
+    public IList<string> Tags { get; } = new List<string>();
 
     /// <summary>
-    /// Gets or sets metadata to use when registering a service.
+    /// Gets metadata to use when registering a service.
     /// </summary>
-    public IDictionary<string, string>? Metadata { get; set; }
+    public IDictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
 
     public bool UseNetUtils { get; set; }
 

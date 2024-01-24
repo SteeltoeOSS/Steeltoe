@@ -121,15 +121,7 @@ public sealed class ConsulRegistration : IServiceInstance
 
     private static IDictionary<string, string> CreateMetadata(ConsulDiscoveryOptions options)
     {
-        var metadata = new Dictionary<string, string>();
-
-        if (options.Metadata != null && options.Metadata.Any())
-        {
-            foreach (KeyValuePair<string, string> m in options.Metadata)
-            {
-                metadata.Add(m.Key, m.Value);
-            }
-        }
+        Dictionary<string, string> metadata = options.Metadata.ToDictionary(pair => pair.Key, pair => pair.Value);
 
         if (!string.IsNullOrEmpty(options.InstanceZone) && !string.IsNullOrEmpty(options.DefaultZoneMetadataName))
         {
@@ -149,11 +141,6 @@ public sealed class ConsulRegistration : IServiceInstance
 
     private static string[] CreateTags(ConsulDiscoveryOptions options)
     {
-        if (options.Tags == null || !options.Tags.Any())
-        {
-            return Array.Empty<string>();
-        }
-
         return options.Tags.ToArray();
     }
 
