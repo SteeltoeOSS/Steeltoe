@@ -188,7 +188,7 @@ public sealed class ConsulRegistrationTest
             InstanceId = "instanceId"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
         }).Build();
@@ -223,7 +223,7 @@ public sealed class ConsulRegistrationTest
         AgentServiceCheck result = ConsulRegistration.CreateCheck(1234, options);
         Assert.NotNull(result);
         Assert.Equal(DateTimeConversions.ToTimeSpan(options.Heartbeat!.TimeToLive), result.TTL);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout), result.DeregisterCriticalServiceAfter);
+        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!), result.DeregisterCriticalServiceAfter);
 
         options.Heartbeat = null;
         Assert.Throws<ArgumentOutOfRangeException>(() => ConsulRegistration.CreateCheck(0, options));
@@ -232,9 +232,9 @@ public sealed class ConsulRegistrationTest
         result = ConsulRegistration.CreateCheck(port, options);
         var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
         Assert.Equal(uri.ToString(), result.HTTP);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckInterval), result.Interval);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout), result.Timeout);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout), result.DeregisterCriticalServiceAfter);
+        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckInterval!), result.Interval);
+        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout!), result.Timeout);
+        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!), result.DeregisterCriticalServiceAfter);
         Assert.Equal(options.HealthCheckTlsSkipVerify, result.TLSSkipVerify);
     }
 
@@ -246,7 +246,7 @@ public sealed class ConsulRegistrationTest
             Port = 1100
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
         }).Build();
@@ -259,11 +259,10 @@ public sealed class ConsulRegistrationTest
         Assert.Equal("foobar", registration.ServiceId);
         Assert.Equal(options.HostName, registration.Host);
         Assert.Equal(1100, registration.Port);
-        string hostName = options.HostName;
-        Assert.Equal(new Uri($"http://{hostName}:1100"), registration.Uri);
-        Assert.NotNull(registration.InnerRegistration);
+        Assert.Equal(new Uri($"http://{options.HostName}:1100"), registration.Uri);
 
-        Assert.Equal(hostName, registration.InnerRegistration.Address);
+        Assert.NotNull(registration.InnerRegistration);
+        Assert.Equal(options.HostName, registration.InnerRegistration.Address);
         Assert.StartsWith("foobar-", registration.InnerRegistration.ID, StringComparison.Ordinal);
         Assert.Equal("foobar", registration.InnerRegistration.Name);
         Assert.Equal(1100, registration.InnerRegistration.Port);

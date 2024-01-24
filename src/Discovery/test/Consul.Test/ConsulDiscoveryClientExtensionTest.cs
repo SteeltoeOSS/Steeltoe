@@ -32,7 +32,7 @@ public sealed class ConsulDiscoveryClientExtensionTest
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" }
         };
@@ -52,7 +52,7 @@ public sealed class ConsulDiscoveryClientExtensionTest
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "consul:discovery:enabled", "true" }

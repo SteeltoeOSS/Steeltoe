@@ -28,8 +28,8 @@ public sealed class ThisServiceInstanceTest
         };
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
-        var registration = new ConsulRegistration(serviceRegistration, optionsMonitor);
-        var instance = new ThisServiceInstance(registration);
+        var consulRegistration = new ConsulRegistration(serviceRegistration, optionsMonitor);
+        var instance = new ThisServiceInstance(consulRegistration);
 
         Assert.Equal("test.foo.bar", instance.Host);
         Assert.Equal("foobar", instance.ServiceId);

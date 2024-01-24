@@ -33,19 +33,19 @@ public sealed class ConsulServiceInstanceTest
             }
         };
 
-        var si = new ConsulServiceInstance(healthService);
-        Assert.Equal("foo.bar.com", si.Host);
-        Assert.Equal("ServiceId", si.ServiceId);
-        Assert.True(si.IsSecure);
-        Assert.Equal(1234, si.Port);
-        Assert.Equal(2, si.Tags.Count);
-        Assert.Contains("tag1", si.Tags);
-        Assert.Contains("tag2", si.Tags);
-        Assert.Equal(2, si.Metadata.Count);
-        Assert.Contains(si.Metadata, x => x.Key == "foo");
-        Assert.Equal("bar", si.Metadata["foo"]);
-        Assert.Contains(si.Metadata, x => x.Key == "secure");
-        Assert.Equal("true", si.Metadata["secure"]);
-        Assert.Equal(new Uri("https://foo.bar.com:1234"), si.Uri);
+        var serviceInstance = new ConsulServiceInstance(healthService);
+        Assert.Equal("foo.bar.com", serviceInstance.Host);
+        Assert.Equal("ServiceId", serviceInstance.ServiceId);
+        Assert.True(serviceInstance.IsSecure);
+        Assert.Equal(1234, serviceInstance.Port);
+        Assert.Equal(2, serviceInstance.Tags.Count);
+        Assert.Contains("tag1", serviceInstance.Tags);
+        Assert.Contains("tag2", serviceInstance.Tags);
+        Assert.Equal(2, serviceInstance.Metadata.Count);
+        Assert.Contains(serviceInstance.Metadata, x => x.Key == "foo");
+        Assert.Equal("bar", serviceInstance.Metadata["foo"]);
+        Assert.Contains(serviceInstance.Metadata, x => x.Key == "secure");
+        Assert.Equal("true", serviceInstance.Metadata["secure"]);
+        Assert.Equal(new Uri("https://foo.bar.com:1234"), serviceInstance.Uri);
     }
 }

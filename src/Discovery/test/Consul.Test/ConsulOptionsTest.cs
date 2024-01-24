@@ -12,6 +12,7 @@ public sealed class ConsulOptionsTest
     public void Constructor_InitializesDefaults()
     {
         var options = new ConsulOptions();
+
         Assert.Null(options.Datacenter);
         Assert.Null(options.Password);
         Assert.Null(options.Username);

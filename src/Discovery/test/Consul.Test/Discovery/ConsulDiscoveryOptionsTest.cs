@@ -54,7 +54,7 @@ public sealed class ConsulDiscoveryOptionsTest
     public void Options_DoNotUseInetUtilsByDefault()
     {
         var mockNetUtils = new Mock<InetUtils>(new InetOptions(), NullLogger<InetUtils>.Instance);
-        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
+        mockNetUtils.Setup(netUtils => netUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
@@ -76,7 +76,7 @@ public sealed class ConsulDiscoveryOptionsTest
         var mockNetUtils = new Mock<InetUtils>(new InetOptions(), NullLogger<InetUtils>.Instance);
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "consul:discovery:UseNetUtils", "true" }
         };
@@ -100,7 +100,7 @@ public sealed class ConsulDiscoveryOptionsTest
     [Fact]
     public void Options_CanUseInetUtilsWithoutReverseDnsOnIP()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "consul:discovery:UseNetUtils", "true" },
             { "spring:cloud:inet:SkipReverseDnsLookup", "true" }
@@ -108,9 +108,11 @@ public sealed class ConsulDiscoveryOptionsTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
+        InetOptions inetOptions = configurationRoot.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>() ?? new InetOptions();
+
         var options = new ConsulDiscoveryOptions
         {
-            NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>(), NullLogger<InetUtils>.Instance)
+            NetUtils = new InetUtils(inetOptions, NullLogger<InetUtils>.Instance)
         };
 
         configurationRoot.GetSection(ConsulDiscoveryOptions.ConfigurationPrefix).Bind(options);
