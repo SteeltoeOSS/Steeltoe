@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,21 +21,26 @@ using Steeltoe.Discovery.Consul.Registry;
 
 namespace Steeltoe.Discovery.Consul;
 
-public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
+internal sealed class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
 {
     private const string SpringDiscoveryEnabled = "spring:cloud:discovery:enabled";
     private const string ConsulPrefix = "consul";
 
     /// <inheritdoc />
-    public void ApplyServices(IServiceCollection services)
+    public bool IsConfigured(IConfiguration configuration, IServiceInfo? serviceInfo)
     {
-        ConfigureConsulServices(services);
-        AddConsulServices(services);
+        ArgumentGuard.NotNull(configuration);
+
+        return configuration.GetSection(ConsulPrefix).GetChildren().Any();
     }
 
-    public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
+    /// <inheritdoc />
+    public void ApplyServices(IServiceCollection services)
     {
-        return configuration.GetSection(ConsulPrefix).GetChildren().Any();
+        ArgumentGuard.NotNull(services);
+
+        ConfigureConsulServices(services);
+        AddConsulServices(services);
     }
 
     internal static void ConfigureConsulServices(IServiceCollection services)
@@ -83,7 +90,7 @@ public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
         services.AddSingleton(serviceProvider =>
         {
             var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
-            var instanceInfo = serviceProvider.GetService<IApplicationInstanceInfo>();
+            var instanceInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
             return ConsulRegistration.Create(optionsMonitor, instanceInfo);
         });
 

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,18 +19,18 @@ public sealed class EurekaDiscoveryClientExtensionTest
     public void ClientEnabledByDefault()
     {
         var services = new ServiceCollection();
-        var ext = new EurekaDiscoveryClientExtension();
+        var extension = new EurekaDiscoveryClientExtension();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "eureka:client:serviceurl", "http://testhost/eureka" }
         };
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-        ext.ConfigureEurekaServices(services);
-        ServiceProvider provider = services.BuildServiceProvider(true);
-        var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
+        extension.ConfigureEurekaServices(services);
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
     }
@@ -37,9 +39,9 @@ public sealed class EurekaDiscoveryClientExtensionTest
     public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
     {
         var services = new ServiceCollection();
-        var ext = new EurekaDiscoveryClientExtension();
+        var extension = new EurekaDiscoveryClientExtension();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "eureka:client:serviceurl", "http://testhost/eureka" }
@@ -47,9 +49,9 @@ public sealed class EurekaDiscoveryClientExtensionTest
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-        ext.ConfigureEurekaServices(services);
-        ServiceProvider provider = services.BuildServiceProvider(true);
-        var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
+        extension.ConfigureEurekaServices(services);
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.False(clientOptions.Value.Enabled);
     }
@@ -58,9 +60,9 @@ public sealed class EurekaDiscoveryClientExtensionTest
     public void ClientFavorsEurekaClientEnabled()
     {
         var services = new ServiceCollection();
-        var ext = new EurekaDiscoveryClientExtension();
+        var extension = new EurekaDiscoveryClientExtension();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "eureka:client:enabled", "true" },
@@ -69,9 +71,9 @@ public sealed class EurekaDiscoveryClientExtensionTest
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-        ext.ConfigureEurekaServices(services);
-        ServiceProvider provider = services.BuildServiceProvider(true);
-        var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
+        extension.ConfigureEurekaServices(services);
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
     }
@@ -80,9 +82,9 @@ public sealed class EurekaDiscoveryClientExtensionTest
     public void HttpClientHandlerProviderIsUsed()
     {
         var services = new ServiceCollection();
-        var ext = new EurekaDiscoveryClientExtension();
+        var extension = new EurekaDiscoveryClientExtension();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "eureka:client:enabled", "true" },
@@ -91,10 +93,11 @@ public sealed class EurekaDiscoveryClientExtensionTest
 
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddSingleton<IHttpClientHandlerProvider, TestClientHandlerProvider>();
-        ext.ApplyServices(services);
-        ServiceProvider provider = services.BuildServiceProvider(true);
-        _ = provider.GetRequiredService<IHttpClientFactory>().CreateClient("Eureka");
-        var handlerProvider = provider.GetRequiredService<IHttpClientHandlerProvider>();
+        extension.ApplyServices(services);
+
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        _ = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient("Eureka");
+        var handlerProvider = serviceProvider.GetRequiredService<IHttpClientHandlerProvider>();
 
         handlerProvider.Should().BeOfType(typeof(TestClientHandlerProvider));
         ((TestClientHandlerProvider)handlerProvider).Called.Should().BeTrue();
@@ -102,7 +105,7 @@ public sealed class EurekaDiscoveryClientExtensionTest
 
     internal sealed class TestClientHandlerProvider : IHttpClientHandlerProvider
     {
-        public bool Called { get; set; }
+        public bool Called { get; private set; }
 
         public HttpClientHandler GetHttpClientHandler()
         {
