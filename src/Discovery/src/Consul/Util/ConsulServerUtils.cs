@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Consul;
+using Steeltoe.Common;
 
 namespace Steeltoe.Discovery.Consul.Util;
 
@@ -13,6 +16,8 @@ internal static class ConsulServerUtils
 {
     public static string FindHost(ServiceEntry healthService)
     {
+        ArgumentGuard.NotNull(healthService);
+
         AgentService service = healthService.Service;
         Node node = healthService.Node;
 
@@ -31,19 +36,21 @@ internal static class ConsulServerUtils
 
     public static string FixIPv6Address(string address)
     {
-        if (IPAddress.TryParse(address, out IPAddress parsed) && parsed.AddressFamily == AddressFamily.InterNetworkV6)
+        ArgumentGuard.NotNull(address);
+
+        if (IPAddress.TryParse(address, out IPAddress? parsed) && parsed.AddressFamily == AddressFamily.InterNetworkV6)
         {
             byte[] bytes = parsed.GetAddressBytes();
-            var sb = new StringBuilder("[");
+            var builder = new StringBuilder("[");
 
-            for (int i = 0; i < bytes.Length; i += 2)
+            for (int index = 0; index < bytes.Length; index += 2)
             {
-                ushort num = (ushort)((bytes[i] << 8) | bytes[i + 1]);
-                sb.Append($"{num:x}:");
+                ushort num = (ushort)((bytes[index] << 8) | bytes[index + 1]);
+                builder.Append($"{num:x}:");
             }
 
-            sb.Replace(':', ']', sb.Length - 1, 1);
-            return sb.ToString();
+            builder.Replace(':', ']', builder.Length - 1, 1);
+            return builder.ToString();
         }
 
         return address;
