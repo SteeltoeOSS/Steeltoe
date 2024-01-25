@@ -2,43 +2,35 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaServiceInstance : IServiceInstance
+internal sealed class EurekaServiceInstance : IServiceInstance
 {
     private readonly InstanceInfo _info;
 
-    public bool IsSecure => _info.IsSecurePortEnabled;
-
-    public IDictionary<string, string> Metadata => _info.Metadata;
-
-    public int Port => IsSecure ? _info.SecurePort : _info.Port;
-
     public string ServiceId => _info.AppName;
-
-    public Uri Uri
-    {
-        get
-        {
-            string scheme = IsSecure ? "https" : "http";
-            return new Uri($"{scheme}://{GetHostName()}:{Port}");
-        }
-    }
-
-    public string Host => GetHostName();
-
-    public string InstanceId => _info.InstanceId;
+    public string Host => _info.HostName;
+    public int Port => IsSecure ? _info.SecurePort : _info.Port;
+    public bool IsSecure => _info.IsSecurePortEnabled;
+    public Uri Uri => GetUri();
+    public IDictionary<string, string> Metadata => _info.Metadata;
 
     public EurekaServiceInstance(InstanceInfo info)
     {
+        ArgumentGuard.NotNull(info);
+
         _info = info;
     }
 
-    public string GetHostName()
+    private Uri GetUri()
     {
-        return _info.HostName;
+        string scheme = IsSecure ? "https" : "http";
+        return new Uri($"{scheme}://{Host}:{Port}");
     }
 }
