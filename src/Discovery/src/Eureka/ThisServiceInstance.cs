@@ -2,47 +2,47 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class ThisServiceInstance : IServiceInstance
+internal sealed class ThisServiceInstance : IServiceInstance
 {
-    private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
+    private readonly IOptionsMonitor<EurekaInstanceOptions> _optionsMonitor;
 
-    private EurekaInstanceOptions InstConfig => _instConfig.CurrentValue;
+    private EurekaInstanceOptions Options => _optionsMonitor.CurrentValue;
 
-    public bool IsSecure => InstConfig.SecurePortEnabled;
+    public string ServiceId => Options.AppName;
+    public string Host => Options.ResolveHostName(false);
+    public int Port => GetPort();
+    public bool IsSecure => Options.SecurePortEnabled;
+    public Uri Uri => GetUri();
+    public IDictionary<string, string> Metadata => Options.MetadataMap;
 
-    public IDictionary<string, string> Metadata => InstConfig.MetadataMap;
-
-    public int Port => InstConfig.NonSecurePort == -1 ? EurekaInstanceConfiguration.DefaultNonSecurePort : InstConfig.NonSecurePort;
-
-    public int SecurePort => InstConfig.SecurePort == -1 ? EurekaInstanceConfiguration.DefaultSecurePort : InstConfig.SecurePort;
-
-    public string ServiceId => InstConfig.AppName;
-
-    public Uri Uri
+    public ThisServiceInstance(IOptionsMonitor<EurekaInstanceOptions> optionsMonitor)
     {
-        get
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        _optionsMonitor = optionsMonitor;
+    }
+
+    private Uri GetUri()
+    {
+        string scheme = IsSecure ? "https" : "http";
+        return new Uri($"{scheme}://{Host}:{Port}");
+    }
+
+    private int GetPort()
+    {
+        if (IsSecure)
         {
-            string scheme = IsSecure ? "https" : "http";
-            int uriPort = IsSecure ? SecurePort : Port;
-            var uri = new Uri($"{scheme}://{GetHostName()}:{uriPort}");
-            return uri;
+            return Options.SecurePort == -1 ? EurekaInstanceConfiguration.DefaultSecurePort : Options.SecurePort;
         }
-    }
 
-    public string Host => GetHostName();
-
-    public ThisServiceInstance(IOptionsMonitor<EurekaInstanceOptions> instConfig)
-    {
-        _instConfig = instConfig;
-    }
-
-    public string GetHostName()
-    {
-        return InstConfig.ResolveHostName(false);
+        return Options.NonSecurePort == -1 ? EurekaInstanceConfiguration.DefaultNonSecurePort : Options.NonSecurePort;
     }
 }
