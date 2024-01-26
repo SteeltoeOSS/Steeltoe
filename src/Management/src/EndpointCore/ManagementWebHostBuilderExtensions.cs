@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -238,12 +239,12 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     /// <param name="configureEndpoints"><see cref="IEndpointConventionBuilder" /></param>
     /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
-    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         => hostBuilder.AddManagementPort()
             .ConfigureLogging(builder => builder.AddDynamicConsole())
             .ConfigureServices((context, collection) =>
             {
-                collection.AddAllActuators(context.Configuration, mediaTypeVersion);
+                collection.AddAllActuators(context.Configuration, mediaTypeVersion, buildCorsPolicy);
                 collection.ActivateActuatorEndpoints(configureEndpoints);
             });
 
