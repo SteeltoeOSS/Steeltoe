@@ -63,6 +63,8 @@ internal static class CloudFoundryOpenIdConnectConfigurer
             }
         }
 
+        //oidcOptions.GetClaimsFromUserInfoEndpoint = true;
+
         oidcOptions.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(
             cfOptions.TokenValidationParameters,
             oidcOptions.Authority + CloudFoundryDefaults.JwtTokenUri,
@@ -74,7 +76,7 @@ internal static class CloudFoundryOpenIdConnectConfigurer
         oidcOptions.Events.OnTokenValidated = MapScopesToClaims;
     }
 
-    internal static readonly Func<TokenValidatedContext, Task> MapScopesToClaims = (context) =>
+    internal static readonly Func<TokenValidatedContext, Task> MapScopesToClaims = context =>
     {
         // get claimsId
         var claimsId = context.Principal.Identity as ClaimsIdentity;

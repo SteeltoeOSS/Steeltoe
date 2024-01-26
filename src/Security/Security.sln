@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28315.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7608EFF0-BADC-4259-A760-FA312F9887CD}"
 EndProject
@@ -67,6 +67,16 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj", "{3B956CF1-91A2-4D62-9538-054D2C40D42F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.CloudFoundry", "..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj", "{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudFoundrySingleSignon", "..\..\..\..\Samples\Security\src\CloudFoundrySingleSignon\CloudFoundrySingleSignon.csproj", "{CA00A222-EC42-469D-8A61-2068B0953B4F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Hosting", "..\Common\src\Common.Hosting\Steeltoe.Common.Hosting.csproj", "{02F85197-E446-42FD-BA12-910587B50785}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudFoundryJwtAuthentication", "..\..\..\..\Samples\Security\src\CloudFoundryJwtAuthentication\CloudFoundryJwtAuthentication.csproj", "{009A6159-7ADA-4E1B-B31E-00F7F185954E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudFoundryCertificateAuthentication", "..\..\..\..\Samples\Security\src\CloudFoundryCertificateAuthentication\CloudFoundryCertificateAuthentication.csproj", "{FF2055BB-BAE7-4717-8C8A-8F3AF8EA8879}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{0C963BEE-3798-4E70-B85C-D61D814A2539}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -166,6 +176,22 @@ Global
 		{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA00A222-EC42-469D-8A61-2068B0953B4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA00A222-EC42-469D-8A61-2068B0953B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA00A222-EC42-469D-8A61-2068B0953B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA00A222-EC42-469D-8A61-2068B0953B4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02F85197-E446-42FD-BA12-910587B50785}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02F85197-E446-42FD-BA12-910587B50785}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02F85197-E446-42FD-BA12-910587B50785}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02F85197-E446-42FD-BA12-910587B50785}.Release|Any CPU.Build.0 = Release|Any CPU
+		{009A6159-7ADA-4E1B-B31E-00F7F185954E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{009A6159-7ADA-4E1B-B31E-00F7F185954E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{009A6159-7ADA-4E1B-B31E-00F7F185954E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{009A6159-7ADA-4E1B-B31E-00F7F185954E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF2055BB-BAE7-4717-8C8A-8F3AF8EA8879}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF2055BB-BAE7-4717-8C8A-8F3AF8EA8879}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF2055BB-BAE7-4717-8C8A-8F3AF8EA8879}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF2055BB-BAE7-4717-8C8A-8F3AF8EA8879}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -194,6 +220,9 @@ Global
 		{C699011E-AB0A-4FA4-B0C6-9BE3D75A2FD3} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{3B956CF1-91A2-4D62-9538-054D2C40D42F} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
+		{CA00A222-EC42-469D-8A61-2068B0953B4F} = {0C963BEE-3798-4E70-B85C-D61D814A2539}
+		{009A6159-7ADA-4E1B-B31E-00F7F185954E} = {0C963BEE-3798-4E70-B85C-D61D814A2539}
+		{FF2055BB-BAE7-4717-8C8A-8F3AF8EA8879} = {0C963BEE-3798-4E70-B85C-D61D814A2539}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BED45957-EDAD-4686-B959-BD5DA962F7B0}
