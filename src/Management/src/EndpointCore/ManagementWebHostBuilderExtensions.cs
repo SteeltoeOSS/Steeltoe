@@ -239,6 +239,7 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="hostBuilder">Your HostBuilder</param>
     /// <param name="configureEndpoints"><see cref="IEndpointConventionBuilder" /></param>
     /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+    /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         => hostBuilder.AddManagementPort()
             .ConfigureLogging(builder => builder.AddDynamicConsole())

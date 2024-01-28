@@ -217,7 +217,9 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
         /// <param name="configureEndpoints"><see cref="IEndpointConventionBuilder" /></param>
         /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
-        public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)        {
+        /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
+        public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+        {
             applicationBuilder.Logging.AddDynamicConsole();
             applicationBuilder.Services.AddAllActuators(applicationBuilder.Configuration, mediaTypeVersion, buildCorsPolicy);
             applicationBuilder.AddCommonServices();
