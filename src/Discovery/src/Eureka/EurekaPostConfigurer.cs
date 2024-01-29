@@ -76,9 +76,9 @@ internal static class EurekaPostConfigurer
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(options);
 
-        string defaultIdEnding = $":{EurekaInstanceConfiguration.DefaultAppName}:{EurekaInstanceConfiguration.DefaultNonSecurePort}";
+        string defaultIdEnding = $":{EurekaInstanceOptions.DefaultAppName}:{EurekaInstanceOptions.DefaultNonSecurePort}";
 
-        if (options.AppName == EurekaInstanceConfiguration.DefaultAppName)
+        if (options.AppName == EurekaInstanceOptions.DefaultAppName)
         {
             string? springAppName = appInfo?.GetApplicationNameInContext(SteeltoeComponent.Discovery);
 
@@ -125,7 +125,7 @@ internal static class EurekaPostConfigurer
             }
             else
             {
-                options.InstanceId = options.SecurePortEnabled
+                options.InstanceId = options.IsSecurePortEnabled
                     ? $"{options.ResolveHostName(false)}:{options.AppName}:{options.SecurePort}"
                     : $"{options.ResolveHostName(false)}:{options.AppName}:{options.NonSecurePort}";
             }
@@ -164,7 +164,7 @@ internal static class EurekaPostConfigurer
             return;
         }
 
-        if (instanceOptions.AppName == EurekaInstanceConfiguration.DefaultAppName)
+        if (instanceOptions.AppName == EurekaInstanceOptions.DefaultAppName)
         {
             instanceOptions.AppName = serviceInfo.ApplicationInfo.ApplicationName;
         }
@@ -205,7 +205,7 @@ internal static class EurekaPostConfigurer
             return;
         }
 
-        if (!clientOptions.EurekaServerServiceUrls.Contains(EurekaClientConfiguration.DefaultServerServiceUrl.TrimEnd('/'), StringComparison.Ordinal))
+        if (!clientOptions.EurekaServerServiceUrls.Contains(EurekaClientOptions.DefaultServerServiceUrl.TrimEnd('/'), StringComparison.Ordinal))
         {
             return;
         }
@@ -216,7 +216,7 @@ internal static class EurekaPostConfigurer
         }
 
         throw new InvalidOperationException(
-            $"Eureka URL {EurekaClientConfiguration.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
+            $"Eureka URL {EurekaClientOptions.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
     }
 
     private static void UpdateWithDefaultsForHost(EurekaServiceInfo serviceInfo, EurekaInstanceOptions instanceOptions, string hostName)
@@ -238,8 +238,8 @@ internal static class EurekaPostConfigurer
     private static void UpdateWithDefaultsForRoute(EurekaServiceInfo serviceInfo, EurekaInstanceOptions instanceOptions)
     {
         UpdateWithDefaults(serviceInfo, instanceOptions);
-        instanceOptions.NonSecurePort = EurekaInstanceConfiguration.DefaultNonSecurePort;
-        instanceOptions.SecurePort = EurekaInstanceConfiguration.DefaultSecurePort;
+        instanceOptions.NonSecurePort = EurekaInstanceOptions.DefaultNonSecurePort;
+        instanceOptions.SecurePort = EurekaInstanceOptions.DefaultSecurePort;
 
         if (serviceInfo.ApplicationInfo.Uris?.Any() == true)
         {

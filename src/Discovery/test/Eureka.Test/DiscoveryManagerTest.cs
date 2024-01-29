@@ -18,15 +18,15 @@ public sealed class DiscoveryManagerTest : AbstractBaseTest
     public void DiscoveryManager_Uninitialized()
     {
         Assert.Null(DiscoveryManager.Instance.Client);
-        Assert.Null(DiscoveryManager.Instance.ClientConfiguration);
-        Assert.Null(DiscoveryManager.Instance.InstanceConfig);
+        Assert.Null(DiscoveryManager.Instance.ClientOptions);
+        Assert.Null(DiscoveryManager.Instance.InstanceOptions);
     }
 
     [Fact]
     public void Initialize_Throws_IfInstanceConfigNull()
     {
         var ex = Assert.Throws<ArgumentNullException>(() =>
-            DiscoveryManager.Instance.Initialize(new EurekaClientConfiguration(), (EurekaInstanceConfiguration)null));
+            DiscoveryManager.Instance.Initialize(new EurekaClientOptions(), (EurekaInstanceOptions)null));
 
         Assert.Contains("instanceConfig", ex.Message, StringComparison.Ordinal);
     }
@@ -34,48 +34,48 @@ public sealed class DiscoveryManagerTest : AbstractBaseTest
     [Fact]
     public void Initialize_Throws_IfClientConfigNull()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryManager.Instance.Initialize(null, new EurekaInstanceConfiguration()));
+        var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryManager.Instance.Initialize(null, new EurekaInstanceOptions()));
         Assert.Contains("clientConfig", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public void Initialize_WithBothConfigs_InitializesAll()
     {
-        var instanceConfig = new EurekaInstanceConfiguration();
+        var instanceOptions = new EurekaInstanceOptions();
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             ShouldRegisterWithEureka = false,
             ShouldFetchRegistry = false
         };
 
-        DiscoveryManager.Instance.Initialize(clientConfig, instanceConfig);
+        DiscoveryManager.Instance.Initialize(clientOptions, instanceOptions);
 
-        Assert.NotNull(DiscoveryManager.Instance.InstanceConfig);
-        Assert.Equal(instanceConfig, DiscoveryManager.Instance.InstanceConfig);
-        Assert.NotNull(DiscoveryManager.Instance.ClientConfiguration);
-        Assert.Equal(clientConfig, DiscoveryManager.Instance.ClientConfiguration);
+        Assert.NotNull(DiscoveryManager.Instance.InstanceOptions);
+        Assert.Equal(instanceOptions, DiscoveryManager.Instance.InstanceOptions);
+        Assert.NotNull(DiscoveryManager.Instance.ClientOptions);
+        Assert.Equal(clientOptions, DiscoveryManager.Instance.ClientOptions);
         Assert.NotNull(DiscoveryManager.Instance.Client);
 
-        Assert.Equal(instanceConfig, ApplicationInfoManager.Instance.InstanceConfig);
+        Assert.Equal(instanceOptions, ApplicationInfoManager.Instance.InstanceOptions);
     }
 
     [Fact]
     public void Initialize_WithClientConfig_InitializesAll()
     {
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             ShouldRegisterWithEureka = false,
             ShouldFetchRegistry = false
         };
 
-        DiscoveryManager.Instance.Initialize(clientConfig);
+        DiscoveryManager.Instance.Initialize(clientOptions);
 
-        Assert.Null(DiscoveryManager.Instance.InstanceConfig);
-        Assert.NotNull(DiscoveryManager.Instance.ClientConfiguration);
-        Assert.Equal(clientConfig, DiscoveryManager.Instance.ClientConfiguration);
+        Assert.Null(DiscoveryManager.Instance.InstanceOptions);
+        Assert.NotNull(DiscoveryManager.Instance.ClientOptions);
+        Assert.Equal(clientOptions, DiscoveryManager.Instance.ClientOptions);
         Assert.NotNull(DiscoveryManager.Instance.Client);
 
-        Assert.Null(ApplicationInfoManager.Instance.InstanceConfig);
+        Assert.Null(ApplicationInfoManager.Instance.InstanceOptions);
     }
 }

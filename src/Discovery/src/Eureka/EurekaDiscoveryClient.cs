@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
@@ -22,19 +23,21 @@ public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, I
 {
     private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
     private readonly IServiceInstance _thisInstance;
+    private readonly ILogger<EurekaDiscoveryClient> _logger;
 
-    public override EurekaClientConfiguration ClientConfiguration => _configOptions.CurrentValue;
+    public override EurekaClientOptions ClientOptions => _configOptions.CurrentValue;
 
     public string Description => "A discovery client for Spring Cloud Eureka.";
 
     public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
         EurekaApplicationInfoManager appInfoManager, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null,
         IHttpClientHandlerProvider handlerProvider = null, HttpClient netHttpClient = null)
-        : base(appInfoManager, loggerFactory)
+        : base(appInfoManager, loggerFactory ?? NullLoggerFactory.Instance)
     {
         _thisInstance = new ThisServiceInstance(instConfig);
         _configOptions = clientConfig;
         this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, loggerFactory, handlerProvider, netHttpClient);
+        _logger = (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger<EurekaDiscoveryClient>();
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
@@ -75,7 +78,7 @@ public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, I
 
         foreach (InstanceInfo info in infos)
         {
-            logger?.LogDebug($"GetInstances returning: {info}");
+            _logger.LogDebug($"GetInstances returning: {info}");
             instances.Add(new EurekaServiceInstance(info));
         }
 
@@ -103,19 +106,10 @@ public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, I
 
     private sealed class EurekaHttpClientInternal : EurekaHttpClient
     {
-        private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitorOptions;
-
-        protected override EurekaClientConfiguration Configuration => _optionsMonitorOptions.CurrentValue;
-
         public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILoggerFactory loggerFactory = null,
             IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
+            : base(optionsMonitor, handlerProvider, loggerFactory)
         {
-            ArgumentGuard.NotNull(optionsMonitor);
-
-            configuration = null;
-            _optionsMonitorOptions = optionsMonitor;
-            this.handlerProvider = handlerProvider;
-            Initialize(new Dictionary<string, string>(), loggerFactory);
             this.httpClient = httpClient;
         }
     }

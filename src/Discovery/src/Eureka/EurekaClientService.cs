@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -69,7 +68,7 @@ public static class EurekaClientService
 
     internal static LookupClient GetLookupClient(EurekaClientOptions options, ILoggerFactory loggerFactory)
     {
-        return new LookupClient(options, null, loggerFactory);
+        return new LookupClient(options, loggerFactory);
     }
 
     internal static EurekaClientOptions ConfigureClientOptions(IConfiguration configuration)
@@ -85,9 +84,13 @@ public static class EurekaClientService
 
     internal sealed class LookupClient : DiscoveryClient
     {
-        public LookupClient(EurekaClientConfiguration clientConfiguration, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null)
-            : base(clientConfiguration, httpClient, loggerFactory)
+        private readonly ILogger<LookupClient> _logger;
+
+        public LookupClient(EurekaClientOptions clientOptions, ILoggerFactory loggerFactory)
+            : base(clientOptions, null, loggerFactory)
         {
+            _logger = loggerFactory.CreateLogger<LookupClient>();
+
             if (cacheRefreshTimer != null)
             {
                 cacheRefreshTimer.Dispose();
@@ -102,7 +105,7 @@ public static class EurekaClientService
 
             foreach (InstanceInfo info in infos)
             {
-                logger?.LogDebug($"GetInstances returning: {info}");
+                _logger.LogDebug($"GetInstances returning: {info}");
                 instances.Add(new EurekaServiceInstance(info));
             }
 

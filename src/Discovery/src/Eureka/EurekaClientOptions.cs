@@ -2,159 +2,102 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using Microsoft.Extensions.Configuration;
+
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaClientOptions : EurekaClientConfiguration
+public sealed class EurekaClientOptions
 {
-    public const string EurekaClientConfigurationPrefix = "eureka:client";
-
-    public new const int DefaultInstanceInfoReplicationIntervalSeconds = 30;
-
-    // Configuration property: eureka:client:accessTokenUri
-    public string AccessTokenUri { get; set; }
-
-    // Configuration property: eureka:client:clientSecret
-    public string ClientSecret { get; set; }
-
-    // Configuration property: eureka:client:clientId
-    public string ClientId { get; set; }
-
-    // Configuration property: eureka:client:serviceUrl
-    public string ServiceUrl
-    {
-        get => EurekaServerServiceUrls;
-        set => EurekaServerServiceUrls = value;
-    }
-
-    // Configuration property: eureka:client:validate_certificates
-    // ReSharper disable once InconsistentNaming
-    public bool Validate_Certificates
-    {
-        get => ValidateCertificates;
-        set => ValidateCertificates = value;
-    }
+    internal const string EurekaClientConfigurationPrefix = "eureka:client";
+    internal const int DefaultRegistryFetchIntervalSeconds = 30;
+    internal const string DefaultServerServiceUrl = "http://localhost:8761/eureka/";
 
     /// <summary>
-    /// Gets or sets the time in seconds that service instance cache records should remain active.
+    /// Gets or sets the URI to use to obtain an OAuth2 access token. Configuration property: eureka:client:accessTokenUri.
     /// </summary>
-    /// <remarks>
-    /// configuration property: eureka:client:cacheTTL.
-    /// </remarks>
+    public string? AccessTokenUri { get; set; }
+
+    /// <summary>
+    /// Gets or sets the secret to use to obtain an OAuth2 access token. Configuration property: eureka:client:clientSecret.
+    /// </summary>
+    public string? ClientSecret { get; set; }
+
+    /// <summary>
+    /// Gets or sets the client ID to use to obtain an OAuth2 access token. Configuration property: eureka:client:clientId.
+    /// </summary>
+    public string? ClientId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the time in seconds that service instance cache records should remain active. Configuration property: eureka:client:cacheTTL.
+    /// </summary>
     public int CacheTtl { get; set; } = 15;
 
+    /// <summary>
+    /// Gets or sets how often (in seconds) to fetch the registry information from the Eureka server. Configuration property:
+    /// eureka:client:registryFetchIntervalSeconds.
+    /// </summary>
+    public int RegistryFetchIntervalSeconds { get; set; } = DefaultRegistryFetchIntervalSeconds;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance should register its information with Eureka server for discovery by others. In some cases, you
+    /// do not want your instances to be discovered whereas you just want to discover other instances. Configuration property:
+    /// eureka:client:shouldRegisterWithEureka.
+    /// </summary>
+    public bool ShouldRegisterWithEureka { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the Eureka client should disable fetching of deltas and should rather resort to getting the full registry
+    /// information. Note that the delta fetches can reduce the traffic tremendously, because the rate of change with the Eureka server is normally much
+    /// lower than the rate of fetches. The changes are effective at runtime at the next registry fetch cycle as specified by
+    /// <see cref="RegistryFetchIntervalSeconds" />. Configuration property: eureka:client:shouldDisableDelta.
+    /// </summary>
+    public bool ShouldDisableDelta { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to include only instances with UP status after fetching the list of applications. The changes are effective
+    /// at runtime at the next registry fetch cycle as specified by <see cref="RegistryFetchIntervalSeconds" />. Configuration property:
+    /// eureka:client:shouldFilterOnlyUpInstances.
+    /// </summary>
+    public bool ShouldFilterOnlyUpInstances { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this client should fetch Eureka registry information from Eureka server. Configuration property:
+    /// eureka:client:shouldFetchRegistry.
+    /// </summary>
+    public bool ShouldFetchRegistry { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether the client is only interested in the registry information for a single VIP. Configuration property:
+    /// eureka:client:registryRefreshSingleVipAddress.
+    /// </summary>
+    public string? RegistryRefreshSingleVipAddress { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether local status updates via <see cref="ApplicationInfoManager.InstanceStatus" />  will trigger on-demand (but
+    /// rate limited) register/updates to remote Eureka servers. Configuration property: eureka:client:shouldOnDemandUpdateStatusChange.
+    /// </summary>
+    public bool ShouldOnDemandUpdateStatusChange { get; set; } = true;
+
+    // Configuration property: eureka:client:enabled
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a comma-delimited list of URls to use in contacting the Eureka Server. Configuration property: eureka:client:serviceUrl.
+    /// </summary>
+    [ConfigurationKeyName("ServiceUrl")]
+    public string? EurekaServerServiceUrls { get; set; } = DefaultServerServiceUrl;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the client validates server certificates. Configuration property: eureka:client:validate_certificates.
+    /// </summary>
+    [ConfigurationKeyName("Validate_Certificates")]
+    public bool ValidateCertificates { get; set; } = true;
+
     // Configuration property: eureka:client:eurekaServer
-    public EurekaServerConfig EurekaServer { get; set; }
+    public EurekaServerConfiguration EurekaServer { get; } = new();
 
     // Configuration property: eureka:client:health
-    public EurekaHealthConfig Health { get; set; }
-
-    public EurekaClientOptions()
-    {
-        EurekaServer = new EurekaServerConfig(this);
-        Health = new EurekaHealthConfig(this);
-    }
-
-    public class EurekaHealthConfig
-    {
-        private readonly EurekaClientOptions _options;
-
-        // Configuration property: eureka:client:health:enabled
-        public bool Enabled
-        {
-            get => _options.HealthContribEnabled;
-            set => _options.HealthContribEnabled = value;
-        }
-
-        // Configuration property: eureka:client:health:monitoredApps
-        public string MonitoredApps
-        {
-            get => _options.HealthMonitoredApps;
-            set => _options.HealthMonitoredApps = value;
-        }
-
-        // Configuration property: eureka:client:health:checkEnabled
-        public bool CheckEnabled
-        {
-            get => _options.HealthCheckEnabled;
-            set => _options.HealthCheckEnabled = value;
-        }
-
-        public EurekaHealthConfig(EurekaClientOptions options)
-        {
-            _options = options;
-        }
-    }
-
-    public class EurekaServerConfig
-    {
-        private readonly EurekaClientOptions _options;
-
-        /// <summary>
-        /// Gets or sets configuration property: eureka:client:eurekaServer:proxyHost.
-        /// </summary>
-        public string ProxyHost
-        {
-            get => _options.ProxyHost;
-            set => _options.ProxyHost = value;
-        }
-
-        /// <summary>
-        /// Gets or sets configuration property: eureka:client:eurekaServer:proxyPort.
-        /// </summary>
-        public int ProxyPort
-        {
-            get => _options.ProxyPort;
-            set => _options.ProxyPort = value;
-        }
-
-        /// <summary>
-        /// Gets or sets configuration property: eureka:client:eurekaServer:proxyUserName.
-        /// </summary>
-        public string ProxyUserName
-        {
-            get => _options.ProxyUserName;
-            set => _options.ProxyUserName = value;
-        }
-
-        /// <summary>
-        /// Gets or sets configuration property: eureka:client:eurekaServer:proxyPassword.
-        /// </summary>
-        public string ProxyPassword
-        {
-            get => _options.ProxyPassword;
-            set => _options.ProxyPassword = value;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether configuration property: eureka:client:eurekaServer:shouldGZipContent.
-        /// </summary>
-        public bool ShouldGZipContent
-        {
-            get => _options.ShouldGZipContent;
-            set => _options.ShouldGZipContent = value;
-        }
-
-        /// <summary>
-        /// Gets or sets configuration property: eureka:client:eurekaServer:connectTimeoutSeconds.
-        /// </summary>
-        public int ConnectTimeoutSeconds
-        {
-            get => _options.EurekaServerConnectTimeoutSeconds;
-            set => _options.EurekaServerConnectTimeoutSeconds = value;
-        }
-
-        /// <summary>
-        /// Gets or sets configuration property: eureka:client:eurekaServer:retryCount.
-        /// </summary>
-        public int RetryCount
-        {
-            get => _options.EurekaServerRetryCount;
-            set => _options.EurekaServerRetryCount = value;
-        }
-
-        public EurekaServerConfig(EurekaClientOptions options)
-        {
-            _options = options;
-        }
-    }
+    public EurekaHealthConfiguration Health { get; } = new();
 }

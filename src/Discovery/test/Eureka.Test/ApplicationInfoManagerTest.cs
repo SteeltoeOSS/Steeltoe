@@ -20,7 +20,7 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void ApplicationInfoManager_Uninitialized()
     {
-        Assert.Null(ApplicationInfoManager.Instance.InstanceConfig);
+        Assert.Null(ApplicationInfoManager.Instance.InstanceOptions);
         Assert.Null(ApplicationInfoManager.Instance.InstanceInfo);
         Assert.Equal(InstanceStatus.Unknown, ApplicationInfoManager.Instance.InstanceStatus);
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Down;
@@ -43,18 +43,22 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void Initialize_Initializes_InstanceInfo()
     {
-        var configuration = new EurekaInstanceConfiguration();
+        var configuration = new EurekaInstanceOptions();
         ApplicationInfoManager.Instance.Initialize(configuration);
 
-        Assert.NotNull(ApplicationInfoManager.Instance.InstanceConfig);
-        Assert.Equal(configuration, ApplicationInfoManager.Instance.InstanceConfig);
+        Assert.NotNull(ApplicationInfoManager.Instance.InstanceOptions);
+        Assert.Equal(configuration, ApplicationInfoManager.Instance.InstanceOptions);
         Assert.NotNull(ApplicationInfoManager.Instance.InstanceInfo);
     }
 
     [Fact]
     public void StatusChanged_ChangesStatus()
     {
-        var configuration = new EurekaInstanceConfiguration();
+        var configuration = new EurekaInstanceOptions
+        {
+            IsInstanceEnabledOnInit = false
+        };
+
         ApplicationInfoManager.Instance.Initialize(configuration);
 
         Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
@@ -64,7 +68,11 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void StatusChanged_ChangesStatus_SendsEvents()
     {
-        var configuration = new EurekaInstanceConfiguration();
+        var configuration = new EurekaInstanceOptions
+        {
+            IsInstanceEnabledOnInit = false
+        };
+
         ApplicationInfoManager.Instance.Initialize(configuration);
         Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
 
@@ -81,7 +89,11 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void StatusChanged_RemovesEventHandler()
     {
-        var configuration = new EurekaInstanceConfiguration();
+        var configuration = new EurekaInstanceOptions
+        {
+            IsInstanceEnabledOnInit = false
+        };
+
         ApplicationInfoManager.Instance.Initialize(configuration);
         Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
 
@@ -101,7 +113,7 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void RefreshLeaseInfo_UpdatesLeaseInfo()
     {
-        var configuration = new EurekaInstanceConfiguration();
+        var configuration = new EurekaInstanceOptions();
         ApplicationInfoManager.Instance.Initialize(configuration);
 
         ApplicationInfoManager.Instance.RefreshLeaseInfo();

@@ -17,7 +17,7 @@ public class ApplicationInfoManager
 
     public static ApplicationInfoManager Instance => InnerInstance;
 
-    public virtual EurekaInstanceConfiguration InstanceConfig { get; protected internal set; }
+    public virtual EurekaInstanceOptions InstanceOptions { get; protected internal set; }
 
     public virtual InstanceInfo InstanceInfo { get; protected internal set; }
 
@@ -66,18 +66,18 @@ public class ApplicationInfoManager
     {
     }
 
-    public virtual void Initialize(EurekaInstanceConfiguration instanceConfig, ILoggerFactory loggerFactory = null)
+    public virtual void Initialize(EurekaInstanceOptions instanceConfig, ILoggerFactory loggerFactory = null)
     {
         ArgumentGuard.NotNull(instanceConfig);
 
         logger = loggerFactory?.CreateLogger<ApplicationInfoManager>();
-        InstanceConfig = instanceConfig;
+        InstanceOptions = instanceConfig;
         InstanceInfo = InstanceInfo.FromInstanceConfiguration(instanceConfig);
     }
 
     public virtual void RefreshLeaseInfo()
     {
-        if (InstanceInfo == null || InstanceConfig == null)
+        if (InstanceInfo == null || InstanceOptions == null)
         {
             return;
         }
@@ -87,13 +87,13 @@ public class ApplicationInfoManager
             return;
         }
 
-        if (InstanceInfo.LeaseInfo.DurationInSecs != InstanceConfig.LeaseExpirationDurationInSeconds ||
-            InstanceInfo.LeaseInfo.RenewalIntervalInSecs != InstanceConfig.LeaseRenewalIntervalInSeconds)
+        if (InstanceInfo.LeaseInfo.DurationInSecs != InstanceOptions.LeaseExpirationDurationInSeconds ||
+            InstanceInfo.LeaseInfo.RenewalIntervalInSecs != InstanceOptions.LeaseRenewalIntervalInSeconds)
         {
             var newLease = new LeaseInfo
             {
-                DurationInSecs = InstanceConfig.LeaseExpirationDurationInSeconds,
-                RenewalIntervalInSecs = InstanceConfig.LeaseRenewalIntervalInSeconds
+                DurationInSecs = InstanceOptions.LeaseExpirationDurationInSeconds,
+                RenewalIntervalInSecs = InstanceOptions.LeaseRenewalIntervalInSeconds
             };
 
             InstanceInfo.LeaseInfo = newLease;

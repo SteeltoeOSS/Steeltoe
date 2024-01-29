@@ -179,7 +179,7 @@ public class InstanceInfo
         return sb.ToString();
     }
 
-    internal static InstanceInfo FromInstanceConfiguration(EurekaInstanceConfiguration instanceConfig)
+    internal static InstanceInfo FromInstanceConfiguration(EurekaInstanceOptions instanceConfig)
     {
         var info = new InstanceInfo
         {
@@ -204,10 +204,10 @@ public class InstanceInfo
         info.DataCenterInfo = instanceConfig.DataCenterInfo;
         info.IPAddress = instanceConfig.IPAddress;
         info.HostName = defaultAddress;
-        info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceConfiguration.DefaultNonSecurePort : instanceConfig.NonSecurePort;
+        info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceOptions.DefaultNonSecurePort : instanceConfig.NonSecurePort;
         info.IsInsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
-        info.SecurePort = instanceConfig.SecurePort == -1 ? EurekaInstanceConfiguration.DefaultSecurePort : instanceConfig.SecurePort;
-        info.IsSecurePortEnabled = instanceConfig.SecurePortEnabled;
+        info.SecurePort = instanceConfig.SecurePort == -1 ? EurekaInstanceOptions.DefaultSecurePort : instanceConfig.SecurePort;
+        info.IsSecurePortEnabled = instanceConfig.IsSecurePortEnabled;
         info.VipAddress = instanceConfig.VirtualHostName;
         info.SecureVipAddress = instanceConfig.SecureVirtualHostName;
         info.HomePageUrl = MakeUrl(info, instanceConfig.HomePageUrlPath, instanceConfig.HomePageUrl);
@@ -259,7 +259,7 @@ public class InstanceInfo
             info.VipAddress = json.VipAddress;
             info.SecureVipAddress = json.SecureVipAddress;
             info.CountryId = json.CountryId;
-            info.DataCenterInfo = json.DataCenterInfo == null ? null : AppInfo.DataCenterInfo.FromJson(json.DataCenterInfo);
+            info.DataCenterInfo = json.DataCenterInfo == null ? null : DataCenterInfo.FromJson(json.DataCenterInfo);
             info.HostName = json.HostName;
             info.Status = json.Status;
             info.OverriddenStatus = json.OverriddenStatus;

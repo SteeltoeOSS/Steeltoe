@@ -42,9 +42,9 @@ public class EurekaServerHealthContributor : IHealthContributor
     private void AddHealthStatus(HealthCheckResult result)
     {
         HealthStatus remoteStatus = AddRemoteInstanceStatus(result);
-        HealthStatus fetchStatus = AddFetchStatus(_discoveryClient.ClientConfiguration, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
+        HealthStatus fetchStatus = AddFetchStatus(_discoveryClient.ClientOptions, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
 
-        HealthStatus heartBeatStatus = AddHeartbeatStatus(_discoveryClient.ClientConfiguration, _appInfoManager.InstanceConfig, result,
+        HealthStatus heartBeatStatus = AddHeartbeatStatus(_discoveryClient.ClientOptions, _appInfoManager.InstanceOptions, result,
             _discoveryClient.LastGoodHeartbeatTimestamp);
 
         result.Status = remoteStatus;
@@ -69,7 +69,7 @@ public class EurekaServerHealthContributor : IHealthContributor
         return remoteStatus;
     }
 
-    internal HealthStatus AddHeartbeatStatus(EurekaClientConfiguration clientConfiguration, EurekaInstanceConfiguration instanceConfig, HealthCheckResult result,
+    internal HealthStatus AddHeartbeatStatus(EurekaClientOptions clientConfiguration, EurekaInstanceOptions instanceConfig, HealthCheckResult result,
         long lastGoodHeartbeatTimeTicks)
     {
         if (clientConfiguration != null && clientConfiguration.ShouldRegisterWithEureka)
@@ -103,7 +103,7 @@ public class EurekaServerHealthContributor : IHealthContributor
         return HealthStatus.Unknown;
     }
 
-    internal HealthStatus AddFetchStatus(EurekaClientConfiguration clientConfiguration, HealthCheckResult result, long lastGoodFetchTimeTicks)
+    internal HealthStatus AddFetchStatus(EurekaClientOptions clientConfiguration, HealthCheckResult result, long lastGoodFetchTimeTicks)
     {
         if (clientConfiguration != null && clientConfiguration.ShouldFetchRegistry)
         {

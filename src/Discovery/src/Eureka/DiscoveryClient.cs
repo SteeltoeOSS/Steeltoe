@@ -15,19 +15,15 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class DiscoveryClient
 {
+    private readonly ILogger<DiscoveryClient> _logger;
     protected readonly ApplicationInfoManager AppInfoManager;
     private int _shutdown;
-    protected Timer heartBeatTimer;
+    private volatile Applications _localRegionApps;
+    private long _registryFetchCounter;
     protected Timer cacheRefreshTimer;
-    protected volatile Applications localRegionApps;
-    protected long registryFetchCounter;
     protected EurekaHttpClient httpClient;
-    protected Random random = new();
-    protected ILogger logger;
-    protected ILogger regularLogger;
-    protected ILogger startupLogger;
 
-    internal Timer HeartBeatTimer => heartBeatTimer;
+    internal Timer HeartBeatTimer { get; private set; }
 
     internal Timer CacheRefreshTimer => cacheRefreshTimer;
 
@@ -49,33 +45,35 @@ public class DiscoveryClient
 
     public Applications Applications
     {
-        get => localRegionApps;
-        internal set => localRegionApps = value;
+        get => _localRegionApps;
+        internal set => _localRegionApps = value;
     }
 
-    public virtual EurekaClientConfiguration ClientConfiguration { get; }
+    public virtual EurekaClientOptions ClientOptions { get; }
 
     public IHealthCheckHandler HealthCheckHandler { get; set; }
 
     public event EventHandler<ApplicationsEventArgs> OnApplicationsChange;
 
-    public DiscoveryClient(EurekaClientConfiguration clientConfiguration, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null)
-        : this(ApplicationInfoManager.Instance, loggerFactory)
+    public DiscoveryClient(EurekaClientOptions clientOptions, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null)
+        : this(ApplicationInfoManager.Instance, loggerFactory ?? NullLoggerFactory.Instance)
     {
-        ArgumentGuard.NotNull(clientConfiguration);
+        ArgumentGuard.NotNull(clientOptions);
 
-        ClientConfiguration = clientConfiguration;
-        this.httpClient = httpClient ?? new EurekaHttpClient(clientConfiguration, loggerFactory);
+        ClientOptions = clientOptions;
+        this.httpClient = httpClient ?? new EurekaHttpClient(clientOptions, loggerFactory);
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
     // Constructor used by Dependency Injection
-    protected DiscoveryClient(ApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory = null)
+    protected DiscoveryClient(ApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory)
     {
+        ArgumentGuard.NotNull(appInfoManager);
+        ArgumentGuard.NotNull(loggerFactory);
+
         AppInfoManager = appInfoManager;
-        regularLogger = (ILogger)loggerFactory?.CreateLogger<DiscoveryClient>() ?? NullLogger.Instance;
-        startupLogger = loggerFactory?.CreateLogger($"Startup.{GetType().FullName}") ?? NullLogger.Instance;
+        _logger = loggerFactory.CreateLogger<DiscoveryClient>();
     }
 
     public Application GetApplication(string appName)
@@ -124,13 +122,11 @@ public class DiscoveryClient
     {
         ArgumentGuard.NotNullOrEmpty(vipAddress);
 
-        var results = new List<InstanceInfo>();
-
         Applications apps = Applications;
 
         if (apps == null)
         {
-            return results;
+            return [];
         }
 
         if (secure)
@@ -168,14 +164,14 @@ public class DiscoveryClient
             return result;
         }
 
-        foreach (Application app in localRegionApps.GetRegisteredApplications())
+        foreach (Application app in _localRegionApps.GetRegisteredApplications())
         {
             foreach (InstanceInfo instance in app.Instances)
             {
                 string instanceVipAddress = secure ? instance.SecureVipAddress : instance.VipAddress;
 
-                if (vipAddress.Equals(instanceVipAddress, StringComparison.OrdinalIgnoreCase) &&
-                    appName.Equals(instance.AppName, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(vipAddress, instanceVipAddress, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(appName, instance.AppName, StringComparison.OrdinalIgnoreCase))
                 {
                     result.Add(instance);
                 }
@@ -185,7 +181,7 @@ public class DiscoveryClient
         return result;
     }
 
-    public InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure)
+    internal InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure)
     {
         ArgumentGuard.NotNullOrEmpty(virtualHostname);
 
@@ -196,7 +192,7 @@ public class DiscoveryClient
             return null;
         }
 
-        int index = random.Next() % results.Count;
+        int index = Random.Shared.Next() % results.Count;
         return results[index];
     }
 
@@ -215,18 +211,18 @@ public class DiscoveryClient
             cacheRefreshTimer = null;
         }
 
-        if (heartBeatTimer != null)
+        if (HeartBeatTimer != null)
         {
-            await heartBeatTimer.DisposeAsync();
-            heartBeatTimer = null;
+            await HeartBeatTimer.DisposeAsync();
+            HeartBeatTimer = null;
         }
 
-        if (ClientConfiguration.ShouldOnDemandUpdateStatusChange)
+        if (ClientOptions.ShouldOnDemandUpdateStatusChange)
         {
             AppInfoManager.StatusChanged -= HandleInstanceStatusChanged;
         }
 
-        if (ClientConfiguration.ShouldRegisterWithEureka)
+        if (ClientOptions.ShouldRegisterWithEureka)
         {
             InstanceInfo info = AppInfoManager.InstanceInfo;
 
@@ -237,15 +233,10 @@ public class DiscoveryClient
 
                 if (!result)
                 {
-                    logger.LogWarning("Unregister failed during Shutdown");
+                    _logger.LogWarning("Unregister failed during Shutdown");
                 }
             }
         }
-    }
-
-    public InstanceStatus GetInstanceRemoteStatus()
-    {
-        return InstanceStatus.Unknown;
     }
 
     private async void HandleInstanceStatusChanged(object sender, StatusChangedEventArgs args)
@@ -256,7 +247,7 @@ public class DiscoveryClient
 
             if (info != null)
             {
-                logger.LogDebug("HandleInstanceStatusChanged {previousStatus}, {currentStatus}, {instanceId}, {dirty}", args.Previous, args.Current,
+                _logger.LogDebug("HandleInstanceStatusChanged {previousStatus}, {currentStatus}, {instanceId}, {dirty}", args.Previous, args.Current,
                     args.InstanceId, info.IsDirty);
 
                 if (info.IsDirty)
@@ -266,14 +257,14 @@ public class DiscoveryClient
                     if (result)
                     {
                         info.IsDirty = false;
-                        logger.LogInformation("HandleInstanceStatusChanged RegisterAsync succeeded");
+                        _logger.LogInformation("HandleInstanceStatusChanged RegisterAsync succeeded");
                     }
                 }
             }
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "HandleInstanceStatusChanged failed");
+            _logger.LogError(exception, "HandleInstanceStatusChanged failed");
         }
     }
 
@@ -290,8 +281,8 @@ public class DiscoveryClient
 
         try
         {
-            if (fullUpdate || !string.IsNullOrEmpty(ClientConfiguration.RegistryRefreshSingleVipAddress) || ClientConfiguration.ShouldDisableDelta ||
-                localRegionApps.GetRegisteredApplications().Count == 0)
+            if (fullUpdate || !string.IsNullOrEmpty(ClientOptions.RegistryRefreshSingleVipAddress) || ClientOptions.ShouldDisableDelta ||
+                _localRegionApps.GetRegisteredApplications().Count == 0)
             {
                 fetched = await FetchFullRegistryAsync(cancellationToken);
             }
@@ -302,26 +293,26 @@ public class DiscoveryClient
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            logger.LogError(exception, "FetchRegistry Failed for Eureka service urls: {EurekaServerServiceUrls}",
-                new Uri(ClientConfiguration.EurekaServerServiceUrls).ToMaskedString());
+            _logger.LogError(exception, "FetchRegistry Failed for Eureka service urls: {EurekaServerServiceUrls}",
+                new Uri(ClientOptions.EurekaServerServiceUrls).ToMaskedString());
 
             return false;
         }
 
         if (fetched != null)
         {
-            localRegionApps = fetched;
-            localRegionApps.ReturnUpInstancesOnly = ClientConfiguration.ShouldFilterOnlyUpInstances;
+            _localRegionApps = fetched;
+            _localRegionApps.ReturnUpInstancesOnly = ClientOptions.ShouldFilterOnlyUpInstances;
             LastGoodRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
 
-            //// Update remote status based on refreshed data held in the cache
+            // Update remote status based on refreshed data held in the cache
             UpdateInstanceRemoteStatus();
 
-            logger.LogDebug("FetchRegistry succeeded");
+            _logger.LogDebug("FetchRegistry succeeded");
             return true;
         }
 
-        logger.LogDebug("FetchRegistry failed");
+        _logger.LogDebug("FetchRegistry failed");
         return false;
     }
 
@@ -337,15 +328,15 @@ public class DiscoveryClient
         try
         {
             EurekaHttpResponse resp = await HttpClient.CancelAsync(inst.AppName, inst.InstanceId, cancellationToken);
-            logger.LogDebug("Unregister {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
+            _logger.LogDebug("Unregister {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
             return resp.StatusCode == HttpStatusCode.OK;
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            logger.LogError(exception, "Unregister Failed");
+            _logger.LogError(exception, "Unregister Failed");
         }
 
-        logger.LogDebug("Unregister failed");
+        _logger.LogDebug("Unregister failed");
         return false;
     }
 
@@ -362,7 +353,7 @@ public class DiscoveryClient
         {
             EurekaHttpResponse resp = await HttpClient.RegisterAsync(inst, cancellationToken);
             bool result = resp.StatusCode == HttpStatusCode.NoContent;
-            logger.LogDebug("Register {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
+            _logger.LogDebug("Register {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
 
             if (result)
             {
@@ -373,10 +364,10 @@ public class DiscoveryClient
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            logger.LogError(exception, "Register Failed");
+            _logger.LogError(exception, "Register Failed");
         }
 
-        logger.LogDebug("Register failed");
+        _logger.LogDebug("Register failed");
         return false;
     }
 
@@ -401,11 +392,11 @@ public class DiscoveryClient
             EurekaHttpResponse<InstanceInfo> resp =
                 await HttpClient.SendHeartBeatAsync(inst.AppName, inst.InstanceId, inst, InstanceStatus.Unknown, cancellationToken);
 
-            logger.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
+            _logger.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
 
             if (resp.StatusCode == HttpStatusCode.NotFound)
             {
-                logger.LogWarning(
+                _logger.LogWarning(
                     "Eureka heartbeat came back with 404 status. This could happen if Eureka was offline during app startup. Attempting to (re)register now.");
 
                 return await RegisterAsync(cancellationToken);
@@ -422,37 +413,38 @@ public class DiscoveryClient
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            logger.LogError(exception, "Renew Failed");
+            _logger.LogError(exception, "Renew Failed");
         }
 
-        logger.LogDebug("Renew failed");
+        _logger.LogDebug("Renew failed");
         return false;
     }
 
     protected internal async Task<Applications> FetchFullRegistryAsync(CancellationToken cancellationToken)
     {
-        long startingCounter = registryFetchCounter;
+        long startingCounter = _registryFetchCounter;
         Applications fetched = null;
 
         EurekaHttpResponse<Applications> resp;
 
-        if (string.IsNullOrEmpty(ClientConfiguration.RegistryRefreshSingleVipAddress))
+        if (string.IsNullOrEmpty(ClientOptions.RegistryRefreshSingleVipAddress))
         {
             resp = await HttpClient.GetApplicationsAsync(cancellationToken);
         }
         else
         {
-            resp = await HttpClient.GetVipAsync(ClientConfiguration.RegistryRefreshSingleVipAddress, cancellationToken);
+            resp = await HttpClient.GetVipAsync(ClientOptions.RegistryRefreshSingleVipAddress, cancellationToken);
         }
 
-        logger.LogDebug("FetchFullRegistry returned: {StatusCode}, {Response}", resp.StatusCode, resp.Response != null ? resp.Response.ToString() : "null");
+        _logger.LogDebug("FetchFullRegistry returned: {StatusCode}, {Response}", resp.StatusCode, resp.Response != null ? resp.Response.ToString() : "null");
 
         if (resp.StatusCode == HttpStatusCode.OK)
         {
             fetched = resp.Response;
         }
 
-        if (fetched != null && Interlocked.CompareExchange(ref registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
+        if (fetched != null && Interlocked.CompareExchange(ref _registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) ==
+            startingCounter)
         {
             // Log
             LastGoodFullRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
@@ -460,19 +452,19 @@ public class DiscoveryClient
             return fetched;
         }
 
-        logger.LogWarning("FetchFullRegistry discarding fetch, race condition");
+        _logger.LogWarning("FetchFullRegistry discarding fetch, race condition");
 
-        logger.LogDebug("FetchFullRegistry failed");
+        _logger.LogDebug("FetchFullRegistry failed");
         return null;
     }
 
     protected internal async Task<Applications> FetchRegistryDeltaAsync(CancellationToken cancellationToken)
     {
-        long startingCounter = registryFetchCounter;
+        long startingCounter = _registryFetchCounter;
         Applications delta = null;
 
         EurekaHttpResponse<Applications> resp = await HttpClient.GetDeltaAsync(cancellationToken);
-        logger.LogDebug("FetchRegistryDelta returned: {StatusCode}", resp.StatusCode);
+        _logger.LogDebug("FetchRegistryDelta returned: {StatusCode}", resp.StatusCode);
 
         if (resp.StatusCode == HttpStatusCode.OK)
         {
@@ -485,24 +477,24 @@ public class DiscoveryClient
             return await FetchFullRegistryAsync(cancellationToken);
         }
 
-        if (Interlocked.CompareExchange(ref registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
+        if (Interlocked.CompareExchange(ref _registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
         {
-            localRegionApps.UpdateFromDelta(delta);
-            string hashCode = localRegionApps.ComputeHashCode();
+            _localRegionApps.UpdateFromDelta(delta);
+            string hashCode = _localRegionApps.ComputeHashCode();
 
             if (hashCode != delta.AppsHashCode)
             {
-                logger.LogWarning($"FetchRegistryDelta discarding delta, hash codes mismatch: {hashCode}!={delta.AppsHashCode}");
+                _logger.LogWarning($"FetchRegistryDelta discarding delta, hash codes mismatch: {hashCode}!={delta.AppsHashCode}");
                 return await FetchFullRegistryAsync(cancellationToken);
             }
 
-            localRegionApps.AppsHashCode = delta.AppsHashCode;
+            _localRegionApps.AppsHashCode = delta.AppsHashCode;
             LastGoodDeltaRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
             OnApplicationsChange?.Invoke(this, new ApplicationsEventArgs(delta));
-            return localRegionApps;
+            return _localRegionApps;
         }
 
-        logger.LogDebug("FetchRegistryDelta failed");
+        _logger.LogDebug("FetchRegistryDelta failed");
         return null;
     }
 
@@ -524,11 +516,11 @@ public class DiscoveryClient
             try
             {
                 status = await HealthCheckHandler.GetStatusAsync(cancellationToken);
-                logger.LogDebug("RefreshInstanceInfo called, returning {status}", status);
+                _logger.LogDebug("RefreshInstanceInfo called, returning {status}", status);
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
-                logger.LogError(exception, "RefreshInstanceInfo HealthCheck handler. App: {Application}, Instance: {Instance} marked DOWN", info.AppName,
+                _logger.LogError(exception, "RefreshInstanceInfo HealthCheck handler. App: {Application}, Instance: {Instance} marked DOWN", info.AppName,
                     info.InstanceId);
 
                 status = InstanceStatus.Down;
@@ -544,7 +536,7 @@ public class DiscoveryClient
     private async Task RegisterDirtyInstanceInfoAsync(InstanceInfo inst, CancellationToken cancellationToken)
     {
         bool regResult = await RegisterAsync(cancellationToken);
-        logger.LogDebug("Register dirty InstanceInfo returned {status}", regResult);
+        _logger.LogDebug("Register dirty InstanceInfo returned {status}", regResult);
 
         if (regResult)
         {
@@ -554,54 +546,44 @@ public class DiscoveryClient
 
     protected async Task InitializeAsync(CancellationToken cancellationToken)
     {
-        Interlocked.Exchange(ref logger, startupLogger);
-
-        localRegionApps = new Applications
+        _localRegionApps = new Applications
         {
-            ReturnUpInstancesOnly = ClientConfiguration.ShouldFilterOnlyUpInstances
+            ReturnUpInstancesOnly = ClientOptions.ShouldFilterOnlyUpInstances
         };
 
-        if (ClientConfiguration is EurekaClientConfiguration eurekaClientConfig && (!eurekaClientConfig.Enabled ||
-            (!ClientConfiguration.ShouldRegisterWithEureka && !ClientConfiguration.ShouldFetchRegistry)))
+        if (!ClientOptions.Enabled || (!ClientOptions.ShouldRegisterWithEureka && !ClientOptions.ShouldFetchRegistry))
         {
             return;
         }
 
-        if (ClientConfiguration.ShouldRegisterWithEureka && AppInfoManager.InstanceInfo != null)
+        if (ClientOptions.ShouldRegisterWithEureka && AppInfoManager.InstanceInfo != null)
         {
             if (!await RegisterAsync(cancellationToken))
             {
-                logger.LogInformation("Initial Registration failed.");
+                _logger.LogInformation("Initial Registration failed.");
             }
 
-            logger.LogInformation("Starting HeartBeat");
+            _logger.LogInformation("Starting HeartBeat");
             int intervalInMilliseconds = AppInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-            heartBeatTimer = StartTimer("HeartBeat", intervalInMilliseconds, HeartBeatTask);
+            HeartBeatTimer = StartTimer("HeartBeat", intervalInMilliseconds, HeartBeatTask);
 
-            if (ClientConfiguration.ShouldOnDemandUpdateStatusChange)
+            if (ClientOptions.ShouldOnDemandUpdateStatusChange)
             {
                 AppInfoManager.StatusChanged += HandleInstanceStatusChanged;
             }
         }
 
-        if (ClientConfiguration.ShouldFetchRegistry)
+        if (ClientOptions.ShouldFetchRegistry)
         {
             await FetchRegistryAsync(true, cancellationToken);
-            int intervalInMilliseconds = ClientConfiguration.RegistryFetchIntervalSeconds * 1000;
+            int intervalInMilliseconds = ClientOptions.RegistryFetchIntervalSeconds * 1000;
             cacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTask);
         }
-
-        Interlocked.Exchange(ref logger, regularLogger);
     }
 
     private bool IsHealthCheckHandlerEnabled()
     {
-        if (ClientConfiguration is EurekaClientConfiguration configuration)
-        {
-            return configuration.HealthCheckEnabled && HealthCheckHandler != null;
-        }
-
-        return HealthCheckHandler != null;
+        return ClientOptions.Health.CheckEnabled && HealthCheckHandler != null;
     }
 
     private void UpdateInstanceRemoteStatus()
@@ -644,12 +626,12 @@ public class DiscoveryClient
 
             if (!result)
             {
-                logger.LogError("HeartBeat failed");
+                _logger.LogError("HeartBeat failed");
             }
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "HeartBeat failed");
+            _logger.LogError(exception, "HeartBeat failed");
         }
     }
 
@@ -668,12 +650,12 @@ public class DiscoveryClient
 
             if (!result)
             {
-                logger.LogError("CacheRefresh failed");
+                _logger.LogError("CacheRefresh failed");
             }
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "CacheRefresh failed");
+            _logger.LogError(exception, "CacheRefresh failed");
         }
     }
 }

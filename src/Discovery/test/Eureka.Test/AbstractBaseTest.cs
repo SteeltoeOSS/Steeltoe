@@ -9,9 +9,9 @@ public abstract class AbstractBaseTest
     protected AbstractBaseTest()
     {
         ApplicationInfoManager.Instance.InstanceInfo = null;
-        ApplicationInfoManager.Instance.InstanceConfig = null;
-        DiscoveryManager.Instance.ClientConfiguration = null;
+        ApplicationInfoManager.Instance.InstanceOptions = null;
+        DiscoveryManager.Instance.ClientOptions = null;
         DiscoveryManager.Instance.Client = null;
-        DiscoveryManager.Instance.InstanceConfig = null;
+        DiscoveryManager.Instance.InstanceOptions = null;
     }
 }

@@ -197,13 +197,13 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
     private IHttpClientBuilder AddEurekaHttpClient(IServiceCollection services)
     {
-        return services.AddHttpClient<EurekaDiscoveryClient>("Eureka", (serviceProvider, client) =>
+        return services.AddHttpClient<EurekaDiscoveryClient>("Eureka", (serviceProvider, httpClient) =>
         {
             var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
-            if (clientOptions.Value.EurekaServerConnectTimeoutSeconds > 0)
+            if (clientOptions.Value.EurekaServer.ConnectTimeoutSeconds > 0)
             {
-                client.Timeout = TimeSpan.FromSeconds(clientOptions.Value.EurekaServerConnectTimeoutSeconds);
+                httpClient.Timeout = TimeSpan.FromSeconds(clientOptions.Value.EurekaServer.ConnectTimeoutSeconds);
             }
         });
     }

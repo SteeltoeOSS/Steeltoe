@@ -11,21 +11,26 @@ public sealed class EurekaDiscoveryManagerTest : AbstractBaseTest
     [Fact]
     public void Constructor_Initializes_Correctly()
     {
-        var instOptions = new EurekaInstanceOptions();
+        var instanceOptions = new EurekaInstanceOptions();
 
         var clientOptions = new EurekaClientOptions
         {
-            EurekaServerRetryCount = 0
+            EurekaServer =
+            {
+                RetryCount = 0
+            }
         };
 
-        var wrapInst = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instOptions);
-        var wrapClient = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
-        var appMgr = new EurekaApplicationInfoManager(wrapInst);
-        var client = new EurekaDiscoveryClient(wrapClient, wrapInst, appMgr);
+        var instanceOptionsMonitor = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instanceOptions);
+        var clientOptionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
 
-        var mgr = new EurekaDiscoveryManager(wrapClient, wrapInst, client);
-        Assert.Equal(instOptions, mgr.InstanceConfig);
-        Assert.Equal(clientOptions, mgr.ClientConfiguration);
-        Assert.Equal(client, mgr.Client);
+        var applicationInfoManager = new EurekaApplicationInfoManager(instanceOptionsMonitor);
+        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, applicationInfoManager);
+
+        var discoveryManager = new EurekaDiscoveryManager(clientOptionsMonitor, instanceOptionsMonitor, discoveryClient);
+
+        Assert.Equal(instanceOptions, discoveryManager.InstanceOptions);
+        Assert.Equal(clientOptions, discoveryManager.ClientOptions);
+        Assert.Equal(discoveryClient, discoveryManager.Client);
     }
 }

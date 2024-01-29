@@ -18,24 +18,17 @@ namespace Steeltoe.Discovery.Eureka.Test.Transport;
 public sealed class EurekaHttpClientTest : AbstractBaseTest
 {
     [Fact]
-    public void Constructor_Throws_IfConfigNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient((EurekaClientConfiguration)null));
-        Assert.Contains("config", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void Constructor_Throws_IfHeadersNull()
     {
         const IDictionary<string, string> headers = null;
-        var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient(new EurekaClientConfiguration(), headers));
+        var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient(new EurekaClientOptions(), headers));
         Assert.Contains("headers", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public void Constructor_Throws_IfServiceUrlBad()
     {
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "foobar\\foobar"
         };
@@ -47,7 +40,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task Register_Throws_IfInstanceInfoNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.RegisterAsync(null, CancellationToken.None));
         Assert.Contains("info", ex.Message, StringComparison.Ordinal);
@@ -56,10 +49,13 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task RegisterAsync_ThrowsHttpRequestException_ServerTimeout()
     {
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://localhost:9999/",
-            EurekaServerRetryCount = 0
+            EurekaServer =
+            {
+                RetryCount = 0
+            }
         };
 
         var client = new EurekaHttpClient(configuration);
@@ -77,10 +73,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
-        var configuration = new EurekaInstanceConfiguration();
+        var configuration = new EurekaInstanceOptions();
         var info = InstanceInfo.FromInstanceConfiguration(configuration);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
@@ -105,14 +101,14 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaInstanceConfiguration
+        var configuration = new EurekaInstanceOptions
         {
             AppName = "foobar"
         };
 
         var info = InstanceInfo.FromInstanceConfiguration(configuration);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
@@ -142,7 +138,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task SendHeartbeat_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
@@ -154,7 +150,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task SendHeartbeat_Throws_IfIdNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
@@ -166,7 +162,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task SendHeartbeat_Throws_IfInstanceInfoNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
@@ -187,7 +183,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaInstanceConfiguration
+        var configuration = new EurekaInstanceOptions
         {
             AppName = "foo",
             InstanceId = "id1"
@@ -195,7 +191,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         var info = InstanceInfo.FromInstanceConfiguration(configuration);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
@@ -210,7 +206,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
         Assert.Equal("/apps/FOO/id1", TestConfigServerStartup.LastRequest.Path.Value);
         long time = DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc));
-        Assert.Equal($"?status=STARTING&lastDirtyTimestamp={time}", TestConfigServerStartup.LastRequest.QueryString.Value);
+        Assert.Equal($"?status=UP&lastDirtyTimestamp={time}", TestConfigServerStartup.LastRequest.QueryString.Value);
     }
 
     [Fact]
@@ -259,7 +255,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
@@ -297,7 +293,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetVipAsync_Throws_IfVipAddressNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetVipAsync(null, CancellationToken.None));
         Assert.Contains("vipAddress", ex.Message, StringComparison.Ordinal);
@@ -306,7 +302,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetSecureVipAsync_Throws_IfVipAddressNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetSecureVipAsync(null, CancellationToken.None));
         Assert.Contains("secureVipAddress", ex.Message, StringComparison.Ordinal);
@@ -315,7 +311,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetApplicationAsync_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetApplicationAsync(null, CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
@@ -363,7 +359,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
@@ -438,7 +434,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = $"https://bad.host:9999/,{uri}"
         };
@@ -473,7 +469,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstanceAsync_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync(null, "id", CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
@@ -482,7 +478,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstanceAsync_Throws_IfAppNameNotNullAndIDNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync("appName", null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
@@ -491,7 +487,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstanceAsync_Throws_IfIDNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync(null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
@@ -541,7 +537,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
@@ -609,7 +605,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = $"https://bad.host:9999/,{uri}"
         };
@@ -635,7 +631,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task CancelAsync_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.CancelAsync(null, "id", CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
@@ -644,7 +640,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task CancelAsync_Throws_IfAppNameNotNullAndIDNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.CancelAsync("appName", null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
@@ -662,7 +658,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
@@ -682,7 +678,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task StatusUpdateAsync_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
@@ -694,7 +690,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task StatusUpdateAsync_Throws_IfIdNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
@@ -706,7 +702,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task StatusUpdateAsync_Throws_IfInstanceInfoNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
@@ -727,7 +723,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
@@ -755,7 +751,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task DeleteStatusOverrideAsync_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DeleteStatusOverrideAsync(null, "id", null, CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
@@ -764,7 +760,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task DeleteStatusOverrideAsync_Throws_IfIdNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
@@ -776,7 +772,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task DeleteStatusOverrideAsync_Throws_IfInstanceInfoNull()
     {
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         var client = new EurekaHttpClient(configuration);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
@@ -797,7 +793,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
@@ -851,7 +847,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
             { "foo", "bar" }
         };
 
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://boo:123/eureka/"
         };
@@ -866,7 +862,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetRequestMessage_No_Auth_When_Credentials_Not_In_Url()
     {
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://boo:123/eureka/"
         };
@@ -882,7 +878,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         var clientOptions = new EurekaClientOptions
         {
-            ServiceUrl = "http://boo:123/eureka/"
+            EurekaServerServiceUrls = "http://boo:123/eureka/"
         };
 
         var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
@@ -898,7 +894,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetRequestMessage_Adds_Auth_When_Credentials_In_Url()
     {
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/"
         };
@@ -914,7 +910,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         var clientOptions = new EurekaClientOptions
         {
-            ServiceUrl = "http://user:pass@boo:123/eureka/"
+            EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/"
         };
 
         var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
@@ -930,7 +926,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetRequestMessage_Adds_Auth_When_JustPassword_In_Url()
     {
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://:pass@boo:123/eureka/"
         };
@@ -946,7 +942,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         var clientOptions = new EurekaClientOptions
         {
-            ServiceUrl = "http://:pass@boo:123/eureka/"
+            EurekaServerServiceUrls = "http://:pass@boo:123/eureka/"
         };
 
         var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
@@ -962,7 +958,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public void GetRequestUri_ReturnsCorrect_WithQueryArguments()
     {
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://boo:123/eureka/"
         };
@@ -983,7 +979,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public void GetServiceUrlCandidates_NoFailingUrls_ReturnsExpected()
     {
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
         };
@@ -997,7 +993,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public void GetServiceUrlCandidates_WithFailingUrls_ReturnsExpected()
     {
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             EurekaServerServiceUrls =
                 "https://user:pass@boo:123/eureka/,https://user:pass@foo:123/eureka,https://user:pass@blah:123/eureka,https://user:pass@blah.blah:123/eureka"
@@ -1016,7 +1012,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public void GetServiceUrlCandidates_ThresholdHit_ReturnsExpected()
     {
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
         };
