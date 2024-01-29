@@ -19,7 +19,7 @@ internal sealed class ThisServiceInstance : IServiceInstance
     public string ServiceId => Options.AppName;
     public string Host => Options.ResolveHostName(false);
     public int Port => GetPort();
-    public bool IsSecure => Options.SecurePortEnabled;
+    public bool IsSecure => Options.IsSecurePortEnabled;
     public Uri Uri => GetUri();
     public IDictionary<string, string> Metadata => Options.MetadataMap;
 
@@ -40,9 +40,9 @@ internal sealed class ThisServiceInstance : IServiceInstance
     {
         if (IsSecure)
         {
-            return Options.SecurePort == -1 ? EurekaInstanceConfiguration.DefaultSecurePort : Options.SecurePort;
+            return Options.SecurePort == -1 ? EurekaInstanceOptions.DefaultSecurePort : Options.SecurePort;
         }
 
-        return Options.NonSecurePort == -1 ? EurekaInstanceConfiguration.DefaultNonSecurePort : Options.NonSecurePort;
+        return Options.NonSecurePort == -1 ? EurekaInstanceOptions.DefaultNonSecurePort : Options.NonSecurePort;
     }
 }

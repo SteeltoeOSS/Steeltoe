@@ -42,12 +42,12 @@ public sealed class EurekaClientServiceTest
         IConfigurationRoot configurationRoot = builder.Build();
 
         EurekaClientOptions options = EurekaClientService.ConfigureClientOptions(configurationRoot);
-        EurekaClientService.LookupClient lookupClient = EurekaClientService.GetLookupClient(options, null);
+        EurekaClientService.LookupClient lookupClient = EurekaClientService.GetLookupClient(options, NullLoggerFactory.Instance);
         Assert.NotNull(lookupClient);
-        Assert.NotNull(lookupClient.ClientConfiguration);
-        Assert.Equal("https://foo.bar:8761/eureka/", lookupClient.ClientConfiguration.EurekaServerServiceUrls);
-        Assert.True(lookupClient.ClientConfiguration.ShouldFetchRegistry);
-        Assert.False(lookupClient.ClientConfiguration.ShouldRegisterWithEureka);
+        Assert.NotNull(lookupClient.ClientOptions);
+        Assert.Equal("https://foo.bar:8761/eureka/", lookupClient.ClientOptions.EurekaServerServiceUrls);
+        Assert.True(lookupClient.ClientOptions.ShouldFetchRegistry);
+        Assert.False(lookupClient.ClientOptions.ShouldRegisterWithEureka);
         Assert.Null(lookupClient.HeartBeatTimer);
         Assert.Null(lookupClient.CacheRefreshTimer);
         Assert.NotNull(lookupClient.HttpClient);

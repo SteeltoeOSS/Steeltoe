@@ -14,13 +14,16 @@ public sealed class EurekaApplicationHealthContributorTest
     public void GetApplicationsFromConfig_ReturnsExpected()
     {
         var contrib = new EurekaApplicationsHealthContributor();
-        var configuration = new EurekaClientConfiguration();
+        var configuration = new EurekaClientOptions();
         IList<string> apps = contrib.GetApplicationsFromConfig(configuration);
         Assert.Null(apps);
 
-        configuration = new EurekaClientConfiguration
+        configuration = new EurekaClientOptions
         {
-            HealthMonitoredApps = "foo,bar, boo "
+            Health =
+            {
+                MonitoredApps = "foo,bar, boo "
+            }
         };
 
         apps = contrib.GetApplicationsFromConfig(configuration);

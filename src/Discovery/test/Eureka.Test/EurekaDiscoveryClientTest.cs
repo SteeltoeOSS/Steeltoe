@@ -26,8 +26,8 @@ public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
         var appMgr = new EurekaApplicationInfoManager(instanceWrapper);
         var client = new EurekaDiscoveryClient(clientWrapper, instanceWrapper, appMgr);
 
-        Assert.NotNull(client.ClientConfiguration);
-        Assert.Equal(clientConfig, client.ClientConfiguration);
+        Assert.NotNull(client.ClientOptions);
+        Assert.Equal(clientConfig, client.ClientOptions);
         Assert.NotNull(client.HttpClient);
         Assert.NotNull(client.Description);
 
@@ -38,13 +38,13 @@ public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
         IServiceInstance thisService = client.GetLocalServiceInstance();
         Assert.NotNull(thisService);
         Assert.Equal(instanceConfig.ResolveHostName(false), thisService.Host);
-        Assert.Equal(instanceConfig.SecurePortEnabled, thisService.IsSecure);
+        Assert.Equal(instanceConfig.IsSecurePortEnabled, thisService.IsSecure);
         Assert.NotNull(thisService.Metadata);
         Assert.Equal(instanceConfig.NonSecurePort, thisService.Port);
         Assert.Equal(instanceConfig.AppName, thisService.ServiceId);
         Assert.NotNull(thisService.Uri);
-        string scheme = instanceConfig.SecurePortEnabled ? "https" : "http";
-        int uriPort = instanceConfig.SecurePortEnabled ? instanceConfig.SecurePort : instanceConfig.NonSecurePort;
+        string scheme = instanceConfig.IsSecurePortEnabled ? "https" : "http";
+        int uriPort = instanceConfig.IsSecurePortEnabled ? instanceConfig.SecurePort : instanceConfig.NonSecurePort;
         var uri = new Uri($"{scheme}://{instanceConfig.ResolveHostName(false)}:{uriPort}");
         Assert.Equal(uri, thisService.Uri);
     }

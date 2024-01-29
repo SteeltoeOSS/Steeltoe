@@ -81,7 +81,7 @@ public sealed class EurekaServerHealthContributorTest
 
         results = new HealthCheckResult();
 
-        var configuration = new EurekaClientConfiguration
+        var configuration = new EurekaClientOptions
         {
             ShouldFetchRegistry = true
         };
@@ -119,12 +119,12 @@ public sealed class EurekaServerHealthContributorTest
 
         results = new HealthCheckResult();
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientConfig = new EurekaClientOptions
         {
             ShouldRegisterWithEureka = true
         };
 
-        var instanceConfig = new EurekaInstanceConfiguration();
+        var instanceConfig = new EurekaInstanceOptions();
 
         contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, 0);
         Assert.Contains("heartbeat", results.Details.Keys);

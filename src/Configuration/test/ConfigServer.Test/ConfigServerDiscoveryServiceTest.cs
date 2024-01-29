@@ -127,7 +127,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientSettings(), NullLoggerFactory.Instance);
         Assert.IsType<EurekaDiscoveryClient>(service.DiscoveryClient);
 
-        // replace the bootstrapped eureka client with a test client
+        // replace the bootstrapped Eureka client with a test client
         await service.ProvideRuntimeReplacementsAsync(testDiscoveryClient, CancellationToken.None);
         service.DiscoveryClient.Should().Be(testDiscoveryClient);
     }
@@ -147,7 +147,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientSettings(), NullLoggerFactory.Instance);
         var originalClient = (TestDiscoveryClient)service.DiscoveryClient;
 
-        // replace the bootstrapped eureka client with a test client
+        // replace the bootstrapped Eureka client with a test client
         await service.ProvideRuntimeReplacementsAsync(replacementDiscoveryClient, CancellationToken.None);
 
         Assert.True(originalClient.HasShutdown, "ShutdownAsync() called on original discovery client.");
@@ -167,7 +167,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientSettings(), NullLoggerFactory.Instance);
         var originalClient = (TestDiscoveryClient)service.DiscoveryClient;
 
-        // replace the bootstrapped eureka client with a test client
+        // replace the bootstrapped Eureka client with a test client
         await service.ShutdownAsync(CancellationToken.None);
 
         Assert.True(originalClient.HasShutdown, "ShutdownAsync() called on original discovery client.");

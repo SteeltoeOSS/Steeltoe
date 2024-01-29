@@ -11,28 +11,44 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public sealed class EurekaClientOptionsTest : AbstractBaseTest
 {
     [Fact]
+    public void DefaultConstructor_InitializedWithDefaults()
+    {
+        var options = new EurekaClientOptions();
+
+        Assert.Equal(EurekaClientOptions.DefaultRegistryFetchIntervalSeconds, options.RegistryFetchIntervalSeconds);
+        Assert.True(options.EurekaServer.ShouldGZipContent);
+        Assert.Equal(EurekaServerConfiguration.DefaultConnectTimeoutSeconds, options.EurekaServer.ConnectTimeoutSeconds);
+        Assert.True(options.ShouldRegisterWithEureka);
+        Assert.False(options.ShouldDisableDelta);
+        Assert.True(options.ShouldFilterOnlyUpInstances);
+        Assert.True(options.ShouldFetchRegistry);
+        Assert.True(options.ShouldOnDemandUpdateStatusChange);
+    }
+
+    [Fact]
     public void Constructor_Initializes_Defaults()
     {
-        var opts = new EurekaClientOptions();
-        Assert.True(opts.Enabled);
-        Assert.Equal(EurekaClientConfiguration.DefaultRegistryFetchIntervalSeconds, opts.RegistryFetchIntervalSeconds);
-        Assert.Null(opts.ProxyHost);
-        Assert.Equal(0, opts.ProxyPort);
-        Assert.Null(opts.ProxyUserName);
-        Assert.Null(opts.ProxyPassword);
-        Assert.True(opts.ShouldGZipContent);
-        Assert.Equal(EurekaClientConfiguration.DefaultEurekaServerConnectTimeoutSeconds, opts.EurekaServerConnectTimeoutSeconds);
-        Assert.True(opts.ShouldRegisterWithEureka);
-        Assert.False(opts.ShouldDisableDelta);
-        Assert.True(opts.ShouldFilterOnlyUpInstances);
-        Assert.True(opts.ShouldFetchRegistry);
-        Assert.Null(opts.RegistryRefreshSingleVipAddress);
-        Assert.True(opts.ShouldOnDemandUpdateStatusChange);
-        Assert.Equal(EurekaClientConfiguration.DefaultServerServiceUrl, opts.EurekaServerServiceUrls);
-        Assert.NotNull(opts.Health);
-        Assert.True(opts.Health.Enabled); // Health contrib enabled
-        Assert.True(opts.Health.CheckEnabled); // Health check enabled
-        Assert.Null(opts.Health.MonitoredApps);
+        var options = new EurekaClientOptions();
+
+        Assert.True(options.Enabled);
+        Assert.Equal(EurekaClientOptions.DefaultRegistryFetchIntervalSeconds, options.RegistryFetchIntervalSeconds);
+        Assert.Null(options.EurekaServer.ProxyHost);
+        Assert.Equal(0, options.EurekaServer.ProxyPort);
+        Assert.Null(options.EurekaServer.ProxyUserName);
+        Assert.Null(options.EurekaServer.ProxyPassword);
+        Assert.True(options.EurekaServer.ShouldGZipContent);
+        Assert.Equal(EurekaServerConfiguration.DefaultConnectTimeoutSeconds, options.EurekaServer.ConnectTimeoutSeconds);
+        Assert.True(options.ShouldRegisterWithEureka);
+        Assert.False(options.ShouldDisableDelta);
+        Assert.True(options.ShouldFilterOnlyUpInstances);
+        Assert.True(options.ShouldFetchRegistry);
+        Assert.Null(options.RegistryRefreshSingleVipAddress);
+        Assert.True(options.ShouldOnDemandUpdateStatusChange);
+        Assert.Equal(EurekaClientOptions.DefaultServerServiceUrl, options.EurekaServerServiceUrls);
+        Assert.NotNull(options.Health);
+        Assert.True(options.Health.Enabled); // Health contrib enabled
+        Assert.True(options.Health.CheckEnabled); // Health check enabled
+        Assert.Null(options.Health.MonitoredApps);
     }
 
     [Fact]
@@ -104,26 +120,26 @@ public sealed class EurekaClientOptionsTest : AbstractBaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
-        var co = new EurekaClientOptions();
-        clientSection.Bind(co);
+        var options = new EurekaClientOptions();
+        clientSection.Bind(options);
 
-        Assert.Equal("proxyHost", co.ProxyHost);
-        Assert.Equal(100, co.ProxyPort);
-        Assert.Equal("proxyPassword", co.ProxyPassword);
-        Assert.Equal("proxyUserName", co.ProxyUserName);
-        Assert.Equal(100, co.EurekaServerConnectTimeoutSeconds);
-        Assert.Equal("https://foo.bar:8761/eureka/", co.EurekaServerServiceUrls);
-        Assert.Equal(100, co.RegistryFetchIntervalSeconds);
-        Assert.Equal("registryRefreshSingleVipAddress", co.RegistryRefreshSingleVipAddress);
-        Assert.True(co.ShouldDisableDelta);
-        Assert.True(co.ShouldFetchRegistry);
-        Assert.True(co.ShouldFilterOnlyUpInstances);
-        Assert.True(co.ShouldGZipContent);
-        Assert.True(co.ShouldOnDemandUpdateStatusChange);
-        Assert.True(co.ShouldRegisterWithEureka);
-        Assert.NotNull(co.Health);
-        Assert.True(co.Health.Enabled); // Health contrib enabled
-        Assert.True(co.Health.CheckEnabled); // Health check enabled
-        Assert.Null(co.Health.MonitoredApps);
+        Assert.Equal("proxyHost", options.EurekaServer.ProxyHost);
+        Assert.Equal(100, options.EurekaServer.ProxyPort);
+        Assert.Equal("proxyPassword", options.EurekaServer.ProxyPassword);
+        Assert.Equal("proxyUserName", options.EurekaServer.ProxyUserName);
+        Assert.Equal(100, options.EurekaServer.ConnectTimeoutSeconds);
+        Assert.Equal("https://foo.bar:8761/eureka/", options.EurekaServerServiceUrls);
+        Assert.Equal(100, options.RegistryFetchIntervalSeconds);
+        Assert.Equal("registryRefreshSingleVipAddress", options.RegistryRefreshSingleVipAddress);
+        Assert.True(options.ShouldDisableDelta);
+        Assert.True(options.ShouldFetchRegistry);
+        Assert.True(options.ShouldFilterOnlyUpInstances);
+        Assert.True(options.EurekaServer.ShouldGZipContent);
+        Assert.True(options.ShouldOnDemandUpdateStatusChange);
+        Assert.True(options.ShouldRegisterWithEureka);
+        Assert.NotNull(options.Health);
+        Assert.True(options.Health.Enabled); // Health contrib enabled
+        Assert.True(options.Health.CheckEnabled); // Health check enabled
+        Assert.Null(options.Health.MonitoredApps);
     }
 }

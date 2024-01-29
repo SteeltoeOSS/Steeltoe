@@ -50,7 +50,7 @@ public class LeaseInfo
         return info;
     }
 
-    internal static LeaseInfo FromConfig(EurekaInstanceConfiguration configuration)
+    internal static LeaseInfo FromConfig(EurekaInstanceOptions configuration)
     {
         var info = new LeaseInfo
         {

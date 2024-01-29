@@ -14,6 +14,6 @@ public sealed class EurekaApplicationInfoManagerTest : AbstractBaseTest
         var instOptions = new EurekaInstanceOptions();
         var wrap = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instOptions);
         var mgr = new EurekaApplicationInfoManager(wrap);
-        Assert.Equal(instOptions, mgr.InstanceConfig);
+        Assert.Equal(instOptions, mgr.InstanceOptions);
     }
 }

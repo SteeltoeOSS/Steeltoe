@@ -2,27 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 
 namespace Steeltoe.Discovery.Eureka;
 
 public class EurekaDiscoveryManager : DiscoveryManager
 {
-    private readonly IOptionsMonitor<EurekaClientOptions> _clientConfig;
-    private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
+    private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
+    private readonly IOptionsMonitor<EurekaInstanceOptions> _instanceOptionsMonitor;
 
-    public override EurekaClientConfiguration ClientConfiguration => _clientConfig.CurrentValue;
-
-    public override EurekaInstanceConfiguration InstanceConfig => _instConfig.CurrentValue;
+    public override EurekaClientOptions ClientOptions => _clientOptionsMonitor.CurrentValue;
+    public override EurekaInstanceOptions InstanceOptions => _instanceOptionsMonitor.CurrentValue;
 
     // Constructor used via Dependency Injection
-    public EurekaDiscoveryManager(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
-        EurekaDiscoveryClient client, ILoggerFactory loggerFactory = null)
+    public EurekaDiscoveryManager(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
+        EurekaDiscoveryClient client)
     {
-        logger = loggerFactory?.CreateLogger<DiscoveryManager>();
-        _clientConfig = clientConfig;
-        _instConfig = instConfig;
+        ArgumentGuard.NotNull(instanceOptionsMonitor);
+        ArgumentGuard.NotNull(clientOptionsMonitor);
+
+        _clientOptionsMonitor = clientOptionsMonitor;
+        _instanceOptionsMonitor = instanceOptionsMonitor;
         Client = client;
     }
 }

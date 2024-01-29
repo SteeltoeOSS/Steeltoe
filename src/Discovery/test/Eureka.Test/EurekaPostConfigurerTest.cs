@@ -30,14 +30,14 @@ public sealed class EurekaPostConfigurerTest
 
         IConfigurationRoot root = builder.Build();
 
-        var instOpts = new EurekaInstanceOptions();
-        EurekaPostConfigurer.UpdateConfiguration(root, instOpts, new ApplicationInstanceInfo(root));
+        var instanceOptions = new EurekaInstanceOptions();
+        EurekaPostConfigurer.UpdateConfiguration(root, instanceOptions, new ApplicationInstanceInfo(root));
 
-        Assert.Equal("bar", instOpts.AppName);
-        Assert.Equal("instance", instOpts.InstanceId);
-        Assert.Equal("registrationMethod", instOpts.RegistrationMethod);
-        Assert.Equal("bar", instOpts.VirtualHostName);
-        Assert.Equal("bar", instOpts.SecureVirtualHostName);
+        Assert.Equal("bar", instanceOptions.AppName);
+        Assert.Equal("instance", instanceOptions.InstanceId);
+        Assert.Equal("registrationMethod", instanceOptions.RegistrationMethod);
+        Assert.Equal("bar", instanceOptions.VirtualHostName);
+        Assert.Equal("bar", instanceOptions.SecureVirtualHostName);
     }
 
     [Fact]
@@ -54,20 +54,20 @@ public sealed class EurekaPostConfigurerTest
 
         IConfigurationRoot root = builder.Build();
 
-        var instOpts = new EurekaInstanceOptions
+        var instanceOptions = new EurekaInstanceOptions
         {
             AppName = "doNotChange",
             InstanceId = "doNotChange",
             RegistrationMethod = "doNotChange"
         };
 
-        EurekaPostConfigurer.UpdateConfiguration(root, instOpts, null);
+        EurekaPostConfigurer.UpdateConfiguration(root, instanceOptions, null);
 
-        Assert.Equal("doNotChange", instOpts.AppName);
-        Assert.Equal("doNotChange", instOpts.InstanceId);
-        Assert.Equal("doNotChange", instOpts.RegistrationMethod);
-        Assert.Equal("doNotChange", instOpts.VirtualHostName);
-        Assert.Equal("doNotChange", instOpts.SecureVirtualHostName);
+        Assert.Equal("doNotChange", instanceOptions.AppName);
+        Assert.Equal("doNotChange", instanceOptions.InstanceId);
+        Assert.Equal("doNotChange", instanceOptions.RegistrationMethod);
+        Assert.Equal("doNotChange", instanceOptions.VirtualHostName);
+        Assert.Equal("doNotChange", instanceOptions.SecureVirtualHostName);
     }
 
     [Fact]
@@ -83,15 +83,15 @@ public sealed class EurekaPostConfigurerTest
 
         IConfigurationRoot root = builder.Build();
 
-        var instOpts = new EurekaInstanceOptions();
+        var instanceOptions = new EurekaInstanceOptions();
 
-        EurekaPostConfigurer.UpdateConfiguration(root, instOpts, new ApplicationInstanceInfo(root));
+        EurekaPostConfigurer.UpdateConfiguration(root, instanceOptions, new ApplicationInstanceInfo(root));
 
-        Assert.Equal("bar", instOpts.AppName);
-        Assert.EndsWith("bar:80", instOpts.InstanceId, StringComparison.OrdinalIgnoreCase);
-        Assert.Equal("registrationMethod", instOpts.RegistrationMethod);
-        Assert.Equal("bar", instOpts.VirtualHostName);
-        Assert.Equal("bar", instOpts.SecureVirtualHostName);
+        Assert.Equal("bar", instanceOptions.AppName);
+        Assert.EndsWith("bar:80", instanceOptions.InstanceId, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal("registrationMethod", instanceOptions.RegistrationMethod);
+        Assert.Equal("bar", instanceOptions.VirtualHostName);
+        Assert.Equal("bar", instanceOptions.SecureVirtualHostName);
     }
 
     [Fact]
@@ -107,20 +107,20 @@ public sealed class EurekaPostConfigurerTest
 
         IConfigurationRoot root = builder.Build();
 
-        var instOpts = new EurekaInstanceOptions
+        var instanceOptions = new EurekaInstanceOptions
         {
             AppName = "doNotChange",
             InstanceId = "doNotChange",
             RegistrationMethod = "doNotChange"
         };
 
-        EurekaPostConfigurer.UpdateConfiguration(root, instOpts, null);
+        EurekaPostConfigurer.UpdateConfiguration(root, instanceOptions, null);
 
-        Assert.Equal("doNotChange", instOpts.AppName);
-        Assert.Equal("doNotChange", instOpts.InstanceId);
-        Assert.Equal("doNotChange", instOpts.RegistrationMethod);
-        Assert.Equal("doNotChange", instOpts.VirtualHostName);
-        Assert.Equal("doNotChange", instOpts.SecureVirtualHostName);
+        Assert.Equal("doNotChange", instanceOptions.AppName);
+        Assert.Equal("doNotChange", instanceOptions.InstanceId);
+        Assert.Equal("doNotChange", instanceOptions.RegistrationMethod);
+        Assert.Equal("doNotChange", instanceOptions.VirtualHostName);
+        Assert.Equal("doNotChange", instanceOptions.SecureVirtualHostName);
     }
 
     [Fact]
@@ -187,61 +187,58 @@ public sealed class EurekaPostConfigurerTest
         configurationBuilder.AddJsonFile(Path.GetFileName(path));
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        var clientOpts = new EurekaClientOptions();
+        var clientOptions = new EurekaClientOptions();
         IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
-        clientSection.Bind(clientOpts);
+        clientSection.Bind(clientOptions);
 
-        EurekaPostConfigurer.UpdateConfiguration(null, clientOpts);
+        EurekaPostConfigurer.UpdateConfiguration(null, clientOptions);
 
-        EurekaClientOptions co = clientOpts;
-        Assert.NotNull(co);
-        Assert.Equal("proxyHost", co.ProxyHost);
-        Assert.Equal(100, co.ProxyPort);
-        Assert.Equal("proxyPassword", co.ProxyPassword);
-        Assert.Equal("proxyUserName", co.ProxyUserName);
-        Assert.Equal(100, co.EurekaServerConnectTimeoutSeconds);
-        Assert.Equal("http://localhost:8761/eureka/", co.EurekaServerServiceUrls);
-        Assert.Equal(100, co.RegistryFetchIntervalSeconds);
-        Assert.Equal("registryRefreshSingleVipAddress", co.RegistryRefreshSingleVipAddress);
-        Assert.True(co.ShouldDisableDelta);
-        Assert.True(co.ShouldFetchRegistry);
-        Assert.True(co.ShouldFilterOnlyUpInstances);
-        Assert.True(co.ShouldGZipContent);
-        Assert.True(co.ShouldOnDemandUpdateStatusChange);
-        Assert.True(co.ShouldRegisterWithEureka);
+        Assert.NotNull(clientOptions);
+        Assert.Equal("proxyHost", clientOptions.EurekaServer.ProxyHost);
+        Assert.Equal(100, clientOptions.EurekaServer.ProxyPort);
+        Assert.Equal("proxyPassword", clientOptions.EurekaServer.ProxyPassword);
+        Assert.Equal("proxyUserName", clientOptions.EurekaServer.ProxyUserName);
+        Assert.Equal(100, clientOptions.EurekaServer.ConnectTimeoutSeconds);
+        Assert.Equal("http://localhost:8761/eureka/", clientOptions.EurekaServerServiceUrls);
+        Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
+        Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
+        Assert.True(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.ShouldFetchRegistry);
+        Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
+        Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
+        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
+        Assert.True(clientOptions.ShouldRegisterWithEureka);
 
-        var instOpts = new EurekaInstanceOptions();
-        IConfigurationSection instSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
-        instSection.Bind(instOpts);
+        var instanceOptions = new EurekaInstanceOptions();
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        instanceSection.Bind(instanceOptions);
 
-        EurekaPostConfigurer.UpdateConfiguration(configurationRoot, null, instOpts, null);
+        EurekaPostConfigurer.UpdateConfiguration(configurationRoot, null, instanceOptions, null);
 
-        EurekaInstanceOptions ro = instOpts;
+        Assert.Equal("instanceId", instanceOptions.InstanceId);
+        Assert.Equal("appName", instanceOptions.AppName);
+        Assert.Equal("appGroup", instanceOptions.AppGroupName);
+        Assert.True(instanceOptions.IsInstanceEnabledOnInit);
+        Assert.Equal(100, instanceOptions.NonSecurePort);
+        Assert.Equal("hostname", instanceOptions.HostName);
+        Assert.Equal(100, instanceOptions.SecurePort);
+        Assert.True(instanceOptions.IsNonSecurePortEnabled);
+        Assert.True(instanceOptions.IsSecurePortEnabled);
+        Assert.Equal(100, instanceOptions.LeaseExpirationDurationInSeconds);
+        Assert.Equal(100, instanceOptions.LeaseRenewalIntervalInSeconds);
+        Assert.Equal("secureVipAddress", instanceOptions.SecureVirtualHostName);
+        Assert.Equal("vipAddress", instanceOptions.VirtualHostName);
+        Assert.Equal("asgName", instanceOptions.AsgName);
 
-        Assert.Equal("instanceId", ro.InstanceId);
-        Assert.Equal("appName", ro.AppName);
-        Assert.Equal("appGroup", ro.AppGroupName);
-        Assert.True(ro.IsInstanceEnabledOnInit);
-        Assert.Equal(100, ro.NonSecurePort);
-        Assert.Equal("hostname", ro.HostName);
-        Assert.Equal(100, ro.SecurePort);
-        Assert.True(ro.IsNonSecurePortEnabled);
-        Assert.True(ro.SecurePortEnabled);
-        Assert.Equal(100, ro.LeaseExpirationDurationInSeconds);
-        Assert.Equal(100, ro.LeaseRenewalIntervalInSeconds);
-        Assert.Equal("secureVipAddress", ro.SecureVirtualHostName);
-        Assert.Equal("vipAddress", ro.VirtualHostName);
-        Assert.Equal("asgName", ro.AsgName);
+        Assert.Equal("statusPageUrlPath", instanceOptions.StatusPageUrlPath);
+        Assert.Equal("statusPageUrl", instanceOptions.StatusPageUrl);
+        Assert.Equal("homePageUrlPath", instanceOptions.HomePageUrlPath);
+        Assert.Equal("homePageUrl", instanceOptions.HomePageUrl);
+        Assert.Equal("healthCheckUrlPath", instanceOptions.HealthCheckUrlPath);
+        Assert.Equal("healthCheckUrl", instanceOptions.HealthCheckUrl);
+        Assert.Equal("secureHealthCheckUrl", instanceOptions.SecureHealthCheckUrl);
 
-        Assert.Equal("statusPageUrlPath", ro.StatusPageUrlPath);
-        Assert.Equal("statusPageUrl", ro.StatusPageUrl);
-        Assert.Equal("homePageUrlPath", ro.HomePageUrlPath);
-        Assert.Equal("homePageUrl", ro.HomePageUrl);
-        Assert.Equal("healthCheckUrlPath", ro.HealthCheckUrlPath);
-        Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
-        Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
-
-        IDictionary<string, string> map = ro.MetadataMap;
+        IDictionary<string, string> map = instanceOptions.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(2, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -254,7 +251,7 @@ public sealed class EurekaPostConfigurerTest
         using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
 
         var exception = Assert.Throws<InvalidOperationException>(() => EurekaPostConfigurer.UpdateConfiguration(null, new EurekaClientOptions()));
-        Assert.Contains(EurekaClientConfiguration.DefaultServerServiceUrl, exception.Message, StringComparison.Ordinal);
+        Assert.Contains(EurekaClientOptions.DefaultServerServiceUrl, exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -407,65 +404,62 @@ public sealed class EurekaPostConfigurerTest
         Assert.Single(sis);
         EurekaServiceInfo si = sis.First();
 
-        var clientOpts = new EurekaClientOptions();
+        var clientOptions = new EurekaClientOptions();
         IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
-        clientSection.Bind(clientOpts);
+        clientSection.Bind(clientOptions);
 
-        EurekaPostConfigurer.UpdateConfiguration(si, clientOpts);
+        EurekaPostConfigurer.UpdateConfiguration(si, clientOptions);
 
-        EurekaClientOptions co = clientOpts;
-        Assert.NotNull(co);
-        Assert.Equal("proxyHost", co.ProxyHost);
-        Assert.Equal(100, co.ProxyPort);
-        Assert.Equal("proxyPassword", co.ProxyPassword);
-        Assert.Equal("proxyUserName", co.ProxyUserName);
-        Assert.Equal(100, co.EurekaServerConnectTimeoutSeconds);
-        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", co.EurekaServerServiceUrls);
-        Assert.Equal(100, co.RegistryFetchIntervalSeconds);
-        Assert.Equal("registryRefreshSingleVipAddress", co.RegistryRefreshSingleVipAddress);
-        Assert.True(co.ShouldDisableDelta);
-        Assert.True(co.ShouldFetchRegistry);
-        Assert.True(co.ShouldFilterOnlyUpInstances);
-        Assert.True(co.ShouldGZipContent);
-        Assert.True(co.ShouldOnDemandUpdateStatusChange);
-        Assert.True(co.ShouldRegisterWithEureka);
-        Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", co.AccessTokenUri);
-        Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", co.ClientId);
-        Assert.Equal("dCsdoiuklicS", co.ClientSecret);
+        Assert.NotNull(clientOptions);
+        Assert.Equal("proxyHost", clientOptions.EurekaServer.ProxyHost);
+        Assert.Equal(100, clientOptions.EurekaServer.ProxyPort);
+        Assert.Equal("proxyPassword", clientOptions.EurekaServer.ProxyPassword);
+        Assert.Equal("proxyUserName", clientOptions.EurekaServer.ProxyUserName);
+        Assert.Equal(100, clientOptions.EurekaServer.ConnectTimeoutSeconds);
+        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
+        Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
+        Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
+        Assert.True(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.ShouldFetchRegistry);
+        Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
+        Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
+        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
+        Assert.True(clientOptions.ShouldRegisterWithEureka);
+        Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", clientOptions.AccessTokenUri);
+        Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", clientOptions.ClientId);
+        Assert.Equal("dCsdoiuklicS", clientOptions.ClientSecret);
 
-        var instOpts = new EurekaInstanceOptions();
-        IConfigurationSection instSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
-        instSection.Bind(instOpts);
+        var instanceOptions = new EurekaInstanceOptions();
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        instanceSection.Bind(instanceOptions);
 
-        EurekaPostConfigurer.UpdateConfiguration(configurationRoot, si, instOpts, si.ApplicationInfo);
+        EurekaPostConfigurer.UpdateConfiguration(configurationRoot, si, instanceOptions, si.ApplicationInfo);
 
-        EurekaInstanceOptions ro = instOpts;
+        Assert.Equal("hostname", instanceOptions.RegistrationMethod);
+        Assert.Equal("myhostname:instance_id", instanceOptions.InstanceId);
+        Assert.Equal("foo", instanceOptions.AppName);
+        Assert.Equal("appGroup", instanceOptions.AppGroupName);
+        Assert.True(instanceOptions.IsInstanceEnabledOnInit);
+        Assert.Equal(100, instanceOptions.NonSecurePort);
+        Assert.Equal("myhostname", instanceOptions.HostName);
+        Assert.Equal(100, instanceOptions.SecurePort);
+        Assert.True(instanceOptions.IsNonSecurePortEnabled);
+        Assert.True(instanceOptions.IsSecurePortEnabled);
+        Assert.Equal(100, instanceOptions.LeaseExpirationDurationInSeconds);
+        Assert.Equal(100, instanceOptions.LeaseRenewalIntervalInSeconds);
+        Assert.Equal("secureVipAddress", instanceOptions.SecureVirtualHostName);
+        Assert.Equal("vipAddress", instanceOptions.VirtualHostName);
+        Assert.Equal("asgName", instanceOptions.AsgName);
 
-        Assert.Equal("hostname", ro.RegistrationMethod);
-        Assert.Equal("myhostname:instance_id", ro.InstanceId);
-        Assert.Equal("foo", ro.AppName);
-        Assert.Equal("appGroup", ro.AppGroupName);
-        Assert.True(ro.IsInstanceEnabledOnInit);
-        Assert.Equal(100, ro.NonSecurePort);
-        Assert.Equal("myhostname", ro.HostName);
-        Assert.Equal(100, ro.SecurePort);
-        Assert.True(ro.IsNonSecurePortEnabled);
-        Assert.True(ro.SecurePortEnabled);
-        Assert.Equal(100, ro.LeaseExpirationDurationInSeconds);
-        Assert.Equal(100, ro.LeaseRenewalIntervalInSeconds);
-        Assert.Equal("secureVipAddress", ro.SecureVirtualHostName);
-        Assert.Equal("vipAddress", ro.VirtualHostName);
-        Assert.Equal("asgName", ro.AsgName);
+        Assert.Equal("statusPageUrlPath", instanceOptions.StatusPageUrlPath);
+        Assert.Equal("statusPageUrl", instanceOptions.StatusPageUrl);
+        Assert.Equal("homePageUrlPath", instanceOptions.HomePageUrlPath);
+        Assert.Equal("homePageUrl", instanceOptions.HomePageUrl);
+        Assert.Equal("healthCheckUrlPath", instanceOptions.HealthCheckUrlPath);
+        Assert.Equal("healthCheckUrl", instanceOptions.HealthCheckUrl);
+        Assert.Equal("secureHealthCheckUrl", instanceOptions.SecureHealthCheckUrl);
 
-        Assert.Equal("statusPageUrlPath", ro.StatusPageUrlPath);
-        Assert.Equal("statusPageUrl", ro.StatusPageUrl);
-        Assert.Equal("homePageUrlPath", ro.HomePageUrlPath);
-        Assert.Equal("homePageUrl", ro.HomePageUrl);
-        Assert.Equal("healthCheckUrlPath", ro.HealthCheckUrlPath);
-        Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
-        Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
-
-        IDictionary<string, string> map = ro.MetadataMap;
+        IDictionary<string, string> map = instanceOptions.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -619,65 +613,62 @@ public sealed class EurekaPostConfigurerTest
         Assert.Single(sis);
         EurekaServiceInfo si = sis.First();
 
-        var clientOpts = new EurekaClientOptions();
+        var clientOptions = new EurekaClientOptions();
         IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
-        clientSection.Bind(clientOpts);
+        clientSection.Bind(clientOptions);
 
-        EurekaPostConfigurer.UpdateConfiguration(si, clientOpts);
+        EurekaPostConfigurer.UpdateConfiguration(si, clientOptions);
 
-        EurekaClientOptions co = clientOpts;
-        Assert.NotNull(co);
-        Assert.Equal("proxyHost", co.ProxyHost);
-        Assert.Equal(100, co.ProxyPort);
-        Assert.Equal("proxyPassword", co.ProxyPassword);
-        Assert.Equal("proxyUserName", co.ProxyUserName);
-        Assert.Equal(100, co.EurekaServerConnectTimeoutSeconds);
-        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", co.EurekaServerServiceUrls);
-        Assert.Equal(100, co.RegistryFetchIntervalSeconds);
-        Assert.Equal("registryRefreshSingleVipAddress", co.RegistryRefreshSingleVipAddress);
-        Assert.True(co.ShouldDisableDelta);
-        Assert.True(co.ShouldFetchRegistry);
-        Assert.True(co.ShouldFilterOnlyUpInstances);
-        Assert.True(co.ShouldGZipContent);
-        Assert.True(co.ShouldOnDemandUpdateStatusChange);
-        Assert.True(co.ShouldRegisterWithEureka);
-        Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", co.AccessTokenUri);
-        Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", co.ClientId);
-        Assert.Equal("dCsdoiuklicS", co.ClientSecret);
+        Assert.NotNull(clientOptions);
+        Assert.Equal("proxyHost", clientOptions.EurekaServer.ProxyHost);
+        Assert.Equal(100, clientOptions.EurekaServer.ProxyPort);
+        Assert.Equal("proxyPassword", clientOptions.EurekaServer.ProxyPassword);
+        Assert.Equal("proxyUserName", clientOptions.EurekaServer.ProxyUserName);
+        Assert.Equal(100, clientOptions.EurekaServer.ConnectTimeoutSeconds);
+        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
+        Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
+        Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
+        Assert.True(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.ShouldFetchRegistry);
+        Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
+        Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
+        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
+        Assert.True(clientOptions.ShouldRegisterWithEureka);
+        Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", clientOptions.AccessTokenUri);
+        Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", clientOptions.ClientId);
+        Assert.Equal("dCsdoiuklicS", clientOptions.ClientSecret);
 
-        var instOpts = new EurekaInstanceOptions();
-        IConfigurationSection instSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
-        instSection.Bind(instOpts);
+        var instanceOptions = new EurekaInstanceOptions();
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        instanceSection.Bind(instanceOptions);
 
-        EurekaPostConfigurer.UpdateConfiguration(configurationRoot, si, instOpts, si.ApplicationInfo);
+        EurekaPostConfigurer.UpdateConfiguration(configurationRoot, si, instanceOptions, si.ApplicationInfo);
 
-        EurekaInstanceOptions ro = instOpts;
+        Assert.Equal("route", instanceOptions.RegistrationMethod);
+        Assert.Equal("foo.apps.testcloud.com:instance_id", instanceOptions.InstanceId);
+        Assert.Equal("foo", instanceOptions.AppName);
+        Assert.Equal("appGroup", instanceOptions.AppGroupName);
+        Assert.True(instanceOptions.IsInstanceEnabledOnInit);
+        Assert.Equal(80, instanceOptions.NonSecurePort);
+        Assert.Equal("foo.apps.testcloud.com", instanceOptions.HostName);
+        Assert.Equal(443, instanceOptions.SecurePort);
+        Assert.True(instanceOptions.IsNonSecurePortEnabled);
+        Assert.True(instanceOptions.IsSecurePortEnabled);
+        Assert.Equal(100, instanceOptions.LeaseExpirationDurationInSeconds);
+        Assert.Equal(100, instanceOptions.LeaseRenewalIntervalInSeconds);
+        Assert.Equal("secureVipAddress", instanceOptions.SecureVirtualHostName);
+        Assert.Equal("vipAddress", instanceOptions.VirtualHostName);
+        Assert.Equal("asgName", instanceOptions.AsgName);
 
-        Assert.Equal("route", ro.RegistrationMethod);
-        Assert.Equal("foo.apps.testcloud.com:instance_id", ro.InstanceId);
-        Assert.Equal("foo", ro.AppName);
-        Assert.Equal("appGroup", ro.AppGroupName);
-        Assert.True(ro.IsInstanceEnabledOnInit);
-        Assert.Equal(80, ro.NonSecurePort);
-        Assert.Equal("foo.apps.testcloud.com", ro.HostName);
-        Assert.Equal(443, ro.SecurePort);
-        Assert.True(ro.IsNonSecurePortEnabled);
-        Assert.True(ro.SecurePortEnabled);
-        Assert.Equal(100, ro.LeaseExpirationDurationInSeconds);
-        Assert.Equal(100, ro.LeaseRenewalIntervalInSeconds);
-        Assert.Equal("secureVipAddress", ro.SecureVirtualHostName);
-        Assert.Equal("vipAddress", ro.VirtualHostName);
-        Assert.Equal("asgName", ro.AsgName);
+        Assert.Equal("statusPageUrlPath", instanceOptions.StatusPageUrlPath);
+        Assert.Equal("statusPageUrl", instanceOptions.StatusPageUrl);
+        Assert.Equal("homePageUrlPath", instanceOptions.HomePageUrlPath);
+        Assert.Equal("homePageUrl", instanceOptions.HomePageUrl);
+        Assert.Equal("healthCheckUrlPath", instanceOptions.HealthCheckUrlPath);
+        Assert.Equal("healthCheckUrl", instanceOptions.HealthCheckUrl);
+        Assert.Equal("secureHealthCheckUrl", instanceOptions.SecureHealthCheckUrl);
 
-        Assert.Equal("statusPageUrlPath", ro.StatusPageUrlPath);
-        Assert.Equal("statusPageUrl", ro.StatusPageUrl);
-        Assert.Equal("homePageUrlPath", ro.HomePageUrlPath);
-        Assert.Equal("homePageUrl", ro.HomePageUrl);
-        Assert.Equal("healthCheckUrlPath", ro.HealthCheckUrlPath);
-        Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
-        Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
-
-        IDictionary<string, string> map = ro.MetadataMap;
+        IDictionary<string, string> map = instanceOptions.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -832,66 +823,62 @@ public sealed class EurekaPostConfigurerTest
         Assert.Single(sis);
         EurekaServiceInfo si = sis.First();
 
-        var clientOpts = new EurekaClientOptions();
+        var clientOptions = new EurekaClientOptions();
         IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
-        clientSection.Bind(clientOpts);
+        clientSection.Bind(clientOptions);
 
-        EurekaPostConfigurer.UpdateConfiguration(si, clientOpts);
+        EurekaPostConfigurer.UpdateConfiguration(si, clientOptions);
 
-        EurekaClientOptions co = clientOpts;
+        Assert.NotNull(clientOptions);
+        Assert.Equal("proxyHost", clientOptions.EurekaServer.ProxyHost);
+        Assert.Equal(100, clientOptions.EurekaServer.ProxyPort);
+        Assert.Equal("proxyPassword", clientOptions.EurekaServer.ProxyPassword);
+        Assert.Equal("proxyUserName", clientOptions.EurekaServer.ProxyUserName);
+        Assert.Equal(100, clientOptions.EurekaServer.ConnectTimeoutSeconds);
+        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
+        Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
+        Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
+        Assert.True(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.ShouldFetchRegistry);
+        Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
+        Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
+        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
+        Assert.True(clientOptions.ShouldRegisterWithEureka);
+        Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", clientOptions.AccessTokenUri);
+        Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", clientOptions.ClientId);
+        Assert.Equal("dCsdoiuklicS", clientOptions.ClientSecret);
 
-        Assert.NotNull(co);
-        Assert.Equal("proxyHost", co.ProxyHost);
-        Assert.Equal(100, co.ProxyPort);
-        Assert.Equal("proxyPassword", co.ProxyPassword);
-        Assert.Equal("proxyUserName", co.ProxyUserName);
-        Assert.Equal(100, co.EurekaServerConnectTimeoutSeconds);
-        Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", co.EurekaServerServiceUrls);
-        Assert.Equal(100, co.RegistryFetchIntervalSeconds);
-        Assert.Equal("registryRefreshSingleVipAddress", co.RegistryRefreshSingleVipAddress);
-        Assert.True(co.ShouldDisableDelta);
-        Assert.True(co.ShouldFetchRegistry);
-        Assert.True(co.ShouldFilterOnlyUpInstances);
-        Assert.True(co.ShouldGZipContent);
-        Assert.True(co.ShouldOnDemandUpdateStatusChange);
-        Assert.True(co.ShouldRegisterWithEureka);
-        Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", co.AccessTokenUri);
-        Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", co.ClientId);
-        Assert.Equal("dCsdoiuklicS", co.ClientSecret);
+        var instanceOptions = new EurekaInstanceOptions();
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        instanceSection.Bind(instanceOptions);
 
-        var instOpts = new EurekaInstanceOptions();
-        IConfigurationSection instSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
-        instSection.Bind(instOpts);
+        EurekaPostConfigurer.UpdateConfiguration(configurationRoot, si, instanceOptions, si.ApplicationInfo);
 
-        EurekaPostConfigurer.UpdateConfiguration(configurationRoot, si, instOpts, si.ApplicationInfo);
+        Assert.Equal("hostname", instanceOptions.RegistrationMethod);
+        Assert.Equal("myhostname:instance_id", instanceOptions.InstanceId);
+        Assert.Equal("appName", instanceOptions.AppName);
+        Assert.Equal("appGroup", instanceOptions.AppGroupName);
+        Assert.True(instanceOptions.IsInstanceEnabledOnInit);
+        Assert.Equal(100, instanceOptions.NonSecurePort);
+        Assert.Equal("myhostname", instanceOptions.HostName);
+        Assert.Equal(100, instanceOptions.SecurePort);
+        Assert.True(instanceOptions.IsNonSecurePortEnabled);
+        Assert.True(instanceOptions.IsSecurePortEnabled);
+        Assert.Equal(100, instanceOptions.LeaseExpirationDurationInSeconds);
+        Assert.Equal(100, instanceOptions.LeaseRenewalIntervalInSeconds);
+        Assert.Equal("secureVipAddress", instanceOptions.SecureVirtualHostName);
+        Assert.Equal("vipAddress", instanceOptions.VirtualHostName);
+        Assert.Equal("asgName", instanceOptions.AsgName);
 
-        EurekaInstanceOptions ro = instOpts;
+        Assert.Equal("statusPageUrlPath", instanceOptions.StatusPageUrlPath);
+        Assert.Equal("statusPageUrl", instanceOptions.StatusPageUrl);
+        Assert.Equal("homePageUrlPath", instanceOptions.HomePageUrlPath);
+        Assert.Equal("homePageUrl", instanceOptions.HomePageUrl);
+        Assert.Equal("healthCheckUrlPath", instanceOptions.HealthCheckUrlPath);
+        Assert.Equal("healthCheckUrl", instanceOptions.HealthCheckUrl);
+        Assert.Equal("secureHealthCheckUrl", instanceOptions.SecureHealthCheckUrl);
 
-        Assert.Equal("hostname", ro.RegistrationMethod);
-        Assert.Equal("myhostname:instance_id", ro.InstanceId);
-        Assert.Equal("appName", ro.AppName);
-        Assert.Equal("appGroup", ro.AppGroupName);
-        Assert.True(ro.IsInstanceEnabledOnInit);
-        Assert.Equal(100, ro.NonSecurePort);
-        Assert.Equal("myhostname", ro.HostName);
-        Assert.Equal(100, ro.SecurePort);
-        Assert.True(ro.IsNonSecurePortEnabled);
-        Assert.True(ro.SecurePortEnabled);
-        Assert.Equal(100, ro.LeaseExpirationDurationInSeconds);
-        Assert.Equal(100, ro.LeaseRenewalIntervalInSeconds);
-        Assert.Equal("secureVipAddress", ro.SecureVirtualHostName);
-        Assert.Equal("vipAddress", ro.VirtualHostName);
-        Assert.Equal("asgName", ro.AsgName);
-
-        Assert.Equal("statusPageUrlPath", ro.StatusPageUrlPath);
-        Assert.Equal("statusPageUrl", ro.StatusPageUrl);
-        Assert.Equal("homePageUrlPath", ro.HomePageUrlPath);
-        Assert.Equal("homePageUrl", ro.HomePageUrl);
-        Assert.Equal("healthCheckUrlPath", ro.HealthCheckUrlPath);
-        Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
-        Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
-
-        IDictionary<string, string> map = ro.MetadataMap;
+        IDictionary<string, string> map = instanceOptions.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -965,14 +952,14 @@ public sealed class EurekaPostConfigurerTest
             { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" }
         }).Build();
 
-        var instOpts = new EurekaInstanceOptions();
+        var instanceOptions = new EurekaInstanceOptions();
         var appInfo = new ApplicationInstanceInfo(configurationRoot);
 
-        EurekaPostConfigurer.UpdateConfiguration(configurationRoot, instOpts, appInfo);
+        EurekaPostConfigurer.UpdateConfiguration(configurationRoot, instanceOptions, appInfo);
 
-        Assert.Equal("myapp", instOpts.HostName);
-        Assert.Equal(1234, instOpts.SecurePort);
-        Assert.Equal(1233, instOpts.Port);
+        Assert.Equal("myapp", instanceOptions.HostName);
+        Assert.Equal(1234, instanceOptions.SecurePort);
+        Assert.Equal(1233, instanceOptions.NonSecurePort);
     }
 
     [Fact]

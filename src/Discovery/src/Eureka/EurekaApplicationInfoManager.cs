@@ -11,11 +11,11 @@ public class EurekaApplicationInfoManager : ApplicationInfoManager
 {
     private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
 
-    public override EurekaInstanceConfiguration InstanceConfig => _instConfig.CurrentValue;
+    public override EurekaInstanceOptions InstanceOptions => _instConfig.CurrentValue;
 
     public EurekaApplicationInfoManager(IOptionsMonitor<EurekaInstanceOptions> instConfig, ILoggerFactory loggerFactory = null)
     {
         _instConfig = instConfig;
-        Initialize(InstanceConfig, loggerFactory);
+        Initialize(InstanceOptions, loggerFactory);
     }
 }

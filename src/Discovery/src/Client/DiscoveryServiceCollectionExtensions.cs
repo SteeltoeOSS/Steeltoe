@@ -123,7 +123,6 @@ public static class DiscoveryServiceCollectionExtensions
         services.RegisterDefaultApplicationInstanceInfo();
         ApplyDiscoveryOptions(services, configuration, builderAction);
 
-        services.TryAddTransient<DiscoveryHttpMessageHandler>();
         services.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
         services.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
         services.AddSingleton<IHostedService, DiscoveryClientService>();
