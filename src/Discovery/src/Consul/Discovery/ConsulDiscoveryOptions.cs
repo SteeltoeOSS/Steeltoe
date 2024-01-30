@@ -220,8 +220,8 @@ public sealed class ConsulDiscoveryOptions
     /// </param>
     internal void ApplyConfigUrls(IList<Uri> addresses)
     {
-        // try to pull some values out of server config to override defaults, but only if not using NetUtils
-        // if NetUtils are configured, the user probably wants to define their own behavior
+        // Try to pull some values out of server configuration to override defaults, but only if not using NetUtils.
+        // If NetUtils are configured, the user probably wants to define their own behavior.
         if (addresses.Count > 0 && !UseNetUtils && UseAspNetCoreUrls && Port == 0)
         {
             // prefer https

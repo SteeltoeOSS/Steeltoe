@@ -10,20 +10,15 @@ using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
-public class Applications
+public sealed class Applications
 {
     private readonly object _addRemoveInstanceLock = new();
 
     internal ConcurrentDictionary<string, Application> ApplicationMap { get; } = new();
-
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap { get; } = new();
-
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new();
-
     public string AppsHashCode { get; internal set; }
-
-    public long Version { get; internal set; }
-
+    public long Version { get; private set; }
     public bool ReturnUpInstancesOnly { get; set; }
 
     internal Applications()
@@ -89,30 +84,30 @@ public class Applications
         AddInstances(app);
     }
 
-    internal void AddInstances(Application app)
+    private void AddInstances(Application app)
     {
-        foreach (InstanceInfo inst in app.Instances)
+        foreach (InstanceInfo instance in app.Instances)
         {
-            AddInstanceToVip(inst);
+            AddInstanceToVip(instance);
         }
     }
 
-    internal void AddInstanceToVip(InstanceInfo inst)
+    private void AddInstanceToVip(InstanceInfo instance)
     {
-        if (!string.IsNullOrEmpty(inst.VipAddress))
+        if (!string.IsNullOrEmpty(instance.VipAddress))
         {
-            AddInstanceToVip(inst.VipAddress, inst, VirtualHostInstanceMap);
+            AddInstanceToVip(instance.VipAddress, instance, VirtualHostInstanceMap);
         }
 
-        if (!string.IsNullOrEmpty(inst.SecureVipAddress))
+        if (!string.IsNullOrEmpty(instance.SecureVipAddress))
         {
-            AddInstanceToVip(inst.SecureVipAddress, inst, SecureVirtualHostInstanceMap);
+            AddInstanceToVip(instance.SecureVipAddress, instance, SecureVirtualHostInstanceMap);
         }
     }
 
-    internal void AddInstanceToVip(string address, InstanceInfo info, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
+    private void AddInstanceToVip(string address, InstanceInfo instance, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
     {
-        if (info.InstanceId == null)
+        if (instance.InstanceId == null)
         {
             return;
         }
@@ -127,24 +122,24 @@ public class Applications
                 instances = dict[addressUpper] = new ConcurrentDictionary<string, InstanceInfo>();
             }
 
-            instances[info.InstanceId] = info;
+            instances[instance.InstanceId] = instance;
         }
     }
 
-    internal void RemoveInstanceFromVip(InstanceInfo inst)
+    internal void RemoveInstanceFromVip(InstanceInfo instance)
     {
-        if (!string.IsNullOrEmpty(inst.VipAddress))
+        if (!string.IsNullOrEmpty(instance.VipAddress))
         {
-            RemoveInstanceFromVip(inst.VipAddress, inst, VirtualHostInstanceMap);
+            RemoveInstanceFromVip(instance.VipAddress, instance, VirtualHostInstanceMap);
         }
 
-        if (!string.IsNullOrEmpty(inst.SecureVipAddress))
+        if (!string.IsNullOrEmpty(instance.SecureVipAddress))
         {
-            RemoveInstanceFromVip(inst.SecureVipAddress, inst, SecureVirtualHostInstanceMap);
+            RemoveInstanceFromVip(instance.SecureVipAddress, instance, SecureVirtualHostInstanceMap);
         }
     }
 
-    internal void RemoveInstanceFromVip(string address, InstanceInfo info, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
+    private void RemoveInstanceFromVip(string address, InstanceInfo instance, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
     {
         lock (_addRemoveInstanceLock)
         {
@@ -153,7 +148,7 @@ public class Applications
 
             if (instances != null)
             {
-                instances.TryRemove(info.InstanceId, out _);
+                instances.TryRemove(instance.InstanceId, out _);
 
                 if (instances.Count <= 0)
                 {
@@ -201,9 +196,9 @@ public class Applications
 
         foreach (Application app in GetRegisteredApplications())
         {
-            foreach (InstanceInfo inst in app.Instances)
+            foreach (InstanceInfo instance in app.Instances)
             {
-                string instanceStatus = inst.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
+                string instanceStatus = instance.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
 
                 if (!statusMap.TryGetValue(instanceStatus, out int count))
                 {
@@ -257,18 +252,18 @@ public class Applications
         {
             foreach (KeyValuePair<string, InstanceInfo> kvp in instances)
             {
-                InstanceInfo inst = kvp.Value;
+                InstanceInfo instance = kvp.Value;
 
                 if (ReturnUpInstancesOnly)
                 {
-                    if (inst.Status == InstanceStatus.Up)
+                    if (instance.Status == InstanceStatus.Up)
                     {
-                        result.Add(inst);
+                        result.Add(instance);
                     }
                 }
                 else
                 {
-                    result.Add(inst);
+                    result.Add(instance);
                 }
             }
         }

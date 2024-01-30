@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -12,22 +13,22 @@ public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task Constructor_Initializes_Correctly()
     {
-        var clientConfig = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldRegisterWithEureka = false,
             ShouldFetchRegistry = false
         };
 
-        var clientWrapper = new TestOptionMonitorWrapper<EurekaClientOptions>(clientConfig);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>(clientOptions);
 
-        var instanceConfig = new EurekaInstanceOptions();
-        var instanceWrapper = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instanceConfig);
+        var instanceOptions = new EurekaInstanceOptions();
+        var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
 
-        var appMgr = new EurekaApplicationInfoManager(instanceWrapper);
-        var client = new EurekaDiscoveryClient(clientWrapper, instanceWrapper, appMgr);
+        var appManager = new EurekaApplicationInfoManager(instanceOptionsMonitor);
+        var client = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager);
 
         Assert.NotNull(client.ClientOptions);
-        Assert.Equal(clientConfig, client.ClientOptions);
+        Assert.Equal(clientOptions, client.ClientOptions);
         Assert.NotNull(client.HttpClient);
         Assert.NotNull(client.Description);
 
@@ -37,15 +38,15 @@ public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
 
         IServiceInstance thisService = client.GetLocalServiceInstance();
         Assert.NotNull(thisService);
-        Assert.Equal(instanceConfig.ResolveHostName(false), thisService.Host);
-        Assert.Equal(instanceConfig.IsSecurePortEnabled, thisService.IsSecure);
+        Assert.Equal(instanceOptions.ResolveHostName(false), thisService.Host);
+        Assert.Equal(instanceOptions.IsSecurePortEnabled, thisService.IsSecure);
         Assert.NotNull(thisService.Metadata);
-        Assert.Equal(instanceConfig.NonSecurePort, thisService.Port);
-        Assert.Equal(instanceConfig.AppName, thisService.ServiceId);
+        Assert.Equal(instanceOptions.NonSecurePort, thisService.Port);
+        Assert.Equal(instanceOptions.AppName, thisService.ServiceId);
         Assert.NotNull(thisService.Uri);
-        string scheme = instanceConfig.IsSecurePortEnabled ? "https" : "http";
-        int uriPort = instanceConfig.IsSecurePortEnabled ? instanceConfig.SecurePort : instanceConfig.NonSecurePort;
-        var uri = new Uri($"{scheme}://{instanceConfig.ResolveHostName(false)}:{uriPort}");
+        string scheme = instanceOptions.IsSecurePortEnabled ? "https" : "http";
+        int uriPort = instanceOptions.IsSecurePortEnabled ? instanceOptions.SecurePort : instanceOptions.NonSecurePort;
+        var uri = new Uri($"{scheme}://{instanceOptions.ResolveHostName(false)}:{uriPort}");
         Assert.Equal(uri, thisService.Uri);
     }
 }

@@ -318,17 +318,17 @@ public class DiscoveryClient
 
     protected internal async Task<bool> UnregisterAsync(CancellationToken cancellationToken)
     {
-        InstanceInfo inst = AppInfoManager.InstanceInfo;
+        InstanceInfo instance = AppInfoManager.InstanceInfo;
 
-        if (inst == null)
+        if (instance == null)
         {
             return false;
         }
 
         try
         {
-            EurekaHttpResponse resp = await HttpClient.CancelAsync(inst.AppName, inst.InstanceId, cancellationToken);
-            _logger.LogDebug("Unregister {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
+            EurekaHttpResponse resp = await HttpClient.CancelAsync(instance.AppName, instance.InstanceId, cancellationToken);
+            _logger.LogDebug("Unregister {Application}/{Instance} returned: {StatusCode}", instance.AppName, instance.InstanceId, resp.StatusCode);
             return resp.StatusCode == HttpStatusCode.OK;
         }
         catch (Exception exception) when (!exception.IsCancellation())
@@ -342,18 +342,18 @@ public class DiscoveryClient
 
     protected internal async Task<bool> RegisterAsync(CancellationToken cancellationToken)
     {
-        InstanceInfo inst = AppInfoManager.InstanceInfo;
+        InstanceInfo instance = AppInfoManager.InstanceInfo;
 
-        if (inst == null)
+        if (instance == null)
         {
             return false;
         }
 
         try
         {
-            EurekaHttpResponse resp = await HttpClient.RegisterAsync(inst, cancellationToken);
+            EurekaHttpResponse resp = await HttpClient.RegisterAsync(instance, cancellationToken);
             bool result = resp.StatusCode == HttpStatusCode.NoContent;
-            _logger.LogDebug("Register {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
+            _logger.LogDebug("Register {Application}/{Instance} returned: {StatusCode}", instance.AppName, instance.InstanceId, resp.StatusCode);
 
             if (result)
             {
@@ -373,26 +373,26 @@ public class DiscoveryClient
 
     protected internal async Task<bool> RenewAsync(CancellationToken cancellationToken)
     {
-        InstanceInfo inst = AppInfoManager.InstanceInfo;
+        InstanceInfo instance = AppInfoManager.InstanceInfo;
 
-        if (inst == null)
+        if (instance == null)
         {
             return false;
         }
 
         await RefreshInstanceInfoAsync(cancellationToken);
 
-        if (inst.IsDirty)
+        if (instance.IsDirty)
         {
-            await RegisterDirtyInstanceInfoAsync(inst, cancellationToken);
+            await RegisterDirtyInstanceInfoAsync(instance, cancellationToken);
         }
 
         try
         {
             EurekaHttpResponse<InstanceInfo> resp =
-                await HttpClient.SendHeartBeatAsync(inst.AppName, inst.InstanceId, inst, InstanceStatus.Unknown, cancellationToken);
+                await HttpClient.SendHeartBeatAsync(instance.AppName, instance.InstanceId, instance, InstanceStatus.Unknown, cancellationToken);
 
-            _logger.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
+            _logger.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", instance.AppName, instance.InstanceId, resp.StatusCode);
 
             if (resp.StatusCode == HttpStatusCode.NotFound)
             {
@@ -533,14 +533,14 @@ public class DiscoveryClient
         }
     }
 
-    private async Task RegisterDirtyInstanceInfoAsync(InstanceInfo inst, CancellationToken cancellationToken)
+    private async Task RegisterDirtyInstanceInfoAsync(InstanceInfo instance, CancellationToken cancellationToken)
     {
-        bool regResult = await RegisterAsync(cancellationToken);
-        _logger.LogDebug("Register dirty InstanceInfo returned {status}", regResult);
+        bool result = await RegisterAsync(cancellationToken);
+        _logger.LogDebug("Register dirty InstanceInfo returned {status}", result);
 
-        if (regResult)
+        if (result)
         {
-            inst.IsDirty = false;
+            instance.IsDirty = false;
         }
     }
 

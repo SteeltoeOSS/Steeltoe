@@ -8,14 +8,12 @@ using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
-public class Application
+public sealed class Application
 {
     internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new();
 
-    public string Name { get; internal set; }
-
+    public string Name { get; }
     public int Count => InstanceMap.Count;
-
     public IList<InstanceInfo> Instances => new List<InstanceInfo>(InstanceMap.Values);
 
     internal Application(string name)
@@ -45,9 +43,9 @@ public class Application
         sb.Append($"Name={Name}");
         sb.Append(",Instances=");
 
-        foreach (InstanceInfo inst in Instances)
+        foreach (InstanceInfo instance in Instances)
         {
-            sb.Append(inst);
+            sb.Append(instance);
             sb.Append(',');
         }
 
@@ -69,9 +67,9 @@ public class Application
 
     internal void Remove(InstanceInfo info)
     {
-        if (!InstanceMap.TryRemove(info.InstanceId, out InstanceInfo removed))
+        if (!InstanceMap.TryRemove(info.InstanceId, out _))
         {
-            InstanceMap.TryRemove(info.HostName, out removed);
+            InstanceMap.TryRemove(info.HostName, out _);
         }
     }
 
@@ -86,10 +84,10 @@ public class Application
 
         if (application.Instances != null)
         {
-            foreach (JsonInstanceInfo instance in application.Instances)
+            foreach (JsonInstanceInfo jsonInstance in application.Instances)
             {
-                var inst = InstanceInfo.FromJsonInstance(instance);
-                app.Add(inst);
+                var instance = InstanceInfo.FromJsonInstance(jsonInstance);
+                app.Add(instance);
             }
         }
 

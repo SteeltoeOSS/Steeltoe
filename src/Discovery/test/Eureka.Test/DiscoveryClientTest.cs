@@ -87,13 +87,14 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public void Constructor_TimersNotStarted()
     {
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldRegisterWithEureka = false,
             ShouldFetchRegistry = false
         };
 
-        var client = new DiscoveryClient(configuration);
+        var client = new DiscoveryClient(clientOptions);
+
         Assert.Null(client.CacheRefreshTimer);
         Assert.Null(client.HeartBeatTimer);
     }
@@ -110,15 +111,15 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false,
             EurekaServerServiceUrls = uri
         };
 
-        var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
-        var client = new DiscoveryClient(configuration, httpClient);
+        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
+        var client = new DiscoveryClient(clientOptions, httpClient);
         Applications result = await client.FetchFullRegistryAsync(CancellationToken.None);
         Assert.NotNull(result);
         Assert.Equal(1, result.Version);
@@ -142,15 +143,15 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false,
             EurekaServerServiceUrls = uri
         };
 
-        var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
-        var client = new DiscoveryClient(configuration, httpClient);
+        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
+        var client = new DiscoveryClient(clientOptions, httpClient);
         Task<Applications> result = client.FetchFullRegistryAsync(CancellationToken.None);
         client.RegistryFetchCounter = 100;
         Applications apps = await result;
@@ -169,19 +170,19 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false,
             EurekaServerServiceUrls = uri
         };
 
-        var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
-        var client = new DiscoveryClient(configuration, httpClient);
+        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
+        var client = new DiscoveryClient(clientOptions, httpClient);
         var apps = new Applications();
         var app = new Application("FOO");
 
-        var inst = new InstanceInfo
+        var instance = new InstanceInfo
         {
             InstanceId = "localhost:foo",
             HostName = "localhost",
@@ -190,7 +191,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        app.InstanceMap[inst.InstanceId] = inst;
+        app.InstanceMap[instance.InstanceId] = instance;
         apps.Add(app);
         client.Applications = apps;
 
@@ -218,15 +219,15 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false,
             EurekaServerServiceUrls = uri
         };
 
-        var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
-        var client = new DiscoveryClient(configuration, httpClient);
+        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
+        var client = new DiscoveryClient(clientOptions, httpClient);
         Task<Applications> result = client.FetchRegistryDeltaAsync(CancellationToken.None);
         client.RegistryFetchCounter = 100;
         Applications apps = await result;
@@ -245,14 +246,14 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false,
             EurekaServerServiceUrls = uri
         };
 
-        var inst = new InstanceInfo
+        var instance = new InstanceInfo
         {
             InstanceId = "localhost:foo",
             HostName = "localhost",
@@ -261,10 +262,10 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        ApplicationInfoManager.Instance.InstanceInfo = inst;
+        ApplicationInfoManager.Instance.InstanceInfo = instance;
 
-        var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
-        var client = new DiscoveryClient(configuration, httpClient);
+        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
+        var client = new DiscoveryClient(clientOptions, httpClient);
         bool result = await client.RegisterAsync(CancellationToken.None);
         Assert.False(result);
 
@@ -287,14 +288,14 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false,
             EurekaServerServiceUrls = uri
         };
 
-        var inst = new InstanceInfo
+        var instance = new InstanceInfo
         {
             InstanceId = "localhost:foo",
             HostName = "localhost",
@@ -303,10 +304,10 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        ApplicationInfoManager.Instance.InstanceInfo = inst;
+        ApplicationInfoManager.Instance.InstanceInfo = instance;
 
-        var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
-        var client = new DiscoveryClient(configuration, httpClient);
+        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
+        var client = new DiscoveryClient(clientOptions, httpClient);
         bool result = await client.RegisterAsync(CancellationToken.None);
         Assert.True(result);
 
@@ -329,14 +330,14 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false,
             EurekaServerServiceUrls = uri
         };
 
-        var inst = new InstanceInfo
+        var instance = new InstanceInfo
         {
             InstanceId = "localhost:foo",
             HostName = "localhost",
@@ -345,10 +346,10 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        ApplicationInfoManager.Instance.InstanceInfo = inst;
+        ApplicationInfoManager.Instance.InstanceInfo = instance;
 
-        var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
-        var client = new DiscoveryClient(configuration, httpClient);
+        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
+        var client = new DiscoveryClient(clientOptions, httpClient);
         bool result = await client.RenewAsync(CancellationToken.None);
 
         // Verify Register done
@@ -373,14 +374,14 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false,
             EurekaServerServiceUrls = uri
         };
 
-        var inst = new InstanceInfo
+        var instance = new InstanceInfo
         {
             InstanceId = "localhost:foo",
             HostName = "localhost",
@@ -389,10 +390,10 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        ApplicationInfoManager.Instance.InstanceInfo = inst;
+        ApplicationInfoManager.Instance.InstanceInfo = instance;
 
-        var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
-        var client = new DiscoveryClient(configuration, httpClient);
+        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
+        var client = new DiscoveryClient(clientOptions, httpClient);
         bool result = await client.RenewAsync(CancellationToken.None);
         Assert.True(result);
     }
@@ -409,14 +410,14 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false,
             EurekaServerServiceUrls = uri
         };
 
-        var inst = new InstanceInfo
+        var instance = new InstanceInfo
         {
             InstanceId = "localhost:foo",
             HostName = "localhost",
@@ -425,10 +426,10 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        ApplicationInfoManager.Instance.InstanceInfo = inst;
+        ApplicationInfoManager.Instance.InstanceInfo = instance;
 
-        var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
-        var client = new DiscoveryClient(configuration, httpClient);
+        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
+        var client = new DiscoveryClient(clientOptions, httpClient);
         bool result = await client.UnregisterAsync(CancellationToken.None);
         Assert.True(result);
 
@@ -485,13 +486,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         apps.Add(app1);
         apps.Add(app2);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(configuration)
+        var client = new DiscoveryClient(clientOptions)
         {
             Applications = apps
         };
@@ -559,13 +560,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         apps.Add(app1);
         apps.Add(app2);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(configuration)
+        var client = new DiscoveryClient(clientOptions)
         {
             Applications = apps
         };
@@ -585,13 +586,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public void GetInstancesById_Returns_EmptyListWhenNoApps()
     {
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(configuration);
+        var client = new DiscoveryClient(clientOptions);
         IList<InstanceInfo> result = client.GetInstanceById("myId");
         Assert.NotNull(result);
         Assert.Empty(result);
@@ -644,13 +645,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         apps.Add(app1);
         apps.Add(app2);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(configuration)
+        var client = new DiscoveryClient(clientOptions)
         {
             Applications = apps
         };
@@ -714,13 +715,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         apps.Add(app1);
         apps.Add(app2);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(configuration)
+        var client = new DiscoveryClient(clientOptions)
         {
             Applications = apps
         };
@@ -736,13 +737,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public void GetInstancesByVipAddressAndAppName_Throws_WhenAddressAndAppNameNull()
     {
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(configuration);
+        var client = new DiscoveryClient(clientOptions);
         var ex = Assert.Throws<ArgumentException>(() => client.GetInstancesByVipAddressAndAppName(null, null, false));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
@@ -750,16 +751,16 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task RefreshInstanceInfo_CallsHealthCheckHandler_UpdatesInstanceStatus()
     {
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
 
-        var instanceConfig = new EurekaInstanceOptions();
-        ApplicationInfoManager.Instance.Initialize(instanceConfig);
+        var instanceOptions = new EurekaInstanceOptions();
+        ApplicationInfoManager.Instance.Initialize(instanceOptions);
 
-        var client = new DiscoveryClient(configuration);
+        var client = new DiscoveryClient(clientOptions);
         var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
         client.HealthCheckHandler = myHandler;
 
@@ -772,13 +773,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task StartTimer_StartsTimer()
     {
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(configuration);
+        var client = new DiscoveryClient(clientOptions);
         _timerFuncCount = 0;
         Timer result = client.StartTimer("MyTimer", 10, TimerFunc);
         Assert.NotNull(result);
@@ -790,13 +791,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task StartTimer_StartsTimer_KeepsRunningOnExceptions()
     {
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(configuration);
+        var client = new DiscoveryClient(clientOptions);
         _timerFuncCount = 0;
         Timer result = client.StartTimer("MyTimer", 10, TimerFuncThrows);
         Assert.NotNull(result);
@@ -808,13 +809,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task StartTimer_StartsTimer_StopsAfterDispose()
     {
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(configuration);
+        var client = new DiscoveryClient(clientOptions);
         _timerFuncCount = 0;
         Timer result = client.StartTimer("MyTimer", 10, TimerFuncThrows);
         Assert.NotNull(result);
@@ -841,16 +842,16 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false,
             EurekaServerServiceUrls = uri
         };
 
-        var httpClient = new EurekaHttpClient(configuration, server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
 
-        var client = new DiscoveryClient(configuration, httpClient)
+        var client = new DiscoveryClient(clientOptions, httpClient)
         {
             Applications = new Applications()
         };

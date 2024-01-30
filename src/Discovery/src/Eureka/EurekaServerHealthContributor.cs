@@ -69,7 +69,7 @@ public class EurekaServerHealthContributor : IHealthContributor
         return remoteStatus;
     }
 
-    internal HealthStatus AddHeartbeatStatus(EurekaClientOptions clientConfiguration, EurekaInstanceOptions instanceConfig, HealthCheckResult result,
+    internal HealthStatus AddHeartbeatStatus(EurekaClientOptions clientConfiguration, EurekaInstanceOptions instanceOptions, HealthCheckResult result,
         long lastGoodHeartbeatTimeTicks)
     {
         if (clientConfiguration != null && clientConfiguration.ShouldRegisterWithEureka)
@@ -84,12 +84,12 @@ public class EurekaServerHealthContributor : IHealthContributor
                 return HealthStatus.Unknown;
             }
 
-            if (lastGoodHeartbeatPeriod > instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond * 2)
+            if (lastGoodHeartbeatPeriod > instanceOptions.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond * 2)
             {
                 result.Details.Add("heartbeat", "Reporting failures connecting");
                 result.Details.Add("heartbeatStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                 result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
-                result.Details.Add("heartbeatFailures", lastGoodHeartbeatPeriod / (instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond));
+                result.Details.Add("heartbeatFailures", lastGoodHeartbeatPeriod / (instanceOptions.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond));
                 return HealthStatus.Down;
             }
 

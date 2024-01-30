@@ -14,18 +14,19 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void MakeHealthStatus_ReturnsExpected()
     {
-        var contrib = new EurekaServerHealthContributor();
-        Assert.Equal(HealthStatus.Down, contrib.MakeHealthStatus(InstanceStatus.Down));
-        Assert.Equal(HealthStatus.Up, contrib.MakeHealthStatus(InstanceStatus.Up));
-        Assert.Equal(HealthStatus.Unknown, contrib.MakeHealthStatus(InstanceStatus.Starting));
-        Assert.Equal(HealthStatus.Unknown, contrib.MakeHealthStatus(InstanceStatus.Unknown));
-        Assert.Equal(HealthStatus.OutOfService, contrib.MakeHealthStatus(InstanceStatus.OutOfService));
+        var contributor = new EurekaServerHealthContributor();
+
+        Assert.Equal(HealthStatus.Down, contributor.MakeHealthStatus(InstanceStatus.Down));
+        Assert.Equal(HealthStatus.Up, contributor.MakeHealthStatus(InstanceStatus.Up));
+        Assert.Equal(HealthStatus.Unknown, contributor.MakeHealthStatus(InstanceStatus.Starting));
+        Assert.Equal(HealthStatus.Unknown, contributor.MakeHealthStatus(InstanceStatus.Unknown));
+        Assert.Equal(HealthStatus.OutOfService, contributor.MakeHealthStatus(InstanceStatus.OutOfService));
     }
 
     [Fact]
     public void AddApplications_AddsExpected()
     {
-        var contrib = new EurekaServerHealthContributor();
+        var contributor = new EurekaServerHealthContributor();
         var app1 = new Application("app1");
 
         app1.Add(new InstanceInfo
@@ -57,7 +58,8 @@ public sealed class EurekaServerHealthContributorTest
         });
 
         var result = new HealthCheckResult();
-        contrib.AddApplications(apps, result);
+        contributor.AddApplications(apps, result);
+
         Dictionary<string, object> details = result.Details;
         Assert.Contains("applications", details.Keys);
         var appsDict = details["applications"] as Dictionary<string, int>;
@@ -73,20 +75,22 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void AddFetchStatus_AddsExpected()
     {
-        var contrib = new EurekaServerHealthContributor();
+        var contributor = new EurekaServerHealthContributor();
         var results = new HealthCheckResult();
-        contrib.AddFetchStatus(null, results, 0);
+        contributor.AddFetchStatus(null, results, 0);
+
         Assert.Contains("fetchStatus", results.Details.Keys);
         Assert.Equal("Not fetching", results.Details["fetchStatus"]);
 
         results = new HealthCheckResult();
 
-        var configuration = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldFetchRegistry = true
         };
 
-        contrib.AddFetchStatus(configuration, results, 0);
+        contributor.AddFetchStatus(clientOptions, results, 0);
+
         Assert.Contains("fetch", results.Details.Keys);
         Assert.Contains("Not yet successfully connected", (string)results.Details["fetch"], StringComparison.Ordinal);
         Assert.Contains("fetchTime", results.Details.Keys);
@@ -95,9 +99,10 @@ public sealed class EurekaServerHealthContributorTest
         Assert.Equal("UNKNOWN", results.Details["fetchStatus"]);
 
         results = new HealthCheckResult();
-        long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * configuration.RegistryFetchIntervalSeconds * 10;
+        long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * clientOptions.RegistryFetchIntervalSeconds * 10;
         var dateTime = new DateTime(ticks, DateTimeKind.Utc);
-        contrib.AddFetchStatus(configuration, results, ticks);
+        contributor.AddFetchStatus(clientOptions, results, ticks);
+
         Assert.Contains("fetch", results.Details.Keys);
         Assert.Contains("Reporting failures", (string)results.Details["fetch"], StringComparison.Ordinal);
         Assert.Contains("fetchTime", results.Details.Keys);
@@ -111,22 +116,23 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void AddHeartbeatStatus_AddsExpected()
     {
-        var contrib = new EurekaServerHealthContributor();
+        var contributor = new EurekaServerHealthContributor();
         var results = new HealthCheckResult();
-        contrib.AddHeartbeatStatus(null, null, results, 0);
+        contributor.AddHeartbeatStatus(null, null, results, 0);
+
         Assert.Contains("heartbeatStatus", results.Details.Keys);
         Assert.Equal("Not registering", results.Details["heartbeatStatus"]);
 
         results = new HealthCheckResult();
 
-        var clientConfig = new EurekaClientOptions
+        var clientOptions = new EurekaClientOptions
         {
             ShouldRegisterWithEureka = true
         };
 
-        var instanceConfig = new EurekaInstanceOptions();
+        var instanceOptions = new EurekaInstanceOptions();
+        contributor.AddHeartbeatStatus(clientOptions, instanceOptions, results, 0);
 
-        contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, 0);
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Not yet successfully connected", (string)results.Details["heartbeat"], StringComparison.Ordinal);
         Assert.Contains("heartbeatTime", results.Details.Keys);
@@ -135,9 +141,10 @@ public sealed class EurekaServerHealthContributorTest
         Assert.Equal("UNKNOWN", results.Details["heartbeatStatus"]);
 
         results = new HealthCheckResult();
-        long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * instanceConfig.LeaseRenewalIntervalInSeconds * 10;
+        long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * instanceOptions.LeaseRenewalIntervalInSeconds * 10;
         var dateTime = new DateTime(ticks, DateTimeKind.Utc);
-        contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, ticks);
+        contributor.AddHeartbeatStatus(clientOptions, instanceOptions, results, ticks);
+
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Reporting failures", (string)results.Details["heartbeat"], StringComparison.Ordinal);
         Assert.Contains("heartbeatTime", results.Details.Keys);

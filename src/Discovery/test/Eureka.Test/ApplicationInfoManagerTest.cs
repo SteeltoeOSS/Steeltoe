@@ -37,29 +37,29 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
     public void Initialize_Throws_IfInstanceConfigNull()
     {
         var ex = Assert.Throws<ArgumentNullException>(() => ApplicationInfoManager.Instance.Initialize(null));
-        Assert.Contains("instanceConfig", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("instanceOptions", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public void Initialize_Initializes_InstanceInfo()
     {
-        var configuration = new EurekaInstanceOptions();
-        ApplicationInfoManager.Instance.Initialize(configuration);
+        var instanceOptions = new EurekaInstanceOptions();
+        ApplicationInfoManager.Instance.Initialize(instanceOptions);
 
         Assert.NotNull(ApplicationInfoManager.Instance.InstanceOptions);
-        Assert.Equal(configuration, ApplicationInfoManager.Instance.InstanceOptions);
+        Assert.Equal(instanceOptions, ApplicationInfoManager.Instance.InstanceOptions);
         Assert.NotNull(ApplicationInfoManager.Instance.InstanceInfo);
     }
 
     [Fact]
     public void StatusChanged_ChangesStatus()
     {
-        var configuration = new EurekaInstanceOptions
+        var instanceOptions = new EurekaInstanceOptions
         {
             IsInstanceEnabledOnInit = false
         };
 
-        ApplicationInfoManager.Instance.Initialize(configuration);
+        ApplicationInfoManager.Instance.Initialize(instanceOptions);
 
         Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
         ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Up;
@@ -68,12 +68,12 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void StatusChanged_ChangesStatus_SendsEvents()
     {
-        var configuration = new EurekaInstanceOptions
+        var instanceOptions = new EurekaInstanceOptions
         {
             IsInstanceEnabledOnInit = false
         };
 
-        ApplicationInfoManager.Instance.Initialize(configuration);
+        ApplicationInfoManager.Instance.Initialize(instanceOptions);
         Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
 
         // Check event sent
@@ -89,12 +89,12 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void StatusChanged_RemovesEventHandler()
     {
-        var configuration = new EurekaInstanceOptions
+        var instanceOptions = new EurekaInstanceOptions
         {
             IsInstanceEnabledOnInit = false
         };
 
-        ApplicationInfoManager.Instance.Initialize(configuration);
+        ApplicationInfoManager.Instance.Initialize(instanceOptions);
         Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
 
         // Check event sent
@@ -113,22 +113,22 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
     [Fact]
     public void RefreshLeaseInfo_UpdatesLeaseInfo()
     {
-        var configuration = new EurekaInstanceOptions();
-        ApplicationInfoManager.Instance.Initialize(configuration);
+        var instanceOptions = new EurekaInstanceOptions();
+        ApplicationInfoManager.Instance.Initialize(instanceOptions);
 
         ApplicationInfoManager.Instance.RefreshLeaseInfo();
         InstanceInfo info = ApplicationInfoManager.Instance.InstanceInfo;
 
         Assert.False(info.IsDirty);
-        Assert.Equal(configuration.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(configuration.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
+        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
+        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
 
-        configuration.LeaseRenewalIntervalInSeconds += 100;
-        configuration.LeaseExpirationDurationInSeconds += 100;
+        instanceOptions.LeaseRenewalIntervalInSeconds += 100;
+        instanceOptions.LeaseExpirationDurationInSeconds += 100;
         ApplicationInfoManager.Instance.RefreshLeaseInfo();
         Assert.True(info.IsDirty);
-        Assert.Equal(configuration.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(configuration.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
+        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
+        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
     }
 
     private void HandleInstanceStatusChanged(object sender, StatusChangedEventArgs args)

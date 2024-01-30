@@ -21,22 +21,22 @@ namespace Steeltoe.Discovery.Eureka;
 /// </summary>
 public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, IAsyncDisposable
 {
-    private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
+    private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
     private readonly IServiceInstance _thisInstance;
     private readonly ILogger<EurekaDiscoveryClient> _logger;
 
-    public override EurekaClientOptions ClientOptions => _configOptions.CurrentValue;
+    public override EurekaClientOptions ClientOptions => _clientOptionsMonitor.CurrentValue;
 
     public string Description => "A discovery client for Spring Cloud Eureka.";
 
-    public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
+    public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
         EurekaApplicationInfoManager appInfoManager, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null,
         IHttpClientHandlerProvider handlerProvider = null, HttpClient netHttpClient = null)
         : base(appInfoManager, loggerFactory ?? NullLoggerFactory.Instance)
     {
-        _thisInstance = new ThisServiceInstance(instConfig);
-        _configOptions = clientConfig;
-        this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, loggerFactory, handlerProvider, netHttpClient);
+        _thisInstance = new ThisServiceInstance(instanceOptionsMonitor);
+        _clientOptionsMonitor = clientOptionsMonitor;
+        this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientOptionsMonitor, loggerFactory, handlerProvider, netHttpClient);
         _logger = (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger<EurekaDiscoveryClient>();
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();

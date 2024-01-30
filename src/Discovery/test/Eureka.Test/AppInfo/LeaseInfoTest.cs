@@ -46,9 +46,9 @@ public sealed class LeaseInfoTest : AbstractBaseTest
     [Fact]
     public void FromConfig_Correct()
     {
-        var configuration = new EurekaInstanceOptions();
-        LeaseInfo info = LeaseInfo.FromConfig(configuration);
-        Assert.Equal(configuration.LeaseRenewalIntervalInSeconds, info.RenewalIntervalInSecs);
-        Assert.Equal(configuration.LeaseExpirationDurationInSeconds, info.DurationInSecs);
+        var instanceOptions = new EurekaInstanceOptions();
+        LeaseInfo info = LeaseInfo.FromConfiguration(instanceOptions);
+        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, info.RenewalIntervalInSecs);
+        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, info.DurationInSecs);
     }
 }
