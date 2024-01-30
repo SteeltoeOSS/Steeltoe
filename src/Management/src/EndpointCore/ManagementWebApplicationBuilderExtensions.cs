@@ -4,6 +4,7 @@
 
 #if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Extensions.Logging;
@@ -216,10 +217,11 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
         /// <param name="configureEndpoints"><see cref="IEndpointConventionBuilder" /></param>
         /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
-        public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+        /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
+        public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             applicationBuilder.Logging.AddDynamicConsole();
-            applicationBuilder.Services.AddAllActuators(applicationBuilder.Configuration, mediaTypeVersion);
+            applicationBuilder.Services.AddAllActuators(applicationBuilder.Configuration, mediaTypeVersion, buildCorsPolicy);
             applicationBuilder.AddCommonServices();
             return applicationBuilder;
         }
