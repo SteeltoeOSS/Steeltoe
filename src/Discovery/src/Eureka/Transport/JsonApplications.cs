@@ -20,5 +20,5 @@ internal sealed class JsonApplications
 
     [JsonPropertyName("application")]
     [JsonConverter(typeof(JsonApplicationConverter))]
-    public IList<JsonApplication>? Applications { get; set; }
+    public IList<JsonApplication?>? Applications { get; set; }
 }

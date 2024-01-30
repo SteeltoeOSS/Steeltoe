@@ -115,7 +115,7 @@ internal static class EurekaPostConfigurer
 
         options.ApplyConfigUrls(configuration.GetAspNetCoreUrls());
 
-        if (options.InstanceId.EndsWith(defaultIdEnding, StringComparison.Ordinal))
+        if (options.InstanceId != null && options.InstanceId.EndsWith(defaultIdEnding, StringComparison.Ordinal))
         {
             string? springInstanceId = appInfo?.InstanceId;
 
@@ -219,7 +219,7 @@ internal static class EurekaPostConfigurer
             $"Eureka URL {EurekaClientOptions.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
     }
 
-    private static void UpdateWithDefaultsForHost(EurekaServiceInfo serviceInfo, EurekaInstanceOptions instanceOptions, string hostName)
+    private static void UpdateWithDefaultsForHost(EurekaServiceInfo serviceInfo, EurekaInstanceOptions instanceOptions, string? hostName)
     {
         UpdateWithDefaults(serviceInfo, instanceOptions);
         instanceOptions.HostName = hostName;

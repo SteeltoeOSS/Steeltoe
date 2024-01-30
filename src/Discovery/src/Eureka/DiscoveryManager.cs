@@ -26,40 +26,40 @@ public class DiscoveryManager
     {
     }
 
-    public virtual void Initialize(EurekaClientOptions clientConfiguration, ILoggerFactory loggerFactory = null)
+    public virtual void Initialize(EurekaClientOptions clientOptions, ILoggerFactory loggerFactory = null)
     {
-        Initialize(clientConfiguration, (EurekaHttpClient)null, loggerFactory);
+        Initialize(clientOptions, (EurekaHttpClient)null, loggerFactory);
     }
 
-    public virtual void Initialize(EurekaClientOptions clientConfiguration, EurekaInstanceOptions instanceConfig, ILoggerFactory loggerFactory = null)
+    public virtual void Initialize(EurekaClientOptions clientOptions, EurekaInstanceOptions instanceOptions, ILoggerFactory loggerFactory = null)
     {
-        Initialize(clientConfiguration, instanceConfig, null, loggerFactory);
+        Initialize(clientOptions, instanceOptions, null, loggerFactory);
     }
 
-    public virtual void Initialize(EurekaClientOptions clientConfiguration, EurekaHttpClient httpClient, ILoggerFactory loggerFactory = null)
+    public virtual void Initialize(EurekaClientOptions clientOptions, EurekaHttpClient httpClient, ILoggerFactory loggerFactory = null)
     {
-        ArgumentGuard.NotNull(clientConfiguration);
+        ArgumentGuard.NotNull(clientOptions);
 
         logger = loggerFactory?.CreateLogger<DiscoveryManager>();
-        ClientOptions = clientConfiguration;
-        Client = new DiscoveryClient(clientConfiguration, httpClient, loggerFactory);
+        ClientOptions = clientOptions;
+        Client = new DiscoveryClient(clientOptions, httpClient, loggerFactory);
     }
 
-    public virtual void Initialize(EurekaClientOptions clientConfiguration, EurekaInstanceOptions instanceConfig, EurekaHttpClient httpClient,
+    public virtual void Initialize(EurekaClientOptions clientOptions, EurekaInstanceOptions instanceOptions, EurekaHttpClient httpClient,
         ILoggerFactory loggerFactory = null)
     {
-        ArgumentGuard.NotNull(clientConfiguration);
-        ArgumentGuard.NotNull(instanceConfig);
+        ArgumentGuard.NotNull(clientOptions);
+        ArgumentGuard.NotNull(instanceOptions);
 
         logger = loggerFactory?.CreateLogger<DiscoveryManager>();
-        ClientOptions = clientConfiguration;
-        InstanceOptions = instanceConfig;
+        ClientOptions = clientOptions;
+        InstanceOptions = instanceOptions;
 
         if (ApplicationInfoManager.Instance.InstanceInfo == null)
         {
-            ApplicationInfoManager.Instance.Initialize(instanceConfig, loggerFactory);
+            ApplicationInfoManager.Instance.Initialize(instanceOptions, loggerFactory);
         }
 
-        Client = new DiscoveryClient(clientConfiguration, httpClient, loggerFactory);
+        Client = new DiscoveryClient(clientOptions, httpClient, loggerFactory);
     }
 }

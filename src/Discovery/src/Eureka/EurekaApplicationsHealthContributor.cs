@@ -86,26 +86,23 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
         return regApps.Select(app => app.Name).ToList();
     }
 
-    internal IList<string> GetApplicationsFromConfig(EurekaClientOptions clientConfiguration)
+    internal IList<string> GetApplicationsFromConfig(EurekaClientOptions clientOptions)
     {
-        if (clientConfiguration is EurekaClientOptions configuration)
+        string[] monitoredApps = clientOptions.Health.MonitoredApps?.Split(new[]
         {
-            string[] monitoredApps = configuration.Health.MonitoredApps?.Split(new[]
+            ','
+        }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        if (monitoredApps is { Length: > 0 })
+        {
+            var results = new List<string>();
+
+            foreach (string str in monitoredApps)
             {
-                ','
-            }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-            if (monitoredApps != null && monitoredApps.Length > 0)
-            {
-                var results = new List<string>();
-
-                foreach (string str in monitoredApps)
-                {
-                    results.Add(str.Trim());
-                }
-
-                return results;
+                results.Add(str.Trim());
             }
+
+            return results;
         }
 
         return null;

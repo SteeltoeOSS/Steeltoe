@@ -13,42 +13,42 @@ public sealed class EurekaClientOptionsTest : AbstractBaseTest
     [Fact]
     public void DefaultConstructor_InitializedWithDefaults()
     {
-        var options = new EurekaClientOptions();
+        var clientOptions = new EurekaClientOptions();
 
-        Assert.Equal(EurekaClientOptions.DefaultRegistryFetchIntervalSeconds, options.RegistryFetchIntervalSeconds);
-        Assert.True(options.EurekaServer.ShouldGZipContent);
-        Assert.Equal(EurekaServerConfiguration.DefaultConnectTimeoutSeconds, options.EurekaServer.ConnectTimeoutSeconds);
-        Assert.True(options.ShouldRegisterWithEureka);
-        Assert.False(options.ShouldDisableDelta);
-        Assert.True(options.ShouldFilterOnlyUpInstances);
-        Assert.True(options.ShouldFetchRegistry);
-        Assert.True(options.ShouldOnDemandUpdateStatusChange);
+        Assert.Equal(EurekaClientOptions.DefaultRegistryFetchIntervalSeconds, clientOptions.RegistryFetchIntervalSeconds);
+        Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
+        Assert.Equal(EurekaServerConfiguration.DefaultConnectTimeoutSeconds, clientOptions.EurekaServer.ConnectTimeoutSeconds);
+        Assert.True(clientOptions.ShouldRegisterWithEureka);
+        Assert.False(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
+        Assert.True(clientOptions.ShouldFetchRegistry);
+        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
     }
 
     [Fact]
     public void Constructor_Initializes_Defaults()
     {
-        var options = new EurekaClientOptions();
+        var clientOptions = new EurekaClientOptions();
 
-        Assert.True(options.Enabled);
-        Assert.Equal(EurekaClientOptions.DefaultRegistryFetchIntervalSeconds, options.RegistryFetchIntervalSeconds);
-        Assert.Null(options.EurekaServer.ProxyHost);
-        Assert.Equal(0, options.EurekaServer.ProxyPort);
-        Assert.Null(options.EurekaServer.ProxyUserName);
-        Assert.Null(options.EurekaServer.ProxyPassword);
-        Assert.True(options.EurekaServer.ShouldGZipContent);
-        Assert.Equal(EurekaServerConfiguration.DefaultConnectTimeoutSeconds, options.EurekaServer.ConnectTimeoutSeconds);
-        Assert.True(options.ShouldRegisterWithEureka);
-        Assert.False(options.ShouldDisableDelta);
-        Assert.True(options.ShouldFilterOnlyUpInstances);
-        Assert.True(options.ShouldFetchRegistry);
-        Assert.Null(options.RegistryRefreshSingleVipAddress);
-        Assert.True(options.ShouldOnDemandUpdateStatusChange);
-        Assert.Equal(EurekaClientOptions.DefaultServerServiceUrl, options.EurekaServerServiceUrls);
-        Assert.NotNull(options.Health);
-        Assert.True(options.Health.Enabled); // Health contrib enabled
-        Assert.True(options.Health.CheckEnabled); // Health check enabled
-        Assert.Null(options.Health.MonitoredApps);
+        Assert.True(clientOptions.Enabled);
+        Assert.Equal(EurekaClientOptions.DefaultRegistryFetchIntervalSeconds, clientOptions.RegistryFetchIntervalSeconds);
+        Assert.Null(clientOptions.EurekaServer.ProxyHost);
+        Assert.Equal(0, clientOptions.EurekaServer.ProxyPort);
+        Assert.Null(clientOptions.EurekaServer.ProxyUserName);
+        Assert.Null(clientOptions.EurekaServer.ProxyPassword);
+        Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
+        Assert.Equal(EurekaServerConfiguration.DefaultConnectTimeoutSeconds, clientOptions.EurekaServer.ConnectTimeoutSeconds);
+        Assert.True(clientOptions.ShouldRegisterWithEureka);
+        Assert.False(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
+        Assert.True(clientOptions.ShouldFetchRegistry);
+        Assert.Null(clientOptions.RegistryRefreshSingleVipAddress);
+        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
+        Assert.Equal(EurekaClientOptions.DefaultServerServiceUrl, clientOptions.EurekaServerServiceUrls);
+        Assert.NotNull(clientOptions.Health);
+        Assert.True(clientOptions.Health.Enabled); // Health contributor enabled
+        Assert.True(clientOptions.Health.CheckEnabled); // Health check enabled
+        Assert.Null(clientOptions.Health.MonitoredApps);
     }
 
     [Fact]
@@ -120,26 +120,26 @@ public sealed class EurekaClientOptionsTest : AbstractBaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
-        var options = new EurekaClientOptions();
-        clientSection.Bind(options);
+        var clientOptions = new EurekaClientOptions();
+        clientSection.Bind(clientOptions);
 
-        Assert.Equal("proxyHost", options.EurekaServer.ProxyHost);
-        Assert.Equal(100, options.EurekaServer.ProxyPort);
-        Assert.Equal("proxyPassword", options.EurekaServer.ProxyPassword);
-        Assert.Equal("proxyUserName", options.EurekaServer.ProxyUserName);
-        Assert.Equal(100, options.EurekaServer.ConnectTimeoutSeconds);
-        Assert.Equal("https://foo.bar:8761/eureka/", options.EurekaServerServiceUrls);
-        Assert.Equal(100, options.RegistryFetchIntervalSeconds);
-        Assert.Equal("registryRefreshSingleVipAddress", options.RegistryRefreshSingleVipAddress);
-        Assert.True(options.ShouldDisableDelta);
-        Assert.True(options.ShouldFetchRegistry);
-        Assert.True(options.ShouldFilterOnlyUpInstances);
-        Assert.True(options.EurekaServer.ShouldGZipContent);
-        Assert.True(options.ShouldOnDemandUpdateStatusChange);
-        Assert.True(options.ShouldRegisterWithEureka);
-        Assert.NotNull(options.Health);
-        Assert.True(options.Health.Enabled); // Health contrib enabled
-        Assert.True(options.Health.CheckEnabled); // Health check enabled
-        Assert.Null(options.Health.MonitoredApps);
+        Assert.Equal("proxyHost", clientOptions.EurekaServer.ProxyHost);
+        Assert.Equal(100, clientOptions.EurekaServer.ProxyPort);
+        Assert.Equal("proxyPassword", clientOptions.EurekaServer.ProxyPassword);
+        Assert.Equal("proxyUserName", clientOptions.EurekaServer.ProxyUserName);
+        Assert.Equal(100, clientOptions.EurekaServer.ConnectTimeoutSeconds);
+        Assert.Equal("https://foo.bar:8761/eureka/", clientOptions.EurekaServerServiceUrls);
+        Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
+        Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
+        Assert.True(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.ShouldFetchRegistry);
+        Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
+        Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
+        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
+        Assert.True(clientOptions.ShouldRegisterWithEureka);
+        Assert.NotNull(clientOptions.Health);
+        Assert.True(clientOptions.Health.Enabled); // Health contributor enabled
+        Assert.True(clientOptions.Health.CheckEnabled); // Health check enabled
+        Assert.Null(clientOptions.Health.MonitoredApps);
     }
 }

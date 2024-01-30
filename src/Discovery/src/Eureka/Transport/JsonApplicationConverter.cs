@@ -9,20 +9,20 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal sealed class JsonApplicationConverter : JsonConverter<IList<JsonApplication>>
+internal sealed class JsonApplicationConverter : JsonConverter<IList<JsonApplication?>>
 {
-    public override IList<JsonApplication> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override IList<JsonApplication?> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.StartArray)
         {
-            return JsonSerializer.Deserialize<List<JsonApplication>>(ref reader, options)!;
+            return JsonSerializer.Deserialize<List<JsonApplication?>>(ref reader, options)!;
         }
 
         var application = JsonSerializer.Deserialize<JsonApplication>(ref reader, options);
         return application != null ? [application] : [];
     }
 
-    public override void Write(Utf8JsonWriter writer, IList<JsonApplication> value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, IList<JsonApplication?> value, JsonSerializerOptions options)
     {
         throw new NotImplementedException();
     }

@@ -74,7 +74,7 @@ internal sealed class JsonInstanceInfo
     public bool IsCoordinatingDiscoveryServer { get; set; }
 
     [JsonPropertyName("metadata")]
-    public IDictionary<string, string>? Metadata { get; set; }
+    public IDictionary<string, string?>? Metadata { get; set; }
 
     [JsonPropertyName("lastUpdatedTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]

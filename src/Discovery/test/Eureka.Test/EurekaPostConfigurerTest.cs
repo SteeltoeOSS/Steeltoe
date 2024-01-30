@@ -931,8 +931,8 @@ public sealed class EurekaPostConfigurerTest
         EurekaPostConfigurer.UpdateConfiguration(si, clientOptions);
 
         var instanceOptions = new EurekaInstanceOptions();
-        IConfigurationSection instanceConfigSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
-        instanceConfigSection.Bind(instanceOptions);
+        IConfigurationSection instanceOptionsSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        instanceOptionsSection.Bind(instanceOptions);
 
         void ConfigureAction()
         {

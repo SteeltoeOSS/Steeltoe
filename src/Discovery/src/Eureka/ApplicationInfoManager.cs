@@ -66,13 +66,13 @@ public class ApplicationInfoManager
     {
     }
 
-    public virtual void Initialize(EurekaInstanceOptions instanceConfig, ILoggerFactory loggerFactory = null)
+    public virtual void Initialize(EurekaInstanceOptions instanceOptions, ILoggerFactory loggerFactory = null)
     {
-        ArgumentGuard.NotNull(instanceConfig);
+        ArgumentGuard.NotNull(instanceOptions);
 
         logger = loggerFactory?.CreateLogger<ApplicationInfoManager>();
-        InstanceOptions = instanceConfig;
-        InstanceInfo = InstanceInfo.FromInstanceConfiguration(instanceConfig);
+        InstanceOptions = instanceOptions;
+        InstanceInfo = InstanceInfo.FromConfiguration(instanceOptions);
     }
 
     public virtual void RefreshLeaseInfo()
@@ -90,11 +90,7 @@ public class ApplicationInfoManager
         if (InstanceInfo.LeaseInfo.DurationInSecs != InstanceOptions.LeaseExpirationDurationInSeconds ||
             InstanceInfo.LeaseInfo.RenewalIntervalInSecs != InstanceOptions.LeaseRenewalIntervalInSeconds)
         {
-            var newLease = new LeaseInfo
-            {
-                DurationInSecs = InstanceOptions.LeaseExpirationDurationInSeconds,
-                RenewalIntervalInSecs = InstanceOptions.LeaseRenewalIntervalInSeconds
-            };
+            var newLease = new LeaseInfo(InstanceOptions.LeaseRenewalIntervalInSeconds, InstanceOptions.LeaseExpirationDurationInSeconds);
 
             InstanceInfo.LeaseInfo = newLease;
             InstanceInfo.IsDirty = true;

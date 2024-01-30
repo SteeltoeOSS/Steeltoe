@@ -15,5 +15,5 @@ internal sealed class JsonApplication
 
     [JsonPropertyName("instance")]
     [JsonConverter(typeof(JsonInstanceInfoConverter))]
-    public IList<JsonInstanceInfo>? Instances { get; set; }
+    public IList<JsonInstanceInfo?>? Instances { get; set; }
 }

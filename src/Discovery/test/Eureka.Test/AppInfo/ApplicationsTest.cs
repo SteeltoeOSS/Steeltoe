@@ -867,9 +867,9 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(registered.Instances);
         Assert.Equal(2, registered.Instances.Count);
 
-        foreach (InstanceInfo inst in registered.Instances)
+        foreach (InstanceInfo instance in registered.Instances)
         {
-            Assert.Equal(InstanceStatus.Up, inst.Status);
+            Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
         IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
@@ -962,9 +962,9 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(registered.Instances);
         Assert.Single(registered.Instances);
 
-        foreach (InstanceInfo inst in registered.Instances)
+        foreach (InstanceInfo instance in registered.Instances)
         {
-            Assert.Equal(InstanceStatus.Up, inst.Status);
+            Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
         IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");

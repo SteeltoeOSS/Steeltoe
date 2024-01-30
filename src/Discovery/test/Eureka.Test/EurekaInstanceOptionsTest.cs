@@ -20,32 +20,33 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
     [Fact]
     public void DefaultConstructor_InitializedWithDefaults()
     {
-        var options = new EurekaInstanceOptions();
+        var instanceOptions = new EurekaInstanceOptions();
 
-        string thisHostAddress = options.GetHostAddress(false);
+        string thisHostAddress = instanceOptions.GetHostAddress(false);
 
-        Assert.True(options.IsInstanceEnabledOnInit);
-        Assert.Equal(EurekaInstanceOptions.DefaultNonSecurePort, options.NonSecurePort);
-        Assert.Equal(EurekaInstanceOptions.DefaultSecurePort, options.SecurePort);
-        Assert.True(options.IsNonSecurePortEnabled);
-        Assert.False(options.IsSecurePortEnabled);
-        Assert.Equal(EurekaInstanceOptions.DefaultLeaseRenewalIntervalInSeconds, options.LeaseRenewalIntervalInSeconds);
-        Assert.Equal(EurekaInstanceOptions.DefaultLeaseExpirationDurationInSeconds, options.LeaseExpirationDurationInSeconds);
-        Assert.Null(options.SecureVirtualHostName);
-        Assert.Equal(thisHostAddress, options.IPAddress);
-        Assert.Equal(EurekaInstanceOptions.DefaultAppName, options.AppName);
-        Assert.Equal(EurekaInstanceOptions.DefaultStatusPageUrlPath, options.StatusPageUrlPath);
-        Assert.Equal(EurekaInstanceOptions.DefaultHomePageUrlPath, options.HomePageUrlPath);
-        Assert.Equal(EurekaInstanceOptions.DefaultHealthCheckUrlPath, options.HealthCheckUrlPath);
-        Assert.NotNull(options.MetadataMap);
-        Assert.Empty(options.MetadataMap);
-        Assert.Equal(DataCenterName.MyOwn, options.DataCenterInfo.Name);
+        Assert.True(instanceOptions.IsInstanceEnabledOnInit);
+        Assert.Equal(EurekaInstanceOptions.DefaultNonSecurePort, instanceOptions.NonSecurePort);
+        Assert.Equal(EurekaInstanceOptions.DefaultSecurePort, instanceOptions.SecurePort);
+        Assert.True(instanceOptions.IsNonSecurePortEnabled);
+        Assert.False(instanceOptions.IsSecurePortEnabled);
+        Assert.Equal(EurekaInstanceOptions.DefaultLeaseRenewalIntervalInSeconds, instanceOptions.LeaseRenewalIntervalInSeconds);
+        Assert.Equal(EurekaInstanceOptions.DefaultLeaseExpirationDurationInSeconds, instanceOptions.LeaseExpirationDurationInSeconds);
+        Assert.Null(instanceOptions.SecureVirtualHostName);
+        Assert.Equal(thisHostAddress, instanceOptions.IPAddress);
+        Assert.Equal(EurekaInstanceOptions.DefaultAppName, instanceOptions.AppName);
+        Assert.Equal(EurekaInstanceOptions.DefaultStatusPageUrlPath, instanceOptions.StatusPageUrlPath);
+        Assert.Equal(EurekaInstanceOptions.DefaultHomePageUrlPath, instanceOptions.HomePageUrlPath);
+        Assert.Equal(EurekaInstanceOptions.DefaultHealthCheckUrlPath, instanceOptions.HealthCheckUrlPath);
+        Assert.NotNull(instanceOptions.MetadataMap);
+        Assert.Empty(instanceOptions.MetadataMap);
+        Assert.Equal(DataCenterName.MyOwn, instanceOptions.DataCenterInfo.Name);
     }
 
     [Fact]
     public void Constructor_Initializes_Defaults()
     {
         var instanceOptions = new EurekaInstanceOptions();
+
         Assert.NotNull(instanceOptions.InstanceId);
         Assert.Equal("unknown", instanceOptions.AppName);
         Assert.Null(instanceOptions.AppGroupName);
@@ -264,14 +265,14 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
             { "urls", "http://myapp:1233" }
         }).Build();
 
-        var instOpts = new EurekaInstanceOptions();
+        var instanceOptions = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
+        instanceOptions.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
 
-        Assert.Equal("myapp", instOpts.HostName);
-        Assert.Equal(1233, instOpts.NonSecurePort);
-        Assert.False(instOpts.IsSecurePortEnabled);
-        Assert.True(instOpts.IsNonSecurePortEnabled);
+        Assert.Equal("myapp", instanceOptions.HostName);
+        Assert.Equal(1233, instanceOptions.NonSecurePort);
+        Assert.False(instanceOptions.IsSecurePortEnabled);
+        Assert.True(instanceOptions.IsNonSecurePortEnabled);
     }
 
     [Fact]
@@ -282,15 +283,15 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
             { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" }
         }).Build();
 
-        var instOpts = new EurekaInstanceOptions();
+        var instanceOptions = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
+        instanceOptions.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
 
-        Assert.Equal("myapp", instOpts.HostName);
-        Assert.Equal(1234, instOpts.SecurePort);
-        Assert.Equal(1233, instOpts.NonSecurePort);
-        Assert.True(instOpts.IsSecurePortEnabled);
-        Assert.False(instOpts.IsNonSecurePortEnabled);
+        Assert.Equal("myapp", instanceOptions.HostName);
+        Assert.Equal(1234, instanceOptions.SecurePort);
+        Assert.Equal(1233, instanceOptions.NonSecurePort);
+        Assert.True(instanceOptions.IsSecurePortEnabled);
+        Assert.False(instanceOptions.IsNonSecurePortEnabled);
     }
 
     [Fact]
@@ -301,26 +302,26 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
             { "urls", "https://+:443;http://+:80" }
         }).Build();
 
-        var instOpts = new EurekaInstanceOptions();
+        var instanceOptions = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
+        instanceOptions.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
 
-        Assert.Equal(80, instOpts.NonSecurePort);
-        Assert.Equal(443, instOpts.SecurePort);
-        Assert.True(instOpts.IsSecurePortEnabled);
-        Assert.False(instOpts.IsNonSecurePortEnabled);
+        Assert.Equal(80, instanceOptions.NonSecurePort);
+        Assert.Equal(443, instanceOptions.SecurePort);
+        Assert.True(instanceOptions.IsSecurePortEnabled);
+        Assert.False(instanceOptions.IsNonSecurePortEnabled);
     }
 
     [Fact]
     public void UpdateConfigurationUsesDefaultsWhenNoUrl()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
-        var instOpts = new EurekaInstanceOptions();
+        var instanceOptions = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
+        instanceOptions.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());
 
-        Assert.Equal(80, instOpts.NonSecurePort);
-        Assert.False(instOpts.IsSecurePortEnabled);
-        Assert.True(instOpts.IsNonSecurePortEnabled);
+        Assert.Equal(80, instanceOptions.NonSecurePort);
+        Assert.False(instanceOptions.IsSecurePortEnabled);
+        Assert.True(instanceOptions.IsNonSecurePortEnabled);
     }
 }

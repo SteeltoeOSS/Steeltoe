@@ -13,12 +13,13 @@ public sealed class EurekaApplicationHealthContributorTest
     [Fact]
     public void GetApplicationsFromConfig_ReturnsExpected()
     {
-        var contrib = new EurekaApplicationsHealthContributor();
-        var configuration = new EurekaClientOptions();
-        IList<string> apps = contrib.GetApplicationsFromConfig(configuration);
+        var contributor = new EurekaApplicationsHealthContributor();
+        var clientOptions = new EurekaClientOptions();
+
+        IList<string> apps = contributor.GetApplicationsFromConfig(clientOptions);
         Assert.Null(apps);
 
-        configuration = new EurekaClientOptions
+        clientOptions = new EurekaClientOptions
         {
             Health =
             {
@@ -26,7 +27,8 @@ public sealed class EurekaApplicationHealthContributorTest
             }
         };
 
-        apps = contrib.GetApplicationsFromConfig(configuration);
+        apps = contributor.GetApplicationsFromConfig(clientOptions);
+
         Assert.NotEmpty(apps);
         Assert.Equal(3, apps.Count);
         Assert.Contains("foo", apps);
@@ -37,7 +39,7 @@ public sealed class EurekaApplicationHealthContributorTest
     [Fact]
     public void AddApplicationHealthStatus_AddsExpected()
     {
-        var contrib = new EurekaApplicationsHealthContributor();
+        var contributor = new EurekaApplicationsHealthContributor();
         var app1 = new Application("app1");
 
         app1.Add(new InstanceInfo
@@ -67,12 +69,14 @@ public sealed class EurekaApplicationHealthContributorTest
         });
 
         var result = new HealthCheckResult();
-        contrib.AddApplicationHealthStatus("app1", null, result);
+        contributor.AddApplicationHealthStatus("app1", null, result);
+
         Assert.Equal(HealthStatus.Down, result.Status);
         Assert.Equal("No instances found", result.Details["app1"]);
 
         result = new HealthCheckResult();
-        contrib.AddApplicationHealthStatus("foobar", app1, result);
+        contributor.AddApplicationHealthStatus("foobar", app1, result);
+
         Assert.Equal(HealthStatus.Down, result.Status);
         Assert.Equal("No instances found", result.Details["foobar"]);
 
@@ -81,7 +85,8 @@ public sealed class EurekaApplicationHealthContributorTest
             Status = HealthStatus.Up
         };
 
-        contrib.AddApplicationHealthStatus("app1", app1, result);
+        contributor.AddApplicationHealthStatus("app1", app1, result);
+
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Equal("2 instances with UP status", result.Details["app1"]);
 
@@ -90,7 +95,8 @@ public sealed class EurekaApplicationHealthContributorTest
             Status = HealthStatus.Up
         };
 
-        contrib.AddApplicationHealthStatus("app2", app2, result);
+        contributor.AddApplicationHealthStatus("app2", app2, result);
+
         Assert.Equal(HealthStatus.Down, result.Status);
         Assert.Equal("0 instances with UP status", result.Details["app2"]);
     }
