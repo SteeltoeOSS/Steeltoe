@@ -203,7 +203,7 @@ public sealed class InstanceInfo
 
         if (!string.IsNullOrEmpty(info.InstanceId))
         {
-            InstanceInfo me = ApplicationInfoManager.Instance.InstanceInfo;
+            InstanceInfo me = EurekaApplicationInfoManager.SharedInstance.InstanceInfo;
 
             if (me != null && info.InstanceId == me.InstanceId)
             {

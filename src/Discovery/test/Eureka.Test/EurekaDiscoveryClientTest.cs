@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Xunit;
@@ -24,7 +25,7 @@ public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
         var instanceOptions = new EurekaInstanceOptions();
         var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
 
-        var appManager = new EurekaApplicationInfoManager(instanceOptionsMonitor);
+        var appManager = new EurekaApplicationInfoManager(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         var client = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager);
 
         Assert.NotNull(client.ClientOptions);

@@ -15,13 +15,13 @@ public sealed class EurekaDiscoveryManager
     private IOptionsMonitor<EurekaClientOptions>? _clientOptionsMonitor;
     private IOptionsMonitor<EurekaInstanceOptions>? _instanceOptionsMonitor;
 
-    public static EurekaDiscoveryManager Instance { get; } = new();
-    public DiscoveryClient? Client { get; internal set; }
+    public static EurekaDiscoveryManager SharedInstance { get; } = new();
+    public DiscoveryClient? Client { get; private set; }
 
     public EurekaClientOptions? ClientOptions
     {
         get => _clientOptionsMonitor?.CurrentValue;
-        internal set
+        private set
         {
             if (value != null)
             {
@@ -35,7 +35,7 @@ public sealed class EurekaDiscoveryManager
     public EurekaInstanceOptions? InstanceOptions
     {
         get => _instanceOptionsMonitor?.CurrentValue;
-        internal set
+        private set
         {
             if (value != null)
             {
@@ -62,28 +62,39 @@ public sealed class EurekaDiscoveryManager
     {
     }
 
-    internal void Initialize(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, ILoggerFactory? loggerFactory = null)
+    internal void Initialize(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(clientOptionsMonitor);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _clientOptionsMonitor = clientOptionsMonitor;
         Client = new DiscoveryClient(clientOptionsMonitor.CurrentValue, null, loggerFactory);
     }
 
     internal void Initialize(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
-        ILoggerFactory? loggerFactory = null)
+        ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(clientOptionsMonitor);
         ArgumentGuard.NotNull(instanceOptionsMonitor);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _clientOptionsMonitor = clientOptionsMonitor;
         _instanceOptionsMonitor = instanceOptionsMonitor;
 
-        if (ApplicationInfoManager.Instance.InstanceInfo == null)
+        if (EurekaApplicationInfoManager.SharedInstance.InstanceInfo == null)
         {
-            ApplicationInfoManager.Instance.Initialize(instanceOptionsMonitor.CurrentValue, loggerFactory);
+            ILogger<EurekaApplicationInfoManager> logger = loggerFactory.CreateLogger<EurekaApplicationInfoManager>();
+            EurekaApplicationInfoManager.SharedInstance.Initialize(instanceOptionsMonitor, logger);
         }
 
         Client = new DiscoveryClient(clientOptionsMonitor.CurrentValue, null, loggerFactory);
+    }
+
+    internal static void ResetSharedInstance()
+    {
+        SharedInstance.ClientOptions = null;
+        SharedInstance.Client = null;
+        SharedInstance.InstanceOptions = null;
+
     }
 }

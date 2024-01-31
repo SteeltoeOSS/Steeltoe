@@ -16,7 +16,7 @@ namespace Steeltoe.Discovery.Eureka;
 public class DiscoveryClient
 {
     private readonly ILogger<DiscoveryClient> _logger;
-    protected readonly ApplicationInfoManager AppInfoManager;
+    protected readonly EurekaApplicationInfoManager AppInfoManager;
     private int _shutdown;
     private volatile Applications _localRegionApps;
     private long _registryFetchCounter;
@@ -56,7 +56,7 @@ public class DiscoveryClient
     public event EventHandler<ApplicationsEventArgs> OnApplicationsChange;
 
     public DiscoveryClient(EurekaClientOptions clientOptions, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null)
-        : this(ApplicationInfoManager.Instance, loggerFactory ?? NullLoggerFactory.Instance)
+        : this(EurekaApplicationInfoManager.SharedInstance, loggerFactory ?? NullLoggerFactory.Instance)
     {
         ArgumentGuard.NotNull(clientOptions);
 
@@ -67,7 +67,7 @@ public class DiscoveryClient
     }
 
     // Constructor used by Dependency Injection
-    protected DiscoveryClient(ApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory)
+    protected DiscoveryClient(EurekaApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(appInfoManager);
         ArgumentGuard.NotNull(loggerFactory);
@@ -239,7 +239,7 @@ public class DiscoveryClient
         }
     }
 
-    private async void HandleInstanceStatusChanged(object sender, StatusChangedEventArgs args)
+    private async void HandleInstanceStatusChanged(object sender, InstanceStatusChangedEventArgs args)
     {
         try
         {
