@@ -10,8 +10,8 @@ public abstract class AbstractBaseTest
     {
         ApplicationInfoManager.Instance.InstanceInfo = null;
         ApplicationInfoManager.Instance.InstanceOptions = null;
-        DiscoveryManager.Instance.ClientOptions = null;
-        DiscoveryManager.Instance.Client = null;
-        DiscoveryManager.Instance.InstanceOptions = null;
+        EurekaDiscoveryManager.Instance.ClientOptions = null;
+        EurekaDiscoveryManager.Instance.Client = null;
+        EurekaDiscoveryManager.Instance.InstanceOptions = null;
     }
 }

@@ -22,7 +22,7 @@ public sealed class ConsulServiceRegistrarTest
     [Fact]
     public async Task Start_CallsRegistry()
     {
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var appInstanceInfo = new ApplicationInstanceInfo(new ConfigurationBuilder().Build());
         var registration = ConsulRegistration.Create(optionsMonitor, appInstanceInfo);
 
@@ -81,7 +81,7 @@ public sealed class ConsulServiceRegistrarTest
     [Fact]
     public async Task Dispose_CallsRegistry()
     {
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var appInstanceInfo = new ApplicationInstanceInfo(new ConfigurationBuilder().Build());
         var registration = ConsulRegistration.Create(optionsMonitor, appInstanceInfo);
 

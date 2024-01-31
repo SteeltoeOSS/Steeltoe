@@ -27,7 +27,7 @@ public sealed class ThisServiceInstanceTest
             }
         };
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var consulRegistration = new ConsulRegistration(serviceRegistration, optionsMonitor);
         var instance = new ThisServiceInstance(consulRegistration);
 

@@ -95,8 +95,6 @@ public sealed class ConsulDiscoveryClientTest
     [Fact]
     public async Task GetServicesAsync_ReturnsExpected()
     {
-        var options = new ConsulDiscoveryOptions();
-
         var queryResult = new QueryResult<Dictionary<string, string[]>>
         {
             Response = new Dictionary<string, string[]>
@@ -122,7 +120,7 @@ public sealed class ConsulDiscoveryClientTest
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         await using var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
         IList<string> serviceIds = await discoveryClient.GetServiceIdsAsync(QueryOptions.Default, CancellationToken.None);
 
