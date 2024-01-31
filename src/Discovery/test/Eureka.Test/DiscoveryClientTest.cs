@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -262,7 +263,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        ApplicationInfoManager.Instance.InstanceInfo = instance;
+        EurekaApplicationInfoManager.SharedInstance.InstanceInfo = instance;
 
         var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
         var client = new DiscoveryClient(clientOptions, httpClient);
@@ -304,7 +305,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        ApplicationInfoManager.Instance.InstanceInfo = instance;
+        EurekaApplicationInfoManager.SharedInstance.InstanceInfo = instance;
 
         var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
         var client = new DiscoveryClient(clientOptions, httpClient);
@@ -346,7 +347,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        ApplicationInfoManager.Instance.InstanceInfo = instance;
+        EurekaApplicationInfoManager.SharedInstance.InstanceInfo = instance;
 
         var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
         var client = new DiscoveryClient(clientOptions, httpClient);
@@ -390,7 +391,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        ApplicationInfoManager.Instance.InstanceInfo = instance;
+        EurekaApplicationInfoManager.SharedInstance.InstanceInfo = instance;
 
         var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
         var client = new DiscoveryClient(clientOptions, httpClient);
@@ -426,7 +427,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        ApplicationInfoManager.Instance.InstanceInfo = instance;
+        EurekaApplicationInfoManager.SharedInstance.InstanceInfo = instance;
 
         var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
         var client = new DiscoveryClient(clientOptions, httpClient);
@@ -757,8 +758,8 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldRegisterWithEureka = false
         };
 
-        var instanceOptions = new EurekaInstanceOptions();
-        ApplicationInfoManager.Instance.Initialize(instanceOptions);
+        var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>();
+        EurekaApplicationInfoManager.SharedInstance.Initialize(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
         var client = new DiscoveryClient(clientOptions);
         var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
@@ -767,7 +768,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         await client.RefreshInstanceInfoAsync(CancellationToken.None);
 
         Assert.True(myHandler.Awaited);
-        Assert.Equal(InstanceStatus.Down, ApplicationInfoManager.Instance.InstanceInfo.Status);
+        Assert.Equal(InstanceStatus.Down, EurekaApplicationInfoManager.SharedInstance.InstanceInfo.Status);
     }
 
     [Fact]
