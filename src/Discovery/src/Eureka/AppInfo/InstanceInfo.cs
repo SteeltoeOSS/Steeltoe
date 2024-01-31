@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
-using System.Text.Json.Serialization;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
 
@@ -23,7 +22,6 @@ public sealed class InstanceInfo
     public string AppName { get; internal set; }
     public string AppGroupName { get; private set; }
 
-    [JsonPropertyName("IpAddr")]
     public string IPAddress { get; internal set; }
 
     public string Sid

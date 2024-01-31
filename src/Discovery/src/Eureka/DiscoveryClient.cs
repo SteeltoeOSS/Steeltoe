@@ -24,23 +24,14 @@ public class DiscoveryClient
     protected EurekaHttpClient httpClient;
 
     internal Timer HeartBeatTimer { get; private set; }
-
     internal Timer CacheRefreshTimer => cacheRefreshTimer;
-
     internal long RegistryFetchCounter { get; set; }
-
     public long LastGoodHeartbeatTimestamp { get; private set; }
-
     public long LastGoodFullRegistryFetchTimestamp { get; internal set; }
-
     public long LastGoodDeltaRegistryFetchTimestamp { get; internal set; }
-
     public long LastGoodRegistryFetchTimestamp { get; private set; }
-
     public long LastGoodRegisterTimestamp { get; internal set; }
-
     public InstanceStatus LastRemoteInstanceStatus { get; private set; } = InstanceStatus.Unknown;
-
     public EurekaHttpClient HttpClient => httpClient;
 
     public Applications Applications
@@ -50,9 +41,7 @@ public class DiscoveryClient
     }
 
     public virtual EurekaClientOptions ClientOptions { get; }
-
     public IHealthCheckHandler HealthCheckHandler { get; set; }
-
     public event EventHandler<ApplicationsEventArgs> OnApplicationsChange;
 
     public DiscoveryClient(EurekaClientOptions clientOptions, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null)
@@ -66,6 +55,8 @@ public class DiscoveryClient
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
+#nullable enable
+
     // Constructor used by Dependency Injection
     protected DiscoveryClient(EurekaApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory)
     {
@@ -75,6 +66,8 @@ public class DiscoveryClient
         AppInfoManager = appInfoManager;
         _logger = loggerFactory.CreateLogger<DiscoveryClient>();
     }
+
+#nullable disable
 
     public Application GetApplication(string appName)
     {
