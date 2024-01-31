@@ -27,7 +27,7 @@ public sealed class EurekaDiscoveryManagerTest : AbstractBaseTest
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>(clientOptions);
 
         var appManager = new EurekaApplicationInfoManager(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
-        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager);
+        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, NullLoggerFactory.Instance);
 
         var discoveryManager = new EurekaDiscoveryManager(clientOptionsMonitor, instanceOptionsMonitor, discoveryClient);
 

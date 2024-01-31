@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
@@ -29,18 +28,25 @@ public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, I
 
     public string Description => "A discovery client for Spring Cloud Eureka.";
 
+#nullable enable
+
     public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
-        EurekaApplicationInfoManager appInfoManager, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null,
-        IHttpClientHandlerProvider handlerProvider = null, HttpClient netHttpClient = null)
-        : base(appInfoManager, loggerFactory ?? NullLoggerFactory.Instance)
+        EurekaApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory, EurekaHttpClient? httpClient = null,
+        IHttpClientHandlerProvider? handlerProvider = null, HttpClient? netHttpClient = null)
+        : base(appInfoManager, loggerFactory)
     {
-        _thisInstance = new ThisServiceInstance(instanceOptionsMonitor);
+        ArgumentGuard.NotNull(clientOptionsMonitor);
+        ArgumentGuard.NotNull(instanceOptionsMonitor);
+
         _clientOptionsMonitor = clientOptionsMonitor;
+        _thisInstance = new ThisServiceInstance(instanceOptionsMonitor);
         this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientOptionsMonitor, loggerFactory, handlerProvider, netHttpClient);
-        _logger = (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger<EurekaDiscoveryClient>();
+        _logger = loggerFactory.CreateLogger<EurekaDiscoveryClient>();
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
+
+#nullable disable
 
     /// <inheritdoc />
     public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
