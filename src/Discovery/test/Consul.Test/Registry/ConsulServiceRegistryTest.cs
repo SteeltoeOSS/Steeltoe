@@ -23,7 +23,7 @@ public sealed class ConsulServiceRegistryTest
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
@@ -50,7 +50,7 @@ public sealed class ConsulServiceRegistryTest
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
@@ -81,7 +81,7 @@ public sealed class ConsulServiceRegistryTest
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
@@ -103,7 +103,7 @@ public sealed class ConsulServiceRegistryTest
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
@@ -125,7 +125,7 @@ public sealed class ConsulServiceRegistryTest
     [Fact]
     public async Task GetStatusAsync_ReturnsExpected()
     {
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {

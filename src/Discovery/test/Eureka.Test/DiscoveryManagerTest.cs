@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -17,25 +18,9 @@ public sealed class DiscoveryManagerTest : AbstractBaseTest
     [Fact]
     public void DiscoveryManager_Uninitialized()
     {
-        Assert.Null(DiscoveryManager.Instance.Client);
-        Assert.Null(DiscoveryManager.Instance.ClientOptions);
-        Assert.Null(DiscoveryManager.Instance.InstanceOptions);
-    }
-
-    [Fact]
-    public void Initialize_Throws_IfInstanceConfigNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() =>
-            DiscoveryManager.Instance.Initialize(new EurekaClientOptions(), (EurekaInstanceOptions)null));
-
-        Assert.Contains("instanceOptions", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Initialize_Throws_IfClientConfigNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryManager.Instance.Initialize(null, new EurekaInstanceOptions()));
-        Assert.Contains("clientOptions", ex.Message, StringComparison.Ordinal);
+        Assert.Null(EurekaDiscoveryManager.Instance.Client);
+        Assert.Null(EurekaDiscoveryManager.Instance.ClientOptions);
+        Assert.Null(EurekaDiscoveryManager.Instance.InstanceOptions);
     }
 
     [Fact]
@@ -49,13 +34,16 @@ public sealed class DiscoveryManagerTest : AbstractBaseTest
             ShouldFetchRegistry = false
         };
 
-        DiscoveryManager.Instance.Initialize(clientOptions, instanceOptions);
+        var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>(clientOptions);
 
-        Assert.NotNull(DiscoveryManager.Instance.InstanceOptions);
-        Assert.Equal(instanceOptions, DiscoveryManager.Instance.InstanceOptions);
-        Assert.NotNull(DiscoveryManager.Instance.ClientOptions);
-        Assert.Equal(clientOptions, DiscoveryManager.Instance.ClientOptions);
-        Assert.NotNull(DiscoveryManager.Instance.Client);
+        EurekaDiscoveryManager.Instance.Initialize(clientOptionsMonitor, instanceOptionsMonitor);
+
+        Assert.NotNull(EurekaDiscoveryManager.Instance.InstanceOptions);
+        Assert.Equal(instanceOptions, EurekaDiscoveryManager.Instance.InstanceOptions);
+        Assert.NotNull(EurekaDiscoveryManager.Instance.ClientOptions);
+        Assert.Equal(clientOptions, EurekaDiscoveryManager.Instance.ClientOptions);
+        Assert.NotNull(EurekaDiscoveryManager.Instance.Client);
 
         Assert.Equal(instanceOptions, ApplicationInfoManager.Instance.InstanceOptions);
     }
@@ -69,12 +57,14 @@ public sealed class DiscoveryManagerTest : AbstractBaseTest
             ShouldFetchRegistry = false
         };
 
-        DiscoveryManager.Instance.Initialize(clientOptions);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>(clientOptions);
 
-        Assert.Null(DiscoveryManager.Instance.InstanceOptions);
-        Assert.NotNull(DiscoveryManager.Instance.ClientOptions);
-        Assert.Equal(clientOptions, DiscoveryManager.Instance.ClientOptions);
-        Assert.NotNull(DiscoveryManager.Instance.Client);
+        EurekaDiscoveryManager.Instance.Initialize(clientOptionsMonitor);
+
+        Assert.Null(EurekaDiscoveryManager.Instance.InstanceOptions);
+        Assert.NotNull(EurekaDiscoveryManager.Instance.ClientOptions);
+        Assert.Equal(clientOptions, EurekaDiscoveryManager.Instance.ClientOptions);
+        Assert.NotNull(EurekaDiscoveryManager.Instance.Client);
 
         Assert.Null(ApplicationInfoManager.Instance.InstanceOptions);
     }

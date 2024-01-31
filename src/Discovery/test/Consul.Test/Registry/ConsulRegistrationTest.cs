@@ -36,7 +36,7 @@ public sealed class ConsulRegistrationTest
             }
         };
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var registration = new ConsulRegistration(source, optionsMonitor);
 
         Assert.Equal("id", registration.InstanceId);
@@ -116,7 +116,7 @@ public sealed class ConsulRegistrationTest
     [Fact]
     public void AppName_SetAsExpected()
     {
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var appsettings = new Dictionary<string, string>();
         IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
         var appInstanceInfo = new ApplicationInstanceInfo(configuration);
@@ -164,7 +164,7 @@ public sealed class ConsulRegistrationTest
 
         IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
 
         Assert.StartsWith("serviceName-", registration.InstanceId, StringComparison.Ordinal);

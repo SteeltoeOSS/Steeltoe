@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
@@ -197,7 +198,7 @@ public sealed class CloudFoundryOAuthHandlerTest
     private MyTestCloudFoundryHandler GetTestHandler(CloudFoundryOAuthOptions options)
     {
         var loggerFactory = new LoggerFactory();
-        IOptionsMonitor<CloudFoundryOAuthOptions> monitor = new MonitorWrapper<CloudFoundryOAuthOptions>(options);
+        IOptionsMonitor<CloudFoundryOAuthOptions> monitor = new TestOptionsMonitor<CloudFoundryOAuthOptions>(options);
         var encoder = UrlEncoder.Default;
 
 #if NET6_0

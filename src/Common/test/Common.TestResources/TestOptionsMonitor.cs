@@ -7,11 +7,19 @@ using Microsoft.Extensions.Options;
 namespace Steeltoe.Common.TestResources;
 
 public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
+    where T : new()
 {
     public T CurrentValue { get; }
 
+    public TestOptionsMonitor()
+    {
+        CurrentValue = new T();
+    }
+
     public TestOptionsMonitor(T currentValue)
     {
+        ArgumentNullException.ThrowIfNull(currentValue);
+
         CurrentValue = currentValue;
     }
 

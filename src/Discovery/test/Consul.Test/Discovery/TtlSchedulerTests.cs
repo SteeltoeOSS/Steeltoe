@@ -17,7 +17,7 @@ public sealed class TtlSchedulerTests
     public void Add_Throws_Invalid_InstanceId()
     {
         var clientMoq = new Mock<IConsulClient>();
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
         Assert.Throws<ArgumentException>(() => scheduler.Add(string.Empty));
@@ -64,7 +64,7 @@ public sealed class TtlSchedulerTests
     public async Task Remove_Throws_Invalid_InstanceId()
     {
         var clientMoq = new Mock<IConsulClient>();
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
         await Assert.ThrowsAsync<ArgumentException>(async () => await scheduler.RemoveAsync(string.Empty));
