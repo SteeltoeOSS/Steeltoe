@@ -4,11 +4,15 @@
 
 #nullable enable
 
+using System.Net;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -79,38 +83,48 @@ public sealed class EurekaDiscoveryClientExtensionTest
     }
 
     [Fact]
-    public void HttpClientHandlerProviderIsUsed()
+    public async Task CustomDelegatingHandlerCanBeAdded()
     {
-        var services = new ServiceCollection();
-        var extension = new EurekaDiscoveryClientExtension();
-
         var appSettings = new Dictionary<string, string?>
         {
-            { "spring:cloud:discovery:enabled", "false" },
-            { "eureka:client:enabled", "true" },
-            { "eureka:client:serviceurl", "http://testhost/eureka" }
+            { "Eureka:Client:ServiceUrl", "https://www.google.com" },
+            { "Eureka:Client:EurekaServer:ConnectTimeoutSeconds", "1" },
+            { "Eureka:Client:EurekaServer:RetryCount", "1" }
         };
 
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
-        services.AddSingleton<IHttpClientHandlerProvider, TestClientHandlerProvider>();
-        extension.ApplyServices(services);
+        var services = new ServiceCollection();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        services.AddSingleton<IConfiguration>(configuration);
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        _ = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient("Eureka");
-        var handlerProvider = serviceProvider.GetRequiredService<IHttpClientHandlerProvider>();
+        var pluggableHandler = new PluggableDelegatingHandler();
+        services.AddSingleton(pluggableHandler);
 
-        handlerProvider.Should().BeOfType(typeof(TestClientHandlerProvider));
-        ((TestClientHandlerProvider)handlerProvider).Called.Should().BeTrue();
+        services.Configure<HttpClientFactoryOptions>("Eureka", options =>
+        {
+            options.HttpMessageHandlerBuilderActions.Add(builder =>
+                builder.AdditionalHandlers.Add(builder.Services.GetRequiredService<PluggableDelegatingHandler>()));
+        });
+
+        services.AddServiceDiscovery(configuration, builder => builder.UseEureka());
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        var eurekaHttpClient = serviceProvider.GetRequiredService<EurekaHttpClient>();
+
+        EurekaHttpResponse<Applications> response = await eurekaHttpClient.GetApplicationsAsync(CancellationToken.None);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        pluggableHandler.WasCalled.Should().BeTrue();
     }
 
-    internal sealed class TestClientHandlerProvider : IHttpClientHandlerProvider
+    private sealed class PluggableDelegatingHandler : DelegatingHandler
     {
-        public bool Called { get; private set; }
+        public bool WasCalled { get; private set; }
 
-        public HttpClientHandler GetHttpClientHandler()
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            Called = true;
-            return new HttpClientHandler();
+            WasCalled = true;
+            return base.SendAsync(request, cancellationToken);
         }
     }
 }

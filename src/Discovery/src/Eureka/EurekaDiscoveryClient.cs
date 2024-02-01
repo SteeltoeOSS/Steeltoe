@@ -31,8 +31,7 @@ public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, I
 #nullable enable
 
     public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
-        EurekaApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory, EurekaHttpClient? httpClient = null,
-        IHttpClientHandlerProvider? handlerProvider = null, HttpClient? netHttpClient = null)
+        EurekaApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory, EurekaHttpClient? httpClient = null, HttpClient? netHttpClient = null)
         : base(appInfoManager, loggerFactory)
     {
         ArgumentGuard.NotNull(clientOptionsMonitor);
@@ -40,7 +39,7 @@ public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, I
 
         _clientOptionsMonitor = clientOptionsMonitor;
         _thisInstance = new ThisServiceInstance(instanceOptionsMonitor);
-        this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientOptionsMonitor, loggerFactory, handlerProvider, netHttpClient);
+        this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientOptionsMonitor, loggerFactory, netHttpClient);
         _logger = loggerFactory.CreateLogger<EurekaDiscoveryClient>();
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
@@ -112,9 +111,8 @@ public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, I
 
     private sealed class EurekaHttpClientInternal : EurekaHttpClient
     {
-        public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILoggerFactory loggerFactory = null,
-            IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
-            : base(optionsMonitor, handlerProvider, loggerFactory)
+        public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILoggerFactory loggerFactory = null, HttpClient httpClient = null)
+            : base(optionsMonitor, loggerFactory)
         {
             this.httpClient = httpClient;
         }

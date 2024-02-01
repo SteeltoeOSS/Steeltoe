@@ -27,7 +27,6 @@ public class EurekaHttpClient
     private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitor;
     private readonly object _lock = new();
     private readonly EurekaClientOptions _configuration;
-    private readonly IHttpClientHandlerProvider _handlerProvider;
     private IList<string> _failingServiceUrls = new List<string>();
     private IDictionary<string, string> _headers;
     private ILogger _logger;
@@ -42,14 +41,26 @@ public class EurekaHttpClient
 
     private EurekaClientOptions Configuration => _optionsMonitor != null ? _optionsMonitor.CurrentValue : _configuration;
 
-    public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> optionsMonitor, IHttpClientHandlerProvider handlerProvider = null,
-        ILoggerFactory loggerFactory = null)
+    // Constructor used by Dependency Injection
+    public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> optionsMonitor, IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory)
+    {
+        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(httpClientFactory);
+        ArgumentGuard.NotNull(loggerFactory);
+
+        _configuration = null;
+        _optionsMonitor = optionsMonitor;
+        httpClient = httpClientFactory.CreateClient("Eureka");
+        Initialize(new Dictionary<string, string>(), loggerFactory);
+    }
+
+
+    public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILoggerFactory loggerFactory = null)
     {
         ArgumentGuard.NotNull(optionsMonitor);
 
         _configuration = null;
         _optionsMonitor = optionsMonitor;
-        _handlerProvider = handlerProvider;
         Initialize(new Dictionary<string, string>(), loggerFactory);
     }
 
@@ -59,18 +70,16 @@ public class EurekaHttpClient
         httpClient = client;
     }
 
-    public EurekaHttpClient(EurekaClientOptions configuration, ILoggerFactory loggerFactory = null, IHttpClientHandlerProvider handlerProvider = null)
-        : this(configuration, new Dictionary<string, string>(), loggerFactory, handlerProvider)
+    public EurekaHttpClient(EurekaClientOptions configuration, ILoggerFactory loggerFactory = null)
+        : this(configuration, new Dictionary<string, string>(), loggerFactory)
     {
     }
 
-    public EurekaHttpClient(EurekaClientOptions configuration, IDictionary<string, string> headers, ILoggerFactory loggerFactory = null,
-        IHttpClientHandlerProvider handlerProvider = null)
+    public EurekaHttpClient(EurekaClientOptions configuration, IDictionary<string, string> headers, ILoggerFactory loggerFactory = null)
     {
         ArgumentGuard.NotNull(configuration);
 
         _configuration = configuration;
-        _handlerProvider = handlerProvider;
         Initialize(headers, loggerFactory);
     }
 
@@ -640,7 +649,7 @@ public class EurekaHttpClient
         return new Uri(uri);
     }
 
-    protected void Initialize(IDictionary<string, string> headers, ILoggerFactory loggerFactory)
+    private void Initialize(IDictionary<string, string> headers, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(headers);
 
@@ -772,7 +781,7 @@ public class EurekaHttpClient
     protected virtual HttpClient GetHttpClient()
     {
         return httpClient ?? HttpClientHelper.GetHttpClient(Configuration.ValidateCertificates,
-            ConfigureEurekaHttpClientHandler(Configuration, _handlerProvider?.GetHttpClientHandler()), Configuration.EurekaServer.ConnectTimeoutSeconds * 1000);
+            ConfigureEurekaHttpClientHandler(Configuration, null), Configuration.EurekaServer.ConnectTimeoutSeconds * 1000);
     }
 
     internal static HttpClientHandler ConfigureEurekaHttpClientHandler(EurekaClientOptions configuration, HttpClientHandler handler)

@@ -175,28 +175,27 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
         services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
 
-        ServiceDescriptor? existingHandler = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IHttpClientHandlerProvider));
-
-        if (existingHandler != null && typeof(IHttpClientHandlerProvider).IsAssignableFrom(existingHandler.ImplementationType))
+        AddEurekaHttpClient(services).ConfigurePrimaryHttpMessageHandler(serviceProvider =>
         {
-            AddEurekaHttpClient(services).ConfigurePrimaryHttpMessageHandler(serviceProvider =>
-                serviceProvider.GetRequiredService<IHttpClientHandlerProvider>().GetHttpClientHandler());
-        }
-        else
-        {
-            AddEurekaHttpClient(services).ConfigurePrimaryHttpMessageHandler(serviceProvider =>
-            {
-                var certificateOptionsMonitor = serviceProvider.GetService<IOptionsMonitor<CertificateOptions>>();
-                var eurekaOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
+            var certificateOptionsMonitor = serviceProvider.GetService<IOptionsMonitor<CertificateOptions>>();
+            var eurekaOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
 
-                return EurekaHttpClient.ConfigureEurekaHttpClientHandler(eurekaOptionsMonitor.CurrentValue,
-                    certificateOptionsMonitor is null ? null : new ClientCertificateHttpHandler(certificateOptionsMonitor));
-            });
-        }
+            return EurekaHttpClient.ConfigureEurekaHttpClientHandler(eurekaOptionsMonitor.CurrentValue,
+                certificateOptionsMonitor is null ? null : new ClientCertificateHttpHandler(certificateOptionsMonitor));
+        });
     }
 
     private IHttpClientBuilder AddEurekaHttpClient(IServiceCollection services)
     {
+        services.AddTransient<EurekaHttpClient>(serviceProvider =>
+        {
+            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
+            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+            return new EurekaHttpClient(optionsMonitor, httpClientFactory, loggerFactory);
+        });
+
         return services.AddHttpClient<EurekaDiscoveryClient>("Eureka", (serviceProvider, httpClient) =>
         {
             var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
