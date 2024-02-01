@@ -68,7 +68,7 @@ public sealed class EurekaDiscoveryManager
         ArgumentGuard.NotNull(loggerFactory);
 
         _clientOptionsMonitor = clientOptionsMonitor;
-        Client = new DiscoveryClient(clientOptionsMonitor.CurrentValue, null, loggerFactory);
+        Client = new DiscoveryClient(clientOptionsMonitor, null, loggerFactory);
     }
 
     internal void Initialize(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
@@ -87,7 +87,7 @@ public sealed class EurekaDiscoveryManager
             EurekaApplicationInfoManager.SharedInstance.Initialize(instanceOptionsMonitor, logger);
         }
 
-        Client = new DiscoveryClient(clientOptionsMonitor.CurrentValue, null, loggerFactory);
+        Client = new DiscoveryClient(clientOptionsMonitor, null, loggerFactory);
     }
 
     internal static void ResetSharedInstance()

@@ -5,6 +5,7 @@
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -44,13 +45,13 @@ public class DiscoveryClient
     public IHealthCheckHandler HealthCheckHandler { get; set; }
     public event EventHandler<ApplicationsEventArgs> OnApplicationsChange;
 
-    public DiscoveryClient(EurekaClientOptions clientOptions, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null)
+    public DiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null)
         : this(EurekaApplicationInfoManager.SharedInstance, loggerFactory ?? NullLoggerFactory.Instance)
     {
-        ArgumentGuard.NotNull(clientOptions);
+        ArgumentGuard.NotNull(clientOptionsMonitor);
 
-        ClientOptions = clientOptions;
-        this.httpClient = httpClient ?? new EurekaHttpClient(clientOptions, loggerFactory);
+        ClientOptions = clientOptionsMonitor.CurrentValue;
+        this.httpClient = httpClient ?? new EurekaHttpClient(clientOptionsMonitor, loggerFactory);
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }

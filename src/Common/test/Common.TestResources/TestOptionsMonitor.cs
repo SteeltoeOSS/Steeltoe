@@ -6,6 +6,15 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.TestResources;
 
+public static class TestOptionsMonitor
+{
+    public static TestOptionsMonitor<T> Create<T>(T currentValue)
+        where T : new()
+    {
+        return new TestOptionsMonitor<T>(currentValue);
+    }
+}
+
 public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
     where T : new()
 {
