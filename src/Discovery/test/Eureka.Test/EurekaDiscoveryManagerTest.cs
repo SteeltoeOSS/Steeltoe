@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -27,7 +28,8 @@ public sealed class EurekaDiscoveryManagerTest : AbstractBaseTest
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>(clientOptions);
 
         var appManager = new EurekaApplicationInfoManager(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
-        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, NullLoggerFactory.Instance);
+        var eurekaHttpClient = new EurekaHttpClient(clientOptionsMonitor, new TestHttpClientFactory(), NullLoggerFactory.Instance);
+        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, eurekaHttpClient, NullLoggerFactory.Instance);
 
         var discoveryManager = new EurekaDiscoveryManager(clientOptionsMonitor, instanceOptionsMonitor, discoveryClient);
 

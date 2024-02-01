@@ -31,15 +31,16 @@ public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, I
 #nullable enable
 
     public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
-        EurekaApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory, EurekaHttpClient? httpClient = null, HttpClient? netHttpClient = null)
+        EurekaApplicationInfoManager appInfoManager, EurekaHttpClient eurekaHttpClient, ILoggerFactory loggerFactory, HttpClient? httpClient = null)
         : base(appInfoManager, loggerFactory)
     {
         ArgumentGuard.NotNull(clientOptionsMonitor);
         ArgumentGuard.NotNull(instanceOptionsMonitor);
+        ArgumentGuard.NotNull(eurekaHttpClient);
 
         _clientOptionsMonitor = clientOptionsMonitor;
         _thisInstance = new ThisServiceInstance(instanceOptionsMonitor);
-        this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientOptionsMonitor, loggerFactory, netHttpClient);
+        this.httpClient = eurekaHttpClient;
         _logger = loggerFactory.CreateLogger<EurekaDiscoveryClient>();
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
@@ -107,14 +108,5 @@ public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, I
     public async ValueTask DisposeAsync()
     {
         await ShutdownAsync(CancellationToken.None);
-    }
-
-    private sealed class EurekaHttpClientInternal : EurekaHttpClient
-    {
-        public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILoggerFactory loggerFactory = null, HttpClient httpClient = null)
-            : base(optionsMonitor, loggerFactory)
-        {
-            this.httpClient = httpClient;
-        }
     }
 }

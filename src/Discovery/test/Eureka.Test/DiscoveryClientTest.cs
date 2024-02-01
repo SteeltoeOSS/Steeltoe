@@ -94,7 +94,8 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldFetchRegistry = false
         };
 
-        var client = new DiscoveryClient(clientOptions);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var client = new DiscoveryClient(clientOptionsMonitor);
 
         Assert.Null(client.CacheRefreshTimer);
         Assert.Null(client.HeartBeatTimer);
@@ -119,9 +120,12 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             EurekaServerServiceUrls = uri
         };
 
-        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
-        var client = new DiscoveryClient(clientOptions, httpClient);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+        var client = new DiscoveryClient(clientOptionsMonitor, httpClient);
         Applications result = await client.FetchFullRegistryAsync(CancellationToken.None);
+
         Assert.NotNull(result);
         Assert.Equal(1, result.Version);
         Assert.Equal("UP_1_", result.AppsHashCode);
@@ -151,8 +155,11 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             EurekaServerServiceUrls = uri
         };
 
-        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
-        var client = new DiscoveryClient(clientOptions, httpClient);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+        var client = new DiscoveryClient(clientOptionsMonitor, httpClient);
+
         Task<Applications> result = client.FetchFullRegistryAsync(CancellationToken.None);
         client.RegistryFetchCounter = 100;
         Applications apps = await result;
@@ -178,8 +185,10 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             EurekaServerServiceUrls = uri
         };
 
-        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
-        var client = new DiscoveryClient(clientOptions, httpClient);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+        var client = new DiscoveryClient(clientOptionsMonitor, httpClient);
         var apps = new Applications();
         var app = new Application("FOO");
 
@@ -227,9 +236,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             EurekaServerServiceUrls = uri
         };
 
-        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
-        var client = new DiscoveryClient(clientOptions, httpClient);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+        var client = new DiscoveryClient(clientOptionsMonitor, httpClient);
+
         Task<Applications> result = client.FetchRegistryDeltaAsync(CancellationToken.None);
+
         client.RegistryFetchCounter = 100;
         Applications apps = await result;
         Assert.Null(apps);
@@ -265,9 +278,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         EurekaApplicationInfoManager.SharedInstance.InstanceInfo = instance;
 
-        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
-        var client = new DiscoveryClient(clientOptions, httpClient);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+        var client = new DiscoveryClient(clientOptionsMonitor, httpClient);
+
         bool result = await client.RegisterAsync(CancellationToken.None);
+
         Assert.False(result);
 
         // Verify Register done
@@ -307,9 +324,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         EurekaApplicationInfoManager.SharedInstance.InstanceInfo = instance;
 
-        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
-        var client = new DiscoveryClient(clientOptions, httpClient);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+        var client = new DiscoveryClient(clientOptionsMonitor, httpClient);
+
         bool result = await client.RegisterAsync(CancellationToken.None);
+
         Assert.True(result);
 
         // Verify Register done
@@ -349,8 +370,11 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         EurekaApplicationInfoManager.SharedInstance.InstanceInfo = instance;
 
-        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
-        var client = new DiscoveryClient(clientOptions, httpClient);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+        var client = new DiscoveryClient(clientOptionsMonitor, httpClient);
+
         bool result = await client.RenewAsync(CancellationToken.None);
 
         // Verify Register done
@@ -393,9 +417,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         EurekaApplicationInfoManager.SharedInstance.InstanceInfo = instance;
 
-        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
-        var client = new DiscoveryClient(clientOptions, httpClient);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+        var client = new DiscoveryClient(clientOptionsMonitor, httpClient);
+
         bool result = await client.RenewAsync(CancellationToken.None);
+
         Assert.True(result);
     }
 
@@ -429,9 +457,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         EurekaApplicationInfoManager.SharedInstance.InstanceInfo = instance;
 
-        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
-        var client = new DiscoveryClient(clientOptions, httpClient);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+        var client = new DiscoveryClient(clientOptionsMonitor, httpClient);
+
         bool result = await client.UnregisterAsync(CancellationToken.None);
+
         Assert.True(result);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -493,7 +525,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(clientOptions)
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+
+        var client = new DiscoveryClient(clientOptionsMonitor)
         {
             Applications = apps
         };
@@ -567,7 +601,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(clientOptions)
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+
+        var client = new DiscoveryClient(clientOptionsMonitor)
         {
             Applications = apps
         };
@@ -593,7 +629,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(clientOptions);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var client = new DiscoveryClient(clientOptionsMonitor);
+
         IList<InstanceInfo> result = client.GetInstanceById("myId");
         Assert.NotNull(result);
         Assert.Empty(result);
@@ -652,7 +690,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(clientOptions)
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+
+        var client = new DiscoveryClient(clientOptionsMonitor)
         {
             Applications = apps
         };
@@ -722,7 +762,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(clientOptions)
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+
+        var client = new DiscoveryClient(clientOptionsMonitor)
         {
             Applications = apps
         };
@@ -744,7 +786,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(clientOptions);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var client = new DiscoveryClient(clientOptionsMonitor);
+
         var ex = Assert.Throws<ArgumentException>(() => client.GetInstancesByVipAddressAndAppName(null, null, false));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
@@ -761,7 +805,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>();
         EurekaApplicationInfoManager.SharedInstance.Initialize(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        var client = new DiscoveryClient(clientOptions);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var client = new DiscoveryClient(clientOptionsMonitor);
+
         var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
         client.HealthCheckHandler = myHandler;
 
@@ -780,7 +826,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(clientOptions);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var client = new DiscoveryClient(clientOptionsMonitor);
+
         _timerFuncCount = 0;
         Timer result = client.StartTimer("MyTimer", 10, TimerFunc);
         Assert.NotNull(result);
@@ -798,7 +846,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(clientOptions);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var client = new DiscoveryClient(clientOptionsMonitor);
+
         _timerFuncCount = 0;
         Timer result = client.StartTimer("MyTimer", 10, TimerFuncThrows);
         Assert.NotNull(result);
@@ -816,7 +866,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ShouldRegisterWithEureka = false
         };
 
-        var client = new DiscoveryClient(clientOptions);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var client = new DiscoveryClient(clientOptionsMonitor);
+
         _timerFuncCount = 0;
         Timer result = client.StartTimer("MyTimer", 10, TimerFuncThrows);
         Assert.NotNull(result);
@@ -850,9 +902,11 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             EurekaServerServiceUrls = uri
         };
 
-        var httpClient = new EurekaHttpClient(clientOptions, server.CreateClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var httpClient = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
-        var client = new DiscoveryClient(clientOptions, httpClient)
+        var client = new DiscoveryClient(clientOptionsMonitor, httpClient)
         {
             Applications = new Applications()
         };
