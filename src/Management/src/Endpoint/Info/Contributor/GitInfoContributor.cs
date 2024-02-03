@@ -54,34 +54,31 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
         {
             string[] lines = await File.ReadAllLinesAsync(propertiesPath, cancellationToken);
 
-            if (lines.Length > 0)
+            if (lines.Length == 0)
             {
-                var dictionary = new Dictionary<string, string?>();
+                _logger.LogWarning("Unable to find valid GitInfo at {GitInfoLocation}", propertiesPath);
+                return null;
+            }
+            var dictionary = new Dictionary<string, string?>();
 
-                foreach (string line in lines)
+            foreach (string line in lines.Where(x => x.StartsWith("git.", StringComparison.OrdinalIgnoreCase)))
+            {
+                string[] keyValuePair = line.Split('=');
+
+                if (keyValuePair.Length != 2)
                 {
-                    if (line.StartsWith('#') || !line.StartsWith("git.", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    string[] keyValuePair = line.Split('=');
-
-                    if (keyValuePair.Length != 2)
-                    {
-                        continue;
-                    }
-
-                    string key = keyValuePair[0].Trim().Replace('.', ':');
-                    string value = keyValuePair[1].Replace("\\:", ":", StringComparison.Ordinal);
-
-                    dictionary[key] = value;
+                    continue;
                 }
 
-                var builder = new ConfigurationBuilder();
-                builder.AddInMemoryCollection(dictionary);
-                return builder.Build();
+                string key = keyValuePair[0].Trim().Replace('.', ':');
+                string value = keyValuePair[1].Replace("\\:", ":", StringComparison.Ordinal);
+
+                dictionary[key] = value;
             }
+
+            var builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(dictionary);
+            return builder.Build();
         }
         else
         {

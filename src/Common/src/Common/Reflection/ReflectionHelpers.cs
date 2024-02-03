@@ -213,16 +213,17 @@ public static class ReflectionHelpers
         {
             Assembly assembly = FindAssembly(assemblyName);
 
-            if (assembly != null)
+            if (assembly == null)
             {
-                foreach (string type in typeNames)
-                {
-                    Type result = FindType(assembly, type);
+                continue;
+            }
+            foreach (string type in typeNames)
+            {
+                Type result = FindType(assembly, type);
 
-                    if (result != null)
-                    {
-                        return result;
-                    }
+                if (result != null)
+                {
+                    return result;
                 }
             }
         }

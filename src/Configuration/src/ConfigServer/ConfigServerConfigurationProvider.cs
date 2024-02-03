@@ -535,21 +535,20 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 Logger.LogInformation("Config Server returned status: {statusCode} invoking path: {requestUri}", response.StatusCode,
                     WebUtility.UrlEncode(requestUri));
 
-                if (response.StatusCode != HttpStatusCode.OK)
+
+                if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    if (response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        return null;
-                    }
-
-                    // Throw if status >= 400
-                    if (response.StatusCode >= HttpStatusCode.BadRequest)
-                    {
-                        // HttpClientErrorException
-                        throw new HttpRequestException(
-                            $"Config Server returned status: {response.StatusCode} invoking path: {WebUtility.UrlEncode(requestUri)}");
-                    }
-
+                    return null;
+                }
+                // Throw if status >= 400
+                else if (response.StatusCode >= HttpStatusCode.BadRequest)
+                {
+                    // HttpClientErrorException
+                    throw new HttpRequestException(
+                        $"Config Server returned status: {response.StatusCode} invoking path: {WebUtility.UrlEncode(requestUri)}");
+                }
+                else if (response.StatusCode != HttpStatusCode.OK)
+                {
                     return null;
                 }
 

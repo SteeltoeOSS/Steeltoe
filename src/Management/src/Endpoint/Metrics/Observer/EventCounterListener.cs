@@ -63,21 +63,18 @@ internal sealed class EventCounterListener : EventListener
     {
         ArgumentGuard.NotNull(eventData);
 
-        if (!_isInitialized)
+        if (!_isInitialized || (string.Equals(eventData.EventName, EventName, StringComparison.OrdinalIgnoreCase) && eventData.Payload != null))
         {
             return;
         }
 
         try
         {
-            if (string.Equals(eventData.EventName, EventName, StringComparison.OrdinalIgnoreCase) && eventData.Payload != null)
+            foreach (IDictionary<string, object?>? payload in eventData.Payload)
             {
-                foreach (IDictionary<string, object?>? payload in eventData.Payload)
+                if (payload != null)
                 {
-                    if (payload != null)
-                    {
-                        ExtractAndRecordMetric(eventData.EventSource.Name, payload);
-                    }
+                    ExtractAndRecordMetric(eventData.EventSource.Name, payload);
                 }
             }
         }

@@ -259,15 +259,10 @@ public class DiscoveryClient : IEurekaClient
                 logger.LogDebug("HandleInstanceStatusChanged {previousStatus}, {currentStatus}, {instanceId}, {dirty}", args.Previous, args.Current,
                     args.InstanceId, info.IsDirty);
 
-                if (info.IsDirty)
+                if (info.IsDirty && await RegisterAsync(CancellationToken.None))
                 {
-                    bool result = await RegisterAsync(CancellationToken.None);
-
-                    if (result)
-                    {
-                        info.IsDirty = false;
-                        logger.LogInformation("HandleInstanceStatusChanged RegisterAsync succeeded");
-                    }
+                    info.IsDirty = false;
+                    logger.LogInformation("HandleInstanceStatusChanged RegisterAsync succeeded");
                 }
             }
         }

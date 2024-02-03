@@ -170,16 +170,13 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 
             NameValueCollection queryCollection = HttpUtility.ParseQueryString(uri.Query);
 
-            foreach (string? key in queryCollection.AllKeys)
+            foreach (string? key in queryCollection.AllKeys.Where(x => x != null))
             {
-                if (key != null)
-                {
-                    string? value = queryCollection.Get(key);
+                string? value = queryCollection.Get(key);
 
-                    if (value != null)
-                    {
-                        _settings[key] = value;
-                    }
+                if (key != null && value != null)
+                {
+                    _settings[key] = value;
                 }
             }
         }

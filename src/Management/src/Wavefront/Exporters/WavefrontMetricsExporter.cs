@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
@@ -58,48 +59,17 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
 
         foreach (Metric metric in batch)
         {
-            bool isLong = ((int)metric.MetricType & 0b_0000_1111) == 0x0a; // I8 : signed 8 byte integer
-            bool isSum = metric.MetricType.IsSum();
 
             try
             {
-                if (!metric.MetricType.IsHistogram())
+                foreach (ref readonly MetricPoint metricPoint in metric.GetMetricPoints())
                 {
-                    foreach (ref readonly MetricPoint metricPoint in metric.GetMetricPoints())
+                    long timestamp = metricPoint.EndTime.ToUnixTimeMilliseconds();
+                    IDictionary<string, string?> tags = GetTags(metricPoint.Tags);
+                    foreach (var item in GetMetrics(metric, metricPoint))
                     {
-                        long timestamp = metricPoint.EndTime.ToUnixTimeMilliseconds();
-                        double doubleValue;
-
-                        if (isLong)
-                        {
-                            doubleValue = isSum ? metricPoint.GetSumLong() : metricPoint.GetGaugeLastValueLong();
-                        }
-                        else
-                        {
-                            doubleValue = isSum ? metricPoint.GetSumDouble() : metricPoint.GetGaugeLastValueDouble();
-                        }
-
-                        IDictionary<string, string?> tags = GetTags(metricPoint.Tags);
-
-                        _wavefrontSender.SendMetric(metric.Name.ToLowerInvariant(), doubleValue, timestamp, Options.Source, tags);
-
+                        _wavefrontSender.SendMetric(item.Key, item.Value, timestamp, Options.Source, tags);
                         metricCount++;
-                    }
-                }
-                else
-                {
-                    foreach (ref readonly MetricPoint metricPoint in metric.GetMetricPoints())
-                    {
-                        long timestamp = metricPoint.EndTime.ToUnixTimeMilliseconds();
-
-                        IDictionary<string, string?> tags = GetTags(metricPoint.Tags);
-
-                        _wavefrontSender.SendMetric($"{metric.Name.ToLowerInvariant()}_count", metricPoint.GetHistogramCount(), timestamp, Options.Source,
-                            tags);
-
-                        _wavefrontSender.SendMetric($"{metric.Name.ToLowerInvariant()}_sum", metricPoint.GetHistogramSum(), timestamp, Options.Source, tags);
-
-                        metricCount += 2;
                     }
                 }
             }
@@ -111,6 +81,33 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
 
         _logger.LogTrace("Exported {MetricCount} metrics to {Uri}", metricCount, Options.Uri);
         return ExportResult.Success;
+    }
+
+    private List<KeyValuePair<string, double>> GetMetrics(Metric metric, MetricPoint metricPoint)
+    {
+        bool isLong = ((int)metric.MetricType & 0b_0000_1111) == 0x0a; // I8 : signed 8 byte integer
+        bool isSum = metric.MetricType.IsSum();
+        List<KeyValuePair<string, double>> metrics = [];
+        if (!metric.MetricType.IsHistogram())
+        {
+            double doubleValue;
+
+            if (isLong)
+            {
+                doubleValue = isSum ? metricPoint.GetSumLong() : metricPoint.GetGaugeLastValueLong();
+            }
+            else
+            {
+                doubleValue = isSum ? metricPoint.GetSumDouble() : metricPoint.GetGaugeLastValueDouble();
+            }
+            metrics.Add(new KeyValuePair<string, double>(metric.Name.ToLowerInvariant(), doubleValue));
+        }
+        else
+        {
+            metrics.Add(new KeyValuePair<string, double>($"{metric.Name.ToLowerInvariant()}_count", metricPoint.GetHistogramCount()));
+            metrics.Add(new KeyValuePair<string, double>($"{metric.Name.ToLowerInvariant()}_sum", metricPoint.GetHistogramSum()));
+        }
+        return metrics;
     }
 
     private IDictionary<string, string?> GetTags(ReadOnlyTagCollection inputTags)
