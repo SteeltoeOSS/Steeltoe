@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
@@ -226,21 +227,19 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 {
                     return await DoLoadAsync(updateDictionary, cancellationToken);
                 }
-                catch (ConfigServerException e)
+                catch (ConfigServerException e) when (attempts < Settings.RetryAttempts)
                 {
                     Logger.LogInformation(e, "Failed fetching configuration from server at: {uri}.", Settings.Uri);
                     attempts++;
 
-                    if (attempts < Settings.RetryAttempts)
-                    {
-                        Thread.CurrentThread.Join(backOff);
-                        int nextBackOff = (int)(backOff * Settings.RetryMultiplier);
-                        backOff = Math.Min(nextBackOff, Settings.RetryMaxInterval);
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    Thread.CurrentThread.Join(backOff);
+                    int nextBackOff = (int)(backOff * Settings.RetryMultiplier);
+                    backOff = Math.Min(nextBackOff, Settings.RetryMaxInterval);
+                }
+                catch (ConfigServerException e) when (attempts >= Settings.RetryAttempts)
+                {
+                    Logger.LogInformation(e, "Failed fetching configuration for the final time from server at: {uri} .", Settings.Uri);
+                    throw;
                 }
             }
             while (true);
@@ -275,10 +274,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                     Logger.LogInformation("Located environment name: {name}, profiles: {profiles}, labels: {label}, version: {version}, state: {state}",
                         env.Name, env.Profiles, env.Label, env.Version, env.State);
 
-                    if (updateDictionary)
-                    {
-                        UpdateDictionary(env);
-                    }
+                    UpdateDictionaryData(updateDictionary, env);
 
                     return env;
                 }
@@ -299,9 +295,12 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         return null;
     }
 
-    private void UpdateDictionary(ConfigEnvironment env)
+    private void UpdateDictionaryData(bool updateDictionary, ConfigEnvironment env)
     {
-
+        if (updateDictionary)
+        {
+            return;
+        }
         var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 
         if (!string.IsNullOrEmpty(env.State))
@@ -383,16 +382,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                     settings.Username = username;
                     settings.Password = password;
                 }
-
-                if (metaData.TryGetValue("configPath", out string? path))
-                {
-                    if (uri.EndsWith('/') && path.StartsWith('/'))
-                    {
-                        uri = uri.Substring(0, uri.Length - 1);
-                    }
-
-                    uri += path;
-                }
+                uri += ExtractPath(metaData, uri);
             }
 
             endpoints.Append(uri);
@@ -404,6 +394,15 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             string uris = endpoints.ToString(0, endpoints.Length - 1);
             settings.Uri = uris;
         }
+    }
+
+    private string ExtractPath(IDictionary<string, string> metaData, string uri)
+    {
+        if (metaData.TryGetValue("configPath", out string? path))
+        {
+            return uri.EndsWith('/') && path.StartsWith('/')? path.Substring(1, path.Length - 1) : path;
+        }
+        return string.Empty;
     }
 
     internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient? discoveryClientFromDi, CancellationToken cancellationToken)

@@ -62,15 +62,17 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
 
             try
             {
+                List<MetricReading> metricReadings = new List<MetricReading>();
                 foreach (ref readonly MetricPoint metricPoint in metric.GetMetricPoints())
                 {
                     long timestamp = metricPoint.EndTime.ToUnixTimeMilliseconds();
                     IDictionary<string, string?> tags = GetTags(metricPoint.Tags);
-                    foreach (var item in GetMetrics(metric, metricPoint))
-                    {
-                        _wavefrontSender.SendMetric(item.Key, item.Value, timestamp, Options.Source, tags);
-                        metricCount++;
-                    }
+                    metricReadings.AddRange(GetMetricData(metric, metricPoint, timestamp, tags));
+                }
+                foreach (MetricReading metricReading in metricReadings)
+                {
+                    _wavefrontSender.SendMetric(metricReading.Key, metricReading.Value, metricReading.Timestamp, Options.Source, metricReading.Tags);
+                    metricCount++;
                 }
             }
             catch (Exception exception)
@@ -83,11 +85,11 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
         return ExportResult.Success;
     }
 
-    private List<KeyValuePair<string, double>> GetMetrics(Metric metric, MetricPoint metricPoint)
+    private List<MetricReading> GetMetricData(Metric metric, MetricPoint metricPoint, long timestamp, IDictionary<string, string?> tags)
     {
         bool isLong = ((int)metric.MetricType & 0b_0000_1111) == 0x0a; // I8 : signed 8 byte integer
         bool isSum = metric.MetricType.IsSum();
-        List<KeyValuePair<string, double>> metrics = [];
+        List<MetricReading> metrics = [];
         if (!metric.MetricType.IsHistogram())
         {
             double doubleValue;
@@ -100,12 +102,24 @@ public sealed class WavefrontMetricsExporter : BaseExporter<Metric>
             {
                 doubleValue = isSum ? metricPoint.GetSumDouble() : metricPoint.GetGaugeLastValueDouble();
             }
-            metrics.Add(new KeyValuePair<string, double>(metric.Name.ToLowerInvariant(), doubleValue));
+            metrics.Add(new MetricReading(metric.Name.ToLowerInvariant(), doubleValue)
+            {
+                Tags = tags,
+                Timestamp = timestamp
+            });
         }
         else
         {
-            metrics.Add(new KeyValuePair<string, double>($"{metric.Name.ToLowerInvariant()}_count", metricPoint.GetHistogramCount()));
-            metrics.Add(new KeyValuePair<string, double>($"{metric.Name.ToLowerInvariant()}_sum", metricPoint.GetHistogramSum()));
+            metrics.Add(new MetricReading($"{metric.Name.ToLowerInvariant()}_count", metricPoint.GetHistogramCount())
+            {
+                Tags = tags,
+                Timestamp = timestamp
+            });
+            metrics.Add(new MetricReading($"{metric.Name.ToLowerInvariant()}_sum", metricPoint.GetHistogramSum())
+            {
+                Tags = tags,
+                Timestamp = timestamp
+            });
         }
         return metrics;
     }

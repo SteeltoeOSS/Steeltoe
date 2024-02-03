@@ -117,7 +117,9 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
         return builder.Uri.AbsoluteUri;
     }
 
+#pragma warning disable S3776 // Cognitive Complexity of methods should not be too high
     private void FromConnectionString(string? connectionString, bool preserveUnknownSettings)
+#pragma warning restore S3776 // Cognitive Complexity of methods should not be too high
     {
         if (preserveUnknownSettings)
         {
@@ -131,53 +133,54 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
             _settings.Clear();
         }
 
-        if (!string.IsNullOrEmpty(connectionString))
+        if (string.IsNullOrEmpty(connectionString))
         {
-            if (connectionString.Contains(','))
+            return;
+        }
+        if (connectionString.Contains(','))
+        {
+            // MongoDB allows multiple servers in the connection string, but we haven't found any service bindings that actually use that.
+            throw new NotImplementedException("Support for multiple servers is not implemented. Please open a GitHub issue if you need this.");
+        }
+
+        // MongoDB allows semicolon as separator for query string parameters, to provide backwards compatibility.
+        connectionString = connectionString.Replace(';', '&');
+
+        var uri = new Uri(connectionString);
+
+        if (!string.IsNullOrEmpty(uri.UserInfo))
+        {
+            string[] parts = uri.UserInfo.Split(':', 2);
+
+            _settings[KnownKeywords.Username] = Uri.UnescapeDataString(parts[0]);
+
+            if (parts.Length == 2)
             {
-                // MongoDB allows multiple servers in the connection string, but we haven't found any service bindings that actually use that.
-                throw new NotImplementedException("Support for multiple servers is not implemented. Please open a GitHub issue if you need this.");
+                _settings[KnownKeywords.Password] = Uri.UnescapeDataString(parts[1]);
             }
+        }
 
-            // MongoDB allows semicolon as separator for query string parameters, to provide backwards compatibility.
-            connectionString = connectionString.Replace(';', '&');
+        _settings[KnownKeywords.Server] = uri.Host;
 
-            var uri = new Uri(connectionString);
+        if (uri.Port != -1)
+        {
+            _settings[KnownKeywords.Port] = uri.Port.ToString(CultureInfo.InvariantCulture);
+        }
 
-            if (!string.IsNullOrEmpty(uri.UserInfo))
+        if (uri.AbsolutePath.StartsWith('/') && uri.AbsolutePath.Length > 1)
+        {
+            _settings[KnownKeywords.AuthenticationDatabase] = Uri.UnescapeDataString(uri.AbsolutePath[1..]);
+        }
+
+        NameValueCollection queryCollection = HttpUtility.ParseQueryString(uri.Query);
+
+        foreach (string? key in queryCollection.AllKeys.Where(x => x != null))
+        {
+            string? value = queryCollection.Get(key);
+
+            if (key != null && value != null)
             {
-                string[] parts = uri.UserInfo.Split(':', 2);
-
-                _settings[KnownKeywords.Username] = Uri.UnescapeDataString(parts[0]);
-
-                if (parts.Length == 2)
-                {
-                    _settings[KnownKeywords.Password] = Uri.UnescapeDataString(parts[1]);
-                }
-            }
-
-            _settings[KnownKeywords.Server] = uri.Host;
-
-            if (uri.Port != -1)
-            {
-                _settings[KnownKeywords.Port] = uri.Port.ToString(CultureInfo.InvariantCulture);
-            }
-
-            if (uri.AbsolutePath.StartsWith('/') && uri.AbsolutePath.Length > 1)
-            {
-                _settings[KnownKeywords.AuthenticationDatabase] = Uri.UnescapeDataString(uri.AbsolutePath[1..]);
-            }
-
-            NameValueCollection queryCollection = HttpUtility.ParseQueryString(uri.Query);
-
-            foreach (string? key in queryCollection.AllKeys.Where(x => x != null))
-            {
-                string? value = queryCollection.Get(key);
-
-                if (key != null && value != null)
-                {
-                    _settings[key] = value;
-                }
+                _settings[key] = value;
             }
         }
     }

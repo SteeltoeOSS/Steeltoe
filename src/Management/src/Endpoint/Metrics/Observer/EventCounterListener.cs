@@ -64,13 +64,13 @@ internal sealed class EventCounterListener : EventListener
     {
         ArgumentGuard.NotNull(eventData);
 
-        if (!_isInitialized || (string.Equals(eventData.EventName, EventName, StringComparison.OrdinalIgnoreCase) && eventData.Payload != null))
-        {
-            return;
-        }
-
         try
         {
+
+            if (!_isInitialized || string.Equals(eventData.EventName, EventName, StringComparison.OrdinalIgnoreCase) || eventData.Payload == null)
+            {
+                return;
+            }
             foreach (IDictionary<string, object?>? payload in eventData.Payload)
             {
                 if (payload != null)

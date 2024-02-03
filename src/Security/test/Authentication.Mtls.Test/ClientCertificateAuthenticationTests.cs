@@ -359,7 +359,9 @@ public sealed class ClientCertificateAuthenticationTests
     }
 
     [Fact]
+#pragma warning disable S3776 // Cognitive Complexity of methods should not be too high
     public async Task VerifyNoEventWireUpWithAValidCertificateCreatesADefaultUser()
+#pragma warning restore S3776 // Cognitive Complexity of methods should not be too high
     {
         TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
@@ -512,7 +514,9 @@ public sealed class ClientCertificateAuthenticationTests
         Assert.Single(responseAsXml.Elements("claim"));
     }
 
+#pragma warning disable S3776 // Cognitive Complexity of methods should not be too high
     private static TestServer CreateServer(MutualTlsAuthenticationOptions configureOptions, X509Certificate2 clientCertificate = null, Uri baseAddress = null,
+#pragma warning restore S3776 // Cognitive Complexity of methods should not be too high
         bool wireUpHeaderMiddleware = false, string headerName = "")
     {
         IWebHostBuilder builder = new WebHostBuilder().Configure(app =>

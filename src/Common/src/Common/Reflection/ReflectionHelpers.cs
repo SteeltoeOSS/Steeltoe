@@ -463,18 +463,22 @@ public static class ReflectionHelpers
                 try
                 {
                     Assembly assemblyRef = loadContext.LoadFromAssemblyPath(assembly);
-
-                    // haven't been able to get actual type comparison to work (assembly of the attribute not found?), falling back on matching the type name
-                    if (CustomAttributeData.GetCustomAttributes(assemblyRef).Any(attr => attr.AttributeType.FullName == typeof(T).FullName))
-                    {
-                        FindAssembly(filename);
-                    }
+                    FindAssemblyByFullName<T>(assemblyRef, filename);
                 }
                 catch
                 {
                     // most failures here are situations that aren't relevant, so just fail silently
                 }
             }
+        }
+    }
+
+    private static void FindAssemblyByFullName<T>(Assembly assemblyRef, string filename)
+    {
+        // haven't been able to get actual type comparison to work (assembly of the attribute not found?), falling back on matching the type name
+        if (CustomAttributeData.GetCustomAttributes(assemblyRef).Any(attr => attr.AttributeType.FullName == typeof(T).FullName))
+        {
+            FindAssembly(filename);
         }
     }
 

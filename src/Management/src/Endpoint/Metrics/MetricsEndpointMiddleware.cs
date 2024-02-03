@@ -69,7 +69,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
     {
         var results = new List<KeyValuePair<string, string>>();
 
-        foreach (KeyValuePair<string, StringValues> parameter in query.Where(X => X.Key.Equals("tag", StringComparison.OrdinalIgnoreCase)))
+        foreach (KeyValuePair<string, StringValues> parameter in query.Where(x => x.Key.Equals("tag", StringComparison.OrdinalIgnoreCase)))
         {
             foreach (string? value in parameter.Value)
             {
