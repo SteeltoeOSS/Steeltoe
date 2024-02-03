@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -77,22 +78,12 @@ public static class PropertyPlaceholderHelper
     private static string ParseStringValue(string property, IConfiguration configuration, ISet<string> visitedPlaceHolders, ILogger logger = null,
         bool useEmptyStringIfNotFound = false)
     {
-        if (configuration == null)
-        {
-            return property;
-        }
-
-        if (string.IsNullOrEmpty(property))
+        if (configuration == null || string.IsNullOrEmpty(property))
         {
             return property;
         }
 
         int startIndex = property.IndexOf(Prefix, StringComparison.Ordinal);
-
-        if (startIndex == -1)
-        {
-            return property;
-        }
 
         var result = new StringBuilder(property);
         int endIndex;
@@ -117,29 +108,7 @@ public static class PropertyPlaceholderHelper
             // Now obtain the value for the fully resolved key...
             string propVal = configuration[lookup];
 
-            if (propVal == null)
-            {
-                int separatorIndex = placeholder.IndexOf(Separator, StringComparison.Ordinal);
-
-                if (separatorIndex != -1)
-                {
-                    string actualPlaceholder = placeholder.Substring(0, separatorIndex);
-                    string defaultValue = placeholder.Substring(separatorIndex + Separator.Length);
-                    propVal = configuration[actualPlaceholder] ?? defaultValue;
-                }
-                else if (useEmptyStringIfNotFound)
-                {
-                    propVal = string.Empty;
-                }
-            }
-
-            // Attempt to resolve as a spring-compatible placeholder
-            if (propVal == null)
-            {
-                // Replace Spring delimiters ('.') with MS-friendly delimiters (':') so Spring placeholders can also be resolved
-                lookup = placeholder.Replace('.', ':');
-                propVal = configuration[lookup];
-            }
+            propVal ??= ResolveValue(configuration, placeholder, propVal, useEmptyStringIfNotFound);
 
             if (propVal != null)
             {
@@ -161,6 +130,31 @@ public static class PropertyPlaceholderHelper
         }
 
         return result.ToString();
+    }
+
+    private static string ResolveValue(IConfiguration configuration, string placeholder, string propVal, bool useEmptyStringIfNotFound)
+    {
+        int separatorIndex = placeholder.IndexOf(Separator, StringComparison.Ordinal);
+
+        if (separatorIndex != -1)
+        {
+            string actualPlaceholder = placeholder.Substring(0, separatorIndex);
+            string defaultValue = placeholder.Substring(separatorIndex + Separator.Length);
+            propVal = configuration[actualPlaceholder] ?? defaultValue;
+        }
+        else if (useEmptyStringIfNotFound)
+        {
+            propVal = string.Empty;
+        }
+
+        // Attempt to resolve as a spring-compatible placeholder
+        if (propVal == null)
+        {
+            // Replace Spring delimiters ('.') with MS-friendly delimiters (':') so Spring placeholders can also be resolved
+            string lookup = placeholder.Replace('.', ':');
+            propVal = configuration[lookup];
+        }
+        return propVal;
     }
 
     private static int FindEndIndex(StringBuilder property, int startIndex)

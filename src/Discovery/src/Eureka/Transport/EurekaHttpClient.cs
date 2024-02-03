@@ -25,9 +25,9 @@ public class EurekaHttpClient : IEurekaHttpClient
     private const int DefaultGetAccessTokenTimeout = 10000; // Milliseconds
 
     private static readonly char[] ColonDelimit =
-    {
+    [
         ':'
-    };
+    ];
 
     private readonly IOptionsMonitor<EurekaClientOptions> _configurationOptions;
 
@@ -190,10 +190,6 @@ public class EurekaHttpClient : IEurekaHttpClient
                 {
                     string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                    if (response.IsSuccessStatusCode && string.IsNullOrEmpty(responseBody))
-                    {
-                        // request was successful but body was empty. This is OK, we don't need a response body
-                    }
 
                     logger?.LogError(exception, "Failed to read heartbeat response. Response code: {responseCode}, Body: {responseBody}", response.StatusCode,
                         responseBody);

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Globalization;
@@ -179,17 +180,10 @@ internal sealed class EventCounterListener : EventListener
                     longValue = Convert.ToInt64(payload.Value, CultureInfo.InvariantCulture);
                     break;
                 case var _ when key.Equals("Metadata", StringComparison.OrdinalIgnoreCase):
-                    string? metadata = payload.Value?.ToString();
-
-                    if (!string.IsNullOrEmpty(metadata))
+                    List<KeyValuePair<string, object?>> labels = MakeLabels(payload.Value?.ToString());
+                    if (labels.Any())
                     {
-                        string[] keyValuePairStrings = metadata.Split(',');
-
-                        foreach (string keyValuePairString in keyValuePairStrings)
-                        {
-                            string[] keyValuePair = keyValuePairString.Split(':');
-                            labelSet.Add(KeyValuePair.Create(keyValuePair[0], (object?)keyValuePair[1]));
-                        }
+                        labelSet.AddRange(labels);
                     }
 
                     break;
@@ -212,6 +206,22 @@ internal sealed class EventCounterListener : EventListener
             _longMeasureMetrics.GetOrAdd(metricName,
                 name => SteeltoeMetrics.Meter.CreateObservableGauge($"{name}", () => ObserveLong(name, labelSet), counterDisplayUnit, counterDisplayName));
         }
+    }
+
+    private List<KeyValuePair<string, object?>> MakeLabels(string? metadata)
+    {
+        List<KeyValuePair<string, object?>> labelSet = new List<KeyValuePair<string, object?>>();
+        if (!string.IsNullOrEmpty(metadata))
+        {
+            string[] keyValuePairStrings = metadata.Split(',');
+
+            foreach (string keyValuePairString in keyValuePairStrings)
+            {
+                string[] keyValuePair = keyValuePairString.Split(':');
+                labelSet.Add(KeyValuePair.Create(keyValuePair[0], (object?)keyValuePair[1]));
+            }
+        }
+        return labelSet;
     }
 
     private Measurement<double> ObserveDouble(string name, List<KeyValuePair<string, object?>> labelSet)

@@ -277,34 +277,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
                     if (updateDictionary)
                     {
-                        var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
-
-                        if (!string.IsNullOrEmpty(env.State))
-                        {
-                            data["spring:cloud:config:client:state"] = env.State;
-                        }
-
-                        if (!string.IsNullOrEmpty(env.Version))
-                        {
-                            data["spring:cloud:config:client:version"] = env.Version;
-                        }
-
-                        IList<PropertySource> sources = env.PropertySources;
-                        int index = sources.Count - 1;
-
-                        for (; index >= 0; index--)
-                        {
-                            AddPropertySource(sources[index], data);
-                        }
-
-                        // Adds client settings (e.g. spring:cloud:config:uri, etc.) back to the (new) Data dictionary
-                        AddConfigServerClientSettings(data);
-
-                        if (!AreDictionariesEqual(Data, data))
-                        {
-                            Data = data;
-                            OnReload();
-                        }
+                        UpdateDictionary(env);
                     }
 
                     return env;
@@ -324,6 +297,39 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         }
 
         return null;
+    }
+
+    private void UpdateDictionary(ConfigEnvironment env)
+    {
+
+        var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+
+        if (!string.IsNullOrEmpty(env.State))
+        {
+            data["spring:cloud:config:client:state"] = env.State;
+        }
+
+        if (!string.IsNullOrEmpty(env.Version))
+        {
+            data["spring:cloud:config:client:version"] = env.Version;
+        }
+
+        IList<PropertySource> sources = env.PropertySources;
+        int index = sources.Count - 1;
+
+        for (; index >= 0; index--)
+        {
+            AddPropertySource(sources[index], data);
+        }
+
+        // Adds client settings (e.g. spring:cloud:config:uri, etc.) back to the (new) Data dictionary
+        AddConfigServerClientSettings(data);
+
+        if (!AreDictionariesEqual(Data, data))
+        {
+            Data = data;
+            OnReload();
+        }
     }
 
     private static bool AreDictionariesEqual<TKey, TValue>(IDictionary<TKey, TValue> first, IDictionary<TKey, TValue> second)
