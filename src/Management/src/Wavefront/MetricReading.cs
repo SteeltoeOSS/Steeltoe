@@ -3,8 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 namespace Steeltoe.Management.Wavefront;
+
 internal class MetricReading
 {
+    public string Key { get; internal set; }
+    public double Value { get; internal set; }
+    public long? Timestamp { get; internal set; }
+    public IDictionary<string, string?> Tags { get; internal set; } = new Dictionary<string, string?>();
+
     public MetricReading(string key, double value, long? timestamp, IDictionary<string, string?> tags)
     {
         Key = key;
@@ -12,14 +18,10 @@ internal class MetricReading
         Timestamp = timestamp;
         Tags = tags;
     }
+
     public MetricReading(string key, double value)
     {
         Key = key;
         Value = value;
     }
-
-    public string Key { get; internal set; }
-    public double Value { get; internal set; }
-    public long? Timestamp { get; internal set; }
-    public IDictionary<string, string?> Tags { get; internal set; } = new Dictionary<string, string?>();
 }
