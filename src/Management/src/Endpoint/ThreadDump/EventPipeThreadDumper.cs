@@ -338,7 +338,9 @@ public sealed class EventPipeThreadDumper
     }
 
     // Much of this code is from PerfView/TraceLog.cs
+#pragma warning disable S3776 // Cognitive Complexity of methods should not be too high
     private SourceLocation? GetSourceLine(TraceEventStackSource stackSource, StackSourceFrameIndex frameIndex, SymbolReader reader)
+#pragma warning restore S3776 // Cognitive Complexity of methods should not be too high
     {
         TraceLog log = stackSource.TraceLog;
         uint codeAddress = (uint)frameIndex - (uint)StackSourceFrameIndex.Start;

@@ -17,6 +17,7 @@
     <Rule Id="S1151" Action="Warning" />
     <Rule Id="S1186" Action="None" />
     <Rule Id="S1244" Action="Warning" />
+    <Rule Id="S134" Action="Warning" />
     <Rule Id="S1449" Action="Warning" />
     <Rule Id="S1479" Action="Warning" />
     <Rule Id="S1659" Action="Warning" />
@@ -42,6 +43,7 @@
     <Rule Id="S3433" Action="None" />
     <Rule Id="S3597" Action="None" />
     <Rule Id="S3598" Action="None" />
+    <Rule Id="S3776" Action="Warning" />
     <Rule Id="S3872" Action="Warning" />
     <Rule Id="S3874" Action="Warning" />
     <Rule Id="S3889" Action="None" />

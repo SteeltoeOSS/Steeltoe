@@ -760,10 +760,12 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
                     string name = nameValuePair[0];
                     string value = nameValuePair[1];
 
+#pragma warning disable S134 // Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
                     if (TempFileKeys.Contains(name))
                     {
                         value = File.ReadAllText(value);
                     }
+#pragma warning restore S134 // Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
 
                     value = value.Replace("\n", Environment.NewLine, StringComparison.Ordinal);
 
@@ -787,10 +789,12 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
                     string key = pair[0];
                     string value = pair[1];
 
+#pragma warning disable S134 // Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
                     if (TempFileKeys.Contains(key) && File.Exists(value))
                     {
                         File.Delete(value);
                     }
+#pragma warning restore S134 // Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
                 }
             }
         }

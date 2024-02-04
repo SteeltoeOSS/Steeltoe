@@ -57,25 +57,31 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
                 string loggerName = remaining.Value!.TrimStart('/');
 
                 Dictionary<string, string> change = await DeserializeRequestAsync(request.Body);
-
-                change.TryGetValue("configuredLevel", out string? level);
-
-                _logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
-
-                if (!string.IsNullOrEmpty(loggerName))
-                {
-                    if (!string.IsNullOrEmpty(level) && LoggerLevels.StringToLogLevel(level) == null)
-                    {
-                        _logger.LogDebug("Invalid LogLevel specified: {level}", level);
-                        return null;
-                    }
-
-                    return new LoggersRequest(loggerName, level);
-                }
+                return CheckLogger(loggerName, change);
             }
         }
 
         return new LoggersRequest();
+    }
+
+    private LoggersRequest? CheckLogger(string loggerName, Dictionary<string, string> change)
+    {
+
+        change.TryGetValue("configuredLevel", out string? level);
+
+        _logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
+
+        if (string.IsNullOrEmpty(loggerName))
+        {
+            return new LoggersRequest();
+        }
+        if (!string.IsNullOrEmpty(level) && LoggerLevels.StringToLogLevel(level) == null)
+        {
+            _logger.LogDebug("Invalid LogLevel specified: {level}", level);
+            return null;
+        }
+
+        return new LoggersRequest(loggerName, level);
     }
 
     private async Task<Dictionary<string, string>> DeserializeRequestAsync(Stream stream)

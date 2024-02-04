@@ -87,36 +87,37 @@ internal sealed class RedisConnectionStringBuilder : IConnectionStringBuilder
     {
         _settings.Clear();
 
-        if (!string.IsNullOrEmpty(connectionString))
+        if (string.IsNullOrEmpty(connectionString))
         {
-            foreach (string option in connectionString.Split(',').Where(element => !string.IsNullOrWhiteSpace(element)))
+            return;
+        }
+        foreach (string option in connectionString.Split(',').Where(element => !string.IsNullOrWhiteSpace(element)))
+        {
+            int equalsIndex = option.IndexOf('=');
+
+            if (equalsIndex != -1)
             {
-                int equalsIndex = option.IndexOf('=');
+                string name = option[..equalsIndex].Trim();
+                string value = option[(equalsIndex + 1)..].Trim();
+                _settings[name] = value;
+            }
+            else if (option.Contains(','))
+            {
+                // Redis allows multiple servers in the connection string, but we haven't found any service bindings that actually use that.
+                throw new NotImplementedException("Support for multiple servers is not implemented. Please open a GitHub issue if you need this.");
+            }
+            else
+            {
+                string[] hostWithPort = option.Split(':', 2);
+                _settings[KnownKeywords.Host] = hostWithPort[0];
 
-                if (equalsIndex != -1)
+                if (hostWithPort.Length > 1)
                 {
-                    string name = option[..equalsIndex].Trim();
-                    string value = option[(equalsIndex + 1)..].Trim();
-                    _settings[name] = value;
-                }
-                else
-                {
-                    if (option.Contains(','))
-                    {
-                        // Redis allows multiple servers in the connection string, but we haven't found any service bindings that actually use that.
-                        throw new NotImplementedException("Support for multiple servers is not implemented. Please open a GitHub issue if you need this.");
-                    }
-
-                    string[] hostWithPort = option.Split(':', 2);
-                    _settings[KnownKeywords.Host] = hostWithPort[0];
-
-                    if (hostWithPort.Length > 1)
-                    {
-                        _settings[KnownKeywords.Port] = hostWithPort[1];
-                    }
+                    _settings[KnownKeywords.Port] = hostWithPort[1];
                 }
             }
         }
+
     }
 
     private static void AssertIsKnownKeyword(string keyword)

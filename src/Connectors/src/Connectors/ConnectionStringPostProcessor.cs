@@ -139,14 +139,11 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
                     // Take the connection string from appsettings.json as baseline, then merge cloud-provided secrets into it.
                     connectionStringBuilder.ConnectionString = secretValue;
                 }
-                else
+                // Never merge separately-defined secrets from appsettings.json into the connection string.
+                // Earlier Steeltoe versions used to do that, which raised the question what takes precedence.
+                else if (!IsPartOfConnectionString(secretName))
                 {
-                    // Never merge separately-defined secrets from appsettings.json into the connection string.
-                    // Earlier Steeltoe versions used to do that, which raised the question what takes precedence.
-                    if (!IsPartOfConnectionString(secretName))
-                    {
-                        separateSecrets[secretName] = secretValue;
-                    }
+                    separateSecrets[secretName] = secretValue;
                 }
             }
         }

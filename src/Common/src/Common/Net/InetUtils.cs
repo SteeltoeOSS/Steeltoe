@@ -46,39 +46,30 @@ public class InetUtils
         try
         {
             int lowest = int.MaxValue;
-            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces()
+                .Where(x => x.OperationalStatus == OperationalStatus.Up && !x.IsReceiveOnly && !IgnoreInterface(x.Name))
+                .ToArray();
 
             foreach (NetworkInterface @interface in interfaces)
             {
-                if (@interface.OperationalStatus == OperationalStatus.Up && !@interface.IsReceiveOnly)
+                _logger?.LogTrace("Testing interface: {name}, {id}", @interface.Name, @interface.Id);
+
+                IPInterfaceProperties props = @interface.GetIPProperties();
+                IPv4InterfaceProperties ipProps = props.GetIPv4Properties();
+
+                if (ipProps.Index < lowest || result == null)
                 {
-                    _logger?.LogTrace("Testing interface: {name}, {id}", @interface.Name, @interface.Id);
-
-                    IPInterfaceProperties props = @interface.GetIPProperties();
-                    IPv4InterfaceProperties ipProps = props.GetIPv4Properties();
-
-                    if (ipProps.Index < lowest || result == null)
-                    {
-                        lowest = ipProps.Index;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-
-                    if (!IgnoreInterface(@interface.Name))
-                    {
-                        foreach (UnicastIPAddressInformation addressInfo in props.UnicastAddresses)
-                        {
-                            IPAddress address = addressInfo.Address;
-
-                            if (IsInet4Address(address) && !IsLoopbackAddress(address) && IsPreferredAddress(address))
-                            {
-                                _logger?.LogTrace("Found non-loopback interface: {name}", @interface.Name);
-                                result = address;
-                            }
-                        }
-                    }
+                    lowest = ipProps.Index;
+                }
+                else
+                {
+                    continue;
+                }
+                foreach (UnicastIPAddressInformation addressInfo in props.UnicastAddresses
+                    .Where(x => IsInet4Address(x.Address) && !IsLoopbackAddress(x.Address) && IsPreferredAddress(x.Address)))
+                {
+                    _logger?.LogTrace("Found non-loopback interface: {name}", @interface.Name);
+                    result = addressInfo.Address;
                 }
             }
         }
@@ -195,30 +186,18 @@ public class InetUtils
 
     internal IPAddress ResolveHostAddress(string hostName)
     {
-        IPAddress result = null;
-
         try
         {
             IPAddress[] results = Dns.GetHostAddresses(hostName);
 
-            if (results.Length > 0)
-            {
-                foreach (IPAddress address in results)
-                {
-                    if (address.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        result = address;
-                        break;
-                    }
-                }
-            }
+            return Array.Find(results, x => x.AddressFamily == AddressFamily.InterNetwork);
         }
         catch (Exception e)
         {
             _logger?.LogWarning(e, "Unable to resolve host address");
         }
 
-        return result;
+        return null;
     }
 
     internal string ResolveHostName()

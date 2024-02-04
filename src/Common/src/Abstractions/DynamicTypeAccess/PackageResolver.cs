@@ -88,6 +88,7 @@ internal abstract class PackageResolver
 
                 foreach (string typeName in typeNames)
                 {
+#pragma warning disable S134 // Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
                     try
                     {
                         Type type = assembly.GetType(typeName, true)!;
@@ -97,6 +98,7 @@ internal abstract class PackageResolver
                     {
                         exceptions.Add(exception);
                     }
+#pragma warning restore S134 // Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
                 }
             }
             catch (Exception exception) when (exception is ArgumentException or IOException or BadImageFormatException)

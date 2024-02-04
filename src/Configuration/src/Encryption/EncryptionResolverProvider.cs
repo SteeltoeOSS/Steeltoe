@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -193,22 +194,16 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
         {
             HashSet<IDisposable> disposables = [];
 
-            foreach (IConfigurationProvider provider in Providers)
+            foreach (IDisposable disposable in GetDisposables(Providers))
             {
-                if (provider is IDisposable disposable)
-                {
-                    disposables.Add(disposable);
-                }
+                disposables.Add(disposable);
             }
 
             if (Configuration != null)
             {
-                foreach (IConfigurationProvider provider in Configuration.Providers)
+                foreach (IDisposable disposable in GetDisposables(Configuration.Providers))
                 {
-                    if (provider is IDisposable disposable)
-                    {
-                        disposables.Add(disposable);
-                    }
+                    disposables.Add(disposable);
                 }
             }
 
@@ -219,5 +214,18 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
 
             _isDisposed = true;
         }
+    }
+
+    private HashSet<IDisposable> GetDisposables(IEnumerable<IConfigurationProvider> providers)
+    {
+        HashSet<IDisposable> disposables = [];
+        foreach (IConfigurationProvider provider in providers)
+        {
+            if (provider is IDisposable disposable)
+            {
+                disposables.Add(disposable);
+            }
+        }
+        return disposables;
     }
 }

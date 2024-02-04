@@ -50,7 +50,9 @@ public static class TracingBaseServiceCollectionExtensions
     /// <returns>
     /// <see cref="IServiceCollection" /> configured for distributed tracing.
     /// </returns>
+#pragma warning disable S3776 // Cognitive Complexity of methods should not be too high
     public static IServiceCollection AddDistributedTracing(this IServiceCollection services, Action<TracerProviderBuilder>? action)
+#pragma warning restore S3776 // Cognitive Complexity of methods should not be too high
     {
         ArgumentGuard.NotNull(services);
 

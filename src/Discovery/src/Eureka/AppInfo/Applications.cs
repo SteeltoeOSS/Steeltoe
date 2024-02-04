@@ -259,14 +259,11 @@ public class Applications
             {
                 InstanceInfo inst = kvp.Value;
 
-                if (ReturnUpInstancesOnly)
+                if (ReturnUpInstancesOnly && inst.Status == InstanceStatus.Up)
                 {
-                    if (inst.Status == InstanceStatus.Up)
-                    {
-                        result.Add(inst);
-                    }
+                    result.Add(inst);
                 }
-                else
+                else if(!ReturnUpInstancesOnly)
                 {
                     result.Add(inst);
                 }

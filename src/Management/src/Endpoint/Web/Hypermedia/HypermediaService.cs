@@ -71,19 +71,16 @@ internal sealed class HypermediaService
             {
                 selfLink = new Link(baseUrl);
             }
-            else
+            else if (!string.IsNullOrEmpty(endpointOptions.Id))
             {
-                if (!string.IsNullOrEmpty(endpointOptions.Id))
+                if (!links.Entries.ContainsKey(endpointOptions.Id))
                 {
-                    if (!links.Entries.ContainsKey(endpointOptions.Id))
-                    {
-                        string linkPath = $"{baseUrl.TrimEnd('/')}/{endpointOptions.Path}";
-                        links.Entries.Add(endpointOptions.Id, new Link(linkPath));
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", endpointOptions.Id);
-                    }
+                    string linkPath = $"{baseUrl.TrimEnd('/')}/{endpointOptions.Path}";
+                    links.Entries.Add(endpointOptions.Id, new Link(linkPath));
+                }
+                else
+                {
+                    _logger.LogWarning("Duplicate endpoint ID detected: {DuplicateEndpointId}", endpointOptions.Id);
                 }
             }
         }

@@ -71,7 +71,9 @@ internal static class EurekaPostConfigurer
     /// <param name="instanceInfo">
     /// Information about this application instance.
     /// </param>
+#pragma warning disable S3776 // Cognitive Complexity of methods should not be too high
     public static void UpdateConfiguration(IConfiguration configuration, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
+#pragma warning restore S3776 // Cognitive Complexity of methods should not be too high
     {
         string defaultIdEnding = $":{EurekaInstanceConfiguration.DefaultAppName}:{EurekaInstanceConfiguration.DefaultNonSecurePort}";
 

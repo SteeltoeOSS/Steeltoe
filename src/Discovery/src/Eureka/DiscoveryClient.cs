@@ -168,17 +168,14 @@ public class DiscoveryClient : IEurekaClient
             return result;
         }
 
-        foreach (Application app in localRegionApps.GetRegisteredApplications())
+        foreach (InstanceInfo instance in localRegionApps.GetRegisteredApplications().SelectMany(x => x.Instances))
         {
-            foreach (InstanceInfo instance in app.Instances)
-            {
-                string instanceVipAddress = secure ? instance.SecureVipAddress : instance.VipAddress;
+            string instanceVipAddress = secure ? instance.SecureVipAddress : instance.VipAddress;
 
-                if (vipAddress.Equals(instanceVipAddress, StringComparison.OrdinalIgnoreCase) &&
-                    appName.Equals(instance.AppName, StringComparison.OrdinalIgnoreCase))
-                {
-                    result.Add(instance);
-                }
+            if (vipAddress.Equals(instanceVipAddress, StringComparison.OrdinalIgnoreCase) &&
+                appName.Equals(instance.AppName, StringComparison.OrdinalIgnoreCase))
+            {
+                result.Add(instance);
             }
         }
 
@@ -259,15 +256,10 @@ public class DiscoveryClient : IEurekaClient
                 logger.LogDebug("HandleInstanceStatusChanged {previousStatus}, {currentStatus}, {instanceId}, {dirty}", args.Previous, args.Current,
                     args.InstanceId, info.IsDirty);
 
-                if (info.IsDirty)
+                if (info.IsDirty && await RegisterAsync(CancellationToken.None))
                 {
-                    bool result = await RegisterAsync(CancellationToken.None);
-
-                    if (result)
-                    {
-                        info.IsDirty = false;
-                        logger.LogInformation("HandleInstanceStatusChanged RegisterAsync succeeded");
-                    }
+                    info.IsDirty = false;
+                    logger.LogInformation("HandleInstanceStatusChanged RegisterAsync succeeded");
                 }
             }
         }
@@ -434,16 +426,9 @@ public class DiscoveryClient : IEurekaClient
         long startingCounter = registryFetchCounter;
         Applications fetched = null;
 
-        EurekaHttpResponse<Applications> resp;
-
-        if (string.IsNullOrEmpty(ClientConfiguration.RegistryRefreshSingleVipAddress))
-        {
-            resp = await HttpClient.GetApplicationsAsync(cancellationToken);
-        }
-        else
-        {
-            resp = await HttpClient.GetVipAsync(ClientConfiguration.RegistryRefreshSingleVipAddress, cancellationToken);
-        }
+        EurekaHttpResponse<Applications> resp = string.IsNullOrEmpty(ClientConfiguration.RegistryRefreshSingleVipAddress)
+            ? await HttpClient.GetApplicationsAsync(cancellationToken)
+            : await HttpClient.GetVipAsync(ClientConfiguration.RegistryRefreshSingleVipAddress, cancellationToken);
 
         logger.LogDebug("FetchFullRegistry returned: {StatusCode}, {Response}", resp.StatusCode, resp.Response != null ? resp.Response.ToString() : "null");
 
