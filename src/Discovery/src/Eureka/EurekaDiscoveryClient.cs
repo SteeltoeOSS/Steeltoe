@@ -20,30 +20,23 @@ namespace Steeltoe.Discovery.Eureka;
 /// </summary>
 public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, IAsyncDisposable
 {
-    private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
     private readonly IServiceInstance _thisInstance;
     private readonly ILogger<EurekaDiscoveryClient> _logger;
-
-    public override EurekaClientOptions ClientOptions => _clientOptionsMonitor.CurrentValue;
 
     public string Description => "A discovery client for Spring Cloud Eureka.";
 
 #nullable enable
 
     public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
-        EurekaApplicationInfoManager appInfoManager, EurekaHttpClient eurekaHttpClient, ILoggerFactory loggerFactory, HttpClient? httpClient = null)
-        : base(appInfoManager, loggerFactory)
+        EurekaApplicationInfoManager appInfoManager, EurekaHttpClient eurekaHttpClient, ILoggerFactory loggerFactory)
+        : base(appInfoManager, eurekaHttpClient, clientOptionsMonitor, loggerFactory)
     {
         ArgumentGuard.NotNull(clientOptionsMonitor);
         ArgumentGuard.NotNull(instanceOptionsMonitor);
         ArgumentGuard.NotNull(eurekaHttpClient);
 
-        _clientOptionsMonitor = clientOptionsMonitor;
         _thisInstance = new ThisServiceInstance(instanceOptionsMonitor);
-        this.httpClient = eurekaHttpClient;
         _logger = loggerFactory.CreateLogger<EurekaDiscoveryClient>();
-
-        InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
 #nullable disable

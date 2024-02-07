@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using Consul;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,7 +22,6 @@ using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
-using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
@@ -96,28 +95,39 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddDiscoveryClient_WithEurekaClientCertConfig_AddsDiscoveryClient()
+    public async Task AddDiscoveryClient_WithEurekaClientCertConfig_AddsDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string?>(FastEureka);
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+        };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPemFiles("instance.crt", "instance.key").Build();
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Configuration.AddPemFiles("instance.crt", "instance.key");
 
-        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
-        services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
-        services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-        services.AddDiscoveryClient(configuration);
+        builder.Services.AddOptions();
+        builder.Services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetRequiredService<IDiscoveryClient>();
-        EurekaHttpClient eurekaHttpClient = discoveryClient.HttpClient;
+        var handler = new DelegateToMockHttpClientHandler();
 
-        var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().First(n => n.Name == "httpClient").GetValue(eurekaHttpClient)!;
+        builder.Services.AddSingleton<IHttpClientHandlerFactory>(_ =>
+        {
+            var factory = new DefaultHttpClientHandlerFactory();
+            factory.Using(() => handler);
+            return factory;
+        });
 
-        var handler = (DelegatingHandler)httpClient.GetType().BaseType!.GetRuntimeFields().Single(f => f.Name == "_handler").GetValue(httpClient)!;
-        object? innerHandler = GetInnerHttpHandler(handler);
+        builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
-        Assert.NotNull(discoveryClient);
-        Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
+        await using WebApplication webApplication = builder.Build();
+
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+        _ = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+
+        Assert.NotNull(handler.ClientCertificates);
+        Assert.NotEmpty(handler.ClientCertificates);
     }
 
     [Fact]
@@ -431,31 +441,6 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.NotNull(client);
         IServiceInstance instanceInfo = client.GetLocalServiceInstance();
         Assert.Equal("fromtest", instanceInfo.Host);
-    }
-
-    [Fact]
-    public void AddServiceDiscovery_WithEurekaClientCertConfig_AddsDiscoveryClient()
-    {
-        var appsettings = new Dictionary<string, string?>(FastEureka);
-
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPemFiles("instance.crt", "instance.key").Build();
-
-        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
-        services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
-        services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-        services.AddServiceDiscovery(configuration, builder => builder.UseEureka());
-
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetRequiredService<IDiscoveryClient>();
-        EurekaHttpClient eurekaHttpClient = discoveryClient.HttpClient;
-
-        var httpClient = (HttpClient)eurekaHttpClient.GetType().GetRuntimeFields().First(n => n.Name == "httpClient").GetValue(eurekaHttpClient)!;
-
-        var handler = (DelegatingHandler)httpClient.GetType().BaseType!.GetRuntimeFields().First(f => f.Name == "_handler").GetValue(httpClient)!;
-        object? innerHandler = GetInnerHttpHandler(handler);
-
-        Assert.NotNull(discoveryClient);
-        Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
     }
 
     [Fact]

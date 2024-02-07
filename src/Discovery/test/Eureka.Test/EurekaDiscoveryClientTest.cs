@@ -27,12 +27,9 @@ public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
         var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
 
         var appManager = new EurekaApplicationInfoManager(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
-        var eurekaHttpClient = new EurekaHttpClient(clientOptionsMonitor, new TestHttpClientFactory(), NullLoggerFactory.Instance);
+        var eurekaHttpClient = new EurekaHttpClient(clientOptionsMonitor, new TestHttpClientFactory(), NullLogger<EurekaHttpClient>.Instance);
         var client = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, eurekaHttpClient, NullLoggerFactory.Instance);
 
-        Assert.NotNull(client.ClientOptions);
-        Assert.Equal(clientOptions, client.ClientOptions);
-        Assert.NotNull(client.HttpClient);
         Assert.NotNull(client.Description);
 
         IList<string> services = await client.GetServiceIdsAsync(CancellationToken.None);

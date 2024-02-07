@@ -4,7 +4,6 @@
 
 using System.Net;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
@@ -14,26 +13,27 @@ using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class DiscoveryClient
+public abstract class DiscoveryClient
 {
     private readonly ILogger<DiscoveryClient> _logger;
-    protected readonly EurekaApplicationInfoManager AppInfoManager;
+    private readonly EurekaHttpClient _eurekaHttpClient;
+    private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
+    protected internal readonly EurekaApplicationInfoManager AppInfoManager;
     private int _shutdown;
     private volatile Applications _localRegionApps;
     private long _registryFetchCounter;
-    protected Timer cacheRefreshTimer;
-    protected EurekaHttpClient httpClient;
+
+    private EurekaClientOptions ClientOptions => _clientOptionsMonitor.CurrentValue;
 
     internal Timer HeartBeatTimer { get; private set; }
-    internal Timer CacheRefreshTimer => cacheRefreshTimer;
-    internal long RegistryFetchCounter { get; set; }
+    internal Timer CacheRefreshTimer { get; private set; }
+
     public long LastGoodHeartbeatTimestamp { get; private set; }
     public long LastGoodFullRegistryFetchTimestamp { get; internal set; }
     public long LastGoodDeltaRegistryFetchTimestamp { get; internal set; }
     public long LastGoodRegistryFetchTimestamp { get; private set; }
     public long LastGoodRegisterTimestamp { get; internal set; }
     public InstanceStatus LastRemoteInstanceStatus { get; private set; } = InstanceStatus.Unknown;
-    public EurekaHttpClient HttpClient => httpClient;
 
     public Applications Applications
     {
@@ -41,34 +41,33 @@ public class DiscoveryClient
         internal set => _localRegionApps = value;
     }
 
-    public virtual EurekaClientOptions ClientOptions { get; }
     public IHealthCheckHandler HealthCheckHandler { get; set; }
     public event EventHandler<ApplicationsEventArgs> OnApplicationsChange;
 
-    public DiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, EurekaHttpClient httpClient = null, ILoggerFactory loggerFactory = null)
-        : this(EurekaApplicationInfoManager.SharedInstance, loggerFactory ?? NullLoggerFactory.Instance)
-    {
-        ArgumentGuard.NotNull(clientOptionsMonitor);
+#nullable enable
 
-        ClientOptions = clientOptionsMonitor.CurrentValue;
-        this.httpClient = httpClient ?? new EurekaHttpClient(clientOptionsMonitor, loggerFactory);
+    protected DiscoveryClient(EurekaApplicationInfoManager appInfoManager, EurekaHttpClient eurekaHttpClient,
+        IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, ILoggerFactory loggerFactory)
+    {
+        ArgumentGuard.NotNull(appInfoManager);
+        ArgumentGuard.NotNull(eurekaHttpClient);
+        ArgumentGuard.NotNull(clientOptionsMonitor);
+        ArgumentGuard.NotNull(loggerFactory);
+
+        AppInfoManager = appInfoManager;
+        _eurekaHttpClient = eurekaHttpClient;
+        _clientOptionsMonitor = clientOptionsMonitor;
+        _logger = loggerFactory.CreateLogger<DiscoveryClient>();
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
-#nullable enable
-
-    // Constructor used by Dependency Injection
-    protected DiscoveryClient(EurekaApplicationInfoManager appInfoManager, ILoggerFactory loggerFactory)
-    {
-        ArgumentGuard.NotNull(appInfoManager);
-        ArgumentGuard.NotNull(loggerFactory);
-
-        AppInfoManager = appInfoManager;
-        _logger = loggerFactory.CreateLogger<DiscoveryClient>();
-    }
-
 #nullable disable
+
+    internal void SetRegistryFetchCounter(long value)
+    {
+        _registryFetchCounter = value;
+    }
 
     public Application GetApplication(string appName)
     {
@@ -199,10 +198,10 @@ public class DiscoveryClient
             return;
         }
 
-        if (cacheRefreshTimer != null)
+        if (CacheRefreshTimer != null)
         {
-            await cacheRefreshTimer.DisposeAsync();
-            cacheRefreshTimer = null;
+            await CacheRefreshTimer.DisposeAsync();
+            CacheRefreshTimer = null;
         }
 
         if (HeartBeatTimer != null)
@@ -321,7 +320,7 @@ public class DiscoveryClient
 
         try
         {
-            EurekaHttpResponse resp = await HttpClient.CancelAsync(instance.AppName, instance.InstanceId, cancellationToken);
+            EurekaHttpResponse resp = await _eurekaHttpClient.CancelAsync(instance.AppName, instance.InstanceId, cancellationToken);
             _logger.LogDebug("Unregister {Application}/{Instance} returned: {StatusCode}", instance.AppName, instance.InstanceId, resp.StatusCode);
             return resp.StatusCode == HttpStatusCode.OK;
         }
@@ -345,7 +344,7 @@ public class DiscoveryClient
 
         try
         {
-            EurekaHttpResponse resp = await HttpClient.RegisterAsync(instance, cancellationToken);
+            EurekaHttpResponse resp = await _eurekaHttpClient.RegisterAsync(instance, cancellationToken);
             bool result = resp.StatusCode == HttpStatusCode.NoContent;
             _logger.LogDebug("Register {Application}/{Instance} returned: {StatusCode}", instance.AppName, instance.InstanceId, resp.StatusCode);
 
@@ -384,7 +383,7 @@ public class DiscoveryClient
         try
         {
             EurekaHttpResponse<InstanceInfo> resp =
-                await HttpClient.SendHeartBeatAsync(instance.AppName, instance.InstanceId, instance, InstanceStatus.Unknown, cancellationToken);
+                await _eurekaHttpClient.SendHeartBeatAsync(instance.AppName, instance.InstanceId, instance, InstanceStatus.Unknown, cancellationToken);
 
             _logger.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", instance.AppName, instance.InstanceId, resp.StatusCode);
 
@@ -414,7 +413,7 @@ public class DiscoveryClient
         return false;
     }
 
-    protected internal async Task<Applications> FetchFullRegistryAsync(CancellationToken cancellationToken)
+    public async Task<Applications> FetchFullRegistryAsync(CancellationToken cancellationToken)
     {
         long startingCounter = _registryFetchCounter;
         Applications fetched = null;
@@ -423,11 +422,11 @@ public class DiscoveryClient
 
         if (string.IsNullOrEmpty(ClientOptions.RegistryRefreshSingleVipAddress))
         {
-            resp = await HttpClient.GetApplicationsAsync(cancellationToken);
+            resp = await _eurekaHttpClient.GetApplicationsAsync(cancellationToken);
         }
         else
         {
-            resp = await HttpClient.GetVipAsync(ClientOptions.RegistryRefreshSingleVipAddress, cancellationToken);
+            resp = await _eurekaHttpClient.GetVipAsync(ClientOptions.RegistryRefreshSingleVipAddress, cancellationToken);
         }
 
         _logger.LogDebug("FetchFullRegistry returned: {StatusCode}, {Response}", resp.StatusCode, resp.Response != null ? resp.Response.ToString() : "null");
@@ -457,7 +456,7 @@ public class DiscoveryClient
         long startingCounter = _registryFetchCounter;
         Applications delta = null;
 
-        EurekaHttpResponse<Applications> resp = await HttpClient.GetDeltaAsync(cancellationToken);
+        EurekaHttpResponse<Applications> resp = await _eurekaHttpClient.GetDeltaAsync(cancellationToken);
         _logger.LogDebug("FetchRegistryDelta returned: {StatusCode}", resp.StatusCode);
 
         if (resp.StatusCode == HttpStatusCode.OK)
@@ -538,7 +537,7 @@ public class DiscoveryClient
         }
     }
 
-    protected async Task InitializeAsync(CancellationToken cancellationToken)
+    private async Task InitializeAsync(CancellationToken cancellationToken)
     {
         _localRegionApps = new Applications
         {
@@ -571,7 +570,7 @@ public class DiscoveryClient
         {
             await FetchRegistryAsync(true, cancellationToken);
             int intervalInMilliseconds = ClientOptions.RegistryFetchIntervalSeconds * 1000;
-            cacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTask);
+            CacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTask);
         }
     }
 

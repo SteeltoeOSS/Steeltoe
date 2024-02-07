@@ -21,7 +21,7 @@ public sealed class Application
         Name = name;
     }
 
-    internal Application(string name, IList<InstanceInfo> instances)
+    internal Application(string name, IEnumerable<InstanceInfo> instances)
     {
         Name = name;
 

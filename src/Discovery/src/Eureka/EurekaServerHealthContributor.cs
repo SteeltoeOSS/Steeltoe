@@ -3,25 +3,32 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaServerHealthContributor : IHealthContributor
+public sealed class EurekaServerHealthContributor : IHealthContributor
 {
     private readonly EurekaDiscoveryClient _discoveryClient;
     private readonly EurekaApplicationInfoManager _appInfoManager;
+    private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
 
     public string Id => "eurekaServer";
 
     public EurekaServerHealthContributor(EurekaDiscoveryClient discoveryClient, EurekaApplicationInfoManager appInfoManager,
-        ILogger<EurekaServerHealthContributor> logger = null)
+        IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor)
     {
+        ArgumentGuard.NotNull(discoveryClient);
+        ArgumentGuard.NotNull(appInfoManager);
+        ArgumentGuard.NotNull(clientOptionsMonitor);
+
         _discoveryClient = discoveryClient;
         _appInfoManager = appInfoManager;
+        _clientOptionsMonitor = clientOptionsMonitor;
     }
 
     // Testing
@@ -41,11 +48,11 @@ public class EurekaServerHealthContributor : IHealthContributor
 
     private void AddHealthStatus(HealthCheckResult result)
     {
-        HealthStatus remoteStatus = AddRemoteInstanceStatus(result);
-        HealthStatus fetchStatus = AddFetchStatus(_discoveryClient.ClientOptions, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
+        EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
 
-        HealthStatus heartBeatStatus = AddHeartbeatStatus(_discoveryClient.ClientOptions, _appInfoManager.InstanceOptions, result,
-            _discoveryClient.LastGoodHeartbeatTimestamp);
+        HealthStatus remoteStatus = AddRemoteInstanceStatus(result);
+        HealthStatus fetchStatus = AddFetchStatus(clientOptions, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
+        HealthStatus heartBeatStatus = AddHeartbeatStatus(clientOptions, _appInfoManager.InstanceOptions, result, _discoveryClient.LastGoodHeartbeatTimestamp);
 
         result.Status = remoteStatus;
 

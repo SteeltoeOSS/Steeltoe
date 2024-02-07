@@ -2,22 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaApplicationsHealthContributor : IHealthContributor
+public sealed class EurekaApplicationsHealthContributor : IHealthContributor
 {
     private readonly EurekaDiscoveryClient _discoveryClient;
+    private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
 
-    public string Id { get; } = "eurekaApplications";
+    public string Id => "eurekaApplications";
 
-    public EurekaApplicationsHealthContributor(EurekaDiscoveryClient discoveryClient, ILogger<EurekaApplicationsHealthContributor> logger = null)
+    public EurekaApplicationsHealthContributor(EurekaDiscoveryClient discoveryClient, IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor)
     {
+        ArgumentGuard.NotNull(discoveryClient);
+        ArgumentGuard.NotNull(clientOptionsMonitor);
+
         _discoveryClient = discoveryClient;
+        _clientOptionsMonitor = clientOptionsMonitor;
     }
 
     // Testing
@@ -35,7 +41,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
             Description = "No monitored applications"
         };
 
-        IList<string> appNames = GetMonitoredApplications(_discoveryClient.ClientOptions);
+        IList<string> appNames = GetMonitoredApplications(_clientOptionsMonitor.CurrentValue);
 
         foreach (string appName in appNames)
         {

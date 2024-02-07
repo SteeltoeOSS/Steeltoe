@@ -4,7 +4,6 @@
 
 #nullable enable
 
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 
@@ -62,39 +61,10 @@ public sealed class EurekaDiscoveryManager
     {
     }
 
-    internal void Initialize(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, ILoggerFactory loggerFactory)
-    {
-        ArgumentGuard.NotNull(clientOptionsMonitor);
-        ArgumentGuard.NotNull(loggerFactory);
-
-        _clientOptionsMonitor = clientOptionsMonitor;
-        Client = new DiscoveryClient(clientOptionsMonitor, null, loggerFactory);
-    }
-
-    internal void Initialize(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
-        ILoggerFactory loggerFactory)
-    {
-        ArgumentGuard.NotNull(clientOptionsMonitor);
-        ArgumentGuard.NotNull(instanceOptionsMonitor);
-        ArgumentGuard.NotNull(loggerFactory);
-
-        _clientOptionsMonitor = clientOptionsMonitor;
-        _instanceOptionsMonitor = instanceOptionsMonitor;
-
-        if (EurekaApplicationInfoManager.SharedInstance.InstanceInfo == null)
-        {
-            ILogger<EurekaApplicationInfoManager> logger = loggerFactory.CreateLogger<EurekaApplicationInfoManager>();
-            EurekaApplicationInfoManager.SharedInstance.Initialize(instanceOptionsMonitor, logger);
-        }
-
-        Client = new DiscoveryClient(clientOptionsMonitor, null, loggerFactory);
-    }
-
     internal static void ResetSharedInstance()
     {
         SharedInstance.ClientOptions = null;
         SharedInstance.Client = null;
         SharedInstance.InstanceOptions = null;
-
     }
 }
