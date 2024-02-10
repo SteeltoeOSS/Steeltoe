@@ -50,6 +50,7 @@
 
   <Target Name="ValidatePackage" AfterTargets="BeforeBuild">
     <Error Text="The 'Description' property must be set for packable project '$(MSBuildProjectName)'." Condition="'$(Description)' == ''" />
+    <Error Text="The 'PackageTags' property must be set for packable project '$(MSBuildProjectName)'." Condition="'$(PackageTags)' == ''" />
   </Target>
 
   <ItemGroup

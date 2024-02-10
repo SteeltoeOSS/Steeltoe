@@ -3,7 +3,7 @@
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Management</RootNamespace>
     <Description>Abstractions for application management and monitoring</Description>
-    <PackageTags>management;monitoring</PackageTags>
+    <PackageTags>management;monitoring;Spring Cloud</PackageTags>
     <IsPackable>true</IsPackable>
     <Nullable>enable</Nullable>
   </PropertyGroup>
