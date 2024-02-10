@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Steeltoe common utility libraries</Description>
-    <PackageTags></PackageTags>
+    <PackageTags>IO; File; Directory</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
