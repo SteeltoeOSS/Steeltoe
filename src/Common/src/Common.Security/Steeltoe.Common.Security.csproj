@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Steeltoe common library for security</Description>
-    <PackageTags></PackageTags>
+    <PackageTags>security;pem;certificate</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

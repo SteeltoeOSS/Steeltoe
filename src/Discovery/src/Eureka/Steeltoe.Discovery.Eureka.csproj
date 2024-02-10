@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Client for service discovery and registration with Neflix Eureka</Description>
-    <PackageTags>aspnetcore;Netflix Eureka;Spring;Spring Cloud</PackageTags>
+    <PackageTags>aspnetcore;service discovery;service registry;Netflix Eureka;netflix;eureka</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Steeltoe common library for network interaction</Description>
-    <PackageTags></PackageTags>
+    <PackageTags>NET Core; file system</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

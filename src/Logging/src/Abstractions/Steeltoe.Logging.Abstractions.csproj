@@ -3,7 +3,7 @@
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Logging</RootNamespace>
     <Description>Abstractions for use with dynamic logging</Description>
-    <PackageTags></PackageTags>
+    <PackageTags>logging;dynamic logging;management;monitoring</PackageTags>
     <IsPackable>true</IsPackable>
     <Nullable>enable</Nullable>
   </PropertyGroup>

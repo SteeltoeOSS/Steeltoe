@@ -3,7 +3,7 @@
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Discovery</RootNamespace>
     <Description>Abstractions for service registration and discovery</Description>
-    <PackageTags></PackageTags>
+    <PackageTags>service discovery;service registry</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
