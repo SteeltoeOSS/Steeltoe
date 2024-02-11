@@ -11,5 +11,7 @@ public sealed class RefreshEndpointOptions : EndpointOptions
         "Post"
     };
 
+    public IList<string> KeysToSanitize { get; set; } = new List<string>();
+
     public bool ReturnConfiguration { get; set; } = true;
 }
