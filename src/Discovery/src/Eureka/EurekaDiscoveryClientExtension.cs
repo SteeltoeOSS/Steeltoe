@@ -199,6 +199,7 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
             return handler;
         });
 
+        services.AddSingleton<EurekaServiceUriStateManager>();
         services.AddSingleton<EurekaHttpClient>();
     }
 

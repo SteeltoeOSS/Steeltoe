@@ -27,26 +27,12 @@ namespace Steeltoe.Discovery.Eureka.Test.Transport;
 public sealed class EurekaHttpClientTest : AbstractBaseTest
 {
     [Fact]
-    public void Constructor_Throws_IfServiceUrlBad()
-    {
-        var clientOptions = new EurekaClientOptions
-        {
-            EurekaServerServiceUrls = "foobar\\foobar"
-        };
-
-        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
-        var httpClientFactory = new TestHttpClientFactory();
-
-        var ex = Assert.Throws<UriFormatException>(() => new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance));
-        Assert.Contains("URI", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public async Task Register_Throws_IfInstanceInfoNull()
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.RegisterAsync(null, CancellationToken.None));
         Assert.Contains("info", ex.Message, StringComparison.Ordinal);
@@ -66,7 +52,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         await Assert.ThrowsAsync<EurekaTransportException>(async () => await client.RegisterAsync(new InstanceInfo(), CancellationToken.None));
     }
@@ -92,7 +79,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         EurekaHttpResponse resp = await client.RegisterAsync(instance, CancellationToken.None);
 
@@ -127,7 +115,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         await client.RegisterAsync(instance, CancellationToken.None);
 
@@ -155,7 +144,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.SendHeartBeatAsync(null, "bar", new InstanceInfo(), InstanceStatus.Down, CancellationToken.None));
@@ -168,7 +158,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.SendHeartBeatAsync("foo", null, new InstanceInfo(), InstanceStatus.Down, CancellationToken.None));
@@ -181,7 +172,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.SendHeartBeatAsync("foo", "bar", null, InstanceStatus.Down, CancellationToken.None));
@@ -216,7 +208,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         EurekaHttpResponse<InstanceInfo> resp = await client.SendHeartBeatAsync("foo", "id1", instance, InstanceStatus.Unknown, CancellationToken.None);
 
@@ -284,7 +277,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         EurekaHttpResponse<Applications> resp = await client.GetApplicationsAsync(CancellationToken.None);
 
@@ -321,7 +315,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetVipAsync(null, CancellationToken.None));
         Assert.Contains("vipAddress", ex.Message, StringComparison.Ordinal);
@@ -332,7 +327,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetSecureVipAsync(null, CancellationToken.None));
         Assert.Contains("secureVipAddress", ex.Message, StringComparison.Ordinal);
@@ -343,7 +339,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetApplicationAsync(null, CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
@@ -398,7 +395,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo", CancellationToken.None);
 
@@ -423,8 +421,6 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("192.168.56.1", instance.IPAddress);
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
-
-        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -477,7 +473,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo", CancellationToken.None);
 
@@ -502,8 +499,6 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
             Assert.Equal("192.168.56.1", instance.IPAddress);
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
-
-        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -511,7 +506,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync(null, "id", CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
@@ -522,7 +518,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync("appName", null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
@@ -533,7 +530,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync(null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
@@ -590,7 +588,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT", CancellationToken.None);
 
@@ -606,8 +605,6 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
         Assert.Equal("192.168.0.147", resp.Response.IPAddress);
         Assert.Equal(InstanceStatus.Up, resp.Response.Status);
-
-        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -662,7 +659,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT", CancellationToken.None);
 
@@ -678,8 +676,6 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("DESKTOP-GNQ5SUT", resp.Response.HostName);
         Assert.Equal("192.168.0.147", resp.Response.IPAddress);
         Assert.Equal(InstanceStatus.Up, resp.Response.Status);
-
-        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -687,7 +683,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.CancelAsync(null, "id", CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
@@ -698,7 +695,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.CancelAsync("appName", null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
@@ -723,7 +721,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         EurekaHttpResponse resp = await client.CancelAsync("foo", "bar", CancellationToken.None);
 
@@ -733,8 +732,6 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("DELETE", TestConfigServerStartup.LastRequest.Method);
         Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
         Assert.Equal("/apps/foo/bar", TestConfigServerStartup.LastRequest.Path.Value);
-
-        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -742,7 +739,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.StatusUpdateAsync(null, "id", InstanceStatus.Up, null, CancellationToken.None));
@@ -755,7 +753,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.StatusUpdateAsync("appName", null, InstanceStatus.Up, null, CancellationToken.None));
@@ -768,7 +767,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.StatusUpdateAsync("appName", "bar", InstanceStatus.Up, null, CancellationToken.None));
@@ -795,7 +795,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         long now = DateTime.UtcNow.Ticks;
         long javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
@@ -812,8 +813,6 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
         Assert.Equal("/apps/foo/bar/status", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal($"?value=DOWN&lastDirtyTimestamp={javaTime}", TestConfigServerStartup.LastRequest.QueryString.Value);
-
-        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
     }
 
     [Fact]
@@ -821,7 +820,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DeleteStatusOverrideAsync(null, "id", null, CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
@@ -832,7 +832,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.DeleteStatusOverrideAsync("appName", null, null, CancellationToken.None));
@@ -845,7 +846,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     {
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.DeleteStatusOverrideAsync("appName", "bar", null, CancellationToken.None));
@@ -872,7 +874,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         long now = DateTime.UtcNow.Ticks;
         long javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
@@ -889,29 +892,6 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
         Assert.Equal("/apps/foo/bar/status", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal($"?lastDirtyTimestamp={javaTime}", TestConfigServerStartup.LastRequest.QueryString.Value);
-
-        Assert.Equal("http://localhost:8888/", client.ServiceUrl);
-    }
-
-    [Fact]
-    public void MakeServiceUrl_Throws_IfServiceUrlBad()
-    {
-        var ex = Assert.Throws<UriFormatException>(() => EurekaHttpClient.MakeServiceUrl("foobar\\foobar"));
-        Assert.Contains("URI", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void MakeServiceUrl_AppendsSlash_IfMissing()
-    {
-        string result = EurekaHttpClient.MakeServiceUrl("http://boo:123");
-        Assert.Equal("http://boo:123/", result);
-    }
-
-    [Fact]
-    public void MakeServiceUrl_DoesNotAppendSlash_IfPresent()
-    {
-        string result = EurekaHttpClient.MakeServiceUrl("http://boo:123/");
-        Assert.Equal("http://boo:123/", result);
     }
 
     [Fact]
@@ -973,7 +953,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         HttpRequestMessage result =
             await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
@@ -981,8 +962,6 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.False(result.Headers.Contains("Authorization"));
-
-        client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
 
         result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
@@ -1001,7 +980,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         HttpRequestMessage result =
             await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
@@ -1009,8 +989,6 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.True(result.Headers.Contains("Authorization"));
-
-        client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
 
         result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
@@ -1029,7 +1007,8 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
+        var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, eurekaServiceUriStateManager, NullLogger<EurekaHttpClient>.Instance);
 
         HttpRequestMessage result =
             await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
@@ -1038,94 +1017,11 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.True(result.Headers.Contains("Authorization"));
 
-        client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
-
         result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.True(result.Headers.Contains("Authorization"));
-    }
-
-    [Fact]
-    public void GetRequestUri_ReturnsCorrect_WithQueryArguments()
-    {
-        var clientOptions = new EurekaClientOptions
-        {
-            EurekaServerServiceUrls = "http://boo:123/eureka/"
-        };
-
-        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
-        var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
-
-        var queryArgs = new Dictionary<string, string>
-        {
-            { "foo", "bar" },
-            { "bar", "foo" }
-        };
-
-        Uri result = client.GetRequestUri("http://boo:123/eureka", queryArgs);
-        Assert.NotNull(result);
-        Assert.Equal("http://boo:123/eureka?foo=bar&bar=foo", result.ToString());
-    }
-
-    [Fact]
-    public void GetServiceUrlCandidates_NoFailingUrls_ReturnsExpected()
-    {
-        var clientOptions = new EurekaClientOptions
-        {
-            EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
-        };
-
-        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
-        var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
-
-        IList<string> result = client.GetServiceUrlCandidates();
-        Assert.Contains("http://user:pass@boo:123/eureka/", result);
-        Assert.Contains("http://user:pass@foo:123/eureka/", result);
-    }
-
-    [Fact]
-    public void GetServiceUrlCandidates_WithFailingUrls_ReturnsExpected()
-    {
-        var clientOptions = new EurekaClientOptions
-        {
-            EurekaServerServiceUrls =
-                "https://user:pass@boo:123/eureka/,https://user:pass@foo:123/eureka,https://user:pass@blah:123/eureka,https://user:pass@blah.blah:123/eureka"
-        };
-
-        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
-        var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
-
-        client.AddToFailingServiceUrls("https://user:pass@foo:123/eureka/");
-        client.AddToFailingServiceUrls("https://user:pass@blah.blah:123/eureka/");
-
-        IList<string> result = client.GetServiceUrlCandidates();
-        Assert.Contains("https://user:pass@boo:123/eureka/", result);
-        Assert.Contains("https://user:pass@blah:123/eureka/", result);
-        Assert.Equal(2, result.Count);
-    }
-
-    [Fact]
-    public void GetServiceUrlCandidates_ThresholdHit_ReturnsExpected()
-    {
-        var clientOptions = new EurekaClientOptions
-        {
-            EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
-        };
-
-        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
-        var httpClientFactory = new TestHttpClientFactory();
-        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLogger<EurekaHttpClient>.Instance);
-
-        client.AddToFailingServiceUrls("http://user:pass@foo:123/eureka/");
-
-        IList<string> result = client.GetServiceUrlCandidates();
-        Assert.Contains("http://user:pass@boo:123/eureka/", result);
-        Assert.Contains("http://user:pass@foo:123/eureka/", result);
     }
 
     private sealed class AddCustomRequestHeadersDelegatingHandler : DelegatingHandler
