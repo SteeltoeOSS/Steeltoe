@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Http;
+using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connectors.Services;
@@ -179,22 +179,35 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
     private static void AddEurekaHttpClient(IServiceCollection services)
     {
-        services.TryAddSingleton<IHttpClientHandlerFactory, DefaultHttpClientHandlerFactory>();
-        services.TryAddSingleton<EurekaPrimaryHttpClientHandlerConfigurer>();
-        services.TryAddSingleton<ClientCertificatePrimaryHttpClientHandlerConfigurer>();
+        services.TryAddSingleton<HttpClientHandlerFactory>();
+        services.TryAddSingleton<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
+        services.TryAddSingleton<ClientCertificateHttpClientHandlerConfigurer>();
+        services.TryAddSingleton<EurekaHttpClientHandlerConfigurer>();
 
-        IHttpClientBuilder httpClientBuilder = services.AddHttpClient("Eureka");
-
-        httpClientBuilder.ConfigurePrimaryHttpMessageHandler(serviceProvider =>
+        services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(serviceProvider =>
         {
-            var handlerFactory = serviceProvider.GetRequiredService<IHttpClientHandlerFactory>();
+            var handlerFactory = serviceProvider.GetRequiredService<HttpClientHandlerFactory>();
             HttpClientHandler handler = handlerFactory.Create();
 
-            var eurekaConfigurer = serviceProvider.GetRequiredService<EurekaPrimaryHttpClientHandlerConfigurer>();
+            var validateCertificatesHandler = serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
+            validateCertificatesHandler.Configure(handler);
+
+            var clientCertificateConfigurer = serviceProvider.GetRequiredService<ClientCertificateHttpClientHandlerConfigurer>();
+            clientCertificateConfigurer.Configure(handler);
+
+            var eurekaConfigurer = serviceProvider.GetRequiredService<EurekaHttpClientHandlerConfigurer>();
             eurekaConfigurer.Configure(handler);
 
-            var clientCertificateConfigurer = serviceProvider.GetRequiredService<ClientCertificatePrimaryHttpClientHandlerConfigurer>();
-            clientCertificateConfigurer.Configure(handler);
+            return handler;
+        });
+
+        services.AddHttpClient("EurekaAccessToken").ConfigurePrimaryHttpMessageHandler(serviceProvider =>
+        {
+            var handlerFactory = serviceProvider.GetRequiredService<HttpClientHandlerFactory>();
+            HttpClientHandler handler = handlerFactory.Create();
+
+            var validateCertificatesHandler = serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
+            validateCertificatesHandler.Configure(handler);
 
             return handler;
         });

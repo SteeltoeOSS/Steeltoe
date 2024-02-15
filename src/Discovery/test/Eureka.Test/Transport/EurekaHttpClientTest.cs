@@ -15,6 +15,7 @@ using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Http;
+using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -916,13 +917,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
-        var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
+        var extraHeadersHandler = new AddCustomRequestHeadersDelegatingHandler();
+        extraHeadersHandler.ExtraRequestHeaders.Add("foo", "bar");
 
-        var headersHandler = new AddCustomRequestHeadersDelegatingHandler();
-        headersHandler.ExtraRequestHeaders.Add("foo", "bar");
-
-        builder.Services.AddTransient(_ => headersHandler);
+        builder.Services.AddTransient(_ => extraHeadersHandler);
 
         builder.Services.Configure<HttpClientFactoryOptions>("Eureka", options =>
         {
@@ -930,9 +928,11 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
                 handlerBuilder.AdditionalHandlers.Add(handlerBuilder.Services.GetRequiredService<AddCustomRequestHeadersDelegatingHandler>()));
         });
 
+        var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/some").WithHeaders("foo", "bar").Respond("application/json", jsonResponse);
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var client = webApplication.Services.GetRequiredService<EurekaHttpClient>();
 

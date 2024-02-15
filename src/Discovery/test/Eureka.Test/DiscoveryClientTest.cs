@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
-using Steeltoe.Common.Http;
+using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -131,11 +131,11 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
-
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/").Respond("application/json", FooAddedJson);
 
         await using WebApplication webApplication = builder.Build();
+
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         Applications applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
@@ -166,11 +166,10 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
-
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/").Respond("application/json", FooAddedJson);
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         Task<Applications> applicationsTask = discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
@@ -196,11 +195,10 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
-
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/delta").Respond("application/json", FooModifiedJson);
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
@@ -255,11 +253,10 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
-
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/delta").Respond("application/json", FooModifiedJson);
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
@@ -286,8 +283,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
-
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
 
         builder.Services.Replace(ServiceDescriptor.Singleton(serviceProvider =>
@@ -310,6 +305,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         }));
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
@@ -334,8 +330,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
-
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NoContent);
 
         builder.Services.Replace(ServiceDescriptor.Singleton(serviceProvider =>
@@ -358,6 +352,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         }));
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
@@ -382,8 +377,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
-
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
 
         builder.Services.Replace(ServiceDescriptor.Singleton(serviceProvider =>
@@ -406,6 +399,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         }));
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
@@ -430,8 +424,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
-
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
         handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost:foo").Respond("application/json", "{}");
 
@@ -455,6 +447,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         }));
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
@@ -479,8 +472,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
-
         handler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost:foo").Respond(HttpStatusCode.OK);
 
         builder.Services.Replace(ServiceDescriptor.Singleton(serviceProvider =>
@@ -503,6 +494,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         }));
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
@@ -955,12 +947,11 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(new TestableHttpClientHandlerFactory(handler));
-
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/").Respond("application/json", FooAddedJson);
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/delta").Respond("application/json", FooModifiedJson);
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 

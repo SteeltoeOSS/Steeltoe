@@ -2,15 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Consul;
+using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using RichardSzalay.MockHttp;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Http;
+using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
@@ -22,6 +25,7 @@ using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Discovery.Eureka.AppInfo;
 using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
@@ -112,16 +116,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var handler = new DelegateToMockHttpClientHandler();
 
-        builder.Services.AddSingleton<IHttpClientHandlerFactory>(_ =>
-        {
-            var factory = new DefaultHttpClientHandlerFactory();
-            factory.Using(() => handler);
-            return factory;
-        });
-
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         _ = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
@@ -749,19 +747,205 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         Assert.True(service.GetType().IsAssignableFrom(typeof(EurekaDiscoveryClient)));
     }
 
-    private static object? GetInnerHttpHandler(object? handler)
+    [Fact]
+    public async Task AddDiscoveryClient_WithAccessTokenUri_SendsAuthTokenRequestFirst()
     {
-        while (handler is not null)
-        {
-            handler = handler.GetType().GetProperty(nameof(DelegatingHandler.InnerHandler))!.GetValue(handler);
-
-            if (handler is HttpClientHandler)
+        const string vcapApplication = """
             {
-                break;
+                "limits": {
+                    "fds": 16384,
+                    "mem": 1024,
+                    "disk": 1024
+                },
+                "application_name": "spring-cloud-broker",
+                "application_uris": [
+                  "spring-cloud-broker.apps.testcloud.com"
+                ],
+                "name": "spring-cloud-broker",
+                "space_name": "p-spring-cloud-services",
+                "space_id": "65b73473-94cc-4640-b462-7ad52838b4ae",
+                "uris": [
+                    "spring-cloud-broker.apps.testcloud.com"
+                ],
+                "users": null,
+                "version": "07e112f7-2f71-4f5a-8a34-db51dbed30a3",
+                "application_version": "07e112f7-2f71-4f5a-8a34-db51dbed30a3",
+                "application_id": "798c2495-fe75-49b1-88da-b81197f2bf06"
             }
-        }
+            """;
 
-        return handler;
+        const string vcapServices = """
+            {
+                "p-service-registry": [
+                {
+                    "credentials": {
+                        "uri": "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com",
+                        "client_id": "p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe",
+                        "client_secret": "dCsdoiuklicS",
+                        "access_token_uri": "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token"
+                    },
+                    "syslog_drain_url": null,
+                    "label": "p-service-registry",
+                    "provider": null,
+                    "plan": "standard",
+                    "name": "myDiscoveryService",
+                    "tags": [
+                        "eureka",
+                        "discovery",
+                        "registry",
+                        "spring-cloud"
+                    ]
+                }]
+            }
+            """;
+
+        const string accessTokenResponse = """
+            {
+                "access_token": "secret"
+            }
+            """;
+
+        const string applicationsResponse = """
+            {
+                "applications": {
+                    "versions__delta":"1",
+                    "apps__hashcode":"UP_1_",
+                    "application":[{
+                        "name":"FOO",
+                        "instance":[{
+                            "instanceId":"localhost:foo",
+                            "hostName":"localhost",
+                            "app":"FOO",
+                            "ipAddr":"192.168.56.1",
+                            "status":"UP",
+                            "overriddenstatus":"UNKNOWN",
+                            "port":{"$":8080,"@enabled":"true"},
+                            "securePort":{"$":443,"@enabled":"false"},
+                            "countryId":1,
+                            "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                            "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
+                            "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                            "homePageUrl":"http://localhost:8080/",
+                            "statusPageUrl":"http://localhost:8080/info",
+                            "healthCheckUrl":"http://localhost:8080/health",
+                            "vipAddress":"foo",
+                            "isCoordinatingDiscoveryServer":"false",
+                            "lastUpdatedTimestamp":"1457714988223",
+                            "lastDirtyTimestamp":"1457714988172",
+                            "actionType":"ADDED"
+                        }]
+                    }]
+                }
+            }
+            """;
+
+        using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", vcapApplication);
+        using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Configuration.AddCloudFoundry();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            { "Eureka:Client:ShouldRegisterWithEureka", "false" },
+            { "Eureka:Client:ShouldFetchRegistry", "false" }
+        });
+
+        builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
+
+        var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.Expect(HttpMethod.Post, "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token")
+            .WithHeaders("Authorization", "Basic cC1zZXJ2aWNlLXJlZ2lzdHJ5LTA2ZTI4ZWZkLTI0YmUtNGNlMy05Nzg0LTg1NGVkOGQyYWNiZTpkQ3Nkb2l1a2xpY1M=")
+            .WithFormData("grant_type=client_credentials")
+            .Respond("application/json", accessTokenResponse);
+
+        handler.Mock.Expect(HttpMethod.Get, "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/apps/")
+            .WithHeaders("Authorization", "Bearer secret")
+            .WithHeaders("X-Discovery-AllowRedirect", "false")
+            .Respond("application/json", applicationsResponse);
+
+        await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        await using var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        Applications applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+
+        applications.GetRegisteredApplications().Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task AddDiscoveryClient_WithUsernamePasswordInURL_SendsWithAuthHeader()
+    {
+        const string applicationsResponse = """
+            {
+                "applications": {
+                    "versions__delta":"1",
+                    "apps__hashcode":"UP_1_",
+                    "application":[{
+                        "name":"FOO",
+                        "instance":[{
+                            "instanceId":"localhost:foo",
+                            "hostName":"localhost",
+                            "app":"FOO",
+                            "ipAddr":"192.168.56.1",
+                            "status":"UP",
+                            "overriddenstatus":"UNKNOWN",
+                            "port":{"$":8080,"@enabled":"true"},
+                            "securePort":{"$":443,"@enabled":"false"},
+                            "countryId":1,
+                            "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                            "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
+                            "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                            "homePageUrl":"http://localhost:8080/",
+                            "statusPageUrl":"http://localhost:8080/info",
+                            "healthCheckUrl":"http://localhost:8080/health",
+                            "vipAddress":"foo",
+                            "isCoordinatingDiscoveryServer":"false",
+                            "lastUpdatedTimestamp":"1457714988223",
+                            "lastDirtyTimestamp":"1457714988172",
+                            "actionType":"ADDED"
+                        }]
+                    }]
+                }
+            }
+            """;
+
+        string username = WebUtility.UrlEncode("u$er?N@me");
+        string password = WebUtility.UrlEncode(":p@ssw0rd=");
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            { "Eureka:Client:ShouldRegisterWithEureka", "false" },
+            { "Eureka:Client:ShouldFetchRegistry", "false" },
+            { "Eureka:Client:AccessTokenUri", "https://api.auth-server.com/get-token" },
+            { "Eureka:Client:ServiceUrl", $"https://{username}:{password}@api.eureka-server.com/eureka" }
+        });
+
+        builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
+
+        var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.Expect(HttpMethod.Get, "https://api.eureka-server.com/eureka/apps/")
+            .WithHeaders("Authorization", "Basic dSRlcj9OQG1lOjpwQHNzdzByZD0=")
+            .WithHeaders("X-Discovery-AllowRedirect", "false")
+            .Respond("application/json", applicationsResponse);
+
+        await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        await using var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        Applications applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+
+        applications.GetRegisteredApplications().Should().HaveCount(1);
     }
 
     private sealed class TestApplicationLifetime : IHostApplicationLifetime

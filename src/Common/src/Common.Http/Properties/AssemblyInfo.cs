@@ -6,3 +6,4 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Common.Http.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Client.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka")]

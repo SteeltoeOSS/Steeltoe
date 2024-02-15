@@ -4,12 +4,12 @@
 
 #nullable enable
 
-namespace Steeltoe.Common.Http;
+namespace Steeltoe.Common.Http.HttpClientPooling;
 
 /// <summary>
 /// Provides a method to configure the primary <see cref="HttpClientHandler" /> for a named <see cref="HttpClient" />.
 /// </summary>
-public interface IPrimaryHttpClientHandlerConfigurer
+public interface IHttpClientHandlerConfigurer
 {
     void Configure(HttpClientHandler handler);
 }

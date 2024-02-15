@@ -4,12 +4,12 @@
 
 #nullable enable
 
-namespace Steeltoe.Common.Http;
+namespace Steeltoe.Common.Http.HttpClientPooling;
 
 /// <summary>
-/// Provides a method to create a new <see cref="HttpClientHandler" /> instance.
+/// Indicates that an options type provides a boolean to turn off certificate validation.
 /// </summary>
-public interface IHttpClientHandlerFactory
+public interface IValidateCertificatesOptions
 {
-    HttpClientHandler Create();
+    bool ValidateCertificates { get; set; }
 }

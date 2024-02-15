@@ -4,6 +4,7 @@
 
 using System.Globalization;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -22,8 +23,7 @@ namespace Steeltoe.Discovery.Eureka.Transport;
 public sealed class EurekaHttpClient
 {
     private const string HttpXDiscoveryAllowRedirect = "X-Discovery-AllowRedirect";
-    private const int DefaultGetAccessTokenTimeoutInMilliseconds = 10_000;
-    private static readonly char[] ColonDelimiter = [':'];
+    private static readonly TimeSpan GetAccessTokenTimeout = TimeSpan.FromSeconds(10);
 
     private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitor;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -439,39 +439,34 @@ public sealed class EurekaHttpClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the StatusUpdateAsync request");
     }
 
-    private async Task<string> FetchAccessTokenAsync(CancellationToken cancellationToken)
-    {
-        EurekaClientOptions options = _optionsMonitor.CurrentValue;
-
-        return string.IsNullOrEmpty(options.AccessTokenUri)
-            ? null
-            : await HttpClientHelper.GetAccessTokenAsync(options.AccessTokenUri, options.ClientId, options.ClientSecret,
-                DefaultGetAccessTokenTimeoutInMilliseconds, options.ValidateCertificates, null, null, cancellationToken);
-    }
-
     internal async Task<HttpRequestMessage> GetRequestMessageAsync(HttpMethod method, Uri requestUri, CancellationToken cancellationToken)
     {
-        var rawUri = new Uri(requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped));
-        string rawUserInfo = requestUri.GetComponents(UriComponents.UserInfo, UriFormat.Unescaped);
-        var request = new HttpRequestMessage(method, rawUri);
+        var uriWithoutUserInfo = new Uri(requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.SafeUnescaped));
+        var requestMessage = new HttpRequestMessage(method, uriWithoutUserInfo);
 
-        if (!string.IsNullOrEmpty(rawUserInfo) && rawUserInfo.IndexOfAny(ColonDelimiter) >= 0)
+        if (requestUri.TryGetUsernamePassword(out string username, out string password) && password.Length > 0)
         {
-            string[] userInfo = GetUserInfo(rawUserInfo);
-
-            if (userInfo.Length >= 2)
-            {
-                request = HttpClientHelper.GetRequestMessage(method, rawUri, userInfo[0], userInfo[1]);
-            }
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
         }
         else
         {
-            request = await HttpClientHelper.GetRequestMessageAsync(method, rawUri, FetchAccessTokenAsync, cancellationToken);
+            EurekaClientOptions options = _optionsMonitor.CurrentValue;
+
+            if (!string.IsNullOrEmpty(options.AccessTokenUri))
+            {
+                using HttpClient httpClient = _httpClientFactory.CreateClient("EurekaAccessToken");
+
+                string accessToken = await httpClient.GetAccessTokenAsync(new Uri(options.AccessTokenUri), options.ClientId, options.ClientSecret,
+                    GetAccessTokenTimeout, cancellationToken);
+
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            }
         }
 
-        request.Headers.Add("Accept", "application/json");
-        request.Headers.Add(HttpXDiscoveryAllowRedirect, "false");
-        return request;
+        requestMessage.Headers.Add("Accept", "application/json");
+        requestMessage.Headers.Add(HttpXDiscoveryAllowRedirect, "false");
+        return requestMessage;
     }
 
 #nullable enable
@@ -651,18 +646,6 @@ public sealed class EurekaHttpClient
         }
 
         return sb.ToString();
-    }
-
-    private string[] GetUserInfo(string userInfo)
-    {
-        string[] result = null;
-
-        if (!string.IsNullOrEmpty(userInfo))
-        {
-            result = userInfo.Split(ColonDelimiter);
-        }
-
-        return result;
     }
 
     private int GetRetryCount()

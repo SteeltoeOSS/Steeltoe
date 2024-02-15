@@ -5,10 +5,11 @@
 #nullable enable
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Http.HttpClientPooling;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public sealed class EurekaClientOptions
+public sealed class EurekaClientOptions : IValidateCertificatesOptions
 {
     internal const string EurekaClientConfigurationPrefix = "eureka:client";
     internal const int DefaultRegistryFetchIntervalSeconds = 30;

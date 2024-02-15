@@ -87,7 +87,12 @@ public sealed class EurekaServiceUriStateManager
     private ISet<Uri> GetConfiguredServiceUris()
     {
         string serviceUrls = _optionsMonitor.CurrentValue.EurekaServerServiceUrls ?? string.Empty;
-        return serviceUrls.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(url => new Uri(url)).ToHashSet();
+        return serviceUrls.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(EnsureTrailingSlash).ToHashSet();
+    }
+
+    private static Uri EnsureTrailingSlash(string url)
+    {
+        return new Uri(url.EndsWith('/') ? url : url + '/');
     }
 
     /// <summary>

@@ -6,13 +6,16 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
 
-namespace Steeltoe.Common.Http;
+namespace Steeltoe.Common.Http.HttpClientPooling;
 
-public sealed class ClientCertificatePrimaryHttpClientHandlerConfigurer : IPrimaryHttpClientHandlerConfigurer
+/// <summary>
+/// Configures the primary <see cref="HttpClientHandler" /> for a named <see cref="HttpClient" /> by using a client certificate from configuration.
+/// </summary>
+public sealed class ClientCertificateHttpClientHandlerConfigurer : IHttpClientHandlerConfigurer
 {
     private readonly IOptionsMonitor<CertificateOptions> _optionsMonitor;
 
-    public ClientCertificatePrimaryHttpClientHandlerConfigurer(IOptionsMonitor<CertificateOptions> optionsMonitor)
+    public ClientCertificateHttpClientHandlerConfigurer(IOptionsMonitor<CertificateOptions> optionsMonitor)
     {
         ArgumentGuard.NotNull(optionsMonitor);
 
