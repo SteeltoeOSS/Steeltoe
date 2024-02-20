@@ -28,19 +28,16 @@ public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
 
         var appManager = new EurekaApplicationInfoManager(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
+        var eurekaClient = new EurekaClient(new TestHttpClientFactory(), clientOptionsMonitor, eurekaServiceUriStateManager, NullLogger<EurekaClient>.Instance);
+        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, eurekaClient, NullLoggerFactory.Instance);
 
-        var eurekaHttpClient = new EurekaHttpClient(clientOptionsMonitor, new TestHttpClientFactory(), eurekaServiceUriStateManager,
-            NullLogger<EurekaHttpClient>.Instance);
+        Assert.NotNull(discoveryClient.Description);
 
-        var client = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, eurekaHttpClient, NullLoggerFactory.Instance);
-
-        Assert.NotNull(client.Description);
-
-        IList<string> services = await client.GetServiceIdsAsync(CancellationToken.None);
+        IList<string> services = await discoveryClient.GetServiceIdsAsync(CancellationToken.None);
         Assert.NotNull(services);
         Assert.Empty(services);
 
-        IServiceInstance thisService = client.GetLocalServiceInstance();
+        IServiceInstance thisService = discoveryClient.GetLocalServiceInstance();
         Assert.NotNull(thisService);
         Assert.Equal(instanceOptions.ResolveHostName(false), thisService.Host);
         Assert.Equal(instanceOptions.IsSecurePortEnabled, thisService.IsSecure);

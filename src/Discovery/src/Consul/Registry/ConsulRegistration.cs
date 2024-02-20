@@ -210,7 +210,7 @@ public sealed class ConsulRegistration : IServiceInstance
             check.DeregisterCriticalServiceAfter = DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout);
         }
 
-        if (options is { IsHeartBeatEnabled: true, Heartbeat: not null })
+        if (options is { IsHeartbeatEnabled: true, Heartbeat: not null })
         {
             check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.TimeToLive);
             return check;

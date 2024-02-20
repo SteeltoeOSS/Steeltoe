@@ -174,10 +174,10 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
         services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
 
-        AddEurekaHttpClient(services);
+        AddEurekaClient(services);
     }
 
-    private static void AddEurekaHttpClient(IServiceCollection services)
+    private static void AddEurekaClient(IServiceCollection services)
     {
         services.TryAddSingleton<HttpClientHandlerFactory>();
         services.TryAddSingleton<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
@@ -201,7 +201,7 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
             return handler;
         });
 
-        services.AddHttpClient("EurekaAccessToken").ConfigurePrimaryHttpMessageHandler(serviceProvider =>
+        services.AddHttpClient("AccessTokenForEureka").ConfigurePrimaryHttpMessageHandler(serviceProvider =>
         {
             var handlerFactory = serviceProvider.GetRequiredService<HttpClientHandlerFactory>();
             HttpClientHandler handler = handlerFactory.Create();
@@ -213,7 +213,7 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
         });
 
         services.AddSingleton<EurekaServiceUriStateManager>();
-        services.AddSingleton<EurekaHttpClient>();
+        services.AddSingleton<EurekaClient>();
     }
 
     private EurekaServiceInfo? GetServiceInfo(IConfiguration configuration)

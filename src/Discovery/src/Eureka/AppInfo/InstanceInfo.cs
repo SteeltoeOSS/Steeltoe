@@ -73,7 +73,7 @@ public sealed class InstanceInfo
         }
     }
 
-    public long LastUpdatedTimestamp { get; private set; }
+    public long LastUpdatedTimestamp { get; internal set; }
     public long LastDirtyTimestamp { get; internal set; }
     public ActionType ActionType { get; internal set; }
     public string AsgName { get; private set; }

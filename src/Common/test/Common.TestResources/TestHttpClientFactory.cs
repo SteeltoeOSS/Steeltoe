@@ -6,7 +6,7 @@
 
 namespace Steeltoe.Common.TestResources;
 
-public sealed class TestHttpClientFactory : IHttpClientFactory
+public sealed class TestHttpClientFactory : IHttpClientFactory, IDisposable
 {
     private readonly HttpClient _httpClient;
 
@@ -23,5 +23,10 @@ public sealed class TestHttpClientFactory : IHttpClientFactory
     public HttpClient CreateClient(string name)
     {
         return _httpClient;
+    }
+
+    public void Dispose()
+    {
+        _httpClient.Dispose();
     }
 }

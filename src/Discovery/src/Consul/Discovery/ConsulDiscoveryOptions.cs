@@ -175,7 +175,7 @@ public sealed class ConsulDiscoveryOptions
     /// <summary>
     /// Gets a value indicating whether heart beats are enabled.
     /// </summary>
-    public bool IsHeartBeatEnabled => Heartbeat is { Enabled: true };
+    public bool IsHeartbeatEnabled => Heartbeat is { Enabled: true };
 
     /// <summary>
     /// Gets a value indicating whether retries are enabled.

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -28,12 +27,12 @@ public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, I
 #nullable enable
 
     public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
-        EurekaApplicationInfoManager appInfoManager, EurekaHttpClient eurekaHttpClient, ILoggerFactory loggerFactory)
-        : base(appInfoManager, eurekaHttpClient, clientOptionsMonitor, loggerFactory)
+        EurekaApplicationInfoManager appInfoManager, EurekaClient eurekaClient, ILoggerFactory loggerFactory)
+        : base(appInfoManager, eurekaClient, clientOptionsMonitor, loggerFactory)
     {
         ArgumentGuard.NotNull(clientOptionsMonitor);
         ArgumentGuard.NotNull(instanceOptionsMonitor);
-        ArgumentGuard.NotNull(eurekaHttpClient);
+        ArgumentGuard.NotNull(eurekaClient);
 
         _thisInstance = new ThisServiceInstance(instanceOptionsMonitor);
         _logger = loggerFactory.CreateLogger<EurekaDiscoveryClient>();

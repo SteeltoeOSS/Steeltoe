@@ -52,7 +52,7 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
 
         HealthStatus remoteStatus = AddRemoteInstanceStatus(result);
         HealthStatus fetchStatus = AddFetchStatus(clientOptions, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
-        HealthStatus heartBeatStatus = AddHeartbeatStatus(clientOptions, _appInfoManager.InstanceOptions, result, _discoveryClient.LastGoodHeartbeatTimestamp);
+        HealthStatus heartbeatStatus = AddHeartbeatStatus(clientOptions, _appInfoManager.InstanceOptions, result, _discoveryClient.LastGoodHeartbeatTimestamp);
 
         result.Status = remoteStatus;
 
@@ -61,9 +61,9 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
             result.Status = fetchStatus;
         }
 
-        if (heartBeatStatus > result.Status)
+        if (heartbeatStatus > result.Status)
         {
-            result.Status = heartBeatStatus;
+            result.Status = heartbeatStatus;
         }
 
         result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));

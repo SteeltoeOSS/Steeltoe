@@ -29,12 +29,8 @@ public sealed class EurekaDiscoveryManagerTest : AbstractBaseTest
 
         var appManager = new EurekaApplicationInfoManager(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
-
-        var eurekaHttpClient = new EurekaHttpClient(clientOptionsMonitor, new TestHttpClientFactory(), eurekaServiceUriStateManager,
-            NullLogger<EurekaHttpClient>.Instance);
-
-        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, eurekaHttpClient, NullLoggerFactory.Instance);
-
+        var eurekaClient = new EurekaClient(new TestHttpClientFactory(), clientOptionsMonitor, eurekaServiceUriStateManager, NullLogger<EurekaClient>.Instance);
+        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, eurekaClient, NullLoggerFactory.Instance);
         var discoveryManager = new EurekaDiscoveryManager(clientOptionsMonitor, instanceOptionsMonitor, discoveryClient);
 
         Assert.Equal(instanceOptions, discoveryManager.InstanceOptions);

@@ -115,6 +115,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         builder.Services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
 
         var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");
 
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
@@ -126,6 +127,8 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         Assert.NotNull(handler.ClientCertificates);
         Assert.NotEmpty(handler.ClientCertificates);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
@@ -860,7 +863,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
             .WithFormData("grant_type=client_credentials")
             .Respond("application/json", accessTokenResponse);
 
-        handler.Mock.Expect(HttpMethod.Get, "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/apps/")
+        handler.Mock.Expect(HttpMethod.Get, "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/apps")
             .WithHeaders("Authorization", "Bearer secret")
             .WithHeaders("X-Discovery-AllowRedirect", "false")
             .Respond("application/json", applicationsResponse);
@@ -931,7 +934,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var handler = new DelegateToMockHttpClientHandler();
 
-        handler.Mock.Expect(HttpMethod.Get, "https://api.eureka-server.com/eureka/apps/")
+        handler.Mock.Expect(HttpMethod.Get, "https://api.eureka-server.com/eureka/apps")
             .WithHeaders("Authorization", "Basic dSRlcj9OQG1lOjpwQHNzdzByZD0=")
             .WithHeaders("X-Discovery-AllowRedirect", "false")
             .Respond("application/json", applicationsResponse);

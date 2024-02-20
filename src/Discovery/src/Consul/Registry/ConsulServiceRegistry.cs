@@ -72,7 +72,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
         {
             await _client.Agent.ServiceRegister(registration.InnerRegistration, cancellationToken);
 
-            if (Options.IsHeartBeatEnabled && _scheduler != null)
+            if (Options.IsHeartbeatEnabled && _scheduler != null)
             {
                 _scheduler.Add(registration.InstanceId);
             }
@@ -102,7 +102,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
     {
         ArgumentGuard.NotNull(registration);
 
-        if (Options.IsHeartBeatEnabled && _scheduler != null)
+        if (Options.IsHeartbeatEnabled && _scheduler != null)
         {
             await _scheduler.RemoveAsync(registration.InstanceId);
         }
