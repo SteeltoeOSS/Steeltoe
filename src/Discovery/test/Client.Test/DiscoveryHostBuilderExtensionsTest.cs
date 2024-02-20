@@ -36,7 +36,7 @@ public sealed class DiscoveryHostBuilderExtensionsTest
         IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
         hostBuilder.ConfigureServices((context, services) => services.AddServiceDiscovery(context.Configuration, builder => builder.UseEureka()));
 
-        IHost host = hostBuilder.Build();
+        using IHost host = hostBuilder.Build();
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         IHostedService? hostedService = host.Services.GetServices<IHostedService>().FirstOrDefault();
 
@@ -63,7 +63,7 @@ public sealed class DiscoveryHostBuilderExtensionsTest
         IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
         hostBuilder.ConfigureServices((context, services) => services.AddServiceDiscovery(context.Configuration, builder => builder.UseConsul()));
 
-        IHost host = hostBuilder.Build();
+        using IHost host = hostBuilder.Build();
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         IHostedService? hostedService = host.Services.GetServices<IHostedService>().FirstOrDefault();
 

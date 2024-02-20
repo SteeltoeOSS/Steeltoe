@@ -40,7 +40,7 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 
         hostBuilder.ConfigureServices((context, services) => services.AddDiscoveryClient(context.Configuration));
 
-        IWebHost host = hostBuilder.Build();
+        using IWebHost host = hostBuilder.Build();
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         var hostedService = host.Services.GetService<IHostedService>();
 
@@ -57,7 +57,7 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 
         hostBuilder.ConfigureServices((context, services) => services.AddDiscoveryClient(context.Configuration));
 
-        IWebHost host = hostBuilder.Build();
+        using IWebHost host = hostBuilder.Build();
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         var hostedService = host.Services.GetService<IHostedService>();
 
@@ -74,7 +74,7 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 
         hostBuilder.ConfigureServices((context, services) => services.AddServiceDiscovery(context.Configuration, builder => builder.UseEureka()));
 
-        IWebHost host = hostBuilder.Build();
+        using IWebHost host = hostBuilder.Build();
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         var hostedService = host.Services.GetService<IHostedService>();
 
@@ -91,7 +91,7 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 
         hostBuilder.ConfigureServices((context, services) => services.AddServiceDiscovery(context.Configuration, builder => builder.UseConsul()));
 
-        IWebHost host = hostBuilder.Build();
+        using IWebHost host = hostBuilder.Build();
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         var hostedService = host.Services.GetService<IHostedService>();
 

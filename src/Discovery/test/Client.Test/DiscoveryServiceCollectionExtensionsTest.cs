@@ -860,18 +860,15 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         handler.Mock.Expect(HttpMethod.Post, "https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token")
             .WithHeaders("Authorization", "Basic cC1zZXJ2aWNlLXJlZ2lzdHJ5LTA2ZTI4ZWZkLTI0YmUtNGNlMy05Nzg0LTg1NGVkOGQyYWNiZTpkQ3Nkb2l1a2xpY1M=")
-            .WithFormData("grant_type=client_credentials")
-            .Respond("application/json", accessTokenResponse);
+            .WithFormData("grant_type=client_credentials").Respond("application/json", accessTokenResponse);
 
         handler.Mock.Expect(HttpMethod.Get, "https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/apps")
-            .WithHeaders("Authorization", "Bearer secret")
-            .WithHeaders("X-Discovery-AllowRedirect", "false")
-            .Respond("application/json", applicationsResponse);
+            .WithHeaders("Authorization", "Bearer secret").WithHeaders("X-Discovery-AllowRedirect", "false").Respond("application/json", applicationsResponse);
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
-        await using var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
         Applications applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
 
@@ -934,15 +931,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var handler = new DelegateToMockHttpClientHandler();
 
-        handler.Mock.Expect(HttpMethod.Get, "https://api.eureka-server.com/eureka/apps")
-            .WithHeaders("Authorization", "Basic dSRlcj9OQG1lOjpwQHNzdzByZD0=")
-            .WithHeaders("X-Discovery-AllowRedirect", "false")
-            .Respond("application/json", applicationsResponse);
+        handler.Mock.Expect(HttpMethod.Get, "https://api.eureka-server.com/eureka/apps").WithHeaders("Authorization", "Basic dSRlcj9OQG1lOjpwQHNzdzByZD0=")
+            .WithHeaders("X-Discovery-AllowRedirect", "false").Respond("application/json", applicationsResponse);
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
-        await using var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
         Applications applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
 

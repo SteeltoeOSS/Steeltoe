@@ -15,7 +15,7 @@ public sealed class EurekaDiscoveryManager
     private IOptionsMonitor<EurekaInstanceOptions>? _instanceOptionsMonitor;
 
     public static EurekaDiscoveryManager SharedInstance { get; } = new();
-    public DiscoveryClient? Client { get; private set; }
+    public EurekaDiscoveryClient? Client { get; private set; }
 
     public EurekaClientOptions? ClientOptions
     {

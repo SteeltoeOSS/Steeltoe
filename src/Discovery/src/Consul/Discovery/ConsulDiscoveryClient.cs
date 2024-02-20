@@ -19,7 +19,7 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 /// </see>
 /// .
 /// </summary>
-public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
+public sealed class ConsulDiscoveryClient : IDiscoveryClient
 {
     private readonly IConsulClient _client;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
@@ -164,12 +164,6 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
         {
             await _registrar.DisposeAsync();
         }
-    }
-
-    /// <inheritdoc />
-    public async ValueTask DisposeAsync()
-    {
-        await ShutdownAsync(CancellationToken.None);
     }
 
     internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions,

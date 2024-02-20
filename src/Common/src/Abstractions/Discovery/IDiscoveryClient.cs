@@ -49,5 +49,18 @@ public interface IDiscoveryClient
     /// </returns>
     Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Deregisters the local service (this app) from the discovery server.
+    /// </summary>
+    /// <remarks>
+    /// This method exists for two reasons, instead of just reusing <see cref="IAsyncDisposable" />. The first reason is that this method enables
+    /// cancellation. The second reason is more complicated. Deregistration typically requires to send an HTTP request to the discovery server. When using
+    /// `IHttpClientFactory`, it requires the IoC container to obtain an <see cref="HttpClient" />. But that fails when the container is being disposed.
+    /// Deregistration must be performed earlier. That's why implementations should register `DiscoveryClientService` in the IoC container, which is a hosted
+    /// service that performs deregistration (by calling this method) when the app is terminating. At that time, the IoC container is still accessible.
+    /// </remarks>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
     Task ShutdownAsync(CancellationToken cancellationToken);
 }

@@ -38,7 +38,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         WebApplicationBuilder webApplicationBuilder = TestHelpers.GetTestWebApplicationBuilder();
         webApplicationBuilder.Configuration.AddInMemoryCollection(EurekaSettings);
         webApplicationBuilder.Services.AddDiscoveryClient(webApplicationBuilder.Configuration);
-        WebApplication host = webApplicationBuilder.Build();
+        using WebApplication host = webApplicationBuilder.Build();
 
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         Assert.Single(discoveryClients);
@@ -53,7 +53,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         webApplicationBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         webApplicationBuilder.Configuration.AddInMemoryCollection(ConsulSettings);
         webApplicationBuilder.Services.AddDiscoveryClient(webApplicationBuilder.Configuration);
-        WebApplication host = webApplicationBuilder.Build();
+        using WebApplication host = webApplicationBuilder.Build();
 
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         Assert.Single(discoveryClients);
@@ -68,7 +68,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         webApplicationBuilder.Configuration.AddInMemoryCollection(EurekaSettings);
         webApplicationBuilder.Services.AddServiceDiscovery(webApplicationBuilder.Configuration, builder => builder.UseEureka());
 
-        WebApplication host = webApplicationBuilder.Build();
+        using WebApplication host = webApplicationBuilder.Build();
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
@@ -81,7 +81,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         WebApplicationBuilder webApplicationBuilder = TestHelpers.GetTestWebApplicationBuilder();
         webApplicationBuilder.Configuration.AddInMemoryCollection(ConsulSettings);
         webApplicationBuilder.Services.AddServiceDiscovery(webApplicationBuilder.Configuration, builder => builder.UseConsul());
-        WebApplication host = webApplicationBuilder.Build();
+        using WebApplication host = webApplicationBuilder.Build();
 
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         Assert.Single(discoveryClients);

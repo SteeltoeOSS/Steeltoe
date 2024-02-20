@@ -181,10 +181,10 @@ public sealed class EurekaClient
     }
 
     /// <summary>
-    /// Queries for all application instances under a particular vip address.
+    /// Queries for all application instances under a particular VIP address.
     /// </summary>
     /// <param name="vipAddress">
-    /// The vip address whose instances to return.
+    /// The Virtual Internet Protocol address whose instances to return.
     /// </param>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.

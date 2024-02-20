@@ -63,7 +63,7 @@ public sealed class ConsulDiscoveryClientTest
         clientMoq.Setup(client => client.Health).Returns(healthMoq.Object);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
-        await using var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
 
         var serviceInstances = new List<IServiceInstance>();
         await discoveryClient.AddInstancesToListAsync(serviceInstances, "ServiceId", QueryOptions.Default, CancellationToken.None);
@@ -121,7 +121,7 @@ public sealed class ConsulDiscoveryClientTest
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        await using var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
         IList<string> serviceIds = await discoveryClient.GetServiceIdsAsync(QueryOptions.Default, CancellationToken.None);
 
         Assert.Equal(2, serviceIds.Count);
@@ -195,7 +195,7 @@ public sealed class ConsulDiscoveryClientTest
             .Returns(Task.FromResult(queryResult2));
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
-        await using var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(clientMoq.Object, optionsMonitor, null, NullLogger<ConsulDiscoveryClient>.Instance);
         IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, CancellationToken.None);
 
         Assert.Equal(2, serviceInstances.Count);
