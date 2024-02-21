@@ -6,9 +6,4 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public abstract class AbstractBaseTest
 {
-    protected AbstractBaseTest()
-    {
-        EurekaApplicationInfoManager.ResetSharedInstance();
-        EurekaDiscoveryManager.ResetSharedInstance();
-    }
 }

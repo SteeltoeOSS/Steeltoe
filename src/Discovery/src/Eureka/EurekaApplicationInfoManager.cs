@@ -18,8 +18,6 @@ public sealed class EurekaApplicationInfoManager
     private ILogger<EurekaApplicationInfoManager> _logger;
     private IOptionsMonitor<EurekaInstanceOptions>? _instanceOptionsMonitor;
 
-    public static EurekaApplicationInfoManager SharedInstance { get; } = new();
-
     public EurekaInstanceOptions? InstanceOptions
     {
         get => _instanceOptionsMonitor?.CurrentValue;
@@ -115,11 +113,5 @@ public sealed class EurekaApplicationInfoManager
             InstanceInfo.LeaseInfo = newLease;
             InstanceInfo.IsDirty = true;
         }
-    }
-
-    internal static void ResetSharedInstance()
-    {
-        SharedInstance.InstanceInfo = null;
-        SharedInstance.InstanceOptions = null;
     }
 }

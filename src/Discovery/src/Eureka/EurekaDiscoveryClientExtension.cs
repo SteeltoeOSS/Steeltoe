@@ -159,7 +159,6 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
     private void AddEurekaServices(IServiceCollection services)
     {
         services.AddSingleton<EurekaApplicationInfoManager>();
-        services.AddSingleton<EurekaDiscoveryManager>();
         services.AddSingleton<EurekaDiscoveryClient>();
 
         services.AddSingleton<IDiscoveryClient>(serviceProvider =>

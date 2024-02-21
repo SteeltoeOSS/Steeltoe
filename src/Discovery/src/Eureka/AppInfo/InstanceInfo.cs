@@ -199,16 +199,6 @@ public sealed class InstanceInfo
             info._status = InstanceStatus.Starting;
         }
 
-        if (!string.IsNullOrEmpty(info.InstanceId))
-        {
-            InstanceInfo me = EurekaApplicationInfoManager.SharedInstance.InstanceInfo;
-
-            if (me != null && info.InstanceId == me.InstanceId)
-            {
-                info.IsCoordinatingDiscoveryServer = true;
-            }
-        }
-
         if (options.MetadataMap.Count > 0)
         {
             info._metaData = new Dictionary<string, string>(options.MetadataMap);
