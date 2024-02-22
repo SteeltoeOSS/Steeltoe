@@ -23,7 +23,7 @@ internal sealed class JsonLeaseInfo
 
     [JsonPropertyName("lastRenewalTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]
-    public long LastRenewalTimestamp { get; set; }
+    public long? LastRenewalTimestamp { get; set; }
 
     [JsonPropertyName("renewalTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]

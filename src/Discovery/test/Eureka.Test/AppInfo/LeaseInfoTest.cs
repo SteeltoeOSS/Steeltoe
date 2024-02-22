@@ -12,14 +12,6 @@ namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 public sealed class LeaseInfoTest : AbstractBaseTest
 {
     [Fact]
-    public void Constructor_Defaults()
-    {
-        var info = new LeaseInfo();
-        Assert.Equal(LeaseInfo.DefaultDurationInSecs, info.DurationInSecs);
-        Assert.Equal(LeaseInfo.DefaultRenewalIntervalInSecs, info.RenewalIntervalInSecs);
-    }
-
-    [Fact]
     public void FromJson_Correct()
     {
         var leaseInfo = new JsonLeaseInfo
@@ -28,6 +20,27 @@ public sealed class LeaseInfoTest : AbstractBaseTest
             DurationInSecs = 200,
             RegistrationTimestamp = 1_457_973_741_708,
             LastRenewalTimestamp = 1_457_973_741_708,
+            EvictionTimestamp = 1_457_973_741_708,
+            ServiceUpTimestamp = 1_457_973_741_708
+        };
+
+        LeaseInfo result = LeaseInfo.FromJson(leaseInfo);
+        Assert.Equal(100, result.RenewalIntervalInSecs);
+        Assert.Equal(200, result.DurationInSecs);
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.RegistrationTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.EvictionTimestamp, DateTimeKind.Utc)));
+        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.ServiceUpTimestamp, DateTimeKind.Utc)));
+    }
+
+    [Fact]
+    public void FromJson_LastRenewalTimestampLegacy_Correct()
+    {
+        var leaseInfo = new JsonLeaseInfo
+        {
+            RenewalIntervalInSecs = 100,
+            DurationInSecs = 200,
+            RegistrationTimestamp = 1_457_973_741_708,
             LastRenewalTimestampLegacy = 1_457_973_741_708,
             EvictionTimestamp = 1_457_973_741_708,
             ServiceUpTimestamp = 1_457_973_741_708
@@ -38,7 +51,6 @@ public sealed class LeaseInfoTest : AbstractBaseTest
         Assert.Equal(200, result.DurationInSecs);
         Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.RegistrationTimestamp, DateTimeKind.Utc)));
         Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestamp, DateTimeKind.Utc)));
-        Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.LastRenewalTimestampLegacy, DateTimeKind.Utc)));
         Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.EvictionTimestamp, DateTimeKind.Utc)));
         Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.ServiceUpTimestamp, DateTimeKind.Utc)));
     }

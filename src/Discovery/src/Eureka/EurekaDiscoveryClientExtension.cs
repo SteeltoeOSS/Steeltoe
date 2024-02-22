@@ -58,10 +58,10 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
     {
         services.AddOptions<EurekaClientOptions>().Configure<IConfiguration>((options, configuration) =>
         {
-            configuration.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix).Bind(options);
+            configuration.GetSection(EurekaClientOptions.ConfigurationPrefix).Bind(options);
 
             // Eureka is enabled by default. If eureka:client:enabled was not set then check spring:cloud:discovery:enabled
-            if (options.Enabled && configuration.GetValue<bool?>($"{EurekaClientOptions.EurekaClientConfigurationPrefix}:enabled") is null &&
+            if (options.Enabled && configuration.GetValue<bool?>($"{EurekaClientOptions.ConfigurationPrefix}:enabled") is null &&
                 configuration.GetValue<bool?>(SpringDiscoveryEnabled) == false)
             {
                 options.Enabled = false;
@@ -73,26 +73,25 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
         });
 
         services.AddOptions<EurekaInstanceOptions>()
-            .Configure<IConfiguration>((options, configuration) =>
-                configuration.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(options)).PostConfigure<IServiceProvider>(
-                (options, serviceProvider) =>
+            .Configure<IConfiguration>((options, configuration) => configuration.GetSection(EurekaInstanceOptions.ConfigurationPrefix).Bind(options))
+            .PostConfigure<IServiceProvider>((options, serviceProvider) =>
+            {
+                var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+                var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
+                InetOptions inetOptions = configuration.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>() ?? new InetOptions();
+                var logger = serviceProvider.GetRequiredService<ILogger<InetUtils>>();
+                options.NetUtils = new InetUtils(inetOptions, logger);
+                options.ApplyNetUtils();
+
+                if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Management.Endpoint") && string.IsNullOrEmpty(
+                    configuration.GetValue<string>($"{EurekaInstanceOptions.ConfigurationPrefix}:HealthCheckUrlPath")))
                 {
-                    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-                    var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
-                    InetOptions inetOptions = configuration.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>() ?? new InetOptions();
-                    var logger = serviceProvider.GetRequiredService<ILogger<InetUtils>>();
-                    options.NetUtils = new InetUtils(inetOptions, logger);
-                    options.ApplyNetUtils();
+                    GetPathsFromEndpointOptions(options, serviceProvider, configuration);
+                }
 
-                    if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Management.Endpoint") && string.IsNullOrEmpty(
-                        configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:HealthCheckUrlPath")))
-                    {
-                        GetPathsFromEndpointOptions(options, serviceProvider, configuration);
-                    }
-
-                    EurekaServiceInfo? serviceInfo = GetServiceInfo(configuration);
-                    EurekaPostConfigurer.UpdateConfiguration(configuration, serviceInfo, options, serviceInfo?.ApplicationInfo ?? appInfo);
-                });
+                EurekaServiceInfo? serviceInfo = GetServiceInfo(configuration);
+                EurekaPostConfigurer.UpdateConfiguration(configuration, serviceInfo, options, serviceInfo?.ApplicationInfo ?? appInfo);
+            });
 
         services.TryAddSingleton(serviceProvider =>
         {
@@ -123,7 +122,7 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
         eurekaOptions.HealthCheckUrlPath = basePath + ((string?)endpointOptionsPathProperty.GetValue(healthOptions))?.TrimStart('/');
 
-        if (string.IsNullOrEmpty(configuration.GetValue<string>($"{EurekaInstanceOptions.EurekaInstanceConfigurationPrefix}:StatusPageUrlPath")))
+        if (string.IsNullOrEmpty(configuration.GetValue<string>($"{EurekaInstanceOptions.ConfigurationPrefix}:StatusPageUrlPath")))
         {
             object infoOptions = ConfigureOptionsType(serviceProvider, configuration, endpointAssembly,
                 "Steeltoe.Management.Endpoint.Info.ConfigureInfoEndpointOptions", "Steeltoe.Management.Endpoint.Info.InfoEndpointOptions");

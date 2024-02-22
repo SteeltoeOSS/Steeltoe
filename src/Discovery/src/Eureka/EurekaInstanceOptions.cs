@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Eureka;
 
 public sealed class EurekaInstanceOptions
 {
-    internal const string EurekaInstanceConfigurationPrefix = "eureka:instance";
+    internal const string ConfigurationPrefix = "eureka:instance";
     internal const string DefaultStatusPageUrlPath = "/info";
     internal const string DefaultHealthCheckUrlPath = "/health";
     internal const int DefaultNonSecurePort = 80;

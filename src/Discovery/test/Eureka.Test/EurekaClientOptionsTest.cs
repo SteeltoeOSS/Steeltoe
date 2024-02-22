@@ -17,7 +17,7 @@ public sealed class EurekaClientOptionsTest : AbstractBaseTest
 
         Assert.Equal(EurekaClientOptions.DefaultRegistryFetchIntervalSeconds, clientOptions.RegistryFetchIntervalSeconds);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
-        Assert.Equal(EurekaServerConfiguration.DefaultConnectTimeoutSeconds, clientOptions.EurekaServer.ConnectTimeoutSeconds);
+        Assert.Equal(EurekaServerOptions.DefaultConnectTimeoutSeconds, clientOptions.EurekaServer.ConnectTimeoutSeconds);
         Assert.True(clientOptions.ShouldRegisterWithEureka);
         Assert.False(clientOptions.ShouldDisableDelta);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
@@ -37,7 +37,7 @@ public sealed class EurekaClientOptionsTest : AbstractBaseTest
         Assert.Null(clientOptions.EurekaServer.ProxyUserName);
         Assert.Null(clientOptions.EurekaServer.ProxyPassword);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
-        Assert.Equal(EurekaServerConfiguration.DefaultConnectTimeoutSeconds, clientOptions.EurekaServer.ConnectTimeoutSeconds);
+        Assert.Equal(EurekaServerOptions.DefaultConnectTimeoutSeconds, clientOptions.EurekaServer.ConnectTimeoutSeconds);
         Assert.True(clientOptions.ShouldRegisterWithEureka);
         Assert.False(clientOptions.ShouldDisableDelta);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
@@ -119,7 +119,7 @@ public sealed class EurekaClientOptionsTest : AbstractBaseTest
         configurationBuilder.AddJsonFile(fileName);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.ConfigurationPrefix);
         var clientOptions = new EurekaClientOptions();
         clientSection.Bind(clientOptions);
 

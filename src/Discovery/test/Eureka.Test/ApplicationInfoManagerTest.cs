@@ -14,20 +14,6 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
     private InstanceStatusChangedEventArgs _eventArgs;
 
     [Fact]
-    public void Initialize_Initializes_InstanceInfo()
-    {
-        var instanceOptions = new EurekaInstanceOptions();
-        var optionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
-
-        appManager.Initialize(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
-
-        Assert.NotNull(appManager.InstanceOptions);
-        Assert.Equal(instanceOptions, appManager.InstanceOptions);
-        Assert.NotNull(appManager.InstanceInfo);
-    }
-
-    [Fact]
     public void StatusChanged_ChangesStatus()
     {
         var instanceOptions = new EurekaInstanceOptions
@@ -37,8 +23,6 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
 
         TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
-
-        appManager.Initialize(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
         Assert.Equal(InstanceStatus.Starting, appManager.InstanceStatus);
         appManager.InstanceStatus = InstanceStatus.Up;
@@ -55,7 +39,6 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
         TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        appManager.Initialize(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         Assert.Equal(InstanceStatus.Starting, appManager.InstanceStatus);
 
         // Check event sent
@@ -79,7 +62,6 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
         TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        appManager.Initialize(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         Assert.Equal(InstanceStatus.Starting, appManager.InstanceStatus);
 
         // Check event sent
@@ -101,8 +83,6 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
         var instanceOptions = new EurekaInstanceOptions();
         TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
-
-        appManager.Initialize(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.RefreshLeaseInfo();
         InstanceInfo info = appManager.InstanceInfo;

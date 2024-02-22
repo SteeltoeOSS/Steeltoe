@@ -148,7 +148,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
         configurationBuilder.AddJsonFile(fileName);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
         var instanceOptions = new EurekaInstanceOptions();
         instanceSection.Bind(instanceOptions);
 
@@ -197,7 +197,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
             NetUtils = mockNetUtils.Object
         };
 
-        configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(instanceOptions);
+        configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix).Bind(instanceOptions);
 
         mockNetUtils.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Never);
     }
@@ -221,7 +221,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
             NetUtils = mockNetUtils.Object
         };
 
-        configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(instanceOptions);
+        configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix).Bind(instanceOptions);
 
         instanceOptions.ApplyNetUtils();
 
@@ -246,7 +246,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
             NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>(), NullLogger<InetUtils>.Instance)
         };
 
-        configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(instanceOptions);
+        configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix).Bind(instanceOptions);
 
         var noSlowReverseDnsQuery = new Stopwatch();
         noSlowReverseDnsQuery.Start();

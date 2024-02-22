@@ -5,7 +5,6 @@
 #nullable enable
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -14,47 +13,28 @@ namespace Steeltoe.Discovery.Eureka;
 
 public sealed class EurekaApplicationInfoManager
 {
+    private readonly IOptionsMonitor<EurekaInstanceOptions> _instanceOptionsMonitor;
+    private readonly ILogger<EurekaApplicationInfoManager> _logger;
     private readonly object _statusChangeLock = new();
-    private ILogger<EurekaApplicationInfoManager> _logger;
-    private IOptionsMonitor<EurekaInstanceOptions>? _instanceOptionsMonitor;
 
-    public EurekaInstanceOptions? InstanceOptions
-    {
-        get => _instanceOptionsMonitor?.CurrentValue;
-        private set
-        {
-            if (value != null)
-            {
-                throw new NotSupportedException();
-            }
-
-            _instanceOptionsMonitor = null;
-        }
-    }
-
-    public InstanceInfo? InstanceInfo { get; internal set; }
+    public InstanceInfo InstanceInfo { get; }
 
     public InstanceStatus InstanceStatus
     {
-        get => InstanceInfo?.Status ?? InstanceStatus.Unknown;
+        get => InstanceInfo.Status;
         set
         {
-            if (InstanceInfo == null)
-            {
-                return;
-            }
-
             lock (_statusChangeLock)
             {
-                InstanceStatus previousInstance = InstanceInfo.Status;
+                InstanceStatus previousStatus = InstanceInfo.Status;
 
-                if (previousInstance != value)
+                if (previousStatus != value)
                 {
                     InstanceInfo.Status = value;
 
                     try
                     {
-                        StatusChanged?.Invoke(this, new InstanceStatusChangedEventArgs(previousInstance, value, InstanceInfo.InstanceId));
+                        StatusChanged?.Invoke(this, new InstanceStatusChangedEventArgs(previousStatus, value, InstanceInfo.InstanceId));
                     }
                     catch (Exception exception)
                     {
@@ -78,37 +58,20 @@ public sealed class EurekaApplicationInfoManager
         InstanceInfo = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
     }
 
-    private EurekaApplicationInfoManager()
-    {
-        _logger = NullLogger<EurekaApplicationInfoManager>.Instance;
-    }
-
-    internal void Initialize(IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor, ILogger<EurekaApplicationInfoManager> logger)
-    {
-        ArgumentGuard.NotNull(instanceOptionsMonitor);
-        ArgumentGuard.NotNull(logger);
-
-        _instanceOptionsMonitor = instanceOptionsMonitor;
-        _logger = logger;
-        InstanceInfo = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
-    }
-
     public void RefreshLeaseInfo()
     {
-        if (InstanceInfo == null || InstanceOptions == null)
-        {
-            return;
-        }
-
         if (InstanceInfo.LeaseInfo == null)
         {
             return;
         }
 
-        if (InstanceInfo.LeaseInfo.DurationInSecs != InstanceOptions.LeaseExpirationDurationInSeconds ||
-            InstanceInfo.LeaseInfo.RenewalIntervalInSecs != InstanceOptions.LeaseRenewalIntervalInSeconds)
+        EurekaInstanceOptions instanceOptions = _instanceOptionsMonitor.CurrentValue;
+
+        if (InstanceInfo.LeaseInfo.DurationInSecs != instanceOptions.LeaseExpirationDurationInSeconds ||
+            InstanceInfo.LeaseInfo.RenewalIntervalInSecs != instanceOptions.LeaseRenewalIntervalInSeconds)
         {
-            var newLease = new LeaseInfo(InstanceOptions.LeaseRenewalIntervalInSeconds, InstanceOptions.LeaseExpirationDurationInSeconds);
+            // Adapt to changed configuration.
+            LeaseInfo newLease = LeaseInfo.FromConfiguration(instanceOptions);
 
             InstanceInfo.LeaseInfo = newLease;
             InstanceInfo.IsDirty = true;

@@ -6,10 +6,8 @@ using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
@@ -273,7 +271,8 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var appSettings = new Dictionary<string, string>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Instance:AppName"] = "FOO"
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -282,25 +281,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
-
-        builder.Services.Replace(ServiceDescriptor.Singleton(serviceProvider =>
-        {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
-
-            var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance)
-            {
-                InstanceInfo = new InstanceInfo
-                {
-                    InstanceId = "localhost:foo",
-                    HostName = "localhost",
-                    AppName = "FOO",
-                    IPAddress = "192.168.56.1",
-                    Status = InstanceStatus.Starting
-                }
-            };
-
-            return appManager;
-        }));
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
@@ -320,7 +300,8 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var appSettings = new Dictionary<string, string>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Instance:AppName"] = "FOO"
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -329,25 +310,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NoContent);
-
-        builder.Services.Replace(ServiceDescriptor.Singleton(serviceProvider =>
-        {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
-
-            var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance)
-            {
-                InstanceInfo = new InstanceInfo
-                {
-                    InstanceId = "localhost:foo",
-                    HostName = "localhost",
-                    AppName = "FOO",
-                    IPAddress = "192.168.56.1",
-                    Status = InstanceStatus.Starting
-                }
-            };
-
-            return appManager;
-        }));
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
@@ -367,7 +329,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var appSettings = new Dictionary<string, string>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Instance:AppName"] = "FOO",
+            ["Eureka:Instance:InstanceId"] = "localhost:foo"
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -379,29 +343,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost:foo").Respond(HttpStatusCode.NotFound);
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
 
-        builder.Services.Replace(ServiceDescriptor.Singleton(serviceProvider =>
-        {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
-
-            var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance)
-            {
-                InstanceInfo = new InstanceInfo
-                {
-                    InstanceId = "localhost:foo",
-                    HostName = "localhost",
-                    AppName = "FOO",
-                    IPAddress = "192.168.56.1",
-                    Status = InstanceStatus.Starting
-                }
-            };
-
-            return appManager;
-        }));
-
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        var appManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
+        appManager.InstanceInfo.IsDirty = true;
 
         bool result = await discoveryClient.RenewAsync(CancellationToken.None);
 
@@ -416,7 +364,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var appSettings = new Dictionary<string, string>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Instance:AppName"] = "FOO",
+            ["Eureka:Instance:InstanceId"] = "localhost:foo"
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -427,29 +377,13 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
         handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost:foo").Respond("application/json", "{}");
 
-        builder.Services.Replace(ServiceDescriptor.Singleton(serviceProvider =>
-        {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
-
-            var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance)
-            {
-                InstanceInfo = new InstanceInfo
-                {
-                    InstanceId = "localhost:foo",
-                    HostName = "localhost",
-                    AppName = "FOO",
-                    IPAddress = "192.168.56.1",
-                    Status = InstanceStatus.Starting
-                }
-            };
-
-            return appManager;
-        }));
-
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        var appManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
+        appManager.InstanceInfo.IsDirty = true;
 
         bool result = await discoveryClient.RenewAsync(CancellationToken.None);
 
@@ -464,7 +398,9 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var appSettings = new Dictionary<string, string>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Instance:AppName"] = "FOO",
+            ["Eureka:Instance:InstanceId"] = "localhost:foo"
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -473,25 +409,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost:foo").Respond(HttpStatusCode.OK);
-
-        builder.Services.Replace(ServiceDescriptor.Singleton(serviceProvider =>
-        {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
-
-            var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance)
-            {
-                InstanceInfo = new InstanceInfo
-                {
-                    InstanceId = "localhost:foo",
-                    HostName = "localhost",
-                    AppName = "FOO",
-                    IPAddress = "192.168.56.1",
-                    Status = InstanceStatus.Starting
-                }
-            };
-
-            return appManager;
-        }));
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
@@ -786,7 +703,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         handler.Mock.VerifyNoOutstandingExpectation();
     }
 
-
     [Fact]
     public async Task Can_manipulate_request_headers()
     {
@@ -796,7 +712,8 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var appSettings = new Dictionary<string, string>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Instance:AppName"] = "FOO"
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -815,25 +732,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").WithHeaders("X-Special-Feature", "enabled")
             .Respond(HttpStatusCode.NoContent);
 
-        builder.Services.Replace(ServiceDescriptor.Singleton(serviceProvider =>
-        {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
-
-            var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance)
-            {
-                InstanceInfo = new InstanceInfo
-                {
-                    InstanceId = "localhost:foo",
-                    HostName = "localhost",
-                    AppName = "FOO",
-                    IPAddress = "192.168.56.1",
-                    Status = InstanceStatus.Starting
-                }
-            };
-
-            return appManager;
-        }));
-
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
@@ -844,6 +742,17 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         handler.Mock.VerifyNoOutstandingExpectation();
 
         Assert.True(result);
+    }
+
+    private void TimerFunc()
+    {
+        Interlocked.Increment(ref _timerFuncCount);
+    }
+
+    private void TimerFuncThrows()
+    {
+        Interlocked.Increment(ref _timerFuncCount);
+        throw new FormatException();
     }
 
     private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler
@@ -863,17 +772,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
                 request.Headers.Add(name, value);
             }
         }
-    }
-
-    private void TimerFunc()
-    {
-        Interlocked.Increment(ref _timerFuncCount);
-    }
-
-    private void TimerFuncThrows()
-    {
-        Interlocked.Increment(ref _timerFuncCount);
-        throw new FormatException();
     }
 
     private sealed class TestHealthCheckHandler : IHealthCheckHandler

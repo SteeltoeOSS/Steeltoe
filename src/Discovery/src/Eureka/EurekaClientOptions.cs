@@ -11,7 +11,7 @@ namespace Steeltoe.Discovery.Eureka;
 
 public sealed class EurekaClientOptions : IValidateCertificatesOptions
 {
-    internal const string EurekaClientConfigurationPrefix = "eureka:client";
+    internal const string ConfigurationPrefix = "eureka:client";
     internal const int DefaultRegistryFetchIntervalSeconds = 30;
     internal const string DefaultServerServiceUrl = "http://localhost:8761/eureka/";
 
@@ -76,12 +76,14 @@ public sealed class EurekaClientOptions : IValidateCertificatesOptions
     public string? RegistryRefreshSingleVipAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether local status updates via <see cref="EurekaApplicationInfoManager.InstanceStatus" />  will trigger on-demand (but
-    /// rate limited) register/updates to remote Eureka servers. Configuration property: eureka:client:shouldOnDemandUpdateStatusChange.
+    /// Gets or sets a value indicating whether local status updates via <see cref="EurekaApplicationInfoManager.InstanceStatus" />  will trigger on-demand
+    /// register/updates to remote Eureka servers. Configuration property: eureka:client:shouldOnDemandUpdateStatusChange.
     /// </summary>
     public bool ShouldOnDemandUpdateStatusChange { get; set; } = true;
 
-    // Configuration property: eureka:client:enabled
+    /// <summary>
+    /// Gets or sets a value indicating whether Eureka service discovery is enabled. Configuration property: eureka:client:enabled.
+    /// </summary>
     public bool Enabled { get; set; } = true;
 
     /// <summary>
@@ -96,9 +98,13 @@ public sealed class EurekaClientOptions : IValidateCertificatesOptions
     [ConfigurationKeyName("Validate_Certificates")]
     public bool ValidateCertificates { get; set; } = true;
 
-    // Configuration property: eureka:client:eurekaServer
-    public EurekaServerConfiguration EurekaServer { get; } = new();
+    /// <summary>
+    /// Gets Eureka server settings. Configuration property: eureka:client:eurekaServer.
+    /// </summary>
+    public EurekaServerOptions EurekaServer { get; } = new();
 
-    // Configuration property: eureka:client:health
-    public EurekaHealthConfiguration Health { get; } = new();
+    /// <summary>
+    /// Gets Eureka health settings. Configuration property: eureka:client:health.
+    /// </summary>
+    public EurekaHealthOptions Health { get; } = new();
 }

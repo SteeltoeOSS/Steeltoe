@@ -101,7 +101,6 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(2, info.LeaseInfo.DurationInSecs);
         Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.RegistrationTimestamp);
         Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.LastRenewalTimestampLegacy);
         Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.EvictionTimestamp);
         Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.ServiceUpTimestamp);
         Assert.False(info.IsCoordinatingDiscoveryServer);
@@ -117,7 +116,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
     public void FromInstanceConfiguration_DefaultInstanceOptions_Correct()
     {
         var instanceOptions = new EurekaInstanceOptions();
-        var info = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo info = InstanceInfo.FromConfiguration(instanceOptions);
         Assert.NotNull(info);
 
         // Verify
@@ -147,7 +146,6 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(90, info.LeaseInfo.DurationInSecs);
         Assert.Equal(0, info.LeaseInfo.RegistrationTimestamp);
         Assert.Equal(0, info.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(0, info.LeaseInfo.LastRenewalTimestampLegacy);
         Assert.Equal(0, info.LeaseInfo.EvictionTimestamp);
         Assert.Equal(0, info.LeaseInfo.ServiceUpTimestamp);
         Assert.False(info.IsCoordinatingDiscoveryServer);
@@ -167,7 +165,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             IsNonSecurePortEnabled = false
         };
 
-        var info = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo info = InstanceInfo.FromConfiguration(instanceOptions);
         Assert.NotNull(info);
 
         // Verify
@@ -197,7 +195,6 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(90, info.LeaseInfo.DurationInSecs);
         Assert.Equal(0, info.LeaseInfo.RegistrationTimestamp);
         Assert.Equal(0, info.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(0, info.LeaseInfo.LastRenewalTimestampLegacy);
         Assert.Equal(0, info.LeaseInfo.EvictionTimestamp);
         Assert.Equal(0, info.LeaseInfo.ServiceUpTimestamp);
         Assert.False(info.IsCoordinatingDiscoveryServer);
@@ -212,7 +209,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
     public void ToJsonInstance_DefaultInstanceConfiguration_Correct()
     {
         var instanceOptions = new EurekaInstanceOptions();
-        var info = InstanceInfo.FromConfiguration(instanceOptions);
+        InstanceInfo info = InstanceInfo.FromConfiguration(instanceOptions);
         Assert.NotNull(info);
 
         JsonInstanceInfo instanceInfo = info.ToJsonInstance();

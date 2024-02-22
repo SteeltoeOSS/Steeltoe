@@ -6,7 +6,7 @@
 
 namespace Steeltoe.Discovery.Eureka;
 
-public sealed class EurekaServerConfiguration
+public sealed class EurekaServerOptions
 {
     internal const int DefaultConnectTimeoutSeconds = 5;
 
@@ -47,5 +47,5 @@ public sealed class EurekaServerConfiguration
     /// <summary>
     /// Gets or sets the number of times to retry Eureka Server requests. Configuration property: eureka:client:eurekaServer:retryCount.
     /// </summary>
-    public int RetryCount { get; set; } = 3;
+    public int RetryCount { get; set; } = 2;
 }

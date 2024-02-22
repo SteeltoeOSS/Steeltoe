@@ -14,31 +14,39 @@ namespace Steeltoe.Discovery.Eureka;
 public sealed class EurekaServerHealthContributor : IHealthContributor
 {
     private readonly EurekaDiscoveryClient _discoveryClient;
-    private readonly EurekaApplicationInfoManager _appInfoManager;
     private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
+    private readonly IOptionsMonitor<EurekaInstanceOptions> _instanceOptionsMonitor;
 
     public string Id => "eurekaServer";
 
-    public EurekaServerHealthContributor(EurekaDiscoveryClient discoveryClient, EurekaApplicationInfoManager appInfoManager,
-        IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor)
+    public EurekaServerHealthContributor(EurekaDiscoveryClient discoveryClient, IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor,
+        IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor)
     {
         ArgumentGuard.NotNull(discoveryClient);
-        ArgumentGuard.NotNull(appInfoManager);
         ArgumentGuard.NotNull(clientOptionsMonitor);
+        ArgumentGuard.NotNull(instanceOptionsMonitor);
 
         _discoveryClient = discoveryClient;
-        _appInfoManager = appInfoManager;
         _clientOptionsMonitor = clientOptionsMonitor;
+        _instanceOptionsMonitor = instanceOptionsMonitor;
     }
 
     // Testing
-    internal EurekaServerHealthContributor()
+    internal EurekaServerHealthContributor(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor,
+        IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor)
     {
+        _instanceOptionsMonitor = instanceOptionsMonitor;
+        _clientOptionsMonitor = clientOptionsMonitor;
     }
 
     public Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+
+        if (!_clientOptionsMonitor.CurrentValue.Health.Enabled)
+        {
+            return Task.FromResult<HealthCheckResult>(null);
+        }
 
         var result = new HealthCheckResult();
         AddHealthStatus(result);
@@ -52,7 +60,7 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
 
         HealthStatus remoteStatus = AddRemoteInstanceStatus(result);
         HealthStatus fetchStatus = AddFetchStatus(clientOptions, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
-        HealthStatus heartbeatStatus = AddHeartbeatStatus(clientOptions, _appInfoManager.InstanceOptions, result, _discoveryClient.LastGoodHeartbeatTimestamp);
+        HealthStatus heartbeatStatus = AddHeartbeatStatus(result, _discoveryClient.LastGoodHeartbeatTimestamp);
 
         result.Status = remoteStatus;
 
@@ -76,10 +84,12 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
         return remoteStatus;
     }
 
-    internal HealthStatus AddHeartbeatStatus(EurekaClientOptions clientConfiguration, EurekaInstanceOptions instanceOptions, HealthCheckResult result,
-        long lastGoodHeartbeatTimeTicks)
+    internal HealthStatus AddHeartbeatStatus(HealthCheckResult result, long lastGoodHeartbeatTimeTicks)
     {
-        if (clientConfiguration != null && clientConfiguration.ShouldRegisterWithEureka)
+        EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
+        EurekaInstanceOptions instanceOptions = _instanceOptionsMonitor.CurrentValue;
+
+        if (clientOptions is { ShouldRegisterWithEureka: true })
         {
             long lastGoodHeartbeatPeriod = GetLastGoodHeartbeatTimePeriod(lastGoodHeartbeatTimeTicks);
 
@@ -110,9 +120,9 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
         return HealthStatus.Unknown;
     }
 
-    internal HealthStatus AddFetchStatus(EurekaClientOptions clientConfiguration, HealthCheckResult result, long lastGoodFetchTimeTicks)
+    internal HealthStatus AddFetchStatus(EurekaClientOptions clientOptions, HealthCheckResult result, long lastGoodFetchTimeTicks)
     {
-        if (clientConfiguration != null && clientConfiguration.ShouldFetchRegistry)
+        if (clientOptions != null && clientOptions.ShouldFetchRegistry)
         {
             long lastGoodFetchPeriod = GetLastGoodRegistryFetchTimePeriod(lastGoodFetchTimeTicks);
 
@@ -124,12 +134,12 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
                 return HealthStatus.Unknown;
             }
 
-            if (lastGoodFetchPeriod > clientConfiguration.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond * 2)
+            if (lastGoodFetchPeriod > clientOptions.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond * 2)
             {
                 result.Details.Add("fetch", "Reporting failures connecting");
                 result.Details.Add("fetchStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                 result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
-                result.Details.Add("fetchFailures", lastGoodFetchPeriod / (clientConfiguration.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond));
+                result.Details.Add("fetchFailures", lastGoodFetchPeriod / (clientOptions.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond));
                 return HealthStatus.Down;
             }
 

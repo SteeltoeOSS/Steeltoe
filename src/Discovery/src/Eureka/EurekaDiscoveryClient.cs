@@ -90,34 +90,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         return null;
     }
 
-    public IList<InstanceInfo> GetInstanceById(string id)
-    {
-        ArgumentGuard.NotNullOrEmpty(id);
-
-        var results = new List<InstanceInfo>();
-
-        Applications apps = Applications;
-
-        if (apps == null)
-        {
-            return results;
-        }
-
-        IList<Application> regApps = apps.GetRegisteredApplications();
-
-        foreach (Application app in regApps)
-        {
-            InstanceInfo instance = app.GetInstance(id);
-
-            if (instance != null)
-            {
-                results.Add(instance);
-            }
-        }
-
-        return results;
-    }
-
     public IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure)
     {
         ArgumentGuard.NotNullOrEmpty(vipAddress);
@@ -135,65 +107,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         }
 
         return apps.GetInstancesByVirtualHostName(vipAddress);
-    }
-
-    public IList<InstanceInfo> GetInstancesByVipAddressAndAppName(string vipAddress, string appName, bool secure)
-    {
-        if (vipAddress == null && appName == null)
-        {
-            throw new ArgumentException($"{nameof(vipAddress)} and {nameof(appName)} cannot both be null.");
-        }
-
-        IList<InstanceInfo> result = new List<InstanceInfo>();
-
-        if (vipAddress != null && appName == null)
-        {
-            return GetInstancesByVipAddress(vipAddress, secure);
-        }
-
-        if (vipAddress == null)
-        {
-            // note: if appName were null, we would not get into this block
-            Application application = GetApplication(appName);
-
-            if (application != null)
-            {
-                result = application.Instances;
-            }
-
-            return result;
-        }
-
-        foreach (Application app in _localRegionApps.GetRegisteredApplications())
-        {
-            foreach (InstanceInfo instance in app.Instances)
-            {
-                string instanceVipAddress = secure ? instance.SecureVipAddress : instance.VipAddress;
-
-                if (string.Equals(vipAddress, instanceVipAddress, StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(appName, instance.AppName, StringComparison.OrdinalIgnoreCase))
-                {
-                    result.Add(instance);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    internal InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure)
-    {
-        ArgumentGuard.NotNullOrEmpty(virtualHostname);
-
-        IList<InstanceInfo> results = GetInstancesByVipAddress(virtualHostname, secure);
-
-        if (results.Count == 0)
-        {
-            return null;
-        }
-
-        int index = Random.Shared.Next() % results.Count;
-        return results[index];
     }
 
     public async Task ShutdownAsync(CancellationToken cancellationToken)
@@ -228,15 +141,12 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             InstanceInfo info = AppInfoManager.InstanceInfo;
 
-            if (info != null)
-            {
-                info.Status = InstanceStatus.Down;
-                bool result = await DeregisterAsync(cancellationToken);
+            info.Status = InstanceStatus.Down;
+            bool result = await DeregisterAsync(cancellationToken);
 
-                if (!result)
-                {
-                    _logger.LogWarning("Deregister failed during shutdown.");
-                }
+            if (!result)
+            {
+                _logger.LogWarning("Deregister failed during shutdown.");
             }
         }
     }
@@ -247,20 +157,17 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             InstanceInfo info = AppInfoManager.InstanceInfo;
 
-            if (info != null)
+            _logger.LogDebug("HandleInstanceStatusChanged {previousStatus}, {currentStatus}, {instanceId}, {dirty}", args.Previous, args.Current,
+                args.InstanceId, info.IsDirty);
+
+            if (info.IsDirty)
             {
-                _logger.LogDebug("HandleInstanceStatusChanged {previousStatus}, {currentStatus}, {instanceId}, {dirty}", args.Previous, args.Current,
-                    args.InstanceId, info.IsDirty);
+                bool result = await RegisterAsync(CancellationToken.None);
 
-                if (info.IsDirty)
+                if (result)
                 {
-                    bool result = await RegisterAsync(CancellationToken.None);
-
-                    if (result)
-                    {
-                        info.IsDirty = false;
-                        _logger.LogInformation("HandleInstanceStatusChanged RegisterAsync succeeded");
-                    }
+                    info.IsDirty = false;
+                    _logger.LogInformation("HandleInstanceStatusChanged RegisterAsync succeeded");
                 }
             }
         }
@@ -322,11 +229,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         InstanceInfo instance = AppInfoManager.InstanceInfo;
 
-        if (instance == null)
-        {
-            return false;
-        }
-
         try
         {
             await _eurekaClient.DeregisterAsync(instance.AppName, instance.InstanceId, cancellationToken);
@@ -343,11 +245,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     internal async Task<bool> RegisterAsync(CancellationToken cancellationToken)
     {
         InstanceInfo instance = AppInfoManager.InstanceInfo;
-
-        if (instance == null)
-        {
-            return false;
-        }
 
         try
         {
@@ -367,11 +264,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     internal async Task<bool> RenewAsync(CancellationToken cancellationToken)
     {
         InstanceInfo instance = AppInfoManager.InstanceInfo;
-
-        if (instance == null)
-        {
-            return false;
-        }
 
         await RefreshInstanceInfoAsync(cancellationToken);
 
@@ -479,11 +371,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         InstanceInfo info = AppInfoManager.InstanceInfo;
 
-        if (info == null)
-        {
-            return;
-        }
-
         AppInfoManager.RefreshLeaseInfo();
 
         if (IsHealthCheckHandlerEnabled())
@@ -530,7 +417,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             return;
         }
 
-        if (ClientOptions.ShouldRegisterWithEureka && AppInfoManager.InstanceInfo != null)
+        if (ClientOptions.ShouldRegisterWithEureka)
         {
             if (!await RegisterAsync(cancellationToken))
             {
@@ -563,9 +450,9 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     private void UpdateInstanceRemoteStatus()
     {
         // Determine this instance's status for this app and set to UNKNOWN if not found
-        InstanceInfo info = AppInfoManager?.InstanceInfo;
+        InstanceInfo info = AppInfoManager.InstanceInfo;
 
-        if (info != null && !string.IsNullOrEmpty(info.AppName))
+        if (!string.IsNullOrEmpty(info.AppName))
         {
             Application app = GetApplication(info.AppName);
 

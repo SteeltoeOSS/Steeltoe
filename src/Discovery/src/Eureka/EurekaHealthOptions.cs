@@ -6,7 +6,7 @@
 
 namespace Steeltoe.Discovery.Eureka;
 
-public sealed class EurekaHealthConfiguration
+public sealed class EurekaHealthOptions
 {
     /// <summary>
     /// Gets or sets a value indicating whether to enable the management health contributor. Configuration property: eureka:client:health:enabled.

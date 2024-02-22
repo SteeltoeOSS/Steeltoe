@@ -1152,7 +1152,6 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.Equal(2, info.LeaseInfo.DurationInSecs);
         Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.RegistrationTimestamp);
         Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.LastRenewalTimestampLegacy);
         Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.EvictionTimestamp);
         Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.ServiceUpTimestamp);
         Assert.False(info.IsCoordinatingDiscoveryServer);

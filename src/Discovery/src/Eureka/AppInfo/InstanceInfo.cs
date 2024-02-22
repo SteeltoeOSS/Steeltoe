@@ -11,11 +11,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 public sealed class InstanceInfo
 {
     private string _sid;
-
     private InstanceStatus _status;
-
     private Dictionary<string, string> _metaData;
-
     private bool _isDirty;
 
     public string InstanceId { get; internal set; }

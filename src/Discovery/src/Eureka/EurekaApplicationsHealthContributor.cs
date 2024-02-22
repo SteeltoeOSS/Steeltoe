@@ -79,9 +79,9 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
         }
     }
 
-    private IList<string> GetMonitoredApplications(EurekaClientOptions clientConfiguration)
+    private IList<string> GetMonitoredApplications(EurekaClientOptions clientOptions)
     {
-        IList<string> configApps = GetApplicationsFromConfig(clientConfiguration);
+        IList<string> configApps = GetApplicationsFromConfig(clientOptions);
 
         if (configApps != null)
         {

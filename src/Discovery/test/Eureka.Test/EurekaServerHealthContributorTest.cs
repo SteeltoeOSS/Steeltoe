@@ -4,6 +4,7 @@
 
 using System.Globalization;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Xunit;
 
@@ -14,7 +15,7 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void MakeHealthStatus_ReturnsExpected()
     {
-        var contributor = new EurekaServerHealthContributor();
+        var contributor = new EurekaServerHealthContributor(new TestOptionsMonitor<EurekaClientOptions>(), new TestOptionsMonitor<EurekaInstanceOptions>());
 
         Assert.Equal(HealthStatus.Down, contributor.MakeHealthStatus(InstanceStatus.Down));
         Assert.Equal(HealthStatus.Up, contributor.MakeHealthStatus(InstanceStatus.Up));
@@ -26,7 +27,7 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void AddApplications_AddsExpected()
     {
-        var contributor = new EurekaServerHealthContributor();
+        var contributor = new EurekaServerHealthContributor(new TestOptionsMonitor<EurekaClientOptions>(), new TestOptionsMonitor<EurekaInstanceOptions>());
         var app1 = new Application("app1");
 
         app1.Add(new InstanceInfo
@@ -75,7 +76,7 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void AddFetchStatus_AddsExpected()
     {
-        var contributor = new EurekaServerHealthContributor();
+        var contributor = new EurekaServerHealthContributor(new TestOptionsMonitor<EurekaClientOptions>(), new TestOptionsMonitor<EurekaInstanceOptions>());
         var results = new HealthCheckResult();
         contributor.AddFetchStatus(null, results, 0);
 
@@ -116,22 +117,24 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void AddHeartbeatStatus_AddsExpected()
     {
-        var contributor = new EurekaServerHealthContributor();
+        var clientOptions = new EurekaClientOptions
+        {
+            ShouldRegisterWithEureka = false
+        };
+
+        var contributor = new EurekaServerHealthContributor(TestOptionsMonitor.Create(clientOptions), new TestOptionsMonitor<EurekaInstanceOptions>());
         var results = new HealthCheckResult();
-        contributor.AddHeartbeatStatus(null, null, results, 0);
+        contributor.AddHeartbeatStatus(results, 0);
 
         Assert.Contains("heartbeatStatus", results.Details.Keys);
         Assert.Equal("Not registering", results.Details["heartbeatStatus"]);
 
         results = new HealthCheckResult();
 
-        var clientOptions = new EurekaClientOptions
-        {
-            ShouldRegisterWithEureka = true
-        };
+        clientOptions.ShouldRegisterWithEureka = true;
 
         var instanceOptions = new EurekaInstanceOptions();
-        contributor.AddHeartbeatStatus(clientOptions, instanceOptions, results, 0);
+        contributor.AddHeartbeatStatus(results, 0);
 
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Not yet successfully connected", (string)results.Details["heartbeat"], StringComparison.Ordinal);
@@ -143,7 +146,7 @@ public sealed class EurekaServerHealthContributorTest
         results = new HealthCheckResult();
         long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * instanceOptions.LeaseRenewalIntervalInSeconds * 10;
         var dateTime = new DateTime(ticks, DateTimeKind.Utc);
-        contributor.AddHeartbeatStatus(clientOptions, instanceOptions, results, ticks);
+        contributor.AddHeartbeatStatus(results, ticks);
 
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Reporting failures", (string)results.Details["heartbeat"], StringComparison.Ordinal);

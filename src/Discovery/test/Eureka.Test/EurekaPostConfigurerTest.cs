@@ -188,7 +188,7 @@ public sealed class EurekaPostConfigurerTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var clientOptions = new EurekaClientOptions();
-        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.ConfigurationPrefix);
         clientSection.Bind(clientOptions);
 
         EurekaPostConfigurer.UpdateConfiguration(null, clientOptions);
@@ -210,7 +210,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.True(clientOptions.ShouldRegisterWithEureka);
 
         var instanceOptions = new EurekaInstanceOptions();
-        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
         instanceSection.Bind(instanceOptions);
 
         EurekaPostConfigurer.UpdateConfiguration(configurationRoot, null, instanceOptions, null);
@@ -405,7 +405,7 @@ public sealed class EurekaPostConfigurerTest
         EurekaServiceInfo si = sis.First();
 
         var clientOptions = new EurekaClientOptions();
-        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.ConfigurationPrefix);
         clientSection.Bind(clientOptions);
 
         EurekaPostConfigurer.UpdateConfiguration(si, clientOptions);
@@ -430,7 +430,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("dCsdoiuklicS", clientOptions.ClientSecret);
 
         var instanceOptions = new EurekaInstanceOptions();
-        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
         instanceSection.Bind(instanceOptions);
 
         EurekaPostConfigurer.UpdateConfiguration(configurationRoot, si, instanceOptions, si.ApplicationInfo);
@@ -614,7 +614,7 @@ public sealed class EurekaPostConfigurerTest
         EurekaServiceInfo si = sis.First();
 
         var clientOptions = new EurekaClientOptions();
-        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.ConfigurationPrefix);
         clientSection.Bind(clientOptions);
 
         EurekaPostConfigurer.UpdateConfiguration(si, clientOptions);
@@ -639,7 +639,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("dCsdoiuklicS", clientOptions.ClientSecret);
 
         var instanceOptions = new EurekaInstanceOptions();
-        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
         instanceSection.Bind(instanceOptions);
 
         EurekaPostConfigurer.UpdateConfiguration(configurationRoot, si, instanceOptions, si.ApplicationInfo);
@@ -824,7 +824,7 @@ public sealed class EurekaPostConfigurerTest
         EurekaServiceInfo si = sis.First();
 
         var clientOptions = new EurekaClientOptions();
-        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.ConfigurationPrefix);
         clientSection.Bind(clientOptions);
 
         EurekaPostConfigurer.UpdateConfiguration(si, clientOptions);
@@ -849,7 +849,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("dCsdoiuklicS", clientOptions.ClientSecret);
 
         var instanceOptions = new EurekaInstanceOptions();
-        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
         instanceSection.Bind(instanceOptions);
 
         EurekaPostConfigurer.UpdateConfiguration(configurationRoot, si, instanceOptions, si.ApplicationInfo);
@@ -931,7 +931,7 @@ public sealed class EurekaPostConfigurerTest
         EurekaPostConfigurer.UpdateConfiguration(si, clientOptions);
 
         var instanceOptions = new EurekaInstanceOptions();
-        IConfigurationSection instanceOptionsSection = configurationRoot.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instanceOptionsSection = configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
         instanceOptionsSection.Bind(instanceOptions);
 
         void ConfigureAction()

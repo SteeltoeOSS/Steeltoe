@@ -129,7 +129,7 @@ public sealed class EurekaClient
     /// <param name="status">
     /// The new instance status.
     /// </param>
-    /// <param name="lastDirtyTimestamp">
+    /// <param name="lastDirtyTimeUtc">
     /// The date and time (in UTC) when the instance was last dirty.
     /// </param>
     /// <param name="cancellationToken">
@@ -138,7 +138,7 @@ public sealed class EurekaClient
     /// <exception cref="EurekaTransportException">
     /// The registration failed because none of the Eureka servers responded with success.
     /// </exception>
-    public async Task HeartbeatAsync(string appId, string instanceId, InstanceStatus status, DateTime lastDirtyTimestamp, CancellationToken cancellationToken)
+    public async Task HeartbeatAsync(string appId, string instanceId, InstanceStatus status, DateTime lastDirtyTimeUtc, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNullOrEmpty(appId);
         ArgumentGuard.NotNullOrEmpty(instanceId);
@@ -146,7 +146,7 @@ public sealed class EurekaClient
         var queryString = new Dictionary<string, string>
         {
             ["status"] = status.ToSnakeCaseString(SnakeCaseStyle.AllCaps),
-            ["lastDirtyTimestamp"] = DateTimeConversions.ToJavaMillis(lastDirtyTimestamp).ToString(CultureInfo.InvariantCulture)
+            ["lastDirtyTimestamp"] = DateTimeConversions.ToJavaMillis(lastDirtyTimeUtc).ToString(CultureInfo.InvariantCulture)
         };
 
         await ExecuteRequestAsync(HttpMethod.Put, $"apps/{appId}/{instanceId}", queryString, null, cancellationToken);
