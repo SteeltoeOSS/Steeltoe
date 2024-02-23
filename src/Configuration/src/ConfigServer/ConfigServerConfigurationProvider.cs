@@ -16,7 +16,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
-using Steeltoe.Discovery;
 
 namespace Steeltoe.Configuration.ConfigServer;
 

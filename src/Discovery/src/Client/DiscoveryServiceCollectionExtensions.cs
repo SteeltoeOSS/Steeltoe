@@ -123,7 +123,7 @@ public static class DiscoveryServiceCollectionExtensions
 
         services.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
         services.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
-        services.AddSingleton<IHostedService, DiscoveryClientService>();
+        services.AddSingleton<IHostedService, DiscoveryClientHostedService>();
         return services;
     }
 

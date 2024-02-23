@@ -46,7 +46,7 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
-        Assert.IsType<DiscoveryClientService>(hostedService);
+        Assert.IsType<DiscoveryClientHostedService>(hostedService);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 
         Assert.Single(discoveryClients);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
-        Assert.IsType<DiscoveryClientService>(hostedService);
+        Assert.IsType<DiscoveryClientHostedService>(hostedService);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
-        Assert.IsType<DiscoveryClientService>(hostedService);
+        Assert.IsType<DiscoveryClientHostedService>(hostedService);
     }
 
     [Fact]
@@ -97,6 +97,6 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
 
         Assert.Single(discoveryClients);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
-        Assert.IsType<DiscoveryClientService>(hostedService);
+        Assert.IsType<DiscoveryClientHostedService>(hostedService);
     }
 }

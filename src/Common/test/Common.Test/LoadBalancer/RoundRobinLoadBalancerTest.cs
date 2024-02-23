@@ -8,7 +8,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common.Discovery;
 using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Client.SimpleClients;

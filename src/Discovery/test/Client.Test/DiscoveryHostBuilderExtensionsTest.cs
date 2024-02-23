@@ -43,7 +43,7 @@ public sealed class DiscoveryHostBuilderExtensionsTest
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
         Assert.NotNull(hostedService);
-        Assert.IsType<DiscoveryClientService>(hostedService);
+        Assert.IsType<DiscoveryClientHostedService>(hostedService);
     }
 
     [Fact]
@@ -70,6 +70,6 @@ public sealed class DiscoveryHostBuilderExtensionsTest
         Assert.Single(discoveryClients);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
         Assert.NotNull(hostedService);
-        Assert.IsType<DiscoveryClientService>(hostedService);
+        Assert.IsType<DiscoveryClientHostedService>(hostedService);
     }
 }

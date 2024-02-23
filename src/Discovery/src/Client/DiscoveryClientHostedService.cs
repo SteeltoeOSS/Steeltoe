@@ -8,11 +8,11 @@ using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Client;
 
-internal sealed class DiscoveryClientService : IHostedService
+internal sealed class DiscoveryClientHostedService : IHostedService
 {
     private readonly IDiscoveryClient _client;
 
-    public DiscoveryClientService(IDiscoveryClient client)
+    public DiscoveryClientHostedService(IDiscoveryClient client)
     {
         ArgumentGuard.NotNull(client);
 
