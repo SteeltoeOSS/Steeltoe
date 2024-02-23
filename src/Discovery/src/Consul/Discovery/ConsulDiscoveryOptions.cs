@@ -183,11 +183,6 @@ public sealed class ConsulDiscoveryOptions
     public bool IsRetryEnabled => Retry is { Enabled: true };
 
     /// <summary>
-    /// Gets or sets the time in seconds that service instance cache records should remain active.
-    /// </summary>
-    public int CacheTtl { get; set; } = 15;
-
-    /// <summary>
     /// Gets or sets a value indicating whether to register url from ASP.NET Core configuration.
     /// </summary>
     public bool UseAspNetCoreUrls { get; set; } = true;

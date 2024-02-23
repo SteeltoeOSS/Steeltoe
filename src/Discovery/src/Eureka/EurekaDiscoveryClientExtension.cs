@@ -92,16 +92,6 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                 EurekaServiceInfo? serviceInfo = GetServiceInfo(configuration);
                 EurekaPostConfigurer.UpdateConfiguration(configuration, serviceInfo, options, serviceInfo?.ApplicationInfo ?? appInfo);
             });
-
-        services.TryAddSingleton(serviceProvider =>
-        {
-            var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
-
-            return new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTtl)
-            };
-        });
     }
 
     private static void GetPathsFromEndpointOptions(EurekaInstanceOptions eurekaOptions, IServiceProvider serviceProvider, IConfiguration configuration)

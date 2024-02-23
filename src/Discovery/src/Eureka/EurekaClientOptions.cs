@@ -31,11 +31,6 @@ public sealed class EurekaClientOptions : IValidateCertificatesOptions
     public string? ClientId { get; set; }
 
     /// <summary>
-    /// Gets or sets the time in seconds that service instance cache records should remain active. Configuration property: eureka:client:cacheTTL.
-    /// </summary>
-    public int CacheTtl { get; set; } = 15;
-
-    /// <summary>
     /// Gets or sets how often (in seconds) to fetch the registry information from the Eureka server. Configuration property:
     /// eureka:client:registryFetchIntervalSeconds.
     /// </summary>

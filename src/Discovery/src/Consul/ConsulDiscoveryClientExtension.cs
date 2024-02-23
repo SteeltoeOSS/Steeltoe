@@ -62,16 +62,6 @@ internal sealed class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
             InetOptions inetOptions = configuration.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>() ?? new InetOptions();
             ConsulPostConfigurer.UpdateDiscoveryOptions(configuration, discoveryOptions, inetOptions, loggerFactory);
         });
-
-        services.TryAddSingleton(serviceProvider =>
-        {
-            var clientOptions = serviceProvider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
-
-            return new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTtl)
-            };
-        });
     }
 
     private static void AddConsulServices(IServiceCollection services)
