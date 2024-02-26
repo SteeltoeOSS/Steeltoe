@@ -68,7 +68,39 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         _logger = loggerFactory.CreateLogger<EurekaDiscoveryClient>();
         _thisInstance = new ThisServiceInstance(instanceOptionsMonitor);
 
-        InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
+        _localRegionApps = new Applications
+        {
+            ReturnUpInstancesOnly = ClientOptions.ShouldFilterOnlyUpInstances
+        };
+
+        if (!ClientOptions.Enabled || (!ClientOptions.ShouldRegisterWithEureka && !ClientOptions.ShouldFetchRegistry))
+        {
+            return;
+        }
+
+        if (ClientOptions.ShouldRegisterWithEureka)
+        {
+            if (!RegisterAsync(CancellationToken.None).GetAwaiter().GetResult())
+            {
+                _logger.LogInformation("Initial registration failed.");
+            }
+
+            _logger.LogInformation("Starting Heartbeat");
+            int intervalInMilliseconds = AppInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
+            HeartbeatTimer = StartTimer("Heartbeat", intervalInMilliseconds, HeartbeatTask);
+
+            if (ClientOptions.ShouldOnDemandUpdateStatusChange)
+            {
+                AppInfoManager.StatusChanged += HandleInstanceStatusChanged;
+            }
+        }
+
+        if (ClientOptions.ShouldFetchRegistry)
+        {
+            FetchRegistryAsync(true, CancellationToken.None).GetAwaiter().GetResult();
+            int intervalInMilliseconds = ClientOptions.RegistryFetchIntervalSeconds * 1000;
+            CacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTask);
+        }
     }
 
     internal void SetRegistryFetchCounter(long value)
@@ -402,43 +434,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         if (result)
         {
             instance.IsDirty = false;
-        }
-    }
-
-    private async Task InitializeAsync(CancellationToken cancellationToken)
-    {
-        _localRegionApps = new Applications
-        {
-            ReturnUpInstancesOnly = ClientOptions.ShouldFilterOnlyUpInstances
-        };
-
-        if (!ClientOptions.Enabled || (!ClientOptions.ShouldRegisterWithEureka && !ClientOptions.ShouldFetchRegistry))
-        {
-            return;
-        }
-
-        if (ClientOptions.ShouldRegisterWithEureka)
-        {
-            if (!await RegisterAsync(cancellationToken))
-            {
-                _logger.LogInformation("Initial registration failed.");
-            }
-
-            _logger.LogInformation("Starting Heartbeat");
-            int intervalInMilliseconds = AppInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-            HeartbeatTimer = StartTimer("Heartbeat", intervalInMilliseconds, HeartbeatTask);
-
-            if (ClientOptions.ShouldOnDemandUpdateStatusChange)
-            {
-                AppInfoManager.StatusChanged += HandleInstanceStatusChanged;
-            }
-        }
-
-        if (ClientOptions.ShouldFetchRegistry)
-        {
-            await FetchRegistryAsync(true, cancellationToken);
-            int intervalInMilliseconds = ClientOptions.RegistryFetchIntervalSeconds * 1000;
-            CacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTask);
         }
     }
 
