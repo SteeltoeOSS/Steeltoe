@@ -605,34 +605,10 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
         _timerFuncCount = 0;
-        await using Timer timer = discoveryClient.StartTimer("MyTimer", 10, TimerFunc);
+        await using Timer timer = discoveryClient.StartTimer(10, TimerFunc);
         Assert.NotNull(timer);
         await Task.Delay(1000);
         Assert.True(_timerFuncCount > 0);
-    }
-
-    [Fact]
-    public async Task StartTimer_StartsTimer_KeepsRunningOnExceptions()
-    {
-        var appSettings = new Dictionary<string, string>
-        {
-            ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
-        };
-
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
-
-        await using WebApplication webApplication = builder.Build();
-
-        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-
-        _timerFuncCount = 0;
-        await using Timer timer = discoveryClient.StartTimer("MyTimer", 10, TimerFuncThrows);
-        Assert.NotNull(timer);
-        await Task.Delay(1000);
-        Assert.True(_timerFuncCount >= 1);
     }
 
     [Fact]
@@ -654,7 +630,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         _timerFuncCount = 0;
 
-        await using (Timer timer = discoveryClient.StartTimer("MyTimer", 10, TimerFuncThrows))
+        await using (Timer timer = discoveryClient.StartTimer(10, TimerFunc))
         {
             Assert.NotNull(timer);
             await Task.Delay(1000);
@@ -748,12 +724,6 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     private void TimerFunc()
     {
         Interlocked.Increment(ref _timerFuncCount);
-    }
-
-    private void TimerFuncThrows()
-    {
-        Interlocked.Increment(ref _timerFuncCount);
-        throw new FormatException();
     }
 
     private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler

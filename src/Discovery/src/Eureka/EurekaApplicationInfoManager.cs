@@ -47,7 +47,6 @@ public sealed class EurekaApplicationInfoManager
 
     public event EventHandler<InstanceStatusChangedEventArgs>? StatusChanged;
 
-    // Constructor used via Dependency Injection
     public EurekaApplicationInfoManager(IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor, ILogger<EurekaApplicationInfoManager> logger)
     {
         ArgumentGuard.NotNull(instanceOptionsMonitor);
@@ -58,7 +57,7 @@ public sealed class EurekaApplicationInfoManager
         InstanceInfo = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
     }
 
-    public void RefreshLeaseInfo()
+    internal void RefreshLeaseInfo()
     {
         if (InstanceInfo.LeaseInfo == null)
         {

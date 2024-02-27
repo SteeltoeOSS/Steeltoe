@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
@@ -26,12 +28,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
         _clientOptionsMonitor = clientOptionsMonitor;
     }
 
-    // Testing
-    internal EurekaApplicationsHealthContributor()
-    {
-    }
-
-    public Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -41,7 +38,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
             Description = "No monitored applications"
         };
 
-        IList<string> appNames = GetMonitoredApplications(_clientOptionsMonitor.CurrentValue);
+        IList<string> appNames = GetMonitoredApplications();
 
         foreach (string appName in appNames)
         {
@@ -56,12 +53,12 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
         result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         result.Details.Add("statusDescription", result.Description);
 
-        return Task.FromResult(result);
+        return Task.FromResult<HealthCheckResult?>(result);
     }
 
     internal void AddApplicationHealthStatus(string appName, Application app, HealthCheckResult result)
     {
-        if (app != null && app.Name == appName)
+        if (app.Name == appName)
         {
             int upCount = app.Instances.Count(x => x.Status == InstanceStatus.Up);
 
@@ -79,36 +76,28 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
         }
     }
 
-    private IList<string> GetMonitoredApplications(EurekaClientOptions clientOptions)
+    private IList<string> GetMonitoredApplications()
     {
-        IList<string> configApps = GetApplicationsFromConfig(clientOptions);
+        IList<string>? configuredApplications = GetApplicationsFromConfig();
 
-        if (configApps != null)
+        if (configuredApplications != null)
         {
-            return configApps;
+            return configuredApplications;
         }
 
-        IList<Application> regApps = _discoveryClient.Applications.GetRegisteredApplications();
-        return regApps.Select(app => app.Name).ToList();
+        IList<Application> registeredApplications = _discoveryClient.Applications.GetRegisteredApplications();
+        return registeredApplications.Select(app => app.Name).ToList();
     }
 
-    internal IList<string> GetApplicationsFromConfig(EurekaClientOptions clientOptions)
+    internal IList<string>? GetApplicationsFromConfig()
     {
-        string[] monitoredApps = clientOptions.Health.MonitoredApps?.Split(new[]
-        {
-            ','
-        }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
+
+        string[]? monitoredApps = clientOptions.Health.MonitoredApps?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
         if (monitoredApps is { Length: > 0 })
         {
-            var results = new List<string>();
-
-            foreach (string str in monitoredApps)
-            {
-                results.Add(str.Trim());
-            }
-
-            return results;
+            return monitoredApps.ToList();
         }
 
         return null;

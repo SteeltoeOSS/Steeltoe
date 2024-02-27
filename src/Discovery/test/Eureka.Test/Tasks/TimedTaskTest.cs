@@ -15,8 +15,8 @@ public sealed class TimedTaskTest : AbstractBaseTest
     public async Task Run_Enforces_SingleActiveTask()
     {
         _timerFuncCount = 0;
-        var timedTask = new TimedTask("MyTask", TimerFunc);
-        await using var timer = new Timer(timedTask.Run, null, 10, 100);
+        var timedTask = new TimedTask(TimerFunc);
+        await using var timer = new Timer(_ => timedTask.Run(), null, 10, 100);
         await Task.Delay(1000);
         Assert.Equal(1, _timerFuncCount);
     }

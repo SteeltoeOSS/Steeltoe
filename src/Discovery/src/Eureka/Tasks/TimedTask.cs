@@ -2,37 +2,37 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using Steeltoe.Common;
+
 namespace Steeltoe.Discovery.Eureka.Tasks;
 
 internal sealed class TimedTask
 {
-    private int _taskRunning;
+    private readonly Action _task;
+    private int _isTaskRunning;
 
-    public string Name { get; }
-
-    public Action Task { get; }
-
-    public TimedTask(string name, Action task)
+    public TimedTask(Action task)
     {
-        Name = name;
-        Task = task;
-        _taskRunning = 0;
+        ArgumentGuard.NotNull(task);
+
+        _task = task;
+        _isTaskRunning = 0;
     }
 
-    public void Run(object state)
+    public void Run()
     {
-        if (Interlocked.CompareExchange(ref _taskRunning, 1, 0) == 0)
+        if (Interlocked.CompareExchange(ref _isTaskRunning, 1, 0) == 0)
         {
             try
             {
-                Task();
+                _task();
             }
-            catch (Exception)
+            finally
             {
-                // Log
+                Interlocked.Exchange(ref _isTaskRunning, 0);
             }
-
-            Interlocked.Exchange(ref _taskRunning, 0);
         }
     }
 }

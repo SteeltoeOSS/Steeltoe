@@ -2,8 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Management.Endpoint.Health;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -13,22 +20,17 @@ public sealed class EurekaApplicationHealthContributorTest
     [Fact]
     public void GetApplicationsFromConfig_ReturnsExpected()
     {
-        var contributor = new EurekaApplicationsHealthContributor();
-        var clientOptions = new EurekaClientOptions();
+        (EurekaApplicationsHealthContributor contributor, EurekaClientOptions clientOptions) = CreateHealthContributor();
 
-        IList<string> apps = contributor.GetApplicationsFromConfig(clientOptions);
+        IList<string>? apps = contributor.GetApplicationsFromConfig();
+
         Assert.Null(apps);
 
-        clientOptions = new EurekaClientOptions
-        {
-            Health =
-            {
-                MonitoredApps = "foo,bar, boo "
-            }
-        };
+        clientOptions.Health.MonitoredApps = "foo,bar, boo ";
 
-        apps = contributor.GetApplicationsFromConfig(clientOptions);
+        apps = contributor.GetApplicationsFromConfig();
 
+        Assert.NotNull(apps);
         Assert.NotEmpty(apps);
         Assert.Equal(3, apps.Count);
         Assert.Contains("foo", apps);
@@ -39,42 +41,35 @@ public sealed class EurekaApplicationHealthContributorTest
     [Fact]
     public void AddApplicationHealthStatus_AddsExpected()
     {
-        var contributor = new EurekaApplicationsHealthContributor();
-        var app1 = new Application("app1");
+        (EurekaApplicationsHealthContributor contributor, _) = CreateHealthContributor();
 
-        app1.Add(new InstanceInfo
-        {
-            InstanceId = "id1",
-            Status = InstanceStatus.Up
-        });
+        var app1 = new Application("app1", [
+            new InstanceInfo
+            {
+                InstanceId = "id1",
+                Status = InstanceStatus.Up
+            },
+            new InstanceInfo
+            {
+                InstanceId = "id2",
+                Status = InstanceStatus.Up
+            }
+        ]);
 
-        app1.Add(new InstanceInfo
-        {
-            InstanceId = "id2",
-            Status = InstanceStatus.Up
-        });
-
-        var app2 = new Application("app2");
-
-        app2.Add(new InstanceInfo
-        {
-            InstanceId = "id1",
-            Status = InstanceStatus.Down
-        });
-
-        app2.Add(new InstanceInfo
-        {
-            InstanceId = "id2",
-            Status = InstanceStatus.Starting
-        });
+        var app2 = new Application("app2", [
+            new InstanceInfo
+            {
+                InstanceId = "id1",
+                Status = InstanceStatus.Down
+            },
+            new InstanceInfo
+            {
+                InstanceId = "id2",
+                Status = InstanceStatus.Starting
+            }
+        ]);
 
         var result = new HealthCheckResult();
-        contributor.AddApplicationHealthStatus("app1", null, result);
-
-        Assert.Equal(HealthStatus.Down, result.Status);
-        Assert.Equal("No instances found", result.Details["app1"]);
-
-        result = new HealthCheckResult();
         contributor.AddApplicationHealthStatus("foobar", app1, result);
 
         Assert.Equal(HealthStatus.Down, result.Status);
@@ -99,5 +94,31 @@ public sealed class EurekaApplicationHealthContributorTest
 
         Assert.Equal(HealthStatus.Down, result.Status);
         Assert.Equal("0 instances with UP status", result.Details["app2"]);
+    }
+
+    private static (EurekaApplicationsHealthContributor Contributor, EurekaClientOptions ClientOptions) CreateHealthContributor()
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configuration);
+
+        services.AddOptions<EurekaClientOptions>().Configure(options =>
+        {
+            options.ShouldFetchRegistry = false;
+            options.ShouldRegisterWithEureka = false;
+        });
+
+        services.AddHealthContributors([typeof(EurekaApplicationsHealthContributor)]);
+        services.AddServiceDiscovery(configuration, options => options.UseEureka());
+
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+
+        EurekaApplicationsHealthContributor contributor =
+            serviceProvider.GetRequiredService<IEnumerable<IHealthContributor>>().OfType<EurekaApplicationsHealthContributor>().Single();
+
+        var clientOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
+
+        return (contributor, clientOptionsMonitor.CurrentValue);
     }
 }

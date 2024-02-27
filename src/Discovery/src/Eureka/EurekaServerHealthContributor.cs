@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Globalization;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
@@ -31,35 +33,25 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
         _instanceOptionsMonitor = instanceOptionsMonitor;
     }
 
-    // Testing
-    internal EurekaServerHealthContributor(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor,
-        IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor)
-    {
-        _instanceOptionsMonitor = instanceOptionsMonitor;
-        _clientOptionsMonitor = clientOptionsMonitor;
-    }
-
-    public Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         if (!_clientOptionsMonitor.CurrentValue.Health.Enabled)
         {
-            return Task.FromResult<HealthCheckResult>(null);
+            return Task.FromResult<HealthCheckResult?>(null);
         }
 
         var result = new HealthCheckResult();
         AddHealthStatus(result);
         AddApplications(_discoveryClient.Applications, result);
-        return Task.FromResult(result);
+        return Task.FromResult<HealthCheckResult?>(result);
     }
 
     private void AddHealthStatus(HealthCheckResult result)
     {
-        EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
-
         HealthStatus remoteStatus = AddRemoteInstanceStatus(result);
-        HealthStatus fetchStatus = AddFetchStatus(clientOptions, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
+        HealthStatus fetchStatus = AddFetchStatus(result, _discoveryClient.LastGoodRegistryFetchTimestamp);
         HealthStatus heartbeatStatus = AddHeartbeatStatus(result, _discoveryClient.LastGoodHeartbeatTimestamp);
 
         result.Status = remoteStatus;
@@ -120,9 +112,11 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
         return HealthStatus.Unknown;
     }
 
-    internal HealthStatus AddFetchStatus(EurekaClientOptions clientOptions, HealthCheckResult result, long lastGoodFetchTimeTicks)
+    internal HealthStatus AddFetchStatus(HealthCheckResult result, long lastGoodFetchTimeTicks)
     {
-        if (clientOptions != null && clientOptions.ShouldFetchRegistry)
+        EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
+
+        if (clientOptions.ShouldFetchRegistry)
         {
             long lastGoodFetchPeriod = GetLastGoodRegistryFetchTimePeriod(lastGoodFetchTimeTicks);
 
@@ -155,38 +149,26 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
 
     internal HealthStatus MakeHealthStatus(InstanceStatus lastRemoteInstanceStatus)
     {
-        if (lastRemoteInstanceStatus == InstanceStatus.Down)
+        return lastRemoteInstanceStatus switch
         {
-            return HealthStatus.Down;
-        }
-
-        if (lastRemoteInstanceStatus == InstanceStatus.OutOfService)
-        {
-            return HealthStatus.OutOfService;
-        }
-
-        if (lastRemoteInstanceStatus == InstanceStatus.Up)
-        {
-            return HealthStatus.Up;
-        }
-
-        return HealthStatus.Unknown;
+            InstanceStatus.Down => HealthStatus.Down,
+            InstanceStatus.OutOfService => HealthStatus.OutOfService,
+            InstanceStatus.Up => HealthStatus.Up,
+            _ => HealthStatus.Unknown
+        };
     }
 
     internal void AddApplications(Applications applications, HealthCheckResult result)
     {
         var apps = new Dictionary<string, int>();
 
-        if (applications != null)
-        {
-            IList<Application> registered = applications.GetRegisteredApplications();
+        IList<Application> registered = applications.GetRegisteredApplications();
 
-            foreach (Application app in registered)
+        foreach (Application app in registered)
+        {
+            if (app.Instances?.Count > 0)
             {
-                if (app.Instances?.Count > 0)
-                {
-                    apps.Add(app.Name, app.Instances.Count);
-                }
+                apps.Add(app.Name, app.Instances.Count);
             }
         }
 

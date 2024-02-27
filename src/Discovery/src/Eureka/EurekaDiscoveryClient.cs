@@ -86,7 +86,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
             _logger.LogInformation("Starting Heartbeat");
             int intervalInMilliseconds = _appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-            HeartbeatTimer = StartTimer("Heartbeat", intervalInMilliseconds, HeartbeatTask);
+            HeartbeatTimer = StartTimer(intervalInMilliseconds, HeartbeatTask);
 
             if (clientOptions.ShouldOnDemandUpdateStatusChange)
             {
@@ -98,7 +98,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             FetchRegistryAsync(true, CancellationToken.None).GetAwaiter().GetResult();
             int intervalInMilliseconds = clientOptions.RegistryFetchIntervalSeconds * 1000;
-            CacheRefreshTimer = StartTimer("Query", intervalInMilliseconds, CacheRefreshTask);
+            CacheRefreshTimer = StartTimer(intervalInMilliseconds, CacheRefreshTask);
         }
     }
 
@@ -198,10 +198,10 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         }
     }
 
-    internal Timer StartTimer(string name, int interval, Action task)
+    internal Timer StartTimer(int interval, Action task)
     {
-        var timedTask = new TimedTask(name, task);
-        var timer = new Timer(timedTask.Run, null, interval, interval);
+        var timedTask = new TimedTask(task);
+        var timer = new Timer(_ => timedTask.Run(), null, interval, interval);
         return timer;
     }
 

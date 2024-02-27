@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
@@ -14,6 +17,8 @@ public sealed class InstanceStatusChangedEventArgs : EventArgs
 
     public InstanceStatusChangedEventArgs(InstanceStatus previous, InstanceStatus current, string instanceId)
     {
+        ArgumentGuard.NotNull(instanceId);
+
         Previous = previous;
         Current = current;
         InstanceId = instanceId;
