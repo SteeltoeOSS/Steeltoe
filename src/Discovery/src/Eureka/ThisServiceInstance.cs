@@ -16,7 +16,7 @@ internal sealed class ThisServiceInstance : IServiceInstance
 
     private EurekaInstanceOptions Options => _optionsMonitor.CurrentValue;
 
-    public string ServiceId => Options.AppName;
+    public string ServiceId => Options.AppName ?? EurekaInstanceOptions.DefaultAppName;
     public string Host => Options.ResolveHostName(false);
     public int Port => GetPort();
     public bool IsSecure => Options.IsSecurePortEnabled;

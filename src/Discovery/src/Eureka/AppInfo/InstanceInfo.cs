@@ -314,16 +314,16 @@ public sealed class InstanceInfo
         return instanceInfo.InstanceId;
     }
 
-    private static string MakeUrl(InstanceInfo info, string relativeUrl, string explicitUrl, string secureExplicitUrl = null)
+    private static string MakeUrl(InstanceInfo instance, string relativeUrl, string explicitUrl, string secureExplicitUrl = null)
     {
         if (!string.IsNullOrEmpty(explicitUrl))
         {
             return explicitUrl;
         }
 
-        if (!string.IsNullOrEmpty(relativeUrl) && info.IsInsecurePortEnabled)
+        if (!string.IsNullOrEmpty(relativeUrl) && instance.IsInsecurePortEnabled)
         {
-            return $"http://{info.HostName}:{info.Port}{relativeUrl}";
+            return $"http://{instance.HostName}:{instance.Port}{relativeUrl}";
         }
 
         if (!string.IsNullOrEmpty(secureExplicitUrl))
@@ -331,9 +331,9 @@ public sealed class InstanceInfo
             return secureExplicitUrl;
         }
 
-        if (info.IsSecurePortEnabled)
+        if (instance.IsSecurePortEnabled)
         {
-            return $"https://{info.HostName}:{info.SecurePort}{relativeUrl}";
+            return $"https://{instance.HostName}:{instance.SecurePort}{relativeUrl}";
         }
 
         return string.Empty;

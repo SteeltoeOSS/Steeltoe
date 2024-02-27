@@ -205,7 +205,8 @@ internal static class EurekaPostConfigurer
             return;
         }
 
-        if (!clientOptions.EurekaServerServiceUrls.Contains(EurekaClientOptions.DefaultServerServiceUrl.TrimEnd('/'), StringComparison.Ordinal))
+        if (clientOptions.EurekaServerServiceUrls != null &&
+            !clientOptions.EurekaServerServiceUrls.Contains(EurekaClientOptions.DefaultServerServiceUrl.TrimEnd('/'), StringComparison.Ordinal))
         {
             return;
         }

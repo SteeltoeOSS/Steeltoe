@@ -576,6 +576,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         await using WebApplication webApplication = builder.Build();
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+        var appInfoManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
 
         var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
         discoveryClient.HealthCheckHandler = myHandler;
@@ -583,7 +584,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         await discoveryClient.RefreshInstanceInfoAsync(CancellationToken.None);
 
         Assert.True(myHandler.Awaited);
-        Assert.Equal(InstanceStatus.Down, discoveryClient.AppInfoManager.InstanceInfo.Status);
+        Assert.Equal(InstanceStatus.Down, appInfoManager.InstanceInfo.Status);
     }
 
     [Fact]

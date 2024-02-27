@@ -116,44 +116,44 @@ public sealed class InstanceInfoTest : AbstractBaseTest
     public void FromInstanceConfiguration_DefaultInstanceOptions_Correct()
     {
         var instanceOptions = new EurekaInstanceOptions();
-        InstanceInfo info = InstanceInfo.FromConfiguration(instanceOptions);
-        Assert.NotNull(info);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+        Assert.NotNull(instance);
 
         // Verify
-        Assert.Equal(instanceOptions.ResolveHostName(false), info.HostName);
-        Assert.Equal($"{info.HostName}:unknown:80", info.InstanceId);
-        Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), info.AppName);
-        Assert.Null(info.AppGroupName);
-        Assert.Equal(instanceOptions.IPAddress, info.IPAddress);
-        Assert.Equal("na", info.Sid);
-        Assert.Equal(80, info.Port);
-        Assert.True(info.IsInsecurePortEnabled);
-        Assert.Equal(443, info.SecurePort);
-        Assert.False(info.IsSecurePortEnabled);
-        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/", info.HomePageUrl);
-        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/info", info.StatusPageUrl);
-        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/health", info.HealthCheckUrl);
-        Assert.Null(info.SecureHealthCheckUrl);
-        Assert.Null(info.VipAddress);
-        Assert.Null(info.SecureVipAddress);
-        Assert.Equal(1, info.CountryId);
-        Assert.Equal("MyOwn", info.DataCenterInfo.Name.ToString());
-        Assert.Equal(instanceOptions.ResolveHostName(false), info.HostName);
-        Assert.Equal(InstanceStatus.Up, info.Status);
-        Assert.Equal(InstanceStatus.Unknown, info.OverriddenStatus);
-        Assert.NotNull(info.LeaseInfo);
-        Assert.Equal(30, info.LeaseInfo.RenewalIntervalInSecs);
-        Assert.Equal(90, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(0, info.LeaseInfo.RegistrationTimestamp);
-        Assert.Equal(0, info.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(0, info.LeaseInfo.EvictionTimestamp);
-        Assert.Equal(0, info.LeaseInfo.ServiceUpTimestamp);
-        Assert.False(info.IsCoordinatingDiscoveryServer);
-        Assert.NotNull(info.Metadata);
-        Assert.Empty(info.Metadata);
-        Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
-        Assert.Equal(ActionType.Added, info.ActionType);
-        Assert.Null(info.AsgName);
+        Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
+        Assert.Equal($"{instance.HostName}:unknown:80", instance.InstanceId);
+        Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), instance.AppName);
+        Assert.Null(instance.AppGroupName);
+        Assert.Equal(instanceOptions.IPAddress, instance.IPAddress);
+        Assert.Equal("na", instance.Sid);
+        Assert.Equal(80, instance.Port);
+        Assert.True(instance.IsInsecurePortEnabled);
+        Assert.Equal(443, instance.SecurePort);
+        Assert.False(instance.IsSecurePortEnabled);
+        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/", instance.HomePageUrl);
+        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/info", instance.StatusPageUrl);
+        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/health", instance.HealthCheckUrl);
+        Assert.Null(instance.SecureHealthCheckUrl);
+        Assert.Null(instance.VipAddress);
+        Assert.Null(instance.SecureVipAddress);
+        Assert.Equal(1, instance.CountryId);
+        Assert.Equal("MyOwn", instance.DataCenterInfo.Name.ToString());
+        Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
+        Assert.Equal(InstanceStatus.Up, instance.Status);
+        Assert.Equal(InstanceStatus.Unknown, instance.OverriddenStatus);
+        Assert.NotNull(instance.LeaseInfo);
+        Assert.Equal(30, instance.LeaseInfo.RenewalIntervalInSecs);
+        Assert.Equal(90, instance.LeaseInfo.DurationInSecs);
+        Assert.Equal(0, instance.LeaseInfo.RegistrationTimestamp);
+        Assert.Equal(0, instance.LeaseInfo.LastRenewalTimestamp);
+        Assert.Equal(0, instance.LeaseInfo.EvictionTimestamp);
+        Assert.Equal(0, instance.LeaseInfo.ServiceUpTimestamp);
+        Assert.False(instance.IsCoordinatingDiscoveryServer);
+        Assert.NotNull(instance.Metadata);
+        Assert.Empty(instance.Metadata);
+        Assert.Equal(instance.LastDirtyTimestamp, instance.LastUpdatedTimestamp);
+        Assert.Equal(ActionType.Added, instance.ActionType);
+        Assert.Null(instance.AsgName);
     }
 
     [Fact]
@@ -165,54 +165,54 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             IsNonSecurePortEnabled = false
         };
 
-        InstanceInfo info = InstanceInfo.FromConfiguration(instanceOptions);
-        Assert.NotNull(info);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+        Assert.NotNull(instance);
 
         // Verify
-        Assert.Equal(instanceOptions.ResolveHostName(false), info.HostName);
-        Assert.Equal($"{info.HostName}:unknown:80", info.InstanceId);
-        Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), info.AppName);
-        Assert.Null(info.AppGroupName);
-        Assert.Equal(instanceOptions.IPAddress, info.IPAddress);
-        Assert.Equal("na", info.Sid);
-        Assert.Equal(80, info.Port);
-        Assert.False(info.IsInsecurePortEnabled);
-        Assert.Equal(443, info.SecurePort);
-        Assert.True(info.IsSecurePortEnabled);
-        Assert.Equal($"https://{instanceOptions.ResolveHostName(false)}:443/", info.HomePageUrl);
-        Assert.Equal($"https://{instanceOptions.ResolveHostName(false)}:443/info", info.StatusPageUrl);
-        Assert.Equal($"https://{instanceOptions.ResolveHostName(false)}:443/health", info.HealthCheckUrl);
-        Assert.Null(info.SecureHealthCheckUrl);
-        Assert.Null(info.VipAddress);
-        Assert.Null(info.SecureVipAddress);
-        Assert.Equal(1, info.CountryId);
-        Assert.Equal("MyOwn", info.DataCenterInfo.Name.ToString());
-        Assert.Equal(instanceOptions.ResolveHostName(false), info.HostName);
-        Assert.Equal(InstanceStatus.Up, info.Status);
-        Assert.Equal(InstanceStatus.Unknown, info.OverriddenStatus);
-        Assert.NotNull(info.LeaseInfo);
-        Assert.Equal(30, info.LeaseInfo.RenewalIntervalInSecs);
-        Assert.Equal(90, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(0, info.LeaseInfo.RegistrationTimestamp);
-        Assert.Equal(0, info.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(0, info.LeaseInfo.EvictionTimestamp);
-        Assert.Equal(0, info.LeaseInfo.ServiceUpTimestamp);
-        Assert.False(info.IsCoordinatingDiscoveryServer);
-        Assert.NotNull(info.Metadata);
-        Assert.Empty(info.Metadata);
-        Assert.Equal(info.LastDirtyTimestamp, info.LastUpdatedTimestamp);
-        Assert.Equal(ActionType.Added, info.ActionType);
-        Assert.Null(info.AsgName);
+        Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
+        Assert.Equal($"{instance.HostName}:unknown:80", instance.InstanceId);
+        Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), instance.AppName);
+        Assert.Null(instance.AppGroupName);
+        Assert.Equal(instanceOptions.IPAddress, instance.IPAddress);
+        Assert.Equal("na", instance.Sid);
+        Assert.Equal(80, instance.Port);
+        Assert.False(instance.IsInsecurePortEnabled);
+        Assert.Equal(443, instance.SecurePort);
+        Assert.True(instance.IsSecurePortEnabled);
+        Assert.Equal($"https://{instanceOptions.ResolveHostName(false)}:443/", instance.HomePageUrl);
+        Assert.Equal($"https://{instanceOptions.ResolveHostName(false)}:443/info", instance.StatusPageUrl);
+        Assert.Equal($"https://{instanceOptions.ResolveHostName(false)}:443/health", instance.HealthCheckUrl);
+        Assert.Null(instance.SecureHealthCheckUrl);
+        Assert.Null(instance.VipAddress);
+        Assert.Null(instance.SecureVipAddress);
+        Assert.Equal(1, instance.CountryId);
+        Assert.Equal("MyOwn", instance.DataCenterInfo.Name.ToString());
+        Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
+        Assert.Equal(InstanceStatus.Up, instance.Status);
+        Assert.Equal(InstanceStatus.Unknown, instance.OverriddenStatus);
+        Assert.NotNull(instance.LeaseInfo);
+        Assert.Equal(30, instance.LeaseInfo.RenewalIntervalInSecs);
+        Assert.Equal(90, instance.LeaseInfo.DurationInSecs);
+        Assert.Equal(0, instance.LeaseInfo.RegistrationTimestamp);
+        Assert.Equal(0, instance.LeaseInfo.LastRenewalTimestamp);
+        Assert.Equal(0, instance.LeaseInfo.EvictionTimestamp);
+        Assert.Equal(0, instance.LeaseInfo.ServiceUpTimestamp);
+        Assert.False(instance.IsCoordinatingDiscoveryServer);
+        Assert.NotNull(instance.Metadata);
+        Assert.Empty(instance.Metadata);
+        Assert.Equal(instance.LastDirtyTimestamp, instance.LastUpdatedTimestamp);
+        Assert.Equal(ActionType.Added, instance.ActionType);
+        Assert.Null(instance.AsgName);
     }
 
     [Fact]
     public void ToJsonInstance_DefaultInstanceConfiguration_Correct()
     {
         var instanceOptions = new EurekaInstanceOptions();
-        InstanceInfo info = InstanceInfo.FromConfiguration(instanceOptions);
-        Assert.NotNull(info);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+        Assert.NotNull(instance);
 
-        JsonInstanceInfo instanceInfo = info.ToJsonInstance();
+        JsonInstanceInfo instanceInfo = instance.ToJsonInstance();
 
         // Verify
         Assert.Equal(instanceOptions.ResolveHostName(false), instanceInfo.HostName);

@@ -870,10 +870,11 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        Applications applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+        Applications? applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
+        Assert.NotNull(applications);
         applications.GetRegisteredApplications().Should().HaveCount(1);
     }
 
@@ -939,10 +940,11 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        Applications applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+        Applications? applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
+        Assert.NotNull(applications);
         applications.GetRegisteredApplications().Should().HaveCount(1);
     }
 

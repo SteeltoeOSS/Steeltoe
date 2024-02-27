@@ -12,20 +12,20 @@ namespace Steeltoe.Discovery.Eureka;
 
 internal sealed class EurekaServiceInstance : IServiceInstance
 {
-    private readonly InstanceInfo _info;
+    private readonly InstanceInfo _instance;
 
-    public string ServiceId => _info.AppName;
-    public string Host => _info.HostName;
-    public int Port => IsSecure ? _info.SecurePort : _info.Port;
-    public bool IsSecure => _info.IsSecurePortEnabled;
+    public string ServiceId => _instance.AppName;
+    public string Host => _instance.HostName;
+    public int Port => IsSecure ? _instance.SecurePort : _instance.Port;
+    public bool IsSecure => _instance.IsSecurePortEnabled;
     public Uri Uri => GetUri();
-    public IDictionary<string, string> Metadata => _info.Metadata;
+    public IDictionary<string, string> Metadata => _instance.Metadata;
 
-    public EurekaServiceInstance(InstanceInfo info)
+    public EurekaServiceInstance(InstanceInfo instance)
     {
-        ArgumentGuard.NotNull(info);
+        ArgumentGuard.NotNull(instance);
 
-        _info = info;
+        _instance = instance;
     }
 
     private Uri GetUri()

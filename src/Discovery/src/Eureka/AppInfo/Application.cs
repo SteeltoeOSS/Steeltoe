@@ -25,9 +25,9 @@ public sealed class Application
     {
         Name = name;
 
-        foreach (InstanceInfo info in instances)
+        foreach (InstanceInfo instance in instances)
         {
-            Add(info);
+            Add(instance);
         }
     }
 
@@ -53,23 +53,23 @@ public sealed class Application
         return sb.ToString();
     }
 
-    internal void Add(InstanceInfo info)
+    internal void Add(InstanceInfo instance)
     {
-        if (!string.IsNullOrEmpty(info.InstanceId))
+        if (!string.IsNullOrEmpty(instance.InstanceId))
         {
-            InstanceMap[info.InstanceId] = info;
+            InstanceMap[instance.InstanceId] = instance;
         }
-        else if (!string.IsNullOrEmpty(info.HostName))
+        else if (!string.IsNullOrEmpty(instance.HostName))
         {
-            InstanceMap[info.HostName] = info;
+            InstanceMap[instance.HostName] = instance;
         }
     }
 
-    internal void Remove(InstanceInfo info)
+    internal void Remove(InstanceInfo instance)
     {
-        if (!InstanceMap.TryRemove(info.InstanceId, out _))
+        if (!InstanceMap.TryRemove(instance.InstanceId, out _))
         {
-            InstanceMap.TryRemove(info.HostName, out _);
+            InstanceMap.TryRemove(instance.HostName, out _);
         }
     }
 

@@ -85,18 +85,18 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.RefreshLeaseInfo();
-        InstanceInfo info = appManager.InstanceInfo;
+        InstanceInfo instance = appManager.InstanceInfo;
 
-        Assert.False(info.IsDirty);
-        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
+        Assert.False(instance.IsDirty);
+        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.DurationInSecs);
+        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalIntervalInSecs);
 
         instanceOptions.LeaseRenewalIntervalInSeconds += 100;
         instanceOptions.LeaseExpirationDurationInSeconds += 100;
         appManager.RefreshLeaseInfo();
-        Assert.True(info.IsDirty);
-        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
+        Assert.True(instance.IsDirty);
+        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.DurationInSecs);
+        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalIntervalInSecs);
     }
 
     private void HandleInstanceStatusChanged(object sender, InstanceStatusChangedEventArgs args)
