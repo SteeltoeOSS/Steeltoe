@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;

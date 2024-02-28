@@ -15,7 +15,6 @@ public sealed class ApplicationTest : AbstractBaseTest
     {
         var app = new Application("foobar");
         Assert.Equal("foobar", app.Name);
-        Assert.Equal(0, app.Count);
         Assert.NotNull(app.Instances);
         Assert.Empty(app.Instances);
         Assert.Null(app.GetInstance("bar"));
@@ -43,9 +42,7 @@ public sealed class ApplicationTest : AbstractBaseTest
         var app = new Application("foobar", infos);
 
         Assert.Equal("foobar", app.Name);
-        Assert.Equal(2, app.Count);
         Assert.NotNull(app.Instances);
-        Assert.Equal(2, app.Instances.Count);
         Assert.Equal(2, app.Instances.Count);
         Assert.NotNull(app.GetInstance("1"));
         Assert.NotNull(app.GetInstance("2"));
@@ -64,10 +61,9 @@ public sealed class ApplicationTest : AbstractBaseTest
         app.Add(info);
 
         Assert.NotNull(app.GetInstance("1"));
-        Assert.True(app.GetInstance("1") == info);
+        Assert.Equal(info, app.GetInstance("1"));
         Assert.NotNull(app.Instances);
-        Assert.Equal(1, app.Count);
-        Assert.Equal(app.Count, app.Instances.Count);
+        Assert.Single(app.Instances);
     }
 
     [Fact]
@@ -84,7 +80,7 @@ public sealed class ApplicationTest : AbstractBaseTest
         app.Add(info);
 
         Assert.NotNull(app.GetInstance("1"));
-        Assert.Equal(InstanceStatus.Down, app.GetInstance("1").Status);
+        Assert.Equal(InstanceStatus.Down, app.GetInstance("1")?.Status);
 
         var info2 = new InstanceInfo
         {
@@ -93,9 +89,9 @@ public sealed class ApplicationTest : AbstractBaseTest
         };
 
         app.Add(info2);
-        Assert.Equal(1, app.Count);
+        Assert.Single(app.Instances);
         Assert.NotNull(app.GetInstance("1"));
-        Assert.Equal(InstanceStatus.Up, app.GetInstance("1").Status);
+        Assert.Equal(InstanceStatus.Up, app.GetInstance("1")?.Status);
     }
 
     [Fact]
@@ -117,7 +113,11 @@ public sealed class ApplicationTest : AbstractBaseTest
             VipAddress = "VipAddress",
             SecureVipAddress = "SecureVipAddress",
             CountryId = 1,
-            DataCenterInfo = JsonDataCenterInfo.Create(string.Empty, "MyOwn"),
+            DataCenterInfo = new JsonDataCenterInfo
+            {
+                ClassName = string.Empty,
+                Name = "MyOwn"
+            },
             HostName = "HostName",
             Status = InstanceStatus.Down,
             OverriddenStatus = InstanceStatus.OutOfService,
@@ -154,11 +154,11 @@ public sealed class ApplicationTest : AbstractBaseTest
         Assert.NotNull(app);
         Assert.Equal("myApp", app.Name);
         Assert.NotNull(app.Instances);
-        Assert.Equal(1, app.Count);
         Assert.Single(app.Instances);
         Assert.NotNull(app.GetInstance("InstanceId"));
         InstanceInfo instance = app.GetInstance("InstanceId");
 
+        Assert.NotNull(instance);
         Assert.Equal("InstanceId", instance.InstanceId);
         Assert.Equal("myApp", instance.AppName);
         Assert.Equal("AppGroupName", instance.AppGroupName);

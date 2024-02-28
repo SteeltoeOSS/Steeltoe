@@ -5,6 +5,7 @@
 #nullable enable
 
 using Steeltoe.Common;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
 
@@ -48,11 +49,11 @@ public sealed class LeaseInfo
     {
     }
 
-    internal static LeaseInfo FromJson(JsonLeaseInfo? jsonLeaseInfo)
+    internal static LeaseInfo? FromJson(JsonLeaseInfo? jsonLeaseInfo)
     {
         if (jsonLeaseInfo == null)
         {
-            return new LeaseInfo();
+            return null;
         }
 
         return new LeaseInfo

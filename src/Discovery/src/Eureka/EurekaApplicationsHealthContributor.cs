@@ -9,6 +9,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -42,7 +43,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
 
         foreach (string appName in appNames)
         {
-            Application app = _discoveryClient.GetApplication(appName);
+            Application? app = _discoveryClient.GetApplication(appName);
             AddApplicationHealthStatus(appName, app, result);
         }
 
@@ -56,9 +57,9 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
         return Task.FromResult<HealthCheckResult?>(result);
     }
 
-    internal void AddApplicationHealthStatus(string appName, Application app, HealthCheckResult result)
+    internal void AddApplicationHealthStatus(string appName, Application? app, HealthCheckResult result)
     {
-        if (app.Name == appName)
+        if (app != null && app.Name == appName)
         {
             int upCount = app.Instances.Count(x => x.Status == InstanceStatus.Up);
 

@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
+
+// TODO: NRT
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
@@ -129,30 +131,9 @@ public sealed class InstanceInfo
 
     public override string ToString()
     {
-        var sb = new StringBuilder("Instance[");
-        sb.Append($"InstanceId={InstanceId}");
-        sb.Append(',');
-        sb.Append($"HostName={HostName}");
-        sb.Append(',');
-        sb.Append($"IpAddr={IPAddress}");
-        sb.Append(',');
-        sb.Append($"Status={Status}");
-        sb.Append(',');
-        sb.Append($"IsInsecurePortEnabled={IsInsecurePortEnabled}");
-        sb.Append(',');
-        sb.Append($"Port={Port}");
-        sb.Append(',');
-        sb.Append($"IsSecurePortEnabled={IsSecurePortEnabled}");
-        sb.Append(',');
-        sb.Append($"SecurePort={SecurePort}");
-        sb.Append(',');
-        sb.Append($"VipAddress={VipAddress}");
-        sb.Append(',');
-        sb.Append($"SecureVipAddress={SecureVipAddress}");
-        sb.Append(',');
-        sb.Append($"ActionType={ActionType}");
-        sb.Append(']');
-        return sb.ToString();
+        return
+            $"Instance[InstanceId={InstanceId},HostName={HostName},IPAddress={IPAddress},Status={Status},Port={Port},IsInsecurePortEnabled={IsInsecurePortEnabled}," +
+            $"SecurePort={SecurePort}IsSecurePortEnabled={IsSecurePortEnabled},VipAddress={VipAddress},SecureVipAddress={SecureVipAddress},ActionType={ActionType}]";
     }
 
     internal static InstanceInfo FromConfiguration(EurekaInstanceOptions options)
@@ -225,7 +206,7 @@ public sealed class InstanceInfo
             info.VipAddress = json.VipAddress;
             info.SecureVipAddress = json.SecureVipAddress;
             info.CountryId = json.CountryId;
-            info.DataCenterInfo = json.DataCenterInfo == null ? null : DataCenterInfo.FromJson(json.DataCenterInfo);
+            info.DataCenterInfo = DataCenterInfo.FromJson(json.DataCenterInfo);
             info.HostName = json.HostName;
             info.Status = json.Status;
             info.OverriddenStatus = json.OverriddenStatus;

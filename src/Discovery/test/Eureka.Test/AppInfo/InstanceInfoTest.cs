@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
@@ -47,7 +48,11 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             VipAddress = "VipAddress",
             SecureVipAddress = "SecureVipAddress",
             CountryId = 1,
-            DataCenterInfo = JsonDataCenterInfo.Create(string.Empty, "MyOwn"),
+            DataCenterInfo = new JsonDataCenterInfo
+            {
+                ClassName = string.Empty,
+                Name = "MyOwn"
+            },
             HostName = "HostName",
             Status = InstanceStatus.Down,
             OverriddenStatus = InstanceStatus.OutOfService,

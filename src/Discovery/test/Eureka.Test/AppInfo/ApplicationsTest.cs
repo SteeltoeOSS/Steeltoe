@@ -73,7 +73,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
             InstanceId = null
         });
 
-        Assert.Equal(0, app.Count);
+        Assert.Empty(app.Instances);
     }
 
     [Fact]
@@ -1071,7 +1071,11 @@ public sealed class ApplicationsTest : AbstractBaseTest
             VipAddress = "VipAddress",
             SecureVipAddress = "SecureVipAddress",
             CountryId = 1,
-            DataCenterInfo = JsonDataCenterInfo.Create(string.Empty, "MyOwn"),
+            DataCenterInfo = new JsonDataCenterInfo
+            {
+                ClassName = string.Empty,
+                Name = "MyOwn"
+            },
             HostName = "HostName",
             Status = InstanceStatus.Down,
             OverriddenStatus = InstanceStatus.OutOfService,
@@ -1122,11 +1126,11 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(app);
         Assert.Equal("myApp", app.Name);
         Assert.NotNull(app.Instances);
-        Assert.Equal(1, app.Count);
         Assert.Single(app.Instances);
         Assert.NotNull(app.GetInstance("InstanceId"));
         InstanceInfo instance = app.GetInstance("InstanceId");
 
+        Assert.NotNull(instance);
         Assert.Equal("InstanceId", instance.InstanceId);
         Assert.Equal("myApp", instance.AppName);
         Assert.Equal("AppGroupName", instance.AppGroupName);
@@ -1182,7 +1186,11 @@ public sealed class ApplicationsTest : AbstractBaseTest
             VipAddress = "VipAddress",
             SecureVipAddress = "SecureVipAddress",
             CountryId = 1,
-            DataCenterInfo = JsonDataCenterInfo.Create(string.Empty, "MyOwn"),
+            DataCenterInfo = new JsonDataCenterInfo
+            {
+                ClassName = string.Empty,
+                Name = "MyOwn"
+            },
             HostName = "HostName",
             Status = InstanceStatus.Down,
             OverriddenStatus = InstanceStatus.OutOfService,
@@ -1233,7 +1241,6 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(app);
         Assert.Equal("myApp", app.Name);
         Assert.NotNull(app.Instances);
-        Assert.Equal(1, app.Count);
         Assert.Single(app.Instances);
         Assert.Null(app.GetInstance("InstanceId"));
     }

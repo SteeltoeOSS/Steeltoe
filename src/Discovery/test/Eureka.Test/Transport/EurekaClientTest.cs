@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
@@ -463,10 +464,10 @@ public sealed class EurekaClientTest
         applications.Should().NotBeNull();
         applications.ApplicationMap.Should().ContainSingle();
 
-        Application app = applications.GetRegisteredApplication("foo");
+        Application? app = applications.GetRegisteredApplication("foo");
 
         app.Should().NotBeNull();
-        app.Name.Should().Be("FOO");
+        app!.Name.Should().Be("FOO");
 
         app.Instances.Should().ContainSingle();
         app.Instances[0].InstanceId.Should().Be("localhost:foo");
@@ -568,10 +569,10 @@ public sealed class EurekaClientTest
         applications.Should().NotBeNull();
         applications.ApplicationMap.Should().ContainSingle();
 
-        Application app = applications.GetRegisteredApplication("foo");
+        Application? app = applications.GetRegisteredApplication("foo");
 
         app.Should().NotBeNull();
-        app.Name.Should().Be("FOO");
+        app!.Name.Should().Be("FOO");
 
         app.Instances.Should().ContainSingle();
         app.Instances[0].InstanceId.Should().Be("localhost:foo");
@@ -638,10 +639,10 @@ public sealed class EurekaClientTest
         applications.Should().NotBeNull();
         applications.ApplicationMap.Should().ContainSingle();
 
-        Application app = applications.GetRegisteredApplication("foo");
+        Application? app = applications.GetRegisteredApplication("foo");
 
         app.Should().NotBeNull();
-        app.Name.Should().Be("FOO");
+        app!.Name.Should().Be("FOO");
 
         app.Instances.Should().ContainSingle();
         app.Instances[0].InstanceId.Should().Be("localhost:foo");

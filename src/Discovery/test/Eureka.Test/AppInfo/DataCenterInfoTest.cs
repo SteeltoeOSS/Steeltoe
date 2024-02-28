@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
@@ -13,14 +14,22 @@ public sealed class DataCenterInfoTest : AbstractBaseTest
     [Fact]
     public void Constructor_InitializesName()
     {
-        var info = new DataCenterInfo(DataCenterName.MyOwn);
+        var info = new DataCenterInfo
+        {
+            Name = DataCenterName.MyOwn
+        };
+
         Assert.Equal(DataCenterName.MyOwn, info.Name);
     }
 
     [Fact]
     public void ToJson_Correct()
     {
-        var info = new DataCenterInfo(DataCenterName.MyOwn);
+        var info = new DataCenterInfo
+        {
+            Name = DataCenterName.MyOwn
+        };
+
         JsonDataCenterInfo json = info.ToJson();
         Assert.NotNull(json);
         Assert.Equal(DataCenterName.MyOwn.ToString(), json.Name);
@@ -30,7 +39,12 @@ public sealed class DataCenterInfoTest : AbstractBaseTest
     [Fact]
     public void FromJson_Correct()
     {
-        var info = JsonDataCenterInfo.Create("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", "MyOwn");
+        var info = new JsonDataCenterInfo
+        {
+            ClassName = "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+            Name = "MyOwn"
+        };
+
         DataCenterInfo result = DataCenterInfo.FromJson(info);
         Assert.Equal(DataCenterName.MyOwn, result.Name);
     }
@@ -38,7 +52,12 @@ public sealed class DataCenterInfoTest : AbstractBaseTest
     [Fact]
     public void FromJson_Throws_Invalid()
     {
-        var info = JsonDataCenterInfo.Create("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", "FooBar");
+        var info = new JsonDataCenterInfo
+        {
+            ClassName = "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+            Name = "FooBar"
+        };
+
         var ex = Assert.Throws<ArgumentException>(() => DataCenterInfo.FromJson(info));
         Assert.Contains("Unsupported datacenter name", ex.Message, StringComparison.Ordinal);
     }

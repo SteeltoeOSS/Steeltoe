@@ -10,6 +10,7 @@ using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connectors.CloudFoundry;
 using Steeltoe.Connectors.Services;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;

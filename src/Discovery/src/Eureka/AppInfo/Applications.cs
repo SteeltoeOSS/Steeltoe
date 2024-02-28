@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Concurrent;
 using System.Text;
 using Steeltoe.Common;
@@ -17,17 +19,20 @@ public sealed class Applications
     internal ConcurrentDictionary<string, Application> ApplicationMap { get; } = new();
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap { get; } = new();
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new();
-    public string AppsHashCode { get; internal set; }
+
+    public string? AppsHashCode { get; internal set; }
     public long Version { get; private set; }
     public bool ReturnUpInstancesOnly { get; set; }
 
     internal Applications()
+        : this(Array.Empty<Application>())
     {
     }
 
     internal Applications(IList<Application> apps)
     {
         ArgumentGuard.NotNull(apps);
+        ArgumentGuard.ElementsNotNull(apps);
 
         foreach (Application app in apps)
         {
@@ -37,43 +42,33 @@ public sealed class Applications
 
     public IList<Application> GetRegisteredApplications()
     {
-        return new List<Application>(ApplicationMap.Values);
+        return ApplicationMap.Values.ToList();
     }
 
-    public Application GetRegisteredApplication(string appName)
+    public Application? GetRegisteredApplication(string appName)
     {
         ArgumentGuard.NotNullOrEmpty(appName);
 
-        ApplicationMap.TryGetValue(appName.ToUpperInvariant(), out Application result);
-        return result;
+        return ApplicationMap.GetValueOrDefault(appName.ToUpperInvariant());
     }
 
     public IList<InstanceInfo> GetInstancesBySecureVirtualHostName(string secureVirtualHostName)
     {
         ArgumentGuard.NotNullOrEmpty(secureVirtualHostName);
 
-        return DoGetByVirtualHostName(secureVirtualHostName, SecureVirtualHostInstanceMap);
+        return GetByVirtualHostName(secureVirtualHostName, SecureVirtualHostInstanceMap);
     }
 
     public IList<InstanceInfo> GetInstancesByVirtualHostName(string virtualHostName)
     {
         ArgumentGuard.NotNullOrEmpty(virtualHostName);
 
-        return DoGetByVirtualHostName(virtualHostName, VirtualHostInstanceMap);
+        return GetByVirtualHostName(virtualHostName, VirtualHostInstanceMap);
     }
 
     public override string ToString()
     {
-        var sb = new StringBuilder("Applications[");
-
-        foreach (KeyValuePair<string, Application> kvp in ApplicationMap)
-        {
-            sb.Append(kvp.Value);
-        }
-
-        sb.Append("]");
-
-        return sb.ToString();
+        return $"Applications[{string.Join(',', ApplicationMap.Select(pair => pair.Value.ToString()))}]";
     }
 
     internal void Add(Application app)
@@ -81,11 +76,7 @@ public sealed class Applications
         ArgumentGuard.NotNull(app);
 
         ApplicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (_, _) => app);
-        AddInstances(app);
-    }
 
-    private void AddInstances(Application app)
-    {
         foreach (InstanceInfo instance in app.Instances)
         {
             AddInstanceToVip(instance);
@@ -105,7 +96,7 @@ public sealed class Applications
         }
     }
 
-    private void AddInstanceToVip(string address, InstanceInfo instance, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
+    private void AddInstanceToVip(string address, InstanceInfo instance, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
     {
         if (instance.InstanceId == null)
         {
@@ -115,11 +106,11 @@ public sealed class Applications
         lock (_addRemoveInstanceLock)
         {
             string addressUpper = address.ToUpperInvariant();
-            dict.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo> instances);
 
-            if (instances == null)
+            if (!dictionary.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo>? instances))
             {
-                instances = dict[addressUpper] = new ConcurrentDictionary<string, InstanceInfo>();
+                instances = new ConcurrentDictionary<string, InstanceInfo>();
+                dictionary[addressUpper] = instances;
             }
 
             instances[instance.InstanceId] = instance;
@@ -128,6 +119,8 @@ public sealed class Applications
 
     internal void RemoveInstanceFromVip(InstanceInfo instance)
     {
+        ArgumentGuard.NotNull(instance);
+
         if (!string.IsNullOrEmpty(instance.VipAddress))
         {
             RemoveInstanceFromVip(instance.VipAddress, instance, VirtualHostInstanceMap);
@@ -139,20 +132,20 @@ public sealed class Applications
         }
     }
 
-    private void RemoveInstanceFromVip(string address, InstanceInfo instance, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
+    private void RemoveInstanceFromVip(string address, InstanceInfo instance,
+        ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
     {
         lock (_addRemoveInstanceLock)
         {
             string addressUpper = address.ToUpperInvariant();
-            dict.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo> instances);
 
-            if (instances != null)
+            if (dictionary.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo>? instances))
             {
-                instances.TryRemove(instance.InstanceId, out _);
+                _ = instances.TryRemove(instance.InstanceId, out _);
 
-                if (instances.Count <= 0)
+                if (instances.Count == 0)
                 {
-                    _ = dict.TryRemove(addressUpper, out _);
+                    _ = dictionary.TryRemove(addressUpper, out _);
                 }
             }
         }
@@ -160,16 +153,18 @@ public sealed class Applications
 
     internal void UpdateFromDelta(Applications delta)
     {
+        ArgumentGuard.NotNull(delta);
+
         foreach (Application app in delta.GetRegisteredApplications())
         {
             foreach (InstanceInfo instance in app.Instances)
             {
-                Application existingApp = GetRegisteredApplication(instance.AppName);
+                Application? existingApp = GetRegisteredApplication(instance.AppName);
 
                 if (existingApp == null)
                 {
                     Add(app);
-                    existingApp = GetRegisteredApplication(instance.AppName);
+                    existingApp = GetRegisteredApplication(instance.AppName)!;
                 }
 
                 switch (instance.ActionType)
@@ -211,32 +206,35 @@ public sealed class Applications
             }
         }
 
-        IOrderedEnumerable<KeyValuePair<string, int>> query = statusMap.OrderBy(kvp => kvp.Key);
         var hashcodeBuilder = new StringBuilder();
 
-        foreach (KeyValuePair<string, int> entry in query)
+        foreach (KeyValuePair<string, int> pair in statusMap.OrderBy(pair => pair.Key))
         {
-            hashcodeBuilder.Append($"{entry.Key}_{entry.Value}_");
+            hashcodeBuilder.Append($"{pair.Key}_{pair.Value}_");
         }
 
         return hashcodeBuilder.ToString();
     }
 
-    internal static Applications FromJsonApplications(JsonApplications applications)
+    internal static Applications FromJsonApplications(JsonApplications? jsonApplications)
     {
         var apps = new Applications();
 
-        if (applications != null)
+        if (jsonApplications != null)
         {
-            apps.Version = applications.VersionDelta;
-            apps.AppsHashCode = applications.AppsHashCode;
+            apps.Version = jsonApplications.VersionDelta;
+            apps.AppsHashCode = jsonApplications.AppsHashCode;
 
-            if (applications.Applications != null)
+            if (jsonApplications.Applications != null)
             {
-                foreach (JsonApplication application in applications.Applications)
+                foreach (JsonApplication? application in jsonApplications.Applications)
                 {
                     var app = Application.FromJsonApplication(application);
-                    apps.Add(app);
+
+                    if (app != null)
+                    {
+                        apps.Add(app);
+                    }
                 }
             }
         }
@@ -244,24 +242,15 @@ public sealed class Applications
         return apps;
     }
 
-    private IList<InstanceInfo> DoGetByVirtualHostName(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
+    private IList<InstanceInfo> GetByVirtualHostName(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
     {
         var result = new List<InstanceInfo>();
 
-        if (dict.TryGetValue(name.ToUpperInvariant(), out ConcurrentDictionary<string, InstanceInfo> instances))
+        if (dictionary.TryGetValue(name.ToUpperInvariant(), out ConcurrentDictionary<string, InstanceInfo>? instances))
         {
-            foreach (KeyValuePair<string, InstanceInfo> kvp in instances)
+            foreach (InstanceInfo instance in instances.Values.ToArray())
             {
-                InstanceInfo instance = kvp.Value;
-
-                if (ReturnUpInstancesOnly)
-                {
-                    if (instance.Status == InstanceStatus.Up)
-                    {
-                        result.Add(instance);
-                    }
-                }
-                else
+                if ((ReturnUpInstancesOnly && instance.Status == InstanceStatus.Up) || !ReturnUpInstancesOnly)
                 {
                     result.Add(instance);
                 }

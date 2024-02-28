@@ -7,8 +7,10 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Discovery.Eureka.Configuration;
+using Steeltoe.Discovery.Eureka.Transport;
 
-namespace Steeltoe.Discovery.Eureka.Transport;
+namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
 /// Keeps track of working and broken Eureka service URIs that are configured.

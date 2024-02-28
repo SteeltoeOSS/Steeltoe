@@ -17,6 +17,7 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
 
@@ -204,7 +205,7 @@ public sealed class EurekaClient
         return await ExecuteRequestAsync(HttpMethod.Get, path, null, null, async response =>
         {
             var root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(ResponseSerializerOptions, cancellationToken);
-            return Applications.FromJsonApplications(root!.Applications);
+            return Applications.FromJsonApplications(root?.Applications);
         }, cancellationToken);
     }
 

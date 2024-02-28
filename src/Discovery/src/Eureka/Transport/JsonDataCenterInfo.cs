@@ -15,13 +15,4 @@ internal sealed class JsonDataCenterInfo
 
     [JsonPropertyName("name")]
     public string? Name { get; set; }
-
-    public static JsonDataCenterInfo Create(string? className, string? name)
-    {
-        return new JsonDataCenterInfo
-        {
-            ClassName = className,
-            Name = name
-        };
-    }
 }

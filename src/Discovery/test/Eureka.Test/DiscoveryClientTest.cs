@@ -13,7 +13,7 @@ using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using Steeltoe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -207,16 +207,8 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             Status = InstanceStatus.Starting
         };
 
-        var app = new Application("FOO")
-        {
-            InstanceMap =
-            {
-                [instance.InstanceId] = instance
-            }
-        };
-
-        var apps = new Applications();
-        apps.Add(app);
+        var app = new Application("FOO", [instance]);
+        var apps = new Applications([app]);
 
         discoveryClient.Applications = apps;
 

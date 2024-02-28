@@ -10,6 +10,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Tasks;
 using Steeltoe.Discovery.Eureka.Transport;
 
@@ -105,27 +106,18 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         _registryFetchCounter = value;
     }
 
-    internal Application GetApplication(string appName)
+    internal Application? GetApplication(string appName)
     {
         ArgumentGuard.NotNullOrEmpty(appName);
 
-        Applications apps = Applications;
-
-        return apps.GetRegisteredApplication(appName);
+        return Applications.GetRegisteredApplication(appName);
     }
 
     internal IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure)
     {
         ArgumentGuard.NotNullOrEmpty(vipAddress);
 
-        Applications apps = Applications;
-
-        if (secure)
-        {
-            return apps.GetInstancesBySecureVirtualHostName(vipAddress);
-        }
-
-        return apps.GetInstancesByVirtualHostName(vipAddress);
+        return secure ? Applications.GetInstancesBySecureVirtualHostName(vipAddress) : Applications.GetInstancesByVirtualHostName(vipAddress);
     }
 
     public async Task ShutdownAsync(CancellationToken cancellationToken)
@@ -431,17 +423,20 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
         if (!string.IsNullOrEmpty(instance.AppName))
         {
-            Application app = GetApplication(instance.AppName);
+            Application? app = GetApplication(instance.AppName);
 
-            InstanceInfo remoteInstanceInfo = app.GetInstance(instance.InstanceId);
-
-            if (remoteInstanceInfo != null)
+            if (app != null)
             {
-                LastRemoteInstanceStatus = remoteInstanceInfo.Status;
-                return;
-            }
+                InstanceInfo? remoteInstanceInfo = app.GetInstance(instance.InstanceId);
 
-            LastRemoteInstanceStatus = InstanceStatus.Unknown;
+                if (remoteInstanceInfo != null)
+                {
+                    LastRemoteInstanceStatus = remoteInstanceInfo.Status;
+                    return;
+                }
+
+                LastRemoteInstanceStatus = InstanceStatus.Unknown;
+            }
         }
     }
 

@@ -9,7 +9,7 @@ using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
-namespace Steeltoe.Discovery.Eureka;
+namespace Steeltoe.Discovery.Eureka.Configuration;
 
 public sealed class EurekaInstanceOptions
 {
@@ -65,7 +65,7 @@ public sealed class EurekaInstanceOptions
 
     /// <summary>
     /// Gets or sets the IP address of the instance. This information is for academic purposes only, as the communication from other instances primarily
-    /// happens using the information supplied in <see cref="ResolveHostName" />.
+    /// happens using the information supplied in <see cref="HostName" />.
     /// </summary>
     public string? IPAddress
     {
@@ -149,10 +149,10 @@ public sealed class EurekaInstanceOptions
     public int LeaseExpirationDurationInSeconds { get; set; } = DefaultLeaseExpirationDurationInSeconds;
 
     /// <summary>
-    /// Gets or sets the relative path to the status page for this instance. The status page URL is then constructed out of the
-    /// <see cref="ResolveHostName" /> and the type of communication - secure or insecure, as specified in <see cref="SecurePort" /> and
-    /// <see cref="NonSecurePort" />. It is normally used for informational purposes for other services to find out about the status of this instance. Users
-    /// can provide a simple HTML page indicating what the current status of the instance is. Configuration property: eureka:instance:statusPageUrlPath.
+    /// Gets or sets the relative path to the status page for this instance. The status page URL is then constructed out of the <see cref="HostName" /> and
+    /// the type of communication - secure or insecure, as specified in <see cref="SecurePort" /> and <see cref="NonSecurePort" />. It is normally used for
+    /// informational purposes for other services to find out about the status of this instance. Users can provide a simple HTML page indicating what the
+    /// current status of the instance is. Configuration property: eureka:instance:statusPageUrlPath.
     /// </summary>
     public string? StatusPageUrlPath { get; set; } = DefaultStatusPageUrlPath;
 
@@ -166,10 +166,9 @@ public sealed class EurekaInstanceOptions
     public string? StatusPageUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the relative path to the home page URL for this instance. The home page URL is then constructed out of the
-    /// <see cref="ResolveHostName" /> and the type of communication - secure or insecure, as specified in <see cref="SecurePort" /> and
-    /// <see cref="NonSecurePort" />. It is normally used for informational purposes for other services to use it as a landing page. Configuration property:
-    /// eureka:instance:homePageUrlPath.
+    /// Gets or sets the relative path to the home page URL for this instance. The home page URL is then constructed out of the <see cref="HostName" /> and
+    /// the type of communication - secure or insecure, as specified in <see cref="SecurePort" /> and <see cref="NonSecurePort" />. It is normally used for
+    /// informational purposes for other services to use it as a landing page. Configuration property: eureka:instance:homePageUrlPath.
     /// </summary>
     public string? HomePageUrlPath { get; set; } = DefaultHomePageUrlPath;
 
@@ -184,7 +183,7 @@ public sealed class EurekaInstanceOptions
 
     /// <summary>
     /// Gets or sets gets the relative path to the health check endpoint for this instance. The health check URL is then constructed out of the
-    /// <see cref="ResolveHostName" /> and the type of communication - secure or insecure, as specified in <see cref="SecurePort" /> and
+    /// <see cref="HostName" /> and the type of communication - secure or insecure, as specified in <see cref="SecurePort" /> and
     /// <see cref="NonSecurePort" />. It is normally used for making educated decisions based on the health of the instance. For example, it can be used to
     /// determine whether to proceed deployments to an entire farm or stop the deployments without causing further damage. Configuration property:
     /// eureka:instance:healthCheckUrlPath.
@@ -219,10 +218,13 @@ public sealed class EurekaInstanceOptions
     public string? AsgName { get; set; }
 
     /// <summary>
-    /// Gets or sets the data center this instance is deployed to. This information is used to get some AWS-specific instance information if the instance is
-    /// deployed in AWS.
+    /// Gets the data center this instance is deployed to. This information is used to get some AWS-specific instance information if the instance is deployed
+    /// in AWS.
     /// </summary>
-    public DataCenterInfo? DataCenterInfo { get; set; } = new(DataCenterName.MyOwn);
+    public DataCenterInfo DataCenterInfo { get; } = new()
+    {
+        Name = DataCenterName.MyOwn
+    };
 
     /// <summary>
     /// Gets the address resolution order. An instance's network addresses should be fully expressed in its <see cref="DataCenterInfo" />. For example, for

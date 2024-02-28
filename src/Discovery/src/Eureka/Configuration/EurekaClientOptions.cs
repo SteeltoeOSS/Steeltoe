@@ -7,7 +7,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Http.HttpClientPooling;
 
-namespace Steeltoe.Discovery.Eureka;
+namespace Steeltoe.Discovery.Eureka.Configuration;
 
 public sealed class EurekaClientOptions : IValidateCertificatesOptions
 {

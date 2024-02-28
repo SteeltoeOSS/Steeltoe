@@ -4,7 +4,7 @@
 
 #nullable enable
 
-namespace Steeltoe.Discovery.Eureka;
+namespace Steeltoe.Discovery.Eureka.Configuration;
 
 public sealed class EurekaHealthOptions
 {

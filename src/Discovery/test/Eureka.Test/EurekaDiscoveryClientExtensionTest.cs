@@ -7,6 +7,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
