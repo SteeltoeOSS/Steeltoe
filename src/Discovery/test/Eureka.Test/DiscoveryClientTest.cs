@@ -605,7 +605,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
         _timerFuncCount = 0;
-        await using Timer timer = discoveryClient.StartTimer(10, TimerFunc);
+        await using Timer timer = discoveryClient.StartTimer(TimeSpan.FromMilliseconds(10), TimerFunc);
         Assert.NotNull(timer);
         await Task.Delay(1000);
         Assert.True(_timerFuncCount > 0);
@@ -630,7 +630,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         _timerFuncCount = 0;
 
-        await using (Timer timer = discoveryClient.StartTimer(10, TimerFunc))
+        await using (Timer timer = discoveryClient.StartTimer(TimeSpan.FromMilliseconds(10), TimerFunc))
         {
             Assert.NotNull(timer);
             await Task.Delay(1000);

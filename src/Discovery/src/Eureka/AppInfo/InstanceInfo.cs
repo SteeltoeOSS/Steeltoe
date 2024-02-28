@@ -175,7 +175,7 @@ public sealed class InstanceInfo
             defaultAddress = options.IPAddress;
         }
 
-        info.AppName = options.AppName.ToUpperInvariant();
+        info.AppName = (options.AppName ?? EurekaInstanceOptions.DefaultAppName).ToUpperInvariant();
         info.AppGroupName = options.AppGroupName?.ToUpperInvariant();
         info.DataCenterInfo = options.DataCenterInfo;
         info.IPAddress = options.IPAddress;
@@ -231,8 +231,8 @@ public sealed class InstanceInfo
             info.OverriddenStatus = json.OverriddenStatus;
             info.LeaseInfo = LeaseInfo.FromJson(json.LeaseInfo);
             info.IsCoordinatingDiscoveryServer = json.IsCoordinatingDiscoveryServer;
-            info.LastUpdatedTimestamp = DateTimeConversions.FromJavaMillis(json.LastUpdatedTimestamp).Ticks;
-            info.LastDirtyTimestamp = DateTimeConversions.FromJavaMillis(json.LastDirtyTimestamp).Ticks;
+            info.LastUpdatedTimestamp = DateTimeConversions.FromJavaMilliseconds(json.LastUpdatedTimestamp).Ticks;
+            info.LastDirtyTimestamp = DateTimeConversions.FromJavaMilliseconds(json.LastDirtyTimestamp).Ticks;
             info.ActionType = json.ActionType;
             info.AsgName = json.AsgName;
             info._metaData = GetMetaDataFromJson(json.Metadata);
@@ -266,8 +266,8 @@ public sealed class InstanceInfo
             OverriddenStatus = OverriddenStatus,
             LeaseInfo = LeaseInfo?.ToJson(),
             IsCoordinatingDiscoveryServer = IsCoordinatingDiscoveryServer,
-            LastUpdatedTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastUpdatedTimestamp, DateTimeKind.Utc)),
-            LastDirtyTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastDirtyTimestamp, DateTimeKind.Utc)),
+            LastUpdatedTimestamp = DateTimeConversions.ToJavaMilliseconds(new DateTime(LastUpdatedTimestamp, DateTimeKind.Utc)),
+            LastDirtyTimestamp = DateTimeConversions.ToJavaMilliseconds(new DateTime(LastDirtyTimestamp, DateTimeKind.Utc)),
             ActionType = ActionType,
             AsgName = AsgName,
             Metadata = Metadata.Count == 0

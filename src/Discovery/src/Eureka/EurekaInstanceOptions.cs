@@ -28,6 +28,8 @@ public sealed class EurekaInstanceOptions
     private string? _thisHostAddress;
 
     internal InetUtils? NetUtils { get; set; }
+    internal TimeSpan LeaseRenewalInterval => TimeSpan.FromSeconds(LeaseRenewalIntervalInSeconds);
+    internal TimeSpan LeaseExpirationDuration => TimeSpan.FromSeconds(LeaseExpirationDurationInSeconds);
 
     /// <summary>
     /// Gets or sets the unique ID (within the scope of the app name) of this instance to be registered with Eureka. Configuration property:

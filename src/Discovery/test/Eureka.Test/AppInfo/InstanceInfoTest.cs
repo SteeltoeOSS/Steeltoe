@@ -53,8 +53,8 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             OverriddenStatus = InstanceStatus.OutOfService,
             LeaseInfo = new JsonLeaseInfo
             {
-                RenewalIntervalInSecs = 1,
-                DurationInSecs = 2,
+                RenewalIntervalInSeconds = 1,
+                DurationInSeconds = 2,
                 RegistrationTimestamp = 1_457_973_741_708,
                 LastRenewalTimestamp = 1_457_973_741_708,
                 LastRenewalTimestampLegacy = 1_457_973_741_708,
@@ -97,12 +97,12 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(InstanceStatus.Down, info.Status);
         Assert.Equal(InstanceStatus.OutOfService, info.OverriddenStatus);
         Assert.NotNull(info.LeaseInfo);
-        Assert.Equal(1, info.LeaseInfo.RenewalIntervalInSecs);
-        Assert.Equal(2, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.RegistrationTimestamp);
-        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.EvictionTimestamp);
-        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.ServiceUpTimestamp);
+        Assert.Equal(1, info.LeaseInfo.RenewalInterval.TotalSeconds);
+        Assert.Equal(2, info.LeaseInfo.Duration.TotalSeconds);
+        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.RegistrationTimeUtc.Ticks);
+        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.LastRenewalTimeUtc.Ticks);
+        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.EvictionTimeUtc.Ticks);
+        Assert.Equal(635_935_705_417_080_000L, info.LeaseInfo.ServiceUpTimeUtc.Ticks);
         Assert.False(info.IsCoordinatingDiscoveryServer);
         Assert.NotNull(info.Metadata);
         Assert.Empty(info.Metadata);
@@ -142,12 +142,12 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(InstanceStatus.Up, instance.Status);
         Assert.Equal(InstanceStatus.Unknown, instance.OverriddenStatus);
         Assert.NotNull(instance.LeaseInfo);
-        Assert.Equal(30, instance.LeaseInfo.RenewalIntervalInSecs);
-        Assert.Equal(90, instance.LeaseInfo.DurationInSecs);
-        Assert.Equal(0, instance.LeaseInfo.RegistrationTimestamp);
-        Assert.Equal(0, instance.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(0, instance.LeaseInfo.EvictionTimestamp);
-        Assert.Equal(0, instance.LeaseInfo.ServiceUpTimestamp);
+        Assert.Equal(30, instance.LeaseInfo.RenewalInterval.TotalSeconds);
+        Assert.Equal(90, instance.LeaseInfo.Duration.TotalSeconds);
+        Assert.Equal(0, instance.LeaseInfo.RegistrationTimeUtc.Ticks);
+        Assert.Equal(0, instance.LeaseInfo.LastRenewalTimeUtc.Ticks);
+        Assert.Equal(0, instance.LeaseInfo.EvictionTimeUtc.Ticks);
+        Assert.Equal(0, instance.LeaseInfo.ServiceUpTimeUtc.Ticks);
         Assert.False(instance.IsCoordinatingDiscoveryServer);
         Assert.NotNull(instance.Metadata);
         Assert.Empty(instance.Metadata);
@@ -191,12 +191,12 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(InstanceStatus.Up, instance.Status);
         Assert.Equal(InstanceStatus.Unknown, instance.OverriddenStatus);
         Assert.NotNull(instance.LeaseInfo);
-        Assert.Equal(30, instance.LeaseInfo.RenewalIntervalInSecs);
-        Assert.Equal(90, instance.LeaseInfo.DurationInSecs);
-        Assert.Equal(0, instance.LeaseInfo.RegistrationTimestamp);
-        Assert.Equal(0, instance.LeaseInfo.LastRenewalTimestamp);
-        Assert.Equal(0, instance.LeaseInfo.EvictionTimestamp);
-        Assert.Equal(0, instance.LeaseInfo.ServiceUpTimestamp);
+        Assert.Equal(30, instance.LeaseInfo.RenewalInterval.TotalSeconds);
+        Assert.Equal(90, instance.LeaseInfo.Duration.TotalSeconds);
+        Assert.Equal(0, instance.LeaseInfo.RegistrationTimeUtc.Ticks);
+        Assert.Equal(0, instance.LeaseInfo.LastRenewalTimeUtc.Ticks);
+        Assert.Equal(0, instance.LeaseInfo.EvictionTimeUtc.Ticks);
+        Assert.Equal(0, instance.LeaseInfo.ServiceUpTimeUtc.Ticks);
         Assert.False(instance.IsCoordinatingDiscoveryServer);
         Assert.NotNull(instance.Metadata);
         Assert.Empty(instance.Metadata);
@@ -241,8 +241,8 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(InstanceStatus.Up, instanceInfo.Status);
         Assert.Equal(InstanceStatus.Unknown, instanceInfo.OverriddenStatus);
         Assert.NotNull(instanceInfo.LeaseInfo);
-        Assert.Equal(30, instanceInfo.LeaseInfo.RenewalIntervalInSecs);
-        Assert.Equal(90, instanceInfo.LeaseInfo.DurationInSecs);
+        Assert.Equal(30, instanceInfo.LeaseInfo.RenewalIntervalInSeconds);
+        Assert.Equal(90, instanceInfo.LeaseInfo.DurationInSeconds);
         Assert.Equal(0, instanceInfo.LeaseInfo.RegistrationTimestamp);
         Assert.Equal(0, instanceInfo.LeaseInfo.LastRenewalTimestamp);
         Assert.Equal(0, instanceInfo.LeaseInfo.LastRenewalTimestampLegacy);

@@ -146,7 +146,7 @@ public sealed class EurekaClient
         var queryString = new Dictionary<string, string>
         {
             ["status"] = status.ToSnakeCaseString(SnakeCaseStyle.AllCaps),
-            ["lastDirtyTimestamp"] = DateTimeConversions.ToJavaMillis(lastDirtyTimeUtc).ToString(CultureInfo.InvariantCulture)
+            ["lastDirtyTimestamp"] = DateTimeConversions.ToJavaMilliseconds(lastDirtyTimeUtc).ToString(CultureInfo.InvariantCulture)
         };
 
         await ExecuteRequestAsync(HttpMethod.Put, $"apps/{appId}/{instanceId}", queryString, null, cancellationToken);

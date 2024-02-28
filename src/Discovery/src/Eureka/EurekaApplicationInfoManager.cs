@@ -66,8 +66,8 @@ public sealed class EurekaApplicationInfoManager
 
         EurekaInstanceOptions instanceOptions = _instanceOptionsMonitor.CurrentValue;
 
-        if (InstanceInfo.LeaseInfo.DurationInSecs != instanceOptions.LeaseExpirationDurationInSeconds ||
-            InstanceInfo.LeaseInfo.RenewalIntervalInSecs != instanceOptions.LeaseRenewalIntervalInSeconds)
+        if (InstanceInfo.LeaseInfo.Duration != instanceOptions.LeaseExpirationDuration ||
+            InstanceInfo.LeaseInfo.RenewalInterval != instanceOptions.LeaseRenewalInterval)
         {
             // Adapt to changed configuration.
             LeaseInfo newLease = LeaseInfo.FromConfiguration(instanceOptions);

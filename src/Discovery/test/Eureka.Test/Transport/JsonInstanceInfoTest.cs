@@ -58,8 +58,8 @@ public sealed class JsonInstanceInfoTest : AbstractBaseTest
         Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", result.DataCenterInfo.ClassName);
         Assert.Equal("MyOwn", result.DataCenterInfo.Name);
         Assert.NotNull(result.LeaseInfo);
-        Assert.Equal(30, result.LeaseInfo.RenewalIntervalInSecs);
-        Assert.Equal(90, result.LeaseInfo.DurationInSecs);
+        Assert.Equal(30, result.LeaseInfo.RenewalIntervalInSeconds);
+        Assert.Equal(90, result.LeaseInfo.DurationInSeconds);
         Assert.Equal(1_457_714_988_223, result.LeaseInfo.RegistrationTimestamp);
         Assert.Equal(1_457_716_158_319, result.LeaseInfo.LastRenewalTimestamp);
         Assert.Equal(0, result.LeaseInfo.EvictionTimestamp);

@@ -12,10 +12,10 @@ namespace Steeltoe.Discovery.Eureka.Transport;
 internal sealed class JsonLeaseInfo
 {
     [JsonPropertyName("renewalIntervalInSecs")]
-    public int RenewalIntervalInSecs { get; set; }
+    public int RenewalIntervalInSeconds { get; set; }
 
     [JsonPropertyName("durationInSecs")]
-    public int DurationInSecs { get; set; }
+    public int DurationInSeconds { get; set; }
 
     [JsonPropertyName("registrationTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]

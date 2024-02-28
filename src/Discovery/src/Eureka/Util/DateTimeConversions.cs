@@ -10,7 +10,7 @@ internal static class DateTimeConversions
 {
     private static readonly DateTime BaseTime = DateTime.UnixEpoch;
 
-    public static long ToJavaMillis(DateTime dateTime)
+    public static long ToJavaMilliseconds(DateTime dateTime)
     {
         if (dateTime.Kind != DateTimeKind.Utc)
         {
@@ -26,9 +26,9 @@ internal static class DateTimeConversions
         return javaTicks / 10000;
     }
 
-    public static DateTime FromJavaMillis(long javaMillis)
+    public static DateTime FromJavaMilliseconds(long javaMilliseconds)
     {
-        long dotNetTicks = javaMillis * 10000 + BaseTime.Ticks;
+        long dotNetTicks = javaMilliseconds * 10000 + BaseTime.Ticks;
         return new DateTime(dotNetTicks, DateTimeKind.Utc);
     }
 }

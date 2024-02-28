@@ -13,7 +13,7 @@ public sealed class DateTimeConversionsTest
     public void ToJavaMillis_Throws_IfNotUTC()
     {
         DateTime dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Local).AddMilliseconds(708);
-        var ex = Assert.Throws<ArgumentException>(() => DateTimeConversions.ToJavaMillis(dt));
+        var ex = Assert.Throws<ArgumentException>(() => DateTimeConversions.ToJavaMilliseconds(dt));
         Assert.Contains("DateTime kind must be UTC.", ex.Message, StringComparison.Ordinal);
     }
 
@@ -21,7 +21,7 @@ public sealed class DateTimeConversionsTest
     public void ToJavaMillis()
     {
         DateTime dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Utc).AddMilliseconds(708);
-        long millis = DateTimeConversions.ToJavaMillis(dt);
+        long millis = DateTimeConversions.ToJavaMilliseconds(dt);
         Assert.Equal(1_457_973_741_708, millis);
     }
 
@@ -29,7 +29,7 @@ public sealed class DateTimeConversionsTest
     public void FromJavaMillis()
     {
         const long millis = 1_457_973_741_708;
-        DateTime dt = DateTimeConversions.FromJavaMillis(millis);
+        DateTime dt = DateTimeConversions.FromJavaMilliseconds(millis);
         Assert.Equal(3, dt.Month);
         Assert.Equal(14, dt.Day);
         Assert.Equal(2016, dt.Year);

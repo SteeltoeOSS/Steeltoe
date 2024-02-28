@@ -15,6 +15,8 @@ public sealed class EurekaClientOptions : IValidateCertificatesOptions
     internal const int DefaultRegistryFetchIntervalSeconds = 30;
     internal const string DefaultServerServiceUrl = "http://localhost:8761/eureka/";
 
+    internal TimeSpan RegistryFetchInterval => TimeSpan.FromSeconds(RegistryFetchIntervalSeconds);
+
     /// <summary>
     /// Gets or sets the URI to use to obtain an OAuth2 access token. Configuration property: eureka:client:accessTokenUri.
     /// </summary>

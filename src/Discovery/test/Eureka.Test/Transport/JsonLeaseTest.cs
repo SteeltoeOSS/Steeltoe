@@ -26,8 +26,8 @@ public sealed class JsonLeaseTest : AbstractBaseTest
 
         var leaseInfo = JsonSerializer.Deserialize<JsonLeaseInfo>(json);
         Assert.NotNull(leaseInfo);
-        Assert.Equal(30, leaseInfo.RenewalIntervalInSecs);
-        Assert.Equal(90, leaseInfo.DurationInSecs);
+        Assert.Equal(30, leaseInfo.RenewalIntervalInSeconds);
+        Assert.Equal(90, leaseInfo.DurationInSeconds);
         Assert.Equal(1_457_714_988_223, leaseInfo.RegistrationTimestamp);
         Assert.Equal(1_457_716_158_319, leaseInfo.LastRenewalTimestamp);
         Assert.Equal(0, leaseInfo.EvictionTimestamp);
