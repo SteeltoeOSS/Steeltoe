@@ -17,12 +17,23 @@ public sealed class InstanceInfo
     private Dictionary<string, string> _metaData;
     private bool _isDirty;
 
-    public string InstanceId { get; internal set; }
+    public string InstanceId { get; set; }
+
+    /// <summary>
+    /// Gets the application name of the instance. This is mostly used in querying of instances.
+    /// </summary>
     public string AppName { get; internal set; }
+
     public string AppGroupName { get; private set; }
 
+    /// <summary>
+    /// Gets the IP address of this running instance.
+    /// </summary>
     public string IPAddress { get; internal set; }
 
+    /// <summary>
+    /// Gets the identity of this application instance.
+    /// </summary>
     public string Sid
     {
         get => _sid;
@@ -33,18 +44,69 @@ public sealed class InstanceInfo
         }
     }
 
+    /// <summary>
+    /// Gets the port number that is used to service requests.
+    /// </summary>
     public int Port { get; private set; }
+
+    /// <summary>
+    /// Gets the secure port that is used to service requests.
+    /// </summary>
     public int SecurePort { get; private set; }
+
+    /// <summary>
+    /// Gets the value described at <see cref="EurekaInstanceOptions.HomePageUrl" />.
+    /// </summary>
     public string HomePageUrl { get; private set; }
+
+    /// <summary>
+    /// Gets the value described at <see cref="EurekaInstanceOptions.StatusPageUrl" />.
+    /// </summary>
     public string StatusPageUrl { get; private set; }
+
+    /// <summary>
+    /// Gets the value described at <see cref="EurekaInstanceOptions.HealthCheckUrl" />.
+    /// </summary>
     public string HealthCheckUrl { get; private set; }
+
+    /// <summary>
+    /// Gets the value described at <see cref="EurekaInstanceOptions.SecureHealthCheckUrl" />.
+    /// </summary>
     public string SecureHealthCheckUrl { get; private set; }
+
+    /// <summary>
+    /// Gets the Virtual Internet Protocol address for this instance. The address should follow the format
+    /// <b>
+    /// hostname:port
+    /// </b>
+    /// . This address needs to be resolved into a real address for communicating with this instance.
+    /// </summary>
     public string VipAddress { get; internal set; }
+
+    /// <summary>
+    /// Gets the Secure Virtual Internet Protocol address for this instance. The address should follow the format
+    /// <b>
+    /// hostname:port
+    /// </b>
+    /// . This address needs to be resolved into a real address for communicating with this instance.
+    /// </summary>
     public string SecureVipAddress { get; internal set; }
+
     public int CountryId { get; private set; }
+
+    /// <summary>
+    /// Gets the datacenter information for where this instance is running.
+    /// </summary>
     public DataCenterInfo DataCenterInfo { get; private set; }
+
+    /// <summary>
+    /// Gets the fully qualified hostname of this running instance. This is mostly used in constructing the URL for communicating with the instance.
+    /// </summary>
     public string HostName { get; internal set; }
 
+    /// <summary>
+    /// Gets the status of the instance. If the status is <see cref="InstanceStatus.Up" />, that is when the instance is ready to service requests.
+    /// </summary>
     public InstanceStatus Status
     {
         get => _status;
@@ -58,10 +120,24 @@ public sealed class InstanceInfo
         }
     }
 
+    /// <summary>
+    /// Gets the status overridden by some other external process. This is mostly used in putting an instance out of service to block traffic to it.
+    /// </summary>
     public InstanceStatus OverriddenStatus { get; private set; }
+
+    /// <summary>
+    /// Gets the lease information for this instance.
+    /// </summary>
     public LeaseInfo LeaseInfo { get; internal set; }
+
+    /// <summary>
+    /// Gets a value indicating whether this instance is the coordinating discovery server.
+    /// </summary>
     public bool IsCoordinatingDiscoveryServer { get; private set; }
 
+    /// <summary>
+    /// Gets all application-specific metadata set on the instance.
+    /// </summary>
     public Dictionary<string, string> Metadata
     {
         get => _metaData;
@@ -72,13 +148,40 @@ public sealed class InstanceInfo
         }
     }
 
+    /// <summary>
+    /// Gets the time elapsed since epoch since the instance status has been last updated.
+    /// </summary>
     public long LastUpdatedTimestamp { get; internal set; }
+
+    /// <summary>
+    /// Gets the last timestamp when this instance was touched.
+    /// </summary>
     public long LastDirtyTimestamp { get; internal set; }
+
+    /// <summary>
+    /// Gets the type of action done on the instance in the server. Primarily used for updating deltas in the <see cref="EurekaDiscoveryClient" /> instance.
+    /// </summary>
     public ActionType ActionType { get; internal set; }
+
+    /// <summary>
+    /// Gets the AWS autoscaling group name for this instance.
+    /// </summary>
     public string AsgName { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether <see cref="Port" /> is enabled.
+    /// </summary>
     public bool IsInsecurePortEnabled { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether <see cref="SecurePort" /> is enabled.
+    /// </summary>
     public bool IsSecurePortEnabled { get; private set; }
 
+    /// <summary>
+    /// Gets a value indicating whether any state changed, so that <see cref="EurekaDiscoveryClient" /> can check whether to retransmit info or not on the
+    /// next heartbeat.
+    /// </summary>
     public bool IsDirty
     {
         get => _isDirty;

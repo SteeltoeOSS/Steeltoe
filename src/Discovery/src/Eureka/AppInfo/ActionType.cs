@@ -10,7 +10,18 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]
 public enum ActionType
 {
+    /// <summary>
+    /// Added in the discovery server.
+    /// </summary>
     Added,
+
+    /// <summary>
+    /// Changed in the discovery server.
+    /// </summary>
     Modified,
+
+    /// <summary>
+    /// Deleted from the discovery server.
+    /// </summary>
     Deleted
 }

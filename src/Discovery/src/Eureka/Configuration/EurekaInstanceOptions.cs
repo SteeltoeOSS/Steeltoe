@@ -173,8 +173,8 @@ public sealed class EurekaInstanceOptions
     public string? HomePageUrlPath { get; set; } = DefaultHomePageUrlPath;
 
     /// <summary>
-    /// Gets or sets gets the absolute URL to the home page for this instance. Users can provide the <see cref="HomePageUrlPath" /> if the home page resides
-    /// in the same instance talking to Eureka. Otherwise, in case the instance is a proxy for some other server, users can provide the full URL. If the full
+    /// Gets or sets the absolute URL to the home page for this instance. Users can provide the <see cref="HomePageUrlPath" /> if the home page resides in
+    /// the same instance talking to Eureka. Otherwise, in case the instance is a proxy for some other server, users can provide the full URL. If the full
     /// URL is provided it takes precedence. It is normally used for informational purposes for other services to find out about the status of this instance.
     /// Users can provide a simple HTML page indicating what the current status of the instance is. The full URL should follow the format:
     /// http://${eureka.hostname}:7001/ where the value ${eureka.hostname} is replaced at runtime. Configuration property: eureka:instance:homePageUrl.
@@ -182,7 +182,7 @@ public sealed class EurekaInstanceOptions
     public string? HomePageUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets gets the relative path to the health check endpoint for this instance. The health check URL is then constructed out of the
+    /// Gets or sets the relative path to the health check endpoint for this instance. The health check URL is then constructed out of the
     /// <see cref="HostName" /> and the type of communication - secure or insecure, as specified in <see cref="SecurePort" /> and
     /// <see cref="NonSecurePort" />. It is normally used for making educated decisions based on the health of the instance. For example, it can be used to
     /// determine whether to proceed deployments to an entire farm or stop the deployments without causing further damage. Configuration property:
@@ -191,7 +191,7 @@ public sealed class EurekaInstanceOptions
     public string? HealthCheckUrlPath { get; set; } = DefaultHealthCheckUrlPath;
 
     /// <summary>
-    /// Gets or sets gets the absolute URL for health checks of this instance. Users can provide the <see cref="HealthCheckUrlPath" /> if the health check
+    /// Gets or sets the absolute URL for health checks of this instance. Users can provide the <see cref="HealthCheckUrlPath" /> if the health check
     /// endpoint resides in the same instance talking to Eureka. Otherwise, in case the instance is a proxy for some other server, users can provide the full
     /// URL. If the full URL is provided it takes precedence. It is normally used for making educated decisions based on the health of the instance. For
     /// example, it can be used to determine whether to proceed deployments to an entire farm or stop the deployments without causing further damage. The
@@ -201,10 +201,10 @@ public sealed class EurekaInstanceOptions
     public string? HealthCheckUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets gets the secure absolute URL for health checks of this instance. Users can provide the <see cref="HealthCheckUrlPath" /> if the health
-    /// check endpoint resides in the same instance talking to Eureka. Otherwise, in case the instance is a proxy for some other server, users can provide
-    /// the full URL. If the full URL is provided it takes precedence. It is normally used for making educated decisions based on the health of the instance.
-    /// For example, it can be used to determine whether to proceed deployments to an entire farm or stop the deployments without causing further damage. The
+    /// Gets or sets the secure absolute URL for health checks of this instance. Users can provide the <see cref="HealthCheckUrlPath" /> if the health check
+    /// endpoint resides in the same instance talking to Eureka. Otherwise, in case the instance is a proxy for some other server, users can provide the full
+    /// URL. If the full URL is provided it takes precedence. It is normally used for making educated decisions based on the health of the instance. For
+    /// example, it can be used to determine whether to proceed deployments to an entire farm or stop the deployments without causing further damage. The
     /// full URL should follow the format: https://${eureka.hostname}:7001/ where the value ${eureka.hostname} is replaced at runtime. Configuration
     /// property: eureka:instance:secureHealthCheckUrl.
     /// </summary>
