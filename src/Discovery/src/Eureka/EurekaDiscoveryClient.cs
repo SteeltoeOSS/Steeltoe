@@ -286,8 +286,8 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             try
             {
-                await _eurekaClient.HeartbeatAsync(instance.AppName, instance.InstanceId, instance.Status,
-                    new DateTime(instance.LastDirtyTimestamp, DateTimeKind.Utc), cancellationToken);
+                var lastDirtyTimeUtc = new DateTime(instance.LastDirtyTimestamp, DateTimeKind.Utc);
+                await _eurekaClient.HeartbeatAsync(instance.AppName, instance.InstanceId, lastDirtyTimeUtc, cancellationToken);
 
                 _logger.LogDebug("Renew {Application}/{Instance} succeeded.", instance.AppName, instance.InstanceId);
 

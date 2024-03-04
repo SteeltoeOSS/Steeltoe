@@ -132,10 +132,10 @@ public sealed class EurekaInstanceOptions
     public bool IsInstanceEnabledOnInit { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets how often (in seconds) the Eureka client needs to send heartbeats to Eureka server to indicate that it is still alive. If the heartbeats
-    /// are not received for the period specified in <see cref="LeaseExpirationDurationInSeconds" />, Eureka server will remove the instance from its view,
-    /// thereby disallowing traffic to this instance. Note that the instance could still not take traffic if it implements HealthCheckCallback and then
-    /// decides to make itself unavailable. Configuration property: eureka:instance:leaseRenewalIntervalInSeconds.
+    /// Gets or sets how often (in seconds) the Eureka client sends heartbeats to Eureka server to indicate that it is still alive. If the heartbeats are not
+    /// received for the period specified in <see cref="LeaseExpirationDurationInSeconds" />, Eureka server will remove the instance from its view, thereby
+    /// disallowing traffic to this instance. Note that the instance could still not take traffic if it implements HealthCheckCallback and then decides to
+    /// make itself unavailable. Configuration property: eureka:instance:leaseRenewalIntervalInSeconds.
     /// </summary>
     public int LeaseRenewalIntervalInSeconds { get; set; } = DefaultLeaseRenewalIntervalInSeconds;
 

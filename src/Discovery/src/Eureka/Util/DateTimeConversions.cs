@@ -8,7 +8,7 @@ namespace Steeltoe.Discovery.Eureka.Util;
 
 internal static class DateTimeConversions
 {
-    private static readonly DateTime BaseTime = DateTime.UnixEpoch;
+    public static readonly DateTime ZeroDateTimeUtc = DateTime.UnixEpoch;
 
     public static long ToJavaMilliseconds(DateTime dateTime)
     {
@@ -22,13 +22,13 @@ internal static class DateTimeConversions
             return 0;
         }
 
-        long javaTicks = dateTime.Ticks - BaseTime.Ticks;
-        return javaTicks / 10000;
+        long javaTicks = dateTime.Ticks - ZeroDateTimeUtc.Ticks;
+        return javaTicks / 10_000;
     }
 
     public static DateTime FromJavaMilliseconds(long javaMilliseconds)
     {
-        long dotNetTicks = javaMilliseconds * 10000 + BaseTime.Ticks;
+        long dotNetTicks = javaMilliseconds * 10_000 + ZeroDateTimeUtc.Ticks;
         return new DateTime(dotNetTicks, DateTimeKind.Utc);
     }
 }

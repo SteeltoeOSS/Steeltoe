@@ -5,17 +5,18 @@
 #nullable enable
 
 using System.Globalization;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
-using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -35,12 +36,12 @@ public sealed class EurekaClient
     private static readonly Task<object?> TaskOfNull = Task.FromResult<object?>(null);
     private static readonly TimeSpan GetAccessTokenTimeout = TimeSpan.FromSeconds(10);
 
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitor;
-    private readonly EurekaServiceUriStateManager _eurekaServiceUriStateManager;
-    private readonly ILogger<EurekaClient> _logger;
+    private static readonly JsonSerializerOptions RequestSerializerOptions = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
 
-    private static JsonSerializerOptions ResponseSerializerOptions { get; } = new()
+    private static readonly JsonSerializerOptions ResponseSerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -50,6 +51,11 @@ public sealed class EurekaClient
             new JsonInstanceInfoConverter()
         }
     };
+
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitor;
+    private readonly EurekaServiceUriStateManager _eurekaServiceUriStateManager;
+    private readonly ILogger<EurekaClient> _logger;
 
     public EurekaClient(IHttpClientFactory httpClientFactory, IOptionsMonitor<EurekaClientOptions> optionsMonitor,
         EurekaServiceUriStateManager eurekaServiceUriStateManager, ILogger<EurekaClient> logger)
@@ -80,6 +86,7 @@ public sealed class EurekaClient
     public async Task RegisterAsync(InstanceInfo instance, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(instance);
+        AssertInstanceIsValid(instance);
 
         if ((Platform.IsContainerized || Platform.IsCloudHosted) && string.Equals(instance.HostName, "localhost", StringComparison.OrdinalIgnoreCase))
         {
@@ -87,12 +94,43 @@ public sealed class EurekaClient
                 "Registering with hostname 'localhost' in containerized or cloud environments may not be valid. Please configure Eureka:Instance:HostName with a non-localhost address.");
         }
 
-        HttpContent requestContent = new StringContent(JsonSerializer.Serialize(new JsonInstanceInfoRoot
+        string requestBody = JsonSerializer.Serialize(new JsonInstanceInfoRoot
         {
             Instance = instance.ToJsonInstance()
-        }), Encoding.UTF8, MediaType);
+        }, RequestSerializerOptions);
 
-        await ExecuteRequestAsync(HttpMethod.Post, $"apps/{instance.AppName}", null, requestContent, cancellationToken);
+        string path = $"apps/{WebUtility.UrlEncode(instance.AppName)}";
+        await ExecuteRequestAsync(HttpMethod.Post, path, null, requestBody, cancellationToken);
+    }
+
+    private static void AssertInstanceIsValid(InstanceInfo instance)
+    {
+        // TODO: Move this logic higher up the call stack.
+
+        if (string.IsNullOrWhiteSpace(instance.AppName))
+        {
+            throw new InvalidOperationException($"{nameof(InstanceInfo)}.{nameof(instance.AppName)} must not be null, empty or whitespace.");
+        }
+
+        if (string.IsNullOrWhiteSpace(instance.InstanceId))
+        {
+            throw new InvalidOperationException($"{nameof(InstanceInfo)}.{nameof(instance.InstanceId)} must not be null, empty or whitespace.");
+        }
+
+        if (string.IsNullOrWhiteSpace(instance.HostName))
+        {
+            throw new InvalidOperationException($"{nameof(InstanceInfo)}.{nameof(instance.HostName)} must not be null, empty or whitespace.");
+        }
+
+        if (string.IsNullOrWhiteSpace(instance.IPAddress))
+        {
+            throw new InvalidOperationException($"{nameof(InstanceInfo)}.{nameof(instance.IPAddress)} must not be null, empty or whitespace.");
+        }
+
+        if (instance.DataCenterInfo == null)
+        {
+            throw new InvalidOperationException($"{nameof(InstanceInfo)}.{nameof(instance.DataCenterInfo)} must not be null.");
+        }
     }
 
     /// <summary>
@@ -112,10 +150,11 @@ public sealed class EurekaClient
     /// </exception>
     public async Task DeregisterAsync(string appId, string instanceId, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNullOrEmpty(appId);
-        ArgumentGuard.NotNullOrEmpty(instanceId);
+        ArgumentGuard.NotNullOrWhiteSpace(appId);
+        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
 
-        await ExecuteRequestAsync(HttpMethod.Delete, $"apps/{appId}/{instanceId}", null, null, cancellationToken);
+        string path = $"apps/{WebUtility.UrlEncode(appId)}/{WebUtility.UrlEncode(instanceId)}";
+        await ExecuteRequestAsync(HttpMethod.Delete, path, null, null, cancellationToken);
     }
 
     /// <summary>
@@ -127,9 +166,6 @@ public sealed class EurekaClient
     /// <param name="instanceId">
     /// The ID of the instance to send a heartbeat for.
     /// </param>
-    /// <param name="status">
-    /// The new instance status.
-    /// </param>
     /// <param name="lastDirtyTimeUtc">
     /// The date and time (in UTC) when the instance was last dirty.
     /// </param>
@@ -139,18 +175,28 @@ public sealed class EurekaClient
     /// <exception cref="EurekaTransportException">
     /// The registration failed because none of the Eureka servers responded with success.
     /// </exception>
-    public async Task HeartbeatAsync(string appId, string instanceId, InstanceStatus status, DateTime lastDirtyTimeUtc, CancellationToken cancellationToken)
+    public async Task HeartbeatAsync(string appId, string instanceId, DateTime lastDirtyTimeUtc, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNullOrEmpty(appId);
-        ArgumentGuard.NotNullOrEmpty(instanceId);
+        ArgumentGuard.NotNullOrWhiteSpace(appId);
+        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
+
+        // NOTES:
+        // - The 'status' query string parameter is always ignored by Eureka Server.
+        // - The 'overriddenStatus' query string parameter is only used in Eureka server-to-server scenarios.
+        // See InstanceResource.renewLease() at https://github.com/Netflix/eureka/blob/master/eureka-core/src/main/java/com/netflix/eureka/resources/InstanceResource.java#L105-L110.
+
+        // A Eureka server returns 404 when our lastDirtyTimeUtc is newer, and it wants us to re-register because it believes to be outdated.
+        // This can happen in a cluster of Eureka servers where not all servers are in sync.
+        // Because we're sequentially sending a heartbeat to all known servers until one succeeds, we leave it up to the servers
+        // to keep each other in sync. So the client should only try to re-register when none of the Eureka servers reported success.
 
         var queryString = new Dictionary<string, string>
         {
-            ["status"] = status.ToSnakeCaseString(SnakeCaseStyle.AllCaps),
             ["lastDirtyTimestamp"] = DateTimeConversions.ToJavaMilliseconds(lastDirtyTimeUtc).ToString(CultureInfo.InvariantCulture)
         };
 
-        await ExecuteRequestAsync(HttpMethod.Put, $"apps/{appId}/{instanceId}", queryString, null, cancellationToken);
+        string path = $"apps/{WebUtility.UrlEncode(appId)}/{WebUtility.UrlEncode(instanceId)}";
+        await ExecuteRequestAsync(HttpMethod.Put, path, queryString, null, cancellationToken);
     }
 
     /// <summary>
@@ -195,9 +241,10 @@ public sealed class EurekaClient
     /// </exception>
     public Task<Applications> GetVipAsync(string vipAddress, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNullOrEmpty(vipAddress);
+        ArgumentGuard.NotNullOrWhiteSpace(vipAddress);
 
-        return GetApplicationsAtPathAsync($"vips/{vipAddress}", cancellationToken);
+        string path = $"vips/{WebUtility.UrlEncode(vipAddress)}";
+        return GetApplicationsAtPathAsync(path, cancellationToken);
     }
 
     private async Task<Applications> GetApplicationsAtPathAsync(string path, CancellationToken cancellationToken)
@@ -209,14 +256,14 @@ public sealed class EurekaClient
         }, cancellationToken);
     }
 
-    private async Task ExecuteRequestAsync(HttpMethod method, string path, IDictionary<string, string>? queryString, HttpContent? requestContent,
+    private async Task ExecuteRequestAsync(HttpMethod method, string path, IDictionary<string, string>? queryString, string? requestBody,
         CancellationToken cancellationToken)
     {
-        _ = await ExecuteRequestAsync(method, path, queryString, requestContent, _ => TaskOfNull, cancellationToken);
+        _ = await ExecuteRequestAsync(method, path, queryString, requestBody, _ => TaskOfNull, cancellationToken);
     }
 
-    private async Task<TResult> ExecuteRequestAsync<TResult>(HttpMethod method, string path, IDictionary<string, string>? queryString,
-        HttpContent? requestContent, Func<HttpResponseMessage, Task<TResult>> getResultAsync, CancellationToken cancellationToken)
+    private async Task<TResult> ExecuteRequestAsync<TResult>(HttpMethod method, string path, IDictionary<string, string>? queryString, string? requestBody,
+        Func<HttpResponseMessage, Task<TResult>> getResultAsync, CancellationToken cancellationToken)
     {
         using HttpClient httpClient = CreateHttpClient("Eureka");
         EurekaServiceUriStateManager.ServiceUrisSnapshot serviceUris = _eurekaServiceUriStateManager.GetSnapshot();
@@ -228,14 +275,15 @@ public sealed class EurekaClient
             Uri serviceUri = serviceUris.GetNextServiceUri();
             Uri requestUri = GetRequestUri(serviceUri, path, queryString);
 
+            HttpContent? requestContent = requestBody != null ? new StringContent(requestBody, Encoding.UTF8, MediaType) : null;
             HttpRequestMessage request = await GetRequestMessageAsync(method, requestUri, requestContent, cancellationToken);
 
             try
             {
                 using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
-                _logger.LogDebug("HTTP request to '{RequestUri}' returned status {StatusCode} in attempt {Attempt}.", requestUri.ToMaskedUri(),
-                    (int)response.StatusCode, attempt);
+                _logger.LogDebug("HTTP {requestMethod} request to '{RequestUri}' returned status {StatusCode} in attempt {Attempt}.", request.Method,
+                    requestUri.ToMaskedUri(), (int)response.StatusCode, attempt);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -247,20 +295,22 @@ public sealed class EurekaClient
                     }
                     catch (JsonException exception) when (!exception.IsCancellation())
                     {
-                        _logger.LogDebug(exception, "Failed to deserialize HTTP response from '{RequestUri}'.", requestUri.ToMaskedUri());
+                        _logger.LogDebug(exception, "Failed to deserialize HTTP response from {requestMethod} '{RequestUri}'.", request.Method,
+                            requestUri.ToMaskedUri());
                     }
                 }
                 else
                 {
                     string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                    _logger.LogInformation("HTTP request to '{RequestUri}' failed with status {StatusCode}: {ResponseBody}", requestUri.ToMaskedUri(),
-                        (int)response.StatusCode, responseBody);
+                    _logger.LogInformation("HTTP {requestMethod} request to '{RequestUri}' failed with status {StatusCode}: {ResponseBody}", request.Method,
+                        requestUri.ToMaskedUri(), (int)response.StatusCode, responseBody);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
-                _logger.LogWarning(exception, "Failed to execute HTTP request to '{RequestUri}' in attempt {Attempt}.", requestUri.ToMaskedUri(), attempt);
+                _logger.LogWarning(exception, "Failed to execute HTTP {requestMethod} request to '{RequestUri}' in attempt {Attempt}.", request.Method,
+                    requestUri.ToMaskedUri(), attempt);
             }
 
             _eurekaServiceUriStateManager.MarkFailingServiceUri(serviceUri);

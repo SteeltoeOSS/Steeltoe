@@ -1062,8 +1062,16 @@ public sealed class ApplicationsTest : AbstractBaseTest
             AppGroupName = "AppGroupName",
             IPAddress = "IPAddress",
             Sid = "Sid",
-            Port = JsonPortWrapper.Create(true, 100),
-            SecurePort = JsonPortWrapper.Create(false, 100),
+            Port = new JsonPortWrapper
+            {
+                Enabled = true,
+                Port = 100
+            },
+            SecurePort = new JsonPortWrapper
+            {
+                Enabled = false,
+                Port = 100
+            },
             HomePageUrl = "HomePageUrl",
             StatusPageUrl = "StatusPageUrl",
             HealthCheckUrl = "HealthCheckUrl",
@@ -1177,8 +1185,16 @@ public sealed class ApplicationsTest : AbstractBaseTest
             AppGroupName = "AppGroupName",
             IPAddress = "IPAddress",
             Sid = "Sid",
-            Port = JsonPortWrapper.Create(true, 100),
-            SecurePort = JsonPortWrapper.Create(false, 100),
+            Port = new JsonPortWrapper
+            {
+                Enabled = true,
+                Port = 100
+            },
+            SecurePort = new JsonPortWrapper
+            {
+                Enabled = false,
+                Port = 100
+            },
             HomePageUrl = "HomePageUrl",
             StatusPageUrl = "StatusPageUrl",
             HealthCheckUrl = "HealthCheckUrl",

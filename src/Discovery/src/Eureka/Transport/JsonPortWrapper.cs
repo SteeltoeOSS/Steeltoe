@@ -17,13 +17,4 @@ internal sealed class JsonPortWrapper
 
     [JsonPropertyName("$")]
     public int Port { get; set; }
-
-    public static JsonPortWrapper Create(bool enabled, int port)
-    {
-        return new JsonPortWrapper
-        {
-            Enabled = enabled,
-            Port = port
-        };
-    }
 }

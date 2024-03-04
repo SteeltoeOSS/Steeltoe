@@ -5,6 +5,7 @@
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.Util;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
@@ -39,8 +40,16 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             AppGroupName = "AppGroupName",
             IPAddress = "IPAddress",
             Sid = "Sid",
-            Port = JsonPortWrapper.Create(true, 100),
-            SecurePort = JsonPortWrapper.Create(false, 100),
+            Port = new JsonPortWrapper
+            {
+                Enabled = true,
+                Port = 100
+            },
+            SecurePort = new JsonPortWrapper
+            {
+                Enabled = false,
+                Port = 100
+            },
             HomePageUrl = "HomePageUrl",
             StatusPageUrl = "StatusPageUrl",
             HealthCheckUrl = "HealthCheckUrl",
@@ -149,10 +158,10 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.NotNull(instance.LeaseInfo);
         Assert.Equal(30, instance.LeaseInfo.RenewalInterval.TotalSeconds);
         Assert.Equal(90, instance.LeaseInfo.Duration.TotalSeconds);
-        Assert.Equal(0, instance.LeaseInfo.RegistrationTimeUtc.Ticks);
-        Assert.Equal(0, instance.LeaseInfo.LastRenewalTimeUtc.Ticks);
-        Assert.Equal(0, instance.LeaseInfo.EvictionTimeUtc.Ticks);
-        Assert.Equal(0, instance.LeaseInfo.ServiceUpTimeUtc.Ticks);
+        Assert.Equal(0, DateTimeConversions.ToJavaMilliseconds(instance.LeaseInfo.RegistrationTimeUtc));
+        Assert.Equal(0, DateTimeConversions.ToJavaMilliseconds(instance.LeaseInfo.LastRenewalTimeUtc));
+        Assert.Equal(0, DateTimeConversions.ToJavaMilliseconds(instance.LeaseInfo.EvictionTimeUtc));
+        Assert.Equal(0, DateTimeConversions.ToJavaMilliseconds(instance.LeaseInfo.ServiceUpTimeUtc));
         Assert.False(instance.IsCoordinatingDiscoveryServer);
         Assert.NotNull(instance.Metadata);
         Assert.Empty(instance.Metadata);
@@ -198,10 +207,10 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.NotNull(instance.LeaseInfo);
         Assert.Equal(30, instance.LeaseInfo.RenewalInterval.TotalSeconds);
         Assert.Equal(90, instance.LeaseInfo.Duration.TotalSeconds);
-        Assert.Equal(0, instance.LeaseInfo.RegistrationTimeUtc.Ticks);
-        Assert.Equal(0, instance.LeaseInfo.LastRenewalTimeUtc.Ticks);
-        Assert.Equal(0, instance.LeaseInfo.EvictionTimeUtc.Ticks);
-        Assert.Equal(0, instance.LeaseInfo.ServiceUpTimeUtc.Ticks);
+        Assert.Equal(0, DateTimeConversions.ToJavaMilliseconds(instance.LeaseInfo.RegistrationTimeUtc));
+        Assert.Equal(0, DateTimeConversions.ToJavaMilliseconds(instance.LeaseInfo.LastRenewalTimeUtc));
+        Assert.Equal(0, DateTimeConversions.ToJavaMilliseconds(instance.LeaseInfo.EvictionTimeUtc));
+        Assert.Equal(0, DateTimeConversions.ToJavaMilliseconds(instance.LeaseInfo.ServiceUpTimeUtc));
         Assert.False(instance.IsCoordinatingDiscoveryServer);
         Assert.NotNull(instance.Metadata);
         Assert.Empty(instance.Metadata);

@@ -63,7 +63,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
         {
             int upCount = app.Instances.Count(x => x.Status == InstanceStatus.Up);
 
-            if (upCount <= 0)
+            if (upCount == 0)
             {
                 result.Status = HealthStatus.Down;
             }

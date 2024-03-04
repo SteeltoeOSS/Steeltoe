@@ -36,14 +36,24 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        Func<Task> asyncAction = async () => await client.RegisterAsync(new InstanceInfo(), CancellationToken.None);
+        Func<Task> asyncAction = async () => await client.RegisterAsync(new InstanceInfo
+        {
+            AppName = "FOOBAR",
+            InstanceId = "some",
+            HostName = "localhost",
+            IPAddress = "127.0.0.1",
+            DataCenterInfo = new DataCenterInfo
+            {
+                Name = DataCenterName.MyOwn
+            }
+        }, CancellationToken.None);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
         logMessages.Should().BeEquivalentTo([
-            $"WARN {typeof(EurekaClient).FullName}: Failed to execute HTTP request to 'http://host-that-does-not-exist.net:9999/apps/' in attempt 1."
+            $"WARN {typeof(EurekaClient).FullName}: Failed to execute HTTP POST request to 'http://host-that-does-not-exist.net:9999/apps/FOOBAR' in attempt 1."
         ]);
     }
 
@@ -70,7 +80,14 @@ public sealed class EurekaClientTest
 
         Func<Task> asyncAction = async () => await client.RegisterAsync(new InstanceInfo
         {
-            AppName = "FOOBAR"
+            AppName = "FOOBAR",
+            InstanceId = "some",
+            HostName = "localhost",
+            IPAddress = "127.0.0.1",
+            DataCenterInfo = new DataCenterInfo
+            {
+                Name = DataCenterName.MyOwn
+            }
         }, CancellationToken.None);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
@@ -81,8 +98,8 @@ public sealed class EurekaClientTest
 
         logMessages.Should().BeEquivalentTo(
         [
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP request to 'http://localhost:8761/eureka/apps/FOOBAR' returned status 404 in attempt 1.",
-            $"INFO {typeof(EurekaClient).FullName}: HTTP request to 'http://localhost:8761/eureka/apps/FOOBAR' failed with status 404: Sorry!"
+            $"DBUG {typeof(EurekaClient).FullName}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' returned status 404 in attempt 1.",
+            $"INFO {typeof(EurekaClient).FullName}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' failed with status 404: Sorry!"
         ], options => options.WithStrictOrdering());
     }
 
@@ -106,7 +123,14 @@ public sealed class EurekaClientTest
 
         Func<Task> asyncAction = async () => await client.RegisterAsync(new InstanceInfo
         {
-            AppName = "FOOBAR"
+            AppName = "FOOBAR",
+            InstanceId = "some",
+            HostName = "localhost",
+            IPAddress = "127.0.0.1",
+            DataCenterInfo = new DataCenterInfo
+            {
+                Name = DataCenterName.MyOwn
+            }
         }, CancellationToken.None);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Retry limit reached; giving up on completing the HTTP request.");
@@ -117,8 +141,8 @@ public sealed class EurekaClientTest
 
         logMessages.Should().BeEquivalentTo(
         [
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP request to 'http://localhost:8761/eureka/apps/FOOBAR' returned status 404 in attempt 1.",
-            $"INFO {typeof(EurekaClient).FullName}: HTTP request to 'http://localhost:8761/eureka/apps/FOOBAR' failed with status 404: "
+            $"DBUG {typeof(EurekaClient).FullName}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' returned status 404 in attempt 1.",
+            $"INFO {typeof(EurekaClient).FullName}: HTTP POST request to 'http://localhost:8761/eureka/apps/FOOBAR' failed with status 404: "
         ], options => options.WithStrictOrdering());
     }
 
@@ -144,8 +168,14 @@ public sealed class EurekaClientTest
 
         Func<Task> asyncAction = async () => await client.RegisterAsync(new InstanceInfo
         {
+            AppName = "FOOBAR",
+            InstanceId = "some",
             HostName = "localhost",
-            AppName = "FOOBAR"
+            IPAddress = "127.0.0.1",
+            DataCenterInfo = new DataCenterInfo
+            {
+                Name = DataCenterName.MyOwn
+            }
         }, CancellationToken.None);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
@@ -166,8 +196,7 @@ public sealed class EurekaClientTest
               "instance": {
                 "instanceId": "some",
                 "app": "FOOBAR",
-                "appGroupName": null,
-                "ipAddr": null,
+                "ipAddr": "127.0.0.1",
                 "sid": "na",
                 "port": {
                   "@enabled": "true",
@@ -177,26 +206,21 @@ public sealed class EurekaClientTest
                   "@enabled": "false",
                   "$": 7002
                 },
-                "homePageUrl": null,
-                "statusPageUrl": null,
-                "healthCheckUrl": null,
-                "secureHealthCheckUrl": null,
-                "vipAddress": null,
-                "secureVipAddress": null,
                 "countryId": 1,
-                "dataCenterInfo": null,
-                "hostName": null,
+                "dataCenterInfo": {
+                  "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                  "name": "MyOwn"
+                },
+                "hostName": "localhost",
                 "status": "UP",
                 "overriddenstatus": "UNKNOWN",
-                "leaseInfo": null,
                 "isCoordinatingDiscoveryServer": "false",
                 "metadata": {
                   "@class": "java.util.Collections$EmptyMap"
                 },
                 "lastUpdatedTimestamp": "1708427732823",
                 "lastDirtyTimestamp": "1708427732823",
-                "actionType": "ADDED",
-                "asgName": null
+                "actionType": "ADDED"
               }
             }
             """);
@@ -220,6 +244,12 @@ public sealed class EurekaClientTest
         {
             AppName = "FOOBAR",
             InstanceId = "some",
+            HostName = "localhost",
+            IPAddress = "127.0.0.1",
+            DataCenterInfo = new DataCenterInfo
+            {
+                Name = DataCenterName.MyOwn
+            },
             LastUpdatedTimestamp = 638_440_245_328_236_418,
             LastDirtyTimestamp = 638_440_245_328_236_418
         }, CancellationToken.None);
@@ -248,7 +278,14 @@ public sealed class EurekaClientTest
 
         await client.RegisterAsync(new InstanceInfo
         {
-            AppName = "FOOBAR"
+            AppName = "FOOBAR",
+            InstanceId = "some",
+            HostName = "localhost",
+            IPAddress = "127.0.0.1",
+            DataCenterInfo = new DataCenterInfo
+            {
+                Name = DataCenterName.MyOwn
+            }
         }, CancellationToken.None);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
@@ -257,9 +294,9 @@ public sealed class EurekaClientTest
 
         logMessages.Should().BeEquivalentTo(
         [
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP request to 'http://server1:8761/apps/FOOBAR' returned status 404 in attempt 1.",
-            $"INFO {typeof(EurekaClient).FullName}: HTTP request to 'http://server1:8761/apps/FOOBAR' failed with status 404: ",
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP request to 'http://server2:8761/apps/FOOBAR' returned status 204 in attempt 2."
+            $"DBUG {typeof(EurekaClient).FullName}: HTTP POST request to 'http://server1:8761/apps/FOOBAR' returned status 404 in attempt 1.",
+            $"INFO {typeof(EurekaClient).FullName}: HTTP POST request to 'http://server1:8761/apps/FOOBAR' failed with status 404: ",
+            $"DBUG {typeof(EurekaClient).FullName}: HTTP POST request to 'http://server2:8761/apps/FOOBAR' returned status 204 in attempt 2."
         ], options => options.WithStrictOrdering());
     }
 
@@ -284,7 +321,14 @@ public sealed class EurekaClientTest
 
         await client.RegisterAsync(new InstanceInfo
         {
-            AppName = "FOOBAR"
+            AppName = "FOOBAR",
+            InstanceId = "some",
+            HostName = "localhost",
+            IPAddress = "127.0.0.1",
+            DataCenterInfo = new DataCenterInfo
+            {
+                Name = DataCenterName.MyOwn
+            }
         }, CancellationToken.None);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
@@ -311,7 +355,14 @@ public sealed class EurekaClientTest
 
         await client.RegisterAsync(new InstanceInfo
         {
-            AppName = "FOOBAR"
+            AppName = "FOOBAR",
+            InstanceId = "some",
+            HostName = "localhost",
+            IPAddress = "127.0.0.1",
+            DataCenterInfo = new DataCenterInfo
+            {
+                Name = DataCenterName.MyOwn
+            }
         }, CancellationToken.None);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
@@ -356,7 +407,14 @@ public sealed class EurekaClientTest
 
         await client.RegisterAsync(new InstanceInfo
         {
-            AppName = "FOOBAR"
+            AppName = "FOOBAR",
+            InstanceId = "some",
+            HostName = "localhost",
+            IPAddress = "127.0.0.1",
+            DataCenterInfo = new DataCenterInfo
+            {
+                Name = DataCenterName.MyOwn
+            }
         }, CancellationToken.None);
 
         eurekaHttpClientHandler.Mock.VerifyNoOutstandingExpectation();
@@ -372,13 +430,13 @@ public sealed class EurekaClientTest
         services.AddSingleton<EurekaClient>();
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
-        httpClientHandler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/foo/bar").Respond(HttpStatusCode.NoContent);
+        httpClientHandler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/foo/localhost%3Abar%3A1234").Respond(HttpStatusCode.NoContent);
         services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        await client.DeregisterAsync("foo", "bar", CancellationToken.None);
+        await client.DeregisterAsync("foo", "localhost:bar:1234", CancellationToken.None);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -394,7 +452,7 @@ public sealed class EurekaClientTest
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
 
-        httpClientHandler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/id1").WithQueryString("status", "UP")
+        httpClientHandler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Abar%3A1234")
             .WithQueryString("lastDirtyTimestamp", "1708369905756").Respond(HttpStatusCode.OK);
 
         services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
@@ -402,7 +460,7 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        await client.HeartbeatAsync("FOO", "id1", InstanceStatus.Up, new DateTime(638_439_667_057_566_585, DateTimeKind.Utc), CancellationToken.None);
+        await client.HeartbeatAsync("FOO", "localhost:bar:1234", new DateTime(638_439_667_057_566_585, DateTimeKind.Utc), CancellationToken.None);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -507,8 +565,8 @@ public sealed class EurekaClientTest
 
         logMessages.Should().BeEquivalentTo(
         [
-            $"DBUG {typeof(EurekaClient).FullName}: HTTP request to 'http://localhost:8761/eureka/apps' returned status 200 in attempt 1.",
-            $"DBUG {typeof(EurekaClient).FullName}: Failed to deserialize HTTP response from 'http://localhost:8761/eureka/apps'."
+            $"DBUG {typeof(EurekaClient).FullName}: HTTP GET request to 'http://localhost:8761/eureka/apps' returned status 200 in attempt 1.",
+            $"DBUG {typeof(EurekaClient).FullName}: Failed to deserialize HTTP response from GET 'http://localhost:8761/eureka/apps'."
         ], options => options.WithStrictOrdering());
     }
 

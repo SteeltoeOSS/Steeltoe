@@ -13,8 +13,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 
 public sealed class LeaseInfo
 {
-    private static readonly DateTime DefaultDateTimeUtc = DateTime.SpecifyKind(default, DateTimeKind.Utc);
-
     /// <summary>
     /// Gets the client-specified time how often renewal takes place.
     /// </summary>
@@ -28,22 +26,22 @@ public sealed class LeaseInfo
     /// <summary>
     /// Gets the registration time, in UTC, which is the time when the lease was first registered.
     /// </summary>
-    public DateTime RegistrationTimeUtc { get; private init; } = DefaultDateTimeUtc;
+    public DateTime RegistrationTimeUtc { get; private init; } = DateTimeConversions.ZeroDateTimeUtc;
 
     /// <summary>
     /// Gets the time, in UTC, when the lease was last renewed.
     /// </summary>
-    public DateTime LastRenewalTimeUtc { get; private init; } = DefaultDateTimeUtc;
+    public DateTime LastRenewalTimeUtc { get; private init; } = DateTimeConversions.ZeroDateTimeUtc;
 
     /// <summary>
     /// Gets the de-registration time, in UTC, which is the time when the lease was removed.
     /// </summary>
-    public DateTime EvictionTimeUtc { get; private init; } = DefaultDateTimeUtc;
+    public DateTime EvictionTimeUtc { get; private init; } = DateTimeConversions.ZeroDateTimeUtc;
 
     /// <summary>
     /// Gets the time, in UTC, when the leased service was marked as UP.
     /// </summary>
-    public DateTime ServiceUpTimeUtc { get; private init; } = DefaultDateTimeUtc;
+    public DateTime ServiceUpTimeUtc { get; private init; } = DateTimeConversions.ZeroDateTimeUtc;
 
     private LeaseInfo()
     {

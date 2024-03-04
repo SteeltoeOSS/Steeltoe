@@ -332,7 +332,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
-        handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost:foo").Respond(HttpStatusCode.NotFound);
+        handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.NotFound);
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
 
         await using WebApplication webApplication = builder.Build();
@@ -367,7 +367,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
-        handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost:foo").Respond("application/json", "{}");
+        handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond("application/json", "{}");
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
@@ -400,7 +400,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        handler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost:foo").Respond(HttpStatusCode.OK);
+        handler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.OK);
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);

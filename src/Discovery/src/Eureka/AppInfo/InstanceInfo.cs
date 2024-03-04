@@ -97,7 +97,7 @@ public sealed class InstanceInfo
     /// <summary>
     /// Gets the datacenter information for where this instance is running.
     /// </summary>
-    public DataCenterInfo DataCenterInfo { get; private set; }
+    public DataCenterInfo DataCenterInfo { get; internal set; }
 
     /// <summary>
     /// Gets the fully qualified hostname of this running instance. This is mostly used in constructing the URL for communicating with the instance.
@@ -335,8 +335,16 @@ public sealed class InstanceInfo
             AppName = AppName,
             AppGroupName = AppGroupName,
             IPAddress = IPAddress,
-            Port = JsonPortWrapper.Create(IsInsecurePortEnabled, Port),
-            SecurePort = JsonPortWrapper.Create(IsSecurePortEnabled, SecurePort),
+            Port = new JsonPortWrapper
+            {
+                Enabled = IsInsecurePortEnabled,
+                Port = Port
+            },
+            SecurePort = new JsonPortWrapper
+            {
+                Enabled = IsSecurePortEnabled,
+                Port = SecurePort
+            },
             HomePageUrl = HomePageUrl,
             StatusPageUrl = StatusPageUrl,
             HealthCheckUrl = HealthCheckUrl,
