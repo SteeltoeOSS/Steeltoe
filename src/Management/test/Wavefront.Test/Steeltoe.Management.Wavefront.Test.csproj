@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -10,5 +9,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Wavefront\Steeltoe.Management.Wavefront.csproj" />
   </ItemGroup>
-
 </Project>

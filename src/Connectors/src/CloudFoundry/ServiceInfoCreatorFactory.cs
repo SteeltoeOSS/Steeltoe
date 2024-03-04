@@ -40,10 +40,8 @@ internal static class ServiceInfoCreatorFactory
             {
                 if ((bool)alternateInfoCreator.GetProperty(nameof(ServiceInfoCreator.IsRelevant))!.GetValue(null)!)
                 {
-                    _serviceInfoCreator = (ServiceInfoCreator)alternateInfoCreator.GetMethod(nameof(ServiceInfoCreator.Instance))!.Invoke(null, new object[]
-                    {
-                        configuration
-                    });
+                    _serviceInfoCreator =
+                        (ServiceInfoCreator)alternateInfoCreator.GetMethod(nameof(ServiceInfoCreator.Instance))!.Invoke(null, [configuration]);
 
                     return _serviceInfoCreator;
                 }

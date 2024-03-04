@@ -14,12 +14,6 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed class ConfigServerHostedServiceTest
 {
     [Fact]
-    public void Constructor_ThrowsOnNull()
-    {
-        Assert.Throws<ArgumentNullException>(() => new ConfigServerHostedService(null, null));
-    }
-
-    [Fact]
     public async Task ServiceConstructsAndOperatesWithConfigurationRoot()
     {
         var configurationRoot = new ConfigurationRoot(new List<IConfigurationProvider>

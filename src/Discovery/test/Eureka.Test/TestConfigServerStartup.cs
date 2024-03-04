@@ -34,7 +34,7 @@ public sealed class TestConfigServerStartup
 
             LastRequest = await HttpRequestInfo.CreateAsync(context.Request);
             context.Response.StatusCode = ReturnStatus;
-            context.Response.Headers.Add("content-type", "application/json");
+            context.Response.Headers.Append("content-type", "application/json");
             await context.Response.WriteAsync(Response);
         });
     }

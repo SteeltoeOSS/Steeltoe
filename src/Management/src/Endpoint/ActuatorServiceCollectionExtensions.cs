@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -19,6 +21,7 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.RouteMappings;
+using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
@@ -93,11 +96,8 @@ public static class ActuatorServiceCollectionExtensions
         }
 
         services.AddHypermediaActuator();
-
         services.AddThreadDumpActuator(version);
-
         services.AddHeapDumpActuator();
-
         services.AddDbMigrationsActuator();
         services.AddEnvironmentActuator();
         services.AddInfoActuator();
@@ -107,6 +107,8 @@ public static class ActuatorServiceCollectionExtensions
         services.AddMappingsActuator();
         services.AddMetricsActuator();
         services.AddRefreshActuator();
+        services.AddServicesActuator();
+
         return services;
     }
 
@@ -135,5 +137,30 @@ public static class ActuatorServiceCollectionExtensions
                 }
             });
         });
+    }
+
+    /// <summary>
+    /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.
+    /// </summary>
+    /// <param name="collection">
+    /// <see cref="IServiceCollection" /> that has actuators to activate.
+    /// </param>
+    public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection collection)
+    {
+        ArgumentGuard.NotNull(collection);
+
+        // check for existing AllActuatorsStartupFilter
+        IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(descriptor =>
+            descriptor.ImplementationType == typeof(AllActuatorsStartupFilter) ||
+            descriptor.ImplementationFactory?.Method.ReturnType == typeof(AllActuatorsStartupFilter));
+
+        var actuatorConventionBuilder = new ActuatorConventionBuilder();
+
+        if (!existingStartupFilters.Any())
+        {
+            collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(_ => new AllActuatorsStartupFilter(actuatorConventionBuilder));
+        }
+
+        return actuatorConventionBuilder;
     }
 }

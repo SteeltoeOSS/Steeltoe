@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
 
@@ -21,43 +20,43 @@ internal sealed class ConfigServerDiscoveryService
     private readonly ILogger _logger;
 
     private bool _usingInitialDiscoveryClient = true;
-
-    internal ILoggerFactory LoggerFactory { get; }
     internal IDiscoveryClient DiscoveryClient { get; private set; }
 
     public ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientSettings settings, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNull(settings);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _configuration = configuration;
         _settings = settings;
-        LoggerFactory = loggerFactory ?? BootstrapLoggerFactory.Instance;
-        _logger = LoggerFactory.CreateLogger<ConfigServerDiscoveryService>();
-
-        SetupDiscoveryClient();
+        _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
+        DiscoveryClient = SetupDiscoveryClient(loggerFactory);
     }
 
     // Create a discovery client to be used (hopefully only) during startup
-    private void SetupDiscoveryClient()
+    private IDiscoveryClient SetupDiscoveryClient(ILoggerFactory loggerFactory)
     {
-        var services = new ServiceCollection();
-        services.AddSingleton(LoggerFactory);
-        services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
+        var tempServices = new ServiceCollection();
+        tempServices.AddSingleton(loggerFactory);
+        tempServices.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
 
         // force settings to make sure we don't register the app here
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "Eureka:Client:ShouldRegisterWithEureka", "false" },
             { "Consul:Discovery:Register", "false" }
         });
 
-        services.AddSingleton<IConfiguration>(builder.Build());
-        services.AddDiscoveryClient(_configuration);
+        tempServices.AddSingleton<IConfiguration>(builder.Build());
+        tempServices.AddDiscoveryClient(_configuration);
 
-        using ServiceProvider startupServiceProvider = services.BuildServiceProvider();
-        DiscoveryClient = startupServiceProvider.GetRequiredService<IDiscoveryClient>();
-        _logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", DiscoveryClient.GetType());
+        using ServiceProvider tempServiceProvider = tempServices.BuildServiceProvider();
+
+        var discoveryClient = tempServiceProvider.GetRequiredService<IDiscoveryClient>();
+        _logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", discoveryClient.GetType());
+
+        return discoveryClient;
     }
 
     internal async Task<IEnumerable<IServiceInstance>> GetConfigServerInstancesAsync(CancellationToken cancellationToken)
@@ -103,7 +102,7 @@ internal sealed class ConfigServerDiscoveryService
         return instances;
     }
 
-    internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDI, CancellationToken cancellationToken)
+    internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient? discoveryClientFromDI, CancellationToken cancellationToken)
     {
         if (discoveryClientFromDI is not null)
         {

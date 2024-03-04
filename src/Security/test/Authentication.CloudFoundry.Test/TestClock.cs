@@ -6,14 +6,13 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
+#if !NET6_0
+#pragma warning disable CS0618 // Type or member is obsolete
+#endif
+
 public sealed class TestClock : ISystemClock
 {
-    public DateTimeOffset UtcNow { get; set; }
-
-    public TestClock()
-    {
-        UtcNow = new DateTimeOffset(2013, 6, 11, 12, 34, 56, 789, TimeSpan.Zero);
-    }
+    public DateTimeOffset UtcNow { get; set; } = new(2013, 6, 11, 12, 34, 56, 789, TimeSpan.Zero);
 
     public void Add(TimeSpan timeSpan)
     {

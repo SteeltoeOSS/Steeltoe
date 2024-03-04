@@ -5,9 +5,7 @@
       It's safe to update these at any time, so wildcards are allowed.
     -->
 
-    <BenchmarkDotNetVersion>0.13.*</BenchmarkDotNetVersion>
     <CoverletVersion>6.0.*</CoverletVersion>
-    <EasyNetQVersion>2.0.*</EasyNetQVersion>
     <EntityFrameworkCoreTestVersion>7.0.*</EntityFrameworkCoreTestVersion>
     <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
     <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
@@ -29,13 +27,25 @@
     <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>9.11.*</SonarAnalyzerVersion>
-    <SourceLinkGitHubVersion>1.1.*</SourceLinkGitHubVersion>
+    <SourceLinkGitHubVersion>8.0.*</SourceLinkGitHubVersion>
     <StackExchangeVersion>2.6.*</StackExchangeVersion>
     <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
-    <TestSdkVersion>17.7.*</TestSdkVersion>
+    <TestSdkVersion>17.8.*</TestSdkVersion>
     <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
-    <XunitVersion>2.5.*</XunitVersion>
+    <XunitVersion>2.6.*</XunitVersion>
+    <XunitVisualStudioVersion>
+      <!-- Pinned version to workaround https://github.com/xunit/visualstudio.xunit/issues/396 -->
+      2.5.4
+    </XunitVisualStudioVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <AspNetCoreHealthChecksVersion>7.0.*</AspNetCoreHealthChecksVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <AspNetCoreHealthChecksVersion>6.0.*</AspNetCoreHealthChecksVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -47,7 +57,6 @@
     -->
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
-    <CastleCoreVersion>5.1.*</CastleCoreVersion>
     <ConsulVersion>1.6.10.*</ConsulVersion>
     <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
     <DiagnosticsTracingVersion>3.1.*</DiagnosticsTracingVersion>
@@ -57,11 +66,32 @@
         Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
         For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
       -->
-      7.0.*
+      8.0.*
     </FoundationalVersion>
-    <JsonNetVersion>13.0.*</JsonNetVersion>
-    <KubernetesClientVersion>12.1.*</KubernetesClientVersion>
-    <LightweightEmitVersion>4.7.*</LightweightEmitVersion>
+    <OpenTelemetryExporterJaegerVersion>1.5.*</OpenTelemetryExporterJaegerVersion>
+    <OpenTelemetryExporterPrometheusVersion>1.4.0-rc.3</OpenTelemetryExporterPrometheusVersion>
+    <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
+    <OpenTelemetryVersion>1.6.*</OpenTelemetryVersion>
+    <SerilogExtensionsLoggingVersion>7.0.*</SerilogExtensionsLoggingVersion>
+    <SerilogSettingsConfigurationVersion>7.0.*</SerilogSettingsConfigurationVersion>
+    <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
+    <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
+    <SymReaderVersion>2.0.*</SymReaderVersion>
+    <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      8.0.*
+    </MatchTargetFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
@@ -70,20 +100,5 @@
       -->
       6.0.*
     </MatchTargetFrameworkVersion>
-    <OpenIdConnectVersion>7.0.*</OpenIdConnectVersion>
-    <OpenTelemetryExporterJaegerVersion>1.5.*</OpenTelemetryExporterJaegerVersion>
-    <OpenTelemetryExporterPrometheusVersion>1.4.0-rc.3</OpenTelemetryExporterPrometheusVersion>
-    <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
-    <OpenTelemetryVersion>1.6.*</OpenTelemetryVersion>
-    <PollyContribVersion>1.1.*</PollyContribVersion>
-    <PollyVersion>8.0.*</PollyVersion>
-    <RabbitClientVersion>5.1.*</RabbitClientVersion>
-    <RuntimeLoaderVersion>4.3.*</RuntimeLoaderVersion>
-    <SerilogExtensionsLoggingVersion>7.0.*</SerilogExtensionsLoggingVersion>
-    <SerilogSettingsConfigurationVersion>7.0.*</SerilogSettingsConfigurationVersion>
-    <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
-    <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
-    <SymReaderVersion>2.0.*</SymReaderVersion>
-    <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
   </PropertyGroup>
 </Project>

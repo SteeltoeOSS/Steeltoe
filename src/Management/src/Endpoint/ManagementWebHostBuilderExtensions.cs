@@ -3,111 +3,102 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
-using Steeltoe.Logging.DynamicLogger;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.DbMigrations;
-using Steeltoe.Management.Endpoint.Environment;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.HeapDump;
-using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Refresh;
-using Steeltoe.Management.Endpoint.RouteMappings;
-using Steeltoe.Management.Endpoint.ThreadDump;
-using Steeltoe.Management.Endpoint.Trace;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
 
 public static class ManagementWebHostBuilderExtensions
 {
-    private const string ManagementPortKey = "management:endpoints:port";
-    private const string ManagementSslKey = "management:endpoints:sslenabled";
-
     /// <summary>
     /// Adds the Database Migrations actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddDbMigrationsActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddDbMigrationsActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddDbMigrationsActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddDbMigrationsActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Environment actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddEnvironmentActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddEnvironmentActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddEnvironmentActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddEnvironmentActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Health actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddHealthActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddHealthActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Health actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="contributorTypes">
     /// Types that contribute to the overall health of the app.
     /// </param>
-    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, params Type[] contributorTypes)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder builder, params Type[] contributorTypes)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(contributorTypes);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddHealthActuator(contributorTypes);
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddHealthActuator(contributorTypes);
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Health actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="aggregator">
     /// Custom health aggregator.
@@ -115,243 +106,323 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="contributorTypes">
     /// Types that contribute to the overall health of the app.
     /// </param>
-    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, IHealthAggregator aggregator, params Type[] contributorTypes)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder builder, IHealthAggregator aggregator, params Type[] contributorTypes)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(aggregator);
         ArgumentGuard.NotNull(contributorTypes);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddHealthActuator(aggregator, contributorTypes);
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddHealthActuator(aggregator, contributorTypes);
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the HeapDump actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddHeapDumpActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddHeapDumpActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddHeapDumpActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddHeapDumpActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Hypermedia actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddHypermediaActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddHypermediaActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddHypermediaActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddHypermediaActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Info actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddInfoActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddInfoActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Info actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="contributors">
     /// Contributors to application information.
     /// </param>
-    public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder hostBuilder, params IInfoContributor[] contributors)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder builder, params IInfoContributor[] contributors)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(contributors);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddInfoActuator(contributors);
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddInfoActuator(contributors);
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Loggers actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddLoggersActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddLoggersActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((_, collection) =>
-        {
-            collection.AddLoggersActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddLoggersActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Mappings actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddMappingsActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddMappingsActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddMappingsActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddMappingsActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Metrics actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddMetricsActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddMetricsActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddMetricsActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddMetricsActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Refresh actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddRefreshActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddRefreshActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddRefreshActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddRefreshActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the ThreadDump actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    /// <param name="mediaTypeVersion">
-    /// Specify the media type version to use in the response.
-    /// </param>
-    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
-
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddThreadDumpActuator(mediaTypeVersion);
-            collection.ActivateActuatorEndpoints();
-        });
+        return AddThreadDumpActuator(builder, MediaTypeVersion.V2);
     }
 
     /// <summary>
     /// Adds the ThreadDump actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
-    /// </param>
-    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder)
-    {
-        return AddThreadDumpActuator(hostBuilder, MediaTypeVersion.V2);
-    }
-
-    /// <summary>
-    /// Adds the Trace actuator to the application.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddTraceActuator(mediaTypeVersion);
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddThreadDumpActuator(mediaTypeVersion);
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Trace actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder builder)
     {
-        return hostBuilder.AddTraceActuator(MediaTypeVersion.V2);
+        return AddTraceActuator(builder, MediaTypeVersion.V2);
+    }
+
+    /// <summary>
+    /// Adds the Trace actuator to the application.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
+    /// </param>
+    /// <param name="mediaTypeVersion">
+    /// Specify the media type version to use in the response.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder builder, MediaTypeVersion mediaTypeVersion)
+    {
+        ArgumentGuard.NotNull(builder);
+
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddTraceActuator(mediaTypeVersion);
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Adds an actuator endpoint that lists all injectable services that are registered in the IoC container.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddServicesActuator(this IWebHostBuilder builder)
+    {
+        ArgumentGuard.NotNull(builder);
+
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddServicesActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds the Cloud Foundry actuator to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
-    public static IWebHostBuilder AddCloudFoundryActuator(this IWebHostBuilder hostBuilder)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddCloudFoundryActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return hostBuilder.AddManagementPort().ConfigureServices((_, collection) =>
-        {
-            collection.AddCloudFoundryActuator();
-            collection.ActivateActuatorEndpoints();
-        });
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddCloudFoundryActuator();
+
+        return builder;
     }
 
     /// <summary>
     /// Adds all Steeltoe Actuators to the application.
     /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder builder)
+    {
+        return AddAllActuators(builder, null);
+    }
+
+    /// <summary>
+    /// Adds all Steeltoe Actuators to the application.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
+    /// </param>
+    /// <param name="configureEndpoints">
+    /// <see cref="IEndpointConventionBuilder" />.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints)
+    {
+        return AddAllActuators(builder, configureEndpoints, MediaTypeVersion.V2, null);
+    }
+
+    /// <summary>
+    /// Adds all Steeltoe Actuators to the application.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="configureEndpoints">
     /// <see cref="IEndpointConventionBuilder" />.
@@ -359,106 +430,20 @@ public static class ManagementWebHostBuilderExtensions
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
-    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder>? configureEndpoints,
-        MediaTypeVersion mediaTypeVersion)
-    {
-        ArgumentGuard.NotNull(hostBuilder);
-
-        return hostBuilder.AddManagementPort().ConfigureLogging(builder => builder.AddDynamicConsole()).ConfigureServices((_, collection) =>
-        {
-            collection.AddAllActuators(mediaTypeVersion);
-            IEndpointConventionBuilder conventionBuilder = collection.ActivateActuatorEndpoints();
-            configureEndpoints?.Invoke(conventionBuilder);
-        });
-    }
-
-    /// <summary>
-    /// Adds all Steeltoe Actuators to the application.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
+    /// <param name="buildCorsPolicy">
+    /// Customize the CORS policy.
     /// </param>
-    /// <param name="configureEndpoints">
-    /// <see cref="IEndpointConventionBuilder" />.
-    /// </param>
-    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder>? configureEndpoints)
+    /// <returns>
+    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints,
+        MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
-        return AddAllActuators(hostBuilder, configureEndpoints, MediaTypeVersion.V2);
-    }
+        ArgumentGuard.NotNull(builder);
 
-    /// <summary>
-    /// Adds all Steeltoe Actuators to the application.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
-    /// </param>
-    public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder)
-    {
-        return AddAllActuators(hostBuilder, null);
-    }
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
+        wrapper.AddAllActuators(configureEndpoints, mediaTypeVersion, buildCorsPolicy);
 
-    internal static (int? HttpPort, int? HttpsPort) GetManagementPorts(this IWebHostBuilder webHostBuilder)
-    {
-        ArgumentGuard.NotNull(webHostBuilder);
-
-        string? portSetting = webHostBuilder.GetSetting(ManagementPortKey);
-        string? sslSetting = webHostBuilder.GetSetting(ManagementSslKey);
-
-        int? httpPort = null;
-        int? httpsPort = null;
-
-        if (string.IsNullOrEmpty(portSetting))
-        {
-            IConfiguration? configuration = GetConfigurationFallback(); // try reading directly from appsettings.json
-            portSetting = configuration?[ManagementPortKey];
-            sslSetting = configuration?[ManagementSslKey];
-        }
-
-        if (int.TryParse(portSetting, out int managementPort) && managementPort > 0)
-        {
-            if (bool.TryParse(sslSetting, out bool enableSsl) && enableSsl)
-            {
-                httpsPort = managementPort;
-            }
-            else
-            {
-                httpPort = managementPort;
-            }
-        }
-
-        return (httpPort, httpsPort);
-    }
-
-    private static IWebHostBuilder AddManagementPort(this IWebHostBuilder webHostBuilder)
-    {
-        (int? httpPort, int? httpsPort) = webHostBuilder.GetManagementPorts();
-
-        if (httpPort.HasValue || httpsPort.HasValue)
-        {
-            webHostBuilder.UseCloudHosting(httpPort, httpsPort);
-        }
-
-        return webHostBuilder;
-    }
-
-    private static IConfiguration? GetConfigurationFallback()
-    {
-        IConfiguration? configuration = null;
-
-        try
-        {
-            string? environment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
-            if (environment != null)
-            {
-                configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile($"appsettings.{environment}.json", true).Build();
-            }
-        }
-        catch (Exception)
-        {
-            // Not much we can do ...
-        }
-
-        return configuration;
+        return builder;
     }
 }

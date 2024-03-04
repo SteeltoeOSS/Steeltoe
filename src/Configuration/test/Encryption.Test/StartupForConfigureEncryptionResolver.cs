@@ -11,14 +11,11 @@ namespace Steeltoe.Configuration.Encryption.Test;
 public sealed class StartupForConfigureEncryptionResolver
 {
     private readonly IConfiguration _configuration;
-    private readonly ITextDecryptor _textDecryptor;
-
-    internal static IServiceProvider ServiceProvider { get; private set; }
+    private readonly ITextDecryptor _textDecryptor = new TextDecryptorForTest();
 
     public StartupForConfigureEncryptionResolver(IConfiguration configuration)
     {
         _configuration = configuration;
-        _textDecryptor = new TextDecryptorForTest();
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -28,6 +25,18 @@ public sealed class StartupForConfigureEncryptionResolver
 
     public void Configure(IApplicationBuilder app)
     {
-        ServiceProvider = app.ApplicationServices;
+    }
+
+    private sealed class TextDecryptorForTest : ITextDecryptor
+    {
+        public string Decrypt(string fullCipher)
+        {
+            return "DECRYPTED";
+        }
+
+        public string Decrypt(string fullCipher, string alias)
+        {
+            return "DECRYPTEDWITHALIAS";
+        }
     }
 }

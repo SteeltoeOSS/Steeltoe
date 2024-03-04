@@ -19,10 +19,14 @@ internal static class EncryptionFactory
                 return new AesTextDecryptor(settings.EncryptionKey);
             }
 
-            var keystoreStream = new FileStream(settings.EncryptionKeyStoreLocation, FileMode.Open, FileAccess.Read);
+            if (settings is { EncryptionKeyStoreLocation: not null, EncryptionKeyStorePassword: not null, EncryptionKeyStoreAlias: not null })
+            {
+                var keystoreStream = new FileStream(settings.EncryptionKeyStoreLocation, FileMode.Open, FileAccess.Read);
+                var keyProvider = new KeyProvider(keystoreStream, settings.EncryptionKeyStorePassword);
 
-            return new RsaKeyStoreDecryptor(new KeyProvider(keystoreStream, settings.EncryptionKeyStorePassword), settings.EncryptionKeyStoreAlias,
-                settings.EncryptionRsaSalt, settings.EncryptionRsaStrong, settings.EncryptionRsaAlgorithm);
+                return new RsaKeyStoreDecryptor(keyProvider, settings.EncryptionKeyStoreAlias, settings.EncryptionRsaSalt, settings.EncryptionRsaStrong,
+                    settings.EncryptionRsaAlgorithm);
+            }
         }
 
         return decryptor;

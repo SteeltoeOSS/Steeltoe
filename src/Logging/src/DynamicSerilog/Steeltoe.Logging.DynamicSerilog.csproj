@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Steeltoe library for enabling dynamic management of Serilog.</Description>
     <PackageTags>logging;dynamic logging;serilog;management;monitoring;Spring Cloud;</PackageTags>
     <IsPackable>true</IsPackable>
@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.Hosting\Steeltoe.Common.Hosting.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Logging.Abstractions.csproj" />
   </ItemGroup>
 </Project>

@@ -5,4 +5,3 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.SpringBoot.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Stream.Test")]

@@ -23,8 +23,6 @@ using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.Transport;
-using Steeltoe.Discovery.Kubernetes;
-using Steeltoe.Discovery.Kubernetes.Discovery;
 using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
@@ -64,14 +62,14 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-        services.AddDiscoveryClient(configurationRoot);
+        services.AddDiscoveryClient(configuration);
 
-        var service = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
-        Assert.NotNull(service);
+        var client = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
+        Assert.NotNull(client);
     }
 
     [Fact]
@@ -85,14 +83,14 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
             { "eureka:instance:useNetUtils", "true" }
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-        services.AddDiscoveryClient(configurationRoot);
+        services.AddDiscoveryClient(configuration);
 
-        var service = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
-        Assert.NotNull(service);
-        IServiceInstance instanceInfo = await service.GetLocalServiceInstanceAsync(CancellationToken.None);
+        var client = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
+        Assert.NotNull(client);
+        IServiceInstance instanceInfo = await client.GetLocalServiceInstanceAsync(CancellationToken.None);
         Assert.Equal("fromtest", instanceInfo.Host);
     }
 
@@ -101,13 +99,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     {
         var appsettings = new Dictionary<string, string>(FastEureka);
 
-        IConfigurationRoot configurationRoot =
-            new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPemFiles("instance.crt", "instance.key").Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPemFiles("instance.crt", "instance.key").Build();
 
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
         services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-        services.AddDiscoveryClient(configurationRoot);
+        services.AddDiscoveryClient(configuration);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetService<IDiscoveryClient>();
@@ -130,10 +127,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
             { "spring:application:name", "myName" }
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot);
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration);
 
-        services.AddDiscoveryClient();
+        services.AddDiscoveryClient(configuration);
         var client = services.BuildServiceProvider(true).GetRequiredService<IDiscoveryClient>();
 
         Assert.NotNull(client);
@@ -146,9 +143,9 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     public void AddDiscoveryClient_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        IConfiguration configuration = new ConfigurationBuilder().Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(configurationRoot, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(configuration, "foobar"));
         Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
@@ -228,9 +225,9 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot configurationRoot = builder.Build();
+        IConfiguration configuration = builder.Build();
 
-        var ex = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(configurationRoot));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(configuration));
         Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
@@ -263,27 +260,27 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton(configuration);
         services.AddOptions();
-        services.AddDiscoveryClient(configurationRoot);
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        services.AddDiscoveryClient(configuration);
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var service = provider.GetService<IDiscoveryClient>();
+        var service = serviceProvider.GetService<IDiscoveryClient>();
         Assert.NotNull(service);
-        var service1 = provider.GetService<IConsulClient>();
+        var service1 = serviceProvider.GetService<IConsulClient>();
         Assert.NotNull(service1);
-        var service2 = provider.GetService<IScheduler>();
+        var service2 = serviceProvider.GetService<IScheduler>();
         Assert.NotNull(service2);
-        var service3 = provider.GetService<IConsulServiceRegistry>();
+        var service3 = serviceProvider.GetService<IConsulServiceRegistry>();
         Assert.NotNull(service3);
-        var service4 = provider.GetService<IConsulRegistration>();
+        var service4 = serviceProvider.GetService<IConsulRegistration>();
         Assert.NotNull(service4);
-        var service5 = provider.GetService<IConsulServiceRegistrar>();
+        var service5 = serviceProvider.GetService<IConsulServiceRegistrar>();
         Assert.NotNull(service5);
-        var service6 = provider.GetService<IHealthContributor>();
+        var service6 = serviceProvider.GetService<IHealthContributor>();
         Assert.NotNull(service6);
     }
 
@@ -300,62 +297,43 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
             { "consul:discovery:deregister", "false" }
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
-        services.AddDiscoveryClient(configurationRoot);
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
+        services.AddDiscoveryClient(configuration);
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Assert.NotNull(provider.GetService<IDiscoveryClient>());
-        Assert.NotNull(provider.GetService<IConsulClient>());
-        Assert.NotNull(provider.GetService<IScheduler>());
-        Assert.NotNull(provider.GetService<IConsulServiceRegistry>());
-        var reg = provider.GetService<IConsulRegistration>();
+        Assert.NotNull(serviceProvider.GetService<IDiscoveryClient>());
+        Assert.NotNull(serviceProvider.GetService<IConsulClient>());
+        Assert.NotNull(serviceProvider.GetService<IScheduler>());
+        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistry>());
+        var reg = serviceProvider.GetService<IConsulRegistration>();
         Assert.NotNull(reg);
         Assert.Equal("fromtest", reg.Host);
-        Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
-        Assert.NotNull(provider.GetService<IHealthContributor>());
-    }
-
-    [Fact]
-    public void AddDiscoveryClient_WithKubernetesConfig_AddsDiscoveryClient()
-    {
-        var appsettings = new Dictionary<string, string>
-        {
-            { "spring:application:name", "myName" },
-            { "spring:cloud:kubernetes:discovery:enabled", "true" },
-            { "spring:cloud:kubernetes:namespace", "notdefault" }
-        };
-
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
-
-        ServiceProvider provider = services.AddDiscoveryClient(configurationRoot).BuildServiceProvider(true);
-
-        var service = provider.GetService<IDiscoveryClient>();
-        var options = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
-        Assert.True(service.GetType().IsAssignableFrom(typeof(KubernetesDiscoveryClient)));
-        Assert.Equal("notdefault", options.Value.Namespace);
+        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
+        Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
 
     [Fact]
     public void AddServiceDiscovery_ThrowsIfServiceCollectionNull()
     {
-        const IServiceCollection serviceCollection = null;
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+        const IServiceCollection services = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => serviceCollection.AddServiceDiscovery(_ =>
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddServiceDiscovery(configuration, _ =>
         {
         }));
 
-        Assert.Contains(nameof(serviceCollection), ex.Message, StringComparison.Ordinal);
+        Assert.Contains(nameof(services), ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public async Task AddServiceDiscovery_AddsNoOpClientIfBuilderActionNull()
     {
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration);
 
-        services.AddServiceDiscovery();
+        services.AddServiceDiscovery(configuration);
         var client = services.BuildServiceProvider(true).GetRequiredService<IDiscoveryClient>();
         Assert.NotNull(client);
         Assert.IsType<NoOpDiscoveryClient>(client);
@@ -381,12 +359,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
 
-        IServiceCollection sCollection = new ServiceCollection().AddOptions()
-            .AddSingleton<IConfiguration>(new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(path)).AddJsonFile(Path.GetFileName(path)).Build());
+        IConfiguration configuration = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(path)).AddJsonFile(Path.GetFileName(path)).Build();
+        IServiceCollection services = new ServiceCollection().AddOptions().AddSingleton(configuration);
 
-        ServiceProvider services = sCollection.AddServiceDiscovery(builder => builder.UseConfiguredInstances()).BuildServiceProvider(true);
+        ServiceProvider serviceProvider = services.AddServiceDiscovery(configuration, builder => builder.UseConfiguredInstances()).BuildServiceProvider(true);
 
-        var client = services.GetService<IDiscoveryClient>();
+        var client = serviceProvider.GetService<IDiscoveryClient>();
         Assert.NotNull(client);
         Assert.IsType<ConfigurationDiscoveryClient>(client);
         Assert.Contains("fruitService", await client.GetServicesAsync(CancellationToken.None));
@@ -426,14 +404,14 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-        services.AddServiceDiscovery(builder => builder.UseEureka());
+        services.AddServiceDiscovery(configuration, builder => builder.UseEureka());
 
-        var service = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
-        Assert.NotNull(service);
+        var client = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
+        Assert.NotNull(client);
     }
 
     [Fact]
@@ -449,14 +427,14 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
             { "eureka:instance:useNetUtils", "true" }
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-        services.AddServiceDiscovery(builder => builder.UseEureka());
+        services.AddServiceDiscovery(configuration, builder => builder.UseEureka());
 
-        var service = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
-        Assert.NotNull(service);
-        IServiceInstance instanceInfo = await service.GetLocalServiceInstanceAsync(CancellationToken.None);
+        var client = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
+        Assert.NotNull(client);
+        IServiceInstance instanceInfo = await client.GetLocalServiceInstanceAsync(CancellationToken.None);
         Assert.Equal("fromtest", instanceInfo.Host);
     }
 
@@ -465,13 +443,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     {
         var appsettings = new Dictionary<string, string>(FastEureka);
 
-        IConfigurationRoot configurationRoot =
-            new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPemFiles("instance.crt", "instance.key").Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPemFiles("instance.crt", "instance.key").Build();
 
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
         services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-        services.AddServiceDiscovery(builder => builder.UseEureka());
+        services.AddServiceDiscovery(configuration, builder => builder.UseEureka());
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var discoveryClient = (EurekaDiscoveryClient)serviceProvider.GetService<IDiscoveryClient>();
@@ -490,12 +467,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     public void AddServiceDiscovery_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+        services.AddSingleton(configuration);
 
-        services.AddServiceDiscovery(builder => builder.UseEureka("foobar"));
-        ServiceProvider sp = services.BuildServiceProvider(true);
+        services.AddServiceDiscovery(configuration, builder => builder.UseEureka("foobar"));
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var ex = Assert.Throws<ConnectorException>(() => sp.GetService<IDiscoveryClient>());
+        var ex = Assert.Throws<ConnectorException>(() => serviceProvider.GetService<IDiscoveryClient>());
         Assert.Contains("foobar", ex.Message, StringComparison.Ordinal);
     }
 
@@ -573,12 +551,13 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", env1);
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", env2);
 
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddCloudFoundry().Build());
+        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundry().Build();
+        services.AddSingleton(configuration);
 
-        services.AddServiceDiscovery(options => options.UseEureka());
-        ServiceProvider sp = services.BuildServiceProvider(true);
+        services.AddServiceDiscovery(configuration, options => options.UseEureka());
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var ex = Assert.Throws<ConnectorException>(() => sp.GetService<IDiscoveryClient>());
+        var ex = Assert.Throws<ConnectorException>(() => serviceProvider.GetService<IDiscoveryClient>());
         Assert.Contains("Multiple", ex.Message, StringComparison.Ordinal);
     }
 
@@ -596,24 +575,25 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        services.AddSingleton(configuration);
         services.AddOptions();
-        services.AddServiceDiscovery(builder => builder.UseConsul());
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        services.AddServiceDiscovery(configuration, builder => builder.UseConsul());
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var service = provider.GetService<IDiscoveryClient>();
+        var service = serviceProvider.GetService<IDiscoveryClient>();
         Assert.NotNull(service);
-        var service1 = provider.GetService<IConsulClient>();
+        var service1 = serviceProvider.GetService<IConsulClient>();
         Assert.NotNull(service1);
-        var service2 = provider.GetService<IScheduler>();
+        var service2 = serviceProvider.GetService<IScheduler>();
         Assert.NotNull(service2);
-        var service3 = provider.GetService<IConsulServiceRegistry>();
+        var service3 = serviceProvider.GetService<IConsulServiceRegistry>();
         Assert.NotNull(service3);
-        var service4 = provider.GetService<IConsulRegistration>();
+        var service4 = serviceProvider.GetService<IConsulRegistration>();
         Assert.NotNull(service4);
-        var service5 = provider.GetService<IConsulServiceRegistrar>();
+        var service5 = serviceProvider.GetService<IConsulServiceRegistrar>();
         Assert.NotNull(service5);
-        var service6 = provider.GetService<IHealthContributor>();
+        var service6 = serviceProvider.GetService<IHealthContributor>();
         Assert.NotNull(service6);
     }
 
@@ -630,21 +610,21 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
             { "consul:discovery:deregister", "false" }
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
-        services.AddServiceDiscovery(builder => builder.UseConsul());
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
+        services.AddServiceDiscovery(configuration, builder => builder.UseConsul());
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Assert.NotNull(provider.GetService<IDiscoveryClient>());
-        Assert.NotNull(provider.GetService<IConsulClient>());
-        Assert.NotNull(provider.GetService<IScheduler>());
-        Assert.NotNull(provider.GetService<IConsulServiceRegistry>());
-        var reg = provider.GetService<IConsulRegistration>();
+        Assert.NotNull(serviceProvider.GetService<IDiscoveryClient>());
+        Assert.NotNull(serviceProvider.GetService<IConsulClient>());
+        Assert.NotNull(serviceProvider.GetService<IScheduler>());
+        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistry>());
+        var reg = serviceProvider.GetService<IConsulRegistration>();
         Assert.NotNull(reg);
         Assert.Equal("fromtest", reg.Host);
-        Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
-        Assert.NotNull(provider.GetService<IHealthContributor>());
+        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
+        Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
 
     [Fact]
@@ -658,22 +638,22 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
             { "consul:discovery:deregister", "false" }
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
-        services.AddDiscoveryClient(configurationRoot);
-        ServiceProvider provider = services.BuildServiceProvider(true);
+        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
+        services.AddDiscoveryClient(configuration);
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Assert.NotNull(provider.GetService<IDiscoveryClient>());
-        Assert.NotNull(provider.GetService<IConsulClient>());
-        Assert.NotNull(provider.GetService<IScheduler>());
-        Assert.NotNull(provider.GetService<IConsulServiceRegistry>());
-        var reg = provider.GetService<IConsulRegistration>();
+        Assert.NotNull(serviceProvider.GetService<IDiscoveryClient>());
+        Assert.NotNull(serviceProvider.GetService<IConsulClient>());
+        Assert.NotNull(serviceProvider.GetService<IScheduler>());
+        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistry>());
+        var reg = serviceProvider.GetService<IConsulRegistration>();
         Assert.NotNull(reg);
         Assert.Equal("myapp", reg.Host);
         Assert.Equal(1234, reg.Port);
-        Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
-        Assert.NotNull(provider.GetService<IHealthContributor>());
+        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
+        Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
 
     [Fact]
@@ -688,18 +668,18 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
             { "Consul:Discovery:UseAspNetCoreUrls", "false" }
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        ServiceProvider provider = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions().AddDiscoveryClient(configurationRoot)
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddOptions().AddDiscoveryClient(configuration)
             .BuildServiceProvider(true);
 
-        var reg = provider.GetService<IConsulRegistration>();
+        var reg = serviceProvider.GetService<IConsulRegistration>();
 
         Assert.NotNull(reg);
         Assert.NotEqual("myapp", reg.Host);
         Assert.Equal(0, reg.Port);
-        Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
-        Assert.NotNull(provider.GetService<IHealthContributor>());
+        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
+        Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
 
     [Fact]
@@ -714,18 +694,18 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
             { "Consul:Discovery:Port", "8080" }
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        ServiceProvider provider = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions().AddDiscoveryClient(configurationRoot)
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton(configuration).AddOptions().AddDiscoveryClient(configuration)
             .BuildServiceProvider(true);
 
-        var reg = provider.GetService<IConsulRegistration>();
+        var reg = serviceProvider.GetService<IConsulRegistration>();
 
         Assert.NotNull(reg);
         Assert.NotEqual("myapp", reg.Host);
         Assert.Equal(8080, reg.Port);
-        Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
-        Assert.NotNull(provider.GetService<IHealthContributor>());
+        Assert.NotNull(serviceProvider.GetService<IConsulServiceRegistrar>());
+        Assert.NotNull(serviceProvider.GetService<IHealthContributor>());
     }
 
     [Fact]
@@ -733,13 +713,15 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     {
         var serviceCollection = new ServiceCollection();
 
-        serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "consul:discovery:cachettl", "1" },
             { "eureka:client:cachettl", "1" }
-        }).Build());
+        }).Build();
 
-        var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(builder =>
+        serviceCollection.AddSingleton(configuration);
+
+        var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(configuration, builder =>
         {
             builder.UseConsul();
             builder.UseEureka();
@@ -752,9 +734,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     public void AddServiceDiscovery_WithMultipleNotConfiguredClients_NotAllowed()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+        serviceCollection.AddSingleton(configuration);
 
-        var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(builder =>
+        var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(configuration, builder =>
         {
             builder.UseConsul();
             builder.UseEureka();
@@ -767,37 +750,17 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     public void AddServiceDiscovery_WithMultipleClients_PicksConfigured()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(FastEureka).Build());
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(FastEureka).Build();
+        serviceCollection.AddSingleton(configuration);
 
-        ServiceProvider provider = serviceCollection.AddServiceDiscovery(builder =>
+        ServiceProvider serviceProvider = serviceCollection.AddServiceDiscovery(configuration, builder =>
         {
             builder.UseConsul();
             builder.UseEureka();
         }).BuildServiceProvider(true);
 
-        var service = provider.GetService<IDiscoveryClient>();
+        var service = serviceProvider.GetService<IDiscoveryClient>();
         Assert.True(service.GetType().IsAssignableFrom(typeof(EurekaDiscoveryClient)));
-    }
-
-    [Fact]
-    public void AddServiceDiscovery_WithKubernetesConfig_AddsDiscoveryClient()
-    {
-        var appsettings = new Dictionary<string, string>
-        {
-            { "spring:application:name", "myName" },
-            { "spring:cloud:kubernetes:discovery:enabled", "true" },
-            { "spring:cloud:kubernetes:namespace", "notdefault" }
-        };
-
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(configurationRoot).AddOptions();
-
-        ServiceProvider provider = services.AddServiceDiscovery(builder => builder.UseKubernetes()).BuildServiceProvider(true);
-
-        var service = provider.GetService<IDiscoveryClient>();
-        var options = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
-        Assert.True(service.GetType().IsAssignableFrom(typeof(KubernetesDiscoveryClient)));
-        Assert.Equal("notdefault", options.Value.Namespace);
     }
 
     private object GetInnerHttpHandler(object handler)

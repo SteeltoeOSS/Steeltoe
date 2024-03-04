@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations;
 
@@ -79,17 +78,35 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
 
                 try
                 {
-                    descriptor.PendingMigrations.AddRange(_scanner.GetPendingMigrations(dbContext));
-                    descriptor.AppliedMigrations.AddRange(_scanner.GetAppliedMigrations(dbContext));
+                    AddRange(descriptor.PendingMigrations, _scanner.GetPendingMigrations(dbContext));
+                    AddRange(descriptor.AppliedMigrations, _scanner.GetAppliedMigrations(dbContext));
                 }
                 catch (DbException exception) when (exception.Message.Contains("exist", StringComparison.Ordinal))
                 {
                     _logger.LogWarning(exception, "Encountered exception loading migrations: {exception}", exception.Message);
-                    descriptor.PendingMigrations.AddRange(_scanner.GetMigrations(dbContext));
+                    AddRange(descriptor.PendingMigrations, _scanner.GetMigrations(dbContext));
                 }
             }
         }
 
         return result;
+    }
+
+    private static void AddRange<T>(IList<T> source, IEnumerable<T> items)
+    {
+        ArgumentGuard.NotNull(source);
+        ArgumentGuard.NotNull(items);
+
+        if (source is List<T> list)
+        {
+            list.AddRange(items);
+        }
+        else
+        {
+            foreach (T item in items)
+            {
+                source.Add(item);
+            }
+        }
     }
 }

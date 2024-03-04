@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
-public sealed class TestConfigServerConfigurationSource : IConfigurationSource
+internal sealed class TestConfigServerConfigurationSource : IConfigurationSource
 {
     private readonly IConfigurationProvider _provider;
 

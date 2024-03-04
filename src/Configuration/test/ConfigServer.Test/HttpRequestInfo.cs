@@ -9,13 +9,9 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed class HttpRequestInfo
 {
     public string Method { get; }
-
     public HostString Host { get; }
-
     public PathString Path { get; }
-
     public QueryString QueryString { get; }
-
     public Stream Body { get; } = new MemoryStream();
 
     private HttpRequestInfo(HttpRequest request)
@@ -26,7 +22,7 @@ public sealed class HttpRequestInfo
         QueryString = request.QueryString;
     }
 
-    public static async Task<HttpRequestInfo> CreateAsync(HttpRequest request)
+    public static async Task<HttpRequestInfo> CopyFromAsync(HttpRequest request)
     {
         var info = new HttpRequestInfo(request);
 

@@ -6,25 +6,11 @@ namespace Steeltoe.Configuration.CloudFoundry;
 
 internal sealed class CloudFoundryEnvironmentSettingsReader : ICloudFoundrySettingsReader
 {
-    private const string CfInstanceGuid = "CF_INSTANCE_GUID";
-    private const string CfInstanceIndex = "CF_INSTANCE_INDEX";
-    private const string CfInstanceInternalIP = "CF_INSTANCE_INTERNAL_IP";
-    private const string CfInstanceIP = "CF_INSTANCE_IP";
-    private const string CfInstancePort = "CF_INSTANCE_PORT";
-    private const string VcapApplication = "VCAP_APPLICATION";
-    private const string VcapServices = "VCAP_SERVICES";
-
-    public string ApplicationJson => Environment.GetEnvironmentVariable(VcapApplication);
-
-    public string InstanceId => Environment.GetEnvironmentVariable(CfInstanceGuid);
-
-    public string InstanceIndex => Environment.GetEnvironmentVariable(CfInstanceIndex);
-
-    public string InstanceInternalIP => Environment.GetEnvironmentVariable(CfInstanceInternalIP);
-
-    public string InstanceIP => Environment.GetEnvironmentVariable(CfInstanceIP);
-
-    public string InstancePort => Environment.GetEnvironmentVariable(CfInstancePort);
-
-    public string ServicesJson => Environment.GetEnvironmentVariable(VcapServices);
+    public string? ApplicationJson => Environment.GetEnvironmentVariable("VCAP_APPLICATION");
+    public string? InstanceId => Environment.GetEnvironmentVariable("CF_INSTANCE_GUID");
+    public string? InstanceIndex => Environment.GetEnvironmentVariable("CF_INSTANCE_INDEX");
+    public string? InstanceInternalIP => Environment.GetEnvironmentVariable("CF_INSTANCE_INTERNAL_IP");
+    public string? InstanceIP => Environment.GetEnvironmentVariable("CF_INSTANCE_IP");
+    public string? InstancePort => Environment.GetEnvironmentVariable("CF_INSTANCE_PORT");
+    public string? ServicesJson => Environment.GetEnvironmentVariable("VCAP_SERVICES");
 }

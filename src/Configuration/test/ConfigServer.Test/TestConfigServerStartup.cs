@@ -9,16 +9,13 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class TestConfigServerStartup
 {
-    public static CountdownEvent InitialRequestLatch { get; private set; } = new(1);
+    internal static CountdownEvent InitialRequestLatch { get; private set; } = new(1);
 
-    public static string Response { get; set; }
+    public static string? Response { get; set; }
 
-    public static int[] ReturnStatus { get; set; } =
-    {
-        200
-    };
+    public static int[] ReturnStatus { get; set; } = [200];
 
-    public static HttpRequestInfo LastRequest { get; set; }
+    public static HttpRequestInfo? LastRequest { get; set; }
 
     public static int RequestCount { get; set; }
 
@@ -32,10 +29,7 @@ public sealed class TestConfigServerStartup
     {
         Response = null;
 
-        ReturnStatus = new[]
-        {
-            200
-        };
+        ReturnStatus = [200];
 
         LastRequest = null;
         RequestCount = 0;
@@ -47,14 +41,18 @@ public sealed class TestConfigServerStartup
     {
         app.Run(async context =>
         {
-            LastRequest = await HttpRequestInfo.CreateAsync(context.Request);
+            LastRequest = await HttpRequestInfo.CopyFromAsync(context.Request);
             context.Response.StatusCode = GetStatusCode(context.Request.Path);
             RequestCount++;
 
             if (context.Response.StatusCode == 200)
             {
-                context.Response.Headers.Add("content-type", "application/json");
-                await context.Response.WriteAsync(Response);
+                context.Response.Headers.Append("content-type", "application/json");
+
+                if (Response != null)
+                {
+                    await context.Response.WriteAsync(Response);
+                }
             }
 
             if (RequestCount == 1)

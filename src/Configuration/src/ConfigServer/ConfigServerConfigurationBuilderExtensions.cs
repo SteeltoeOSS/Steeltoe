@@ -28,23 +28,23 @@ public static class ConfigServerConfigurationBuilderExtensions
         return AddConfigServer(configurationBuilder, ConfigServerClientSettings.DefaultEnvironment, loggerFactory);
     }
 
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string environment)
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string? environment)
     {
         return AddConfigServer(configurationBuilder, environment, NullLoggerFactory.Instance);
     }
 
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string environment, ILoggerFactory loggerFactory)
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string? environment, ILoggerFactory loggerFactory)
     {
-        string applicationName = Assembly.GetEntryAssembly()?.GetName().Name;
+        string? applicationName = Assembly.GetEntryAssembly()?.GetName().Name;
         return AddConfigServer(configurationBuilder, environment, applicationName, loggerFactory);
     }
 
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string environment, string applicationName)
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string? environment, string? applicationName)
     {
         return AddConfigServer(configurationBuilder, environment, applicationName, NullLoggerFactory.Instance);
     }
 
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string environment, string applicationName,
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string? environment, string? applicationName,
         ILoggerFactory loggerFactory)
     {
         var settings = new ConfigServerClientSettings

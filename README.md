@@ -6,7 +6,7 @@
 
 Are you looking to create .NET microservices? Modernizing existing applications? Moving apps to containers? Steeltoe can help you!
 
-[Steeltoe](https://steeltoe.io) is an open source project that provides a collection of libraries that helps users build production-grade cloud-native applications using externalized configuration, service discovery, distributed tracing, application management, and more. Steeltoe also provides a seamless way to build, configure, and run event-driven microservice applications and stream-based data processing applications.
+[Steeltoe](https://steeltoe.io) is an open source project that provides a collection of libraries that helps users build production-grade cloud-native applications using externalized configuration, service discovery, distributed tracing, application management, and more.
 
 We have also built several tools to get you started:
 

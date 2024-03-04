@@ -16,6 +16,7 @@ namespace Steeltoe.Discovery.Eureka;
 public class DiscoveryClient : IEurekaClient
 {
     protected readonly ApplicationInfoManager AppInfoManager;
+    private int _shutdown;
     protected Timer heartBeatTimer;
     protected Timer cacheRefreshTimer;
     protected volatile Applications localRegionApps;
@@ -25,7 +26,6 @@ public class DiscoveryClient : IEurekaClient
     protected ILogger logger;
     protected ILogger regularLogger;
     protected ILogger startupLogger;
-    protected int shutdown;
 
     internal Timer HeartBeatTimer => heartBeatTimer;
 
@@ -202,7 +202,7 @@ public class DiscoveryClient : IEurekaClient
 
     public virtual async Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        int shutdownValue = Interlocked.Exchange(ref shutdown, 1);
+        int shutdownValue = Interlocked.Exchange(ref _shutdown, 1);
 
         if (shutdownValue > 0)
         {
@@ -248,32 +248,32 @@ public class DiscoveryClient : IEurekaClient
         return InstanceStatus.Unknown;
     }
 
-    internal async void HandleInstanceStatusChanged(object sender, StatusChangedEventArgs args)
+    private async void HandleInstanceStatusChanged(object sender, StatusChangedEventArgs args)
     {
-        InstanceInfo info = AppInfoManager.InstanceInfo;
-
-        if (info != null)
+        try
         {
-            logger.LogDebug("HandleInstanceStatusChanged {previousStatus}, {currentStatus}, {instanceId}, {dirty}", args.Previous, args.Current,
-                args.InstanceId, info.IsDirty);
+            InstanceInfo info = AppInfoManager.InstanceInfo;
 
-            if (info.IsDirty)
+            if (info != null)
             {
-                try
+                logger.LogDebug("HandleInstanceStatusChanged {previousStatus}, {currentStatus}, {instanceId}, {dirty}", args.Previous, args.Current,
+                    args.InstanceId, info.IsDirty);
+
+                if (info.IsDirty)
                 {
                     bool result = await RegisterAsync(CancellationToken.None);
 
                     if (result)
                     {
                         info.IsDirty = false;
-                        logger.LogInformation("HandleInstanceStatusChanged RegisterAsync Succeed");
+                        logger.LogInformation("HandleInstanceStatusChanged RegisterAsync succeeded");
                     }
                 }
-                catch (Exception e)
-                {
-                    logger.LogError(e, "HandleInstanceStatusChanged RegisterAsync Failed");
-                }
             }
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "HandleInstanceStatusChanged failed");
         }
     }
 
@@ -631,31 +631,49 @@ public class DiscoveryClient : IEurekaClient
     // both of these should fire and forget on execution but log failures
     private async void HeartBeatTask()
     {
-        if (shutdown > 0)
+        try
         {
-            return;
+            int shutdownValue = Interlocked.Add(ref _shutdown, 0);
+
+            if (shutdownValue > 0)
+            {
+                return;
+            }
+
+            bool result = await RenewAsync(CancellationToken.None);
+
+            if (!result)
+            {
+                logger.LogError("HeartBeat failed");
+            }
         }
-
-        bool result = await RenewAsync(CancellationToken.None);
-
-        if (!result)
+        catch (Exception exception)
         {
-            logger.LogError("HeartBeat failed");
+            logger.LogError(exception, "HeartBeat failed");
         }
     }
 
     private async void CacheRefreshTask()
     {
-        if (shutdown > 0)
+        try
         {
-            return;
+            int shutdownValue = Interlocked.Add(ref _shutdown, 0);
+
+            if (shutdownValue > 0)
+            {
+                return;
+            }
+
+            bool result = await FetchRegistryAsync(false, CancellationToken.None);
+
+            if (!result)
+            {
+                logger.LogError("CacheRefresh failed");
+            }
         }
-
-        bool result = await FetchRegistryAsync(false, CancellationToken.None);
-
-        if (!result)
+        catch (Exception exception)
         {
-            logger.LogError("CacheRefresh failed");
+            logger.LogError(exception, "CacheRefresh failed");
         }
     }
 }

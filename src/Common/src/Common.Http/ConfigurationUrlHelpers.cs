@@ -34,7 +34,7 @@ public static class ConfigurationUrlHelpers
             string[] addresses = urlStringFromConfiguration.Split(new[]
             {
                 ';'
-            }, StringSplitOptions.RemoveEmptyEntries);
+            }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
             foreach (string address in addresses)
             {

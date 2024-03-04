@@ -114,25 +114,6 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
                 }";
 
     [Fact]
-    public void AddConfigServer_ThrowsIfConfigBuilderNull()
-    {
-        const IConfigurationBuilder configurationBuilder = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(new ConfigServerClientSettings()));
-        Assert.Contains(nameof(configurationBuilder), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void AddConfigServer_ThrowsIfSettingsNull()
-    {
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-        const ConfigServerClientSettings clientSettings = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(clientSettings));
-        Assert.Contains(nameof(clientSettings), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void AddConfigServer_WithPemFiles_AddsConfigServerSourceWithCertificate()
     {
         var configurationBuilder = new ConfigurationBuilder();
@@ -158,7 +139,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         configurationBuilder.AddConfigServer(settings);
 
-        ConfigServerConfigurationSource configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
+        ConfigServerConfigurationSource? configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
         Assert.NotNull(configServerSource);
     }
 
@@ -171,7 +152,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         configurationBuilder.AddConfigServer(settings, loggerFactory);
 
-        ConfigServerConfigurationSource configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
+        ConfigServerConfigurationSource? configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
 
         Assert.NotNull(configServerSource);
         Assert.NotNull(configServerSource.LoggerFactory);
@@ -210,7 +191,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -221,7 +202,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddConfigServer(clientSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
         ConfigServerClientSettings settings = configServerProvider.Settings;
@@ -265,7 +246,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -276,7 +257,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddConfigServer(clientSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(configServerProvider);
         ConfigServerClientSettings settings = configServerProvider.Settings;
@@ -307,7 +288,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -318,7 +299,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddConfigServer(clientSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
         ConfigServerClientSettings settings = configServerProvider.Settings;
@@ -337,7 +318,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     public void AddConfigServer_CommandLineAppSettingsConfiguresClient()
     {
         string[] appsettings =
-        {
+        [
             "spring:cloud:config:enabled=false",
             "--spring:cloud:config:failFast=false",
             "/spring:cloud:config:uri=https://foo.com:9999",
@@ -349,7 +330,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             "myUsername",
             "--spring:cloud:config:password",
             "myPassword"
-        };
+        ];
 
         var configurationBuilder = new ConfigurationBuilder();
         var clientSettings = new ConfigServerClientSettings();
@@ -357,7 +338,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         configurationBuilder.AddConfigServer(clientSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
         ConfigServerClientSettings settings = configServerProvider.Settings;
@@ -403,7 +384,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
 
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -414,7 +395,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         configurationBuilder.AddConfigServer(clientSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
         ConfigServerClientSettings settings = configServerProvider.Settings;
@@ -444,12 +425,13 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         {
             Uri = "https://uri-from-settings",
             RetryEnabled = false,
-            Timeout = 10
+            Timeout = 10,
+            Enabled = false
         };
 
         configurationBuilder.AddEnvironmentVariables().AddConfigServer(settings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        ConfigServerConfigurationProvider configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
+        ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(configServerProvider);
         Assert.IsType<ConfigServerConfigurationProvider>(configServerProvider);
@@ -475,7 +457,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(configServerClientSettings);
 
         IConfigurationRoot configurationRoot = builder.Build();
-        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
+        ConfigServerConfigurationProvider? provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(provider);
         Assert.Equal("testConfigLabel", provider.Settings.Label);
@@ -501,9 +483,20 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     {
         var configurationBuilder = new ConfigurationBuilder();
 
-        configurationBuilder.AddCloudFoundry(new CustomCloudFoundrySettingsReader());
+        configurationBuilder.AddCloudFoundry(new OtherCloudFoundrySettingsReader());
         configurationBuilder.AddConfigServer();
 
         Assert.Single(configurationBuilder.GetConfigurationSources<CloudFoundryConfigurationSource>());
+    }
+
+    private sealed class OtherCloudFoundrySettingsReader : ICloudFoundrySettingsReader
+    {
+        public string ApplicationJson => throw new NotImplementedException();
+        public string InstanceId => throw new NotImplementedException();
+        public string InstanceIndex => throw new NotImplementedException();
+        public string InstanceInternalIP => throw new NotImplementedException();
+        public string InstanceIP => throw new NotImplementedException();
+        public string InstancePort => throw new NotImplementedException();
+        public string ServicesJson => throw new NotImplementedException();
     }
 }

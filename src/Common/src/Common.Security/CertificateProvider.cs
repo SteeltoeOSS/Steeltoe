@@ -23,11 +23,6 @@ public class CertificateProvider : ConfigurationProvider
         // for future use
     }
 
-    public override void Set(string key, string value)
-    {
-        throw new InvalidOperationException();
-    }
-
     public override bool TryGet(string key, out string value)
     {
         value = null;

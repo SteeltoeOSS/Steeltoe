@@ -17,7 +17,7 @@ public sealed class EurekaServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-eureka",
-            Tags = new[]
+            Tags =
             {
                 "eureka",
                 "discovery",
@@ -45,7 +45,7 @@ public sealed class EurekaServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mysql",
-            Tags = new[]
+            Tags =
             {
                 "foobar",
                 "relational"
@@ -77,7 +77,7 @@ public sealed class EurekaServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-eureka",
-            Tags = new[]
+            Tags =
             {
                 "eureka",
                 "discovery",

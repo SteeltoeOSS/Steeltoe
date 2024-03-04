@@ -3,30 +3,29 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
-using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Wavefront.Exporters;
 using Xunit;
 
 namespace Steeltoe.Management.Wavefront.Test;
-public class WavefrontMetricsTests
+
+public sealed class WavefrontMetricsTests
 {
-
-
     [Fact]
-    public async Task AddWavefrontExporter()
+    public async Task AddWavefront_WebApplicationBuilder()
     {
-        var settings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "management:metrics:export:wavefront:apiToken", "test" },
             { "management:metrics:export:wavefront:uri", "http://test.io" },
@@ -34,87 +33,85 @@ public class WavefrontMetricsTests
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddInMemoryCollection(settings);
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddWavefrontMetrics();
         builder.WebHost.UseTestServer();
 
-        using WebApplication host = builder.AddWavefrontMetrics().Build();
-
+        await using WebApplication host = builder.Build();
         await host.StartAsync();
+
         AssertExporterIsAdded(host.Services);
-        await host.StopAsync();
     }
 
     [Fact]
     public async Task AddWavefront_IWebHostBuilder()
     {
-        var wfSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "management:metrics:export:wavefront:uri", "https://wavefront.vmware.com" },
             { "management:metrics:export:wavefront:apiToken", "testToken" }
         };
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
-        using IWebHost host = hostBuilder.UseTestServer()
-            .AddWavefrontMetrics().Build();
+        IWebHostBuilder hostBuilder = new WebHostBuilder();
+        hostBuilder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        hostBuilder.Configure(HostingHelpers.EmptyAction);
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings));
+        hostBuilder.ConfigureServices(services => services.AddWavefrontMetrics());
 
+        using IWebHost host = hostBuilder.UseTestServer().Build();
         await host.StartAsync();
 
         IEnumerable<IDiagnosticsManager> diagnosticsManagers = host.Services.GetServices<IDiagnosticsManager>();
-        Assert.Single(diagnosticsManagers);
-        IEnumerable<DiagnosticServices> diagnosticServices = host.Services.GetServices<IHostedService>().OfType<DiagnosticServices>();
-        Assert.Single(diagnosticServices);
-        IEnumerable<IMetricsObserverOptions> options = host.Services.GetServices<IMetricsObserverOptions>();
-        Assert.Single(options);
+        diagnosticsManagers.Should().HaveCount(1);
+
+        IEnumerable<DiagnosticsService> diagnosticServices = host.Services.GetServices<IHostedService>().OfType<DiagnosticsService>();
+        diagnosticServices.Should().HaveCount(1);
+
+        var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<WavefrontExporterOptions>>();
+        optionsMonitor.CurrentValue.ApiToken.Should().Be("testToken");
 
         AssertExporterIsAdded(host.Services);
-        await host.StopAsync();
-    }
-
-    private static void AssertExporterIsAdded(IServiceProvider services)
-    {
-        var meterProvider = services.GetService<MeterProvider>();
-        Assert.NotNull(meterProvider);
-        object reader = GetProperty(meterProvider, "Reader");
-        Assert.NotNull(reader);
-        Assert.IsType<PeriodicExportingMetricReader>(reader);
-
-
-        object exporter = GetProperty(reader, "Exporter");
-        Assert.NotNull(exporter);
-        Assert.IsType<WavefrontMetricsExporter>(exporter);
-    }
-
-    private static object GetProperty(object meterProvider, string propName)
-    {
-        return meterProvider.GetType().GetProperty(propName, BindingFlags.NonPublic | BindingFlags.Instance)
-                    .GetValue(meterProvider);
     }
 
     [Fact]
     public void AddWavefront_ProxyConfigIsValid()
     {
-        var wfSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "management:metrics:export:wavefront:uri", "proxy://wavefront.vmware.com" },
             { "management:metrics:export:wavefront:apiToken", string.Empty } // Should not throw
         };
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
+        IWebHostBuilder hostBuilder = new WebHostBuilder();
+        hostBuilder.Configure(HostingHelpers.EmptyAction);
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings));
+        hostBuilder.ConfigureServices(services => services.AddWavefrontMetrics());
 
-        IWebHost host = hostBuilder.AddWavefrontMetrics().Build();
-        Assert.NotNull(host);
-
+        using IWebHost host = hostBuilder.Build();
+        host.Should().NotBeNull();
     }
 
-
-    [Fact]
-    public void AddWavefront_ThrowsWhenNull()
+    private static void AssertExporterIsAdded(IServiceProvider services)
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => WavefrontExtensions.AddWavefrontMetrics((IServiceCollection)null));
-        Assert.Contains("services", ex.Message, StringComparison.Ordinal);
+        var meterProvider = services.GetService<MeterProvider>();
+        meterProvider.Should().NotBeNull();
+
+        object? reader = GetProperty(meterProvider!, "Reader");
+        reader.Should().NotBeNull();
+        reader.Should().BeOfType<PeriodicExportingMetricReader>();
+
+        object? exporter = GetProperty(reader!, "Exporter");
+        exporter.Should().NotBeNull();
+        exporter.Should().BeOfType<WavefrontMetricsExporter>();
+    }
+
+    private static object? GetProperty(object instance, string propertyName)
+    {
+        Type type = instance.GetType();
+        PropertyInfo? property = type.GetProperty(propertyName, BindingFlags.NonPublic | BindingFlags.Instance);
+        property.Should().NotBeNull();
+
+        return property!.GetValue(instance);
     }
 }

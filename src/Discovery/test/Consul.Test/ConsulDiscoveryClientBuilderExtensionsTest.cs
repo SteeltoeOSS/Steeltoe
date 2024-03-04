@@ -26,10 +26,10 @@ public sealed class ConsulDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void UseConsulUsesConsul()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(_appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(_appsettings).Build();
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
-        serviceCollection.AddServiceDiscovery(options => options.UseConsul());
+        serviceCollection.AddSingleton(configuration);
+        serviceCollection.AddServiceDiscovery(configuration, options => options.UseConsul());
 
         ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
 

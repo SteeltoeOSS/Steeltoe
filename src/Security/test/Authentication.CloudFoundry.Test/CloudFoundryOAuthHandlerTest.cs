@@ -199,8 +199,12 @@ public sealed class CloudFoundryOAuthHandlerTest
         var loggerFactory = new LoggerFactory();
         IOptionsMonitor<CloudFoundryOAuthOptions> monitor = new MonitorWrapper<CloudFoundryOAuthOptions>(options);
         var encoder = UrlEncoder.Default;
-        var clock = new TestClock();
-        var testHandler = new MyTestCloudFoundryHandler(monitor, loggerFactory, encoder, clock);
+
+#if NET6_0
+        var testHandler = new MyTestCloudFoundryHandler(monitor, loggerFactory, encoder, new TestClock());
+#else
+        var testHandler = new MyTestCloudFoundryHandler(monitor, loggerFactory, encoder);
+#endif
 
         testHandler.InitializeAsync(
             new AuthenticationScheme(CloudFoundryDefaults.AuthenticationScheme, CloudFoundryDefaults.AuthenticationScheme, typeof(CloudFoundryOAuthHandler)),

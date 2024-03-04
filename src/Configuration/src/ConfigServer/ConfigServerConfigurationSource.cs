@@ -15,7 +15,6 @@ namespace Steeltoe.Configuration.ConfigServer;
 internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 {
     internal IList<IConfigurationSource> Sources { get; } = new List<IConfigurationSource>();
-
     internal IDictionary<string, object> Properties { get; } = new Dictionary<string, object>();
 
     /// <summary>
@@ -27,7 +26,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// Gets the configuration the Config Server client uses to contact the Config Server. Values returned override the default values provided in
     /// <see cref="DefaultSettings" />.
     /// </summary>
-    internal IConfiguration Configuration { get; private set; }
+    internal IConfiguration? Configuration { get; private set; }
 
     /// <summary>
     /// Gets the logger factory used by the Config Server client.
@@ -74,7 +73,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IList<IConfigurationSource> sources,
-        IDictionary<string, object> properties, ILoggerFactory loggerFactory)
+        IDictionary<string, object>? properties, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(defaultSettings);
         ArgumentGuard.NotNull(sources);

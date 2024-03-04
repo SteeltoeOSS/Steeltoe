@@ -11,7 +11,7 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
 {
     private readonly ICloudFoundrySettingsReader _settingsReader;
 
-    internal IDictionary<string, string> Properties => Data;
+    internal IDictionary<string, string?> Properties => Data;
 
     public CloudFoundryConfigurationProvider(ICloudFoundrySettingsReader settingsReader)
     {
@@ -38,7 +38,7 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
         return stream;
     }
 
-    private void AddDiegoVariables(IDictionary<string, string> data)
+    private void AddDiegoVariables(IDictionary<string, string?> data)
     {
         if (!data.ContainsKey("vcap:application:instance_id"))
         {
@@ -61,57 +61,48 @@ internal sealed class CloudFoundryConfigurationProvider : ConfigurationProvider
 
     private void Process()
     {
-        var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
 
-        string appJson = _settingsReader.ApplicationJson;
+        string? applicationJson = _settingsReader.ApplicationJson;
 
-        if (!string.IsNullOrEmpty(appJson))
+        if (!string.IsNullOrEmpty(applicationJson))
         {
-            using Stream stream = GetStream(appJson);
+            using Stream stream = GetStream(applicationJson);
             var builder = new ConfigurationBuilder();
             builder.Add(new JsonStreamConfigurationSource(stream));
             IConfigurationRoot applicationData = builder.Build();
 
-            if (applicationData != null)
-            {
-                LoadData("vcap:application", applicationData.GetChildren(), data);
-                AddDiegoVariables(data);
-            }
+            LoadData("vcap:application", applicationData.GetChildren(), data);
+            AddDiegoVariables(data);
         }
 
-        string appServicesJson = _settingsReader.ServicesJson;
+        string? servicesJson = _settingsReader.ServicesJson;
 
-        if (!string.IsNullOrEmpty(appServicesJson))
+        if (!string.IsNullOrEmpty(servicesJson))
         {
-            using Stream stream = GetStream(appServicesJson);
+            using Stream stream = GetStream(servicesJson);
             var builder = new ConfigurationBuilder();
             builder.Add(new JsonStreamConfigurationSource(stream));
             IConfigurationRoot servicesData = builder.Build();
 
-            if (servicesData != null)
-            {
-                LoadData("vcap:services", servicesData.GetChildren(), data);
-            }
+            LoadData("vcap:services", servicesData.GetChildren(), data);
         }
 
         Data = data;
     }
 
-    private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections, IDictionary<string, string> data)
+    private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections, IDictionary<string, string?> data)
     {
-        if (sections != null)
+        foreach (IConfigurationSection section in sections)
         {
-            foreach (IConfigurationSection section in sections)
-            {
-                LoadSection(prefix, section, data);
-                LoadData(prefix, section.GetChildren(), data);
-            }
+            LoadSection(prefix, section, data);
+            LoadData(prefix, section.GetChildren(), data);
         }
     }
 
-    private void LoadSection(string prefix, IConfigurationSection section, IDictionary<string, string> data)
+    private void LoadSection(string prefix, IConfigurationSection section, IDictionary<string, string?> data)
     {
-        if (section == null || string.IsNullOrEmpty(section.Value))
+        if (string.IsNullOrEmpty(section.Value))
         {
             return;
         }

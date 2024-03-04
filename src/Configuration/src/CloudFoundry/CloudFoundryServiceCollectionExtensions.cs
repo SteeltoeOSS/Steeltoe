@@ -21,7 +21,7 @@ public static class CloudFoundryServiceCollectionExtensions
     /// The service container.
     /// </param>
     /// <param name="configuration">
-    /// The applications configuration.
+    /// The application configuration.
     /// </param>
     /// <returns>
     /// The incoming service container.
@@ -56,7 +56,7 @@ public static class CloudFoundryServiceCollectionExtensions
     /// The service container.
     /// </param>
     /// <param name="configuration">
-    /// The applications configuration.
+    /// The application configuration.
     /// </param>
     /// <param name="serviceName">
     /// The Cloud Foundry service name to bind to the options type.
@@ -88,7 +88,7 @@ public static class CloudFoundryServiceCollectionExtensions
     /// The service container.
     /// </param>
     /// <param name="configuration">
-    /// The applications configuration.
+    /// The application configuration.
     /// </param>
     /// <param name="serviceLabel">
     /// The Cloud Foundry service label to use to bind to the options type.
@@ -103,24 +103,47 @@ public static class CloudFoundryServiceCollectionExtensions
         ArgumentGuard.NotNull(configuration);
         ArgumentGuard.NotNullOrEmpty(serviceLabel);
 
-        CloudFoundryServicesOptions servicesOptions = GetServicesOptionsFromConfiguration(configuration);
-        servicesOptions.Services.TryGetValue(serviceLabel, out IEnumerable<Service> cfServices);
+        var servicesOptions = new CloudFoundryServicesOptions(configuration);
 
-        if (cfServices != null)
+        if (servicesOptions.Services.TryGetValue(serviceLabel, out IList<Service>? serviceList))
         {
-            foreach (Service service in cfServices)
+            foreach (Service service in serviceList)
             {
-                services.ConfigureCloudFoundryService<TOption>(configuration, service.Name);
+                if (!string.IsNullOrEmpty(service.Name))
+                {
+                    services.ConfigureCloudFoundryService<TOption>(configuration, service.Name);
+                }
             }
         }
 
         return services;
     }
 
-    private static CloudFoundryServicesOptions GetServicesOptionsFromConfiguration(IConfiguration configuration)
+    /// <summary>
+    /// Removes any existing <see cref="IApplicationInstanceInfo" /> if found. Registers a <see cref="CloudFoundryApplicationOptions" />.
+    /// </summary>
+    /// <param name="services">
+    /// Collection of configured services.
+    /// </param>
+    public static IServiceCollection RegisterCloudFoundryApplicationInstanceInfo(this IServiceCollection services)
     {
-        return configuration is IConfigurationRoot configurationRoot
-            ? new CloudFoundryServicesOptions(configurationRoot)
-            : new CloudFoundryServicesOptions(configuration);
+        ArgumentGuard.NotNull(services);
+
+        ServiceDescriptor? appInfoDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
+
+        if (appInfoDescriptor?.ImplementationType?.IsAssignableFrom(typeof(CloudFoundryApplicationOptions)) != true)
+        {
+            if (appInfoDescriptor != null)
+            {
+                services.Remove(appInfoDescriptor);
+            }
+
+            services.AddSingleton(typeof(CloudFoundryApplicationOptions),
+                serviceProvider => new CloudFoundryApplicationOptions(serviceProvider.GetRequiredService<IConfiguration>()));
+
+            services.AddSingleton<IApplicationInstanceInfo>(serviceProvider => serviceProvider.GetRequiredService<CloudFoundryApplicationOptions>());
+        }
+
+        return services;
     }
 }

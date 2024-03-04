@@ -40,7 +40,7 @@ public sealed class ConfigurationServiceInstanceProviderServiceCollectionExtensi
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         // by getting the provider, we're confirming that the options are also available in the container
-        var serviceInstanceProvider = serviceProvider.GetRequiredService(typeof(IServiceInstanceProvider)) as IServiceInstanceProvider;
+        var serviceInstanceProvider = serviceProvider.GetRequiredService<IServiceInstanceProvider>();
 
         Assert.NotNull(serviceInstanceProvider);
         Assert.IsType<ConfigurationServiceInstanceProvider>(serviceInstanceProvider);

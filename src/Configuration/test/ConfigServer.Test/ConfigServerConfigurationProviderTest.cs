@@ -26,31 +26,12 @@ public sealed class ConfigServerConfigurationProviderTest
     };
 
     [Fact]
-    public void SettingsConstructor__ThrowsIfSettingsNull()
+    public void SettingsConstructor_WithLoggerFactorySucceeds()
     {
-        const ConfigServerClientSettings settings = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance));
-        Assert.Contains(nameof(settings), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void SettingsConstructor__ThrowsIfHttpClientNull()
-    {
-        var settings = new ConfigServerClientSettings();
-        const HttpClient httpClient = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationProvider(settings, httpClient, NullLoggerFactory.Instance));
-        Assert.Contains(nameof(httpClient), ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void SettingsConstructor__WithLoggerFactorySucceeds()
-    {
-        var logFactory = new LoggerFactory();
+        var loggerFactory = new LoggerFactory();
         var settings = new ConfigServerClientSettings();
 
-        var provider = new ConfigServerConfigurationProvider(settings, logFactory);
+        var provider = new ConfigServerConfigurationProvider(settings, loggerFactory);
         Assert.NotNull(provider.Logger);
     }
 
@@ -75,6 +56,22 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
+    public void SourceConstructor_WithTimeoutConfigured_InitializesHttpClientWithConfiguredTimeout()
+    {
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            { "spring:cloud:config:timeout", "30000" }
+        }).Build();
+
+        var settings = new ConfigServerClientSettings();
+        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
+
+        Assert.NotNull(provider.HttpClient);
+        Assert.Equal(TimeSpan.FromMilliseconds(30000), provider.HttpClient.Timeout);
+    }
+
+    [Fact]
     public void GetConfigServerUri_NoBaseUri_Throws()
     {
         var settings = new ConfigServerClientSettings
@@ -85,7 +82,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
 
-        Assert.Throws<ArgumentNullException>(() => provider.GetConfigServerUri(null, null));
+        Assert.Throws<ArgumentNullException>(() => provider.GetConfigServerUri(null!, null));
     }
 
     [Fact]
@@ -226,11 +223,9 @@ public sealed class ConfigServerConfigurationProviderTest
             }
         };
 
-        var settings = new ConfigServerClientSettings();
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
         var content = JsonContent.Create(environment);
 
-        var env = await content.ReadFromJsonAsync<ConfigEnvironment>(provider.SerializerOptions);
+        var env = await content.ReadFromJsonAsync<ConfigEnvironment>(ConfigServerConfigurationProvider.SerializerOptions);
         Assert.NotNull(env);
         Assert.Equal("testname", env.Name);
         Assert.NotNull(env.Profiles);
@@ -244,7 +239,7 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.NotNull(env.PropertySources[0].Source);
         Assert.Equal(2, env.PropertySources[0].Source.Count);
         Assert.Equal("value1", env.PropertySources[0].Source["key1"].ToString());
-        Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString(), CultureInfo.InvariantCulture));
+        Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString()!, CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -355,10 +350,7 @@ public sealed class ConfigServerConfigurationProviderTest
     {
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
-            500
-        };
+        TestConfigServerStartup.ReturnStatus = [500];
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
 
@@ -381,10 +373,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
-            204
-        };
+        TestConfigServerStartup.ReturnStatus = [204];
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
@@ -395,7 +384,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        ConfigEnvironment result = await provider.RemoteLoadAsync(settings.RawUris, null, CancellationToken.None);
+        ConfigEnvironment? result = await provider.RemoteLoadAsync(settings.RawUris, null, CancellationToken.None);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
@@ -446,6 +435,93 @@ public sealed class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
+    public async Task Create_FailFastEnabledAndExceptionThrownDuringPolling_DoesNotCrash()
+    {
+        // Arrange
+        const string environment = @"
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": []
+                }";
+
+        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        TestConfigServerStartup.Reset();
+        TestConfigServerStartup.Response = environment;
+
+        // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
+        TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100)).ToArray();
+        TestConfigServerStartup.Label = "testlabel";
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+
+        var settings = new ConfigServerClientSettings
+        {
+            Name = "myName",
+            PollingInterval = TimeSpan.FromMilliseconds(300),
+            FailFast = true,
+            Label = "testlabel"
+        };
+
+        using HttpClient client = server.CreateClient();
+
+        // Act
+        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+
+        // Assert
+        Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
+        Assert.True(TestConfigServerStartup.RequestCount >= 1);
+        await Task.Delay(1000);
+        Assert.NotNull(TestConfigServerStartup.LastRequest);
+        Assert.True(TestConfigServerStartup.RequestCount >= 2);
+        Assert.False(provider.GetReloadToken().HasChanged);
+    }
+
+    [Fact]
+    public void Create_WithNonZeroPollingIntervalAndClientDisabled_PollingDisabled()
+    {
+        // Arrange
+        const string environment = @"
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": []
+                }";
+
+        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        TestConfigServerStartup.Reset();
+        TestConfigServerStartup.Response = environment;
+        TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
+        TestConfigServerStartup.Label = "testlabel";
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+
+        using var server = new TestServer(builder);
+        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+
+        var settings = new ConfigServerClientSettings
+        {
+            Name = "myName",
+            Enabled = false,
+            PollingInterval = TimeSpan.FromMilliseconds(300),
+            Label = "label,testlabel"
+        };
+
+        using HttpClient client = server.CreateClient();
+
+        // Act
+        _ = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+
+        // Assert
+        Assert.False(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(2)));
+    }
+
+    [Fact]
     public async Task DoLoad_MultipleLabels_ChecksAllLabels()
     {
         const string environment = @"
@@ -469,11 +545,11 @@ public sealed class ConfigServerConfigurationProviderTest
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
+        TestConfigServerStartup.ReturnStatus =
+        [
             404,
             200
-        };
+        ];
 
         TestConfigServerStartup.Label = "testlabel";
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
@@ -525,7 +601,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
 
-        ConfigEnvironment env = await provider.RemoteLoadAsync(settings.GetUris(), null, CancellationToken.None);
+        ConfigEnvironment? env = await provider.RemoteLoadAsync(settings.GetUris(), null, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.NotNull(env);
@@ -540,7 +616,7 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.NotNull(env.PropertySources[0].Source);
         Assert.Equal(2, env.PropertySources[0].Source.Count);
         Assert.Equal("value1", env.PropertySources[0].Source["key1"].ToString());
-        Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString(), CultureInfo.InvariantCulture));
+        Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString()!, CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -549,11 +625,11 @@ public sealed class ConfigServerConfigurationProviderTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
+        TestConfigServerStartup.ReturnStatus =
+        [
             500,
             200
-        };
+        ];
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
@@ -577,11 +653,11 @@ public sealed class ConfigServerConfigurationProviderTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
+        TestConfigServerStartup.ReturnStatus =
+        [
             404,
             200
-        };
+        ];
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
@@ -605,10 +681,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
-            404
-        };
+        TestConfigServerStartup.ReturnStatus = [404];
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
@@ -631,10 +704,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
-            404
-        };
+        TestConfigServerStartup.ReturnStatus = [404];
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
@@ -665,11 +735,11 @@ public sealed class ConfigServerConfigurationProviderTest
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
+        TestConfigServerStartup.ReturnStatus =
+        [
             404,
             200
-        };
+        ];
 
         await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
@@ -681,10 +751,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
-            500
-        };
+        TestConfigServerStartup.ReturnStatus = [500];
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
@@ -705,12 +772,12 @@ public sealed class ConfigServerConfigurationProviderTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
+        TestConfigServerStartup.ReturnStatus =
+        [
             500,
             500,
             500
-        };
+        ];
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
@@ -733,15 +800,15 @@ public sealed class ConfigServerConfigurationProviderTest
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Reset();
 
-        TestConfigServerStartup.ReturnStatus = new[]
-        {
+        TestConfigServerStartup.ReturnStatus =
+        [
             500,
             500,
             500,
             500,
             500,
             500
-        };
+        ];
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
@@ -800,7 +867,7 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
 
-        Assert.True(provider.TryGet("key1", out string value));
+        Assert.True(provider.TryGet("key1", out string? value));
         Assert.Equal("value1", value);
         Assert.True(provider.TryGet("key2", out value));
         Assert.Equal("10", value);
@@ -842,7 +909,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         provider.Load();
         Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.True(provider.TryGet("featureToggles:ShowModule:0", out string value));
+        Assert.True(provider.TryGet("featureToggles:ShowModule:0", out string? value));
         Assert.Equal("FT1", value);
         Assert.True(provider.TryGet("featureToggles:ShowModule:1", out value));
         Assert.Equal("FT2", value);
@@ -870,8 +937,8 @@ public sealed class ConfigServerConfigurationProviderTest
                 }";
 
         provider.Load();
-        Assert.True(provider.TryGet("featureToggles:ShowModule:0", out string val));
-        Assert.Equal("none", val);
+        Assert.True(provider.TryGet("featureToggles:ShowModule:0", out value));
+        Assert.Equal("none", value);
         Assert.False(provider.TryGet("featureToggles:ShowModule:1", out _));
         Assert.False(provider.TryGet("featureToggles:ShowModule:2", out _));
         Assert.False(provider.TryGet("enableSettings", out _));
@@ -901,13 +968,13 @@ public sealed class ConfigServerConfigurationProviderTest
         };
 
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
-        CultureInfo initialCulture = GetAndSetCurrentCulture(new CultureInfo("ru-RU"));
+        CultureInfo? initialCulture = GetAndSetCurrentCulture(new CultureInfo("ru-RU"));
 
         try
         {
             provider.AddConfigServerClientSettings();
 
-            Assert.True(provider.TryGet("spring:cloud:config:access_token_uri", out string value));
+            Assert.True(provider.TryGet("spring:cloud:config:access_token_uri", out string? value));
             Assert.Equal("https://foo.bar/", value);
             Assert.True(provider.TryGet("spring:cloud:config:client_id", out value));
             Assert.Equal("client_id", value);
@@ -1092,10 +1159,10 @@ public sealed class ConfigServerConfigurationProviderTest
         };
 
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
-        HttpClient httpClient = provider.HttpClient;
 
-        Assert.Equal("bar", httpClient.DefaultRequestHeaders.GetValues("foo").SingleOrDefault());
-        Assert.Equal("foo", httpClient.DefaultRequestHeaders.GetValues("bar").SingleOrDefault());
+        Assert.NotNull(provider.HttpClient);
+        Assert.Equal("bar", provider.HttpClient.DefaultRequestHeaders.GetValues("foo").SingleOrDefault());
+        Assert.Equal("foo", provider.HttpClient.DefaultRequestHeaders.GetValues("bar").SingleOrDefault());
     }
 
     [Fact]
@@ -1111,7 +1178,7 @@ public sealed class ConfigServerConfigurationProviderTest
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
         Assert.True(provider.IsDiscoveryFirstEnabled());
 
-        var values = new Dictionary<string, string>
+        var values = new Dictionary<string, string?>
         {
             { "spring:cloud:config:discovery:enabled", "True" }
         };
@@ -1133,7 +1200,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void UpdateSettingsFromDiscovery_UpdatesSettingsCorrectly()
     {
-        var values = new Dictionary<string, string>
+        var values = new Dictionary<string, string?>
         {
             { "spring:cloud:config:discovery:enabled", "True" }
         };
@@ -1182,7 +1249,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task DiscoverServerInstances_FailsFast()
     {
-        var values = new Dictionary<string, string>
+        var values = new Dictionary<string, string?>
         {
             { "spring:cloud:config:discovery:enabled", "True" },
             { "spring:cloud:config:failFast", "True" },
@@ -1233,7 +1300,7 @@ public sealed class ConfigServerConfigurationProviderTest
         ConfigServerClientSettings settings = _commonSettings;
 
         using var server = new TestServer(hostBuilder);
-        server.BaseAddress = new Uri(settings.Uri);
+        server.BaseAddress = new Uri(settings.Uri!);
 
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
@@ -1244,7 +1311,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IConfigurationRoot configuration = configurationBuilder.Build();
 
-        TestOptions options = null;
+        TestOptions? options = null;
 
         using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
 
@@ -1263,14 +1330,12 @@ public sealed class ConfigServerConfigurationProviderTest
             options = configuration.Get<TestOptions>();
         }
 
-        _ = nameof(TestOptions.Name);
-        _ = nameof(TestOptions.Version);
-
+        Assert.NotNull(options);
         Assert.Equal("my-app", options.Name);
         Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
     }
 
-    private static CultureInfo GetAndSetCurrentCulture(CultureInfo newCulture)
+    private static CultureInfo? GetAndSetCurrentCulture(CultureInfo? newCulture)
     {
         var oldCulture = CultureInfo.DefaultThreadCurrentCulture;
         CultureInfo.DefaultThreadCurrentCulture = newCulture;
@@ -1297,14 +1362,10 @@ public sealed class ConfigServerConfigurationProviderTest
 
     private sealed class TestServiceInfo : IServiceInstance
     {
-        public string ServiceId => throw new NotImplementedException();
-
-        public string Host => throw new NotImplementedException();
-
-        public int Port => throw new NotImplementedException();
-
-        public bool IsSecure => throw new NotImplementedException();
-
+        public string? ServiceId { get; }
+        public string? Host { get; }
+        public int Port { get; }
+        public bool IsSecure { get; }
         public Uri Uri { get; }
 
         public IDictionary<string, string> Metadata { get; }
@@ -1319,9 +1380,10 @@ public sealed class ConfigServerConfigurationProviderTest
     private sealed class TestOptions
     {
 #pragma warning disable S3459 // Unassigned members should be removed
-        public string Name { get; set; }
-
-        public string Version { get; set; }
+#pragma warning disable S1144 // Unused private types or members should be removed
+        public string? Name { get; set; }
+        public string? Version { get; set; }
+#pragma warning restore S1144 // Unused private types or members should be removed
 #pragma warning restore S3459 // Unassigned members should be removed
     }
 }

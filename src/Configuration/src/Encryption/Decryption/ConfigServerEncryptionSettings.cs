@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
+
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
 /// <summary>
@@ -42,22 +44,22 @@ internal sealed class ConfigServerEncryptionSettings
     /// <summary>
     /// Gets or sets the location of the keystore.
     /// </summary>
-    public string EncryptionKeyStoreLocation { get; set; }
+    public string? EncryptionKeyStoreLocation { get; set; }
 
     /// <summary>
     /// Gets or sets the keystore password.
     /// </summary>
-    public string EncryptionKeyStorePassword { get; set; }
+    public string? EncryptionKeyStorePassword { get; set; }
 
     /// <summary>
     /// Gets or sets the alias of the key in the keystore.
     /// </summary>
-    public string EncryptionKeyStoreAlias { get; set; }
+    public string? EncryptionKeyStoreAlias { get; set; }
 
     /// <summary>
     /// Gets or sets the key of the simple encryption.
     /// </summary>
-    public string EncryptionKey { get; set; }
+    public string? EncryptionKey { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerEncryptionSettings" /> class.
@@ -69,5 +71,13 @@ internal sealed class ConfigServerEncryptionSettings
     {
         EncryptionRsaAlgorithm = DefaultEncryptionRsaAlgorithm;
         EncryptionRsaSalt = DefaultEncryptionRsaSalt;
+    }
+
+    internal static ITextDecryptor CreateTextDecryptor(IConfiguration configuration)
+    {
+        var settings = new ConfigServerEncryptionSettings();
+        ConfigurationSettingsHelper.Initialize(settings, configuration);
+
+        return EncryptionFactory.CreateEncryptor(settings);
     }
 }

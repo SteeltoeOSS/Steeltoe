@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Support for storing data protection keys in Redis.</Description>
     <PackageTags>CloudFoundry;aspnetcore;security;dataprotection;redis</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -15,5 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connectors\Steeltoe.Connectors.csproj" />
   </ItemGroup>
 </Project>

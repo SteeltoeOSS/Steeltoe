@@ -160,7 +160,7 @@ public sealed class RedisConnectorTests
         fileProvider.IncludeFile("db/password", "v5gjxPDxq4lacijzEus9vGi0cJh0tsOE");
 
         var reader = new KubernetesMemoryServiceBindingsReader(fileProvider);
-        builder.Configuration.AddKubernetesServiceBindings(false, true, _ => false, reader);
+        builder.Configuration.AddKubernetesServiceBindings(reader);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

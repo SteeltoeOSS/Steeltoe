@@ -18,7 +18,7 @@ public class ServicesOptions : BaseServiceOptions
     {
     }
 
-    public ServicesOptions(IConfiguration configuration, string sectionPrefix)
+    public ServicesOptions(IConfiguration configuration, string? sectionPrefix)
         : base(configuration, sectionPrefix)
     {
     }

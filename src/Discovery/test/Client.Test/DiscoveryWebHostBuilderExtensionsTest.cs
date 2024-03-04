@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Eureka;
@@ -33,9 +34,8 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
     [Fact]
     public void AddDiscoveryClient_IWebHostBuilder_AddsServiceDiscovery_Eureka()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction)
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         IWebHost host = hostBuilder.AddDiscoveryClient().Build();
         IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
@@ -49,9 +49,8 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
     [Fact]
     public void AddDiscoveryClient_IWebHostBuilder_AddsServiceDiscovery_Consul()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction)
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
 
         IWebHost host = hostBuilder.AddDiscoveryClient().Build();
         IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
@@ -65,9 +64,8 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
     [Fact]
     public void AddServiceDiscovery_IWebHostBuilder_AddsServiceDiscovery_Eureka()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction)
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         IWebHost host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
         IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
@@ -81,9 +79,8 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
     [Fact]
     public void AddServiceDiscovery_IWebHostBuilder_AddsServiceDiscovery_Consul()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
-        {
-        }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction)
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
 
         IWebHost host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();
         IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();

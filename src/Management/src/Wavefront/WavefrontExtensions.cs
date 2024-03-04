@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -47,52 +45,6 @@ public static class WavefrontExtensions
         });
 
         return services;
-    }
-
-    /// <summary>
-    /// Add wavefront metrics to the application.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your Hostbuilder.
-    /// </param>
-    /// <returns>
-    /// The updated HostBuilder.
-    /// </returns>
-    public static IHostBuilder AddWavefrontMetrics(this IHostBuilder hostBuilder)
-    {
-        ArgumentGuard.NotNull(hostBuilder);
-
-        return hostBuilder.ConfigureServices((_, collection) =>
-        {
-            collection.AddWavefrontMetrics();
-        });
-    }
-
-    /// <summary>
-    /// Add Wavefront Metrics Exporter.
-    /// </summary>
-    /// <param name="applicationBuilder">
-    /// Your <see cref="WebApplicationBuilder" />.
-    /// </param>
-    public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
-    {
-        ArgumentGuard.NotNull(applicationBuilder);
-
-        applicationBuilder.Services.AddWavefrontMetrics();
-        return applicationBuilder;
-    }
-
-    /// <summary>
-    /// Adds Wavefront to the application.
-    /// </summary>
-    /// <param name="hostBuilder">
-    /// Your HostBuilder.
-    /// </param>
-    public static IWebHostBuilder AddWavefrontMetrics(this IWebHostBuilder hostBuilder)
-    {
-        ArgumentGuard.NotNull(hostBuilder);
-
-        return hostBuilder.ConfigureServices((_, collection) => collection.AddWavefrontMetrics());
     }
 
     public static MeterProviderBuilder AddWavefrontExporter(this MeterProviderBuilder builder)

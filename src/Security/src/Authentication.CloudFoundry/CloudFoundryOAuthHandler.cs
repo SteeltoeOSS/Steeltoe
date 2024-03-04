@@ -19,8 +19,13 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
 {
     private readonly ILogger<CloudFoundryOAuthHandler> _logger;
 
+#if NET6_0
     public CloudFoundryOAuthHandler(IOptionsMonitor<CloudFoundryOAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
+#else
+    public CloudFoundryOAuthHandler(IOptionsMonitor<CloudFoundryOAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+        : base(options, logger, encoder)
+#endif
     {
         _logger = logger.CreateLogger<CloudFoundryOAuthHandler>();
     }

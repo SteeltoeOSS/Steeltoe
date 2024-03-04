@@ -10,14 +10,14 @@ namespace Steeltoe.Configuration.Encryption.Test.Decryption;
 public sealed class EncryptionFactoryTest
 {
     [Fact]
-    public void Create_WhenDisabled_CreateNoopDecrytor()
+    public void Create_WhenDisabled_CreateNoopDecryptor()
     {
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings();
         Assert.IsType<NoopDecryptor>(EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
     }
 
     [Fact]
-    public void Create_WhenEnabledWithKey_CreateAesDecrytor()
+    public void Create_WhenEnabledWithKey_CreateAesDecryptor()
     {
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
@@ -29,7 +29,7 @@ public sealed class EncryptionFactoryTest
     }
 
     [Fact]
-    public void Create_WhenEnabledKeyStorelocation_CreateRsaDecrytor()
+    public void Create_WhenEnabledKeyStoreLocation_CreateRsaDecryptor()
     {
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {

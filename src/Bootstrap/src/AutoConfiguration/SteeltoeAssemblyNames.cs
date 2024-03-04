@@ -6,23 +6,32 @@
 
 namespace Steeltoe.Bootstrap.AutoConfiguration;
 
+/// <summary>
+/// Lists the names of Steeltoe assemblies that are used in auto-configuration.
+/// </summary>
 public static class SteeltoeAssemblyNames
 {
     public const string ConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry";
     public const string ConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer";
-    public const string ConfigurationKubernetes = "Steeltoe.Configuration.Kubernetes";
     public const string ConfigurationRandomValue = "Steeltoe.Configuration.RandomValue";
     public const string ConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder";
     public const string Connectors = "Steeltoe.Connectors";
     public const string DiscoveryClient = "Steeltoe.Discovery.Client";
     public const string LoggingDynamicSerilog = "Steeltoe.Logging.DynamicSerilog";
     public const string ManagementEndpoint = "Steeltoe.Management.Endpoint";
-    public const string ManagementKubernetes = "Steeltoe.Management.Kubernetes";
     public const string ManagementPrometheus = "Steeltoe.Management.Prometheus";
     public const string ManagementTracing = "Steeltoe.Management.Tracing";
     public const string ManagementWavefront = "Steeltoe.Management.Wavefront";
     public const string SecurityAuthenticationCloudFoundry = "Steeltoe.Security.Authentication.CloudFoundry";
 
-    internal static readonly IReadOnlyCollection<string> All = typeof(SteeltoeAssemblyNames).GetFields().Where(field => field.FieldType == typeof(string))
-        .Select(field => field.GetValue(null)).Cast<string>().ToArray();
+    internal static readonly IReadOnlySet<string> All = typeof(SteeltoeAssemblyNames).GetFields().Where(field => field.FieldType == typeof(string))
+        .Select(field => field.GetValue(null)).Cast<string>().ToHashSet();
+
+    internal static IReadOnlySet<string> Only(string assemblyName)
+    {
+        return All.Except(new[]
+        {
+            assemblyName
+        }).ToHashSet();
+    }
 }

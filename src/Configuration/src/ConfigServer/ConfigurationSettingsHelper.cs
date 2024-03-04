@@ -56,7 +56,7 @@ internal static class ConfigurationSettingsHelper
         settings.Uri = GetCloudFoundryUri(sectionPrefix, configuration, settings.Uri);
     }
 
-    private static string GetEnvironment(IConfigurationSection section, string defaultValue)
+    private static string? GetEnvironment(IConfigurationSection section, string? defaultValue)
     {
         return section.GetValue("env", string.IsNullOrEmpty(defaultValue) ? ConfigServerClientSettings.DefaultEnvironment : defaultValue);
     }
@@ -84,12 +84,12 @@ internal static class ConfigurationSettingsHelper
             VcapServicesConfigserverPrefix, VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
-    private static string GetApplicationName(string sectionPrefix, IConfiguration configuration, string defaultValue)
+    private static string? GetApplicationName(string sectionPrefix, IConfiguration configuration, string? defaultValue)
     {
         return ConfigurationValuesHelper.GetSetting("name", configuration, defaultValue, sectionPrefix, SpringApplicationPrefix, VcapApplicationPrefix);
     }
 
-    private static string GetCloudFoundryUri(string sectionPrefix, IConfiguration configuration, string defaultValue)
+    private static string? GetCloudFoundryUri(string sectionPrefix, IConfiguration configuration, string? defaultValue)
     {
         return ConfigurationValuesHelper.GetSetting("credentials:uri", configuration, defaultValue, sectionPrefix, VcapServicesConfigserverPrefix,
             VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix);

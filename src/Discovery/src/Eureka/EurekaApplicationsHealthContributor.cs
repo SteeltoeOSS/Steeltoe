@@ -93,7 +93,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
             string[] monitoredApps = configuration.HealthMonitoredApps?.Split(new[]
             {
                 ','
-            }, StringSplitOptions.RemoveEmptyEntries);
+            }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
             if (monitoredApps != null && monitoredApps.Length > 0)
             {

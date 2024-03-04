@@ -11,21 +11,21 @@ internal sealed class TestDiscoveryClient : IDiscoveryClient
 {
     internal bool HasShutdown { get; private set; }
 
-    public string Description => throw new NotImplementedException();
+    public string Description => string.Empty;
 
     public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<IList<string>>(Array.Empty<string>());
     }
 
     public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<IList<IServiceInstance>>(Array.Empty<IServiceInstance>());
     }
 
     public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<IServiceInstance>(new JsonSerializableServiceInstance());
     }
 
     public Task ShutdownAsync(CancellationToken cancellationToken)

@@ -79,11 +79,8 @@ public sealed class CloudFoundryContainerIdentityMtlsTest : IClassFixture<Client
     private IHostBuilder GetHostBuilder()
     {
         return new HostBuilder()
-            .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity(_fixture.ServerOrgId.ToString(), _fixture.ServerSpaceId.ToString()))
-            .ConfigureWebHostDefaults(webHost => webHost.UseStartup<TestServerCertificateStartup>()).ConfigureWebHost(webBuilder =>
-            {
-                webBuilder.UseTestServer();
-            });
+            .ConfigureAppConfiguration(builder => builder.AddCloudFoundryContainerIdentity(_fixture.ServerOrgId.ToString(), _fixture.ServerSpaceId.ToString()))
+            .ConfigureWebHostDefaults(webHost => webHost.UseStartup<TestServerCertificateStartup>()).ConfigureWebHost(webBuilder => webBuilder.UseTestServer());
     }
 
     private HttpClient ClientWithCertificate(HttpClient httpClient, X509Certificate2 certificate)

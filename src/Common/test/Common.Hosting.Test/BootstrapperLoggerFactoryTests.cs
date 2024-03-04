@@ -17,14 +17,14 @@ public sealed class BootstrapperLoggerFactoryTests
     [Fact]
     public void BootstrapLoggerFactory_CorrectTypeResolved()
     {
-        IBootstrapLoggerFactory sut = BootstrapLoggerFactory.Instance;
+        IBootstrapLoggerFactory sut = BootstrapLoggerFactory.Default;
         sut.Should().BeOfType<UpgradableBootstrapLoggerFactory>();
     }
 
     [Fact]
     public void UpgradableBootLogger()
     {
-        IBootstrapLoggerFactory sut = BootstrapLoggerFactory.Instance;
+        IBootstrapLoggerFactory sut = BootstrapLoggerFactory.Default;
         sut.Should().BeOfType<UpgradableBootstrapLoggerFactory>();
 
         var logProvider = new Mock<ILoggerProvider>();

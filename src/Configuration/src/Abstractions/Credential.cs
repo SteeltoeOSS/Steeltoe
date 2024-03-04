@@ -9,7 +9,7 @@ namespace Steeltoe.Configuration;
 [TypeConverter(typeof(CredentialConverter))]
 public sealed class Credential : Dictionary<string, Credential>
 {
-    public string Value { get; }
+    public string? Value { get; }
 
     public Credential()
     {

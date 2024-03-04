@@ -20,7 +20,6 @@ public sealed class NoOpDiscoveryClientTest
             { "spring:application:name", "myName" },
             { "Consul:somekey", "somevalue" },
             { "Eureka:somekey", "somevalue" },
-            { "spring:cloud:kubernetes:discovery:somekey", "somevalue" },
             { "DiscoveryClients:TestClient", "TestClientConfigPath" },
             { "TestClientConfigPath:Uri", "http://someserver:1234" }
         };
@@ -36,8 +35,7 @@ public sealed class NoOpDiscoveryClientTest
         foreach (string c in new List<string>
         {
             "Consul",
-            "Eureka",
-            "Kubernetes"
+            "Eureka"
         })
         {
             VerifyLogEntered(logger, LogLevel.Warning, $"Found configuration values for {c}, try adding a NuGet reference to Steeltoe.Discovery.{c}");

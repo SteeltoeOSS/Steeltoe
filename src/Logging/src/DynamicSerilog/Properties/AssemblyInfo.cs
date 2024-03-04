@@ -4,4 +4,5 @@
 
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Logging.DynamicSerilog.Test")]

@@ -10,17 +10,17 @@ using Steeltoe.Common;
 namespace Steeltoe.Configuration.Encryption;
 
 /// <summary>
-/// Configuration source used in creating a <see cref="EncryptionResolverProvider" /> that resolves encryptions. A encryption takes the form of:
+/// Configuration source used in creating a <see cref="EncryptionResolverProvider" /> that resolves encryptions. An encryption takes the form of:
 /// <code><![CDATA[
 /// ${some:config:reference?default_if_not_present}
 /// ]]></code>
 /// </summary>
 internal sealed class EncryptionResolverSource : IConfigurationSource
 {
-    private readonly IConfigurationRoot _configuration;
+    private readonly IConfigurationRoot? _configuration;
     private readonly ITextDecryptor _textDecryptor;
 
-    internal IList<IConfigurationSource> Sources { get; }
+    internal IList<IConfigurationSource>? Sources { get; }
     internal ILoggerFactory LoggerFactory { get; }
 
     /// <summary>
@@ -29,13 +29,13 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
     /// <param name="sources">
     /// The configuration sources to use.
     /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
     /// </param>
-    public EncryptionResolverSource(IList<IConfigurationSource> sources, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    public EncryptionResolverSource(IList<IConfigurationSource> sources, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(sources);
         ArgumentGuard.NotNull(loggerFactory);
@@ -52,13 +52,13 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
     /// <param name="root">
     /// The root configuration to use.
     /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
     /// <param name="textDecryptor">
     /// Decryptor to use.
     /// </param>
-    public EncryptionResolverSource(IConfigurationRoot root, ILoggerFactory loggerFactory, ITextDecryptor textDecryptor)
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    public EncryptionResolverSource(IConfigurationRoot root, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(root);
         ArgumentGuard.NotNull(loggerFactory);
@@ -85,17 +85,20 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
         if (_configuration != null)
         {
             var configurationView = new ConfigurationView(_configuration.Providers.ToList());
-            return new EncryptionResolverProvider(configurationView, LoggerFactory, _textDecryptor);
+            return new EncryptionResolverProvider(configurationView, _textDecryptor, LoggerFactory);
         }
 
         var providers = new List<IConfigurationProvider>();
 
-        foreach (IConfigurationSource source in Sources)
+        if (Sources != null)
         {
-            IConfigurationProvider provider = source.Build(builder);
-            providers.Add(provider);
+            foreach (IConfigurationSource source in Sources)
+            {
+                IConfigurationProvider provider = source.Build(builder);
+                providers.Add(provider);
+            }
         }
 
-        return new EncryptionResolverProvider(providers, LoggerFactory, _textDecryptor);
+        return new EncryptionResolverProvider(providers, _textDecryptor, LoggerFactory);
     }
 }

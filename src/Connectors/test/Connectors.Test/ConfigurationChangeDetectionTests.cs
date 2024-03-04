@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Connectors.PostgreSql;
 using Xunit;
 
@@ -96,10 +97,7 @@ public sealed class ConfigurationChangeDetectionTests
     public void Applies_local_configuration_changes_using_WebHostBuilder()
     {
         var builder = new WebHostBuilder();
-
-        builder.Configure(_ =>
-        {
-        });
+        builder.Configure(HostingHelpers.EmptyAction);
 
         const string fileName = "appsettings.json";
 

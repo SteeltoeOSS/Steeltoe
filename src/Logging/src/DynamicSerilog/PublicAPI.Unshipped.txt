@@ -22,7 +22,7 @@ Steeltoe.Logging.DynamicSerilog.MinimumLevel
 Steeltoe.Logging.DynamicSerilog.MinimumLevel.Default.get -> Serilog.Events.LogEventLevel
 Steeltoe.Logging.DynamicSerilog.MinimumLevel.Default.set -> void
 Steeltoe.Logging.DynamicSerilog.MinimumLevel.MinimumLevel() -> void
-Steeltoe.Logging.DynamicSerilog.MinimumLevel.Override.get -> System.Collections.Generic.Dictionary<string!, Serilog.Events.LogEventLevel>!
+Steeltoe.Logging.DynamicSerilog.MinimumLevel.Override.get -> System.Collections.Generic.IDictionary<string!, Serilog.Events.LogEventLevel>!
 Steeltoe.Logging.DynamicSerilog.SerilogHostBuilderExtensions
 Steeltoe.Logging.DynamicSerilog.SerilogLoggingBuilderExtensions
 Steeltoe.Logging.DynamicSerilog.SerilogMessageProcessingLogger

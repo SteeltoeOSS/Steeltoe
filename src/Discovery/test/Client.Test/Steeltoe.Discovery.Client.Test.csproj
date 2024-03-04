@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -19,6 +19,5 @@
     <ProjectReference Include="..\..\src\Client\Steeltoe.Discovery.Client.csproj" />
     <ProjectReference Include="..\..\src\Consul\Steeltoe.Discovery.Consul.csproj" />
     <ProjectReference Include="..\..\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
-    <ProjectReference Include="..\..\src\Kubernetes\Steeltoe.Discovery.Kubernetes.csproj" />
   </ItemGroup>
 </Project>
