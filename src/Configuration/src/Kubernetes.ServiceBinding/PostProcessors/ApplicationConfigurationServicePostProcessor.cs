@@ -15,7 +15,7 @@ internal sealed class ApplicationConfigurationServicePostProcessor : IConfigurat
         {
             var mapper = new ServiceBindingMapper(configurationData, bindingKey);
 
-            IEnumerable<string> keysToMap = configurationData.Keys.Select(s => s.Split($"{bindingKey}:").Last()).ToList();
+            IEnumerable<string> keysToMap = configurationData.Keys.Select(s => s.Split($"{bindingKey}:")[^1]).ToList();
             mapper.MapFrom(keysToMap);
         }
     }
