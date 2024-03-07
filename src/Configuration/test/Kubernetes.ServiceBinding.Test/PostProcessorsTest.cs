@@ -158,10 +158,11 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("provider", "acs"),
             Tuple.Create("random", "data"),
             Tuple.Create("from", "some-source"),
-            Tuple.Create("mySecret", "a-password"),
+            Tuple.Create("mySecret", "a-password")
         };
 
-        Dictionary<string, string?> configurationData = GetConfigurationData(TestBindingName, ApplicationConfigurationServicePostProcessor.BindingType, secrets);
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(TestBindingName, ApplicationConfigurationServicePostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
