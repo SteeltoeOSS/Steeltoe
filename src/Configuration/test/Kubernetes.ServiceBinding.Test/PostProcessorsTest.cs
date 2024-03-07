@@ -12,7 +12,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test;
 public class PostProcessorsTest : BasePostProcessorsTest
 {
     [Fact]
-    public void Processes_ApplicationConfigurationService_configuration()
+    public void Processes_ApplicationConfigurationService_Configuration()
     {
         var postProcessor = new ApplicationConfigurationServicePostProcessor();
 
@@ -26,7 +26,7 @@ public class PostProcessorsTest : BasePostProcessorsTest
 
         Dictionary<string, string> configurationData =
             GetConfigData(_testBindingName, ApplicationConfigurationServicePostProcessor.BindingType, secrets);
-        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ApplicationConfigurationServicePostProcessor.BindingType, false);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ApplicationConfigurationServicePostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
