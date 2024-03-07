@@ -21,7 +21,7 @@ public sealed class Applications
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new();
 
     public string? AppsHashCode { get; internal set; }
-    public long Version { get; private set; }
+    public long? Version { get; private set; }
     public bool ReturnUpInstancesOnly { get; set; }
 
     internal Applications()
@@ -193,7 +193,7 @@ public sealed class Applications
         {
             foreach (InstanceInfo instance in app.Instances)
             {
-                string instanceStatus = instance.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
+                string instanceStatus = (instance.Status ?? InstanceStatus.Unknown).ToSnakeCaseString(SnakeCaseStyle.AllCaps);
 
                 if (!statusMap.TryGetValue(instanceStatus, out int count))
                 {

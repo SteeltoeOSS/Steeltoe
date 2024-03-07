@@ -22,7 +22,7 @@ public sealed class JsonApplicationTest : AbstractBaseTest
                     "app":"FOO",
                     "ipAddr":"192.168.56.1",
                     "status":"UP",
-                    "overriddenstatus":"UNKNOWN",
+                    "overriddenStatus":"UNKNOWN",
                     "port":{"$":8080,"@enabled":"true"},
                     "securePort":{"$":443,"@enabled":"false"},
                     "countryId":1,

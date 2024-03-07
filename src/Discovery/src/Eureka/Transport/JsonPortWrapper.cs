@@ -13,8 +13,8 @@ internal sealed class JsonPortWrapper
 {
     [JsonPropertyName("@enabled")]
     [JsonConverter(typeof(BoolStringJsonConverter))]
-    public bool Enabled { get; set; }
+    public bool? Enabled { get; set; }
 
     [JsonPropertyName("$")]
-    public int Port { get; set; }
+    public int? Port { get; set; }
 }

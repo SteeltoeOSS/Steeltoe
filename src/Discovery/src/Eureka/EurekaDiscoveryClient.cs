@@ -78,7 +78,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             return;
         }
 
-        if (clientOptions.ShouldRegisterWithEureka)
+        if (clientOptions.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo.LeaseInfo.RenewalInterval != null)
         {
             if (!RegisterAsync(CancellationToken.None).GetAwaiter().GetResult())
             {
@@ -86,7 +86,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             }
 
             _logger.LogInformation("Starting Heartbeat");
-            HeartbeatTimer = StartTimer(_appInfoManager.InstanceInfo.LeaseInfo.RenewalInterval, HeartbeatTask);
+            HeartbeatTimer = StartTimer(_appInfoManager.InstanceInfo.LeaseInfo.RenewalInterval.Value, HeartbeatTask);
 
             if (clientOptions.ShouldOnDemandUpdateStatusChange)
             {
@@ -190,6 +190,8 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
     internal Timer StartTimer(TimeSpan interval, Action task)
     {
+        // TODO: Change timer interval when config changed.
+
         var timedTask = new TimedTask(task);
         var timer = new Timer(_ => timedTask.Run(), null, interval, interval);
         return timer;
@@ -286,8 +288,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             try
             {
-                var lastDirtyTimeUtc = new DateTime(instance.LastDirtyTimestamp, DateTimeKind.Utc);
-                await _eurekaClient.HeartbeatAsync(instance.AppName, instance.InstanceId, lastDirtyTimeUtc, cancellationToken);
+                await _eurekaClient.HeartbeatAsync(instance.AppName, instance.InstanceId, instance.LastDirtyTimeUtc, cancellationToken);
 
                 _logger.LogDebug("Renew {Application}/{Instance} succeeded.", instance.AppName, instance.InstanceId);
 
@@ -431,7 +432,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
                 if (remoteInstanceInfo != null)
                 {
-                    LastRemoteInstanceStatus = remoteInstanceInfo.Status;
+                    LastRemoteInstanceStatus = remoteInstanceInfo.Status ?? InstanceStatus.Unknown;
                     return;
                 }
 
@@ -515,6 +516,10 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
+        // TODO: Should also take SecureVipAddress into account. On duplicates, which takes precedence?
+        // - https://stackoverflow.com/questions/45569978/discoveryclient-does-not-see-a-service-from-eureka
+        // - https://github.com/spring-cloud/spring-cloud-netflix/issues/3763
+
         IList<InstanceInfo> instances = GetInstancesByVipAddress(serviceId, false);
         IList<IServiceInstance> serviceInstances = new List<IServiceInstance>();
 

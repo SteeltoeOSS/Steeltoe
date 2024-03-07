@@ -35,7 +35,7 @@ public sealed class JsonInstanceInfoRootTest : AbstractBaseTest
                     "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
                     "hostName":"DESKTOP-GNQ5SUT",
                     "status":"UP",
-                    "overriddenstatus":"UNKNOWN",
+                    "overriddenStatus":"UNKNOWN",
                     "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":0,"lastRenewalTimestamp":0,"renewalTimestamp":0,"evictionTimestamp":0,"serviceUpTimestamp":0},
                     "isCoordinatingDiscoveryServer":false,
                     "metadata":{"@class":"java.util.Collections$EmptyMap","metadata":null},

@@ -16,7 +16,7 @@ internal sealed class JsonApplications
 
     [JsonPropertyName("versions__delta")]
     [JsonConverter(typeof(LongStringJsonConverter))]
-    public long VersionDelta { get; set; }
+    public long? VersionDelta { get; set; }
 
     [JsonPropertyName("application")]
     [JsonConverter(typeof(JsonApplicationConverter))]

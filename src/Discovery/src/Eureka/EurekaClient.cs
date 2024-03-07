@@ -43,7 +43,6 @@ public sealed class EurekaClient
 
     private static readonly JsonSerializerOptions ResponseSerializerOptions = new()
     {
-        PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters =
         {
@@ -175,7 +174,7 @@ public sealed class EurekaClient
     /// <exception cref="EurekaTransportException">
     /// The registration failed because none of the Eureka servers responded with success.
     /// </exception>
-    public async Task HeartbeatAsync(string appId, string instanceId, DateTime lastDirtyTimeUtc, CancellationToken cancellationToken)
+    public async Task HeartbeatAsync(string appId, string instanceId, DateTime? lastDirtyTimeUtc, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNullOrWhiteSpace(appId);
         ArgumentGuard.NotNullOrWhiteSpace(instanceId);
@@ -185,15 +184,17 @@ public sealed class EurekaClient
         // - The 'overriddenStatus' query string parameter is only used in Eureka server-to-server scenarios.
         // See InstanceResource.renewLease() at https://github.com/Netflix/eureka/blob/master/eureka-core/src/main/java/com/netflix/eureka/resources/InstanceResource.java#L105-L110.
 
-        // A Eureka server returns 404 when our lastDirtyTimeUtc is newer, and it wants us to re-register because it believes to be outdated.
+        // A Eureka server returns 404 when our lastDirtyTimeUtc is newer, then it wants us to re-register because it believes to be outdated.
         // This can happen in a cluster of Eureka servers where not all servers are in sync.
         // Because we're sequentially sending a heartbeat to all known servers until one succeeds, we leave it up to the servers
         // to keep each other in sync. So the client should only try to re-register when none of the Eureka servers reported success.
 
-        var queryString = new Dictionary<string, string>
-        {
-            ["lastDirtyTimestamp"] = DateTimeConversions.ToJavaMilliseconds(lastDirtyTimeUtc).ToString(CultureInfo.InvariantCulture)
-        };
+        Dictionary<string, string>? queryString = lastDirtyTimeUtc != null
+            ? new Dictionary<string, string>
+            {
+                ["lastDirtyTimestamp"] = DateTimeConversions.ToJavaMilliseconds(lastDirtyTimeUtc.Value).ToString(CultureInfo.InvariantCulture)
+            }
+            : null;
 
         string path = $"apps/{WebUtility.UrlEncode(appId)}/{WebUtility.UrlEncode(instanceId)}";
         await ExecuteRequestAsync(HttpMethod.Put, path, queryString, null, cancellationToken);

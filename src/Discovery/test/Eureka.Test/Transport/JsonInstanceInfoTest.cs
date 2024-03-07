@@ -14,29 +14,31 @@ public sealed class JsonInstanceInfoTest : AbstractBaseTest
     [Fact]
     public void Deserialize_GoodJson()
     {
-        const string json = @"
-{ 
-    ""instanceId"":""localhost:foo"",
-    ""hostName"":""localhost"",
-    ""app"":""FOO"",
-    ""ipAddr"":""192.168.56.1"",
-    ""status"":""UP"",
-    ""overriddenstatus"":""UNKNOWN"",
-    ""port"":{""$"":8080,""@enabled"":""true""},
-    ""securePort"":{""$"":443,""@enabled"":""false""},
-    ""countryId"":1,
-    ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-    ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1457714988223,""lastRenewalTimestamp"":1457716158319,""evictionTimestamp"":0,""serviceUpTimestamp"":1457714988223},
-    ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
-    ""homePageUrl"":""http://localhost:8080/"",
-    ""statusPageUrl"":""http://localhost:8080/info"",
-    ""healthCheckUrl"":""http://localhost:8080/health"",
-    ""vipAddress"":""foo"",
-    ""isCoordinatingDiscoveryServer"":""false"",
-    ""lastUpdatedTimestamp"":""1457714988223"",
-    ""lastDirtyTimestamp"":""1457714988172"",
-    ""actionType"":""ADDED""
-}";
+        const string json = """
+            {
+                "instanceId":"localhost:foo",
+                "hostName":"localhost",
+                "app":"FOO",
+                "ipAddr":"192.168.56.1",
+                "status":"UP",
+                "overriddenStatus":"OUT_OF_SERVICE",
+                "overriddenstatus":"DOWN",
+                "port":{"$":8080,"@enabled":"true"},
+                "securePort":{"$":443,"@enabled":"false"},
+                "countryId":1,
+                "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
+                "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                "homePageUrl":"http://localhost:8080/",
+                "statusPageUrl":"http://localhost:8080/info",
+                "healthCheckUrl":"http://localhost:8080/health",
+                "vipAddress":"foo",
+                "isCoordinatingDiscoveryServer":"false",
+                "lastUpdatedTimestamp":"1457714988223",
+                "lastDirtyTimestamp":"1457714988172",
+                "actionType":"ADDED"
+            }
+            """;
 
         var result = JsonSerializer.Deserialize<JsonInstanceInfo>(json);
 
@@ -46,7 +48,8 @@ public sealed class JsonInstanceInfoTest : AbstractBaseTest
         Assert.Equal("FOO", result.AppName);
         Assert.Equal("192.168.56.1", result.IPAddress);
         Assert.Equal(InstanceStatus.Up, result.Status);
-        Assert.Equal(InstanceStatus.Unknown, result.OverriddenStatus);
+        Assert.Equal(InstanceStatus.OutOfService, result.OverriddenStatus);
+        Assert.Equal(InstanceStatus.Down, result.OverriddenStatusLegacy);
         Assert.NotNull(result.Port);
         Assert.True(result.Port.Enabled);
         Assert.Equal(8080, result.Port.Port);

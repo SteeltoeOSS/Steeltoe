@@ -197,30 +197,16 @@ public sealed class EurekaClientTest
                 "instanceId": "some",
                 "app": "FOOBAR",
                 "ipAddr": "127.0.0.1",
-                "sid": "na",
-                "port": {
-                  "@enabled": "true",
-                  "$": 7001
-                },
-                "securePort": {
-                  "@enabled": "false",
-                  "$": 7002
-                },
-                "countryId": 1,
                 "dataCenterInfo": {
                   "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
                   "name": "MyOwn"
                 },
                 "hostName": "localhost",
-                "status": "UP",
-                "overriddenstatus": "UNKNOWN",
-                "isCoordinatingDiscoveryServer": "false",
                 "metadata": {
                   "@class": "java.util.Collections$EmptyMap"
                 },
                 "lastUpdatedTimestamp": "1708427732823",
-                "lastDirtyTimestamp": "1708427732823",
-                "actionType": "ADDED"
+                "lastDirtyTimestamp": "1708427732823"
               }
             }
             """);
@@ -250,8 +236,8 @@ public sealed class EurekaClientTest
             {
                 Name = DataCenterName.MyOwn
             },
-            LastUpdatedTimestamp = 638_440_245_328_236_418,
-            LastDirtyTimestamp = 638_440_245_328_236_418
+            LastUpdatedTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc),
+            LastDirtyTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc)
         }, CancellationToken.None);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
@@ -481,7 +467,6 @@ public sealed class EurekaClientTest
                             "app":"FOO",
                             "ipAddr":"192.168.56.1",
                             "status":"UP",
-                            "overriddenstatus":"UNKNOWN",
                             "port":{"$":8080,"@enabled":"true"},
                             "securePort":{"$":443,"@enabled":"false"},
                             "countryId":1,
@@ -586,7 +571,7 @@ public sealed class EurekaClientTest
                             "app":"FOO",
                             "ipAddr":"192.168.56.1",
                             "status":"UP",
-                            "overriddenstatus":"UNKNOWN",
+                            "overriddenStatus":"UNKNOWN",
                             "port":{"$":8080,"@enabled":"true"},
                             "securePort":{"$":443,"@enabled":"false"},
                             "countryId":1,
@@ -656,7 +641,7 @@ public sealed class EurekaClientTest
                             "app":"FOO",
                             "ipAddr":"192.168.56.1",
                             "status":"UP",
-                            "overriddenstatus":"UNKNOWN",
+                            "overriddenStatus":"UNKNOWN",
                             "port":{"$":8080,"@enabled":"true"},
                             "securePort":{"$":443,"@enabled":"false"},
                             "countryId":1,

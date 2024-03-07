@@ -25,7 +25,7 @@ public sealed class JsonApplicationRootTest : AbstractBaseTest
                         "app":"FOO",
                         "ipAddr":"192.168.56.1",
                         "status":"UP",
-                        "overriddenstatus":"UNKNOWN",
+                        "overriddenStatus":"UNKNOWN",
                         "port":{"$":8080,"@enabled":"true"},
                         "securePort":{"$":443,"@enabled":"false"},
                         "countryId":1,
@@ -45,12 +45,7 @@ public sealed class JsonApplicationRootTest : AbstractBaseTest
             }
             """;
 
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-
-        var result = JsonSerializer.Deserialize<JsonApplicationRoot>(json, options);
+        var result = JsonSerializer.Deserialize<JsonApplicationRoot>(json);
         Assert.NotNull(result);
         Assert.NotNull(result.Application);
         Assert.Equal("FOO", result.Application.Name);

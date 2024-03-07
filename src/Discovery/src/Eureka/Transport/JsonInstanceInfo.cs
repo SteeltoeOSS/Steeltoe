@@ -12,6 +12,9 @@ namespace Steeltoe.Discovery.Eureka.Transport;
 
 internal sealed class JsonInstanceInfo
 {
+    // All fields are nullable, so the client won't send unspecified values with
+    // JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull.
+
     [JsonPropertyName("instanceId")]
     public string? InstanceId { get; set; }
 
@@ -52,7 +55,7 @@ internal sealed class JsonInstanceInfo
     public string? SecureVipAddress { get; set; }
 
     [JsonPropertyName("countryId")]
-    public int CountryId { get; set; }
+    public int? CountryId { get; set; }
 
     [JsonPropertyName("dataCenterInfo")]
     public JsonDataCenterInfo? DataCenterInfo { get; set; }
@@ -61,31 +64,34 @@ internal sealed class JsonInstanceInfo
     public string? HostName { get; set; }
 
     [JsonPropertyName("status")]
-    public InstanceStatus Status { get; set; }
+    public InstanceStatus? Status { get; set; }
+
+    [JsonPropertyName("overriddenStatus")]
+    public InstanceStatus? OverriddenStatus { get; set; }
 
     [JsonPropertyName("overriddenstatus")]
-    public InstanceStatus OverriddenStatus { get; set; }
+    public InstanceStatus? OverriddenStatusLegacy { get; set; }
 
     [JsonPropertyName("leaseInfo")]
     public JsonLeaseInfo? LeaseInfo { get; set; }
 
     [JsonPropertyName("isCoordinatingDiscoveryServer")]
     [JsonConverter(typeof(BoolStringJsonConverter))]
-    public bool IsCoordinatingDiscoveryServer { get; set; }
+    public bool? IsCoordinatingDiscoveryServer { get; set; }
 
     [JsonPropertyName("metadata")]
     public IDictionary<string, string?>? Metadata { get; set; }
 
     [JsonPropertyName("lastUpdatedTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]
-    public long LastUpdatedTimestamp { get; set; }
+    public long? LastUpdatedTimestamp { get; set; }
 
     [JsonPropertyName("lastDirtyTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]
-    public long LastDirtyTimestamp { get; set; }
+    public long? LastDirtyTimestamp { get; set; }
 
     [JsonPropertyName("actionType")]
-    public ActionType ActionType { get; set; }
+    public ActionType? ActionType { get; set; }
 
     [JsonPropertyName("asgName")]
     public string? AsgName { get; set; }

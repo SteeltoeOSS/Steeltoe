@@ -22,12 +22,12 @@ public sealed class EurekaApplicationInfoManager
 
     public InstanceStatus InstanceStatus
     {
-        get => InstanceInfo.Status;
+        get => InstanceInfo.Status ?? InstanceStatus.Unknown;
         set
         {
             lock (_statusChangeLock)
             {
-                InstanceStatus previousStatus = InstanceInfo.Status;
+                InstanceStatus previousStatus = InstanceInfo.Status ?? InstanceStatus.Unknown;
 
                 if (previousStatus != value)
                 {

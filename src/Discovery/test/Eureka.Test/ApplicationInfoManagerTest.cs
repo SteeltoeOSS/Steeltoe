@@ -89,15 +89,15 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
         InstanceInfo instance = appManager.InstanceInfo;
 
         Assert.False(instance.IsDirty);
-        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.Duration.TotalSeconds);
-        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalInterval.TotalSeconds);
+        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.Duration.Value.TotalSeconds);
+        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
 
         instanceOptions.LeaseRenewalIntervalInSeconds += 100;
         instanceOptions.LeaseExpirationDurationInSeconds += 100;
         appManager.RefreshLeaseInfo();
         Assert.True(instance.IsDirty);
-        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.Duration.TotalSeconds);
-        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalInterval.TotalSeconds);
+        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.Duration.Value.TotalSeconds);
+        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
     }
 
     private void HandleInstanceStatusChanged(object sender, InstanceStatusChangedEventArgs args)
