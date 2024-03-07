@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration;
@@ -54,6 +55,36 @@ internal abstract class ConfigurationDictionaryMapper
             else
             {
                 ConfigData[newKey] = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Finds configuration entries under the <see cref="BindingKey" />, transfers them to <see cref="ToPrefix" />.
+    /// Can convert from Spring style to .NET style hierarchical paths.
+    /// </summary>
+    /// <param name="configurationKeys">
+    /// List of keys to map.
+    /// </param>
+    /// <param name="convertSpringToNetDelimiters">
+    /// Determine whether keys should be converted from Spring-style to .NET style (period vs colon for hierarchy)
+    /// </param>
+    public void MapFrom(IEnumerable<string> configurationKeys, bool convertSpringToNetDelimiters)
+    {
+        foreach (string key in configurationKeys)
+        {
+            if (!key.Equals("type", StringComparison.InvariantCultureIgnoreCase) && !key.Equals("provider", StringComparison.InvariantCultureIgnoreCase))
+            {
+                string value = Get(key);
+
+                if (!convertSpringToNetDelimiters)
+                {
+                    AddKeyValue(key, value);
+                }
+                else
+                {
+                    AddKeyValue(key.Replace('.', ':'), value);
+                }
             }
         }
     }

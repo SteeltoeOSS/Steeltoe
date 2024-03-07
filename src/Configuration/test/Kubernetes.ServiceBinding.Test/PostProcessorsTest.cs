@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -10,6 +11,32 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test;
 
 public class PostProcessorsTest : BasePostProcessorsTest
 {
+    [Fact]
+    public void Processes_ApplicationConfigurationService_configuration()
+    {
+        var postProcessor = new ApplicationConfigurationServicePostProcessor();
+
+        var secrets = new[]
+        {
+            Tuple.Create("provider", "acs"),
+            Tuple.Create("random", "data"),
+            Tuple.Create("from", "some-source"),
+            Tuple.Create("my.Secret", "a-password")
+        };
+
+        Dictionary<string, string> configurationData =
+            GetConfigData(_testBindingName, ApplicationConfigurationServicePostProcessor.BindingType, secrets);
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ApplicationConfigurationServicePostProcessor.BindingType, false);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        configurationData["random"].Should().Be("data");
+        configurationData["from"].Should().Be("some-source");
+        configurationData["my:Secret"].Should().Be("a-password");
+        configurationData.Should().NotContainKey("provider");
+        configurationData.Should().NotContainKey("type");
+    }
+
     [Fact]
     public void ArtemisTest_BindingTypeDisabled()
     {

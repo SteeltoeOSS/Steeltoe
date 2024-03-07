@@ -114,6 +114,7 @@ public static class ConfigurationBuilderExtensions
 
     private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, ServiceBindingConfigurationSource source)
     {
+        source.RegisterPostProcessor(new ApplicationConfigurationServicePostProcessor());
         source.RegisterPostProcessor(new ArtemisPostProcessor());
         source.RegisterPostProcessor(new CassandraPostProcessor());
         source.RegisterPostProcessor(new ConfigServerPostProcessor());
