@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding;
 
@@ -12,6 +13,10 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding;
 /// </summary>
 public static class ConfigurationBuilderExtensions
 {
+    private const bool DefaultOptional = true;
+    private const bool DefaultReloadOnChange = false;
+    private static readonly Predicate<string> DefaultIgnoreKeyPredicate = _ => false;
+
     /// <summary>
     /// Adds configuration using files from the directory path specified by the environment variable "SERVICE_BINDING_ROOT". File name and directory paths
     /// are used as the key, and the file contents are used as the values.
@@ -24,8 +29,7 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder)
     {
-        var source = new ServiceBindingConfigurationSource();
-        return RegisterPostProcessors(builder, source);
+        return builder.AddKubernetesServiceBindings(DefaultOptional);
     }
 
     /// <summary>
@@ -44,12 +48,7 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional)
     {
-        var source = new ServiceBindingConfigurationSource
-        {
-            Optional = optional
-        };
-
-        return RegisterPostProcessors(builder, source);
+        return builder.AddKubernetesServiceBindings(optional, DefaultReloadOnChange);
     }
 
     /// <summary>
@@ -71,13 +70,7 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional, bool reloadOnChange)
     {
-        var source = new ServiceBindingConfigurationSource
-        {
-            Optional = optional,
-            ReloadOnChange = reloadOnChange
-        };
-
-        return RegisterPostProcessors(builder, source);
+        return builder.AddKubernetesServiceBindings(optional, reloadOnChange, DefaultIgnoreKeyPredicate);
     }
 
     /// <summary>
@@ -102,17 +95,23 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional, bool reloadOnChange, Predicate<string> ignoreKeyPredicate)
     {
-        var source = new ServiceBindingConfigurationSource
+        if (!builder.Sources.OfType<ServiceBindingConfigurationSource>().Any())
         {
-            Optional = optional,
-            ReloadOnChange = reloadOnChange,
-            IgnoreKeyPredicate = ignoreKeyPredicate
-        };
+            var source = new ServiceBindingConfigurationSource
+            {
+                Optional = optional,
+                ReloadOnChange = reloadOnChange,
+                IgnoreKeyPredicate = ignoreKeyPredicate
+            };
 
-        return RegisterPostProcessors(builder, source);
+            RegisterPostProcessors(source);
+            builder.Add(source);
+        }
+
+        return builder;
     }
 
-    private static IConfigurationBuilder RegisterPostProcessors(IConfigurationBuilder builder, ServiceBindingConfigurationSource source)
+    private static void RegisterPostProcessors(ServiceBindingConfigurationSource source)
     {
         source.RegisterPostProcessor(new ApplicationConfigurationServicePostProcessor());
         source.RegisterPostProcessor(new ArtemisPostProcessor());
@@ -143,7 +142,5 @@ public static class ConfigurationBuilderExtensions
         source.RegisterPostProcessor(new PostgreSqlLegacyConnectorPostProcessor());
         source.RegisterPostProcessor(new RabbitMQLegacyConnectorPostProcessor());
         source.RegisterPostProcessor(new RedisLegacyConnectorPostProcessor());
-        builder.Add(source);
-        return builder;
     }
 }
