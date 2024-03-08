@@ -36,8 +36,8 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     internal Timer? HeartbeatTimer { get; private set; }
     internal Timer? CacheRefreshTimer { get; private set; }
 
-    internal long LastGoodHeartbeatTimestamp { get; private set; }
-    internal long LastGoodRegistryFetchTimestamp { get; private set; }
+    internal DateTime? LastGoodHeartbeatTimeUtc { get; private set; }
+    internal DateTime? LastGoodRegistryFetchTimeUtc { get; private set; }
     internal InstanceStatus LastRemoteInstanceStatus { get; private set; } = InstanceStatus.Unknown;
 
     internal Applications Applications
@@ -223,7 +223,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             _localRegionApps = fetched;
             _localRegionApps.ReturnUpInstancesOnly = clientOptions.ShouldFilterOnlyUpInstances;
-            LastGoodRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
+            LastGoodRegistryFetchTimeUtc = DateTime.UtcNow;
 
             // Update remote status based on refreshed data held in the cache
             UpdateInstanceRemoteStatus();
@@ -290,7 +290,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
                 _logger.LogDebug("Renew {Application}/{Instance} succeeded.", instance.AppName, instance.InstanceId);
 
-                LastGoodHeartbeatTimestamp = DateTime.UtcNow.Ticks;
+                LastGoodHeartbeatTimeUtc = DateTime.UtcNow;
                 return true;
             }
             catch (EurekaTransportException exception)

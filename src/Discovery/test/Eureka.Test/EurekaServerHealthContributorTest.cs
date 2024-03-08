@@ -67,7 +67,7 @@ public sealed class EurekaServerHealthContributorTest
         (EurekaServerHealthContributor contributor, EurekaClientOptions clientOptions) = CreateHealthContributor();
 
         var results = new HealthCheckResult();
-        contributor.AddFetchStatus(results, 0);
+        contributor.AddFetchStatus(results, null);
 
         Assert.Contains("fetchStatus", results.Details.Keys);
         Assert.Equal("Not fetching", results.Details["fetchStatus"]);
@@ -76,7 +76,7 @@ public sealed class EurekaServerHealthContributorTest
 
         clientOptions.ShouldFetchRegistry = true;
 
-        contributor.AddFetchStatus(results, 0);
+        contributor.AddFetchStatus(results, null);
 
         Assert.Contains("fetch", results.Details.Keys);
         Assert.Contains("Not yet successfully connected", (string)results.Details["fetch"], StringComparison.Ordinal);
@@ -88,7 +88,7 @@ public sealed class EurekaServerHealthContributorTest
         results = new HealthCheckResult();
         long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * clientOptions.RegistryFetchIntervalSeconds * 10;
         var dateTime = new DateTime(ticks, DateTimeKind.Utc);
-        contributor.AddFetchStatus(results, ticks);
+        contributor.AddFetchStatus(results, dateTime);
 
         Assert.Contains("fetch", results.Details.Keys);
         Assert.Contains("Reporting failures", (string)results.Details["fetch"], StringComparison.Ordinal);
@@ -105,7 +105,7 @@ public sealed class EurekaServerHealthContributorTest
     {
         (EurekaServerHealthContributor contributor, EurekaClientOptions clientOptions) = CreateHealthContributor();
         var results = new HealthCheckResult();
-        contributor.AddHeartbeatStatus(results, 0);
+        contributor.AddHeartbeatStatus(results, null);
 
         Assert.Contains("heartbeatStatus", results.Details.Keys);
         Assert.Equal("Not registering", results.Details["heartbeatStatus"]);
@@ -115,7 +115,7 @@ public sealed class EurekaServerHealthContributorTest
         clientOptions.ShouldRegisterWithEureka = true;
 
         var instanceOptions = new EurekaInstanceOptions();
-        contributor.AddHeartbeatStatus(results, 0);
+        contributor.AddHeartbeatStatus(results, null);
 
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Not yet successfully connected", (string)results.Details["heartbeat"], StringComparison.Ordinal);
@@ -127,7 +127,7 @@ public sealed class EurekaServerHealthContributorTest
         results = new HealthCheckResult();
         long ticks = DateTime.UtcNow.Ticks - TimeSpan.TicksPerSecond * instanceOptions.LeaseRenewalIntervalInSeconds * 10;
         var dateTime = new DateTime(ticks, DateTimeKind.Utc);
-        contributor.AddHeartbeatStatus(results, ticks);
+        contributor.AddHeartbeatStatus(results, dateTime);
 
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Reporting failures", (string)results.Details["heartbeat"], StringComparison.Ordinal);

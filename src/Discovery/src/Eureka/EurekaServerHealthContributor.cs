@@ -52,8 +52,8 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
     private void AddHealthStatus(HealthCheckResult result)
     {
         HealthStatus remoteStatus = AddRemoteInstanceStatus(result);
-        HealthStatus fetchStatus = AddFetchStatus(result, _discoveryClient.LastGoodRegistryFetchTimestamp);
-        HealthStatus heartbeatStatus = AddHeartbeatStatus(result, _discoveryClient.LastGoodHeartbeatTimestamp);
+        HealthStatus fetchStatus = AddFetchStatus(result, _discoveryClient.LastGoodRegistryFetchTimeUtc);
+        HealthStatus heartbeatStatus = AddHeartbeatStatus(result, _discoveryClient.LastGoodHeartbeatTimeUtc);
 
         result.Status = remoteStatus;
 
@@ -77,16 +77,16 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
         return remoteStatus;
     }
 
-    internal HealthStatus AddHeartbeatStatus(HealthCheckResult result, long lastGoodHeartbeatTimeTicks)
+    internal HealthStatus AddHeartbeatStatus(HealthCheckResult result, DateTime? lastGoodHeartbeatTimeUtc)
     {
         EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
         EurekaInstanceOptions instanceOptions = _instanceOptionsMonitor.CurrentValue;
 
         if (clientOptions is { ShouldRegisterWithEureka: true })
         {
-            long lastGoodHeartbeatPeriod = GetLastGoodHeartbeatTimePeriod(lastGoodHeartbeatTimeTicks);
+            TimeSpan? elapsed = GetElapsedSince(lastGoodHeartbeatTimeUtc);
 
-            if (lastGoodHeartbeatPeriod <= 0)
+            if (elapsed == null)
             {
                 result.Details.Add("heartbeat", "Not yet successfully connected");
                 result.Details.Add("heartbeatStatus", HealthStatus.Unknown.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
@@ -94,18 +94,20 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
                 return HealthStatus.Unknown;
             }
 
-            if (lastGoodHeartbeatPeriod > instanceOptions.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond * 2)
+            TimeSpan renewalInternal = TimeSpan.FromSeconds(instanceOptions.LeaseRenewalIntervalInSeconds);
+
+            if (elapsed > renewalInternal * 2)
             {
                 result.Details.Add("heartbeat", "Reporting failures connecting");
                 result.Details.Add("heartbeatStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
-                result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
-                result.Details.Add("heartbeatFailures", lastGoodHeartbeatPeriod / (instanceOptions.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond));
+                result.Details.Add("heartbeatTime", lastGoodHeartbeatTimeUtc.GetValueOrDefault().ToString("s", CultureInfo.InvariantCulture));
+                result.Details.Add("heartbeatFailures", (long)(elapsed / renewalInternal));
                 return HealthStatus.Down;
             }
 
             result.Details.Add("heartbeat", "Successful");
             result.Details.Add("heartbeatStatus", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
-            result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
+            result.Details.Add("heartbeatTime", lastGoodHeartbeatTimeUtc.GetValueOrDefault().ToString("s", CultureInfo.InvariantCulture));
             return HealthStatus.Up;
         }
 
@@ -113,15 +115,15 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
         return HealthStatus.Unknown;
     }
 
-    internal HealthStatus AddFetchStatus(HealthCheckResult result, long lastGoodFetchTimeTicks)
+    internal HealthStatus AddFetchStatus(HealthCheckResult result, DateTime? lastGoodRegistryFetchTimeUtc)
     {
         EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
 
         if (clientOptions.ShouldFetchRegistry)
         {
-            long lastGoodFetchPeriod = GetLastGoodRegistryFetchTimePeriod(lastGoodFetchTimeTicks);
+            TimeSpan? elapsed = GetElapsedSince(lastGoodRegistryFetchTimeUtc);
 
-            if (lastGoodFetchPeriod <= 0)
+            if (elapsed == null)
             {
                 result.Details.Add("fetch", "Not yet successfully connected");
                 result.Details.Add("fetchStatus", HealthStatus.Unknown.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
@@ -129,18 +131,20 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
                 return HealthStatus.Unknown;
             }
 
-            if (lastGoodFetchPeriod > clientOptions.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond * 2)
+            TimeSpan fetchInternal = TimeSpan.FromSeconds(clientOptions.RegistryFetchIntervalSeconds);
+
+            if (elapsed > fetchInternal * 2)
             {
                 result.Details.Add("fetch", "Reporting failures connecting");
                 result.Details.Add("fetchStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
-                result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
-                result.Details.Add("fetchFailures", lastGoodFetchPeriod / (clientOptions.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond));
+                result.Details.Add("fetchTime", lastGoodRegistryFetchTimeUtc.GetValueOrDefault().ToString("s", CultureInfo.InvariantCulture));
+                result.Details.Add("fetchFailures", (long)(elapsed / fetchInternal));
                 return HealthStatus.Down;
             }
 
             result.Details.Add("fetch", "Successful");
             result.Details.Add("fetchStatus", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
-            result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
+            result.Details.Add("fetchTime", lastGoodRegistryFetchTimeUtc.GetValueOrDefault().ToString("s", CultureInfo.InvariantCulture));
             return HealthStatus.Up;
         }
 
@@ -185,13 +189,8 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
         }
     }
 
-    private long GetLastGoodRegistryFetchTimePeriod(long lastGoodRegistryFetchTimestamp)
+    private static TimeSpan? GetElapsedSince(DateTime? dateTimeUtc)
     {
-        return lastGoodRegistryFetchTimestamp <= 0L ? lastGoodRegistryFetchTimestamp : DateTime.UtcNow.Ticks - lastGoodRegistryFetchTimestamp;
-    }
-
-    private long GetLastGoodHeartbeatTimePeriod(long lastGoodHeartbeatTimestamp)
-    {
-        return lastGoodHeartbeatTimestamp <= 0L ? lastGoodHeartbeatTimestamp : DateTime.UtcNow.Ticks - lastGoodHeartbeatTimestamp;
+        return dateTimeUtc == null ? null : DateTime.UtcNow - dateTimeUtc.Value;
     }
 }

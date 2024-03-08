@@ -182,12 +182,12 @@ public sealed class InstanceInfo
     }
 
     /// <summary>
-    /// Gets the time when the instance status has been last updated.
+    /// Gets the time, in UTC, when the instance status has been last updated.
     /// </summary>
     public DateTime? LastUpdatedTimeUtc { get; init; }
 
     /// <summary>
-    /// Gets the last timestamp when this instance was touched.
+    /// Gets the time, in UTC, when this instance was last touched.
     /// </summary>
 #pragma warning disable S2292 // Trivial properties should be auto-implemented
     // Suppressed because this needs to be public init-only, while private settable.
