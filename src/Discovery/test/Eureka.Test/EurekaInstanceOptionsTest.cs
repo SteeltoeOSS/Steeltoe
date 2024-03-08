@@ -16,14 +16,14 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
+public sealed class EurekaInstanceOptionsTest
 {
     [Fact]
     public void DefaultConstructor_InitializedWithDefaults()
     {
         var instanceOptions = new EurekaInstanceOptions();
 
-        string thisHostAddress = instanceOptions.GetHostAddress(false);
+        string? thisHostAddress = instanceOptions.GetHostAddress(false);
 
         Assert.True(instanceOptions.IsInstanceEnabledOnInit);
         Assert.Equal(EurekaInstanceOptions.DefaultNonSecurePort, instanceOptions.NonSecurePort);
@@ -177,7 +177,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
         Assert.Equal("myHostName", instanceOptions.ResolveHostName(false));
         Assert.Equal("myHostName", instanceOptions.HostName);
         Assert.Equal("foobar", instanceOptions.RegistrationMethod);
-        IDictionary<string, string> map = instanceOptions.MetadataMap;
+        IDictionary<string, string?> map = instanceOptions.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(2, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -210,7 +210,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
 
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "eureka:instance:UseNetUtils", "true" }
         };
@@ -234,7 +234,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
     [Fact]
     public void Options_CanUseInetUtilsWithoutReverseDnsOnIP()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "eureka:instance:UseNetUtils", "true" },
             { "spring:cloud:inet:SkipReverseDnsLookup", "true" }
@@ -242,9 +242,11 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
+        var inetOptions = configurationRoot.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>()!;
+
         var instanceOptions = new EurekaInstanceOptions
         {
-            NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>(), NullLogger<InetUtils>.Instance)
+            NetUtils = new InetUtils(inetOptions, NullLogger<InetUtils>.Instance)
         };
 
         configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix).Bind(instanceOptions);
@@ -261,10 +263,12 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
     [Fact]
     public void UpdateConfigurationFindsHttpUrl()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "urls", "http://myapp:1233" }
-        }).Build();
+        };
+
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var instanceOptions = new EurekaInstanceOptions();
 
@@ -279,10 +283,12 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
     [Fact]
     public void UpdateConfigurationFindsUrlsPicksHttps()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" }
-        }).Build();
+        };
+
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var instanceOptions = new EurekaInstanceOptions();
 
@@ -298,10 +304,12 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
     [Fact]
     public void UpdateConfigurationHandlesPlus()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "urls", "https://+:443;http://+:80" }
-        }).Build();
+        };
+
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var instanceOptions = new EurekaInstanceOptions();
 
@@ -316,7 +324,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
     [Fact]
     public void UpdateConfigurationUsesDefaultsWhenNoUrl()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
         var instanceOptions = new EurekaInstanceOptions();
 
         instanceOptions.ApplyConfigUrls(configurationRoot.GetAspNetCoreUrls());

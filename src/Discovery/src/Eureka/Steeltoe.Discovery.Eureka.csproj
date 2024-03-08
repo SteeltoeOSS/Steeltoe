@@ -4,6 +4,7 @@
     <Description>Client for service discovery and registration with Neflix Eureka</Description>
     <PackageTags>aspnetcore;Netflix Eureka;Spring;Spring Cloud</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

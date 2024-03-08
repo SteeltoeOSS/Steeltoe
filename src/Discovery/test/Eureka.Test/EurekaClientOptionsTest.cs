@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public sealed class EurekaClientOptionsTest : AbstractBaseTest
+public sealed class EurekaClientOptionsTest
 {
     [Fact]
     public void DefaultConstructor_InitializedWithDefaults()
@@ -112,7 +112,7 @@ public sealed class EurekaClientOptionsTest : AbstractBaseTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);

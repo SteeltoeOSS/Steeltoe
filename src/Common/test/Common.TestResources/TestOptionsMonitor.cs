@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.TestResources;
@@ -32,12 +34,12 @@ public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
         CurrentValue = currentValue;
     }
 
-    public T Get(string name)
+    public T Get(string? name)
     {
         return CurrentValue;
     }
 
-    public IDisposable OnChange(Action<T, string> listener)
+    public IDisposable OnChange(Action<T, string?> listener)
     {
         return EmptyDisposable.Instance;
     }

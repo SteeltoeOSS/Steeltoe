@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.Tasks;
 
-public sealed class TimedTaskTest : AbstractBaseTest
+public sealed class TimedTaskTest
 {
     private volatile int _timerFuncCount;
 

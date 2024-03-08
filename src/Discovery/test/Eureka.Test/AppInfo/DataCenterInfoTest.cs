@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 
-public sealed class DataCenterInfoTest : AbstractBaseTest
+public sealed class DataCenterInfoTest
 {
     [Fact]
     public void Constructor_InitializesName()
@@ -45,7 +45,8 @@ public sealed class DataCenterInfoTest : AbstractBaseTest
             Name = "MyOwn"
         };
 
-        DataCenterInfo result = DataCenterInfo.FromJson(jsonInfo);
+        DataCenterInfo? result = DataCenterInfo.FromJson(jsonInfo);
+        Assert.NotNull(result);
         Assert.Equal(DataCenterName.MyOwn, result.Name);
     }
 

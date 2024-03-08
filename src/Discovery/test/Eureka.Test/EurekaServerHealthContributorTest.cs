@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#nullable enable
-
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,7 +47,7 @@ public sealed class EurekaServerHealthContributorTest
         var result = new HealthCheckResult();
         contributor.AddApplications(apps, result);
 
-        Dictionary<string, object> details = result.Details;
+        Dictionary<string, object>? details = result.Details;
         Assert.Contains("applications", details.Keys);
         var appsDict = (Dictionary<string, int>)details["applications"];
         Assert.Contains("app1", appsDict.Keys);

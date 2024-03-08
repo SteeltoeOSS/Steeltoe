@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.Transport;
 
-public sealed class JsonApplicationRootTest : AbstractBaseTest
+public sealed class JsonApplicationRootTest
 {
     [Fact]
     public void Deserialize_GoodJson()

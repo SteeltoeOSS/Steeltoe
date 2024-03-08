@@ -8,15 +8,8 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 
-public sealed class ApplicationsTest : AbstractBaseTest
+public sealed class ApplicationsTest
 {
-    [Fact]
-    public void ApplicationListConstructor__ThrowsIfListNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => new Applications(null));
-        Assert.Contains("apps", ex.Message, StringComparison.Ordinal);
-    }
-
     [Fact]
     public void ApplicationListConstructor__AddsAppsFromList()
     {
@@ -37,14 +30,6 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(apps.ApplicationMap);
         Assert.True(apps.ApplicationMap.ContainsKey("app1".ToUpperInvariant()));
         Assert.True(apps.ApplicationMap.ContainsKey("app2".ToUpperInvariant()));
-    }
-
-    [Fact]
-    public void Add_ThrowsIfAppNull()
-    {
-        var apps = new Applications();
-        var ex = Assert.Throws<ArgumentNullException>(() => apps.Add(null));
-        Assert.Contains("app", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -216,36 +201,12 @@ public sealed class ApplicationsTest : AbstractBaseTest
             ])
         ]);
 
-        Application registered = apps.GetRegisteredApplication("app1");
+        Application? registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
 
         registered = apps.GetRegisteredApplication("foobar");
         Assert.Null(registered);
-    }
-
-    [Fact]
-    public void GetRegisteredApplication_ThrowsIfAppNull()
-    {
-        var apps = new Applications();
-        var ex = Assert.Throws<ArgumentNullException>(() => apps.GetRegisteredApplication(null));
-        Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void GetInstancesBySecureVirtualHostName_ThrowsIfAddressNull()
-    {
-        var apps = new Applications();
-        var ex = Assert.Throws<ArgumentNullException>(() => apps.GetInstancesBySecureVirtualHostName(null));
-        Assert.Contains("secureVirtualHostName", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void GetInstancesByVirtualHostName_ThrowsIfAddressNull()
-    {
-        var apps = new Applications();
-        var ex = Assert.Throws<ArgumentNullException>(() => apps.GetInstancesByVirtualHostName(null));
-        Assert.Contains("virtualHostName", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -270,14 +231,14 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app1.GetInstance("id1")));
-        Assert.True(result.Contains(app1.GetInstance("id2")));
+        Assert.Contains(app1.GetInstance("id1"), result);
+        Assert.Contains(app1.GetInstance("id2"), result);
 
         result = apps.GetInstancesBySecureVirtualHostName("svapp2");
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app2.GetInstance("id1")));
-        Assert.True(result.Contains(app2.GetInstance("id2")));
+        Assert.Contains(app2.GetInstance("id1"), result);
+        Assert.Contains(app2.GetInstance("id2"), result);
 
         result = apps.GetInstancesBySecureVirtualHostName("foobar");
         Assert.NotNull(result);
@@ -306,14 +267,14 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app1.GetInstance("id1")));
-        Assert.True(result.Contains(app1.GetInstance("id2")));
+        Assert.Contains(app1.GetInstance("id1"), result);
+        Assert.Contains(app1.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("vapp2");
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app2.GetInstance("id1")));
-        Assert.True(result.Contains(app2.GetInstance("id2")));
+        Assert.Contains(app2.GetInstance("id1"), result);
+        Assert.Contains(app2.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
@@ -343,7 +304,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
         var delta = new Applications();
         apps.UpdateFromDelta(delta);
 
-        Application registered = apps.GetRegisteredApplication("app1");
+        Application? registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
         Assert.NotNull(registered.Instances);
@@ -359,14 +320,14 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app1.GetInstance("id1")));
-        Assert.True(result.Contains(app1.GetInstance("id2")));
+        Assert.Contains(app1.GetInstance("id1"), result);
+        Assert.Contains(app1.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("vapp2");
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app2.GetInstance("id1")));
-        Assert.True(result.Contains(app2.GetInstance("id2")));
+        Assert.Contains(app2.GetInstance("id1"), result);
+        Assert.Contains(app2.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
@@ -403,7 +364,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         apps.UpdateFromDelta(delta);
 
-        Application registered = apps.GetRegisteredApplication("app1");
+        Application? registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
         Assert.NotNull(registered.Instances);
@@ -425,19 +386,19 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app1.GetInstance("id1")));
-        Assert.True(result.Contains(app1.GetInstance("id2")));
+        Assert.Contains(app1.GetInstance("id1"), result);
+        Assert.Contains(app1.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("vapp2");
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app2.GetInstance("id1")));
-        Assert.True(result.Contains(app2.GetInstance("id2")));
+        Assert.Contains(app2.GetInstance("id1"), result);
+        Assert.Contains(app2.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("vapp3");
         Assert.NotNull(result);
         Assert.Single(result);
-        Assert.True(result.Contains(app3.GetInstance("id1")));
+        Assert.Contains(app3.GetInstance("id1"), result);
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
@@ -474,7 +435,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         apps.UpdateFromDelta(delta);
 
-        Application registered = apps.GetRegisteredApplication("app1");
+        Application? registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
         Assert.NotNull(registered.Instances);
@@ -490,15 +451,15 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app1.GetInstance("id1")));
-        Assert.True(result.Contains(app1.GetInstance("id2")));
+        Assert.Contains(app1.GetInstance("id1"), result);
+        Assert.Contains(app1.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("vapp2");
         Assert.NotNull(result);
         Assert.Equal(3, result.Count);
-        Assert.True(result.Contains(app2.GetInstance("id1")));
-        Assert.True(result.Contains(app2.GetInstance("id2")));
-        Assert.True(result.Contains(app2.GetInstance("id3")));
+        Assert.Contains(app2.GetInstance("id1"), result);
+        Assert.Contains(app2.GetInstance("id2"), result);
+        Assert.Contains(app2.GetInstance("id3"), result);
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
@@ -537,7 +498,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         apps.UpdateFromDelta(delta);
 
-        Application registered = apps.GetRegisteredApplication("app1");
+        Application? registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
         Assert.NotNull(registered.Instances);
@@ -558,14 +519,14 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app1.GetInstance("id1")));
-        Assert.True(result.Contains(app1.GetInstance("id2")));
+        Assert.Contains(app1.GetInstance("id1"), result);
+        Assert.Contains(app1.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("vapp2");
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app2.GetInstance("id1")));
-        Assert.True(result.Contains(app2.GetInstance("id2")));
+        Assert.Contains(app2.GetInstance("id1"), result);
+        Assert.Contains(app2.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
@@ -604,7 +565,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         apps.UpdateFromDelta(delta);
 
-        Application registered = apps.GetRegisteredApplication("app1");
+        Application? registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
         Assert.NotNull(registered.Instances);
@@ -625,14 +586,14 @@ public sealed class ApplicationsTest : AbstractBaseTest
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.True(result.Contains(app1.GetInstance("id1")));
-        Assert.True(result.Contains(app1.GetInstance("id2")));
+        Assert.Contains(app1.GetInstance("id1"), result);
+        Assert.Contains(app1.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("vapp2");
         Assert.NotNull(result);
         Assert.Single(result);
-        Assert.True(result.Contains(app2.GetInstance("id1")));
-        Assert.False(result.Contains(app2.GetInstance("id2")));
+        Assert.Contains(app2.GetInstance("id1"), result);
+        Assert.DoesNotContain(app2.GetInstance("id2"), result);
 
         result = apps.GetInstancesByVirtualHostName("foobar");
         Assert.NotNull(result);
@@ -723,7 +684,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
                 ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
-            Metadata = new Dictionary<string, string>
+            Metadata = new Dictionary<string, string?>
             {
                 { "@class", "java.util.Collections$EmptyMap" }
             },
@@ -753,7 +714,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(apps.ApplicationMap);
         Assert.Single(apps.ApplicationMap);
 
-        Application app = apps.GetRegisteredApplication("myApp");
+        Application? app = apps.GetRegisteredApplication("myApp");
 
         // Verify
         Assert.NotNull(app);
@@ -761,7 +722,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(app.Instances);
         Assert.Single(app.Instances);
         Assert.NotNull(app.GetInstance("InstanceId"));
-        InstanceInfo instance = app.GetInstance("InstanceId");
+        InstanceInfo? instance = app.GetInstance("InstanceId");
 
         Assert.NotNull(instance);
         Assert.Equal("InstanceId", instance.InstanceId);
@@ -785,16 +746,24 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.Equal(InstanceStatus.Down, instance.Status);
         Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
         Assert.NotNull(instance.LeaseInfo);
+        Assert.NotNull(instance.LeaseInfo.RenewalInterval);
         Assert.Equal(1, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
+        Assert.NotNull(instance.LeaseInfo.Duration);
         Assert.Equal(2, instance.LeaseInfo.Duration.Value.TotalSeconds);
+        Assert.NotNull(instance.LeaseInfo.RegistrationTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.RegistrationTimeUtc.Value.Ticks);
+        Assert.NotNull(instance.LeaseInfo.LastRenewalTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.LastRenewalTimeUtc.Value.Ticks);
+        Assert.NotNull(instance.LeaseInfo.EvictionTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.EvictionTimeUtc.Value.Ticks);
+        Assert.NotNull(instance.LeaseInfo.ServiceUpTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.ServiceUpTimeUtc.Value.Ticks);
         Assert.False(instance.IsCoordinatingDiscoveryServer);
         Assert.NotNull(instance.Metadata);
         Assert.Empty(instance.Metadata);
+        Assert.NotNull(instance.LastUpdatedTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LastUpdatedTimeUtc.Value.Ticks);
+        Assert.NotNull(instance.LastDirtyTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LastDirtyTimeUtc.Value.Ticks);
         Assert.Equal(ActionType.Added, instance.ActionType);
         Assert.Equal("AsgName", instance.AutoScalingGroupName);
@@ -846,7 +815,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
                 ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
-            Metadata = new Dictionary<string, string>
+            Metadata = new Dictionary<string, string?>
             {
                 { "@class", "java.util.Collections$EmptyMap" }
             },
@@ -876,7 +845,7 @@ public sealed class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(apps.ApplicationMap);
         Assert.Single(apps.ApplicationMap);
 
-        Application app = apps.GetRegisteredApplication("myApp");
+        Application? app = apps.GetRegisteredApplication("myApp");
 
         // Verify
         Assert.NotNull(app);

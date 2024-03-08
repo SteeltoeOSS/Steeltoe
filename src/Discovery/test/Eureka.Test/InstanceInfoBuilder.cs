@@ -1,8 +1,6 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
-
-#nullable enable
 
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
@@ -11,8 +9,9 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 internal sealed class InstanceInfoBuilder
 {
-    private readonly string _hostName = "localhost";
-    private readonly string _ipAddress = "127.0.0.1";
+    private const string DefaultHostName = "localhost";
+    private const string DefaultIPAddress = "127.0.0.1";
+
     private readonly DataCenterInfo _dataCenterInfo = new();
     private string _appName = "FOOBAR";
     private string? _instanceId;
@@ -23,9 +22,9 @@ internal sealed class InstanceInfoBuilder
 
     public InstanceInfo Build()
     {
-        string id = _instanceId ?? $"{_hostName}:{_appName}:1234";
+        string instanceId = _instanceId ?? $"{DefaultHostName}:{_appName}:1234";
 
-        return new InstanceInfo(id, _appName, _hostName, _ipAddress, _dataCenterInfo)
+        return new InstanceInfo(instanceId, _appName, DefaultHostName, DefaultIPAddress, _dataCenterInfo)
         {
             Status = _status,
             VipAddress = _vipAddress,

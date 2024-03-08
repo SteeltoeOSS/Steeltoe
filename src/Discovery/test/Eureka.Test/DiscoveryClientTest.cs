@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public sealed class DiscoveryClientTest : AbstractBaseTest
+public sealed class DiscoveryClientTest
 {
     private const string FooAddedJson = """
         {
@@ -116,7 +116,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task FetchFullRegistryAsync_InvokesServer_ReturnsValidResponse()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
@@ -134,7 +134,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        Applications applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+        Applications? applications = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -151,7 +151,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task FetchFullRegistryAsync_ReturnsNull_IfFetchCounterMismatch()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
@@ -168,19 +168,19 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        Task<Applications> applicationsTask = discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+        Task<Applications?> applicationsTask = discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
         discoveryClient.SetRegistryFetchCounter(100);
-        Applications applications = await applicationsTask;
+        Applications? applications = await applicationsTask;
         Assert.Null(applications);
     }
 
     [Fact]
     public async Task FetchRegistryDeltaAsync_InvokesServer_ReturnsValidResponse()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
@@ -208,7 +208,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         discoveryClient.Applications = apps;
 
-        Applications result = await discoveryClient.FetchRegistryDeltaAsync(CancellationToken.None);
+        Applications? result = await discoveryClient.FetchRegistryDeltaAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -226,7 +226,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task FetchRegistryDeltaAsync_ReturnsNull_IfFetchCounterMismatch()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
@@ -244,19 +244,19 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        Task<Applications> applicationsTask = discoveryClient.FetchRegistryDeltaAsync(CancellationToken.None);
+        Task<Applications?> applicationsTask = discoveryClient.FetchRegistryDeltaAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
         discoveryClient.SetRegistryFetchCounter(100);
-        Applications apps = await applicationsTask;
+        Applications? apps = await applicationsTask;
         Assert.Null(apps);
     }
 
     [Fact]
     public async Task RegisterAsync_ReturnsFalse_WhenNotOKStatusReturned()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
@@ -285,7 +285,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task RegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
@@ -314,7 +314,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task RenewAsync_Registers_When404StatusReturned()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
@@ -349,7 +349,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task RenewAsync_ReturnsTrue_WhenOKStatusReturned()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
@@ -383,7 +383,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task UnRegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
@@ -411,7 +411,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstancesByVipAddress_ReturnsExpected()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
@@ -478,7 +478,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task GetApplication_ReturnsExpected()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
@@ -523,7 +523,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
             ])
         ]);
 
-        Application result = discoveryClient.GetApplication("app1");
+        Application? result = discoveryClient.GetApplication("app1");
 
         Assert.NotNull(result);
         Assert.Equal("app1", result.Name);
@@ -535,7 +535,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task RefreshInstanceInfo_CallsHealthCheckHandler_UpdatesInstanceStatus()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
@@ -562,7 +562,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task StartTimer_StartsTimer()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
@@ -586,7 +586,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task StartTimer_StartsTimer_StopsAfterDispose()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
@@ -617,7 +617,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async Task ApplicationEventsFireOnChangeDuringFetch()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
@@ -658,7 +658,7 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
         var extraHeadersHandler = new ExtraRequestHeadersDelegatingHandler();
         extraHeadersHandler.ExtraRequestHeaders.Add("X-Special-Feature", "enabled");
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false",

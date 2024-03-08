@@ -22,7 +22,7 @@ public sealed class EurekaPostConfigurerTest
     {
         var builder = new ConfigurationBuilder();
 
-        builder.AddInMemoryCollection(new Dictionary<string, string>
+        builder.AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "bar" },
             { "spring:application:instance_id", "instance" },
@@ -46,7 +46,7 @@ public sealed class EurekaPostConfigurerTest
     {
         var builder = new ConfigurationBuilder();
 
-        builder.AddInMemoryCollection(new Dictionary<string, string>
+        builder.AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "bar" },
             { "spring:application:instance_id", "instance" },
@@ -76,7 +76,7 @@ public sealed class EurekaPostConfigurerTest
     {
         var builder = new ConfigurationBuilder();
 
-        builder.AddInMemoryCollection(new Dictionary<string, string>
+        builder.AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "bar" },
             { "spring:cloud:discovery:registrationMethod", "registrationMethod" }
@@ -100,7 +100,7 @@ public sealed class EurekaPostConfigurerTest
     {
         var builder = new ConfigurationBuilder();
 
-        builder.AddInMemoryCollection(new Dictionary<string, string>
+        builder.AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:instance_id", "instance" },
             { "spring:cloud:discovery:registrationMethod", "registrationMethod" }
@@ -239,7 +239,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("healthCheckUrl", instanceOptions.HealthCheckUrl);
         Assert.Equal("secureHealthCheckUrl", instanceOptions.SecureHealthCheckUrl);
 
-        IDictionary<string, string> map = instanceOptions.MetadataMap;
+        IDictionary<string, string?> map = instanceOptions.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(2, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -392,7 +392,7 @@ public sealed class EurekaPostConfigurerTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -401,9 +401,9 @@ public sealed class EurekaPostConfigurerTest
         configurationBuilder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        IEnumerable<EurekaServiceInfo> sis = configurationRoot.GetServiceInfos<EurekaServiceInfo>();
+        EurekaServiceInfo[] sis = configurationRoot.GetServiceInfos<EurekaServiceInfo>().ToArray();
         Assert.Single(sis);
-        EurekaServiceInfo si = sis.First();
+        EurekaServiceInfo si = sis[0];
 
         var clientOptions = new EurekaClientOptions();
         IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.ConfigurationPrefix);
@@ -460,7 +460,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("healthCheckUrl", instanceOptions.HealthCheckUrl);
         Assert.Equal("secureHealthCheckUrl", instanceOptions.SecureHealthCheckUrl);
 
-        IDictionary<string, string> map = instanceOptions.MetadataMap;
+        IDictionary<string, string?> map = instanceOptions.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -601,7 +601,7 @@ public sealed class EurekaPostConfigurerTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -610,9 +610,9 @@ public sealed class EurekaPostConfigurerTest
         configurationBuilder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        IEnumerable<EurekaServiceInfo> sis = configurationRoot.GetServiceInfos<EurekaServiceInfo>();
+        EurekaServiceInfo[] sis = configurationRoot.GetServiceInfos<EurekaServiceInfo>().ToArray();
         Assert.Single(sis);
-        EurekaServiceInfo si = sis.First();
+        EurekaServiceInfo si = sis[0];
 
         var clientOptions = new EurekaClientOptions();
         IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.ConfigurationPrefix);
@@ -669,7 +669,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("healthCheckUrl", instanceOptions.HealthCheckUrl);
         Assert.Equal("secureHealthCheckUrl", instanceOptions.SecureHealthCheckUrl);
 
-        IDictionary<string, string> map = instanceOptions.MetadataMap;
+        IDictionary<string, string?> map = instanceOptions.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -811,7 +811,7 @@ public sealed class EurekaPostConfigurerTest
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
@@ -820,9 +820,9 @@ public sealed class EurekaPostConfigurerTest
         configurationBuilder.AddCloudFoundry();
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        IEnumerable<EurekaServiceInfo> sis = configurationRoot.GetServiceInfos<EurekaServiceInfo>();
+        EurekaServiceInfo[] sis = configurationRoot.GetServiceInfos<EurekaServiceInfo>().ToArray();
         Assert.Single(sis);
-        EurekaServiceInfo si = sis.First();
+        EurekaServiceInfo si = sis[0];
 
         var clientOptions = new EurekaClientOptions();
         IConfigurationSection clientSection = configurationRoot.GetSection(EurekaClientOptions.ConfigurationPrefix);
@@ -879,7 +879,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("healthCheckUrl", instanceOptions.HealthCheckUrl);
         Assert.Equal("secureHealthCheckUrl", instanceOptions.SecureHealthCheckUrl);
 
-        IDictionary<string, string> map = instanceOptions.MetadataMap;
+        IDictionary<string, string?> map = instanceOptions.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -948,7 +948,7 @@ public sealed class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfigurationFindsUrls()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" }
         }).Build();
@@ -973,7 +973,7 @@ public sealed class EurekaPostConfigurerTest
 
         using var scope = new EnvironmentVariableScope("DOTNET_RUNNING_IN_CONTAINER", "true");
 
-        Exception ex = Record.Exception(() => EurekaPostConfigurer.UpdateConfiguration(null, clientOptions));
+        Exception? ex = Record.Exception(() => EurekaPostConfigurer.UpdateConfiguration(null, clientOptions));
         Assert.Null(ex);
     }
 }

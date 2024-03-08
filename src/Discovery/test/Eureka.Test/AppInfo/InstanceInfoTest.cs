@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 
-public sealed class InstanceInfoTest : AbstractBaseTest
+public sealed class InstanceInfoTest
 {
     [Fact]
     public void Constructor_InitializedWithDefaults()
@@ -76,7 +76,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
                 ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
-            Metadata = new Dictionary<string, string>
+            Metadata = new Dictionary<string, string?>
             {
                 { "@class", "java.util.Collections$EmptyMap" }
             },
@@ -86,7 +86,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             AutoScalingGroupName = "AsgName"
         };
 
-        InstanceInfo instance = InstanceInfo.FromJson(jsonInstance);
+        InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
         Assert.NotNull(instance);
 
         // Verify
@@ -111,16 +111,24 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(InstanceStatus.Down, instance.Status);
         Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
         Assert.NotNull(instance.LeaseInfo);
+        Assert.NotNull(instance.LeaseInfo.RenewalInterval);
         Assert.Equal(1, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
+        Assert.NotNull(instance.LeaseInfo.Duration);
         Assert.Equal(2, instance.LeaseInfo.Duration.Value.TotalSeconds);
+        Assert.NotNull(instance.LeaseInfo.RegistrationTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.RegistrationTimeUtc.Value.Ticks);
+        Assert.NotNull(instance.LeaseInfo.LastRenewalTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.LastRenewalTimeUtc.Value.Ticks);
+        Assert.NotNull(instance.LeaseInfo.EvictionTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.EvictionTimeUtc.Value.Ticks);
+        Assert.NotNull(instance.LeaseInfo.ServiceUpTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LeaseInfo.ServiceUpTimeUtc.Value.Ticks);
         Assert.False(instance.IsCoordinatingDiscoveryServer);
         Assert.NotNull(instance.Metadata);
         Assert.Empty(instance.Metadata);
+        Assert.NotNull(instance.LastUpdatedTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LastUpdatedTimeUtc.Value.Ticks);
+        Assert.NotNull(instance.LastDirtyTimeUtc);
         Assert.Equal(635_935_705_417_080_000L, instance.LastDirtyTimeUtc.Value.Ticks);
         Assert.Equal(ActionType.Added, instance.ActionType);
         Assert.Equal("AsgName", instance.AutoScalingGroupName);
@@ -172,7 +180,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
                 ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
-            Metadata = new Dictionary<string, string>
+            Metadata = new Dictionary<string, string?>
             {
                 { "@class", "java.util.Collections$EmptyMap" }
             },
@@ -182,7 +190,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             AutoScalingGroupName = "AsgName"
         };
 
-        InstanceInfo instance = InstanceInfo.FromJson(jsonInstance);
+        InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
         Assert.NotNull(instance);
 
         // Verify
@@ -236,7 +244,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
                 ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
-            Metadata = new Dictionary<string, string>
+            Metadata = new Dictionary<string, string?>
             {
                 { "@class", "java.util.Collections$EmptyMap" }
             },
@@ -246,7 +254,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             AutoScalingGroupName = "AsgName"
         };
 
-        InstanceInfo instance = InstanceInfo.FromJson(jsonInstance);
+        InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
         Assert.NotNull(instance);
 
         // Verify

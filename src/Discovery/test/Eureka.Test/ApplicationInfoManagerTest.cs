@@ -10,9 +10,9 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public sealed class ApplicationInfoManagerTest : AbstractBaseTest
+public sealed class ApplicationInfoManagerTest
 {
-    private InstanceStatusChangedEventArgs _eventArgs;
+    private InstanceStatusChangedEventArgs? _eventArgs;
 
     [Fact]
     public void StatusChanged_ChangesStatus()
@@ -89,7 +89,10 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
         InstanceInfo instance = appManager.InstanceInfo;
 
         Assert.False(instance.IsDirty);
+        Assert.NotNull(instance.LeaseInfo);
+        Assert.NotNull(instance.LeaseInfo.Duration);
         Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.Duration.Value.TotalSeconds);
+        Assert.NotNull(instance.LeaseInfo.RenewalInterval);
         Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
 
         instanceOptions.LeaseRenewalIntervalInSeconds += 100;
@@ -100,7 +103,7 @@ public sealed class ApplicationInfoManagerTest : AbstractBaseTest
         Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
     }
 
-    private void HandleInstanceStatusChanged(object sender, InstanceStatusChangedEventArgs args)
+    private void HandleInstanceStatusChanged(object? sender, InstanceStatusChangedEventArgs args)
     {
         _eventArgs = args;
     }

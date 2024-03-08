@@ -38,7 +38,7 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void ApplyServicesUsesManagementOptions()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "management:endpoints:health:path", "/non-default" }
         };
@@ -63,7 +63,7 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
     [Trait("Category", "SkipOnMacOS")]
     public void ApplyServicesUsesServerTimeout()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "Eureka:Client:EurekaServer:ConnectTimeoutSeconds", "1" },
             { "Eureka:Client:EurekaServer:RetryCount", "1" }
@@ -115,7 +115,7 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "management:endpoints:health:path", "/non-default" }
         };
@@ -139,7 +139,7 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void ApplyServicesDoesNotOverrideUserPathSettings()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "eureka:instance:healthcheckurlpath", "/customHealth" },
             { "eureka:instance:statuspageurlpath", "/customStatus" }
