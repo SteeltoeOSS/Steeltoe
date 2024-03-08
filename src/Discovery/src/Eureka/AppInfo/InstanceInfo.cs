@@ -182,7 +182,7 @@ public sealed class InstanceInfo
     }
 
     /// <summary>
-    /// Gets the time, in UTC, when the instance status has been last updated.
+    /// Gets the time, in UTC, when the instance status was last updated.
     /// </summary>
     public DateTime? LastUpdatedTimeUtc { get; init; }
 

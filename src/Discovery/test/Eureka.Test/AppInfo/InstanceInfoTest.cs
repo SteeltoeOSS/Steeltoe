@@ -86,7 +86,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             AutoScalingGroupName = "AsgName"
         };
 
-        var instance = InstanceInfo.FromJson(jsonInstance);
+        InstanceInfo instance = InstanceInfo.FromJson(jsonInstance);
         Assert.NotNull(instance);
 
         // Verify
@@ -182,11 +182,11 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             AutoScalingGroupName = "AsgName"
         };
 
-        var info = InstanceInfo.FromJson(jsonInstance);
-        Assert.NotNull(info);
+        InstanceInfo instance = InstanceInfo.FromJson(jsonInstance);
+        Assert.NotNull(instance);
 
         // Verify
-        Assert.Equal(InstanceStatus.OutOfService, info.OverriddenStatus);
+        Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
     }
 
     [Fact]
@@ -246,7 +246,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             AutoScalingGroupName = "AsgName"
         };
 
-        var instance = InstanceInfo.FromJson(jsonInstance);
+        InstanceInfo instance = InstanceInfo.FromJson(jsonInstance);
         Assert.NotNull(instance);
 
         // Verify

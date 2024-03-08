@@ -75,7 +75,7 @@ public sealed class Application
         {
             foreach (JsonInstanceInfo? jsonInstance in jsonApplication.Instances)
             {
-                var instance = InstanceInfo.FromJson(jsonInstance);
+                InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
 
                 if (instance != null)
                 {

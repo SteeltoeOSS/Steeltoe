@@ -39,26 +39,26 @@ public sealed class DataCenterInfoTest : AbstractBaseTest
     [Fact]
     public void FromJson_Correct()
     {
-        var info = new JsonDataCenterInfo
+        var jsonInfo = new JsonDataCenterInfo
         {
             ClassName = "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
             Name = "MyOwn"
         };
 
-        DataCenterInfo result = DataCenterInfo.FromJson(info);
+        DataCenterInfo result = DataCenterInfo.FromJson(jsonInfo);
         Assert.Equal(DataCenterName.MyOwn, result.Name);
     }
 
     [Fact]
     public void FromJson_Throws_Invalid()
     {
-        var info = new JsonDataCenterInfo
+        var jsonInfo = new JsonDataCenterInfo
         {
             ClassName = "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
             Name = "FooBar"
         };
 
-        var ex = Assert.Throws<ArgumentException>(() => DataCenterInfo.FromJson(info));
+        var ex = Assert.Throws<ArgumentException>(() => DataCenterInfo.FromJson(jsonInfo));
         Assert.Contains("Unsupported datacenter name", ex.Message, StringComparison.Ordinal);
     }
 }

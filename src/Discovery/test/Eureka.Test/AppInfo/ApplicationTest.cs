@@ -43,12 +43,12 @@ public sealed class ApplicationTest : AbstractBaseTest
     public void Add_Adds()
     {
         var app = new Application("foobar");
-        InstanceInfo info = new InstanceInfoBuilder().WithId("1").Build();
+        InstanceInfo instance = new InstanceInfoBuilder().WithId("1").Build();
 
-        app.Add(info);
+        app.Add(instance);
 
         Assert.NotNull(app.GetInstance("1"));
-        Assert.Equal(info, app.GetInstance("1"));
+        Assert.Equal(instance, app.GetInstance("1"));
         Assert.NotNull(app.Instances);
         Assert.Single(app.Instances);
     }
@@ -57,9 +57,9 @@ public sealed class ApplicationTest : AbstractBaseTest
     public void Add_Add_Updates()
     {
         var app = new Application("foobar");
-        InstanceInfo info = new InstanceInfoBuilder().WithId("1").WithStatus(InstanceStatus.Down).Build();
+        InstanceInfo instance = new InstanceInfoBuilder().WithId("1").WithStatus(InstanceStatus.Down).Build();
 
-        app.Add(info);
+        app.Add(instance);
 
         Assert.NotNull(app.GetInstance("1"));
         Assert.Equal(InstanceStatus.Down, app.GetInstance("1")?.Status);
