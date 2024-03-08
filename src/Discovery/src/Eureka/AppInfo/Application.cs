@@ -24,7 +24,7 @@ public sealed class Application
 
     internal Application(string name, ICollection<InstanceInfo> instances)
     {
-        ArgumentGuard.NotNullOrEmpty(name);
+        ArgumentGuard.NotNullOrWhiteSpace(name);
         ArgumentGuard.NotNull(instances);
         ArgumentGuard.ElementsNotNull(instances);
 
@@ -38,62 +38,52 @@ public sealed class Application
 
     internal InstanceInfo? GetInstance(string instanceId)
     {
-        ArgumentGuard.NotNull(instanceId);
+        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
 
         return _instanceMap.GetValueOrDefault(instanceId);
     }
 
     public override string ToString()
     {
-        return $"Application[Name={Name}, Instances={string.Join(',', Instances.Select(instance => instance.ToString()))}]";
+        return $"{nameof(Application)}[{nameof(Name)}={Name}, {nameof(Instances)}={string.Join(',', Instances.Select(instance => instance.ToString()))}]";
     }
 
     internal void Add(InstanceInfo instance)
     {
         ArgumentGuard.NotNull(instance);
 
-        if (!string.IsNullOrEmpty(instance.InstanceId))
-        {
-            _instanceMap[instance.InstanceId] = instance;
-        }
-        else if (!string.IsNullOrEmpty(instance.HostName))
-        {
-            _instanceMap[instance.HostName] = instance;
-        }
+        _instanceMap[instance.InstanceId] = instance;
     }
 
     internal void Remove(InstanceInfo instance)
     {
         ArgumentGuard.NotNull(instance);
 
-        if (!_instanceMap.TryRemove(instance.InstanceId, out _))
-        {
-            _ = _instanceMap.TryRemove(instance.HostName, out _);
-        }
+        _instanceMap.TryRemove(instance.InstanceId, out _);
     }
 
     internal static Application? FromJsonApplication(JsonApplication? jsonApplication)
     {
-        if (jsonApplication == null || string.IsNullOrEmpty(jsonApplication.Name))
+        if (jsonApplication == null || string.IsNullOrWhiteSpace(jsonApplication.Name))
         {
             return null;
         }
 
-        var app = new Application(jsonApplication.Name);
+        var application = new Application(jsonApplication.Name);
 
         if (jsonApplication.Instances != null)
         {
             foreach (JsonInstanceInfo? jsonInstance in jsonApplication.Instances)
             {
-                var instance = InstanceInfo.FromJsonInstance(jsonInstance);
+                var instance = InstanceInfo.FromJson(jsonInstance);
 
                 if (instance != null)
                 {
-                    app.Add(instance);
+                    application.Add(instance);
                 }
             }
         }
 
-        return app;
+        return application;
     }
 }

@@ -258,7 +258,7 @@ internal static class EurekaPostConfigurer
 
         instanceOptions.IPAddress = serviceInfo.ApplicationInfo.InternalIP;
 
-        IDictionary<string, string> map = instanceOptions.MetadataMap;
+        IDictionary<string, string?> map = instanceOptions.MetadataMap;
         map[CFAppGuid] = serviceInfo.ApplicationInfo.ApplicationId;
         map[CFInstanceIndex] = serviceInfo.ApplicationInfo.InstanceIndex.ToString(CultureInfo.InvariantCulture);
         map[InstanceId] = serviceInfo.ApplicationInfo.InstanceId;

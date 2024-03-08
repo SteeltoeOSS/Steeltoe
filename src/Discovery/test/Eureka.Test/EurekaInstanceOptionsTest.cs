@@ -60,7 +60,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
         Assert.Equal(EurekaInstanceOptions.DefaultLeaseExpirationDurationInSeconds, instanceOptions.LeaseExpirationDurationInSeconds);
         Assert.Null(instanceOptions.VirtualHostName);
         Assert.Null(instanceOptions.SecureVirtualHostName);
-        Assert.Null(instanceOptions.AsgName);
+        Assert.Null(instanceOptions.AutoScalingGroupName);
         Assert.NotNull(instanceOptions.MetadataMap);
         Assert.Empty(instanceOptions.MetadataMap);
         Assert.Equal(EurekaInstanceOptions.DefaultStatusPageUrlPath, instanceOptions.StatusPageUrlPath);
@@ -165,7 +165,7 @@ public sealed class EurekaInstanceOptionsTest : AbstractBaseTest
         Assert.Equal(100, instanceOptions.LeaseRenewalIntervalInSeconds);
         Assert.Equal("secureVipAddress", instanceOptions.SecureVirtualHostName);
         Assert.Equal("vipAddress", instanceOptions.VirtualHostName);
-        Assert.Equal("asgName", instanceOptions.AsgName);
+        Assert.Equal("asgName", instanceOptions.AutoScalingGroupName);
 
         Assert.Equal("statusPageUrlPath", instanceOptions.StatusPageUrlPath);
         Assert.Equal("statusPageUrl", instanceOptions.StatusPageUrl);

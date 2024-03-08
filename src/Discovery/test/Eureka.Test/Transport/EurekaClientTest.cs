@@ -36,17 +36,9 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        Func<Task> asyncAction = async () => await client.RegisterAsync(new InstanceInfo
-        {
-            AppName = "FOOBAR",
-            InstanceId = "some",
-            HostName = "localhost",
-            IPAddress = "127.0.0.1",
-            DataCenterInfo = new DataCenterInfo
-            {
-                Name = DataCenterName.MyOwn
-            }
-        }, CancellationToken.None);
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+
+        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, CancellationToken.None);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
@@ -78,17 +70,9 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        Func<Task> asyncAction = async () => await client.RegisterAsync(new InstanceInfo
-        {
-            AppName = "FOOBAR",
-            InstanceId = "some",
-            HostName = "localhost",
-            IPAddress = "127.0.0.1",
-            DataCenterInfo = new DataCenterInfo
-            {
-                Name = DataCenterName.MyOwn
-            }
-        }, CancellationToken.None);
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+
+        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, CancellationToken.None);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
@@ -121,17 +105,9 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        Func<Task> asyncAction = async () => await client.RegisterAsync(new InstanceInfo
-        {
-            AppName = "FOOBAR",
-            InstanceId = "some",
-            HostName = "localhost",
-            IPAddress = "127.0.0.1",
-            DataCenterInfo = new DataCenterInfo
-            {
-                Name = DataCenterName.MyOwn
-            }
-        }, CancellationToken.None);
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+
+        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, CancellationToken.None);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Retry limit reached; giving up on completing the HTTP request.");
 
@@ -166,17 +142,9 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        Func<Task> asyncAction = async () => await client.RegisterAsync(new InstanceInfo
-        {
-            AppName = "FOOBAR",
-            InstanceId = "some",
-            HostName = "localhost",
-            IPAddress = "127.0.0.1",
-            DataCenterInfo = new DataCenterInfo
-            {
-                Name = DataCenterName.MyOwn
-            }
-        }, CancellationToken.None);
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+
+        Func<Task> asyncAction = async () => await client.RegisterAsync(instance, CancellationToken.None);
 
         await asyncAction.Should().ThrowAsync<EurekaTransportException>().WithMessage("Failed to execute request on all known Eureka servers.");
 
@@ -226,19 +194,13 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        await client.RegisterAsync(new InstanceInfo
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo())
         {
-            AppName = "FOOBAR",
-            InstanceId = "some",
-            HostName = "localhost",
-            IPAddress = "127.0.0.1",
-            DataCenterInfo = new DataCenterInfo
-            {
-                Name = DataCenterName.MyOwn
-            },
             LastUpdatedTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc),
             LastDirtyTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc)
-        }, CancellationToken.None);
+        };
+
+        await client.RegisterAsync(instance, CancellationToken.None);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -262,17 +224,9 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        await client.RegisterAsync(new InstanceInfo
-        {
-            AppName = "FOOBAR",
-            InstanceId = "some",
-            HostName = "localhost",
-            IPAddress = "127.0.0.1",
-            DataCenterInfo = new DataCenterInfo
-            {
-                Name = DataCenterName.MyOwn
-            }
-        }, CancellationToken.None);
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+
+        await client.RegisterAsync(instance, CancellationToken.None);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
 
@@ -305,17 +259,9 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        await client.RegisterAsync(new InstanceInfo
-        {
-            AppName = "FOOBAR",
-            InstanceId = "some",
-            HostName = "localhost",
-            IPAddress = "127.0.0.1",
-            DataCenterInfo = new DataCenterInfo
-            {
-                Name = DataCenterName.MyOwn
-            }
-        }, CancellationToken.None);
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+
+        await client.RegisterAsync(instance, CancellationToken.None);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -339,17 +285,9 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        await client.RegisterAsync(new InstanceInfo
-        {
-            AppName = "FOOBAR",
-            InstanceId = "some",
-            HostName = "localhost",
-            IPAddress = "127.0.0.1",
-            DataCenterInfo = new DataCenterInfo
-            {
-                Name = DataCenterName.MyOwn
-            }
-        }, CancellationToken.None);
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+
+        await client.RegisterAsync(instance, CancellationToken.None);
 
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -391,17 +329,9 @@ public sealed class EurekaClientTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetRequiredService<EurekaClient>();
 
-        await client.RegisterAsync(new InstanceInfo
-        {
-            AppName = "FOOBAR",
-            InstanceId = "some",
-            HostName = "localhost",
-            IPAddress = "127.0.0.1",
-            DataCenterInfo = new DataCenterInfo
-            {
-                Name = DataCenterName.MyOwn
-            }
-        }, CancellationToken.None);
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo());
+
+        await client.RegisterAsync(instance, CancellationToken.None);
 
         eurekaHttpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }

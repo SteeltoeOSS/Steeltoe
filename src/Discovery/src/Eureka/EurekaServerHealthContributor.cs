@@ -167,9 +167,11 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
 
         foreach (Application app in registered)
         {
-            if (app.Instances?.Count > 0)
+            int instanceCount = app.Instances.Count;
+
+            if (instanceCount > 0)
             {
-                apps.Add(app.Name, app.Instances.Count);
+                apps.Add(app.Name, instanceCount);
             }
         }
 

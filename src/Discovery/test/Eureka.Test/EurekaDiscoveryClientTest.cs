@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.Configuration;
-using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -44,7 +43,7 @@ public sealed class EurekaDiscoveryClientTest : AbstractBaseTest
         Assert.Equal(instanceOptions.IsSecurePortEnabled, thisService.IsSecure);
         Assert.NotNull(thisService.Metadata);
         Assert.Equal(instanceOptions.NonSecurePort, thisService.Port);
-        Assert.Equal(instanceOptions.AppName, thisService.ServiceId);
+        Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), thisService.ServiceId);
         Assert.NotNull(thisService.Uri);
         string scheme = instanceOptions.IsSecurePortEnabled ? "https" : "http";
         int uriPort = instanceOptions.IsSecurePortEnabled ? instanceOptions.SecurePort : instanceOptions.NonSecurePort;

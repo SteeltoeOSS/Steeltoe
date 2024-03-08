@@ -49,7 +49,7 @@ public sealed class ConsulRegistration : IServiceInstance
     public IList<string> Tags { get; }
 
     /// <inheritdoc />
-    public IDictionary<string, string> Metadata { get; }
+    public IDictionary<string, string?> Metadata { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulRegistration" /> class. Wraps an existing registration.

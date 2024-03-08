@@ -60,21 +60,7 @@ public sealed class EurekaApplicationInfoManager
 
     internal void RefreshLeaseInfo()
     {
-        if (InstanceInfo.LeaseInfo == null)
-        {
-            return;
-        }
-
         EurekaInstanceOptions instanceOptions = _instanceOptionsMonitor.CurrentValue;
-
-        if (InstanceInfo.LeaseInfo.Duration != instanceOptions.LeaseExpirationDuration ||
-            InstanceInfo.LeaseInfo.RenewalInterval != instanceOptions.LeaseRenewalInterval)
-        {
-            // Adapt to changed configuration.
-            LeaseInfo newLease = LeaseInfo.FromConfiguration(instanceOptions);
-
-            InstanceInfo.LeaseInfo = newLease;
-            InstanceInfo.IsDirty = true;
-        }
+        InstanceInfo.LeaseInfo = LeaseInfo.FromConfiguration(instanceOptions);
     }
 }

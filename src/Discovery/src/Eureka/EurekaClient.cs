@@ -85,7 +85,6 @@ public sealed class EurekaClient
     public async Task RegisterAsync(InstanceInfo instance, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(instance);
-        AssertInstanceIsValid(instance);
 
         if ((Platform.IsContainerized || Platform.IsCloudHosted) && string.Equals(instance.HostName, "localhost", StringComparison.OrdinalIgnoreCase))
         {
@@ -95,41 +94,11 @@ public sealed class EurekaClient
 
         string requestBody = JsonSerializer.Serialize(new JsonInstanceInfoRoot
         {
-            Instance = instance.ToJsonInstance()
+            Instance = instance.ToJson()
         }, RequestSerializerOptions);
 
         string path = $"apps/{WebUtility.UrlEncode(instance.AppName)}";
         await ExecuteRequestAsync(HttpMethod.Post, path, null, requestBody, cancellationToken);
-    }
-
-    private static void AssertInstanceIsValid(InstanceInfo instance)
-    {
-        // TODO: Move this logic higher up the call stack.
-
-        if (string.IsNullOrWhiteSpace(instance.AppName))
-        {
-            throw new InvalidOperationException($"{nameof(InstanceInfo)}.{nameof(instance.AppName)} must not be null, empty or whitespace.");
-        }
-
-        if (string.IsNullOrWhiteSpace(instance.InstanceId))
-        {
-            throw new InvalidOperationException($"{nameof(InstanceInfo)}.{nameof(instance.InstanceId)} must not be null, empty or whitespace.");
-        }
-
-        if (string.IsNullOrWhiteSpace(instance.HostName))
-        {
-            throw new InvalidOperationException($"{nameof(InstanceInfo)}.{nameof(instance.HostName)} must not be null, empty or whitespace.");
-        }
-
-        if (string.IsNullOrWhiteSpace(instance.IPAddress))
-        {
-            throw new InvalidOperationException($"{nameof(InstanceInfo)}.{nameof(instance.IPAddress)} must not be null, empty or whitespace.");
-        }
-
-        if (instance.DataCenterInfo == null)
-        {
-            throw new InvalidOperationException($"{nameof(InstanceInfo)}.{nameof(instance.DataCenterInfo)} must not be null.");
-        }
     }
 
     /// <summary>

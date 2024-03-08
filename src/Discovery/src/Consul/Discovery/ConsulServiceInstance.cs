@@ -32,7 +32,7 @@ public sealed class ConsulServiceInstance : IServiceInstance
     public IList<string> Tags { get; }
 
     /// <inheritdoc />
-    public IDictionary<string, string> Metadata { get; }
+    public IDictionary<string, string?> Metadata { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceInstance" /> class.

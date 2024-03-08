@@ -28,7 +28,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
     private readonly ILogger<EurekaDiscoveryClient> _logger;
     private readonly EurekaClient _eurekaClient;
-    private readonly IServiceInstance _thisInstance;
     private readonly EurekaApplicationInfoManager _appInfoManager;
     private int _shutdown;
     private volatile Applications _localRegionApps;
@@ -64,7 +63,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         _eurekaClient = eurekaClient;
         _clientOptionsMonitor = clientOptionsMonitor;
         _logger = loggerFactory.CreateLogger<EurekaDiscoveryClient>();
-        _thisInstance = new ThisServiceInstance(instanceOptionsMonitor);
 
         EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
 
@@ -78,7 +76,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             return;
         }
 
-        if (clientOptions.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo.LeaseInfo.RenewalInterval != null)
+        if (clientOptions.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo.LeaseInfo?.RenewalInterval != null)
         {
             if (!RegisterAsync(CancellationToken.None).GetAwaiter().GetResult())
             {
@@ -535,6 +533,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public IServiceInstance GetLocalServiceInstance()
     {
-        return _thisInstance;
+        return new EurekaServiceInstance(_appInfoManager.InstanceInfo);
     }
 }

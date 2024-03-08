@@ -229,7 +229,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal(100, instanceOptions.LeaseRenewalIntervalInSeconds);
         Assert.Equal("secureVipAddress", instanceOptions.SecureVirtualHostName);
         Assert.Equal("vipAddress", instanceOptions.VirtualHostName);
-        Assert.Equal("asgName", instanceOptions.AsgName);
+        Assert.Equal("asgName", instanceOptions.AutoScalingGroupName);
 
         Assert.Equal("statusPageUrlPath", instanceOptions.StatusPageUrlPath);
         Assert.Equal("statusPageUrl", instanceOptions.StatusPageUrl);
@@ -450,7 +450,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal(100, instanceOptions.LeaseRenewalIntervalInSeconds);
         Assert.Equal("secureVipAddress", instanceOptions.SecureVirtualHostName);
         Assert.Equal("vipAddress", instanceOptions.VirtualHostName);
-        Assert.Equal("asgName", instanceOptions.AsgName);
+        Assert.Equal("asgName", instanceOptions.AutoScalingGroupName);
 
         Assert.Equal("statusPageUrlPath", instanceOptions.StatusPageUrlPath);
         Assert.Equal("statusPageUrl", instanceOptions.StatusPageUrl);
@@ -659,7 +659,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal(100, instanceOptions.LeaseRenewalIntervalInSeconds);
         Assert.Equal("secureVipAddress", instanceOptions.SecureVirtualHostName);
         Assert.Equal("vipAddress", instanceOptions.VirtualHostName);
-        Assert.Equal("asgName", instanceOptions.AsgName);
+        Assert.Equal("asgName", instanceOptions.AutoScalingGroupName);
 
         Assert.Equal("statusPageUrlPath", instanceOptions.StatusPageUrlPath);
         Assert.Equal("statusPageUrl", instanceOptions.StatusPageUrl);
@@ -869,7 +869,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal(100, instanceOptions.LeaseRenewalIntervalInSeconds);
         Assert.Equal("secureVipAddress", instanceOptions.SecureVirtualHostName);
         Assert.Equal("vipAddress", instanceOptions.VirtualHostName);
-        Assert.Equal("asgName", instanceOptions.AsgName);
+        Assert.Equal("asgName", instanceOptions.AutoScalingGroupName);
 
         Assert.Equal("statusPageUrlPath", instanceOptions.StatusPageUrlPath);
         Assert.Equal("statusPageUrl", instanceOptions.StatusPageUrl);

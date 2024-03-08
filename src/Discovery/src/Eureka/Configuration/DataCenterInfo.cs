@@ -11,7 +11,7 @@ namespace Steeltoe.Discovery.Eureka.Configuration;
 
 public sealed class DataCenterInfo
 {
-    public DataCenterName Name { get; set; }
+    public DataCenterName Name { get; set; } = DataCenterName.MyOwn;
 
     internal static DataCenterInfo? FromJson(JsonDataCenterInfo? jsonDataCenterInfo)
     {

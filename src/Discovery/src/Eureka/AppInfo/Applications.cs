@@ -68,7 +68,7 @@ public sealed class Applications
 
     public override string ToString()
     {
-        return $"Applications[{string.Join(',', ApplicationMap.Select(pair => pair.Value.ToString()))}]";
+        return $"{nameof(Applications)}[{string.Join(',', ApplicationMap.Select(pair => pair.Value.ToString()))}]";
     }
 
     internal void Add(Application app)
@@ -98,11 +98,6 @@ public sealed class Applications
 
     private void AddInstanceToVip(string address, InstanceInfo instance, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
     {
-        if (instance.InstanceId == null)
-        {
-            return;
-        }
-
         lock (_addRemoveInstanceLock)
         {
             string addressUpper = address.ToUpperInvariant();

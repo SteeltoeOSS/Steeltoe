@@ -45,29 +45,13 @@ public sealed class EurekaApplicationHealthContributorTest
         (EurekaApplicationsHealthContributor contributor, _) = CreateHealthContributor();
 
         var app1 = new Application("app1", [
-            new InstanceInfo
-            {
-                InstanceId = "id1",
-                Status = InstanceStatus.Up
-            },
-            new InstanceInfo
-            {
-                InstanceId = "id2",
-                Status = InstanceStatus.Up
-            }
+            new InstanceInfoBuilder().WithId("id1").WithStatus(InstanceStatus.Up).Build(),
+            new InstanceInfoBuilder().WithId("id2").WithStatus(InstanceStatus.Up).Build()
         ]);
 
         var app2 = new Application("app2", [
-            new InstanceInfo
-            {
-                InstanceId = "id1",
-                Status = InstanceStatus.Down
-            },
-            new InstanceInfo
-            {
-                InstanceId = "id2",
-                Status = InstanceStatus.Starting
-            }
+            new InstanceInfoBuilder().WithId("id1").WithStatus(InstanceStatus.Down).Build(),
+            new InstanceInfoBuilder().WithId("id2").WithStatus(InstanceStatus.Starting).Build()
         ]);
 
         var result = new HealthCheckResult();

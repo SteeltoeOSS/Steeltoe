@@ -365,7 +365,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         foreach (IServiceInstance instance in instances)
         {
             string uri = instance.Uri.ToString();
-            IDictionary<string, string> metaData = instance.Metadata;
+            IDictionary<string, string?> metaData = instance.Metadata;
 
             if (metaData != null)
             {
@@ -377,7 +377,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                     settings.Password = password;
                 }
 
-                if (metaData.TryGetValue("configPath", out string? path))
+                if (metaData.TryGetValue("configPath", out string? path) && path != null)
                 {
                     if (uri.EndsWith('/') && path.StartsWith('/'))
                     {

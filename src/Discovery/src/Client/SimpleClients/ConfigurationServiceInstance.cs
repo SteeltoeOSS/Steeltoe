@@ -27,5 +27,5 @@ public sealed class ConfigurationServiceInstance : IServiceInstance
 
     public Uri Uri => new($"{(IsSecure ? Uri.UriSchemeHttps : Uri.UriSchemeHttp)}{Uri.SchemeDelimiter}{Host}:{Port}");
 
-    public IDictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
+    public IDictionary<string, string?> Metadata { get; } = new Dictionary<string, string?>();
 }

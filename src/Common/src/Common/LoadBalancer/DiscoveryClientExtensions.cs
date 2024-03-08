@@ -73,7 +73,7 @@ internal static class DiscoveryClientExtensions
         public int Port { get; set; }
         public bool IsSecure { get; set; }
         public Uri Uri { get; set; } = null!;
-        public IDictionary<string, string> Metadata { get; set; } = null!;
+        public IDictionary<string, string?> Metadata { get; set; } = null!;
 
         public static JsonSerializableServiceInstance CopyFrom(IServiceInstance instance)
         {

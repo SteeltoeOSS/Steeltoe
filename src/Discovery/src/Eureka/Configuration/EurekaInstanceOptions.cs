@@ -28,8 +28,6 @@ public sealed class EurekaInstanceOptions
     private string? _thisHostAddress;
 
     internal InetUtils? NetUtils { get; set; }
-    internal TimeSpan LeaseRenewalInterval => TimeSpan.FromSeconds(LeaseRenewalIntervalInSeconds);
-    internal TimeSpan LeaseExpirationDuration => TimeSpan.FromSeconds(LeaseExpirationDurationInSeconds);
 
     /// <summary>
     /// Gets or sets the unique ID (within the scope of the app name) of this instance to be registered with Eureka. Configuration property:
@@ -52,7 +50,7 @@ public sealed class EurekaInstanceOptions
     /// Gets the metadata name/value pairs associated with this instance. This information is sent to Eureka server and can be used by other instances.
     /// Configuration property: eureka:instance:metadataMap.
     /// </summary>
-    public IDictionary<string, string> MetadataMap { get; } = new Dictionary<string, string>();
+    public IDictionary<string, string?> MetadataMap { get; } = new Dictionary<string, string?>();
 
     /// <summary>
     /// Gets or sets configuration property: eureka:instance:hostName.
@@ -215,7 +213,8 @@ public sealed class EurekaInstanceOptions
     /// automatically put an instance out of service after the instance is launched, and it has been disabled for traffic. Configuration property:
     /// eureka:instance:asgName.
     /// </summary>
-    public string? AsgName { get; set; }
+    [ConfigurationKeyName("AsgName")]
+    public string? AutoScalingGroupName { get; set; }
 
     /// <summary>
     /// Gets the data center this instance is deployed to. This information is used to get some AWS-specific instance information if the instance is deployed

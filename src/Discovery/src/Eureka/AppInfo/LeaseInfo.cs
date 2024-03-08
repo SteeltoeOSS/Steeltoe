@@ -99,4 +99,27 @@ public sealed class LeaseInfo
     {
         return timeSpan == null ? null : (int)timeSpan.Value.TotalSeconds;
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj is not LeaseInfo other)
+        {
+            return false;
+        }
+
+#pragma warning disable S1067 // Expressions should not be too complex
+        return RenewalInterval == other.RenewalInterval && Duration == other.Duration && RegistrationTimeUtc == other.RegistrationTimeUtc &&
+            LastRenewalTimeUtc == other.LastRenewalTimeUtc && EvictionTimeUtc == other.EvictionTimeUtc && ServiceUpTimeUtc == other.ServiceUpTimeUtc;
+#pragma warning restore S1067 // Expressions should not be too complex
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(RenewalInterval, Duration, RegistrationTimeUtc, LastRenewalTimeUtc, EvictionTimeUtc, ServiceUpTimeUtc);
+    }
 }

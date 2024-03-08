@@ -93,7 +93,7 @@ public sealed class ConsulRegistrationTest
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
         var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(new ConfigurationBuilder().Build()));
-        IDictionary<string, string> metadata = registration.Metadata;
+        IDictionary<string, string?> metadata = registration.Metadata;
 
         Assert.Equal(5, metadata.Keys.Count);
 

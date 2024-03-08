@@ -25,18 +25,9 @@ public sealed class ApplicationTest : AbstractBaseTest
     {
         var infos = new List<InstanceInfo>
         {
-            new()
-            {
-                InstanceId = "1"
-            },
-            new()
-            {
-                InstanceId = "2"
-            },
-            new()
-            {
-                InstanceId = "2"
-            } // Note duplicate
+            new InstanceInfoBuilder().WithId("1").Build(),
+            new InstanceInfoBuilder().WithId("2").Build(),
+            new InstanceInfoBuilder().WithId("2").Build() // Note duplicate
         };
 
         var app = new Application("foobar", infos);
@@ -52,11 +43,7 @@ public sealed class ApplicationTest : AbstractBaseTest
     public void Add_Adds()
     {
         var app = new Application("foobar");
-
-        var info = new InstanceInfo
-        {
-            InstanceId = "1"
-        };
+        InstanceInfo info = new InstanceInfoBuilder().WithId("1").Build();
 
         app.Add(info);
 
@@ -70,25 +57,16 @@ public sealed class ApplicationTest : AbstractBaseTest
     public void Add_Add_Updates()
     {
         var app = new Application("foobar");
-
-        var info = new InstanceInfo
-        {
-            InstanceId = "1",
-            Status = InstanceStatus.Down
-        };
+        InstanceInfo info = new InstanceInfoBuilder().WithId("1").WithStatus(InstanceStatus.Down).Build();
 
         app.Add(info);
 
         Assert.NotNull(app.GetInstance("1"));
         Assert.Equal(InstanceStatus.Down, app.GetInstance("1")?.Status);
 
-        var info2 = new InstanceInfo
-        {
-            InstanceId = "1",
-            Status = InstanceStatus.Up
-        };
-
+        InstanceInfo info2 = new InstanceInfoBuilder().WithId("1").WithStatus(InstanceStatus.Up).Build();
         app.Add(info2);
+
         Assert.Single(app.Instances);
         Assert.NotNull(app.GetInstance("1"));
         Assert.Equal(InstanceStatus.Up, app.GetInstance("1")?.Status);
@@ -147,7 +125,7 @@ public sealed class ApplicationTest : AbstractBaseTest
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
             ActionType = ActionType.Added,
-            AsgName = "AsgName"
+            AutoScalingGroupName = "AsgName"
         };
 
         var application = new JsonApplication
@@ -172,7 +150,7 @@ public sealed class ApplicationTest : AbstractBaseTest
         Assert.Equal("AppGroupName", instance.AppGroupName);
         Assert.Equal("IPAddress", instance.IPAddress);
         Assert.Equal("Sid", instance.Sid);
-        Assert.Equal(100, instance.Port);
+        Assert.Equal(100, instance.NonSecurePort);
         Assert.True(instance.IsInsecurePortEnabled);
         Assert.Equal(100, instance.SecurePort);
         Assert.False(instance.IsSecurePortEnabled);
@@ -200,6 +178,6 @@ public sealed class ApplicationTest : AbstractBaseTest
         Assert.Equal(635_935_705_417_080_000L, instance.LastUpdatedTimeUtc.Value.Ticks);
         Assert.Equal(635_935_705_417_080_000L, instance.LastDirtyTimeUtc.Value.Ticks);
         Assert.Equal(ActionType.Added, instance.ActionType);
-        Assert.Equal("AsgName", instance.AsgName);
+        Assert.Equal("AsgName", instance.AutoScalingGroupName);
     }
 }

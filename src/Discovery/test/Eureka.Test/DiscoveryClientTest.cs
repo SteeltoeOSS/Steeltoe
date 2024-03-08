@@ -198,12 +198,8 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        var instance = new InstanceInfo
+        var instance = new InstanceInfo("localhost:foo", "FOO", "localhost", "192.168.56.1", new DataCenterInfo())
         {
-            InstanceId = "localhost:foo",
-            HostName = "localhost",
-            AppName = "FOO",
-            IPAddress = "192.168.56.1",
             Status = InstanceStatus.Starting
         };
 
@@ -431,36 +427,28 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         discoveryClient.Applications = new Applications([
             new Application("app1", [
-                new InstanceInfo
+                new InstanceInfo("id1", "app1", "localhost", "192.168.56.1", new DataCenterInfo())
                 {
-                    AppName = "app1",
-                    InstanceId = "id1",
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
                     Status = InstanceStatus.Down
                 },
-                new InstanceInfo
+                new InstanceInfo("id2", "app1", "localhost", "192.168.56.1", new DataCenterInfo())
                 {
-                    AppName = "app1",
-                    InstanceId = "id2",
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
                     Status = InstanceStatus.Down
                 }
             ]),
             new Application("app2", [
-                new InstanceInfo
+                new InstanceInfo("id21", "app2", "localhost", "192.168.56.1", new DataCenterInfo())
                 {
-                    AppName = "app2",
-                    InstanceId = "id21",
                     VipAddress = "vapp2",
                     SecureVipAddress = "svapp2",
                     Status = InstanceStatus.Up
                 },
-                new InstanceInfo
+                new InstanceInfo("id22", "app2", "localhost", "192.168.56.1", new DataCenterInfo())
                 {
-                    AppName = "app2",
-                    InstanceId = "id22",
                     VipAddress = "vapp2",
                     SecureVipAddress = "svapp2",
                     Status = InstanceStatus.OutOfService
@@ -506,38 +494,30 @@ public sealed class DiscoveryClientTest : AbstractBaseTest
 
         discoveryClient.Applications = new Applications([
             new Application("app1", [
-                new InstanceInfo
+                new InstanceInfo("id1", "app1", "localhost", "192.168.56.1", new DataCenterInfo())
                 {
-                    AppName = "app1",
-                    InstanceId = "id1",
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
                     Status = InstanceStatus.Down
                 },
-                new InstanceInfo
+                new InstanceInfo("id2", "app1", "localhost", "192.168.56.1", new DataCenterInfo())
                 {
-                    AppName = "app1",
-                    InstanceId = "id2",
                     VipAddress = "vapp1",
                     SecureVipAddress = "svapp1",
                     Status = InstanceStatus.Down
                 }
             ]),
             new Application("app2", [
-                new InstanceInfo
+                new InstanceInfo("id1", "app2", "localhost", "192.168.56.1", new DataCenterInfo())
                 {
-                    AppName = "app2",
-                    InstanceId = "id1",
-                    VipAddress = "vapp2",
-                    SecureVipAddress = "svapp2",
+                    VipAddress = "vapp1",
+                    SecureVipAddress = "svapp1",
                     Status = InstanceStatus.Up
                 },
-                new InstanceInfo
+                new InstanceInfo("id2", "app2", "localhost", "192.168.56.1", new DataCenterInfo())
                 {
-                    AppName = "app2",
-                    InstanceId = "id2",
-                    VipAddress = "vapp2",
-                    SecureVipAddress = "svapp2",
+                    VipAddress = "vapp1",
+                    SecureVipAddress = "svapp1",
                     Status = InstanceStatus.OutOfService
                 }
             ])

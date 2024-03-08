@@ -5,7 +5,6 @@
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
-using Steeltoe.Discovery.Eureka.Util;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
@@ -13,22 +12,22 @@ namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 public sealed class InstanceInfoTest : AbstractBaseTest
 {
     [Fact]
-    public void DefaultConstructor_InitializedWithDefaults()
+    public void Constructor_InitializedWithDefaults()
     {
-        var instance = new InstanceInfo();
+        var instance = new InstanceInfo("x", "x", "x", "x", new DataCenterInfo());
 
         Assert.Null(instance.OverriddenStatus);
         Assert.False(instance.IsSecurePortEnabled);
-        Assert.True(instance.IsInsecurePortEnabled);
-        Assert.Equal(1, instance.CountryId);
-        Assert.Equal(7001, instance.Port);
-        Assert.Equal(7002, instance.SecurePort);
-        Assert.Equal("na", instance.Sid);
+        Assert.False(instance.IsInsecurePortEnabled);
+        Assert.Null(instance.CountryId);
+        Assert.Equal(0, instance.NonSecurePort);
+        Assert.Equal(0, instance.SecurePort);
+        Assert.Null(instance.Sid);
         Assert.Null(instance.IsCoordinatingDiscoveryServer);
-        Assert.NotNull(instance.Metadata);
+        Assert.Empty(instance.Metadata);
         Assert.False(instance.IsDirty);
         Assert.Equal(instance.LastDirtyTimeUtc, instance.LastUpdatedTimeUtc);
-        Assert.Equal(InstanceStatus.Up, instance.Status);
+        Assert.Null(instance.Status);
     }
 
     [Fact]
@@ -84,10 +83,10 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
             ActionType = ActionType.Added,
-            AsgName = "AsgName"
+            AutoScalingGroupName = "AsgName"
         };
 
-        var instance = InstanceInfo.FromJsonInstance(jsonInstance);
+        var instance = InstanceInfo.FromJson(jsonInstance);
         Assert.NotNull(instance);
 
         // Verify
@@ -96,7 +95,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal("AppGroupName", instance.AppGroupName);
         Assert.Equal("IPAddress", instance.IPAddress);
         Assert.Equal("Sid", instance.Sid);
-        Assert.Equal(100, instance.Port);
+        Assert.Equal(100, instance.NonSecurePort);
         Assert.True(instance.IsInsecurePortEnabled);
         Assert.Equal(100, instance.SecurePort);
         Assert.False(instance.IsSecurePortEnabled);
@@ -124,7 +123,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(635_935_705_417_080_000L, instance.LastUpdatedTimeUtc.Value.Ticks);
         Assert.Equal(635_935_705_417_080_000L, instance.LastDirtyTimeUtc.Value.Ticks);
         Assert.Equal(ActionType.Added, instance.ActionType);
-        Assert.Equal("AsgName", instance.AsgName);
+        Assert.Equal("AsgName", instance.AutoScalingGroupName);
     }
 
     [Fact]
@@ -180,10 +179,10 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
             ActionType = ActionType.Added,
-            AsgName = "AsgName"
+            AutoScalingGroupName = "AsgName"
         };
 
-        var info = InstanceInfo.FromJsonInstance(jsonInstance);
+        var info = InstanceInfo.FromJson(jsonInstance);
         Assert.NotNull(info);
 
         // Verify
@@ -244,10 +243,10 @@ public sealed class InstanceInfoTest : AbstractBaseTest
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
             ActionType = ActionType.Added,
-            AsgName = "AsgName"
+            AutoScalingGroupName = "AsgName"
         };
 
-        var instance = InstanceInfo.FromJsonInstance(jsonInstance);
+        var instance = InstanceInfo.FromJson(jsonInstance);
         Assert.NotNull(instance);
 
         // Verify
@@ -267,8 +266,8 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), instance.AppName);
         Assert.Null(instance.AppGroupName);
         Assert.Equal(instanceOptions.IPAddress, instance.IPAddress);
-        Assert.Equal("na", instance.Sid);
-        Assert.Equal(80, instance.Port);
+        Assert.Null(instance.Sid);
+        Assert.Equal(80, instance.NonSecurePort);
         Assert.True(instance.IsInsecurePortEnabled);
         Assert.Equal(443, instance.SecurePort);
         Assert.False(instance.IsSecurePortEnabled);
@@ -278,7 +277,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Null(instance.SecureHealthCheckUrl);
         Assert.Null(instance.VipAddress);
         Assert.Null(instance.SecureVipAddress);
-        Assert.Equal(1, instance.CountryId);
+        Assert.Null(instance.CountryId);
         Assert.Equal("MyOwn", instance.DataCenterInfo.Name.ToString());
         Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
         Assert.Equal(InstanceStatus.Up, instance.Status);
@@ -297,7 +296,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Empty(instance.Metadata);
         Assert.Equal(instance.LastDirtyTimeUtc, instance.LastUpdatedTimeUtc);
         Assert.Null(instance.ActionType);
-        Assert.Null(instance.AsgName);
+        Assert.Null(instance.AutoScalingGroupName);
     }
 
     [Fact]
@@ -318,8 +317,8 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), instance.AppName);
         Assert.Null(instance.AppGroupName);
         Assert.Equal(instanceOptions.IPAddress, instance.IPAddress);
-        Assert.Equal("na", instance.Sid);
-        Assert.Equal(80, instance.Port);
+        Assert.Null(instance.Sid);
+        Assert.Equal(80, instance.NonSecurePort);
         Assert.False(instance.IsInsecurePortEnabled);
         Assert.Equal(443, instance.SecurePort);
         Assert.True(instance.IsSecurePortEnabled);
@@ -329,12 +328,9 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Null(instance.SecureHealthCheckUrl);
         Assert.Null(instance.VipAddress);
         Assert.Null(instance.SecureVipAddress);
-        Assert.Equal(1, instance.CountryId);
+        Assert.Null(instance.CountryId);
         Assert.Equal("MyOwn", instance.DataCenterInfo.Name.ToString());
         Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
-        Assert.Equal(InstanceStatus.Up, instance.Status);
-        Assert.Null(instance.OverriddenStatus);
-        Assert.NotNull(instance.LeaseInfo);
     }
 
     [Fact]
@@ -344,7 +340,7 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
         Assert.NotNull(instance);
 
-        JsonInstanceInfo jsonInstance = instance.ToJsonInstance();
+        JsonInstanceInfo jsonInstance = instance.ToJson();
 
         // Verify
         Assert.Equal(instanceOptions.ResolveHostName(false), jsonInstance.HostName);
@@ -352,20 +348,18 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), jsonInstance.AppName);
         Assert.Null(jsonInstance.AppGroupName);
         Assert.Equal(instanceOptions.IPAddress, jsonInstance.IPAddress);
-        Assert.Equal("na", jsonInstance.Sid);
+        Assert.Null(jsonInstance.Sid);
         Assert.NotNull(jsonInstance.Port);
         Assert.Equal(80, jsonInstance.Port.Port);
         Assert.True(jsonInstance.Port.Enabled);
-        Assert.NotNull(jsonInstance.SecurePort);
-        Assert.Equal(443, jsonInstance.SecurePort.Port);
-        Assert.False(jsonInstance.SecurePort.Enabled);
+        Assert.Null(jsonInstance.SecurePort);
         Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/", jsonInstance.HomePageUrl);
         Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/info", jsonInstance.StatusPageUrl);
         Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/health", jsonInstance.HealthCheckUrl);
         Assert.Null(jsonInstance.SecureHealthCheckUrl);
         Assert.Null(jsonInstance.VipAddress);
         Assert.Null(jsonInstance.SecureVipAddress);
-        Assert.Equal(1, jsonInstance.CountryId);
+        Assert.Null(jsonInstance.CountryId);
         Assert.NotNull(jsonInstance.DataCenterInfo);
         Assert.Equal("MyOwn", jsonInstance.DataCenterInfo.Name);
         Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", jsonInstance.DataCenterInfo.ClassName);
@@ -388,21 +382,14 @@ public sealed class InstanceInfoTest : AbstractBaseTest
         Assert.Equal("java.util.Collections$EmptyMap", jsonInstance.Metadata["@class"]);
         Assert.Equal(jsonInstance.LastDirtyTimestamp, jsonInstance.LastUpdatedTimestamp);
         Assert.Null(jsonInstance.ActionType);
-        Assert.Null(jsonInstance.AsgName);
+        Assert.Null(jsonInstance.AutoScalingGroupName);
     }
 
     [Fact]
     public void Equals_Equals()
     {
-        var info1 = new InstanceInfo
-        {
-            InstanceId = "foobar"
-        };
-
-        var info2 = new InstanceInfo
-        {
-            InstanceId = "foobar"
-        };
+        var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo());
+        var info2 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo());
 
         Assert.True(info1.Equals(info2));
     }
@@ -410,15 +397,8 @@ public sealed class InstanceInfoTest : AbstractBaseTest
     [Fact]
     public void Equals_NotEqual()
     {
-        var info1 = new InstanceInfo
-        {
-            InstanceId = "foobar"
-        };
-
-        var info2 = new InstanceInfo
-        {
-            InstanceId = "foobar2"
-        };
+        var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo());
+        var info2 = new InstanceInfo("foobar2", "app", "host", "127.0.0.1", new DataCenterInfo());
 
         Assert.False(info1.Equals(info2));
     }
@@ -426,11 +406,9 @@ public sealed class InstanceInfoTest : AbstractBaseTest
     [Fact]
     public void Equals_NotEqual_DiffTypes()
     {
-        var info1 = new InstanceInfo
-        {
-            InstanceId = "foobar"
-        };
+        var info1 = new InstanceInfo("foobar", "app", "host", "127.0.0.1", new DataCenterInfo());
 
+        // ReSharper disable once SuspiciousTypeConversion.Global
         Assert.False(info1.Equals(this));
     }
 }

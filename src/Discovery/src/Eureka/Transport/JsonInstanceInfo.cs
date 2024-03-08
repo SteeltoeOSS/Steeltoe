@@ -94,5 +94,5 @@ internal sealed class JsonInstanceInfo
     public ActionType? ActionType { get; set; }
 
     [JsonPropertyName("asgName")]
-    public string? AsgName { get; set; }
+    public string? AutoScalingGroupName { get; set; }
 }
