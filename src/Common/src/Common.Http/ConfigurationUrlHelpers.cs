@@ -9,8 +9,8 @@ namespace Steeltoe.Common.Http;
 
 public static class ConfigurationUrlHelpers
 {
-    private const string IPV4WildcardHost = "0.0.0.0";
-    private const string IPV6WildcardHost = "[::]";
+    private const string IP4WildcardHost = "0.0.0.0";
+    private const string IP6WildcardHost = "[::]";
 
     private static readonly string[] MicrosoftWildcardHosts =
     {
@@ -20,8 +20,8 @@ public static class ConfigurationUrlHelpers
 
     public static readonly string[] WildcardHosts =
     {
-        IPV4WildcardHost,
-        IPV6WildcardHost
+        IP4WildcardHost,
+        IP6WildcardHost
     };
 
     public static List<Uri> GetAspNetCoreUrls(this IConfiguration configuration)
@@ -50,8 +50,8 @@ public static class ConfigurationUrlHelpers
         if (!Uri.TryCreate(address, UriKind.Absolute, out Uri uri) &&
             address.Any(a => MicrosoftWildcardHosts.Contains(a.ToString(CultureInfo.InvariantCulture))))
         {
-            addresses.AddUniqueUri(address.WildcardUriParse(MicrosoftWildcardHosts, IPV4WildcardHost));
-            addresses.AddUniqueUri(address.WildcardUriParse(MicrosoftWildcardHosts, IPV6WildcardHost));
+            addresses.AddUniqueUri(address.WildcardUriParse(MicrosoftWildcardHosts, IP4WildcardHost));
+            addresses.AddUniqueUri(address.WildcardUriParse(MicrosoftWildcardHosts, IP6WildcardHost));
         }
         else
         {

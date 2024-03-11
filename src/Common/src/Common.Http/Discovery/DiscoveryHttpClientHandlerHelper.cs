@@ -10,18 +10,18 @@ using Steeltoe.Common.LoadBalancer;
 
 namespace Steeltoe.Common.Http.Discovery;
 
-internal sealed class DiscoveryHttpClientHandlerBase
+internal sealed class DiscoveryHttpClientHandlerHelper
 {
     private readonly ILoadBalancer _loadBalancer;
     private readonly ILogger _logger;
 
-    public DiscoveryHttpClientHandlerBase(IDiscoveryClient discoveryClient, ILoggerFactory loggerFactory, ILoadBalancer? loadBalancer = null)
+    public DiscoveryHttpClientHandlerHelper(IDiscoveryClient discoveryClient, ILoggerFactory loggerFactory, ILoadBalancer? loadBalancer = null)
     {
         ArgumentGuard.NotNull(discoveryClient);
         ArgumentGuard.NotNull(loggerFactory);
 
         _loadBalancer = loadBalancer ?? new RandomLoadBalancer(discoveryClient, loggerFactory.CreateLogger<RandomLoadBalancer>());
-        _logger = loggerFactory.CreateLogger<DiscoveryHttpClientHandlerBase>();
+        _logger = loggerFactory.CreateLogger<DiscoveryHttpClientHandlerHelper>();
     }
 
     public async Task<Uri> LookupServiceAsync(Uri requestUri, CancellationToken cancellationToken)

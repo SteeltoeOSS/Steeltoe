@@ -17,7 +17,7 @@ namespace Steeltoe.Common.Http.Discovery;
 public class DiscoveryHttpMessageHandler : DelegatingHandler
 {
     private readonly ILogger _logger;
-    private readonly DiscoveryHttpClientHandlerBase _discoveryBase;
+    private readonly DiscoveryHttpClientHandlerHelper _discoveryHelper;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscoveryHttpMessageHandler" /> class.
@@ -33,7 +33,7 @@ public class DiscoveryHttpMessageHandler : DelegatingHandler
     /// </param>
     public DiscoveryHttpMessageHandler(IDiscoveryClient discoveryClient, ILoggerFactory loggerFactory, ILoadBalancer? loadBalancer = null)
     {
-        _discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, loggerFactory, loadBalancer);
+        _discoveryHelper = new DiscoveryHttpClientHandlerHelper(discoveryClient, loggerFactory, loadBalancer);
         _logger = loggerFactory.CreateLogger<DiscoveryHttpMessageHandler>();
     }
 
@@ -44,7 +44,7 @@ public class DiscoveryHttpMessageHandler : DelegatingHandler
 
         try
         {
-            request.RequestUri = await _discoveryBase.LookupServiceAsync(requestUri, cancellationToken);
+            request.RequestUri = await _discoveryHelper.LookupServiceAsync(requestUri, cancellationToken);
             return await base.SendAsync(request, cancellationToken);
         }
         catch (Exception exception) when (!exception.IsCancellation())
