@@ -23,9 +23,11 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
     private readonly ILogger<ConsulServiceRegistrar> _logger;
 
     private bool _isDisposed;
-    internal int IsRunning;
+    private int _isRunning;
 
     private ConsulDiscoveryOptions Options => _optionsMonitor.CurrentValue;
+
+    internal bool IsRunning => _isRunning == Running;
 
     /// <summary>
     /// Gets the registration that the registrar is to register with Consul.
@@ -75,7 +77,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
             return;
         }
 
-        if (Interlocked.CompareExchange(ref IsRunning, Running, NotRunning) == NotRunning)
+        if (Interlocked.CompareExchange(ref _isRunning, Running, NotRunning) == NotRunning)
         {
             if (Options is { IsRetryEnabled: true, FailFast: true, Retry: not null })
             {
@@ -153,7 +155,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
     {
         if (!_isDisposed)
         {
-            if (Interlocked.CompareExchange(ref IsRunning, NotRunning, Running) == Running)
+            if (Interlocked.CompareExchange(ref _isRunning, NotRunning, Running) == Running)
             {
                 await DeregisterAsync(CancellationToken.None);
             }

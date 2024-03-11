@@ -32,7 +32,7 @@ public sealed class ConsulServiceRegistrarTest
 
         await registrar.StartAsync(CancellationToken.None);
 
-        registrar.IsRunning.Should().Be(1);
+        registrar.IsRunning.Should().BeTrue();
         agentMock.Verify(agent => agent.ServiceRegister(registration.InnerRegistration, CancellationToken.None), Times.Once);
     }
 
@@ -53,7 +53,7 @@ public sealed class ConsulServiceRegistrarTest
 
         await registrar.StartAsync(CancellationToken.None);
 
-        registrar.IsRunning.Should().Be(1);
+        registrar.IsRunning.Should().BeTrue();
         agentMock.Verify(agent => agent.ServiceRegister(registration.InnerRegistration, CancellationToken.None), Times.Never);
     }
 
@@ -74,7 +74,7 @@ public sealed class ConsulServiceRegistrarTest
 
         await registrar.StartAsync(CancellationToken.None);
 
-        registrar.IsRunning.Should().Be(0);
+        registrar.IsRunning.Should().BeFalse();
         agentMock.Verify(agent => agent.ServiceRegister(registration.InnerRegistration, CancellationToken.None), Times.Never);
     }
 
@@ -94,7 +94,7 @@ public sealed class ConsulServiceRegistrarTest
             await registrar.StartAsync(CancellationToken.None);
         }
 
-        registrar.IsRunning.Should().Be(0);
+        registrar.IsRunning.Should().BeFalse();
         agentMock.Verify(agent => agent.ServiceDeregister(registration.InstanceId, CancellationToken.None), Times.Once);
     }
 

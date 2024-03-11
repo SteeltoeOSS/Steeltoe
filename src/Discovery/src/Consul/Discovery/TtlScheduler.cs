@@ -22,7 +22,7 @@ public sealed class TtlScheduler : IAsyncDisposable
     private readonly IConsulClient _client;
     private readonly ILogger<TtlScheduler> _schedulerLogger;
     private readonly ILogger<PeriodicHeartbeat> _heartbeatLogger;
-    internal readonly ConcurrentDictionary<string, PeriodicHeartbeat> ServiceHeartbeats = new(StringComparer.OrdinalIgnoreCase);
+    internal ConcurrentDictionary<string, PeriodicHeartbeat> ServiceHeartbeats { get; } = new(StringComparer.OrdinalIgnoreCase);
     private bool _isDisposed;
 
     /// <summary>
