@@ -76,7 +76,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             return;
         }
 
-        if (clientOptions.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo.LeaseInfo?.RenewalInterval > TimeSpan.Zero)
+        if (clientOptions.ShouldRegisterWithEureka && _appInfoManager.Instance.LeaseInfo?.RenewalInterval > TimeSpan.Zero)
         {
             try
             {
@@ -88,11 +88,11 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             }
 
             _logger.LogInformation("Starting heartbeat timer.");
-            _heartbeatTimer = StartTimer(_appInfoManager.InstanceInfo.LeaseInfo.RenewalInterval.Value, HeartbeatTask);
+            _heartbeatTimer = StartTimer(_appInfoManager.Instance.LeaseInfo.RenewalInterval.Value, HeartbeatTask);
 
             _instanceOptionsChangeToken = _appInfoManager.SubscribeToConfigurationChange(options =>
             {
-                _appInfoManager.InstanceInfo.UpdateFromConfiguration(options);
+                _appInfoManager.Instance.UpdateFromConfiguration(options);
                 ChangeTimer(_heartbeatTimer, options.LeaseRenewalInterval);
             });
 
@@ -149,7 +149,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         }
 
         _appInfoManager.StatusChanged -= HandleInstanceStatusChanged;
-        _appInfoManager.InstanceInfo.Status = InstanceStatus.Down;
+        _appInfoManager.Instance.Status = InstanceStatus.Down;
 
         _instanceOptionsChangeToken?.Dispose();
         _clientOptionsChangeToken?.Dispose();
@@ -178,7 +178,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         try
         {
-            InstanceInfo instance = _appInfoManager.InstanceInfo;
+            InstanceInfo instance = _appInfoManager.Instance;
 
             _logger.LogDebug(
                 nameof(HandleInstanceStatusChanged) + ": Previous={PreviousStatus}, Current={CurrentStatus}, InstanceId={instanceId}, IsDirty={IsDirty}",
@@ -230,7 +230,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
     internal async Task RegisterAsync(CancellationToken cancellationToken)
     {
-        InstanceInfo instance = _appInfoManager.InstanceInfo;
+        InstanceInfo instance = _appInfoManager.Instance;
 
         await _eurekaClient.RegisterAsync(instance, cancellationToken);
         _logger.LogDebug("Register {Application}/{Instance} succeeded.", instance.AppName, instance.InstanceId);
@@ -240,7 +240,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
     internal async Task DeregisterAsync(CancellationToken cancellationToken)
     {
-        InstanceInfo instance = _appInfoManager.InstanceInfo;
+        InstanceInfo instance = _appInfoManager.Instance;
 
         await _eurekaClient.DeregisterAsync(instance.AppName, instance.InstanceId, cancellationToken);
         _logger.LogDebug("Deregister {Application}/{Instance} succeeded.", instance.AppName, instance.InstanceId);
@@ -248,7 +248,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
     internal async Task RenewAsync(CancellationToken cancellationToken)
     {
-        InstanceInfo instance = _appInfoManager.InstanceInfo;
+        InstanceInfo instance = _appInfoManager.Instance;
 
         await RefreshAppInstanceAsync(cancellationToken);
 
@@ -274,7 +274,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         }
     }
 
-    public async Task<Applications?> FetchFullRegistryAsync(CancellationToken cancellationToken)
+    internal async Task<Applications?> FetchFullRegistryAsync(CancellationToken cancellationToken)
     {
         long startingCounter = Interlocked.Read(ref _registryFetchCounter);
         EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
@@ -341,7 +341,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
                 InstanceStatus aggregatedStatus = await HealthCheckHandler.GetStatusAsync(cancellationToken);
                 _logger.LogDebug("Health check handler returned status {status}.", aggregatedStatus);
 
-                _appInfoManager.InstanceInfo.Status = aggregatedStatus;
+                _appInfoManager.Instance.Status = aggregatedStatus;
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
@@ -352,7 +352,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
     private void UpdateLastRemoteInstanceStatusFromCache()
     {
-        InstanceInfo instance = _appInfoManager.InstanceInfo;
+        InstanceInfo instance = _appInfoManager.Instance;
         Application? app = GetApplication(instance.AppName);
 
         if (app != null)
@@ -441,6 +441,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public IServiceInstance GetLocalServiceInstance()
     {
-        return new EurekaServiceInstance(_appInfoManager.InstanceInfo);
+        return new EurekaServiceInstance(_appInfoManager.Instance);
     }
 }

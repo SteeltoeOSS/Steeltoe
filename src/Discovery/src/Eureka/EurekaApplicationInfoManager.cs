@@ -19,35 +19,12 @@ public sealed class EurekaApplicationInfoManager
     private readonly ILogger<EurekaApplicationInfoManager> _logger;
     private readonly object _statusChangeLock = new();
 
-    public InstanceInfo InstanceInfo { get; }
+    /// <summary>
+    /// Gets the instance that represents the currently running app.
+    /// </summary>
+    public InstanceInfo Instance { get; }
 
-    public InstanceStatus InstanceStatus
-    {
-        get => InstanceInfo.Status ?? InstanceStatus.Unknown;
-        set
-        {
-            lock (_statusChangeLock)
-            {
-                InstanceStatus previousStatus = InstanceInfo.Status ?? InstanceStatus.Unknown;
-
-                if (previousStatus != value)
-                {
-                    InstanceInfo.Status = value;
-
-                    try
-                    {
-                        StatusChanged?.Invoke(this, new InstanceStatusChangedEventArgs(previousStatus, value, InstanceInfo.InstanceId));
-                    }
-                    catch (Exception exception)
-                    {
-                        _logger.LogError(exception, "StatusChanged event exception");
-                    }
-                }
-            }
-        }
-    }
-
-    public event EventHandler<InstanceStatusChangedEventArgs>? StatusChanged;
+    internal event EventHandler<InstanceStatusChangedEventArgs>? StatusChanged;
 
     public EurekaApplicationInfoManager(IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor, ILogger<EurekaApplicationInfoManager> logger)
     {
@@ -56,7 +33,39 @@ public sealed class EurekaApplicationInfoManager
 
         _instanceOptionsMonitor = instanceOptionsMonitor;
         _logger = logger;
-        InstanceInfo = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
+        Instance = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
+    }
+
+    /// <summary>
+    /// Updates the status of the instance that represents the currently running app.
+    /// </summary>
+    /// <param name="newStatus">
+    /// The new status.
+    /// </param>
+    /// <remarks>
+    /// Whereas changing <see cref="InstanceInfo.Status" /> marks the instance as dirty, so the change gets sent on the next heartbeat, this method sends the
+    /// status immediately when eureka:client:shouldOnDemandUpdateStatusChange is set to <c>true</c> (the default).
+    /// </remarks>
+    public void UpdateStatus(InstanceStatus newStatus)
+    {
+        lock (_statusChangeLock)
+        {
+            InstanceStatus previousStatus = Instance.Status ?? InstanceStatus.Unknown;
+
+            if (previousStatus != newStatus)
+            {
+                Instance.Status = newStatus;
+
+                try
+                {
+                    StatusChanged?.Invoke(this, new InstanceStatusChangedEventArgs(previousStatus, newStatus, Instance.InstanceId));
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception, "StatusChanged event exception");
+                }
+            }
+        }
     }
 
     internal IDisposable? SubscribeToConfigurationChange(Action<EurekaInstanceOptions> action)

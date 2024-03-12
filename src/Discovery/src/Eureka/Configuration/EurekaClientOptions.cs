@@ -72,8 +72,8 @@ public sealed class EurekaClientOptions : IValidateCertificatesOptions
     public string? RegistryRefreshSingleVipAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether local status updates via <see cref="EurekaApplicationInfoManager.InstanceStatus" />  will trigger on-demand
-    /// register/updates to remote Eureka servers. Configuration property: eureka:client:shouldOnDemandUpdateStatusChange.
+    /// Gets or sets a value indicating whether calling <see cref="EurekaApplicationInfoManager.UpdateStatus" /> triggers immediate register/updates to
+    /// remote Eureka servers, or at the next heartbeat. Configuration property: eureka:client:shouldOnDemandUpdateStatusChange.
     /// </summary>
     public bool ShouldOnDemandUpdateStatusChange { get; set; } = true;
 

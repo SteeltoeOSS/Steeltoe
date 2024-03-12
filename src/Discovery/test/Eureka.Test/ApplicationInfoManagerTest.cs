@@ -25,8 +25,8 @@ public sealed class ApplicationInfoManagerTest
         TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        Assert.Equal(InstanceStatus.Starting, appManager.InstanceStatus);
-        appManager.InstanceStatus = InstanceStatus.Up;
+        Assert.Equal(InstanceStatus.Starting, appManager.Instance.Status);
+        appManager.UpdateStatus(InstanceStatus.Up);
     }
 
     [Fact]
@@ -40,15 +40,15 @@ public sealed class ApplicationInfoManagerTest
         TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        Assert.Equal(InstanceStatus.Starting, appManager.InstanceStatus);
+        Assert.Equal(InstanceStatus.Starting, appManager.Instance.Status);
 
         // Check event sent
         appManager.StatusChanged += HandleInstanceStatusChanged;
-        appManager.InstanceStatus = InstanceStatus.Up;
+        appManager.UpdateStatus(InstanceStatus.Up);
         Assert.NotNull(_eventArgs);
         Assert.Equal(InstanceStatus.Starting, _eventArgs.Previous);
         Assert.Equal(InstanceStatus.Up, _eventArgs.Current);
-        Assert.Equal(appManager.InstanceInfo.InstanceId, _eventArgs.InstanceId);
+        Assert.Equal(appManager.Instance.InstanceId, _eventArgs.InstanceId);
         appManager.StatusChanged -= HandleInstanceStatusChanged;
     }
 
@@ -63,18 +63,18 @@ public sealed class ApplicationInfoManagerTest
         TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        Assert.Equal(InstanceStatus.Starting, appManager.InstanceStatus);
+        Assert.Equal(InstanceStatus.Starting, appManager.Instance.Status);
 
         // Check event sent
         appManager.StatusChanged += HandleInstanceStatusChanged;
-        appManager.InstanceStatus = InstanceStatus.Up;
+        appManager.UpdateStatus(InstanceStatus.Up);
         Assert.NotNull(_eventArgs);
         Assert.Equal(InstanceStatus.Starting, _eventArgs.Previous);
         Assert.Equal(InstanceStatus.Up, _eventArgs.Current);
-        Assert.Equal(appManager.InstanceInfo.InstanceId, _eventArgs.InstanceId);
+        Assert.Equal(appManager.Instance.InstanceId, _eventArgs.InstanceId);
         _eventArgs = null;
         appManager.StatusChanged -= HandleInstanceStatusChanged;
-        appManager.InstanceStatus = InstanceStatus.Down;
+        appManager.UpdateStatus(InstanceStatus.Down);
         Assert.Null(_eventArgs);
     }
 
@@ -85,8 +85,8 @@ public sealed class ApplicationInfoManagerTest
         TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        appManager.InstanceInfo.UpdateFromConfiguration(instanceOptions);
-        InstanceInfo instance = appManager.InstanceInfo;
+        appManager.Instance.UpdateFromConfiguration(instanceOptions);
+        InstanceInfo instance = appManager.Instance;
 
         Assert.False(instance.IsDirty);
         Assert.NotNull(instance.LeaseInfo);
@@ -97,7 +97,7 @@ public sealed class ApplicationInfoManagerTest
 
         instanceOptions.LeaseRenewalIntervalInSeconds += 100;
         instanceOptions.LeaseExpirationDurationInSeconds += 100;
-        appManager.InstanceInfo.UpdateFromConfiguration(instanceOptions);
+        appManager.Instance.UpdateFromConfiguration(instanceOptions);
         Assert.True(instance.IsDirty);
         Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.Duration.Value.TotalSeconds);
         Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);

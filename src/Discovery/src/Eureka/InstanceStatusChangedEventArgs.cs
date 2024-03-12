@@ -7,7 +7,7 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public sealed class InstanceStatusChangedEventArgs : EventArgs
+internal sealed class InstanceStatusChangedEventArgs : EventArgs
 {
     public InstanceStatus Previous { get; }
     public InstanceStatus Current { get; }

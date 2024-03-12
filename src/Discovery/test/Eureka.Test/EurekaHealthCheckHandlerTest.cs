@@ -103,7 +103,7 @@ public sealed class EurekaHealthCheckHandlerTest
         contributor.IsAwaited.Should().BeTrue();
 
         var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
-        infoManager.InstanceStatus.Should().Be(InstanceStatus.Up);
+        infoManager.Instance.Status.Should().Be(InstanceStatus.Up);
     }
 
     private sealed class TestHealthContributor : IHealthContributor

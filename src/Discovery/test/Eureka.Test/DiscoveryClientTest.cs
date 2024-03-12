@@ -335,7 +335,7 @@ public sealed class DiscoveryClientTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
         var appManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
-        appManager.InstanceInfo.IsDirty = true;
+        appManager.Instance.IsDirty = true;
 
         await discoveryClient.RenewAsync(CancellationToken.None);
 
@@ -367,7 +367,7 @@ public sealed class DiscoveryClientTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
         var appManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
-        appManager.InstanceInfo.IsDirty = true;
+        appManager.Instance.IsDirty = true;
 
         await discoveryClient.RenewAsync(CancellationToken.None);
 
@@ -550,7 +550,7 @@ public sealed class DiscoveryClientTest
         await discoveryClient.RefreshAppInstanceAsync(CancellationToken.None);
 
         Assert.True(myHandler.Awaited);
-        Assert.Equal(InstanceStatus.Down, appInfoManager.InstanceInfo.Status);
+        Assert.Equal(InstanceStatus.Down, appInfoManager.Instance.Status);
     }
 
     [Fact]
