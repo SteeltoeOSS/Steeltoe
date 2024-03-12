@@ -25,13 +25,17 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     private readonly ILogger<EurekaDiscoveryClient> _logger;
     private readonly EurekaClient _eurekaClient;
     private readonly EurekaApplicationInfoManager _appInfoManager;
+    private readonly Timer? _heartbeatTimer;
+    private readonly Timer? _cacheRefreshTimer;
+    private readonly IDisposable? _instanceOptionsChangeToken;
+    private readonly IDisposable? _clientOptionsChangeToken;
 
     private volatile Applications _remoteApps;
     private long _registryFetchCounter;
     private int _shutdown;
 
-    internal Timer? HeartbeatTimer { get; }
-    internal Timer? CacheRefreshTimer { get; }
+    internal bool IsHeartbeatTimerStarted => _heartbeatTimer != null;
+    internal bool IsCacheRefreshTimerStarted => _cacheRefreshTimer != null;
 
     internal DateTime? LastGoodHeartbeatTimeUtc { get; private set; }
     internal DateTime? LastGoodRegistryFetchTimeUtc { get; private set; }
@@ -84,7 +88,13 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             }
 
             _logger.LogInformation("Starting heartbeat timer.");
-            HeartbeatTimer = StartTimer(_appInfoManager.InstanceInfo.LeaseInfo.RenewalInterval.Value, HeartbeatTask);
+            _heartbeatTimer = StartTimer(_appInfoManager.InstanceInfo.LeaseInfo.RenewalInterval.Value, HeartbeatTask);
+
+            _instanceOptionsChangeToken = _appInfoManager.SubscribeToConfigurationChange(options =>
+            {
+                _appInfoManager.InstanceInfo.UpdateFromConfiguration(options);
+                ChangeTimer(_heartbeatTimer, options.LeaseRenewalInterval);
+            });
 
             if (clientOptions.ShouldOnDemandUpdateStatusChange)
             {
@@ -104,7 +114,9 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             }
 
             _logger.LogInformation("Starting applications cache refresh timer.");
-            CacheRefreshTimer = StartTimer(clientOptions.RegistryFetchInterval, CacheRefreshTask);
+            _cacheRefreshTimer = StartTimer(clientOptions.RegistryFetchInterval, CacheRefreshTask);
+
+            _clientOptionsChangeToken = _clientOptionsMonitor.OnChange(options => ChangeTimer(_cacheRefreshTimer, options.RegistryFetchInterval));
         }
     }
 
@@ -139,14 +151,17 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         _appInfoManager.StatusChanged -= HandleInstanceStatusChanged;
         _appInfoManager.InstanceInfo.Status = InstanceStatus.Down;
 
-        if (CacheRefreshTimer != null)
+        _instanceOptionsChangeToken?.Dispose();
+        _clientOptionsChangeToken?.Dispose();
+
+        if (_cacheRefreshTimer != null)
         {
-            await CacheRefreshTimer.DisposeAsync();
+            await _cacheRefreshTimer.DisposeAsync();
         }
 
-        if (HeartbeatTimer != null)
+        if (_heartbeatTimer != null)
         {
-            await HeartbeatTimer.DisposeAsync();
+            await _heartbeatTimer.DisposeAsync();
         }
 
         try
@@ -171,6 +186,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
             if (instance.IsDirty)
             {
+                _logger.LogDebug("Instance {Application}/{Instance} is marked as dirty, re-registering.", instance.AppName, instance.InstanceId);
                 await RegisterAsync(CancellationToken.None);
 
                 _logger.LogInformation($"{nameof(RegisterAsync)} from {nameof(HandleInstanceStatusChanged)} succeeded.");
@@ -182,12 +198,15 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         }
     }
 
-    internal Timer StartTimer(TimeSpan interval, Action action)
+    private static Timer StartTimer(TimeSpan interval, Action action)
     {
-        // TODO: Change timer interval when config changed.
-
         var gatedAction = new GatedAction(action);
         return new Timer(_ => gatedAction.Run(), null, interval, interval);
+    }
+
+    private static void ChangeTimer(Timer timer, TimeSpan interval)
+    {
+        timer.Change(interval, interval);
     }
 
     private async Task FetchRegistryAsync(bool doFullUpdate, CancellationToken cancellationToken)
@@ -235,6 +254,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
         if (instance.IsDirty)
         {
+            _logger.LogDebug("Instance {Application}/{Instance} is marked as dirty, re-registering.", instance.AppName, instance.InstanceId);
             await RegisterAsync(cancellationToken);
         }
 
@@ -314,8 +334,6 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
     internal async Task RefreshAppInstanceAsync(CancellationToken cancellationToken)
     {
-        _appInfoManager.UpdateLeaseInfoFromConfiguration();
-
         if (_clientOptionsMonitor.CurrentValue.Health.CheckEnabled && HealthCheckHandler != null)
         {
             try

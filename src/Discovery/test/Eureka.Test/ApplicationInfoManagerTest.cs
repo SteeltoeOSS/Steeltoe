@@ -85,7 +85,7 @@ public sealed class ApplicationInfoManagerTest
         TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        appManager.UpdateLeaseInfoFromConfiguration();
+        appManager.InstanceInfo.UpdateFromConfiguration(instanceOptions);
         InstanceInfo instance = appManager.InstanceInfo;
 
         Assert.False(instance.IsDirty);
@@ -97,7 +97,7 @@ public sealed class ApplicationInfoManagerTest
 
         instanceOptions.LeaseRenewalIntervalInSeconds += 100;
         instanceOptions.LeaseExpirationDurationInSeconds += 100;
-        appManager.UpdateLeaseInfoFromConfiguration();
+        appManager.InstanceInfo.UpdateFromConfiguration(instanceOptions);
         Assert.True(instance.IsDirty);
         Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.Duration.Value.TotalSeconds);
         Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);

@@ -53,6 +53,9 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
 
     internal void ConfigureEurekaServices(IServiceCollection services)
     {
+        SetupConfigurationChangeDetection<EurekaClientOptions>(services, EurekaClientOptions.ConfigurationPrefix);
+        SetupConfigurationChangeDetection<EurekaInstanceOptions>(services, EurekaInstanceOptions.ConfigurationPrefix);
+
         services.AddOptions<EurekaClientOptions>().Configure<IConfiguration>((options, configuration) =>
         {
             configuration.GetSection(EurekaClientOptions.ConfigurationPrefix).Bind(options);
@@ -89,6 +92,16 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                 EurekaServiceInfo? serviceInfo = GetServiceInfo(configuration);
                 EurekaPostConfigurer.UpdateConfiguration(configuration, serviceInfo, options, serviceInfo?.ApplicationInfo ?? appInfo);
             });
+    }
+
+    private static void SetupConfigurationChangeDetection<TOptions>(IServiceCollection services, string configurationKey)
+        where TOptions : class
+    {
+        services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(provider =>
+        {
+            var configuration = provider.GetRequiredService<IConfiguration>();
+            return new ConfigurationChangeTokenSource<TOptions>(configuration.GetSection(configurationKey));
+        });
     }
 
     private static void GetPathsFromEndpointOptions(EurekaInstanceOptions eurekaOptions, IServiceProvider serviceProvider, IConfiguration configuration)

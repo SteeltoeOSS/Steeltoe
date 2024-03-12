@@ -275,6 +275,8 @@ public sealed class InstanceInfo
 
     internal static InstanceInfo FromConfiguration(EurekaInstanceOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         if (string.IsNullOrWhiteSpace(options.IPAddress))
         {
             throw new InvalidOperationException(
@@ -326,6 +328,15 @@ public sealed class InstanceInfo
                 options.SecureHealthCheckUrl),
             _isDirty = false
         };
+    }
+
+    internal void UpdateFromConfiguration(EurekaInstanceOptions options)
+    {
+        ArgumentGuard.NotNull(options);
+
+        // Marks this instance as dirty when settings have changed.
+        LeaseInfo = LeaseInfo.FromConfiguration(options);
+        Metadata = options.MetadataMap.Count > 0 ? new ReadOnlyDictionary<string, string?>(options.MetadataMap) : EmptyReadOnlyDictionary;
     }
 
     internal static InstanceInfo? FromJson(JsonInstanceInfo? jsonInstance)

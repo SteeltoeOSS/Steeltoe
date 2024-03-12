@@ -92,7 +92,7 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
                 return HealthStatus.Unknown;
             }
 
-            TimeSpan renewalInternal = TimeSpan.FromSeconds(instanceOptions.LeaseRenewalIntervalInSeconds);
+            TimeSpan renewalInternal = instanceOptions.LeaseRenewalInterval;
 
             if (elapsed > renewalInternal * 2)
             {
@@ -129,7 +129,7 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
                 return HealthStatus.Unknown;
             }
 
-            TimeSpan fetchInternal = TimeSpan.FromSeconds(clientOptions.RegistryFetchIntervalSeconds);
+            TimeSpan fetchInternal = clientOptions.RegistryFetchInterval;
 
             if (elapsed > fetchInternal * 2)
             {

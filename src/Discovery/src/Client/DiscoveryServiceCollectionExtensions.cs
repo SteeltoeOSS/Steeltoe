@@ -4,9 +4,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Common.Http.LoadBalancer;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connectors.CloudFoundry;
@@ -121,6 +123,7 @@ public static class DiscoveryServiceCollectionExtensions
         services.RegisterDefaultApplicationInstanceInfo();
         ApplyDiscoveryOptions(services, configuration, builderAction);
 
+        services.TryAddTransient<DiscoveryHttpMessageHandler>();
         services.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
         services.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
         services.AddSingleton<IHostedService, DiscoveryClientHostedService>();

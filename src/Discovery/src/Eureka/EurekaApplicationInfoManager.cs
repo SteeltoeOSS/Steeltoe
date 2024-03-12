@@ -59,9 +59,8 @@ public sealed class EurekaApplicationInfoManager
         InstanceInfo = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
     }
 
-    internal void UpdateLeaseInfoFromConfiguration()
+    internal IDisposable? SubscribeToConfigurationChange(Action<EurekaInstanceOptions> action)
     {
-        EurekaInstanceOptions instanceOptions = _instanceOptionsMonitor.CurrentValue;
-        InstanceInfo.LeaseInfo = LeaseInfo.FromConfiguration(instanceOptions);
+        return _instanceOptionsMonitor.OnChange(action);
     }
 }

@@ -23,74 +23,72 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public sealed class DiscoveryClientTest
 {
     private const string FooAddedJson = """
-        {
-            "applications": {
-                "versions__delta":"1",
-                "apps__hashcode":"UP_1_",
-                "application":[{
-                    "name":"FOO",
-                    "instance":[{
-                        "instanceId":"localhost:foo",
-                        "hostName":"localhost",
-                        "app":"FOO",
-                        "ipAddr":"192.168.56.1",
-                        "status":"UP",
-                        "overriddenStatus":"UNKNOWN",
-                        "port":{"$":8080,"@enabled":"true"},
-                        "securePort":{"$":443,"@enabled":"false"},
-                        "countryId":1,
-                        "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
-                        "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
-                        "metadata":{"@class":"java.util.Collections$EmptyMap"},
-                        "homePageUrl":"http://localhost:8080/",
-                        "statusPageUrl":"http://localhost:8080/info",
-                        "healthCheckUrl":"http://localhost:8080/health",
-                        "vipAddress":"foo",
-                        "isCoordinatingDiscoveryServer":"false",
-                        "lastUpdatedTimestamp":"1457714988223",
-                        "lastDirtyTimestamp":"1457714988172",
-                        "actionType":"ADDED"
-                    }]
-                }]
-            }
-        }
-        """;
+                                        {
+                                            "applications": {
+                                                "versions__delta":"1",
+                                                "apps__hashcode":"UP_1_",
+                                                "application":[{
+                                                    "name":"FOO",
+                                                    "instance":[{
+                                                        "instanceId":"localhost:foo",
+                                                        "hostName":"localhost",
+                                                        "app":"FOO",
+                                                        "ipAddr":"192.168.56.1",
+                                                        "status":"UP",
+                                                        "overriddenStatus":"UNKNOWN",
+                                                        "port":{"$":8080,"@enabled":"true"},
+                                                        "securePort":{"$":443,"@enabled":"false"},
+                                                        "countryId":1,
+                                                        "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                                                        "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
+                                                        "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                                                        "homePageUrl":"http://localhost:8080/",
+                                                        "statusPageUrl":"http://localhost:8080/info",
+                                                        "healthCheckUrl":"http://localhost:8080/health",
+                                                        "vipAddress":"foo",
+                                                        "isCoordinatingDiscoveryServer":"false",
+                                                        "lastUpdatedTimestamp":"1457714988223",
+                                                        "lastDirtyTimestamp":"1457714988172",
+                                                        "actionType":"ADDED"
+                                                    }]
+                                                }]
+                                            }
+                                        }
+                                        """;
 
     private const string FooModifiedJson = """
-        {
-            "applications": {
-                "versions__delta":"3",
-                "apps__hashcode":"UP_1_",
-                "application":[{
-                    "name":"FOO",
-                    "instance":[{
-                        "instanceId":"localhost:foo",
-                        "hostName":"localhost",
-                        "app":"FOO",
-                        "ipAddr":"192.168.56.1",
-                        "status":"UP",
-                        "overriddenStatus":"UNKNOWN",
-                        "port":{"$":8080,"@enabled":"true"},
-                        "securePort":{"$":443,"@enabled":"false"},
-                        "countryId":1,
-                        "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
-                        "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
-                        "metadata":{"@class":"java.util.Collections$EmptyMap"},
-                        "homePageUrl":"http://localhost:8080/",
-                        "statusPageUrl":"http://localhost:8080/info",
-                        "healthCheckUrl":"http://localhost:8080/health",
-                        "vipAddress":"foo",
-                        "isCoordinatingDiscoveryServer":"false",
-                        "lastUpdatedTimestamp":"1457714988223",
-                        "lastDirtyTimestamp":"1457714988172",
-                        "actionType":"MODIFIED"
-                    }]
-                }]
-            }
-        }
-        """;
-
-    private volatile int _timerFuncCount;
+                                           {
+                                               "applications": {
+                                                   "versions__delta":"3",
+                                                   "apps__hashcode":"UP_1_",
+                                                   "application":[{
+                                                       "name":"FOO",
+                                                       "instance":[{
+                                                           "instanceId":"localhost:foo",
+                                                           "hostName":"localhost",
+                                                           "app":"FOO",
+                                                           "ipAddr":"192.168.56.1",
+                                                           "status":"UP",
+                                                           "overriddenStatus":"UNKNOWN",
+                                                           "port":{"$":8080,"@enabled":"true"},
+                                                           "securePort":{"$":443,"@enabled":"false"},
+                                                           "countryId":1,
+                                                           "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                                                           "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
+                                                           "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                                                           "homePageUrl":"http://localhost:8080/",
+                                                           "statusPageUrl":"http://localhost:8080/info",
+                                                           "healthCheckUrl":"http://localhost:8080/health",
+                                                           "vipAddress":"foo",
+                                                           "isCoordinatingDiscoveryServer":"false",
+                                                           "lastUpdatedTimestamp":"1457714988223",
+                                                           "lastDirtyTimestamp":"1457714988172",
+                                                           "actionType":"MODIFIED"
+                                                       }]
+                                                   }]
+                                               }
+                                           }
+                                           """;
 
     [Fact]
     public void Constructor_TimersNotStarted()
@@ -111,8 +109,8 @@ public sealed class DiscoveryClientTest
         var eurekaClient = new EurekaClient(httpClientFactory, clientOptionsMonitor, eurekaServiceUriStateManager, NullLogger<EurekaClient>.Instance);
         var discoveryClient = new EurekaDiscoveryClient(appManager, eurekaClient, clientOptionsMonitor, NullLoggerFactory.Instance);
 
-        Assert.Null(discoveryClient.CacheRefreshTimer);
-        Assert.Null(discoveryClient.HeartbeatTimer);
+        Assert.False(discoveryClient.IsCacheRefreshTimerStarted);
+        Assert.False(discoveryClient.IsHeartbeatTimerStarted);
     }
 
     [Fact]
@@ -556,60 +554,6 @@ public sealed class DiscoveryClientTest
     }
 
     [Fact]
-    public async Task StartTimer_StartsTimer()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
-        };
-
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
-
-        await using WebApplication webApplication = builder.Build();
-
-        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        _timerFuncCount = 0;
-
-        await using Timer timer = discoveryClient.StartTimer(TimeSpan.FromMilliseconds(10), TimerFunc);
-        Assert.NotNull(timer);
-        await Task.Delay(1000);
-        Assert.True(_timerFuncCount > 0);
-    }
-
-    [Fact]
-    public async Task StartTimer_StartsTimer_StopsAfterDispose()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
-        };
-
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
-
-        await using WebApplication webApplication = builder.Build();
-
-        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        _timerFuncCount = 0;
-
-        await using (Timer timer = discoveryClient.StartTimer(TimeSpan.FromMilliseconds(10), TimerFunc))
-        {
-            Assert.NotNull(timer);
-            await Task.Delay(1000);
-            Assert.True(_timerFuncCount >= 1);
-        }
-
-        int currentCount = _timerFuncCount;
-        await Task.Delay(1000);
-        Assert.Equal(currentCount, _timerFuncCount);
-    }
-
-    [Fact]
     public async Task Can_manipulate_request_headers()
     {
         var extraHeadersHandler = new ExtraRequestHeadersDelegatingHandler();
@@ -646,11 +590,6 @@ public sealed class DiscoveryClientTest
         await discoveryClient.RegisterAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
-    }
-
-    private void TimerFunc()
-    {
-        Interlocked.Increment(ref _timerFuncCount);
     }
 
     private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler

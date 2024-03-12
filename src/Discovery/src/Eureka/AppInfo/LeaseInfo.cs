@@ -75,8 +75,8 @@ public sealed class LeaseInfo
 
         return new LeaseInfo
         {
-            RenewalInterval = TimeSpan.FromSeconds(options.LeaseRenewalIntervalInSeconds),
-            Duration = TimeSpan.FromSeconds(options.LeaseExpirationDurationInSeconds)
+            RenewalInterval = options.LeaseRenewalInterval,
+            Duration = options.LeaseExpirationDuration
         };
     }
 
