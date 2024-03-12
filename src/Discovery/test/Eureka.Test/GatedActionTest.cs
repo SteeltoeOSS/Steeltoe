@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Discovery.Eureka.Tasks;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Test.Tasks;
+namespace Steeltoe.Discovery.Eureka.Test;
 
-public sealed class TimedTaskTest
+public sealed class GatedActionTest
 {
     private volatile int _timerFuncCount;
 
@@ -15,7 +14,7 @@ public sealed class TimedTaskTest
     public async Task Run_Enforces_SingleActiveTask()
     {
         _timerFuncCount = 0;
-        var timedTask = new TimedTask(TimerFunc);
+        var timedTask = new GatedAction(TimerFunc);
         await using var timer = new Timer(_ => timedTask.Run(), null, 10, 100);
         await Task.Delay(1000);
         Assert.Equal(1, _timerFuncCount);

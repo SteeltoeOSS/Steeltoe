@@ -49,7 +49,8 @@ public sealed class EurekaClientOptions : IValidateCertificatesOptions
     /// lower than the rate of fetches. The changes are effective at runtime at the next registry fetch cycle as specified by
     /// <see cref="RegistryFetchIntervalSeconds" />. Configuration property: eureka:client:shouldDisableDelta.
     /// </summary>
-    public bool ShouldDisableDelta { get; set; }
+    [ConfigurationKeyName("ShouldDisableDelta")]
+    public bool IsFetchDeltaDisabled { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to include only instances with UP status after fetching the list of applications. The changes are effective

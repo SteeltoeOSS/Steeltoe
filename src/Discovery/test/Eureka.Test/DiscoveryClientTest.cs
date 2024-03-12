@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
+using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -107,7 +109,7 @@ public sealed class DiscoveryClientTest
 
         var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
         var eurekaClient = new EurekaClient(httpClientFactory, clientOptionsMonitor, eurekaServiceUriStateManager, NullLogger<EurekaClient>.Instance);
-        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, eurekaClient, NullLoggerFactory.Instance);
+        var discoveryClient = new EurekaDiscoveryClient(appManager, eurekaClient, clientOptionsMonitor, NullLoggerFactory.Instance);
 
         Assert.Null(discoveryClient.CacheRefreshTimer);
         Assert.Null(discoveryClient.HeartbeatTimer);
@@ -254,7 +256,7 @@ public sealed class DiscoveryClientTest
     }
 
     [Fact]
-    public async Task RegisterAsync_ReturnsFalse_WhenNotOKStatusReturned()
+    public async Task RegisterAsync_Throws_WhenNotOKStatusReturned()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -275,15 +277,15 @@ public sealed class DiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        bool result = await discoveryClient.RegisterAsync(CancellationToken.None);
+        Func<Task> action = async () => await discoveryClient.RegisterAsync(CancellationToken.None);
+
+        await action.Should().ThrowExactlyAsync<EurekaTransportException>();
 
         handler.Mock.VerifyNoOutstandingExpectation();
-
-        Assert.False(result);
     }
 
     [Fact]
-    public async Task RegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
+    public async Task RegisterAsync_Succeeds_WhenOKStatusReturned()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -304,15 +306,13 @@ public sealed class DiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        bool result = await discoveryClient.RegisterAsync(CancellationToken.None);
+        await discoveryClient.RegisterAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
-
-        Assert.True(result);
     }
 
     [Fact]
-    public async Task RenewAsync_Registers_When404StatusReturned()
+    public async Task RenewAsync_RegistersAgain_When404StatusFromHeartbeatReturned()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -327,9 +327,9 @@ public sealed class DiscoveryClientTest
         builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
 
         var handler = new DelegateToMockHttpClientHandler();
-        handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
+        handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
         handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.NotFound);
-        handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
+        handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
@@ -339,15 +339,13 @@ public sealed class DiscoveryClientTest
         var appManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
         appManager.InstanceInfo.IsDirty = true;
 
-        bool result = await discoveryClient.RenewAsync(CancellationToken.None);
+        await discoveryClient.RenewAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
-
-        Assert.False(result);
     }
 
     [Fact]
-    public async Task RenewAsync_ReturnsTrue_WhenOKStatusReturned()
+    public async Task RenewAsync_Succeeds_WhenOKStatusReturned()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -373,15 +371,13 @@ public sealed class DiscoveryClientTest
         var appManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
         appManager.InstanceInfo.IsDirty = true;
 
-        bool result = await discoveryClient.RenewAsync(CancellationToken.None);
+        await discoveryClient.RenewAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
-
-        Assert.True(result);
     }
 
     [Fact]
-    public async Task UnRegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
+    public async Task UnRegisterAsync_Succeeds_WhenOKStatusReturned()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -553,7 +549,7 @@ public sealed class DiscoveryClientTest
         var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
         discoveryClient.HealthCheckHandler = myHandler;
 
-        await discoveryClient.RefreshInstanceInfoAsync(CancellationToken.None);
+        await discoveryClient.RefreshAppInstanceAsync(CancellationToken.None);
 
         Assert.True(myHandler.Awaited);
         Assert.Equal(InstanceStatus.Down, appInfoManager.InstanceInfo.Status);
@@ -575,8 +571,8 @@ public sealed class DiscoveryClientTest
         await using WebApplication webApplication = builder.Build();
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-
         _timerFuncCount = 0;
+
         await using Timer timer = discoveryClient.StartTimer(TimeSpan.FromMilliseconds(10), TimerFunc);
         Assert.NotNull(timer);
         await Task.Delay(1000);
@@ -599,7 +595,6 @@ public sealed class DiscoveryClientTest
         await using WebApplication webApplication = builder.Build();
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-
         _timerFuncCount = 0;
 
         await using (Timer timer = discoveryClient.StartTimer(TimeSpan.FromMilliseconds(10), TimerFunc))
@@ -612,44 +607,6 @@ public sealed class DiscoveryClientTest
         int currentCount = _timerFuncCount;
         await Task.Delay(1000);
         Assert.Equal(currentCount, _timerFuncCount);
-    }
-
-    [Fact]
-    public async Task ApplicationEventsFireOnChangeDuringFetch()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
-        };
-
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
-
-        var handler = new DelegateToMockHttpClientHandler();
-        handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", FooAddedJson);
-        handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/delta").Respond("application/json", FooModifiedJson);
-
-        await using WebApplication webApplication = builder.Build();
-        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-
-        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-
-        int eventCount = 0;
-
-        discoveryClient.OnApplicationsChange += (_, _) =>
-        {
-            eventCount++;
-        };
-
-        await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
-        Assert.Equal(1, eventCount);
-
-        await discoveryClient.FetchRegistryDeltaAsync(CancellationToken.None);
-        Assert.Equal(2, eventCount);
-
-        handler.Mock.VerifyNoOutstandingExpectation();
     }
 
     [Fact]
@@ -686,11 +643,9 @@ public sealed class DiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        bool result = await discoveryClient.RegisterAsync(CancellationToken.None);
+        await discoveryClient.RegisterAsync(CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
-
-        Assert.True(result);
     }
 
     private void TimerFunc()

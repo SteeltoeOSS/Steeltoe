@@ -203,7 +203,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("http://localhost:8761/eureka/", clientOptions.EurekaServerServiceUrls);
         Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
         Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
-        Assert.True(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.IsFetchDeltaDisabled);
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
@@ -420,7 +420,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
         Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
         Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
-        Assert.True(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.IsFetchDeltaDisabled);
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
@@ -629,7 +629,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
         Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
         Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
-        Assert.True(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.IsFetchDeltaDisabled);
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
@@ -839,7 +839,7 @@ public sealed class EurekaPostConfigurerTest
         Assert.Equal("https://eureka-6a1b81f5-79e2-4d14-a86b-ddf584635a60.apps.testcloud.com/eureka/", clientOptions.EurekaServerServiceUrls);
         Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
         Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
-        Assert.True(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.IsFetchDeltaDisabled);
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);

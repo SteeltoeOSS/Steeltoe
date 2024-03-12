@@ -75,7 +75,7 @@ public sealed class InstanceInfo
     /// <summary>
     /// Gets a value indicating whether <see cref="NonSecurePort" /> is enabled.
     /// </summary>
-    public bool IsInsecurePortEnabled { get; init; }
+    public bool IsNonSecurePortEnabled { get; init; }
 
     /// <summary>
     /// Gets the secure port number that is used to service requests.
@@ -269,7 +269,7 @@ public sealed class InstanceInfo
     public override string ToString()
     {
         return $"Instance[{nameof(InstanceId)}={InstanceId},{nameof(HostName)}={HostName},{nameof(IPAddress)}={IPAddress},{nameof(Status)}={Status}," +
-            $"{nameof(NonSecurePort)}={NonSecurePort},{nameof(IsInsecurePortEnabled)}={IsInsecurePortEnabled},{nameof(SecurePort)}={SecurePort}," +
+            $"{nameof(NonSecurePort)}={NonSecurePort},{nameof(IsNonSecurePortEnabled)}={IsNonSecurePortEnabled},{nameof(SecurePort)}={SecurePort}," +
             $"{nameof(IsSecurePortEnabled)}={IsSecurePortEnabled},{nameof(VipAddress)}={VipAddress},{nameof(SecureVipAddress)}={SecureVipAddress},{nameof(ActionType)}={ActionType}]";
     }
 
@@ -301,7 +301,7 @@ public sealed class InstanceInfo
         int securePort = options.SecurePort == -1 ? EurekaInstanceOptions.DefaultSecurePort : options.SecurePort;
 
         int? nullableSecurePort = options.IsSecurePortEnabled ? securePort : null;
-        int? nullableInsecurePort = options.IsNonSecurePortEnabled ? port : null;
+        int? nullableNonSecurePort = options.IsNonSecurePortEnabled ? port : null;
 
         DateTime utcNow = DateTime.UtcNow;
 
@@ -309,7 +309,7 @@ public sealed class InstanceInfo
         {
             AppGroupName = options.AppGroupName?.ToUpperInvariant(),
             NonSecurePort = port,
-            IsInsecurePortEnabled = options.IsNonSecurePortEnabled,
+            IsNonSecurePortEnabled = options.IsNonSecurePortEnabled,
             SecurePort = securePort,
             IsSecurePortEnabled = options.IsSecurePortEnabled,
             VipAddress = options.VirtualHostName,
@@ -320,9 +320,9 @@ public sealed class InstanceInfo
             _lastDirtyTimeUtc = utcNow,
             _leaseInfo = LeaseInfo.FromConfiguration(options),
             _metaData = options.MetadataMap.Count > 0 ? new ReadOnlyDictionary<string, string?>(options.MetadataMap) : EmptyReadOnlyDictionary,
-            HomePageUrl = MakeUrl(hostName, nullableSecurePort, nullableInsecurePort, options.HomePageUrlPath, options.HomePageUrl, null),
-            StatusPageUrl = MakeUrl(hostName, nullableSecurePort, nullableInsecurePort, options.StatusPageUrlPath, options.StatusPageUrl, null),
-            HealthCheckUrl = MakeUrl(hostName, nullableSecurePort, nullableInsecurePort, options.HealthCheckUrlPath, options.HealthCheckUrl,
+            HomePageUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.HomePageUrlPath, options.HomePageUrl, null),
+            StatusPageUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.StatusPageUrlPath, options.StatusPageUrl, null),
+            HealthCheckUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.HealthCheckUrlPath, options.HealthCheckUrl,
                 options.SecureHealthCheckUrl),
             _isDirty = false
         };
@@ -355,7 +355,7 @@ public sealed class InstanceInfo
             Sid = jsonInstance.Sid,
             AppGroupName = jsonInstance.AppGroupName,
             NonSecurePort = jsonInstance.Port?.Port ?? 0,
-            IsInsecurePortEnabled = jsonInstance.Port is { Enabled: true },
+            IsNonSecurePortEnabled = jsonInstance.Port is { Enabled: true },
             SecurePort = jsonInstance.SecurePort?.Port ?? 0,
             IsSecurePortEnabled = jsonInstance.SecurePort is { Enabled: true },
             HomePageUrl = jsonInstance.HomePageUrl,
@@ -387,7 +387,7 @@ public sealed class InstanceInfo
             AppName = AppName,
             AppGroupName = AppGroupName,
             IPAddress = IPAddress,
-            Port = IsInsecurePortEnabled
+            Port = IsNonSecurePortEnabled
                 ? new JsonPortWrapper
                 {
                     Enabled = true,
@@ -457,7 +457,7 @@ public sealed class InstanceInfo
         return jsonInstance.InstanceId;
     }
 
-    private static string? MakeUrl(string hostName, int? securePort, int? insecurePort, string? relativeUrl, string? explicitUrl, string? secureExplicitUrl)
+    private static string? MakeUrl(string hostName, int? securePort, int? nonSecurePort, string? relativeUrl, string? explicitUrl, string? secureExplicitUrl)
     {
         if (!string.IsNullOrWhiteSpace(secureExplicitUrl))
         {
@@ -476,9 +476,9 @@ public sealed class InstanceInfo
                 return $"https://{hostName}:{securePort}{relativeUrl}";
             }
 
-            if (insecurePort != null)
+            if (nonSecurePort != null)
             {
-                return $"http://{hostName}:{insecurePort}{relativeUrl}";
+                return $"http://{hostName}:{nonSecurePort}{relativeUrl}";
             }
         }
 

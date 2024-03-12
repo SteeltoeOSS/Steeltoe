@@ -20,7 +20,7 @@ public sealed class EurekaClientOptionsTest
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
         Assert.Equal(EurekaServerOptions.DefaultConnectTimeoutSeconds, clientOptions.EurekaServer.ConnectTimeoutSeconds);
         Assert.True(clientOptions.ShouldRegisterWithEureka);
-        Assert.False(clientOptions.ShouldDisableDelta);
+        Assert.False(clientOptions.IsFetchDeltaDisabled);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
@@ -40,7 +40,7 @@ public sealed class EurekaClientOptionsTest
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
         Assert.Equal(EurekaServerOptions.DefaultConnectTimeoutSeconds, clientOptions.EurekaServer.ConnectTimeoutSeconds);
         Assert.True(clientOptions.ShouldRegisterWithEureka);
-        Assert.False(clientOptions.ShouldDisableDelta);
+        Assert.False(clientOptions.IsFetchDeltaDisabled);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.Null(clientOptions.RegistryRefreshSingleVipAddress);
@@ -132,7 +132,7 @@ public sealed class EurekaClientOptionsTest
         Assert.Equal("https://foo.bar:8761/eureka/", clientOptions.EurekaServerServiceUrls);
         Assert.Equal(100, clientOptions.RegistryFetchIntervalSeconds);
         Assert.Equal("registryRefreshSingleVipAddress", clientOptions.RegistryRefreshSingleVipAddress);
-        Assert.True(clientOptions.ShouldDisableDelta);
+        Assert.True(clientOptions.IsFetchDeltaDisabled);
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);

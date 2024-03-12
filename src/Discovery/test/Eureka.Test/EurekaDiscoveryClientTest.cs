@@ -29,7 +29,7 @@ public sealed class EurekaDiscoveryClientTest
         var appManager = new EurekaApplicationInfoManager(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
         var eurekaClient = new EurekaClient(new TestHttpClientFactory(), clientOptionsMonitor, eurekaServiceUriStateManager, NullLogger<EurekaClient>.Instance);
-        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, eurekaClient, NullLoggerFactory.Instance);
+        var discoveryClient = new EurekaDiscoveryClient(appManager, eurekaClient, clientOptionsMonitor, NullLoggerFactory.Instance);
 
         Assert.NotNull(discoveryClient.Description);
 

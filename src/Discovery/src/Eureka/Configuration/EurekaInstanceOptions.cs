@@ -146,7 +146,7 @@ public sealed class EurekaInstanceOptions
 
     /// <summary>
     /// Gets or sets the relative path to the status page for this instance. The status page URL is then constructed out of the <see cref="HostName" /> and
-    /// the type of communication - secure or insecure, as specified in <see cref="SecurePort" /> and <see cref="NonSecurePort" />. It is normally used for
+    /// the type of communication - secure or non-secure, as specified in <see cref="SecurePort" /> and <see cref="NonSecurePort" />. It is normally used for
     /// informational purposes for other services to find out about the status of this instance. Users can provide a simple HTML page indicating what the
     /// current status of the instance is. Configuration property: eureka:instance:statusPageUrlPath.
     /// </summary>
@@ -163,7 +163,7 @@ public sealed class EurekaInstanceOptions
 
     /// <summary>
     /// Gets or sets the relative path to the home page URL for this instance. The home page URL is then constructed out of the <see cref="HostName" /> and
-    /// the type of communication - secure or insecure, as specified in <see cref="SecurePort" /> and <see cref="NonSecurePort" />. It is normally used for
+    /// the type of communication - secure or non-secure, as specified in <see cref="SecurePort" /> and <see cref="NonSecurePort" />. It is normally used for
     /// informational purposes for other services to use it as a landing page. Configuration property: eureka:instance:homePageUrlPath.
     /// </summary>
     public string? HomePageUrlPath { get; set; } = DefaultHomePageUrlPath;
@@ -179,7 +179,7 @@ public sealed class EurekaInstanceOptions
 
     /// <summary>
     /// Gets or sets the relative path to the health check endpoint for this instance. The health check URL is then constructed out of the
-    /// <see cref="HostName" /> and the type of communication - secure or insecure, as specified in <see cref="SecurePort" /> and
+    /// <see cref="HostName" /> and the type of communication - secure or non-secure, as specified in <see cref="SecurePort" /> and
     /// <see cref="NonSecurePort" />. It is normally used for making educated decisions based on the health of the instance. For example, it can be used to
     /// determine whether to proceed deployments to an entire farm or stop the deployments without causing further damage. Configuration property:
     /// eureka:instance:healthCheckUrlPath.

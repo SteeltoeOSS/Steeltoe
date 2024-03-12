@@ -10,6 +10,9 @@ using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka;
 
+/// <summary>
+/// Provides access to the Eureka instance that represents the currently running app.
+/// </summary>
 public sealed class EurekaApplicationInfoManager
 {
     private readonly IOptionsMonitor<EurekaInstanceOptions> _instanceOptionsMonitor;
@@ -56,7 +59,7 @@ public sealed class EurekaApplicationInfoManager
         InstanceInfo = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
     }
 
-    internal void RefreshLeaseInfo()
+    internal void UpdateLeaseInfoFromConfiguration()
     {
         EurekaInstanceOptions instanceOptions = _instanceOptionsMonitor.CurrentValue;
         InstanceInfo.LeaseInfo = LeaseInfo.FromConfiguration(instanceOptions);

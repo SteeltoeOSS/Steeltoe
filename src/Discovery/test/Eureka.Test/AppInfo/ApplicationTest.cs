@@ -151,7 +151,7 @@ public sealed class ApplicationTest
         Assert.Equal("IPAddress", instance.IPAddress);
         Assert.Equal("Sid", instance.Sid);
         Assert.Equal(100, instance.NonSecurePort);
-        Assert.True(instance.IsInsecurePortEnabled);
+        Assert.True(instance.IsNonSecurePortEnabled);
         Assert.Equal(100, instance.SecurePort);
         Assert.False(instance.IsSecurePortEnabled);
         Assert.Equal("HomePageUrl", instance.HomePageUrl);

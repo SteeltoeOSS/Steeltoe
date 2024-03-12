@@ -18,7 +18,7 @@ public sealed class InstanceInfoTest
 
         Assert.Null(instance.OverriddenStatus);
         Assert.False(instance.IsSecurePortEnabled);
-        Assert.False(instance.IsInsecurePortEnabled);
+        Assert.False(instance.IsNonSecurePortEnabled);
         Assert.Null(instance.CountryId);
         Assert.Equal(0, instance.NonSecurePort);
         Assert.Equal(0, instance.SecurePort);
@@ -96,7 +96,7 @@ public sealed class InstanceInfoTest
         Assert.Equal("IPAddress", instance.IPAddress);
         Assert.Equal("Sid", instance.Sid);
         Assert.Equal(100, instance.NonSecurePort);
-        Assert.True(instance.IsInsecurePortEnabled);
+        Assert.True(instance.IsNonSecurePortEnabled);
         Assert.Equal(100, instance.SecurePort);
         Assert.False(instance.IsSecurePortEnabled);
         Assert.Equal("HomePageUrl", instance.HomePageUrl);
@@ -276,7 +276,7 @@ public sealed class InstanceInfoTest
         Assert.Equal(instanceOptions.IPAddress, instance.IPAddress);
         Assert.Null(instance.Sid);
         Assert.Equal(80, instance.NonSecurePort);
-        Assert.True(instance.IsInsecurePortEnabled);
+        Assert.True(instance.IsNonSecurePortEnabled);
         Assert.Equal(443, instance.SecurePort);
         Assert.False(instance.IsSecurePortEnabled);
         Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/", instance.HomePageUrl);
@@ -327,7 +327,7 @@ public sealed class InstanceInfoTest
         Assert.Equal(instanceOptions.IPAddress, instance.IPAddress);
         Assert.Null(instance.Sid);
         Assert.Equal(80, instance.NonSecurePort);
-        Assert.False(instance.IsInsecurePortEnabled);
+        Assert.False(instance.IsNonSecurePortEnabled);
         Assert.Equal(443, instance.SecurePort);
         Assert.True(instance.IsSecurePortEnabled);
         Assert.Equal($"https://{instanceOptions.ResolveHostName(false)}:443/", instance.HomePageUrl);
