@@ -61,7 +61,7 @@ public static class StringExtensions
                 segmentStart = i + 1;
             }
 
-            if (!readEscapeChar && source[i] == UnderscoreDelimiterChar && i < source.Length - 1 && source[i + 1] == UnderscoreDelimiterChar)
+            if (!readEscapeChar && source[i] == UnderscoreDelimiterChar && i < source.Length - 2 && source[i + 1] == UnderscoreDelimiterChar)
             {
                 result.Add(UnEscapeString(source[segmentStart..i]));
                 segmentStart = i + 2;

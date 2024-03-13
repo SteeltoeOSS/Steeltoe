@@ -193,7 +193,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configuration["key:with:periods"].Should().Be("test-secret-value");
         configuration["key:with:double:underscores"].Should().Be("test-secret-value");
         configuration["key:with:double:underscores_"].Should().Be("test-secret-value");
-        configuration["key:with:double:underscores__"].Should().BeNull();
+        configuration["key:with:double:underscores__"].Should().Be("test-secret-value");
     }
 
     private static string GetK8SResourcesDirectory()
