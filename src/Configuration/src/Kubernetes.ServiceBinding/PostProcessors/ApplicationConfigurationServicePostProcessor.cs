@@ -17,12 +17,12 @@ internal sealed class ApplicationConfigurationServicePostProcessor : IConfigurat
         {
             var mapper = new ServiceBindingMapper(configurationData, bindingKey);
 
-            IEnumerable<string> keysToMap = configurationData.Keys
-                .Select(s => s.Split($"{bindingKey}:")[^1])
-                .Except([KubernetesServiceBindingConfigurationProvider.ProviderKey, KubernetesServiceBindingConfigurationProvider.TypeKey])
-                .ToList();
+            IEnumerable<string> keysToMap = configurationData.Keys.Select(s => s.Split($"{bindingKey}:")[^1]).Except([
+                KubernetesServiceBindingConfigurationProvider.ProviderKey,
+                KubernetesServiceBindingConfigurationProvider.TypeKey
+            ]).ToList();
 
-            foreach (var key in keysToMap)
+            foreach (string key in keysToMap)
             {
                 mapper.MapFromTo(key, key.AsDotNetConfigurationKey());
             }

@@ -150,7 +150,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
     }
 
     [Fact]
-    public void Processes_ApplicationConfigurationService_configuration()
+    public void Processes_ApplicationConfigurationService_ConfigurationData()
     {
         var postProcessor = new ApplicationConfigurationServicePostProcessor();
 
@@ -166,6 +166,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         Dictionary<string, string?> configurationData =
             GetConfigurationData(TestBindingName, ApplicationConfigurationServicePostProcessor.BindingType, secrets);
+
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
@@ -187,7 +188,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         var postProcessor = new ApplicationConfigurationServicePostProcessor();
         source.RegisterPostProcessor(postProcessor);
 
-        var configuration = new ConfigurationBuilder().Add(source).Build();
+        IConfigurationRoot configuration = new ConfigurationBuilder().Add(source).Build();
 
         configuration["test-secret-key"].Should().Be("test-secret-value");
         configuration["key:with:periods"].Should().Be("test-secret-value");
