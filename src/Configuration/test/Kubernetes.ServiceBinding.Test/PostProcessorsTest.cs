@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 using Xunit;
 
@@ -158,7 +159,9 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
             Tuple.Create("provider", "acs"),
             Tuple.Create("random", "data"),
             Tuple.Create("from", "some-source"),
-            Tuple.Create("mySecret", "a-password")
+            Tuple.Create("secret", "password"),
+            Tuple.Create("secret.one", "password1"),
+            Tuple.Create("secret__two", "password2")
         };
 
         Dictionary<string, string?> configurationData =
@@ -169,8 +172,32 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         configurationData["random"].Should().Be("data");
         configurationData["from"].Should().Be("some-source");
-        configurationData["mySecret"].Should().Be("a-password");
-        configurationData.Should().NotContainKey("provider");
+        configurationData["secret"].Should().Be("password");
+        configurationData["secret:one"].Should().Be("password1");
+        configurationData["secret:two"].Should().Be("password2");
         configurationData.Should().NotContainKey("type");
+        configurationData.Should().NotContainKey("provider");
+    }
+
+    [Fact]
+    public void PopulatesDotNetFriendlyKeysFromOtherFormats()
+    {
+        string rootDirectory = GetK8SResourcesDirectory();
+        var source = new KubernetesServiceBindingConfigurationSource(new DirectoryServiceBindingsReader(rootDirectory));
+        var postProcessor = new ApplicationConfigurationServicePostProcessor();
+        source.RegisterPostProcessor(postProcessor);
+
+        var configuration = new ConfigurationBuilder().Add(source).Build();
+
+        configuration["test-secret-key"].Should().Be("test-secret-value");
+        configuration["key:with:periods"].Should().Be("test-secret-value");
+        configuration["key:with:double:underscores"].Should().Be("test-secret-value");
+        configuration["key:with:double:underscores_"].Should().Be("test-secret-value");
+        configuration["key:with:double:underscores__"].Should().BeNull();
+    }
+
+    private static string GetK8SResourcesDirectory()
+    {
+        return Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s");
     }
 }

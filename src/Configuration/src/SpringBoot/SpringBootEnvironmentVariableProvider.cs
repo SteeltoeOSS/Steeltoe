@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration.Json;
 using Steeltoe.Common;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Configuration.SpringBoot;
 
@@ -60,13 +61,7 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
 
             foreach (string key in keys)
             {
-                string? value = Data[key];
-
-                if (key.Contains('.') && value != null)
-                {
-                    string newKey = key.Replace('.', ':');
-                    Data[newKey] = value;
-                }
+                Data[key.AsDotNetConfigurationKey()] = Data[key];
             }
         }
 

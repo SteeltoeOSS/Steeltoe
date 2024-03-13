@@ -9,11 +9,11 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
 using Steeltoe.Discovery;
@@ -27,11 +27,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 {
     private const string VaultRenewPath = "vault/v1/auth/token/renew-self";
     private const string VaultTokenHeader = "X-Vault-Token";
-    private const string DotDelimiterString = ".";
-    private const char DotDelimiterChar = '.';
     private const char CommaDelimiter = ',';
-    private const char EscapeChar = '\\';
-    private const string EscapeString = "\\";
 
     /// <summary>
     /// The <see cref="IConfigurationSection" /> prefix under which all Spring Cloud Config Server configuration settings (
@@ -40,8 +36,6 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     private const string ConfigurationPrefix = "spring:cloud:config";
 
     internal const string TokenHeader = "X-Config-Token";
-
-    private static readonly Regex ArrayRegex = new(@"(\[[0-9]+\])*$", RegexOptions.Compiled);
 
     private static readonly string[] EmptyLabels = [string.Empty];
 
@@ -637,7 +631,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         {
             try
             {
-                string key = ConvertKey(pair.Key);
+                string key = pair.Key.AsDotNetConfigurationKey();
                 string? value = ConvertValue(pair.Value);
                 data[key] = value;
             }
@@ -646,70 +640,6 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 Logger.LogError(exception, "Config Server exception, property: {key}={type}", pair.Key, pair.Value.GetType());
             }
         }
-    }
-
-    internal string ConvertKey(string key)
-    {
-        if (string.IsNullOrEmpty(key))
-        {
-            return key;
-        }
-
-        IEnumerable<string> split = Split(key);
-        var sb = new StringBuilder();
-
-        foreach (string part in split)
-        {
-            string keyPart = ConvertArrayKey(part);
-            sb.Append(keyPart);
-            sb.Append(ConfigurationPath.KeyDelimiter);
-        }
-
-        return sb.ToString(0, sb.Length - 1);
-    }
-
-    private IEnumerable<string> Split(string source)
-    {
-        ArgumentGuard.NotNull(source);
-
-        var result = new List<string>();
-
-        int segmentStart = 0;
-
-        for (int i = 0; i < source.Length; i++)
-        {
-            bool readEscapeChar = false;
-
-            if (source[i] == EscapeChar)
-            {
-                readEscapeChar = true;
-                i++;
-            }
-
-            if (!readEscapeChar && source[i] == DotDelimiterChar)
-            {
-                result.Add(UnEscapeString(source.Substring(segmentStart, i - segmentStart)));
-                segmentStart = i + 1;
-            }
-
-            if (i == source.Length - 1)
-            {
-                result.Add(UnEscapeString(source.Substring(segmentStart)));
-            }
-        }
-
-        return result.ToArray();
-
-        string UnEscapeString(string src)
-        {
-            return src.Replace(EscapeString + DotDelimiterString, DotDelimiterString, StringComparison.Ordinal)
-                .Replace(EscapeString + EscapeString, EscapeString, StringComparison.Ordinal);
-        }
-    }
-
-    internal string ConvertArrayKey(string key)
-    {
-        return ArrayRegex.Replace(key, match => match.Value.Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal));
     }
 
     private string? ConvertValue(object value)

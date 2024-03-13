@@ -6,6 +6,7 @@ using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
@@ -72,7 +73,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
                         continue;
                     }
 
-                    string key = keyValuePair[0].Trim().Replace('.', ':');
+                    string key = keyValuePair[0].Trim().AsDotNetConfigurationKey();
                     string value = keyValuePair[1].Replace("\\:", ":", StringComparison.Ordinal);
 
                     dictionary[key] = value;
