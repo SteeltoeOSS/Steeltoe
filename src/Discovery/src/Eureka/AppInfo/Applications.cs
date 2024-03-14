@@ -83,14 +83,14 @@ public sealed class Applications
 
     private void AddInstanceToVip(InstanceInfo instance)
     {
-        if (!string.IsNullOrEmpty(instance.VipAddress))
+        foreach (string vipAddress in ExpandVipAddresses(instance.VipAddress))
         {
-            AddInstanceToVip(instance.VipAddress, instance, VirtualHostInstanceMap);
+            AddInstanceToVip(vipAddress, instance, VirtualHostInstanceMap);
         }
 
-        if (!string.IsNullOrEmpty(instance.SecureVipAddress))
+        foreach (string secureVipAddress in ExpandVipAddresses(instance.SecureVipAddress))
         {
-            AddInstanceToVip(instance.SecureVipAddress, instance, SecureVirtualHostInstanceMap);
+            AddInstanceToVip(secureVipAddress, instance, SecureVirtualHostInstanceMap);
         }
     }
 
@@ -110,18 +110,28 @@ public sealed class Applications
         }
     }
 
+    private static ICollection<string> ExpandVipAddresses(string? addresses)
+    {
+        if (string.IsNullOrWhiteSpace(addresses))
+        {
+            return [];
+        }
+
+        return addresses.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToArray();
+    }
+
     internal void RemoveInstanceFromVip(InstanceInfo instance)
     {
         ArgumentGuard.NotNull(instance);
 
-        if (!string.IsNullOrEmpty(instance.VipAddress))
+        foreach (string vipAddress in ExpandVipAddresses(instance.VipAddress))
         {
-            RemoveInstanceFromVip(instance.VipAddress, instance, VirtualHostInstanceMap);
+            RemoveInstanceFromVip(vipAddress, instance, VirtualHostInstanceMap);
         }
 
-        if (!string.IsNullOrEmpty(instance.SecureVipAddress))
+        foreach (string secureVipAddress in ExpandVipAddresses(instance.SecureVipAddress))
         {
-            RemoveInstanceFromVip(instance.SecureVipAddress, instance, SecureVirtualHostInstanceMap);
+            RemoveInstanceFromVip(secureVipAddress, instance, SecureVirtualHostInstanceMap);
         }
     }
 

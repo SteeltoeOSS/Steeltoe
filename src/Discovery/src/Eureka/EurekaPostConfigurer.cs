@@ -82,27 +82,27 @@ internal static class EurekaPostConfigurer
             string? springAppName = appInfo?.GetApplicationNameInContext(SteeltoeComponent.Discovery);
 
             // this is a bit of a hack, but depending on how we got here, GetApplicationNameInContext may or may not know about VCAP
-            if (Platform.IsCloudFoundry && springAppName == Assembly.GetEntryAssembly()!.GetName().Name && !string.IsNullOrEmpty(appInfo?.ApplicationName))
+            if (Platform.IsCloudFoundry && springAppName == Assembly.GetEntryAssembly()!.GetName().Name && !string.IsNullOrWhiteSpace(appInfo?.ApplicationName))
             {
                 options.AppName = appInfo.ApplicationName;
             }
-            else if (!string.IsNullOrEmpty(springAppName))
+            else if (!string.IsNullOrWhiteSpace(springAppName))
             {
                 options.AppName = springAppName;
             }
         }
 
-        if (string.IsNullOrEmpty(options.VirtualHostName))
+        if (string.IsNullOrWhiteSpace(options.VirtualHostName))
         {
             options.VirtualHostName = options.AppName;
         }
 
-        if (string.IsNullOrEmpty(options.SecureVirtualHostName))
+        if (string.IsNullOrWhiteSpace(options.SecureVirtualHostName))
         {
             options.SecureVirtualHostName = options.AppName;
         }
 
-        if (string.IsNullOrEmpty(options.RegistrationMethod))
+        if (string.IsNullOrWhiteSpace(options.RegistrationMethod))
         {
             string? springRegistrationMethod = configuration.GetValue<string>(SpringCloudDiscoveryRegistrationMethodKey);
 
@@ -118,7 +118,7 @@ internal static class EurekaPostConfigurer
         {
             string? springInstanceId = appInfo?.InstanceId;
 
-            if (!string.IsNullOrEmpty(springInstanceId))
+            if (!string.IsNullOrWhiteSpace(springInstanceId))
             {
                 options.InstanceId = springInstanceId;
             }

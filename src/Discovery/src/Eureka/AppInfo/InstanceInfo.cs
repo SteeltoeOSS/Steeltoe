@@ -50,20 +50,14 @@ public sealed class InstanceInfo
     public DataCenterInfo DataCenterInfo { get; }
 
     /// <summary>
-    /// Gets the Virtual Internet Protocol address for this instance. The address should follow the format
-    /// <b>
-    /// hostname:port
-    /// </b>
-    /// . This address needs to be resolved into a real address for communicating with this instance.
+    /// Gets the Virtual Internet Protocol address(es) for this instance. Multiple values can be specified as a comma-separated list. When using service
+    /// discovery, virtual addresses are resolved into real addresses on outgoing HTTP requests.
     /// </summary>
     public string? VipAddress { get; init; }
 
     /// <summary>
-    /// Gets the Secure Virtual Internet Protocol address for this instance. The address should follow the format
-    /// <b>
-    /// hostname:port
-    /// </b>
-    /// . This address needs to be resolved into a real address for communicating with this instance.
+    /// Gets the Secure Virtual Internet Protocol address(es) for this instance. Multiple values can be specified as a comma-separated list. When using
+    /// service discovery, virtual addresses are resolved into real addresses on outgoing HTTP requests.
     /// </summary>
     public string? SecureVipAddress { get; init; }
 

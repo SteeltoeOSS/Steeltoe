@@ -77,17 +77,17 @@ public sealed class EurekaInstanceOptions
     public bool PreferIPAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets the virtual host name defined for this instance. This is typically the way other instance would find this instance by using the virtual
-    /// host name. Think of this as similar to the fully qualified domain name, that the users of your services will need to find this instance.
-    /// Configuration property: eureka:instance:vipAddress.
+    /// Gets or sets the virtual host name(s) defined for this instance. Multiple values can be specified as a comma-separated list. This is typically the
+    /// way other instances would find this instance by using the virtual host name. Think of this as similar to the fully qualified domain name, that the
+    /// users of your services will need to find this instance. Configuration property: eureka:instance:vipAddress.
     /// </summary>
     [ConfigurationKeyName("VipAddress")]
     public string? VirtualHostName { get; set; }
 
     /// <summary>
-    /// Gets or sets the secure virtual host name defined for this instance. This is typically the way other instance would find this instance by using the
-    /// virtual host name. Think of this as similar to the fully qualified domain name, that the users of your services will need to find this instance.
-    /// Configuration property: eureka:instance:secureVipAddress.
+    /// Gets or sets the secure virtual host name(s) defined for this instance. Multiple values can be specified as a comma-separated list. This is typically
+    /// the way other instances would find this instance by using the virtual host name. Think of this as similar to the fully qualified domain name, that
+    /// the users of your services will need to find this instance. Configuration property: eureka:instance:secureVipAddress.
     /// </summary>
     [ConfigurationKeyName("SecureVipAddress")]
     public string? SecureVirtualHostName { get; set; }

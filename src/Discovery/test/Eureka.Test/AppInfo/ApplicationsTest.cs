@@ -54,6 +54,21 @@ public sealed class ApplicationsTest
     }
 
     [Fact]
+    public void Add_ExpandsTo_ApplicationMap()
+    {
+        var app1 = new Application("app1");
+        app1.Add(new InstanceInfoBuilder().WithId("id1").WithVipAddress("vip1a,vip1b").Build());
+        app1.Add(new InstanceInfoBuilder().WithId("id2").WithSecureVipAddress("svip2a,svip2b").Build());
+
+        var apps = new Applications([app1]);
+
+        Assert.Single(apps.GetInstancesByVirtualHostName("vip1a"));
+        Assert.Single(apps.GetInstancesByVirtualHostName("vip1b"));
+        Assert.Single(apps.GetInstancesBySecureVirtualHostName("svip2a"));
+        Assert.Single(apps.GetInstancesBySecureVirtualHostName("svip2b"));
+    }
+
+    [Fact]
     public void Add_UpdatesExisting_ApplicationMap()
     {
         var app1 = new Application("app1");
