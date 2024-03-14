@@ -3,8 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test;
@@ -12,29 +15,50 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test;
 public class PostProcessorsTest : BasePostProcessorsTest
 {
     [Fact]
-    public void Processes_ApplicationConfigurationService_Configuration()
+    public void Processes_ApplicationConfigurationService_ConfigurationData()
     {
         var postProcessor = new ApplicationConfigurationServicePostProcessor();
 
-        var secrets = new[]
-        {
+        Dictionary<string, string> configurationData = GetConfigData(
+            _testBindingName,
+            ApplicationConfigurationServicePostProcessor.BindingType,
             Tuple.Create("provider", "acs"),
             Tuple.Create("random", "data"),
             Tuple.Create("from", "some-source"),
-            Tuple.Create("my.Secret", "a-password")
-        };
+            Tuple.Create("secret", "password"),
+            Tuple.Create("secret.one", "password1"),
+            Tuple.Create("secret__two", "password2"));
 
-        Dictionary<string, string> configurationData =
-            GetConfigData(_testBindingName, ApplicationConfigurationServicePostProcessor.BindingType, secrets);
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ApplicationConfigurationServicePostProcessor.BindingType, true);
 
         postProcessor.PostProcessConfiguration(provider, configurationData);
 
         configurationData["random"].Should().Be("data");
         configurationData["from"].Should().Be("some-source");
-        configurationData["my:Secret"].Should().Be("a-password");
-        configurationData.Should().NotContainKey("provider");
+        configurationData["secret"].Should().Be("password");
+        configurationData["secret:one"].Should().Be("password1");
+        configurationData["secret:two"].Should().Be("password2");
         configurationData.Should().NotContainKey("type");
+        configurationData.Should().NotContainKey("provider");
+    }
+
+    [Fact]
+    public void PopulatesDotNetFriendlyKeysFromOtherFormats()
+    {
+        string rootDirectory = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s");
+        var source = new ServiceBindingConfigurationSource(rootDirectory);
+        var postProcessor = new ApplicationConfigurationServicePostProcessor();
+        source.RegisterPostProcessor(postProcessor);
+
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string> { { "steeltoe:kubernetes:bindings:enable", "true" } })
+            .Add(source).Build();
+
+        configuration["test-secret-key"].Should().Be("test-secret-value");
+        configuration["key:with:periods"].Should().Be("test-secret-value");
+        configuration["key:with:double:underscores"].Should().Be("test-secret-value");
+        configuration["key:with:double:underscores_"].Should().Be("test-secret-value");
+        configuration["key:with:double:underscores__"].Should().Be("test-secret-value");
     }
 
     [Fact]

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,8 +27,16 @@ internal sealed class ApplicationConfigurationServicePostProcessor : IConfigurat
         {
             var mapper = new ServiceBindingMapper(configurationData, bindingKey);
 
-            IEnumerable<string> keysToMap = configurationData.Keys.Select(s => s.Split($"{bindingKey}:")[^1]).ToList();
-            mapper.MapFrom(keysToMap, true);
+            IEnumerable<string> keysToMap = configurationData.Keys.Select(s => s.Split($"{bindingKey}:")[^1]).Except(new List<string>
+            {
+                ServiceBindingConfigurationProvider.ProviderKey,
+                ServiceBindingConfigurationProvider.TypeKey
+            }).ToList();
+
+            foreach (string key in keysToMap)
+            {
+                mapper.MapFromTo(key, key.AsDotNetConfigurationKey());
+            }
         }
     }
 }
