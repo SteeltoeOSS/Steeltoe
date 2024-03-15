@@ -11,6 +11,7 @@ pr:
     - .config/dotnet-tools.json
     - build/templates
     - build/management.yml
+    - src/Common
     - src/Management
 
 jobs:

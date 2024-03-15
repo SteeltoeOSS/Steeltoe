@@ -11,6 +11,7 @@ pr:
     - .config/dotnet-tools.json
     - build/templates
     - build/discovery.yml
+    - src/Common
     - src/Discovery
 
 jobs:

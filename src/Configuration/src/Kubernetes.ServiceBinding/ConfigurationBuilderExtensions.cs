@@ -51,7 +51,8 @@ public static class ConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, IServiceBindingsReader serviceBindingsReader)
     {
-        return builder.AddKubernetesServiceBindings(DefaultOptional);
+        return builder.AddKubernetesServiceBindings(DefaultOptional, DefaultReloadOnChange, DefaultIgnoreKeyPredicate, serviceBindingsReader,
+            NullLoggerFactory.Instance);
     }
 
     /// <summary>
