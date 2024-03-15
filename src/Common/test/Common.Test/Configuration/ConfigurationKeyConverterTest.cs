@@ -8,22 +8,22 @@ using Xunit;
 
 namespace Steeltoe.Common.Test.Configuration;
 
-public sealed class StringExtensionsTest
+public sealed class ConfigurationKeyConverterTest
 {
     [Theory]
     [InlineData("foobar", "foobar")]
     [InlineData("foo.bar", "foo:bar")]
-    [InlineData("foo__bar", "foo:bar")]
-    [InlineData("foo__bar_", "foo:bar_")]
-    [InlineData("foo__bar__", "foo:bar__")]
+    [InlineData("foo__bar__baz", "foo:bar:baz")]
+    [InlineData("foo__bar__baz_", "foo:bar:baz_")]
+    [InlineData("foo__bar__baz__", "foo:bar:baz__")]
     [InlineData("foo[bar]", "foo[bar]")]
     [InlineData("foobar[1234]", "foobar:1234")]
     [InlineData("foobar[1234][5678]", "foobar:1234:5678")]
     [InlineData("foobar[1234][5678]barbar", "foobar[1234][5678]barbar")]
     [InlineData("a.b.foobar[1234][5678].barfoo.boo[123]", "a:b:foobar:1234:5678:barfoo:boo:123")]
-    [InlineData(@"a.b\.foobar", "a:b.foobar")]
+    [InlineData(@"one\.four\\.seven", @"one.four\:seven")]
     public void AsDotNetConfigurationKey_ProducesExpected(string input, string expectedOutput)
     {
-        _ = input.AsDotNetConfigurationKey().Should().BeEquivalentTo(expectedOutput);
+        _ = ConfigurationKeyConverter.AsDotNetConfigurationKey(input).Should().BeEquivalentTo(expectedOutput);
     }
 }

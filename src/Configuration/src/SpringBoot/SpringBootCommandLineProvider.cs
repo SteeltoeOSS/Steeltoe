@@ -40,7 +40,7 @@ internal sealed class SpringBootCommandLineProvider : ConfigurationProvider
 
             if (key.StartsWith(KeyPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                Data[key.AsDotNetConfigurationKey()] = pair.Value;
+                Data[ConfigurationKeyConverter.AsDotNetConfigurationKey(key)] = pair.Value;
             }
         }
     }

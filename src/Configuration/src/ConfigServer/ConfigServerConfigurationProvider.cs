@@ -631,7 +631,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         {
             try
             {
-                string key = pair.Key.AsDotNetConfigurationKey();
+                string key = ConfigurationKeyConverter.AsDotNetConfigurationKey(pair.Key);
                 string? value = ConvertValue(pair.Value);
                 data[key] = value;
             }

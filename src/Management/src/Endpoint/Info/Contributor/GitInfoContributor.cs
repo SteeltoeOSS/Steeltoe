@@ -73,7 +73,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
                         continue;
                     }
 
-                    string key = keyValuePair[0].Trim().AsDotNetConfigurationKey();
+                    string key = ConfigurationKeyConverter.AsDotNetConfigurationKey(keyValuePair[0].Trim());
                     string value = keyValuePair[1].Replace("\\:", ":", StringComparison.Ordinal);
 
                     dictionary[key] = value;

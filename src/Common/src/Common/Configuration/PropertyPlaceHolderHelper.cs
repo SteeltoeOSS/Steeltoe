@@ -139,7 +139,7 @@ public static class PropertyPlaceholderHelper
                 // Attempt to resolve as a spring-compatible placeholder
                 if (propVal == null)
                 {
-                    propVal = configuration[placeholder.AsDotNetConfigurationKey()];
+                    propVal = configuration[ConfigurationKeyConverter.AsDotNetConfigurationKey(placeholder)];
                 }
 
                 if (propVal != null)

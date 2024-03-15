@@ -61,7 +61,7 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
 
             foreach (string key in keys)
             {
-                Data[key.AsDotNetConfigurationKey()] = Data[key];
+                Data[ConfigurationKeyConverter.AsDotNetConfigurationKey(key)] = Data[key];
             }
         }
 

@@ -24,7 +24,7 @@ internal sealed class ApplicationConfigurationServicePostProcessor : IConfigurat
 
             foreach (string key in keysToMap)
             {
-                mapper.MapFromTo(key, key.AsDotNetConfigurationKey());
+                mapper.MapFromTo(key, ConfigurationKeyConverter.AsDotNetConfigurationKey(key));
             }
         }
     }

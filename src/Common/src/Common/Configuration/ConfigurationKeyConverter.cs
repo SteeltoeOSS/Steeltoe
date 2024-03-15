@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Common.Configuration;
 
-public static class StringExtensions
+public static class ConfigurationKeyConverter
 {
     private const string DotDelimiterString = ".";
     private const char DotDelimiterChar = '.';
@@ -16,9 +16,9 @@ public static class StringExtensions
     private const char EscapeChar = '\\';
     private const string EscapeString = "\\";
 
-    private static readonly Regex ArrayRegex = new(@"(\[[0-9]+\])*$");
+    private static readonly Regex ArrayRegex = new(@"(\[[0-9]+\])*$", RegexOptions.Compiled);
 
-    public static string AsDotNetConfigurationKey(this string key)
+    public static string AsDotNetConfigurationKey(string key)
     {
         if (string.IsNullOrEmpty(key))
         {
