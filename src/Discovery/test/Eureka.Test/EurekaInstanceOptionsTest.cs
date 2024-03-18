@@ -72,7 +72,6 @@ public sealed class EurekaInstanceOptionsTest
         Assert.Null(instanceOptions.SecureHealthCheckUrl);
         Assert.Equal(DataCenterName.MyOwn, instanceOptions.DataCenterInfo.Name);
         Assert.Equal(instanceOptions.GetHostAddress(false), instanceOptions.IPAddress);
-        Assert.Empty(instanceOptions.DefaultAddressResolutionOrder);
         Assert.Null(instanceOptions.RegistrationMethod);
 
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))

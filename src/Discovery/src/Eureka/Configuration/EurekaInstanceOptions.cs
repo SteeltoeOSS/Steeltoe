@@ -225,15 +225,6 @@ public sealed class EurekaInstanceOptions
         Name = DataCenterName.MyOwn
     };
 
-    /// <summary>
-    /// Gets the address resolution order. An instance's network addresses should be fully expressed in its <see cref="DataCenterInfo" />. For example, for
-    /// instances in AWS, this will include the public hostname, public IP, private hostname and private IP, when available. The <see cref="InstanceInfo" />
-    /// will further express a "default address", which is a field that can be configured by the registering instance to advertise its default address. This
-    /// configuration allows for the expression of an ordered list of fields that can be used to resolve the default address. The exact field values will
-    /// depend on the implementation details of the corresponding implementing <see cref="DataCenterInfo" /> types.
-    /// </summary>
-    public IList<string> DefaultAddressResolutionOrder { get; } = new List<string>();
-
     public bool UseNetUtils { get; set; }
 
     public EurekaInstanceOptions()
