@@ -163,6 +163,14 @@ public sealed class EurekaClientTest
                 "instanceId": "some",
                 "app": "FOOBAR",
                 "ipAddr": "127.0.0.1",
+                "port": {
+                  "@enabled": "true",
+                  "$": 8080
+                },
+                "securePort": {
+                  "@enabled": "false",
+                  "$": 9090
+                },
                 "dataCenterInfo": {
                   "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
                   "name": "MyOwn"
@@ -194,6 +202,10 @@ public sealed class EurekaClientTest
 
         var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo())
         {
+            NonSecurePort = 8080,
+            IsNonSecurePortEnabled = true,
+            SecurePort = 9090,
+            IsSecurePortEnabled = false,
             LastUpdatedTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc),
             LastDirtyTimeUtc = new DateTime(638_440_245_328_236_418, DateTimeKind.Utc)
         };

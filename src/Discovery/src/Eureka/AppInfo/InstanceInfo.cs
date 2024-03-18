@@ -64,7 +64,7 @@ public sealed class InstanceInfo
     /// <summary>
     /// Gets the port number that is used to service requests.
     /// </summary>
-    public int NonSecurePort { get; private init; }
+    public int NonSecurePort { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether <see cref="NonSecurePort" /> is enabled.
@@ -293,18 +293,18 @@ public sealed class InstanceInfo
 
         string appName = (options.AppName ?? EurekaInstanceOptions.DefaultAppName).ToUpperInvariant();
 
-        int port = options.NonSecurePort == -1 ? EurekaInstanceOptions.DefaultNonSecurePort : options.NonSecurePort;
-        int securePort = options.SecurePort == -1 ? EurekaInstanceOptions.DefaultSecurePort : options.SecurePort;
+        int nonSecurePort = options.NonSecurePort <= 0 ? EurekaInstanceOptions.DefaultNonSecurePort : options.NonSecurePort;
+        int securePort = options.SecurePort <= 0 ? EurekaInstanceOptions.DefaultSecurePort : options.SecurePort;
 
+        int? nullableNonSecurePort = options.IsNonSecurePortEnabled ? nonSecurePort : null;
         int? nullableSecurePort = options.IsSecurePortEnabled ? securePort : null;
-        int? nullableNonSecurePort = options.IsNonSecurePortEnabled ? port : null;
 
         DateTime utcNow = DateTime.UtcNow;
 
         return new InstanceInfo(instanceId, appName, hostName, options.IPAddress, options.DataCenterInfo)
         {
             AppGroupName = options.AppGroupName?.ToUpperInvariant(),
-            NonSecurePort = port,
+            NonSecurePort = nonSecurePort,
             IsNonSecurePortEnabled = options.IsNonSecurePortEnabled,
             SecurePort = securePort,
             IsSecurePortEnabled = options.IsSecurePortEnabled,
@@ -392,20 +392,16 @@ public sealed class InstanceInfo
             AppName = AppName,
             AppGroupName = AppGroupName,
             IPAddress = IPAddress,
-            Port = IsNonSecurePortEnabled
-                ? new JsonPortWrapper
-                {
-                    Enabled = true,
-                    Port = NonSecurePort
-                }
-                : null,
-            SecurePort = IsSecurePortEnabled
-                ? new JsonPortWrapper
-                {
-                    Enabled = true,
-                    Port = SecurePort
-                }
-                : null,
+            Port = new JsonPortWrapper
+            {
+                Enabled = IsNonSecurePortEnabled,
+                Port = NonSecurePort
+            },
+            SecurePort = new JsonPortWrapper
+            {
+                Enabled = IsSecurePortEnabled,
+                Port = SecurePort
+            },
             HomePageUrl = HomePageUrl,
             StatusPageUrl = StatusPageUrl,
             HealthCheckUrl = HealthCheckUrl,

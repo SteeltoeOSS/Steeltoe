@@ -358,9 +358,11 @@ public sealed class InstanceInfoTest
         Assert.Equal(instanceOptions.IPAddress, jsonInstance.IPAddress);
         Assert.Null(jsonInstance.Sid);
         Assert.NotNull(jsonInstance.Port);
-        Assert.Equal(80, jsonInstance.Port.Port);
         Assert.True(jsonInstance.Port.Enabled);
-        Assert.Null(jsonInstance.SecurePort);
+        Assert.Equal(EurekaInstanceOptions.DefaultNonSecurePort, jsonInstance.Port.Port);
+        Assert.NotNull(jsonInstance.SecurePort);
+        Assert.False(jsonInstance.SecurePort.Enabled);
+        Assert.Equal(EurekaInstanceOptions.DefaultSecurePort, jsonInstance.SecurePort.Port);
         Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/", jsonInstance.HomePageUrl);
         Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/info", jsonInstance.StatusPageUrl);
         Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/health", jsonInstance.HealthCheckUrl);
