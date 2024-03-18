@@ -16,6 +16,7 @@ public sealed class ConsulDiscoveryClientExtensionTest
     public void ClientEnabledByDefault()
     {
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         ConsulDiscoveryClientExtension.ConfigureConsulServices(services);
@@ -29,8 +30,9 @@ public sealed class ConsulDiscoveryClientExtensionTest
     public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
     {
         var services = new ServiceCollection();
+        services.AddLogging();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" }
         };
@@ -48,8 +50,9 @@ public sealed class ConsulDiscoveryClientExtensionTest
     public void ClientFavorsConsulDiscoveryEnabled()
     {
         var services = new ServiceCollection();
+        services.AddLogging();
 
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "consul:discovery:enabled", "true" }

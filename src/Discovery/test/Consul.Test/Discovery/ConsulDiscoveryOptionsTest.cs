@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Consul.Discovery;
@@ -17,98 +18,89 @@ public sealed class ConsulDiscoveryOptionsTest
     [Fact]
     public void Constructor_InitializesDefaults()
     {
-        var opts = new ConsulDiscoveryOptions();
-        Assert.True(opts.Register);
-        Assert.True(opts.RegisterHealthCheck);
-        Assert.Null(opts.DefaultQueryTag);
-        Assert.Equal("zone", opts.DefaultZoneMetadataName);
-        Assert.True(opts.Deregister);
-        Assert.True(opts.Enabled);
-        Assert.True(opts.FailFast);
-        Assert.Equal("30m", opts.HealthCheckCriticalTimeout);
-        Assert.Equal("10s", opts.HealthCheckInterval);
-        Assert.Equal("/actuator/health", opts.HealthCheckPath);
-        Assert.Equal("10s", opts.HealthCheckTimeout);
-        Assert.False(opts.HealthCheckTlsSkipVerify);
-        Assert.Null(opts.HealthCheckUrl);
-        Assert.NotNull(opts.Heartbeat);
-        Assert.NotNull(opts.HostName);
-        Assert.Null(opts.InstanceGroup);
-        Assert.Null(opts.InstanceZone);
-        Assert.False(opts.PreferIPAddress);
-        Assert.False(opts.PreferAgentAddress);
-        Assert.False(opts.QueryPassing);
-        Assert.Equal("http", opts.Scheme);
-        Assert.Null(opts.ServiceName);
-        Assert.Null(opts.Tags);
+        var options = new ConsulDiscoveryOptions();
+        Assert.True(options.Register);
+        Assert.True(options.RegisterHealthCheck);
+        Assert.Null(options.DefaultQueryTag);
+        Assert.Equal("zone", options.DefaultZoneMetadataName);
+        Assert.True(options.Deregister);
+        Assert.True(options.Enabled);
+        Assert.True(options.FailFast);
+        Assert.Equal("30m", options.HealthCheckCriticalTimeout);
+        Assert.Equal("10s", options.HealthCheckInterval);
+        Assert.Equal("/actuator/health", options.HealthCheckPath);
+        Assert.Equal("10s", options.HealthCheckTimeout);
+        Assert.False(options.HealthCheckTlsSkipVerify);
+        Assert.Null(options.HealthCheckUrl);
+        Assert.NotNull(options.Heartbeat);
+        Assert.NotNull(options.HostName);
+        Assert.Null(options.InstanceGroup);
+        Assert.Null(options.InstanceZone);
+        Assert.False(options.PreferIPAddress);
+        Assert.False(options.PreferAgentAddress);
+        Assert.False(options.QueryPassing);
+        Assert.Equal("http", options.Scheme);
+        Assert.Null(options.ServiceName);
+        Assert.Empty(options.Tags);
+        Assert.Empty(options.Metadata);
 
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            Assert.NotNull(opts.IPAddress);
+            Assert.NotNull(options.IPAddress);
         }
     }
 
     [Fact]
     public void Options_DoNotUseInetUtilsByDefault()
     {
-        var mockNetUtils = new Mock<InetUtils>(null, null);
-
-        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
-        {
-            Hostname = "FromMock",
-            IPAddress = "254.254.254.254"
-        }).Verifiable();
+        var mockNetUtils = new Mock<InetUtils>(new InetOptions(), NullLogger<InetUtils>.Instance);
+        mockNetUtils.Setup(netUtils => netUtils.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var opts = new ConsulDiscoveryOptions
+        var options = new ConsulDiscoveryOptions
         {
             NetUtils = mockNetUtils.Object
         };
 
-        configurationRoot.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
+        configurationRoot.GetSection(ConsulDiscoveryOptions.ConfigurationPrefix).Bind(options);
 
-        opts.ApplyNetUtils();
+        options.ApplyNetUtils();
 
-        mockNetUtils.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Never);
+        mockNetUtils.Verify(netUtils => netUtils.FindFirstNonLoopbackHostInfo(), Times.Never);
     }
 
     [Fact]
     public void Options_CanUseInetUtils()
     {
-        var mockNetUtils = new Mock<InetUtils>(null, null);
+        var mockNetUtils = new Mock<InetUtils>(new InetOptions(), NullLogger<InetUtils>.Instance);
+        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo("FromMock", "254.254.254.254")).Verifiable();
 
-        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
-        {
-            Hostname = "FromMock",
-            IPAddress = "254.254.254.254"
-        }).Verifiable();
-
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "consul:discovery:UseNetUtils", "true" }
         };
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var opts = new ConsulDiscoveryOptions
+        var options = new ConsulDiscoveryOptions
         {
             NetUtils = mockNetUtils.Object
         };
 
-        configurationRoot.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
+        configurationRoot.GetSection(ConsulDiscoveryOptions.ConfigurationPrefix).Bind(options);
 
-        opts.ApplyNetUtils();
+        options.ApplyNetUtils();
 
-        Assert.Equal("FromMock", opts.HostName);
-        Assert.Equal("254.254.254.254", opts.IPAddress);
-        mockNetUtils.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Once);
+        Assert.Equal("FromMock", options.HostName);
+        Assert.Equal("254.254.254.254", options.IPAddress);
+        mockNetUtils.Verify(netUtils => netUtils.FindFirstNonLoopbackHostInfo(), Times.Once);
     }
 
     [Fact]
     public void Options_CanUseInetUtilsWithoutReverseDnsOnIP()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             { "consul:discovery:UseNetUtils", "true" },
             { "spring:cloud:inet:SkipReverseDnsLookup", "true" }
@@ -116,19 +108,21 @@ public sealed class ConsulDiscoveryOptionsTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var opts = new ConsulDiscoveryOptions
+        InetOptions inetOptions = configurationRoot.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>() ?? new InetOptions();
+
+        var options = new ConsulDiscoveryOptions
         {
-            NetUtils = new InetUtils(configurationRoot.GetSection(InetOptions.Prefix).Get<InetOptions>())
+            NetUtils = new InetUtils(inetOptions, NullLogger<InetUtils>.Instance)
         };
 
-        configurationRoot.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
+        configurationRoot.GetSection(ConsulDiscoveryOptions.ConfigurationPrefix).Bind(options);
 
         var noSlowReverseDnsQuery = new Stopwatch();
         noSlowReverseDnsQuery.Start();
-        opts.ApplyNetUtils();
+        options.ApplyNetUtils();
         noSlowReverseDnsQuery.Stop();
 
-        Assert.NotNull(opts.HostName);
+        Assert.NotNull(options.HostName);
         Assert.InRange(noSlowReverseDnsQuery.ElapsedMilliseconds, 0, 1500); // testing with an actual reverse dns query results in around 5000 ms
     }
 }

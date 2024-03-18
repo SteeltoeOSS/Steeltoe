@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.LoadBalancer;
-using Steeltoe.Discovery;
 
 namespace Steeltoe.Common.Http.Discovery;
 
@@ -22,36 +25,41 @@ public class DiscoveryHttpClientHandler : HttpClientHandler
     /// <param name="discoveryClient">
     /// Service discovery client to use - provided by calling services.AddDiscoveryClient(Configuration).
     /// </param>
-    /// <param name="logger">
-    /// ILogger for capturing logs from Discovery operations.
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <param name="loadBalancer">
     /// The load balancer to use.
     /// </param>
-    public DiscoveryHttpClientHandler(IDiscoveryClient discoveryClient, ILogger logger = null, ILoadBalancer loadBalancer = null)
+    public DiscoveryHttpClientHandler(IDiscoveryClient discoveryClient, ILoggerFactory loggerFactory, ILoadBalancer? loadBalancer = null)
     {
-        _discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, logger, loadBalancer);
-        _logger = logger;
+        ArgumentGuard.NotNull(discoveryClient);
+        ArgumentGuard.NotNull(loggerFactory);
+
+        _discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, loggerFactory, loadBalancer);
+        _logger = loggerFactory.CreateLogger<DiscoveryHttpClientHandler>();
     }
 
     /// <inheritdoc />
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        Uri current = request.RequestUri;
+        ArgumentGuard.NotNull(request);
+
+        Uri requestUri = request.RequestUri!;
 
         try
         {
-            request.RequestUri = await _discoveryBase.LookupServiceAsync(current, cancellationToken);
+            request.RequestUri = await _discoveryBase.LookupServiceAsync(requestUri, cancellationToken);
             return await base.SendAsync(request, cancellationToken);
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger?.LogDebug(exception, "Exception during SendAsync()");
+            _logger.LogDebug(exception, "Exception during SendAsync()");
             throw;
         }
         finally
         {
-            request.RequestUri = current;
+            request.RequestUri = requestUri;
         }
     }
 }

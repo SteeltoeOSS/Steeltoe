@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.TestResources;
+using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -11,21 +14,27 @@ public sealed class EurekaDiscoveryManagerTest : AbstractBaseTest
     [Fact]
     public void Constructor_Initializes_Correctly()
     {
-        var instOptions = new EurekaInstanceOptions();
+        var instanceOptions = new EurekaInstanceOptions();
 
         var clientOptions = new EurekaClientOptions
         {
-            EurekaServerRetryCount = 0
+            EurekaServer =
+            {
+                RetryCount = 0
+            }
         };
 
-        var wrapInst = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instOptions);
-        var wrapClient = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
-        var appMgr = new EurekaApplicationInfoManager(wrapInst);
-        var client = new EurekaDiscoveryClient(wrapClient, wrapInst, appMgr);
+        var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>(clientOptions);
 
-        var mgr = new EurekaDiscoveryManager(wrapClient, wrapInst, client);
-        Assert.Equal(instOptions, mgr.InstanceConfig);
-        Assert.Equal(clientOptions, mgr.ClientConfiguration);
-        Assert.Equal(client, mgr.Client);
+        var appManager = new EurekaApplicationInfoManager(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        var eurekaHttpClient = new EurekaHttpClient(clientOptionsMonitor, new TestHttpClientFactory(), NullLoggerFactory.Instance);
+        var discoveryClient = new EurekaDiscoveryClient(clientOptionsMonitor, instanceOptionsMonitor, appManager, eurekaHttpClient, NullLoggerFactory.Instance);
+
+        var discoveryManager = new EurekaDiscoveryManager(clientOptionsMonitor, instanceOptionsMonitor, discoveryClient);
+
+        Assert.Equal(instanceOptions, discoveryManager.InstanceOptions);
+        Assert.Equal(clientOptions, discoveryManager.ClientOptions);
+        Assert.Equal(discoveryClient, discoveryManager.Client);
     }
 }

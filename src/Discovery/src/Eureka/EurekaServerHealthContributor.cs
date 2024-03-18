@@ -42,9 +42,9 @@ public class EurekaServerHealthContributor : IHealthContributor
     private void AddHealthStatus(HealthCheckResult result)
     {
         HealthStatus remoteStatus = AddRemoteInstanceStatus(result);
-        HealthStatus fetchStatus = AddFetchStatus(_discoveryClient.ClientConfiguration, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
+        HealthStatus fetchStatus = AddFetchStatus(_discoveryClient.ClientOptions, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
 
-        HealthStatus heartBeatStatus = AddHeartbeatStatus(_discoveryClient.ClientConfiguration, _appInfoManager.InstanceConfig, result,
+        HealthStatus heartBeatStatus = AddHeartbeatStatus(_discoveryClient.ClientOptions, _appInfoManager.InstanceOptions, result,
             _discoveryClient.LastGoodHeartbeatTimestamp);
 
         result.Status = remoteStatus;
@@ -69,7 +69,7 @@ public class EurekaServerHealthContributor : IHealthContributor
         return remoteStatus;
     }
 
-    internal HealthStatus AddHeartbeatStatus(IEurekaClientConfiguration clientConfiguration, IEurekaInstanceConfig instanceConfig, HealthCheckResult result,
+    internal HealthStatus AddHeartbeatStatus(EurekaClientOptions clientConfiguration, EurekaInstanceOptions instanceOptions, HealthCheckResult result,
         long lastGoodHeartbeatTimeTicks)
     {
         if (clientConfiguration != null && clientConfiguration.ShouldRegisterWithEureka)
@@ -84,12 +84,12 @@ public class EurekaServerHealthContributor : IHealthContributor
                 return HealthStatus.Unknown;
             }
 
-            if (lastGoodHeartbeatPeriod > instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond * 2)
+            if (lastGoodHeartbeatPeriod > instanceOptions.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond * 2)
             {
                 result.Details.Add("heartbeat", "Reporting failures connecting");
                 result.Details.Add("heartbeatStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                 result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks, DateTimeKind.Utc).ToString("s", CultureInfo.InvariantCulture));
-                result.Details.Add("heartbeatFailures", lastGoodHeartbeatPeriod / (instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond));
+                result.Details.Add("heartbeatFailures", lastGoodHeartbeatPeriod / (instanceOptions.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond));
                 return HealthStatus.Down;
             }
 
@@ -103,7 +103,7 @@ public class EurekaServerHealthContributor : IHealthContributor
         return HealthStatus.Unknown;
     }
 
-    internal HealthStatus AddFetchStatus(IEurekaClientConfiguration clientConfiguration, HealthCheckResult result, long lastGoodFetchTimeTicks)
+    internal HealthStatus AddFetchStatus(EurekaClientOptions clientConfiguration, HealthCheckResult result, long lastGoodFetchTimeTicks)
     {
         if (clientConfiguration != null && clientConfiguration.ShouldFetchRegistry)
         {

@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
 
 namespace Steeltoe.Configuration.ConfigServer;
@@ -51,7 +50,12 @@ internal sealed class ConfigServerDiscoveryService
         tempServices.AddSingleton<IConfiguration>(builder.Build());
         tempServices.AddDiscoveryClient(_configuration);
 
-        using ServiceProvider tempServiceProvider = tempServices.BuildServiceProvider();
+        return GetDiscoveryClientFromServiceCollectionAsync(tempServices).GetAwaiter().GetResult();
+    }
+
+    private async Task<IDiscoveryClient> GetDiscoveryClientFromServiceCollectionAsync(ServiceCollection services)
+    {
+        await using ServiceProvider tempServiceProvider = services.BuildServiceProvider();
 
         var discoveryClient = tempServiceProvider.GetRequiredService<IDiscoveryClient>();
         _logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", discoveryClient.GetType());
@@ -63,14 +67,18 @@ internal sealed class ConfigServerDiscoveryService
     {
         int attempts = 0;
         int backOff = _settings.RetryInitialInterval;
-        IList<IServiceInstance> instances;
+        IList<IServiceInstance> instances = [];
 
         do
         {
             try
             {
                 _logger.LogDebug("Locating configserver {serviceId} via discovery", _settings.DiscoveryServiceId);
-                instances = await DiscoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
+
+                if (_settings.DiscoveryServiceId != null)
+                {
+                    instances = await DiscoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
+                }
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {

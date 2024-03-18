@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Xunit;
 
@@ -9,117 +11,127 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public sealed class ApplicationInfoManagerTest : AbstractBaseTest
 {
-    private StatusChangedEventArgs _eventArgs;
+    private InstanceStatusChangedEventArgs _eventArgs;
 
     [Fact]
     public void ApplicationInfoManager_IsSingleton()
     {
-        Assert.Equal(ApplicationInfoManager.Instance, ApplicationInfoManager.Instance);
+        Assert.Equal(EurekaApplicationInfoManager.SharedInstance, EurekaApplicationInfoManager.SharedInstance);
     }
 
     [Fact]
     public void ApplicationInfoManager_Uninitialized()
     {
-        Assert.Null(ApplicationInfoManager.Instance.InstanceConfig);
-        Assert.Null(ApplicationInfoManager.Instance.InstanceInfo);
-        Assert.Equal(InstanceStatus.Unknown, ApplicationInfoManager.Instance.InstanceStatus);
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Down;
-        Assert.Equal(InstanceStatus.Unknown, ApplicationInfoManager.Instance.InstanceStatus);
+        Assert.Null(EurekaApplicationInfoManager.SharedInstance.InstanceOptions);
+        Assert.Null(EurekaApplicationInfoManager.SharedInstance.InstanceInfo);
+        Assert.Equal(InstanceStatus.Unknown, EurekaApplicationInfoManager.SharedInstance.InstanceStatus);
+        EurekaApplicationInfoManager.SharedInstance.InstanceStatus = InstanceStatus.Down;
+        Assert.Equal(InstanceStatus.Unknown, EurekaApplicationInfoManager.SharedInstance.InstanceStatus);
 
         // Check no events sent
-        ApplicationInfoManager.Instance.StatusChanged += HandleInstanceStatusChanged;
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Up;
+        EurekaApplicationInfoManager.SharedInstance.StatusChanged += HandleInstanceStatusChanged;
+        EurekaApplicationInfoManager.SharedInstance.InstanceStatus = InstanceStatus.Up;
         Assert.Null(_eventArgs);
-        ApplicationInfoManager.Instance.StatusChanged -= HandleInstanceStatusChanged;
-    }
-
-    [Fact]
-    public void Initialize_Throws_IfInstanceConfigNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => ApplicationInfoManager.Instance.Initialize(null));
-        Assert.Contains("instanceConfig", ex.Message, StringComparison.Ordinal);
+        EurekaApplicationInfoManager.SharedInstance.StatusChanged -= HandleInstanceStatusChanged;
     }
 
     [Fact]
     public void Initialize_Initializes_InstanceInfo()
     {
-        var configuration = new EurekaInstanceConfiguration();
-        ApplicationInfoManager.Instance.Initialize(configuration);
+        var instanceOptions = new EurekaInstanceOptions();
+        var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
+        EurekaApplicationInfoManager.SharedInstance.Initialize(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        Assert.NotNull(ApplicationInfoManager.Instance.InstanceConfig);
-        Assert.Equal(configuration, ApplicationInfoManager.Instance.InstanceConfig);
-        Assert.NotNull(ApplicationInfoManager.Instance.InstanceInfo);
+        Assert.NotNull(EurekaApplicationInfoManager.SharedInstance.InstanceOptions);
+        Assert.Equal(instanceOptions, EurekaApplicationInfoManager.SharedInstance.InstanceOptions);
+        Assert.NotNull(EurekaApplicationInfoManager.SharedInstance.InstanceInfo);
     }
 
     [Fact]
     public void StatusChanged_ChangesStatus()
     {
-        var configuration = new EurekaInstanceConfiguration();
-        ApplicationInfoManager.Instance.Initialize(configuration);
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            IsInstanceEnabledOnInit = false
+        };
 
-        Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Up;
+        var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
+        EurekaApplicationInfoManager.SharedInstance.Initialize(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+
+        Assert.Equal(InstanceStatus.Starting, EurekaApplicationInfoManager.SharedInstance.InstanceStatus);
+        EurekaApplicationInfoManager.SharedInstance.InstanceStatus = InstanceStatus.Up;
     }
 
     [Fact]
     public void StatusChanged_ChangesStatus_SendsEvents()
     {
-        var configuration = new EurekaInstanceConfiguration();
-        ApplicationInfoManager.Instance.Initialize(configuration);
-        Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            IsInstanceEnabledOnInit = false
+        };
+
+        var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
+        EurekaApplicationInfoManager.SharedInstance.Initialize(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        Assert.Equal(InstanceStatus.Starting, EurekaApplicationInfoManager.SharedInstance.InstanceStatus);
 
         // Check event sent
-        ApplicationInfoManager.Instance.StatusChanged += HandleInstanceStatusChanged;
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Up;
+        EurekaApplicationInfoManager.SharedInstance.StatusChanged += HandleInstanceStatusChanged;
+        EurekaApplicationInfoManager.SharedInstance.InstanceStatus = InstanceStatus.Up;
         Assert.NotNull(_eventArgs);
         Assert.Equal(InstanceStatus.Starting, _eventArgs.Previous);
         Assert.Equal(InstanceStatus.Up, _eventArgs.Current);
-        Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, _eventArgs.InstanceId);
-        ApplicationInfoManager.Instance.StatusChanged -= HandleInstanceStatusChanged;
+        Assert.Equal(EurekaApplicationInfoManager.SharedInstance.InstanceInfo.InstanceId, _eventArgs.InstanceId);
+        EurekaApplicationInfoManager.SharedInstance.StatusChanged -= HandleInstanceStatusChanged;
     }
 
     [Fact]
     public void StatusChanged_RemovesEventHandler()
     {
-        var configuration = new EurekaInstanceConfiguration();
-        ApplicationInfoManager.Instance.Initialize(configuration);
-        Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            IsInstanceEnabledOnInit = false
+        };
+
+        var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
+        EurekaApplicationInfoManager.SharedInstance.Initialize(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        Assert.Equal(InstanceStatus.Starting, EurekaApplicationInfoManager.SharedInstance.InstanceStatus);
 
         // Check event sent
-        ApplicationInfoManager.Instance.StatusChanged += HandleInstanceStatusChanged;
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Up;
+        EurekaApplicationInfoManager.SharedInstance.StatusChanged += HandleInstanceStatusChanged;
+        EurekaApplicationInfoManager.SharedInstance.InstanceStatus = InstanceStatus.Up;
         Assert.NotNull(_eventArgs);
         Assert.Equal(InstanceStatus.Starting, _eventArgs.Previous);
         Assert.Equal(InstanceStatus.Up, _eventArgs.Current);
-        Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, _eventArgs.InstanceId);
+        Assert.Equal(EurekaApplicationInfoManager.SharedInstance.InstanceInfo.InstanceId, _eventArgs.InstanceId);
         _eventArgs = null;
-        ApplicationInfoManager.Instance.StatusChanged -= HandleInstanceStatusChanged;
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Down;
+        EurekaApplicationInfoManager.SharedInstance.StatusChanged -= HandleInstanceStatusChanged;
+        EurekaApplicationInfoManager.SharedInstance.InstanceStatus = InstanceStatus.Down;
         Assert.Null(_eventArgs);
     }
 
     [Fact]
     public void RefreshLeaseInfo_UpdatesLeaseInfo()
     {
-        var configuration = new EurekaInstanceConfiguration();
-        ApplicationInfoManager.Instance.Initialize(configuration);
+        var instanceOptions = new EurekaInstanceOptions();
+        var instanceOptionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>(instanceOptions);
+        EurekaApplicationInfoManager.SharedInstance.Initialize(instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        ApplicationInfoManager.Instance.RefreshLeaseInfo();
-        InstanceInfo info = ApplicationInfoManager.Instance.InstanceInfo;
+        EurekaApplicationInfoManager.SharedInstance.RefreshLeaseInfo();
+        InstanceInfo info = EurekaApplicationInfoManager.SharedInstance.InstanceInfo;
 
         Assert.False(info.IsDirty);
-        Assert.Equal(configuration.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(configuration.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
+        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
+        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
 
-        configuration.LeaseRenewalIntervalInSeconds += 100;
-        configuration.LeaseExpirationDurationInSeconds += 100;
-        ApplicationInfoManager.Instance.RefreshLeaseInfo();
+        instanceOptions.LeaseRenewalIntervalInSeconds += 100;
+        instanceOptions.LeaseExpirationDurationInSeconds += 100;
+        EurekaApplicationInfoManager.SharedInstance.RefreshLeaseInfo();
         Assert.True(info.IsDirty);
-        Assert.Equal(configuration.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
-        Assert.Equal(configuration.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
+        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
+        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
     }
 
-    private void HandleInstanceStatusChanged(object sender, StatusChangedEventArgs args)
+    private void HandleInstanceStatusChanged(object sender, InstanceStatusChangedEventArgs args)
     {
         _eventArgs = args;
     }

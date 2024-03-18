@@ -11,28 +11,45 @@ using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
+/// <summary>
+/// A discovery client for
+/// <see href="https://spring.io/guides/gs/service-registration-and-discovery/">
+/// Spring Cloud Eureka
+/// </see>
+/// .
+/// </summary>
+public sealed class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient, IAsyncDisposable
 {
-    private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
+    private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
     private readonly IServiceInstance _thisInstance;
+    private readonly ILogger<EurekaDiscoveryClient> _logger;
 
-    public override IEurekaClientConfiguration ClientConfiguration => _configOptions.CurrentValue;
+    public override EurekaClientOptions ClientOptions => _clientOptionsMonitor.CurrentValue;
 
-    public string Description => "Spring Cloud Eureka Client";
+    public string Description => "A discovery client for Spring Cloud Eureka.";
 
-    public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
-        EurekaApplicationInfoManager appInfoManager, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null,
-        IHttpClientHandlerProvider handlerProvider = null, HttpClient netHttpClient = null)
-        : base(appInfoManager, logFactory)
+#nullable enable
+
+    public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor,
+        EurekaApplicationInfoManager appInfoManager, EurekaHttpClient eurekaHttpClient, ILoggerFactory loggerFactory, HttpClient? httpClient = null)
+        : base(appInfoManager, loggerFactory)
     {
-        _thisInstance = new ThisServiceInstance(instConfig);
-        _configOptions = clientConfig;
-        this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
+        ArgumentGuard.NotNull(clientOptionsMonitor);
+        ArgumentGuard.NotNull(instanceOptionsMonitor);
+        ArgumentGuard.NotNull(eurekaHttpClient);
+
+        _clientOptionsMonitor = clientOptionsMonitor;
+        _thisInstance = new ThisServiceInstance(instanceOptionsMonitor);
+        this.httpClient = eurekaHttpClient;
+        _logger = loggerFactory.CreateLogger<EurekaDiscoveryClient>();
 
         InitializeAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
+#nullable disable
+
+    /// <inheritdoc />
+    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
         Applications applications = Applications;
 
@@ -59,6 +76,7 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         return Task.FromResult(names);
     }
 
+    /// <inheritdoc />
     public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
         IList<InstanceInfo> infos = GetInstancesByVipAddress(serviceId, false);
@@ -66,40 +84,29 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 
         foreach (InstanceInfo info in infos)
         {
-            logger?.LogDebug($"GetInstances returning: {info}");
+            _logger.LogDebug($"GetInstances returning: {info}");
             instances.Add(new EurekaServiceInstance(info));
         }
 
         return Task.FromResult(instances);
     }
 
-    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public IServiceInstance GetLocalServiceInstance()
     {
-        return Task.FromResult(_thisInstance);
+        return _thisInstance;
     }
 
+    /// <inheritdoc cref="IDiscoveryClient.ShutdownAsync" />
     public override Task ShutdownAsync(CancellationToken cancellationToken)
     {
         AppInfoManager.InstanceStatus = InstanceStatus.Down;
         return base.ShutdownAsync(cancellationToken);
     }
 
-    private sealed class EurekaHttpClientInternal : EurekaHttpClient
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
     {
-        private readonly IOptionsMonitor<EurekaClientOptions> _optionsMonitorOptions;
-
-        protected override IEurekaClientConfiguration Configuration => _optionsMonitorOptions.CurrentValue;
-
-        public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILoggerFactory logFactory = null,
-            IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
-        {
-            ArgumentGuard.NotNull(optionsMonitor);
-
-            configuration = null;
-            _optionsMonitorOptions = optionsMonitor;
-            this.handlerProvider = handlerProvider;
-            Initialize(new Dictionary<string, string>(), logFactory);
-            this.httpClient = httpClient;
-        }
+        await ShutdownAsync(CancellationToken.None);
     }
 }

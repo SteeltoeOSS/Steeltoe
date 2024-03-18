@@ -2,14 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Steeltoe.Common.LoadBalancer;
 
 namespace Steeltoe.Common.Http.LoadBalancer;
 
 /// <summary>
-/// Same as <see cref="LoadBalancerDelegatingHandler" /> except is an <see cref="HttpClientHandler" />, for non-HttpClientFactory use.
+/// Same as <see cref="LoadBalancerDelegatingHandler" />, except this is an <see cref="HttpClientHandler" />, for use with <see cref="HttpClient" />
+/// without <see cref="IHttpClientFactory" />.
 /// </summary>
-public class LoadBalancerHttpClientHandler : HttpClientHandler
+public sealed class LoadBalancerHttpClientHandler : HttpClientHandler
 {
     private readonly ILoadBalancer _loadBalancer;
 
@@ -31,34 +34,39 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
     /// <inheritdoc />
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        ArgumentGuard.NotNull(request);
+
+        return await InternalSendAsync(request, _loadBalancer, base.SendAsync, cancellationToken);
+    }
+
+    internal static async Task<HttpResponseMessage> InternalSendAsync(HttpRequestMessage request, ILoadBalancer loadBalancer,
+        Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> innerSendAsync, CancellationToken cancellationToken)
+    {
         // record the original request
-        Uri originalUri = request.RequestUri;
+        Uri requestUri = request.RequestUri!;
 
         // look up a service instance and update the request
-        Uri resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri, cancellationToken);
-        request.RequestUri = resolvedUri;
+        Uri serviceInstanceUri = await loadBalancer.ResolveServiceInstanceAsync(requestUri, cancellationToken);
+        request.RequestUri = serviceInstanceUri;
 
         // allow other handlers to operate and the request to continue
         DateTime startTime = DateTime.UtcNow;
 
-        Exception exception = null;
+        Exception? error = null;
 
         try
         {
-            return await base.SendAsync(request, cancellationToken);
+            return await innerSendAsync(request, cancellationToken);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            exception = ex;
-
+            error = exception;
             throw;
         }
         finally
         {
-            request.RequestUri = originalUri;
-
-            // track stats
-            await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception, cancellationToken);
+            request.RequestUri = requestUri;
+            await loadBalancer.UpdateStatisticsAsync(requestUri, serviceInstanceUri, DateTime.UtcNow - startTime, error, cancellationToken);
         }
     }
 }

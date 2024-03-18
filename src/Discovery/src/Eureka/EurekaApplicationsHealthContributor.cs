@@ -35,7 +35,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
             Description = "No monitored applications"
         };
 
-        IList<string> appNames = GetMonitoredApplications(_discoveryClient.ClientConfiguration);
+        IList<string> appNames = GetMonitoredApplications(_discoveryClient.ClientOptions);
 
         foreach (string appName in appNames)
         {
@@ -73,7 +73,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
         }
     }
 
-    private IList<string> GetMonitoredApplications(IEurekaClientConfiguration clientConfiguration)
+    private IList<string> GetMonitoredApplications(EurekaClientOptions clientConfiguration)
     {
         IList<string> configApps = GetApplicationsFromConfig(clientConfiguration);
 
@@ -86,26 +86,23 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
         return regApps.Select(app => app.Name).ToList();
     }
 
-    internal IList<string> GetApplicationsFromConfig(IEurekaClientConfiguration clientConfiguration)
+    internal IList<string> GetApplicationsFromConfig(EurekaClientOptions clientOptions)
     {
-        if (clientConfiguration is EurekaClientConfiguration configuration)
+        string[] monitoredApps = clientOptions.Health.MonitoredApps?.Split(new[]
         {
-            string[] monitoredApps = configuration.HealthMonitoredApps?.Split(new[]
+            ','
+        }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        if (monitoredApps is { Length: > 0 })
+        {
+            var results = new List<string>();
+
+            foreach (string str in monitoredApps)
             {
-                ','
-            }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-            if (monitoredApps != null && monitoredApps.Length > 0)
-            {
-                var results = new List<string>();
-
-                foreach (string str in monitoredApps)
-                {
-                    results.Add(str.Trim());
-                }
-
-                return results;
+                results.Add(str.Trim());
             }
+
+            return results;
         }
 
         return null;

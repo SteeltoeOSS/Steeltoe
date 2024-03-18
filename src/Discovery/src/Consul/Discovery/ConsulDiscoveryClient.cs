@@ -4,6 +4,7 @@
 
 using Consul;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
@@ -18,80 +19,46 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 /// </see>
 /// .
 /// </summary>
-public class ConsulDiscoveryClient : IConsulDiscoveryClient
+public sealed class ConsulDiscoveryClient : IDiscoveryClient, IAsyncDisposable
 {
     private readonly IConsulClient _client;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
-    private readonly ConsulDiscoveryOptions _options;
-    private readonly IServiceInstance _thisServiceInstance;
-    private readonly IConsulServiceRegistrar _registrar;
-
-    private ConsulDiscoveryOptions Options => _optionsMonitor != null ? _optionsMonitor.CurrentValue : _options;
+    private readonly ConsulServiceRegistrar? _registrar;
+    private readonly IServiceInstance? _thisServiceInstance;
 
     /// <inheritdoc />
-    public string Description { get; } = "HashiCorp Consul Client";
+    public string Description => "A discovery client for HashiCorp Consul.";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
     /// </summary>
     /// <param name="client">
-    /// a Consul client.
-    /// </param>
-    /// <param name="options">
-    /// the configuration options.
-    /// </param>
-    /// <param name="registrar">
-    /// a Consul registrar service.
-    /// </param>
-    /// <param name="logger">
-    /// optional logger.
-    /// </param>
-    public ConsulDiscoveryClient(IConsulClient client, ConsulDiscoveryOptions options, IConsulServiceRegistrar registrar = null,
-        ILogger<ConsulDiscoveryClient> logger = null)
-    {
-        ArgumentGuard.NotNull(client);
-        ArgumentGuard.NotNull(options);
-
-        _client = client;
-        _options = options;
-        _registrar = registrar;
-
-        if (_registrar != null)
-        {
-            _registrar.Start();
-            _thisServiceInstance = new ThisServiceInstance(_registrar.Registration);
-        }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
-    /// </summary>
-    /// <param name="client">
-    /// a Consul client.
+    /// The Consul client.
     /// </param>
     /// <param name="optionsMonitor">
-    /// the configuration options.
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     /// <param name="registrar">
-    /// a Consul registrar service.
+    /// The Consul registrar service.
     /// </param>
     /// <param name="logger">
-    /// optional logger.
+    /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulServiceRegistrar registrar = null,
-        ILogger<ConsulDiscoveryClient> logger = null)
+    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulServiceRegistrar? registrar,
+        ILogger<ConsulDiscoveryClient> logger)
     {
         ArgumentGuard.NotNull(client);
         ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(logger);
 
         _client = client;
         _optionsMonitor = optionsMonitor;
         _registrar = registrar;
 
-        if (_registrar != null)
+        if (registrar != null)
         {
-            _registrar.Start();
-            _thisServiceInstance = new ThisServiceInstance(_registrar.Registration);
+            _thisServiceInstance = new ThisServiceInstance(registrar.Registration);
+            registrar.StartAsync(CancellationToken.None).GetAwaiter().GetResult();
         }
     }
 
@@ -101,7 +68,21 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         return GetInstancesAsync(serviceId, QueryOptions.Default, cancellationToken);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets all service instances associated with the specified service ID from the Consul catalog.
+    /// </summary>
+    /// <param name="serviceId">
+    /// The ID of the service to lookup.
+    /// </param>
+    /// <param name="queryOptions">
+    /// Any Consul query options to use.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// The list of remote service instances.
+    /// </returns>
     public async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(serviceId);
@@ -112,13 +93,24 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         return instances;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets all service instances from the Consul catalog.
+    /// </summary>
+    /// <param name="queryOptions">
+    /// Any Consul query options to use.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// The list of remote service instances.
+    /// </returns>
     public async Task<IList<IServiceInstance>> GetAllInstancesAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(queryOptions);
 
         var instances = new List<IServiceInstance>();
-        IList<string> serviceIds = await GetServiceNamesAsync(queryOptions, cancellationToken);
+        IList<string> serviceIds = await GetServiceIdsAsync(queryOptions, cancellationToken);
 
         foreach (string serviceId in serviceIds)
         {
@@ -129,59 +121,68 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     }
 
     /// <inheritdoc />
-    public async Task<IList<string>> GetServiceNamesAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
+    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
+    {
+        return GetServiceIdsAsync(QueryOptions.Default, cancellationToken);
+    }
+
+    /// <summary>
+    /// Gets all registered service IDs from the Consul catalog.
+    /// </summary>
+    /// <param name="queryOptions">
+    /// Any Consul query options to use.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// The list of service IDs.
+    /// </returns>
+    public async Task<IList<string>> GetServiceIdsAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(queryOptions);
 
         QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(queryOptions, cancellationToken);
-        Dictionary<string, string[]> response = result.Response;
-        return response.Keys.ToList();
+        return result.Response.Keys.ToList();
     }
 
     /// <inheritdoc />
-    public Task<IList<string>> GetServicesAsync(CancellationToken cancellationToken)
+    public IServiceInstance GetLocalServiceInstance()
     {
-        return GetServiceNamesAsync(QueryOptions.Default, cancellationToken);
+        if (_thisServiceInstance == null)
+        {
+            throw new NotSupportedException("Local service instance is unavailable.");
+        }
+
+        return _thisServiceInstance;
     }
 
     /// <inheritdoc />
-    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    public async Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult(_thisServiceInstance);
+        if (_registrar != null)
+        {
+            await _registrar.DisposeAsync();
+        }
     }
 
     /// <inheritdoc />
-    public Task ShutdownAsync(CancellationToken cancellationToken)
+    public async ValueTask DisposeAsync()
     {
-        return Task.CompletedTask;
+        await ShutdownAsync(CancellationToken.None);
     }
 
     internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions,
         CancellationToken cancellationToken)
     {
+        ConsulDiscoveryOptions options = _optionsMonitor.CurrentValue;
+
         QueryResult<ServiceEntry[]> result =
-            await _client.Health.Service(serviceId, Options.DefaultQueryTag, Options.QueryPassing, queryOptions, cancellationToken);
+            await _client.Health.Service(serviceId, options.DefaultQueryTag, options.QueryPassing, queryOptions, cancellationToken);
 
         foreach (ConsulServiceInstance instance in result.Response.Select(entry => new ConsulServiceInstance(entry)))
         {
             instances.Add(instance);
-        }
-    }
-
-    /// <summary>
-    /// Dispose of the client and also the Consul service registrar if provided.
-    /// </summary>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _registrar?.Dispose();
         }
     }
 }

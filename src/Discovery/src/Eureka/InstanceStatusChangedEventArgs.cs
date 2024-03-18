@@ -6,15 +6,13 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class StatusChangedEventArgs : EventArgs
+public sealed class InstanceStatusChangedEventArgs : EventArgs
 {
     public InstanceStatus Previous { get; }
-
     public InstanceStatus Current { get; }
-
     public string InstanceId { get; }
 
-    public StatusChangedEventArgs(InstanceStatus previous, InstanceStatus current, string instanceId)
+    public InstanceStatusChangedEventArgs(InstanceStatus previous, InstanceStatus current, string instanceId)
     {
         Previous = previous;
         Current = current;

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery;
 
 namespace Steeltoe.Configuration.ConfigServer;

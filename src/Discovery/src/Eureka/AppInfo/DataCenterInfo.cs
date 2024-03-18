@@ -6,7 +6,7 @@ using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
-public class DataCenterInfo : IDataCenterInfo
+public class DataCenterInfo
 {
     public DataCenterName Name { get; }
 
@@ -15,7 +15,7 @@ public class DataCenterInfo : IDataCenterInfo
         Name = name;
     }
 
-    internal static IDataCenterInfo FromJson(JsonInstanceInfo.JsonDataCenterInfo dataCenterInfo)
+    internal static DataCenterInfo FromJson(JsonDataCenterInfo dataCenterInfo)
     {
         if (DataCenterName.MyOwn.ToString() == dataCenterInfo.Name)
         {
@@ -30,8 +30,8 @@ public class DataCenterInfo : IDataCenterInfo
         throw new ArgumentException($"Unsupported datacenter name '{dataCenterInfo.Name}'.", nameof(dataCenterInfo));
     }
 
-    internal JsonInstanceInfo.JsonDataCenterInfo ToJson()
+    internal JsonDataCenterInfo ToJson()
     {
-        return new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", Name.ToString());
+        return JsonDataCenterInfo.Create("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", Name.ToString());
     }
 }

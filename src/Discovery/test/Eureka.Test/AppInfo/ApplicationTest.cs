@@ -108,8 +108,8 @@ public sealed class ApplicationTest : AbstractBaseTest
             AppGroupName = "AppGroupName",
             IPAddress = "IPAddress",
             Sid = "Sid",
-            Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
-            SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),
+            Port = JsonPortWrapper.Create(true, 100),
+            SecurePort = JsonPortWrapper.Create(false, 100),
             HomePageUrl = "HomePageUrl",
             StatusPageUrl = "StatusPageUrl",
             HealthCheckUrl = "HealthCheckUrl",
@@ -117,7 +117,7 @@ public sealed class ApplicationTest : AbstractBaseTest
             VipAddress = "VipAddress",
             SecureVipAddress = "SecureVipAddress",
             CountryId = 1,
-            DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo(string.Empty, "MyOwn"),
+            DataCenterInfo = JsonDataCenterInfo.Create(string.Empty, "MyOwn"),
             HostName = "HostName",
             Status = InstanceStatus.Down,
             OverriddenStatus = InstanceStatus.OutOfService,
@@ -145,10 +145,7 @@ public sealed class ApplicationTest : AbstractBaseTest
         var application = new JsonApplication
         {
             Name = "myApp",
-            Instances = new List<JsonInstanceInfo>
-            {
-                instanceInfo
-            }
+            Instances = [instanceInfo]
         };
 
         var app = Application.FromJsonApplication(application);

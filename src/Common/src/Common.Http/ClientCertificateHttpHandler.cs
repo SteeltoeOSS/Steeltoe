@@ -12,11 +12,18 @@ public sealed class ClientCertificateHttpHandler : HttpClientHandler
 {
     private readonly SemaphoreSlim _lock = new(1);
     private readonly IOptionsMonitor<CertificateOptions> _certificateOptions;
+    private readonly string _name;
     private CertificateOptions _lastValue;
 
     public ClientCertificateHttpHandler(IOptionsMonitor<CertificateOptions> certOptions)
+        : this(certOptions, string.Empty)
+    {
+    }
+
+    public ClientCertificateHttpHandler(IOptionsMonitor<CertificateOptions> certOptions, string name)
     {
         _certificateOptions = certOptions;
+        _name = name;
         _certificateOptions.OnChange(RotateCert);
         RotateCert(_certificateOptions.CurrentValue);
     }
@@ -35,9 +42,11 @@ public sealed class ClientCertificateHttpHandler : HttpClientHandler
         }
     }
 
+    // ReSharper disable once RedundantAssignment
     private void RotateCert(CertificateOptions newCert)
     {
-        if (newCert.Certificate == null)
+        newCert = _certificateOptions.Get(_name);
+        if (newCert.Certificate == null || newCert.Certificate.Equals(_lastValue?.Certificate))
         {
             return;
         }
@@ -47,7 +56,7 @@ public sealed class ClientCertificateHttpHandler : HttpClientHandler
         personalCertStore.Open(OpenFlags.ReadWrite);
         authorityCertStore.Open(OpenFlags.ReadWrite);
 
-        if (_lastValue != null)
+        if (_lastValue != null && personalCertStore.Certificates.Contains(_lastValue.Certificate))
         {
             personalCertStore.Certificates.Remove(_lastValue.Certificate);
         }

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
@@ -9,9 +11,9 @@ namespace Steeltoe.Discovery.Eureka.Transport;
 internal sealed class JsonApplication
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [JsonPropertyName("instance")]
     [JsonConverter(typeof(JsonInstanceInfoConverter))]
-    public IList<JsonInstanceInfo> Instances { get; set; }
+    public IList<JsonInstanceInfo?>? Instances { get; set; }
 }

@@ -5,27 +5,33 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Connectors.Services;
 
 namespace Steeltoe.Discovery.Client.SimpleClients;
 
-public class ConfigurationDiscoveryClientExtension : IDiscoveryClientExtension
+internal sealed class ConfigurationDiscoveryClientExtension : IDiscoveryClientExtension
 {
-    public const string ConfigurationPrefix = "discovery:services";
+    private const string ConfigurationPrefix = "discovery";
+
+    /// <inheritdoc />
+    public bool IsConfigured(IConfiguration configuration, IServiceInfo? serviceInfo)
+    {
+        ArgumentGuard.NotNull(configuration);
+
+        return configuration.GetSection(ConfigurationPrefix).GetChildren().Any();
+    }
 
     /// <inheritdoc />
     public void ApplyServices(IServiceCollection services)
     {
-        services.AddOptions<List<ConfigurationServiceInstance>>()
+        ArgumentGuard.NotNull(services);
+
+        services.AddOptions<ConfigurationDiscoveryOptions>()
             .Configure<IConfiguration>((options, configuration) => configuration.GetSection(ConfigurationPrefix).Bind(options));
 
         services.AddSingleton<IDiscoveryClient>(serviceProvider =>
-            new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<List<ConfigurationServiceInstance>>>()));
-    }
-
-    public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
-    {
-        return configuration.GetSection(ConfigurationPrefix).GetChildren().Any();
+            new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<ConfigurationDiscoveryOptions>>()));
     }
 }

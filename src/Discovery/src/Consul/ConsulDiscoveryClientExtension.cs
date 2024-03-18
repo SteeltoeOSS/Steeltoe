@@ -6,8 +6,10 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Net;
 using Steeltoe.Connectors.Services;
@@ -17,43 +19,48 @@ using Steeltoe.Discovery.Consul.Registry;
 
 namespace Steeltoe.Discovery.Consul;
 
-public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
+internal sealed class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
 {
     private const string SpringDiscoveryEnabled = "spring:cloud:discovery:enabled";
-    public const string ConsulPrefix = "consul";
+    private const string ConsulPrefix = "consul";
+
+    /// <inheritdoc />
+    public bool IsConfigured(IConfiguration configuration, IServiceInfo? serviceInfo)
+    {
+        ArgumentGuard.NotNull(configuration);
+
+        return configuration.GetSection(ConsulPrefix).GetChildren().Any();
+    }
 
     /// <inheritdoc />
     public void ApplyServices(IServiceCollection services)
     {
+        ArgumentGuard.NotNull(services);
+
         ConfigureConsulServices(services);
         AddConsulServices(services);
-    }
-
-    public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
-    {
-        return configuration.GetSection(ConsulPrefix).GetChildren().Any();
     }
 
     internal static void ConfigureConsulServices(IServiceCollection services)
     {
         services.AddOptions<ConsulOptions>()
-            .Configure<IConfiguration>((options, configuration) => configuration.GetSection(ConsulOptions.ConsulConfigurationPrefix).Bind(options))
+            .Configure<IConfiguration>((options, configuration) => configuration.GetSection(ConsulOptions.ConfigurationPrefix).Bind(options))
             .PostConfigure(ConsulPostConfigurer.ValidateConsulOptions);
 
         services.AddOptions<ConsulDiscoveryOptions>().Configure<IConfiguration>((options, configuration) =>
         {
-            configuration.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(options);
+            configuration.GetSection(ConsulDiscoveryOptions.ConfigurationPrefix).Bind(options);
 
             // Consul is enabled by default. If consul:discovery:enabled was not set then check spring:cloud:discovery:enabled
-            if (options.Enabled && configuration.GetValue<bool?>($"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:enabled") is null &&
+            if (options.Enabled && configuration.GetValue<bool?>($"{ConsulDiscoveryOptions.ConfigurationPrefix}:enabled") is null &&
                 configuration.GetValue<bool?>(SpringDiscoveryEnabled) == false)
             {
                 options.Enabled = false;
             }
-        }).PostConfigure<IConfiguration>((options, configuration) =>
+        }).PostConfigure<IConfiguration, ILoggerFactory>((discoveryOptions, configuration, loggerFactory) =>
         {
-            var netOptions = configuration.GetSection(InetOptions.Prefix).Get<InetOptions>();
-            ConsulPostConfigurer.UpdateDiscoveryOptions(configuration, options, netOptions);
+            InetOptions inetOptions = configuration.GetSection(InetOptions.ConfigurationPrefix).Get<InetOptions>() ?? new InetOptions();
+            ConsulPostConfigurer.UpdateDiscoveryOptions(configuration, discoveryOptions, inetOptions, loggerFactory);
         });
 
         services.TryAddSingleton(serviceProvider =>
@@ -69,23 +76,23 @@ public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
 
     private static void AddConsulServices(IServiceCollection services)
     {
-        services.AddSingleton(p =>
+        services.AddSingleton(serviceProvider =>
         {
-            var consulOptions = p.GetRequiredService<IOptions<ConsulOptions>>();
+            var consulOptions = serviceProvider.GetRequiredService<IOptions<ConsulOptions>>();
             return ConsulClientFactory.CreateClient(consulOptions.Value);
         });
 
-        services.AddSingleton<IScheduler, TtlScheduler>();
-        services.AddSingleton<IConsulServiceRegistry, ConsulServiceRegistry>();
+        services.AddSingleton<TtlScheduler>();
+        services.AddSingleton<ConsulServiceRegistry>();
 
-        services.AddSingleton<IConsulRegistration>(p =>
+        services.AddSingleton(serviceProvider =>
         {
-            var opts = p.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
-            var appInfo = p.GetService<IApplicationInstanceInfo>();
-            return ConsulRegistration.CreateRegistration(opts.Value, appInfo);
+            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
+            var instanceInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
+            return ConsulRegistration.Create(optionsMonitor, instanceInfo);
         });
 
-        services.AddSingleton<IConsulServiceRegistrar, ConsulServiceRegistrar>();
+        services.AddSingleton<ConsulServiceRegistrar>();
         services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();
         services.AddSingleton<IHealthContributor, ConsulHealthContributor>();
     }

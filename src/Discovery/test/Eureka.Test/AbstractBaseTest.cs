@@ -8,10 +8,7 @@ public abstract class AbstractBaseTest
 {
     protected AbstractBaseTest()
     {
-        ApplicationInfoManager.Instance.InstanceInfo = null;
-        ApplicationInfoManager.Instance.InstanceConfig = null;
-        DiscoveryManager.Instance.ClientConfiguration = null;
-        DiscoveryManager.Instance.Client = null;
-        DiscoveryManager.Instance.InstanceConfig = null;
+        EurekaApplicationInfoManager.ResetSharedInstance();
+        EurekaDiscoveryManager.ResetSharedInstance();
     }
 }

@@ -15,7 +15,7 @@ public sealed class NoOpDiscoveryClientTest
     [Fact]
     public void NoOpDiscoveryClient_LooksForOtherClients()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "spring:application:name", "myName" },
             { "Consul:somekey", "somevalue" },
@@ -32,19 +32,20 @@ public sealed class NoOpDiscoveryClientTest
         VerifyLogEntered(logger, LogLevel.Warning,
             "Found configuration values for TestClient, try adding a NuGet reference that enables TestClient to work with Steeltoe Discovery");
 
-        foreach (string c in new List<string>
+        foreach (string clientName in new List<string>
         {
             "Consul",
             "Eureka"
         })
         {
-            VerifyLogEntered(logger, LogLevel.Warning, $"Found configuration values for {c}, try adding a NuGet reference to Steeltoe.Discovery.{c}");
+            VerifyLogEntered(logger, LogLevel.Warning,
+                $"Found configuration values for {clientName}, try adding a NuGet reference to Steeltoe.Discovery.{clientName}");
         }
     }
 
     private void VerifyLogEntered(Mock<ILogger<NoOpDiscoveryClient>> logger, LogLevel level, string logEntry)
     {
         logger.Verify(x => x.Log(It.Is<LogLevel>(l => l == level), It.IsAny<EventId>(), It.Is<It.IsAnyType>((v, t) => v.ToString() == logEntry),
-            It.IsAny<Exception>(), It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
+            It.IsAny<Exception>(), It.Is<Func<It.IsAnyType, Exception?, string>>((v, t) => true)));
     }
 }

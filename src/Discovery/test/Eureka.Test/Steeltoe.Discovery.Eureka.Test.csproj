@@ -16,5 +16,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(FoundationalVersion)" />
+    <PackageReference Include="RichardSzalay.MockHttp" Version="$(MockHttpVersion)" />
   </ItemGroup>
 </Project>

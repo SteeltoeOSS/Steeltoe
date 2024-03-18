@@ -4,9 +4,12 @@
 
 using System.Net;
 using System.Text.Json;
+using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
+using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -18,37 +21,27 @@ namespace Steeltoe.Discovery.Eureka.Test.Transport;
 public sealed class EurekaHttpClientTest : AbstractBaseTest
 {
     [Fact]
-    public void Constructor_Throws_IfConfigNull()
-    {
-        var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient((IEurekaClientConfiguration)null));
-        Assert.Contains("config", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Constructor_Throws_IfHeadersNull()
-    {
-        const IDictionary<string, string> headers = null;
-        var ex = Assert.Throws<ArgumentNullException>(() => new EurekaHttpClient(new EurekaClientConfiguration(), headers));
-        Assert.Contains("headers", ex.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void Constructor_Throws_IfServiceUrlBad()
     {
-        var configuration = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "foobar\\foobar"
         };
 
-        var ex = Assert.Throws<UriFormatException>(() => new EurekaHttpClient(configuration));
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory();
+
+        var ex = Assert.Throws<UriFormatException>(() => new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance));
         Assert.Contains("URI", ex.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public async Task Register_Throws_IfInstanceInfoNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.RegisterAsync(null, CancellationToken.None));
         Assert.Contains("info", ex.Message, StringComparison.Ordinal);
     }
@@ -56,13 +49,19 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task RegisterAsync_ThrowsHttpRequestException_ServerTimeout()
     {
-        var configuration = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://localhost:9999/",
-            EurekaServerRetryCount = 0
+            EurekaServer =
+            {
+                RetryCount = 0
+            }
         };
 
-        var client = new EurekaHttpClient(configuration);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         await Assert.ThrowsAsync<EurekaTransportException>(async () => await client.RegisterAsync(new InstanceInfo(), CancellationToken.None));
     }
 
@@ -77,17 +76,20 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
 
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
-        var configuration = new EurekaInstanceConfiguration();
-        var info = InstanceInfo.FromInstanceConfiguration(configuration);
+        var instanceOptions = new EurekaInstanceOptions();
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
-        EurekaHttpResponse resp = await client.RegisterAsync(info, CancellationToken.None);
+        EurekaHttpResponse resp = await client.RegisterAsync(instance, CancellationToken.None);
+
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.NoContent, resp.StatusCode);
         Assert.NotNull(resp.Headers);
@@ -105,20 +107,23 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaInstanceConfiguration
+        var instanceOptions = new EurekaInstanceOptions
         {
             AppName = "foobar"
         };
 
-        var info = InstanceInfo.FromInstanceConfiguration(configuration);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
-        await client.RegisterAsync(info, CancellationToken.None);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
+        await client.RegisterAsync(instance, CancellationToken.None);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal("POST", TestConfigServerStartup.LastRequest.Method);
@@ -133,7 +138,7 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.NotNull(receivedJsonInstanceRoot.Instance);
 
         // Compare a few random values
-        JsonInstanceInfo sentJsonObj = info.ToJsonInstance();
+        JsonInstanceInfo sentJsonObj = instance.ToJsonInstance();
         Assert.Equal(sentJsonObj.ActionType, receivedJsonInstanceRoot.Instance.ActionType);
         Assert.Equal(sentJsonObj.AppName, receivedJsonInstanceRoot.Instance.AppName);
         Assert.Equal(sentJsonObj.HostName, receivedJsonInstanceRoot.Instance.HostName);
@@ -142,8 +147,9 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task SendHeartbeat_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.SendHeartBeatAsync(null, "bar", new InstanceInfo(), InstanceStatus.Down, CancellationToken.None));
@@ -154,8 +160,9 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task SendHeartbeat_Throws_IfIdNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.SendHeartBeatAsync("foo", null, new InstanceInfo(), InstanceStatus.Down, CancellationToken.None));
@@ -166,8 +173,9 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task SendHeartbeat_Throws_IfInstanceInfoNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.SendHeartBeatAsync("foo", "bar", null, InstanceStatus.Down, CancellationToken.None));
@@ -187,21 +195,25 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var configuration = new EurekaInstanceConfiguration
+        var instanceOptions = new EurekaInstanceOptions
         {
             AppName = "foo",
             InstanceId = "id1"
         };
 
-        var info = InstanceInfo.FromInstanceConfiguration(configuration);
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
-        EurekaHttpResponse<InstanceInfo> resp = await client.SendHeartBeatAsync("foo", "id1", info, InstanceStatus.Unknown, CancellationToken.None);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
+        EurekaHttpResponse<InstanceInfo> resp = await client.SendHeartBeatAsync("foo", "id1", instance, InstanceStatus.Unknown, CancellationToken.None);
+
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.NotNull(resp.Headers);
@@ -209,45 +221,46 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         Assert.Equal("PUT", TestConfigServerStartup.LastRequest.Method);
         Assert.Equal("localhost:8888", TestConfigServerStartup.LastRequest.Host.Value);
         Assert.Equal("/apps/FOO/id1", TestConfigServerStartup.LastRequest.Path.Value);
-        long time = DateTimeConversions.ToJavaMillis(new DateTime(info.LastDirtyTimestamp, DateTimeKind.Utc));
-        Assert.Equal($"?status=STARTING&lastDirtyTimestamp={time}", TestConfigServerStartup.LastRequest.QueryString.Value);
+        long time = DateTimeConversions.ToJavaMillis(new DateTime(instance.LastDirtyTimestamp, DateTimeKind.Utc));
+        Assert.Equal($"?status=UP&lastDirtyTimestamp={time}", TestConfigServerStartup.LastRequest.QueryString.Value);
     }
 
     [Fact]
     public async Task GetApplicationsAsync_InvokesServer_ReturnsExpectedApplications()
     {
-        const string json = @"
-                { 
-                    ""applications"": { 
-                        ""versions__delta"":""1"",
-                        ""apps__hashcode"":""UP_1_"",
-                        ""application"":[{
-                            ""name"":""FOO"",
-                            ""instance"":[{ 
-                                ""instanceId"":""localhost:foo"",
-                                ""hostName"":""localhost"",
-                                ""app"":""FOO"",
-                                ""ipAddr"":""192.168.56.1"",
-                                ""status"":""UP"",
-                                ""overriddenstatus"":""UNKNOWN"",
-                                ""port"":{""$"":8080,""@enabled"":""true""},
-                                ""securePort"":{""$"":443,""@enabled"":""false""},
-                                ""countryId"":1,
-                                ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                                ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1457714988223,""lastRenewalTimestamp"":1457716158319,""evictionTimestamp"":0,""serviceUpTimestamp"":1457714988223},
-                                ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
-                                ""homePageUrl"":""http://localhost:8080/"",
-                                ""statusPageUrl"":""http://localhost:8080/info"",
-                                ""healthCheckUrl"":""http://localhost:8080/health"",
-                                ""vipAddress"":""foo"",
-                                ""isCoordinatingDiscoveryServer"":""false"",
-                                ""lastUpdatedTimestamp"":""1457714988223"",
-                                ""lastDirtyTimestamp"":""1457714988172"",
-                                ""actionType"":""ADDED""
+        const string json = """
+                {
+                    "applications": {
+                        "versions__delta":"1",
+                        "apps__hashcode":"UP_1_",
+                        "application":[{
+                            "name":"FOO",
+                            "instance":[{
+                                "instanceId":"localhost:foo",
+                                "hostName":"localhost",
+                                "app":"FOO",
+                                "ipAddr":"192.168.56.1",
+                                "status":"UP",
+                                "overriddenstatus":"UNKNOWN",
+                                "port":{"$":8080,"@enabled":"true"},
+                                "securePort":{"$":443,"@enabled":"false"},
+                                "countryId":1,
+                                "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                                "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
+                                "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                                "homePageUrl":"http://localhost:8080/",
+                                "statusPageUrl":"http://localhost:8080/info",
+                                "healthCheckUrl":"http://localhost:8080/health",
+                                "vipAddress":"foo",
+                                "isCoordinatingDiscoveryServer":"false",
+                                "lastUpdatedTimestamp":"1457714988223",
+                                "lastDirtyTimestamp":"1457714988172",
+                                "actionType":"ADDED"
                             }]
                         }]
                     }
-                }";
+                }
+            """;
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
@@ -258,13 +271,17 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         EurekaHttpResponse<Applications> resp = await client.GetApplicationsAsync(CancellationToken.None);
+
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -296,8 +313,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetVipAsync_Throws_IfVipAddressNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetVipAsync(null, CancellationToken.None));
         Assert.Contains("vipAddress", ex.Message, StringComparison.Ordinal);
     }
@@ -305,8 +324,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetSecureVipAsync_Throws_IfVipAddressNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetSecureVipAsync(null, CancellationToken.None));
         Assert.Contains("secureVipAddress", ex.Message, StringComparison.Ordinal);
     }
@@ -314,8 +335,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetApplicationAsync_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetApplicationAsync(null, CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
@@ -323,34 +346,35 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetApplicationAsync_InvokesServer_ReturnsExpectedApplications()
     {
-        const string json = @"
-                {
-                    ""application"": {
-                        ""name"":""FOO"",
-                        ""instance"":[ {
-                            ""instanceId"":""localhost:foo"",
-                            ""hostName"":""localhost"",
-                            ""app"":""FOO"",
-                            ""ipAddr"":""192.168.56.1"",
-                            ""status"":""UP"",
-                            ""overriddenstatus"":""UNKNOWN"",
-                            ""port"":{""$"":8080,""@enabled"":""true""},
-                            ""securePort"":{""$"":443,""@enabled"":""false""},
-                            ""countryId"":1,
-                            ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                            ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1458152330783,""lastRenewalTimestamp"":1458243422342,""evictionTimestamp"":0,""serviceUpTimestamp"":1458152330783},
-                            ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
-                            ""homePageUrl"":""http://localhost:8080/"",
-                            ""statusPageUrl"":""http://localhost:8080/info"",
-                            ""healthCheckUrl"":""http://localhost:8080/health"",
-                            ""vipAddress"":""foo"",
-                            ""isCoordinatingDiscoveryServer"":""false"",
-                            ""lastUpdatedTimestamp"":""1458152330783"",
-                            ""lastDirtyTimestamp"":""1458152330696"",
-                            ""actionType"":""ADDED""
-                        }]
-                    }
-                }";
+        const string json = """
+            {
+                "application": {
+                    "name":"FOO",
+                    "instance":[ {
+                        "instanceId":"localhost:foo",
+                        "hostName":"localhost",
+                        "app":"FOO",
+                        "ipAddr":"192.168.56.1",
+                        "status":"UP",
+                        "overriddenstatus":"UNKNOWN",
+                        "port":{"$":8080,"@enabled":"true"},
+                        "securePort":{"$":443,"@enabled":"false"},
+                        "countryId":1,
+                        "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                        "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1458152330783,"lastRenewalTimestamp":1458243422342,"evictionTimestamp":0,"serviceUpTimestamp":1458152330783},
+                        "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                        "homePageUrl":"http://localhost:8080/",
+                        "statusPageUrl":"http://localhost:8080/info",
+                        "healthCheckUrl":"http://localhost:8080/health",
+                        "vipAddress":"foo",
+                        "isCoordinatingDiscoveryServer":"false",
+                        "lastUpdatedTimestamp":"1458152330783",
+                        "lastDirtyTimestamp":"1458152330696",
+                        "actionType":"ADDED"
+                    }]
+                }
+            }
+            """;
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
@@ -361,13 +385,17 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo", CancellationToken.None);
+
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -396,34 +424,35 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetApplicationAsync__FirstServerFails_InvokesSecondServer_ReturnsExpectedApplications()
     {
-        const string json = @"
-                {
-                    ""application"": {
-                        ""name"":""FOO"",
-                        ""instance"":[{
-                            ""instanceId"":""localhost:foo"",
-                            ""hostName"":""localhost"",
-                            ""app"":""FOO"",
-                            ""ipAddr"":""192.168.56.1"",
-                            ""status"":""UP"",
-                            ""overriddenstatus"":""UNKNOWN"",
-                            ""port"":{""$"":8080,""@enabled"":""true""},
-                            ""securePort"":{""$"":443,""@enabled"":""false""},
-                            ""countryId"":1,
-                            ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                            ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1458152330783,""lastRenewalTimestamp"":1458243422342,""evictionTimestamp"":0,""serviceUpTimestamp"":1458152330783},
-                            ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
-                            ""homePageUrl"":""http://localhost:8080/"",
-                            ""statusPageUrl"":""http://localhost:8080/info"",
-                            ""healthCheckUrl"":""http://localhost:8080/health"",
-                            ""vipAddress"":""foo"",
-                            ""isCoordinatingDiscoveryServer"":""false"",
-                            ""lastUpdatedTimestamp"":""1458152330783"",
-                            ""lastDirtyTimestamp"":""1458152330696"",
-                            ""actionType"":""ADDED""
-                        }]
-                    }
-                }";
+        const string json = """
+            {
+                "application": {
+                    "name":"FOO",
+                    "instance":[{
+                        "instanceId":"localhost:foo",
+                        "hostName":"localhost",
+                        "app":"FOO",
+                        "ipAddr":"192.168.56.1",
+                        "status":"UP",
+                        "overriddenstatus":"UNKNOWN",
+                        "port":{"$":8080,"@enabled":"true"},
+                        "securePort":{"$":443,"@enabled":"false"},
+                        "countryId":1,
+                        "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                        "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1458152330783,"lastRenewalTimestamp":1458243422342,"evictionTimestamp":0,"serviceUpTimestamp":1458152330783},
+                        "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                        "homePageUrl":"http://localhost:8080/",
+                        "statusPageUrl":"http://localhost:8080/info",
+                        "healthCheckUrl":"http://localhost:8080/health",
+                        "vipAddress":"foo",
+                        "isCoordinatingDiscoveryServer":"false",
+                        "lastUpdatedTimestamp":"1458152330783",
+                        "lastDirtyTimestamp":"1458152330696",
+                        "actionType":"ADDED"
+                    }]
+                }
+            }
+            """;
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
@@ -435,13 +464,17 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = $"https://bad.host:9999/,{uri}"
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo", CancellationToken.None);
+
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -470,8 +503,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstanceAsync_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync(null, "id", CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
@@ -479,8 +514,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstanceAsync_Throws_IfAppNameNotNullAndIDNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync("appName", null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
     }
@@ -488,8 +525,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstanceAsync_Throws_IfIDNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.GetInstanceAsync(null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
     }
@@ -497,36 +536,37 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstanceAsync_InvokesServer_ReturnsExpectedInstances()
     {
-        const string json = @"
-                { 
-                    ""instance"": {
-                        ""instanceId"":""DESKTOP-GNQ5SUT"",
-                        ""app"":""FOOBAR"",
-                        ""appGroupName"":null,
-                        ""ipAddr"":""192.168.0.147"",
-                        ""sid"":""na"",
-                        ""port"":{""@enabled"":true,""$"":80},
-                        ""securePort"":{""@enabled"":false,""$"":443},
-                        ""homePageUrl"":""http://DESKTOP-GNQ5SUT:80/"",
-                        ""statusPageUrl"":""http://DESKTOP-GNQ5SUT:80/Status"",
-                        ""healthCheckUrl"":""http://DESKTOP-GNQ5SUT:80/healthcheck"",
-                        ""secureHealthCheckUrl"":null,
-                        ""vipAddress"":""DESKTOP-GNQ5SUT:80"",
-                        ""secureVipAddress"":""DESKTOP-GNQ5SUT:443"",
-                        ""countryId"":1,
-                        ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                        ""hostName"":""DESKTOP-GNQ5SUT"",
-                        ""status"":""UP"",
-                        ""overriddenstatus"":""UNKNOWN"",
-                        ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":0,""lastRenewalTimestamp"":0,""renewalTimestamp"":0,""evictionTimestamp"":0,""serviceUpTimestamp"":0},
-                        ""isCoordinatingDiscoveryServer"":false,
-                        ""metadata"":{""@class"":""java.util.Collections$EmptyMap"",""metadata"":null},
-                        ""lastUpdatedTimestamp"":1458116137663,
-                        ""lastDirtyTimestamp"":1458116137663,
-                        ""actionType"":""ADDED"",
-                        ""asgName"":null
-                    }
-                }";
+        const string json = """
+            {
+                "instance": {
+                    "instanceId":"DESKTOP-GNQ5SUT",
+                    "app":"FOOBAR",
+                    "appGroupName":null,
+                    "ipAddr":"192.168.0.147",
+                    "sid":"na",
+                    "port":{"@enabled":true,"$":80},
+                    "securePort":{"@enabled":false,"$":443},
+                    "homePageUrl":"http://DESKTOP-GNQ5SUT:80/",
+                    "statusPageUrl":"http://DESKTOP-GNQ5SUT:80/Status",
+                    "healthCheckUrl":"http://DESKTOP-GNQ5SUT:80/healthcheck",
+                    "secureHealthCheckUrl":null,
+                    "vipAddress":"DESKTOP-GNQ5SUT:80",
+                    "secureVipAddress":"DESKTOP-GNQ5SUT:443",
+                    "countryId":1,
+                    "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                    "hostName":"DESKTOP-GNQ5SUT",
+                    "status":"UP",
+                    "overriddenstatus":"UNKNOWN",
+                    "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":0,"lastRenewalTimestamp":0,"renewalTimestamp":0,"evictionTimestamp":0,"serviceUpTimestamp":0},
+                    "isCoordinatingDiscoveryServer":false,
+                    "metadata":{"@class":"java.util.Collections$EmptyMap","metadata":null},
+                    "lastUpdatedTimestamp":1458116137663,
+                    "lastDirtyTimestamp":1458116137663,
+                    "actionType":"ADDED",
+                    "asgName":null
+                }
+            }
+            """;
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
@@ -537,13 +577,17 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT", CancellationToken.None);
+
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -563,36 +607,37 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetInstanceAsync_FirstServerFails_InvokesSecondServer_ReturnsExpectedInstances()
     {
-        const string json = @"
-                { 
-                    ""instance"":{
-                        ""instanceId"":""DESKTOP-GNQ5SUT"",
-                        ""app"":""FOOBAR"",
-                        ""appGroupName"":null,
-                        ""ipAddr"":""192.168.0.147"",
-                        ""sid"":""na"",
-                        ""port"":{""@enabled"":true,""$"":80},
-                        ""securePort"":{""@enabled"":false,""$"":443},
-                        ""homePageUrl"":""http://DESKTOP-GNQ5SUT:80/"",
-                        ""statusPageUrl"":""http://DESKTOP-GNQ5SUT:80/Status"",
-                        ""healthCheckUrl"":""http://DESKTOP-GNQ5SUT:80/healthcheck"",
-                        ""secureHealthCheckUrl"":null,
-                        ""vipAddress"":""DESKTOP-GNQ5SUT:80"",
-                        ""secureVipAddress"":""DESKTOP-GNQ5SUT:443"",
-                        ""countryId"":1,
-                        ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-                        ""hostName"":""DESKTOP-GNQ5SUT"",
-                        ""status"":""UP"",
-                        ""overriddenstatus"":""UNKNOWN"",
-                        ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":0,""lastRenewalTimestamp"":0,""renewalTimestamp"":0,""evictionTimestamp"":0,""serviceUpTimestamp"":0},
-                        ""isCoordinatingDiscoveryServer"":false,
-                        ""metadata"":{""@class"":""java.util.Collections$EmptyMap"",""metadata"":null},
-                        ""lastUpdatedTimestamp"":1458116137663,
-                        ""lastDirtyTimestamp"":1458116137663,
-                        ""actionType"":""ADDED"",
-                        ""asgName"":null
-                    }
-                }";
+        const string json = """
+            {
+                "instance":{
+                    "instanceId":"DESKTOP-GNQ5SUT",
+                    "app":"FOOBAR",
+                    "appGroupName":null,
+                    "ipAddr":"192.168.0.147",
+                    "sid":"na",
+                    "port":{"@enabled":true,"$":80},
+                    "securePort":{"@enabled":false,"$":443},
+                    "homePageUrl":"http://DESKTOP-GNQ5SUT:80/",
+                    "statusPageUrl":"http://DESKTOP-GNQ5SUT:80/Status",
+                    "healthCheckUrl":"http://DESKTOP-GNQ5SUT:80/healthcheck",
+                    "secureHealthCheckUrl":null,
+                    "vipAddress":"DESKTOP-GNQ5SUT:80",
+                    "secureVipAddress":"DESKTOP-GNQ5SUT:443",
+                    "countryId":1,
+                    "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                    "hostName":"DESKTOP-GNQ5SUT",
+                    "status":"UP",
+                    "overriddenstatus":"UNKNOWN",
+                    "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":0,"lastRenewalTimestamp":0,"renewalTimestamp":0,"evictionTimestamp":0,"serviceUpTimestamp":0},
+                    "isCoordinatingDiscoveryServer":false,
+                    "metadata":{"@class":"java.util.Collections$EmptyMap","metadata":null},
+                    "lastUpdatedTimestamp":1458116137663,
+                    "lastDirtyTimestamp":1458116137663,
+                    "actionType":"ADDED",
+                    "asgName":null
+                }
+            }
+            """;
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = json;
@@ -604,13 +649,17 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = $"https://bad.host:9999/,{uri}"
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT", CancellationToken.None);
+
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -630,8 +679,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task CancelAsync_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.CancelAsync(null, "id", CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
@@ -639,8 +690,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task CancelAsync_Throws_IfAppNameNotNullAndIDNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.CancelAsync("appName", null, CancellationToken.None));
         Assert.Contains("id", ex.Message, StringComparison.Ordinal);
     }
@@ -657,13 +710,17 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         EurekaHttpResponse resp = await client.CancelAsync("foo", "bar", CancellationToken.None);
+
         Assert.NotNull(resp);
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.NotNull(resp.Headers);
@@ -677,8 +734,9 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task StatusUpdateAsync_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.StatusUpdateAsync(null, "id", InstanceStatus.Up, null, CancellationToken.None));
@@ -689,8 +747,9 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task StatusUpdateAsync_Throws_IfIdNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.StatusUpdateAsync("appName", null, InstanceStatus.Up, null, CancellationToken.None));
@@ -701,8 +760,9 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task StatusUpdateAsync_Throws_IfInstanceInfoNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.StatusUpdateAsync("appName", "bar", InstanceStatus.Up, null, CancellationToken.None));
@@ -722,12 +782,15 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         long now = DateTime.UtcNow.Ticks;
         long javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
 
@@ -750,8 +813,10 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task DeleteStatusOverrideAsync_Throws_IfAppNameNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.DeleteStatusOverrideAsync(null, "id", null, CancellationToken.None));
         Assert.Contains("appName", ex.Message, StringComparison.Ordinal);
     }
@@ -759,8 +824,9 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task DeleteStatusOverrideAsync_Throws_IfIdNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.DeleteStatusOverrideAsync("appName", null, null, CancellationToken.None));
@@ -771,8 +837,9 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task DeleteStatusOverrideAsync_Throws_IfInstanceInfoNull()
     {
-        var configuration = new EurekaClientConfiguration();
-        var client = new EurekaHttpClient(configuration);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await client.DeleteStatusOverrideAsync("appName", "bar", null, CancellationToken.None));
@@ -792,12 +859,15 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
         const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
-        var clientConfig = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = uri
         };
 
-        var client = new EurekaHttpClient(clientConfig, server.CreateClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory(server.CreateClient());
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         long now = DateTime.UtcNow.Ticks;
         long javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
 
@@ -841,47 +911,70 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetRequestMessage_ReturnsCorrectMessage_WithAdditionalHeaders()
     {
-        var headers = new Dictionary<string, string>
+        const string jsonResponse = """
+            {
+                "application": {
+                    "name":"SOME",
+                    "instance":[]
+                }
+            }
+            """;
+
+        var requestHeaders = new Dictionary<string, string>
         {
             { "foo", "bar" }
         };
 
-        var configuration = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
-            EurekaServerServiceUrls = "http://boo:123/eureka/"
+            EurekaServerServiceUrls = "http://boo:123/eureka/",
+            EurekaServer =
+            {
+                RetryCount = 1
+            }
         };
 
-        var client = new EurekaHttpClient(configuration, headers);
-        HttpRequestMessage result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri("http://boo:123/eureka/"), CancellationToken.None);
-        Assert.Equal(HttpMethod.Post, result.Method);
-        Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
-        Assert.True(result.Headers.Contains("foo"));
+        var mockHttpMessageHandler = new MockHttpMessageHandler();
+
+        mockHttpMessageHandler.Expect(HttpMethod.Get, "http://boo:123/eureka/apps/some")
+            .WithHeaders("foo","bar")
+            .Respond("application/json", jsonResponse);
+
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+
+        var httpClient = new HttpClient(new ExtraRequestHeadersDelegatingHandler(requestHeaders)
+        {
+            InnerHandler = mockHttpMessageHandler
+        });
+
+        var httpClientFactory = new TestHttpClientFactory(httpClient);
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
+        EurekaHttpResponse<Application> response = await client.GetApplicationAsync("some", CancellationToken.None);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Response.Name.Should().Be("SOME");
     }
 
     [Fact]
     public async Task GetRequestMessage_No_Auth_When_Credentials_Not_In_Url()
     {
-        var configuration = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://boo:123/eureka/"
         };
 
-        var client = new EurekaHttpClient(configuration);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         HttpRequestMessage result =
-            await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(configuration.EurekaServerServiceUrls), CancellationToken.None);
+            await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.False(result.Headers.Contains("Authorization"));
 
-        var clientOptions = new EurekaClientOptions
-        {
-            ServiceUrl = "http://boo:123/eureka/"
-        };
-
-        var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
-        client = new EurekaHttpClient(optionsMonitor);
+        client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
@@ -893,27 +986,23 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetRequestMessage_Adds_Auth_When_Credentials_In_Url()
     {
-        var configuration = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/"
         };
 
-        var client = new EurekaHttpClient(configuration);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         HttpRequestMessage result =
-            await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(configuration.EurekaServerServiceUrls), CancellationToken.None);
+            await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.True(result.Headers.Contains("Authorization"));
 
-        var clientOptions = new EurekaClientOptions
-        {
-            ServiceUrl = "http://user:pass@boo:123/eureka/"
-        };
-
-        var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
-        client = new EurekaHttpClient(optionsMonitor);
+        client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
@@ -925,27 +1014,23 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async Task GetRequestMessage_Adds_Auth_When_JustPassword_In_Url()
     {
-        var configuration = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://:pass@boo:123/eureka/"
         };
 
-        var client = new EurekaHttpClient(configuration);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         HttpRequestMessage result =
-            await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(configuration.EurekaServerServiceUrls), CancellationToken.None);
+            await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
         Assert.Equal(HttpMethod.Post, result.Method);
         Assert.Equal(new Uri("http://boo:123/eureka/"), result.RequestUri);
         Assert.True(result.Headers.Contains("Authorization"));
 
-        var clientOptions = new EurekaClientOptions
-        {
-            ServiceUrl = "http://:pass@boo:123/eureka/"
-        };
-
-        var optionsMonitor = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
-        client = new EurekaHttpClient(optionsMonitor);
+        client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         result = await client.GetRequestMessageAsync(HttpMethod.Post, new Uri(clientOptions.EurekaServerServiceUrls), CancellationToken.None);
 
@@ -957,12 +1042,14 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public void GetRequestUri_ReturnsCorrect_WithQueryArguments()
     {
-        var configuration = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://boo:123/eureka/"
         };
 
-        var client = new EurekaHttpClient(configuration, new HttpClient());
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
 
         var queryArgs = new Dictionary<string, string>
         {
@@ -978,12 +1065,15 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public void GetServiceUrlCandidates_NoFailingUrls_ReturnsExpected()
     {
-        var configuration = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
         };
 
-        var client = new EurekaHttpClient(configuration);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         IList<string> result = client.GetServiceUrlCandidates();
         Assert.Contains("http://user:pass@boo:123/eureka/", result);
         Assert.Contains("http://user:pass@foo:123/eureka/", result);
@@ -992,13 +1082,16 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public void GetServiceUrlCandidates_WithFailingUrls_ReturnsExpected()
     {
-        var configuration = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls =
                 "https://user:pass@boo:123/eureka/,https://user:pass@foo:123/eureka,https://user:pass@blah:123/eureka,https://user:pass@blah.blah:123/eureka"
         };
 
-        var client = new EurekaHttpClient(configuration);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         client.AddToFailingServiceUrls("https://user:pass@foo:123/eureka/");
         client.AddToFailingServiceUrls("https://user:pass@blah.blah:123/eureka/");
 
@@ -1011,16 +1104,49 @@ public sealed class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public void GetServiceUrlCandidates_ThresholdHit_ReturnsExpected()
     {
-        var configuration = new EurekaClientConfiguration
+        var clientOptions = new EurekaClientOptions
         {
             EurekaServerServiceUrls = "http://user:pass@boo:123/eureka/,http://user:pass@foo:123/eureka"
         };
 
-        var client = new EurekaHttpClient(configuration);
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        var httpClientFactory = new TestHttpClientFactory();
+        var client = new EurekaHttpClient(clientOptionsMonitor, httpClientFactory, NullLoggerFactory.Instance);
+
         client.AddToFailingServiceUrls("http://user:pass@foo:123/eureka/");
 
         IList<string> result = client.GetServiceUrlCandidates();
         Assert.Contains("http://user:pass@boo:123/eureka/", result);
         Assert.Contains("http://user:pass@foo:123/eureka/", result);
+    }
+
+    private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler
+    {
+        private readonly IDictionary<string, string> _requestHeaders;
+
+        public ExtraRequestHeadersDelegatingHandler(IDictionary<string, string> requestHeaders)
+        {
+            _requestHeaders = requestHeaders;
+        }
+
+        protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            SetHeaders(request);
+            return base.Send(request, cancellationToken);
+        }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            SetHeaders(request);
+            return base.SendAsync(request, cancellationToken);
+        }
+
+        private void SetHeaders(HttpRequestMessage request)
+        {
+            foreach ((string name, string value) in _requestHeaders)
+            {
+                request.Headers.Add(name, value);
+            }
+        }
     }
 }

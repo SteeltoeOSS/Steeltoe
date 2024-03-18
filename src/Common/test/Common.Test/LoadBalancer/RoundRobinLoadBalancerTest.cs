@@ -2,11 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Discovery.Client.SimpleClients;
 using Xunit;
 
 namespace Steeltoe.Common.Test.LoadBalancer;
@@ -14,137 +19,126 @@ namespace Steeltoe.Common.Test.LoadBalancer;
 public sealed class RoundRobinLoadBalancerTest
 {
     [Fact]
-    public void Throws_If_IServiceInstanceProviderNotProvided()
-    {
-        var exception = Assert.Throws<ArgumentNullException>(() => new RoundRobinLoadBalancer(null));
-        Assert.Equal("serviceInstanceProvider", exception.ParamName);
-    }
-
-    [Fact]
     public async Task ResolveServiceInstance_ResolvesAndIncrementsServiceIndex()
     {
-        var services = new List<ConfigurationServiceInstance>
-        {
-            new()
-            {
-                ServiceId = "fruitservice",
-                Host = "fruitball",
-                Port = 8000,
-                IsSecure = true
-            },
-            new()
-            {
-                ServiceId = "fruitservice",
-                Host = "fruitballer",
-                Port = 8001
-            },
-            new()
-            {
-                ServiceId = "fruitservice",
-                Host = "fruitballerz",
-                Port = 8002
-            },
-            new()
-            {
-                ServiceId = "vegetableservice",
-                Host = "vegemite",
-                Port = 8010,
-                IsSecure = true
-            },
-            new()
-            {
-                ServiceId = "vegetableservice",
-                Host = "carrot",
-                Port = 8011
-            },
-            new()
-            {
-                ServiceId = "vegetableservice",
-                Host = "beet",
-                Port = 8012
-            }
-        };
+        ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
+        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        var loadBalancer = new RoundRobinLoadBalancer(client, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
-        var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
-        var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
-        var loadBalancer = new RoundRobinLoadBalancer(provider);
+        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        Uri vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
 
-        Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[$"{RoundRobinLoadBalancer.IndexKeyPrefix}fruitService"]);
-        Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[$"{RoundRobinLoadBalancer.IndexKeyPrefix}vegetableService"]);
+        fruitUri.Port.Should().Be(8000);
+        vegetableUri.Port.Should().Be(8011);
 
-        Uri fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
-        await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
-        Uri vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        // wrap around
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
 
-        Assert.Equal(1, loadBalancer.NextIndexForService[$"{RoundRobinLoadBalancer.IndexKeyPrefix}fruitservice"]);
-        Assert.Equal(8000, fruitResult.Port);
-        Assert.Equal(2, loadBalancer.NextIndexForService[$"{RoundRobinLoadBalancer.IndexKeyPrefix}vegetableservice"]);
-        Assert.Equal(8011, vegResult.Port);
+        vegetableUri.Port.Should().Be(8010);
+
+        // reset when service has disappeared
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        options.Services.RemoveAt(options.Services.Count - 1);
+
+        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        vegetableUri.Port.Should().Be(8010);
     }
 
     [Fact]
     public async Task ResolveServiceInstance_ResolvesAndIncrementsServiceIndex_WithDistributedCache()
     {
-        var services = new List<ConfigurationServiceInstance>
-        {
-            new()
-            {
-                ServiceId = "fruitservice",
-                Host = "fruitball",
-                Port = 8000,
-                IsSecure = true
-            },
-            new()
-            {
-                ServiceId = "fruitservice",
-                Host = "fruitballer",
-                Port = 8001
-            },
-            new()
-            {
-                ServiceId = "fruitservice",
-                Host = "fruitballerz",
-                Port = 8002
-            },
-            new()
-            {
-                ServiceId = "vegetableservice",
-                Host = "vegemite",
-                Port = 8010,
-                IsSecure = true
-            },
-            new()
-            {
-                ServiceId = "vegetableservice",
-                Host = "carrot",
-                Port = 8011
-            },
-            new()
-            {
-                ServiceId = "vegetableservice",
-                Host = "beet",
-                Port = 8012
-            }
-        };
+        ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
+        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        IDistributedCache distributedCache = GetCache();
+        var loadBalancer = new RoundRobinLoadBalancer(client, distributedCache, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
-        var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
-        var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
-        var loadBalancer = new RoundRobinLoadBalancer(provider, GetCache());
+        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        Uri vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
 
-        Uri fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
-        await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
-        Uri vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        fruitUri.Port.Should().Be(8000);
+        vegetableUri.Port.Should().Be(8011);
 
-        Assert.Equal(8000, fruitResult.Port);
-        Assert.Equal(8011, vegResult.Port);
+        // wrap around
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+
+        vegetableUri.Port.Should().Be(8010);
+
+        // reset when service has disappeared
+        _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        options.Services.RemoveAt(options.Services.Count - 1);
+        await distributedCache.RemoveAsync("Steeltoe-LoadBalancerIndex-vegetableservice");
+
+        vegetableUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
+        vegetableUri.Port.Should().Be(8010);
     }
 
-    private IDistributedCache GetCache()
+    private static ConfigurationDiscoveryOptions CreateTestServiceInstances()
+    {
+        return new ConfigurationDiscoveryOptions
+        {
+            Services =
+            {
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitservice",
+                    Host = "fruitball",
+                    Port = 8000,
+                    IsSecure = true
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitservice",
+                    Host = "fruitball",
+                    Port = 8000,
+                    IsSecure = true
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitservice",
+                    Host = "fruitballer",
+                    Port = 8001
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitservice",
+                    Host = "fruitballerz",
+                    Port = 8002
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableservice",
+                    Host = "vegemite",
+                    Port = 8010,
+                    IsSecure = true
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableservice",
+                    Host = "carrot",
+                    Port = 8011
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableservice",
+                    Host = "beet",
+                    Port = 8012
+                }
+            }
+        };
+    }
+
+    private static IDistributedCache GetCache()
     {
         var services = new ServiceCollection();
         services.AddDistributedMemoryCache();
-        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        return serviceProvider.GetService<IDistributedCache>();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        return serviceProvider.GetRequiredService<IDistributedCache>();
     }
 }

@@ -4,9 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.LoadBalancer;
 using Steeltoe.Common.LoadBalancer;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Client.SimpleClients;
 using Xunit;
 
 namespace Steeltoe.Common.Http.Test.LoadBalancer;
@@ -14,17 +15,12 @@ namespace Steeltoe.Common.Http.Test.LoadBalancer;
 public sealed class LoadBalancerHttpClientBuilderExtensionsTest
 {
     [Fact]
-    public void AddRandomLoadBalancer_ThrowsIfBuilderNull()
-    {
-        var exception = Assert.Throws<ArgumentNullException>(() => LoadBalancerHttpClientBuilderExtensions.AddRandomLoadBalancer(null));
-        Assert.Equal("httpClientBuilder", exception.ParamName);
-    }
-
-    [Fact]
     public void AddRandomLoadBalancer_AddsRandomLoadBalancerToServices()
     {
+        IConfiguration configuration = new ConfigurationBuilder().Build();
         var services = new ServiceCollection();
-        services.AddConfigurationDiscoveryClient(new ConfigurationBuilder().Build());
+        services.AddSingleton(configuration);
+        services.AddServiceDiscovery(configuration, builder => builder.UseConfiguration());
 
         services.AddHttpClient("test").AddRandomLoadBalancer();
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -36,17 +32,12 @@ public sealed class LoadBalancerHttpClientBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddRoundRobinLoadBalancer_ThrowsIfBuilderNull()
-    {
-        var exception = Assert.Throws<ArgumentNullException>(() => LoadBalancerHttpClientBuilderExtensions.AddRoundRobinLoadBalancer(null));
-        Assert.Equal("httpClientBuilder", exception.ParamName);
-    }
-
-    [Fact]
     public void AddRoundRobinLoadBalancer_AddsRoundRobinLoadBalancerToServices()
     {
+        IConfiguration configuration = new ConfigurationBuilder().Build();
         var services = new ServiceCollection();
-        services.AddConfigurationDiscoveryClient(new ConfigurationBuilder().Build());
+        services.AddSingleton(configuration);
+        services.AddServiceDiscovery(configuration, builder => builder.UseConfiguration());
 
         services.AddHttpClient("test").AddRoundRobinLoadBalancer();
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -54,13 +45,6 @@ public sealed class LoadBalancerHttpClientBuilderExtensionsTest
 
         Assert.Single(serviceProvider.GetServices<RoundRobinLoadBalancer>());
         Assert.Equal(ServiceLifetime.Singleton, serviceEntryInCollection.Lifetime);
-    }
-
-    [Fact]
-    public void AddLoadBalancerT_ThrowsIfBuilderNull()
-    {
-        var exception = Assert.Throws<ArgumentNullException>(() => LoadBalancerHttpClientBuilderExtensions.AddLoadBalancer<FakeLoadBalancer>(null));
-        Assert.Equal("httpClientBuilder", exception.ParamName);
     }
 
     [Fact]
@@ -91,8 +75,10 @@ public sealed class LoadBalancerHttpClientBuilderExtensionsTest
     [Fact]
     public void CanAddMultipleLoadBalancers()
     {
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
         var services = new ServiceCollection();
-        services.AddConfigurationDiscoveryClient(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddServiceDiscovery(configuration, builder => builder.UseConfiguration());
         services.AddSingleton(typeof(FakeLoadBalancer));
 
         services.AddHttpClient("testRandom").AddRandomLoadBalancer();

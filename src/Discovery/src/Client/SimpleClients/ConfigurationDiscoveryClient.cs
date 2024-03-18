@@ -3,22 +3,52 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Client.SimpleClients;
 
-public class ConfigurationDiscoveryClient : ConfigurationServiceInstanceProvider, IDiscoveryClient
+/// <summary>
+/// A discovery client that reads service instances from app configuration.
+/// </summary>
+public sealed class ConfigurationDiscoveryClient : IDiscoveryClient
 {
-    public ConfigurationDiscoveryClient(IOptionsMonitor<List<ConfigurationServiceInstance>> serviceInstances)
-        : base(serviceInstances)
+    private readonly IOptionsMonitor<ConfigurationDiscoveryOptions> _optionsMonitor;
+
+    public string Description => "A discovery client that returns service instances from app configuration.";
+
+    public ConfigurationDiscoveryClient(IOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor)
     {
+        ArgumentGuard.NotNull(optionsMonitor);
+
+        _optionsMonitor = optionsMonitor;
     }
 
-    public Task<IServiceInstance> GetLocalServiceInstanceAsync(CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("No known use case for implementing this method");
+        IList<string> services = _optionsMonitor.CurrentValue.Services.Select(instance => instance.ServiceId!).Distinct().ToList();
+        return Task.FromResult(services);
     }
 
+    /// <inheritdoc />
+    public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
+    {
+        ArgumentGuard.NotNull(serviceId);
+
+        IList<IServiceInstance> instances = _optionsMonitor.CurrentValue.Services.Where(instance =>
+            string.Equals(instance.ServiceId, serviceId, StringComparison.OrdinalIgnoreCase)).Cast<IServiceInstance>().ToList();
+
+        return Task.FromResult(instances);
+    }
+
+    /// <inheritdoc />
+    public IServiceInstance GetLocalServiceInstance()
+    {
+        throw new NotSupportedException("Configuration does not support a local service instance.");
+    }
+
+    /// <inheritdoc />
     public Task ShutdownAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
