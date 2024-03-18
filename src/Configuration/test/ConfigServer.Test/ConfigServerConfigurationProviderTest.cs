@@ -1367,9 +1367,9 @@ public sealed class ConfigServerConfigurationProviderTest
         public int Port { get; }
         public bool IsSecure { get; }
         public Uri Uri { get; }
-        public IDictionary<string, string?> Metadata { get; }
+        public IReadOnlyDictionary<string, string?> Metadata { get; }
 
-        public TestServiceInstance(string serviceId, Uri uri, IDictionary<string, string?> metadata)
+        public TestServiceInstance(string serviceId, Uri uri, IReadOnlyDictionary<string, string?> metadata)
         {
             ServiceId = serviceId;
             Host = uri.Host;

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using Consul;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
@@ -32,7 +33,7 @@ public sealed class ConsulServiceInstance : IServiceInstance
     public IList<string> Tags { get; }
 
     /// <inheritdoc />
-    public IDictionary<string, string?> Metadata { get; }
+    public IReadOnlyDictionary<string, string?> Metadata { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceInstance" /> class.
@@ -46,11 +47,16 @@ public sealed class ConsulServiceInstance : IServiceInstance
 
         Host = ConsulServerUtils.FindHost(serviceEntry);
         Tags = serviceEntry.Service.Tags;
-        Metadata = serviceEntry.Service.Meta;
+        Metadata = GetServiceMeta(serviceEntry.Service.Meta);
         IsSecure = serviceEntry.Service.Meta != null && serviceEntry.Service.Meta.TryGetValue("secure", out string? secureString) && bool.Parse(secureString);
         ServiceId = serviceEntry.Service.Service;
         Port = serviceEntry.Service.Port;
         string scheme = IsSecure ? "https" : "http";
         Uri = new Uri($"{scheme}://{Host}:{Port}");
+    }
+
+    private static IReadOnlyDictionary<string, string?> GetServiceMeta(IDictionary<string, string?> serviceMeta)
+    {
+        return new ReadOnlyDictionary<string, string?>(serviceMeta);
     }
 }

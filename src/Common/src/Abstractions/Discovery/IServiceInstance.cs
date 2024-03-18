@@ -36,5 +36,5 @@ public interface IServiceInstance
     /// <summary>
     /// Gets the key/value metadata associated with this service instance.
     /// </summary>
-    IDictionary<string, string?> Metadata { get; }
+    IReadOnlyDictionary<string, string?> Metadata { get; }
 }

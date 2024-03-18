@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 using Consul;
@@ -49,7 +50,7 @@ public sealed class ConsulRegistration : IServiceInstance
     public IList<string> Tags { get; }
 
     /// <inheritdoc />
-    public IDictionary<string, string?> Metadata { get; }
+    public IReadOnlyDictionary<string, string?> Metadata { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulRegistration" /> class. Wraps an existing registration.
@@ -73,7 +74,7 @@ public sealed class ConsulRegistration : IServiceInstance
         Host = innerRegistration.Address;
         Port = innerRegistration.Port;
         Tags = innerRegistration.Tags;
-        Metadata = innerRegistration.Meta;
+        Metadata = new ReadOnlyDictionary<string, string?>(innerRegistration.Meta);
     }
 
     /// <summary>

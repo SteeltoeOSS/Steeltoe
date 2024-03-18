@@ -114,19 +114,31 @@ public sealed class RoundRobinLoadBalancerTest
                     ServiceId = "vegetableservice",
                     Host = "vegemite",
                     Port = 8010,
-                    IsSecure = true
+                    IsSecure = true,
+                    Metadata =
+                    {
+                        ["name"] = "meta-vegemite"
+                    }
                 },
                 new ConfigurationServiceInstance
                 {
                     ServiceId = "vegetableservice",
                     Host = "carrot",
-                    Port = 8011
+                    Port = 8011,
+                    Metadata =
+                    {
+                        ["name"] = "meta-carrot"
+                    }
                 },
                 new ConfigurationServiceInstance
                 {
                     ServiceId = "vegetableservice",
                     Host = "beet",
-                    Port = 8012
+                    Port = 8012,
+                    Metadata =
+                    {
+                        ["name"] = "meta-beet"
+                    }
                 }
             }
         };

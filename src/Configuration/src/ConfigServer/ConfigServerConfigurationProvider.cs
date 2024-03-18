@@ -365,9 +365,9 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         foreach (IServiceInstance instance in instances)
         {
             string uri = instance.Uri.ToString();
-            IDictionary<string, string?> metaData = instance.Metadata;
+            IReadOnlyDictionary<string, string?> metaData = instance.Metadata;
 
-            if (metaData != null)
+            if (metaData.Count > 0)
             {
                 if (metaData.TryGetValue("password", out string? password))
                 {

@@ -29,7 +29,7 @@ internal sealed class ThisServiceInstance : IServiceInstance
     public Uri Uri { get; }
 
     /// <inheritdoc />
-    public IDictionary<string, string?> Metadata { get; }
+    public IReadOnlyDictionary<string, string?> Metadata { get; }
 
     public ThisServiceInstance(ConsulRegistration registration)
     {

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using Steeltoe.Common.Discovery;
 
@@ -15,6 +16,8 @@ namespace Steeltoe.Discovery.Client.SimpleClients;
 /// </summary>
 public sealed class ConfigurationServiceInstance : IServiceInstance
 {
+    IReadOnlyDictionary<string, string?> IServiceInstance.Metadata => new ReadOnlyDictionary<string, string?>(Metadata);
+
     [Required]
     public string? ServiceId { get; set; }
 
@@ -27,5 +30,5 @@ public sealed class ConfigurationServiceInstance : IServiceInstance
 
     public Uri Uri => new($"{(IsSecure ? Uri.UriSchemeHttps : Uri.UriSchemeHttp)}{Uri.SchemeDelimiter}{Host}:{Port}");
 
-    public IDictionary<string, string?> Metadata { get; } = new Dictionary<string, string?>();
+    public IDictionary<string, string?> Metadata { get; set; } = new Dictionary<string, string?>();
 }

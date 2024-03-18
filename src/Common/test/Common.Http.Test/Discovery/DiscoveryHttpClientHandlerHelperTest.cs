@@ -53,7 +53,7 @@ public sealed class DiscoveryHttpClientHandlerHelperTest
         public int Port => throw new NotImplementedException();
         public bool IsSecure => throw new NotImplementedException();
         public Uri Uri { get; }
-        public IDictionary<string, string?> Metadata => throw new NotImplementedException();
+        public IReadOnlyDictionary<string, string?> Metadata => throw new NotImplementedException();
 
         public TestServiceInstance(Uri uri)
         {

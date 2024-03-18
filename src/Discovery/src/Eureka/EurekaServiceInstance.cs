@@ -17,7 +17,7 @@ internal sealed class EurekaServiceInstance : IServiceInstance
     public int Port => IsSecure ? _instance.SecurePort : _instance.NonSecurePort;
     public bool IsSecure => _instance.IsSecurePortEnabled;
     public Uri Uri => GetUri();
-    public IDictionary<string, string?> Metadata => new Dictionary<string, string?>(_instance.Metadata);
+    public IReadOnlyDictionary<string, string?> Metadata => _instance.Metadata;
 
     public EurekaServiceInstance(InstanceInfo instance)
     {

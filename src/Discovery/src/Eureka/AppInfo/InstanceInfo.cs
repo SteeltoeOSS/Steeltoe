@@ -12,10 +12,10 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 
 public sealed class InstanceInfo
 {
-    private static readonly ReadOnlyDictionary<string, string?> EmptyReadOnlyDictionary = new(new Dictionary<string, string?>());
+    private static readonly ReadOnlyDictionary<string, string?> EmptyMetadata = new(new Dictionary<string, string?>());
 
     private InstanceStatus? _status;
-    private IReadOnlyDictionary<string, string?> _metaData = EmptyReadOnlyDictionary;
+    private IReadOnlyDictionary<string, string?> _metaData = EmptyMetadata;
     private bool _isDirty;
     private InstanceStatus? _overriddenStatus;
     private LeaseInfo? _leaseInfo;
@@ -315,7 +315,7 @@ public sealed class InstanceInfo
             LastUpdatedTimeUtc = utcNow,
             _lastDirtyTimeUtc = utcNow,
             _leaseInfo = LeaseInfo.FromConfiguration(options),
-            _metaData = options.MetadataMap.Count > 0 ? new ReadOnlyDictionary<string, string?>(options.MetadataMap) : EmptyReadOnlyDictionary,
+            _metaData = options.MetadataMap.Count > 0 ? new ReadOnlyDictionary<string, string?>(options.MetadataMap) : EmptyMetadata,
             HomePageUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.HomePageUrlPath, options.HomePageUrl, null),
             StatusPageUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.StatusPageUrlPath, options.StatusPageUrl, null),
             HealthCheckUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.HealthCheckUrlPath, options.HealthCheckUrl,
@@ -330,7 +330,7 @@ public sealed class InstanceInfo
 
         // Marks this instance as dirty when settings have changed.
         LeaseInfo = LeaseInfo.FromConfiguration(options);
-        Metadata = options.MetadataMap.Count > 0 ? new ReadOnlyDictionary<string, string?>(options.MetadataMap) : EmptyReadOnlyDictionary;
+        Metadata = options.MetadataMap.Count > 0 ? new ReadOnlyDictionary<string, string?>(options.MetadataMap) : EmptyMetadata;
     }
 
     internal static InstanceInfo? FromJson(JsonInstanceInfo? jsonInstance)
@@ -436,7 +436,7 @@ public sealed class InstanceInfo
     {
         if (jsonMetaData == null || (jsonMetaData.TryGetValue("@class", out string? value) && value == "java.util.Collections$EmptyMap"))
         {
-            return EmptyReadOnlyDictionary;
+            return EmptyMetadata;
         }
 
         return new ReadOnlyDictionary<string, string?>(jsonMetaData);

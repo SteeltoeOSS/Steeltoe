@@ -93,9 +93,9 @@ public sealed class ConsulRegistrationTest
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
         var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(new ConfigurationBuilder().Build()));
-        IDictionary<string, string?> metadata = registration.Metadata;
+        IReadOnlyDictionary<string, string?> metadata = registration.Metadata;
 
-        Assert.Equal(5, metadata.Keys.Count);
+        Assert.Equal(5, metadata.Keys.Count());
 
         Assert.Contains(metadata, x => x.Key == "foo");
         Assert.Equal("bar", metadata["foo"]);
