@@ -87,9 +87,8 @@ public sealed class InstanceInfoTest
         };
 
         InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
-        Assert.NotNull(instance);
 
-        // Verify
+        Assert.NotNull(instance);
         Assert.Equal("InstanceId", instance.InstanceId);
         Assert.Equal("AppName", instance.AppName);
         Assert.Equal("AppGroupName", instance.AppGroupName);
@@ -191,9 +190,8 @@ public sealed class InstanceInfoTest
         };
 
         InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
-        Assert.NotNull(instance);
 
-        // Verify
+        Assert.NotNull(instance);
         Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
     }
 
@@ -255,9 +253,8 @@ public sealed class InstanceInfoTest
         };
 
         InstanceInfo? instance = InstanceInfo.FromJson(jsonInstance);
-        Assert.NotNull(instance);
 
-        // Verify
+        Assert.NotNull(instance);
         Assert.Equal(InstanceStatus.OutOfService, instance.OverriddenStatus);
     }
 
@@ -266,9 +263,8 @@ public sealed class InstanceInfoTest
     {
         var instanceOptions = new EurekaInstanceOptions();
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
-        Assert.NotNull(instance);
 
-        // Verify
+        Assert.NotNull(instance);
         Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
         Assert.Equal($"{instance.HostName}:unknown:80", instance.InstanceId);
         Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), instance.AppName);
@@ -287,7 +283,6 @@ public sealed class InstanceInfoTest
         Assert.Null(instance.SecureVipAddress);
         Assert.Null(instance.CountryId);
         Assert.Equal("MyOwn", instance.DataCenterInfo.Name.ToString());
-        Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
         Assert.Equal(InstanceStatus.Up, instance.Status);
         Assert.Null(instance.OverriddenStatus);
         Assert.NotNull(instance.LeaseInfo);
@@ -308,37 +303,112 @@ public sealed class InstanceInfoTest
     }
 
     [Fact]
-    public void FromInstanceConfiguration_NonSecurePortFalse_SecurePortTrue_Correct()
+    public void FromInstanceConfiguration_URLs_OnlySecurePortEnabled_UsesSecurePort()
     {
         var instanceOptions = new EurekaInstanceOptions
         {
+            IsNonSecurePortEnabled = false,
             IsSecurePortEnabled = true,
-            IsNonSecurePortEnabled = false
+            SecurePort = 9090
         };
 
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
-        Assert.NotNull(instance);
 
-        // Verify
-        Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
-        Assert.Equal($"{instance.HostName}:unknown:80", instance.InstanceId);
-        Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), instance.AppName);
-        Assert.Null(instance.AppGroupName);
-        Assert.Equal(instanceOptions.IPAddress, instance.IPAddress);
-        Assert.Null(instance.Sid);
-        Assert.Equal(80, instance.NonSecurePort);
+        Assert.NotNull(instance);
         Assert.False(instance.IsNonSecurePortEnabled);
-        Assert.Equal(443, instance.SecurePort);
         Assert.True(instance.IsSecurePortEnabled);
-        Assert.Equal($"https://{instanceOptions.ResolveHostName(false)}:443/", instance.HomePageUrl);
-        Assert.Equal($"https://{instanceOptions.ResolveHostName(false)}:443/info", instance.StatusPageUrl);
-        Assert.Equal($"https://{instanceOptions.ResolveHostName(false)}:443/health", instance.HealthCheckUrl);
+        Assert.Equal(9090, instance.SecurePort);
+        Assert.Equal($"https://{instance.HostName}:9090/", instance.HomePageUrl);
+        Assert.Equal($"https://{instance.HostName}:9090/info", instance.StatusPageUrl);
+        Assert.Equal($"https://{instance.HostName}:9090/health", instance.HealthCheckUrl);
+        Assert.Equal($"https://{instance.HostName}:9090/health", instance.SecureHealthCheckUrl);
+    }
+
+    [Fact]
+    public void FromInstanceConfiguration_URLs_OnlyNonSecurePortEnabled_UsesNonSecurePort()
+    {
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            IsNonSecurePortEnabled = true,
+            NonSecurePort = 8080,
+            IsSecurePortEnabled = false
+        };
+
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+
+        Assert.NotNull(instance);
+        Assert.True(instance.IsNonSecurePortEnabled);
+        Assert.Equal(8080, instance.NonSecurePort);
+        Assert.False(instance.IsSecurePortEnabled);
+        Assert.Equal($"http://{instance.HostName}:8080/", instance.HomePageUrl);
+        Assert.Equal($"http://{instance.HostName}:8080/info", instance.StatusPageUrl);
+        Assert.Equal($"http://{instance.HostName}:8080/health", instance.HealthCheckUrl);
         Assert.Null(instance.SecureHealthCheckUrl);
-        Assert.Null(instance.VipAddress);
-        Assert.Null(instance.SecureVipAddress);
-        Assert.Null(instance.CountryId);
-        Assert.Equal("MyOwn", instance.DataCenterInfo.Name.ToString());
-        Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
+    }
+
+    [Fact]
+    public void FromInstanceConfiguration_URLs_BothPortsEnabled_UsesSecurePort()
+    {
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            IsNonSecurePortEnabled = true,
+            NonSecurePort = 8080,
+            IsSecurePortEnabled = true,
+            SecurePort = 9090
+        };
+
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+
+        Assert.NotNull(instance);
+        Assert.True(instance.IsNonSecurePortEnabled);
+        Assert.Equal(8080, instance.NonSecurePort);
+        Assert.True(instance.IsSecurePortEnabled);
+        Assert.Equal(9090, instance.SecurePort);
+        Assert.Equal($"https://{instance.HostName}:9090/", instance.HomePageUrl);
+        Assert.Equal($"https://{instance.HostName}:9090/info", instance.StatusPageUrl);
+        Assert.Equal($"https://{instance.HostName}:9090/health", instance.HealthCheckUrl);
+        Assert.Equal($"https://{instance.HostName}:9090/health", instance.SecureHealthCheckUrl);
+    }
+
+    [Fact]
+    public void FromInstanceConfiguration_URLs_NoPortsEnabled_NoURLs()
+    {
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            IsNonSecurePortEnabled = false,
+            IsSecurePortEnabled = false
+        };
+
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+
+        Assert.NotNull(instance);
+        Assert.False(instance.IsNonSecurePortEnabled);
+        Assert.False(instance.IsSecurePortEnabled);
+        Assert.Null(instance.HomePageUrl);
+        Assert.Null(instance.StatusPageUrl);
+        Assert.Null(instance.HealthCheckUrl);
+        Assert.Null(instance.SecureHealthCheckUrl);
+    }
+
+    [Fact]
+    public void FromInstanceConfiguration_ExplicitURLs_SubstitutesEurekaHostname()
+    {
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            HostName = "example-host.com",
+            HomePageUrl = "http://www.${eureka.hostname}/home.html",
+            StatusPageUrl = "http://www.${eureka.hostname}/status.html",
+            HealthCheckUrl = "http://www.${eureka.hostname}/health.html",
+            SecureHealthCheckUrl = "https://www.${eureka.hostname}/health.html"
+        };
+
+        InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
+
+        Assert.NotNull(instance);
+        Assert.Equal("http://www.example-host.com/home.html", instance.HomePageUrl);
+        Assert.Equal("http://www.example-host.com/status.html", instance.StatusPageUrl);
+        Assert.Equal("http://www.example-host.com/health.html", instance.HealthCheckUrl);
+        Assert.Equal("https://www.example-host.com/health.html", instance.SecureHealthCheckUrl);
     }
 
     [Fact]
@@ -346,11 +416,8 @@ public sealed class InstanceInfoTest
     {
         var instanceOptions = new EurekaInstanceOptions();
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
-        Assert.NotNull(instance);
-
         JsonInstanceInfo jsonInstance = instance.ToJson();
 
-        // Verify
         Assert.Equal(instanceOptions.ResolveHostName(false), jsonInstance.HostName);
         Assert.Equal($"{jsonInstance.HostName}:unknown:80", jsonInstance.InstanceId);
         Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), jsonInstance.AppName);

@@ -115,22 +115,22 @@ public sealed class InstanceInfo
     }
 
     /// <summary>
-    /// Gets the value described at <see cref="EurekaInstanceOptions.HomePageUrl" />.
+    /// Gets the computed URL for the home page. Prefers secure when both ports are enabled.
     /// </summary>
     public string? HomePageUrl { get; init; }
 
     /// <summary>
-    /// Gets the value described at <see cref="EurekaInstanceOptions.StatusPageUrl" />.
+    /// Gets the computed URL for the status page. Prefers secure when both ports are enabled.
     /// </summary>
     public string? StatusPageUrl { get; init; }
 
     /// <summary>
-    /// Gets the value described at <see cref="EurekaInstanceOptions.HealthCheckUrl" />.
+    /// Gets the computed URL for health checks. Prefers secure when both ports are enabled.
     /// </summary>
     public string? HealthCheckUrl { get; init; }
 
     /// <summary>
-    /// Gets the value described at <see cref="EurekaInstanceOptions.SecureHealthCheckUrl" />.
+    /// Gets the computed URL for secure health checks. This is only available if the secure port is enabled.
     /// </summary>
     public string? SecureHealthCheckUrl { get; init; }
 
@@ -316,10 +316,10 @@ public sealed class InstanceInfo
             _lastDirtyTimeUtc = utcNow,
             _leaseInfo = LeaseInfo.FromConfiguration(options),
             _metaData = options.MetadataMap.Count > 0 ? new ReadOnlyDictionary<string, string?>(options.MetadataMap) : EmptyMetadata,
-            HomePageUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.HomePageUrlPath, options.HomePageUrl, null),
-            StatusPageUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.StatusPageUrlPath, options.StatusPageUrl, null),
-            HealthCheckUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.HealthCheckUrlPath, options.HealthCheckUrl,
-                options.SecureHealthCheckUrl),
+            HomePageUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.HomePageUrlPath, options.HomePageUrl),
+            StatusPageUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.StatusPageUrlPath, options.StatusPageUrl),
+            HealthCheckUrl = MakeUrl(hostName, nullableSecurePort, nullableNonSecurePort, options.HealthCheckUrlPath, options.HealthCheckUrl),
+            SecureHealthCheckUrl = MakeUrl(hostName, nullableSecurePort, null, options.HealthCheckUrlPath, options.SecureHealthCheckUrl),
             _isDirty = false
         };
     }
@@ -458,16 +458,11 @@ public sealed class InstanceInfo
         return jsonInstance.InstanceId;
     }
 
-    private static string? MakeUrl(string hostName, int? securePort, int? nonSecurePort, string? relativeUrl, string? explicitUrl, string? secureExplicitUrl)
+    private static string? MakeUrl(string hostName, int? securePort, int? nonSecurePort, string? relativeUrl, string? explicitUrl)
     {
-        if (!string.IsNullOrWhiteSpace(secureExplicitUrl))
-        {
-            return secureExplicitUrl;
-        }
-
         if (!string.IsNullOrWhiteSpace(explicitUrl))
         {
-            return explicitUrl;
+            return explicitUrl.Replace("${eureka.hostname}", hostName, StringComparison.Ordinal);
         }
 
         if (!string.IsNullOrWhiteSpace(relativeUrl))
