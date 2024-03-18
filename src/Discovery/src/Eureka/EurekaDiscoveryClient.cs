@@ -71,7 +71,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             ReturnUpInstancesOnly = clientOptions.ShouldFilterOnlyUpInstances
         };
 
-        if (!clientOptions.Enabled || clientOptions is { ShouldRegisterWithEureka: false, ShouldFetchRegistry: false })
+        if (!clientOptions.Enabled)
         {
             return;
         }
@@ -102,7 +102,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             }
         }
 
-        if (clientOptions.ShouldFetchRegistry)
+        if (clientOptions.ShouldFetchRegistry && clientOptions.RegistryFetchInterval > TimeSpan.Zero)
         {
             try
             {
@@ -204,9 +204,12 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         return new Timer(_ => gatedAction.Run(), null, interval, interval);
     }
 
-    private static void ChangeTimer(Timer timer, TimeSpan interval)
+    private static void ChangeTimer(Timer? timer, TimeSpan interval)
     {
-        timer.Change(interval, interval);
+        if (timer != null && interval > TimeSpan.Zero)
+        {
+            timer.Change(interval, interval);
+        }
     }
 
     private async Task FetchRegistryAsync(bool doFullUpdate, CancellationToken cancellationToken)
