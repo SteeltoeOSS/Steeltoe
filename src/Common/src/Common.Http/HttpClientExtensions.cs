@@ -31,16 +31,13 @@ internal static class HttpClientExtensions
     /// <param name="password">
     /// The password to authenticate.
     /// </param>
-    /// <param name="timeout">
-    /// The request timeout.
-    /// </param>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
     /// <returns>
     /// The access token.
     /// </returns>
-    public static async Task<string> GetAccessTokenAsync(this HttpClient httpClient, Uri accessTokenUri, string? username, string? password, TimeSpan? timeout,
+    public static async Task<string> GetAccessTokenAsync(this HttpClient httpClient, Uri accessTokenUri, string? username, string? password,
         CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(httpClient);
@@ -57,12 +54,6 @@ internal static class HttpClientExtensions
                 ["grant_type"] = "client_credentials"
             })
         };
-
-        if (timeout != null)
-        {
-            // Caution: this fails when the httpClient is reused. See comment on the httpClient parameter.
-            httpClient.Timeout = timeout.Value;
-        }
 
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
 

@@ -233,10 +233,13 @@ public sealed class EurekaClient
     private async Task<TResult> ExecuteRequestAsync<TResult>(HttpMethod method, string path, IDictionary<string, string>? queryString, string? requestBody,
         Func<HttpResponseMessage, Task<TResult>> getResultAsync, CancellationToken cancellationToken)
     {
-        using HttpClient httpClient = CreateHttpClient("Eureka");
+        EurekaClientOptions clientOptions = _optionsMonitor.CurrentValue;
+        TimeSpan connectTimeout = TimeSpan.FromSeconds(clientOptions.EurekaServer.ConnectTimeoutSeconds);
+
+        using HttpClient httpClient = CreateHttpClient("Eureka", connectTimeout);
         EurekaServiceUriStateManager.ServiceUrisSnapshot serviceUris = _eurekaServiceUriStateManager.GetSnapshot();
 
-        int tryCount = _optionsMonitor.CurrentValue.EurekaServer.RetryCount + 1;
+        int tryCount = clientOptions.EurekaServer.RetryCount + 1;
 
         for (int attempt = 1; attempt <= tryCount; attempt++)
         {
@@ -287,15 +290,13 @@ public sealed class EurekaClient
         throw new EurekaTransportException("Retry limit reached; giving up on completing the HTTP request.");
     }
 
-    private HttpClient CreateHttpClient(string name)
+    private HttpClient CreateHttpClient(string name, TimeSpan connectTimeout)
     {
         HttpClient httpClient = _httpClientFactory.CreateClient(name);
 
-        int connectTimeoutSeconds = _optionsMonitor.CurrentValue.EurekaServer.ConnectTimeoutSeconds;
-
-        if (connectTimeoutSeconds > 0)
+        if (connectTimeout > TimeSpan.Zero)
         {
-            httpClient.Timeout = TimeSpan.FromSeconds(connectTimeoutSeconds);
+            httpClient.Timeout = connectTimeout;
         }
 
         return httpClient;
@@ -328,14 +329,15 @@ public sealed class EurekaClient
         }
         else
         {
-            EurekaClientOptions options = _optionsMonitor.CurrentValue;
+            EurekaClientOptions clientOptions = _optionsMonitor.CurrentValue;
 
-            if (!string.IsNullOrEmpty(options.AccessTokenUri))
+            if (!string.IsNullOrEmpty(clientOptions.AccessTokenUri))
             {
-                using HttpClient httpClient = CreateHttpClient("AccessTokenForEureka");
+                using HttpClient httpClient = CreateHttpClient("AccessTokenForEureka", GetAccessTokenTimeout);
+                var accessTokenUri = new Uri(clientOptions.AccessTokenUri);
 
-                string accessToken = await httpClient.GetAccessTokenAsync(new Uri(options.AccessTokenUri), options.ClientId, options.ClientSecret,
-                    GetAccessTokenTimeout, cancellationToken);
+                string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, clientOptions.ClientId,
+                    clientOptions.ClientSecret, cancellationToken);
 
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
