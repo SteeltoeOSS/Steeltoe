@@ -23,7 +23,6 @@ public sealed class EurekaClientOptionsTest
         Assert.False(clientOptions.IsFetchDeltaDisabled);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.ShouldFetchRegistry);
-        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
     }
 
     [Fact]
@@ -44,7 +43,6 @@ public sealed class EurekaClientOptionsTest
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.Null(clientOptions.RegistryRefreshSingleVipAddress);
-        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
         Assert.Equal(EurekaClientOptions.DefaultServerServiceUrl, clientOptions.EurekaServerServiceUrls);
         Assert.NotNull(clientOptions.Health);
         Assert.True(clientOptions.Health.Enabled); // Health contributor enabled
@@ -136,7 +134,6 @@ public sealed class EurekaClientOptionsTest
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
-        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
         Assert.True(clientOptions.ShouldRegisterWithEureka);
         Assert.NotNull(clientOptions.Health);
         Assert.True(clientOptions.Health.Enabled); // Health contributor enabled

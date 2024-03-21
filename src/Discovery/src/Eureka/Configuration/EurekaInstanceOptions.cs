@@ -286,15 +286,15 @@ public sealed class EurekaInstanceOptions
         {
             foreach (Uri address in addresses)
             {
-                if (address.Scheme == "http" && NonSecurePort == DefaultNonSecurePort)
+                if (address.Scheme == "http" && NonSecurePort == DefaultNonSecurePort && address.Port > 0)
                 {
                     NonSecurePort = address.Port;
+                    IsNonSecurePortEnabled = true;
                 }
-                else if (address.Scheme == "https" && SecurePort == DefaultSecurePort)
+                else if (address.Scheme == "https" && SecurePort == DefaultSecurePort && address.Port > 0)
                 {
                     SecurePort = address.Port;
                     IsSecurePortEnabled = true;
-                    IsNonSecurePortEnabled = false;
                 }
 
                 if (!ConfigurationUrlHelpers.WildcardHosts.Contains(address.Host))

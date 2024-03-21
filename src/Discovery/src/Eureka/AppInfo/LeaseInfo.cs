@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -43,6 +44,12 @@ public sealed class LeaseInfo
 
     private LeaseInfo()
     {
+    }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
     }
 
     internal static LeaseInfo? FromJson(JsonLeaseInfo? jsonLeaseInfo)

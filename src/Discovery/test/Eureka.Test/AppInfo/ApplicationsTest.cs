@@ -722,7 +722,7 @@ public sealed class ApplicationsTest
             Applications = [application]
         };
 
-        var apps = Applications.FromJsonApplications(applications);
+        var apps = Applications.FromJson(applications);
 
         Assert.Equal("AppsHashCode", apps.AppsHashCode);
         Assert.Equal(1, apps.Version);
@@ -853,7 +853,7 @@ public sealed class ApplicationsTest
             Applications = [application]
         };
 
-        var apps = Applications.FromJsonApplications(applications);
+        var apps = Applications.FromJson(applications);
 
         Assert.Equal("AppsHashCode", apps.AppsHashCode);
         Assert.Equal(1, apps.Version);

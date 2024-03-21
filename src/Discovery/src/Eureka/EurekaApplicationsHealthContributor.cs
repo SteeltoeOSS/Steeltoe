@@ -59,7 +59,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
     {
         if (app != null && app.Name == appName)
         {
-            int upCount = app.Instances.Count(x => x.Status == InstanceStatus.Up);
+            int upCount = app.Instances.Count(instance => instance.EffectiveStatus == InstanceStatus.Up);
 
             if (upCount == 0)
             {
@@ -77,7 +77,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
 
     private IList<string> GetMonitoredApplications()
     {
-        IList<string>? configuredApplications = GetApplicationsFromConfig();
+        IList<string>? configuredApplications = GetApplicationsFromConfiguration();
 
         if (configuredApplications != null)
         {
@@ -88,7 +88,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
         return registeredApplications.Select(app => app.Name).ToList();
     }
 
-    internal IList<string>? GetApplicationsFromConfig()
+    internal IList<string>? GetApplicationsFromConfiguration()
     {
         EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
 

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -21,13 +23,13 @@ public sealed class EurekaApplicationHealthContributorTest
     {
         (EurekaApplicationsHealthContributor contributor, EurekaClientOptions clientOptions) = CreateHealthContributor();
 
-        IList<string>? apps = contributor.GetApplicationsFromConfig();
+        IList<string>? apps = contributor.GetApplicationsFromConfiguration();
 
         Assert.Null(apps);
 
         clientOptions.Health.MonitoredApps = "foo,bar, boo ";
 
-        apps = contributor.GetApplicationsFromConfig();
+        apps = contributor.GetApplicationsFromConfiguration();
 
         Assert.NotNull(apps);
         Assert.NotEmpty(apps);
@@ -85,6 +87,7 @@ public sealed class EurekaApplicationHealthContributorTest
 
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IServer, TestServer>();
 
         services.AddOptions<EurekaClientOptions>().Configure(options =>
         {

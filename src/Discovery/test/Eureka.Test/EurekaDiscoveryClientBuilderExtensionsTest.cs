@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -21,13 +23,14 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
     public void ApplyServicesNoExceptionWithoutManagementOptions()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
-        serviceCollection.RegisterDefaultApplicationInstanceInfo();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton<IServer, TestServer>();
+        services.RegisterDefaultApplicationInstanceInfo();
         var extension = new EurekaDiscoveryClientExtension();
 
-        extension.ApplyServices(serviceCollection);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
+        extension.ApplyServices(services);
+        ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);
@@ -44,14 +47,15 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         };
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
-        serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton<IServer, TestServer>();
+        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddAllActuators();
         var extension = new EurekaDiscoveryClientExtension();
 
-        extension.ApplyServices(serviceCollection);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
+        extension.ApplyServices(services);
+        ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);
@@ -70,13 +74,14 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         };
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
-        serviceCollection.RegisterDefaultApplicationInstanceInfo();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton<IServer, TestServer>();
+        services.RegisterDefaultApplicationInstanceInfo();
         var extension = new EurekaDiscoveryClientExtension();
 
-        extension.ApplyServices(serviceCollection);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
+        extension.ApplyServices(services);
+        ServiceProvider provider = services.BuildServiceProvider(true);
 
         var timer = new Stopwatch();
         timer.Start();
@@ -121,14 +126,15 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         };
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
-        serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton<IServer, TestServer>();
+        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddAllActuators();
         var extension = new EurekaDiscoveryClientExtension();
 
-        extension.ApplyServices(serviceCollection);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
+        extension.ApplyServices(services);
+        ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);
@@ -146,14 +152,15 @@ public sealed class EurekaDiscoveryClientBuilderExtensionsTest
         };
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(configurationRoot);
-        serviceCollection.RegisterDefaultApplicationInstanceInfo();
-        serviceCollection.AddAllActuators();
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton<IServer, TestServer>();
+        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddAllActuators();
         var extension = new EurekaDiscoveryClientExtension();
 
-        extension.ApplyServices(serviceCollection);
-        ServiceProvider provider = serviceCollection.BuildServiceProvider(true);
+        extension.ApplyServices(services);
+        ServiceProvider provider = services.BuildServiceProvider(true);
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);

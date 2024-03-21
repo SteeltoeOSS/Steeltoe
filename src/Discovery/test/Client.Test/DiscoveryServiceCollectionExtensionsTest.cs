@@ -6,6 +6,8 @@ using System.Net;
 using Consul;
 using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -68,7 +70,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         configurationBuilder.AddJsonFile(fileName);
         IConfiguration configuration = configurationBuilder.Build();
 
-        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddOptions();
+        services.AddSingleton<IServer, TestServer>();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddDiscoveryClient(configuration);
 
@@ -88,7 +93,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddOptions();
+        services.AddSingleton<IServer, TestServer>();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddDiscoveryClient(configuration);
 
@@ -412,7 +420,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         configurationBuilder.AddJsonFile(fileName);
         IConfiguration configuration = configurationBuilder.Build();
 
-        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddOptions();
+        services.AddSingleton<IServer, TestServer>();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddServiceDiscovery(configuration, builder => builder.UseEureka());
 
@@ -434,7 +445,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         };
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        IServiceCollection services = new ServiceCollection().AddSingleton(configuration).AddOptions();
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddOptions();
+        services.AddSingleton<IServer, TestServer>();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddServiceDiscovery(configuration, builder => builder.UseEureka());
 
@@ -450,7 +464,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         IConfiguration configuration = new ConfigurationBuilder().Build();
         services.AddSingleton(configuration);
-
+        services.AddSingleton<IServer, TestServer>();
         services.AddServiceDiscovery(configuration, builder => builder.UseEureka("foobar"));
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -536,7 +550,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundry().Build();
         services.AddSingleton(configuration);
-
+        services.AddSingleton<IServer, TestServer>();
         services.AddServiceDiscovery(configuration, options => options.UseEureka());
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -736,11 +750,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     [Fact]
     public void AddServiceDiscovery_WithMultipleClients_PicksConfigured()
     {
-        var serviceCollection = new ServiceCollection();
+        var services = new ServiceCollection();
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(FastEureka).Build();
-        serviceCollection.AddSingleton(configuration);
+        services.AddSingleton(configuration);
+        services.AddSingleton<IServer, TestServer>();
 
-        ServiceProvider serviceProvider = serviceCollection.AddServiceDiscovery(configuration, builder =>
+        ServiceProvider serviceProvider = services.AddServiceDiscovery(configuration, builder =>
         {
             builder.UseConsul();
             builder.UseEureka();

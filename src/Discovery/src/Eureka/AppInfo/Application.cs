@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using System.Text.Json;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.Transport;
 
@@ -41,9 +42,10 @@ public sealed class Application
         return _instanceMap.GetValueOrDefault(instanceId);
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
-        return $"{nameof(Application)}[{nameof(Name)}={Name}, {nameof(Instances)}={string.Join(',', Instances.Select(instance => instance.ToString()))}]";
+        return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
     }
 
     internal void Add(InstanceInfo instance)
@@ -60,7 +62,7 @@ public sealed class Application
         _instanceMap.TryRemove(instance.InstanceId, out _);
     }
 
-    internal static Application? FromJsonApplication(JsonApplication? jsonApplication)
+    internal static Application? FromJson(JsonApplication? jsonApplication)
     {
         if (jsonApplication == null || string.IsNullOrWhiteSpace(jsonApplication.Name))
         {

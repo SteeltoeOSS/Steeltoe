@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -12,99 +13,162 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public sealed class ApplicationInfoManagerTest
 {
-    private InstanceStatusChangedEventArgs? _eventArgs;
+    [Fact]
+    public void UpdateInstance_AppliesChanges()
+    {
+        var optionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>();
+        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        appManager.Instance.IsDirty = false;
+        InstanceStatus? previousStatus = appManager.Instance.Status;
+        using var eventMonitor = new EventMonitor(appManager);
+
+        appManager.UpdateInstance(InstanceStatus.OutOfService, null, null);
+
+        appManager.Instance.Status.Should().Be(InstanceStatus.OutOfService);
+        appManager.Instance.IsDirty.Should().BeTrue();
+
+        eventMonitor.EventArgs.Should().NotBeNull();
+        eventMonitor.EventArgs!.PreviousInstance.Status.Should().Be(previousStatus);
+        eventMonitor.EventArgs.NewInstance.Status.Should().Be(InstanceStatus.OutOfService);
+    }
 
     [Fact]
-    public void StatusChanged_ChangesStatus()
+    public void ChangeConfiguration_AppliesChanges()
+    {
+        var optionsMonitor = TestOptionsMonitor.Create(new EurekaInstanceOptions
+        {
+            VirtualHostName = "some"
+        });
+
+        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        appManager.Instance.IsDirty = false;
+        using var eventMonitor = new EventMonitor(appManager);
+
+        optionsMonitor.Change(new EurekaInstanceOptions
+        {
+            VirtualHostName = "other"
+        });
+
+        appManager.Instance.VipAddress.Should().Be("other");
+        appManager.Instance.IsDirty.Should().BeTrue();
+
+        eventMonitor.EventArgs.Should().NotBeNull();
+        eventMonitor.EventArgs!.PreviousInstance.VipAddress.Should().Be("some");
+        eventMonitor.EventArgs.NewInstance.VipAddress.Should().Be("other");
+    }
+
+    [Fact]
+    public void ChangeConfiguration_DetectsUnchanged()
     {
         var instanceOptions = new EurekaInstanceOptions
         {
-            IsInstanceEnabledOnInit = false
+            VirtualHostName = "some"
+        };
+
+        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        appManager.Instance.IsDirty = false;
+
+        using var eventMonitor = new EventMonitor(appManager);
+
+        optionsMonitor.Change(instanceOptions);
+
+        appManager.Instance.IsDirty.Should().BeFalse();
+
+        eventMonitor.EventArgs.Should().BeNull();
+    }
+
+    [Fact]
+    public void ChangeConfiguration_IgnoresConflict()
+    {
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            InstanceId = "some"
+        };
+
+        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        appManager.Instance.IsDirty = false;
+
+        using var eventMonitor = new EventMonitor(appManager);
+
+        optionsMonitor.Change(new EurekaInstanceOptions
+        {
+            InstanceId = "other"
+        });
+
+        appManager.Instance.InstanceId.Should().Be("some");
+
+        eventMonitor.EventArgs.Should().BeNull();
+    }
+
+    [Fact]
+    public void ChangeConfiguration_PreservesExistingDirtyState()
+    {
+        var optionsMonitor = new TestOptionsMonitor<EurekaInstanceOptions>();
+        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        appManager.Instance.IsDirty = true;
+        using var eventMonitor = new EventMonitor(appManager);
+
+        optionsMonitor.Change(new EurekaInstanceOptions());
+
+        appManager.Instance.IsDirty.Should().BeTrue();
+
+        eventMonitor.EventArgs.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void ChangeConfiguration_PreservesMetadataAndStatusSetFromCode()
+    {
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            MetadataMap =
+            {
+                ["configKey"] = "configValue"
+            }
         };
 
         TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
         var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
-        Assert.Equal(InstanceStatus.Starting, appManager.Instance.Status);
-        appManager.UpdateStatus(InstanceStatus.Up);
-    }
-
-    [Fact]
-    public void StatusChanged_ChangesStatus_SendsEvents()
-    {
-        var instanceOptions = new EurekaInstanceOptions
+        appManager.UpdateInstance(InstanceStatus.OutOfService, null, new Dictionary<string, string?>
         {
-            IsInstanceEnabledOnInit = false
-        };
+            ["appKey"] = "appValue"
+        });
 
-        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        appManager.Instance.IsDirty = false;
 
-        Assert.Equal(InstanceStatus.Starting, appManager.Instance.Status);
+        using var eventMonitor = new EventMonitor(appManager);
 
-        // Check event sent
-        appManager.StatusChanged += HandleInstanceStatusChanged;
-        appManager.UpdateStatus(InstanceStatus.Up);
-        Assert.NotNull(_eventArgs);
-        Assert.Equal(InstanceStatus.Starting, _eventArgs.Previous);
-        Assert.Equal(InstanceStatus.Up, _eventArgs.Current);
-        Assert.Equal(appManager.Instance.InstanceId, _eventArgs.InstanceId);
-        appManager.StatusChanged -= HandleInstanceStatusChanged;
+        optionsMonitor.Change(instanceOptions);
+
+        appManager.Instance.Status.Should().Be(InstanceStatus.OutOfService);
+        appManager.Instance.Metadata.Should().ContainKey("appKey");
+        appManager.Instance.Metadata.Should().NotContainKey("configKey");
+
+        eventMonitor.EventArgs.Should().BeNull();
     }
 
-    [Fact]
-    public void StatusChanged_RemovesEventHandler()
+    private sealed class EventMonitor : IDisposable
     {
-        var instanceOptions = new EurekaInstanceOptions
+        private readonly EurekaApplicationInfoManager _appManager;
+
+        public InstanceChangedEventArgs? EventArgs { get; private set; }
+
+        public EventMonitor(EurekaApplicationInfoManager appManager)
         {
-            IsInstanceEnabledOnInit = false
-        };
+            _appManager = appManager;
+            appManager.InstanceChanged += AppManagerOnInstanceChanged;
+        }
 
-        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        private void AppManagerOnInstanceChanged(object? sender, InstanceChangedEventArgs args)
+        {
+            EventArgs = args;
+        }
 
-        Assert.Equal(InstanceStatus.Starting, appManager.Instance.Status);
-
-        // Check event sent
-        appManager.StatusChanged += HandleInstanceStatusChanged;
-        appManager.UpdateStatus(InstanceStatus.Up);
-        Assert.NotNull(_eventArgs);
-        Assert.Equal(InstanceStatus.Starting, _eventArgs.Previous);
-        Assert.Equal(InstanceStatus.Up, _eventArgs.Current);
-        Assert.Equal(appManager.Instance.InstanceId, _eventArgs.InstanceId);
-        _eventArgs = null;
-        appManager.StatusChanged -= HandleInstanceStatusChanged;
-        appManager.UpdateStatus(InstanceStatus.Down);
-        Assert.Null(_eventArgs);
-    }
-
-    [Fact]
-    public void RefreshLeaseInfo_UpdatesLeaseInfo()
-    {
-        var instanceOptions = new EurekaInstanceOptions();
-        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
-
-        appManager.Instance.UpdateFromConfiguration(instanceOptions);
-        InstanceInfo instance = appManager.Instance;
-
-        Assert.False(instance.IsDirty);
-        Assert.NotNull(instance.LeaseInfo);
-        Assert.NotNull(instance.LeaseInfo.Duration);
-        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.Duration.Value.TotalSeconds);
-        Assert.NotNull(instance.LeaseInfo.RenewalInterval);
-        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
-
-        instanceOptions.LeaseRenewalIntervalInSeconds += 100;
-        instanceOptions.LeaseExpirationDurationInSeconds += 100;
-        appManager.Instance.UpdateFromConfiguration(instanceOptions);
-        Assert.True(instance.IsDirty);
-        Assert.Equal(instanceOptions.LeaseExpirationDurationInSeconds, instance.LeaseInfo.Duration.Value.TotalSeconds);
-        Assert.Equal(instanceOptions.LeaseRenewalIntervalInSeconds, instance.LeaseInfo.RenewalInterval.Value.TotalSeconds);
-    }
-
-    private void HandleInstanceStatusChanged(object? sender, InstanceStatusChangedEventArgs args)
-    {
-        _eventArgs = args;
+        public void Dispose()
+        {
+            _appManager.InstanceChanged -= AppManagerOnInstanceChanged;
+        }
     }
 }

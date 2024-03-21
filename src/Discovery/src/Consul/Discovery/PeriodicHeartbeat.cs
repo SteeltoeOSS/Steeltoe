@@ -36,11 +36,11 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
     {
         try
         {
-            _logger.LogDebug("Start sending periodic Consul heartbeats for '{serviceId}' with interval {interval}.", _serviceId, _interval);
+            _logger.LogDebug("Start sending periodic Consul heartbeats for '{ServiceId}' with interval {Interval}.", _serviceId, _interval);
 
             while (await _periodicTimer.WaitForNextTickAsync(_cancellationTokenSource.Token))
             {
-                _logger.LogDebug("Sending Consul heartbeat for '{serviceId}'.", _serviceId);
+                _logger.LogDebug("Sending Consul heartbeat for '{ServiceId}'.", _serviceId);
 
                 try
                 {
@@ -48,13 +48,13 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
                 }
                 catch (Exception exception) when (!exception.IsCancellation())
                 {
-                    _logger.LogError(exception, "Failed to send Consul heartbeat for '{serviceId}'.", _serviceId);
+                    _logger.LogError(exception, "Failed to send Consul heartbeat for '{ServiceId}'.", _serviceId);
                 }
             }
         }
         catch (OperationCanceledException)
         {
-            _logger.LogDebug("Stop sending periodic Consul heartbeats for '{serviceId}'.", _serviceId);
+            _logger.LogDebug("Stop sending periodic Consul heartbeats for '{ServiceId}'.", _serviceId);
         }
     }
 

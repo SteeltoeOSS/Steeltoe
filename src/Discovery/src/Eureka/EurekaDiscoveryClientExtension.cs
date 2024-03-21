@@ -18,6 +18,7 @@ using Steeltoe.Connectors.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.Configuration;
 using static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions;
+using static Steeltoe.Discovery.Eureka.DynamicPortAssignmentHostedService;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -92,6 +93,8 @@ internal sealed class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
                 EurekaServiceInfo? serviceInfo = GetServiceInfo(configuration);
                 EurekaPostConfigurer.UpdateConfiguration(configuration, serviceInfo, options, serviceInfo?.ApplicationInfo ?? appInfo);
             });
+
+        Wire(services);
     }
 
     private static void SetupConfigurationChangeDetection<TOptions>(IServiceCollection services, string configurationKey)

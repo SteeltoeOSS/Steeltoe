@@ -73,11 +73,7 @@ public sealed class EurekaServiceUriStateManager
             {
                 availableServiceUris.ExceptWith([_lastWorkingServiceUri]);
 
-                return
-                [
-                    _lastWorkingServiceUri,
-                    ..availableServiceUris
-                ];
+                return [_lastWorkingServiceUri, ..availableServiceUris];
             }
         }
 

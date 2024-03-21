@@ -10,28 +10,30 @@ namespace Steeltoe.Common.TestResources;
 
 public static class TestOptionsMonitor
 {
-    public static TestOptionsMonitor<T> Create<T>(T currentValue)
+    public static TestOptionsMonitor<T> Create<T>(T options)
         where T : new()
     {
-        return new TestOptionsMonitor<T>(currentValue);
+        return new TestOptionsMonitor<T>(options);
     }
 }
 
 public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
     where T : new()
 {
-    public T CurrentValue { get; }
+    private readonly List<Action<T, string?>> _listeners = [];
+
+    public T CurrentValue { get; private set; }
 
     public TestOptionsMonitor()
     {
         CurrentValue = new T();
     }
 
-    public TestOptionsMonitor(T currentValue)
+    public TestOptionsMonitor(T options)
     {
-        ArgumentNullException.ThrowIfNull(currentValue);
+        ArgumentNullException.ThrowIfNull(options);
 
-        CurrentValue = currentValue;
+        CurrentValue = options;
     }
 
     public T Get(string? name)
@@ -41,6 +43,17 @@ public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
 
     public IDisposable OnChange(Action<T, string?> listener)
     {
+        _listeners.Add(listener);
         return EmptyDisposable.Instance;
+    }
+
+    public void Change(T options)
+    {
+        CurrentValue = options;
+
+        foreach (Action<T, string?> listener in _listeners)
+        {
+            listener(CurrentValue, string.Empty);
+        }
     }
 }

@@ -116,7 +116,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
     {
         ArgumentGuard.NotNull(retryable);
 
-        _logger.LogDebug("Starting retryable action ..");
+        _logger.LogDebug("Starting retryable action.");
 
         int attempts = 0;
         int backOff = options.InitialInterval;
@@ -126,7 +126,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
             try
             {
                 await retryable(cancellationToken);
-                _logger.LogDebug("Finished retryable action ..");
+                _logger.LogDebug("Finished retryable action.");
                 return;
             }
             catch (Exception exception)
@@ -135,14 +135,14 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
 
                 if (attempts < options.MaxAttempts)
                 {
-                    _logger.LogError(exception, "Exception during {attempt} attempts of retryable action, will retry", attempts);
+                    _logger.LogError(exception, "Exception during {Attempt} attempts of retryable action, will retry", attempts);
                     Thread.CurrentThread.Join(backOff);
                     int nextBackOff = (int)(backOff * options.Multiplier);
                     backOff = Math.Min(nextBackOff, options.MaxInterval);
                 }
                 else
                 {
-                    _logger.LogError(exception, "Exception during {attempt} attempts of retryable action, done with retry", attempts);
+                    _logger.LogError(exception, "Exception during {Attempt} attempts of retryable action, done with retry", attempts);
                     throw;
                 }
             }

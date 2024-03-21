@@ -207,7 +207,6 @@ public sealed class EurekaPostConfigurerTest
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
-        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
         Assert.True(clientOptions.ShouldRegisterWithEureka);
 
         var instanceOptions = new EurekaInstanceOptions();
@@ -424,7 +423,6 @@ public sealed class EurekaPostConfigurerTest
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
-        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
         Assert.True(clientOptions.ShouldRegisterWithEureka);
         Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", clientOptions.AccessTokenUri);
         Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", clientOptions.ClientId);
@@ -633,7 +631,6 @@ public sealed class EurekaPostConfigurerTest
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
-        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
         Assert.True(clientOptions.ShouldRegisterWithEureka);
         Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", clientOptions.AccessTokenUri);
         Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", clientOptions.ClientId);
@@ -843,7 +840,6 @@ public sealed class EurekaPostConfigurerTest
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
-        Assert.True(clientOptions.ShouldOnDemandUpdateStatusChange);
         Assert.True(clientOptions.ShouldRegisterWithEureka);
         Assert.Equal("https://p-spring-cloud-services.uaa.system.testcloud.com/oauth/token", clientOptions.AccessTokenUri);
         Assert.Equal("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe", clientOptions.ClientId);

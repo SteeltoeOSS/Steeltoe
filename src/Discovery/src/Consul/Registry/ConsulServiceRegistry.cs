@@ -66,7 +66,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
     {
         ArgumentGuard.NotNull(registration);
 
-        _logger.LogInformation("Registering service {serviceId} with consul.", registration.ServiceId);
+        _logger.LogInformation("Registering service {ServiceId} with consul.", registration.ServiceId);
 
         try
         {
@@ -81,11 +81,11 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
         {
             if (Options.FailFast)
             {
-                _logger.LogError(exception, "Error registering service {serviceId} with consul.", registration.ServiceId);
+                _logger.LogError(exception, "Error registering service {ServiceId} with consul.", registration.ServiceId);
                 throw;
             }
 
-            _logger.LogWarning(exception, "FailFast is false. Error registering service {serviceId} with consul.", registration.ServiceId);
+            _logger.LogWarning(exception, "FailFast is false. Error registering service {ServiceId} with consul.", registration.ServiceId);
         }
     }
 

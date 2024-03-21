@@ -23,72 +23,72 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public sealed class DiscoveryClientTest
 {
     private const string FooAddedJson = """
-                                        {
-                                            "applications": {
-                                                "versions__delta":"1",
-                                                "apps__hashcode":"UP_1_",
-                                                "application":[{
-                                                    "name":"FOO",
-                                                    "instance":[{
-                                                        "instanceId":"localhost:foo",
-                                                        "hostName":"localhost",
-                                                        "app":"FOO",
-                                                        "ipAddr":"192.168.56.1",
-                                                        "status":"UP",
-                                                        "overriddenStatus":"UNKNOWN",
-                                                        "port":{"$":8080,"@enabled":"true"},
-                                                        "securePort":{"$":443,"@enabled":"false"},
-                                                        "countryId":1,
-                                                        "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
-                                                        "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
-                                                        "metadata":{"@class":"java.util.Collections$EmptyMap"},
-                                                        "homePageUrl":"http://localhost:8080/",
-                                                        "statusPageUrl":"http://localhost:8080/info",
-                                                        "healthCheckUrl":"http://localhost:8080/health",
-                                                        "vipAddress":"foo",
-                                                        "isCoordinatingDiscoveryServer":"false",
-                                                        "lastUpdatedTimestamp":"1457714988223",
-                                                        "lastDirtyTimestamp":"1457714988172",
-                                                        "actionType":"ADDED"
-                                                    }]
-                                                }]
-                                            }
-                                        }
-                                        """;
+        {
+            "applications": {
+                "versions__delta":"1",
+                "apps__hashcode":"UP_1_",
+                "application":[{
+                    "name":"FOO",
+                    "instance":[{
+                        "instanceId":"localhost:foo",
+                        "hostName":"localhost",
+                        "app":"FOO",
+                        "ipAddr":"192.168.56.1",
+                        "status":"UP",
+                        "overriddenStatus":"UNKNOWN",
+                        "port":{"$":8080,"@enabled":"true"},
+                        "securePort":{"$":443,"@enabled":"false"},
+                        "countryId":1,
+                        "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                        "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
+                        "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                        "homePageUrl":"http://localhost:8080/",
+                        "statusPageUrl":"http://localhost:8080/info",
+                        "healthCheckUrl":"http://localhost:8080/health",
+                        "vipAddress":"foo",
+                        "isCoordinatingDiscoveryServer":"false",
+                        "lastUpdatedTimestamp":"1457714988223",
+                        "lastDirtyTimestamp":"1457714988172",
+                        "actionType":"ADDED"
+                    }]
+                }]
+            }
+        }
+        """;
 
     private const string FooModifiedJson = """
-                                           {
-                                               "applications": {
-                                                   "versions__delta":"3",
-                                                   "apps__hashcode":"UP_1_",
-                                                   "application":[{
-                                                       "name":"FOO",
-                                                       "instance":[{
-                                                           "instanceId":"localhost:foo",
-                                                           "hostName":"localhost",
-                                                           "app":"FOO",
-                                                           "ipAddr":"192.168.56.1",
-                                                           "status":"UP",
-                                                           "overriddenStatus":"UNKNOWN",
-                                                           "port":{"$":8080,"@enabled":"true"},
-                                                           "securePort":{"$":443,"@enabled":"false"},
-                                                           "countryId":1,
-                                                           "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
-                                                           "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
-                                                           "metadata":{"@class":"java.util.Collections$EmptyMap"},
-                                                           "homePageUrl":"http://localhost:8080/",
-                                                           "statusPageUrl":"http://localhost:8080/info",
-                                                           "healthCheckUrl":"http://localhost:8080/health",
-                                                           "vipAddress":"foo",
-                                                           "isCoordinatingDiscoveryServer":"false",
-                                                           "lastUpdatedTimestamp":"1457714988223",
-                                                           "lastDirtyTimestamp":"1457714988172",
-                                                           "actionType":"MODIFIED"
-                                                       }]
-                                                   }]
-                                               }
-                                           }
-                                           """;
+        {
+            "applications": {
+                "versions__delta":"3",
+                "apps__hashcode":"UP_1_",
+                "application":[{
+                    "name":"FOO",
+                    "instance":[{
+                        "instanceId":"localhost:foo",
+                        "hostName":"localhost",
+                        "app":"FOO",
+                        "ipAddr":"192.168.56.1",
+                        "status":"UP",
+                        "overriddenStatus":"UNKNOWN",
+                        "port":{"$":8080,"@enabled":"true"},
+                        "securePort":{"$":443,"@enabled":"false"},
+                        "countryId":1,
+                        "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
+                        "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
+                        "metadata":{"@class":"java.util.Collections$EmptyMap"},
+                        "homePageUrl":"http://localhost:8080/",
+                        "statusPageUrl":"http://localhost:8080/info",
+                        "healthCheckUrl":"http://localhost:8080/health",
+                        "vipAddress":"foo",
+                        "isCoordinatingDiscoveryServer":"false",
+                        "lastUpdatedTimestamp":"1457714988223",
+                        "lastDirtyTimestamp":"1457714988172",
+                        "actionType":"MODIFIED"
+                    }]
+                }]
+            }
+        }
+        """;
 
     [Fact]
     public void Constructor_TimersNotStarted()
@@ -107,7 +107,7 @@ public sealed class DiscoveryClientTest
 
         var eurekaServiceUriStateManager = new EurekaServiceUriStateManager(clientOptionsMonitor, NullLogger<EurekaServiceUriStateManager>.Instance);
         var eurekaClient = new EurekaClient(httpClientFactory, clientOptionsMonitor, eurekaServiceUriStateManager, NullLogger<EurekaClient>.Instance);
-        var discoveryClient = new EurekaDiscoveryClient(appManager, eurekaClient, clientOptionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new EurekaDiscoveryClient(appManager, eurekaClient, clientOptionsMonitor, NullLogger<EurekaDiscoveryClient>.Instance);
 
         Assert.False(discoveryClient.IsCacheRefreshTimerStarted);
         Assert.False(discoveryClient.IsHeartbeatTimerStarted);
@@ -146,35 +146,6 @@ public sealed class DiscoveryClientTest
         Assert.NotNull(registeredApplications);
         Assert.Single(registeredApplications);
         Assert.Equal("FOO", registeredApplications[0].Name);
-    }
-
-    [Fact]
-    public async Task FetchFullRegistryAsync_ReturnsNull_IfFetchCounterMismatch()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
-        };
-
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
-
-        var handler = new DelegateToMockHttpClientHandler();
-        handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", FooAddedJson);
-
-        await using WebApplication webApplication = builder.Build();
-        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-
-        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        Task<Applications?> applicationsTask = discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
-
-        handler.Mock.VerifyNoOutstandingExpectation();
-
-        discoveryClient.SetRegistryFetchCounter(100);
-        Applications? applications = await applicationsTask;
-        Assert.Null(applications);
     }
 
     [Fact]
@@ -224,36 +195,6 @@ public sealed class DiscoveryClientTest
     }
 
     [Fact]
-    public async Task FetchRegistryDeltaAsync_ReturnsNull_IfFetchCounterMismatch()
-    {
-        var appSettings = new Dictionary<string, string?>
-        {
-            ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
-        };
-
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddServiceDiscovery(builder.Configuration, options => options.UseEureka());
-
-        var handler = new DelegateToMockHttpClientHandler();
-        handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/delta").Respond("application/json", FooModifiedJson);
-
-        await using WebApplication webApplication = builder.Build();
-        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-
-        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-
-        Task<Applications?> applicationsTask = discoveryClient.FetchRegistryDeltaAsync(CancellationToken.None);
-
-        handler.Mock.VerifyNoOutstandingExpectation();
-
-        discoveryClient.SetRegistryFetchCounter(100);
-        Applications? apps = await applicationsTask;
-        Assert.Null(apps);
-    }
-
-    [Fact]
     public async Task RegisterAsync_Throws_WhenNotOKStatusReturned()
     {
         var appSettings = new Dictionary<string, string?>
@@ -275,7 +216,7 @@ public sealed class DiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        Func<Task> action = async () => await discoveryClient.RegisterAsync(CancellationToken.None);
+        Func<Task> action = async () => await discoveryClient.RegisterAsync(false, CancellationToken.None);
 
         await action.Should().ThrowExactlyAsync<EurekaTransportException>();
 
@@ -304,7 +245,7 @@ public sealed class DiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        await discoveryClient.RegisterAsync(CancellationToken.None);
+        await discoveryClient.RegisterAsync(false, CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -527,7 +468,7 @@ public sealed class DiscoveryClientTest
     }
 
     [Fact]
-    public async Task RefreshInstanceInfo_CallsHealthCheckHandler_UpdatesInstanceStatus()
+    public async Task RunHealthChecksAsync_CallsHealthCheckHandler_UpdatesInstanceStatus()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -547,7 +488,7 @@ public sealed class DiscoveryClientTest
         var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
         discoveryClient.HealthCheckHandler = myHandler;
 
-        await discoveryClient.RefreshAppInstanceAsync(CancellationToken.None);
+        await discoveryClient.RunHealthChecksAsync(CancellationToken.None);
 
         Assert.True(myHandler.Awaited);
         Assert.Equal(InstanceStatus.Down, appInfoManager.Instance.Status);
@@ -587,7 +528,7 @@ public sealed class DiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        await discoveryClient.RegisterAsync(CancellationToken.None);
+        await discoveryClient.RegisterAsync(false, CancellationToken.None);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }

@@ -124,9 +124,16 @@ internal static class EurekaPostConfigurer
             }
             else
             {
-                options.InstanceId = options.IsSecurePortEnabled
-                    ? $"{options.ResolveHostName(false)}:{options.AppName}:{options.SecurePort}"
-                    : $"{options.ResolveHostName(false)}:{options.AppName}:{options.NonSecurePort}";
+                int portNumber = options.IsSecurePortEnabled ? options.SecurePort : options.NonSecurePort;
+
+                if (portNumber <= 0)
+                {
+                    // The port number is dynamically assigned by ASP.NET once the app has fully started.
+                    // Pick a random number (outside the valid range) to prevent registering duplicate instances in Eureka.
+                    portNumber = Random.Shared.Next(90_000, 99_999);
+                }
+
+                options.InstanceId = $"{options.ResolveHostName(false)}:{options.AppName}:{portNumber}";
             }
         }
     }

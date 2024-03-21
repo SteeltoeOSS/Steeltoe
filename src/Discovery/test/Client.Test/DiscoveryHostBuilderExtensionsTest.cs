@@ -2,10 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Eureka;
@@ -33,23 +36,26 @@ public sealed class DiscoveryHostBuilderExtensionsTest
     [Fact]
     public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Eureka()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
+        IHostBuilder hostBuilder = new HostBuilder();
+        hostBuilder.ConfigureWebHost(builder => builder.UseTestServer());
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
         hostBuilder.ConfigureServices((context, services) => services.AddServiceDiscovery(context.Configuration, builder => builder.UseEureka()));
 
         using IHost host = hostBuilder.Build();
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
-        IHostedService? hostedService = host.Services.GetServices<IHostedService>().FirstOrDefault();
+        DiscoveryClientHostedService? hostedService = host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().FirstOrDefault();
 
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
         Assert.NotNull(hostedService);
-        Assert.IsType<DiscoveryClientHostedService>(hostedService);
     }
 
     [Fact]
     public async Task AddServiceDiscovery_IHostBuilder_StartsUp()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
+        IHostBuilder hostBuilder = new HostBuilder();
+        hostBuilder.ConfigureWebHost(builder => builder.UseTestServer().Configure(HostingHelpers.EmptyAction));
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
         hostBuilder.ConfigureServices((context, services) => services.AddServiceDiscovery(context.Configuration, builder => builder.UseEureka()));
 
         await hostBuilder.StartAsync();

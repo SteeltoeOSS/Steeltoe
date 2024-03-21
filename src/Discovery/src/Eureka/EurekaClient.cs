@@ -220,7 +220,7 @@ public sealed class EurekaClient
         return await ExecuteRequestAsync(HttpMethod.Get, path, null, null, async response =>
         {
             var root = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(ResponseSerializerOptions, cancellationToken);
-            return Applications.FromJsonApplications(root?.Applications);
+            return Applications.FromJson(root?.Applications);
         }, cancellationToken);
     }
 
@@ -253,7 +253,7 @@ public sealed class EurekaClient
             {
                 using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
-                _logger.LogDebug("HTTP {requestMethod} request to '{RequestUri}' returned status {StatusCode} in attempt {Attempt}.", request.Method,
+                _logger.LogDebug("HTTP {RequestMethod} request to '{RequestUri}' returned status {StatusCode} in attempt {Attempt}.", request.Method,
                     requestUri.ToMaskedUri(), (int)response.StatusCode, attempt);
 
                 if (response.IsSuccessStatusCode)
@@ -266,7 +266,7 @@ public sealed class EurekaClient
                     }
                     catch (JsonException exception) when (!exception.IsCancellation())
                     {
-                        _logger.LogDebug(exception, "Failed to deserialize HTTP response from {requestMethod} '{RequestUri}'.", request.Method,
+                        _logger.LogDebug(exception, "Failed to deserialize HTTP response from {RequestMethod} '{RequestUri}'.", request.Method,
                             requestUri.ToMaskedUri());
                     }
                 }
@@ -274,13 +274,13 @@ public sealed class EurekaClient
                 {
                     string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                    _logger.LogInformation("HTTP {requestMethod} request to '{RequestUri}' failed with status {StatusCode}: {ResponseBody}", request.Method,
+                    _logger.LogInformation("HTTP {RequestMethod} request to '{RequestUri}' failed with status {StatusCode}: {ResponseBody}", request.Method,
                         requestUri.ToMaskedUri(), (int)response.StatusCode, responseBody);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
-                _logger.LogWarning(exception, "Failed to execute HTTP {requestMethod} request to '{RequestUri}' in attempt {Attempt}.", request.Method,
+                _logger.LogWarning(exception, "Failed to execute HTTP {RequestMethod} request to '{RequestUri}' in attempt {Attempt}.", request.Method,
                     requestUri.ToMaskedUri(), attempt);
             }
 

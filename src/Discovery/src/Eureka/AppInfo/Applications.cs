@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using System.Text;
+using System.Text.Json;
 using Steeltoe.Common;
 using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.Transport;
@@ -18,6 +19,7 @@ public sealed class Applications
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap { get; } = new();
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new();
 
+    public IReadOnlyCollection<Application> Items => new List<Application>(ApplicationMap.Values);
     public string? AppsHashCode { get; internal set; }
     public long? Version { get; private set; }
     public bool ReturnUpInstancesOnly { get; set; }
@@ -64,9 +66,10 @@ public sealed class Applications
         return GetByVirtualHostName(virtualHostName, VirtualHostInstanceMap);
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
-        return $"{nameof(Applications)}[{string.Join(',', ApplicationMap.Select(pair => pair.Value.ToString()))}]";
+        return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
     }
 
     internal void Add(Application app)
@@ -219,7 +222,7 @@ public sealed class Applications
         return hashcodeBuilder.ToString();
     }
 
-    internal static Applications FromJsonApplications(JsonApplications? jsonApplications)
+    internal static Applications FromJson(JsonApplications? jsonApplications)
     {
         var apps = new Applications();
 
@@ -232,7 +235,7 @@ public sealed class Applications
             {
                 foreach (JsonApplication? application in jsonApplications.Applications)
                 {
-                    var app = Application.FromJsonApplication(application);
+                    Application? app = Application.FromJson(application);
 
                     if (app != null)
                     {
@@ -253,7 +256,7 @@ public sealed class Applications
         {
             foreach (InstanceInfo instance in instances.Values.ToArray())
             {
-                if ((ReturnUpInstancesOnly && instance.Status == InstanceStatus.Up) || !ReturnUpInstancesOnly)
+                if ((ReturnUpInstancesOnly && instance.EffectiveStatus == InstanceStatus.Up) || !ReturnUpInstancesOnly)
                 {
                     result.Add(instance);
                 }
