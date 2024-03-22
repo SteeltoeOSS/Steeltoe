@@ -19,6 +19,117 @@ namespace Steeltoe.Discovery.Eureka.Test.Transport;
 
 public sealed class EurekaClientTest
 {
+    private const string GetApplicationsFullJsonResponse = """
+        {
+          "applications": {
+            "versions__delta": "1",
+            "apps__hashcode": "UP_1_",
+            "application": [
+              {
+                "name": "FOO",
+                "instance": [
+                  {
+                    "instanceId": "localhost:foo",
+                    "hostName": "localhost",
+                    "app": "FOO",
+                    "ipAddr": "192.168.56.1",
+                    "status": "UP",
+                    "port": {
+                      "$": 8080,
+                      "@enabled": "true"
+                    },
+                    "securePort": {
+                      "$": 443,
+                      "@enabled": "false"
+                    },
+                    "countryId": 1,
+                    "dataCenterInfo": {
+                      "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                      "name": "MyOwn"
+                    },
+                    "leaseInfo": {
+                      "renewalIntervalInSecs": 30,
+                      "durationInSecs": 90,
+                      "registrationTimestamp": 1457714988223,
+                      "lastRenewalTimestamp": 1457716158319,
+                      "evictionTimestamp": 0,
+                      "serviceUpTimestamp": 1457714988223
+                    },
+                    "metadata": {
+                      "@class": "java.util.Collections$EmptyMap"
+                    },
+                    "homePageUrl": "http://localhost:8080/",
+                    "statusPageUrl": "http://localhost:8080/info",
+                    "healthCheckUrl": "http://localhost:8080/health",
+                    "vipAddress": "foo",
+                    "isCoordinatingDiscoveryServer": "false",
+                    "lastUpdatedTimestamp": "1457714988223",
+                    "lastDirtyTimestamp": "1457714988172",
+                    "actionType": "ADDED"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+        """;
+
+    private const string GetApplicationsDeltaJsonResponse = """
+        {
+          "applications": {
+            "versions__delta": "3",
+            "apps__hashcode": "UP_1_",
+            "application": [
+              {
+                "name": "FOO",
+                "instance": [
+                  {
+                    "instanceId": "localhost:foo",
+                    "hostName": "localhost",
+                    "app": "FOO",
+                    "ipAddr": "192.168.56.1",
+                    "status": "UP",
+                    "overriddenStatus": "UNKNOWN",
+                    "port": {
+                      "$": 8080,
+                      "@enabled": "true"
+                    },
+                    "securePort": {
+                      "$": 443,
+                      "@enabled": "false"
+                    },
+                    "countryId": 1,
+                    "dataCenterInfo": {
+                      "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                      "name": "MyOwn"
+                    },
+                    "leaseInfo": {
+                      "renewalIntervalInSecs": 30,
+                      "durationInSecs": 90,
+                      "registrationTimestamp": 1457714988223,
+                      "lastRenewalTimestamp": 1457716158319,
+                      "evictionTimestamp": 0,
+                      "serviceUpTimestamp": 1457714988223
+                    },
+                    "metadata": {
+                      "@class": "java.util.Collections$EmptyMap"
+                    },
+                    "homePageUrl": "http://localhost:8080/",
+                    "statusPageUrl": "http://localhost:8080/info",
+                    "healthCheckUrl": "http://localhost:8080/health",
+                    "vipAddress": "foo",
+                    "isCoordinatingDiscoveryServer": "false",
+                    "lastUpdatedTimestamp": "1457714988223",
+                    "lastDirtyTimestamp": "1457714988172",
+                    "actionType": "MODIFIED"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+        """;
+
     [Fact]
     public async Task RegisterAsync_ThrowsOnUnreachableServer()
     {
@@ -394,39 +505,6 @@ public sealed class EurekaClientTest
     [Fact]
     public async Task GetApplicationsAsync_SendsRequestToServer()
     {
-        const string jsonResponse = """
-            {
-                "applications": {
-                    "versions__delta":"1",
-                    "apps__hashcode":"UP_1_",
-                    "application":[{
-                        "name":"FOO",
-                        "instance":[{
-                            "instanceId":"localhost:foo",
-                            "hostName":"localhost",
-                            "app":"FOO",
-                            "ipAddr":"192.168.56.1",
-                            "status":"UP",
-                            "port":{"$":8080,"@enabled":"true"},
-                            "securePort":{"$":443,"@enabled":"false"},
-                            "countryId":1,
-                            "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
-                            "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
-                            "metadata":{"@class":"java.util.Collections$EmptyMap"},
-                            "homePageUrl":"http://localhost:8080/",
-                            "statusPageUrl":"http://localhost:8080/info",
-                            "healthCheckUrl":"http://localhost:8080/health",
-                            "vipAddress":"foo",
-                            "isCoordinatingDiscoveryServer":"false",
-                            "lastUpdatedTimestamp":"1457714988223",
-                            "lastDirtyTimestamp":"1457714988172",
-                            "actionType":"ADDED"
-                        }]
-                    }]
-                }
-            }
-            """;
-
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddOptions<EurekaClientOptions>();
@@ -434,7 +512,7 @@ public sealed class EurekaClientTest
         services.AddSingleton<EurekaClient>();
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
-        httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", jsonResponse);
+        httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", GetApplicationsFullJsonResponse);
         services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -498,40 +576,6 @@ public sealed class EurekaClientTest
     [Fact]
     public async Task GetDeltaAsync_SendsRequestToServer()
     {
-        const string jsonResponse = """
-            {
-                "applications": {
-                    "versions__delta":"3",
-                    "apps__hashcode":"UP_1_",
-                    "application":[{
-                        "name":"FOO",
-                        "instance":[{
-                            "instanceId":"localhost:foo",
-                            "hostName":"localhost",
-                            "app":"FOO",
-                            "ipAddr":"192.168.56.1",
-                            "status":"UP",
-                            "overriddenStatus":"UNKNOWN",
-                            "port":{"$":8080,"@enabled":"true"},
-                            "securePort":{"$":443,"@enabled":"false"},
-                            "countryId":1,
-                            "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
-                            "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
-                            "metadata":{"@class":"java.util.Collections$EmptyMap"},
-                            "homePageUrl":"http://localhost:8080/",
-                            "statusPageUrl":"http://localhost:8080/info",
-                            "healthCheckUrl":"http://localhost:8080/health",
-                            "vipAddress":"foo",
-                            "isCoordinatingDiscoveryServer":"false",
-                            "lastUpdatedTimestamp":"1457714988223",
-                            "lastDirtyTimestamp":"1457714988172",
-                            "actionType":"MODIFIED"
-                        }]
-                    }]
-                }
-            }
-            """;
-
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddOptions<EurekaClientOptions>();
@@ -539,7 +583,7 @@ public sealed class EurekaClientTest
         services.AddSingleton<EurekaClient>();
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
-        httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/delta").Respond("application/json", jsonResponse);
+        httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/delta").Respond("application/json", GetApplicationsDeltaJsonResponse);
         services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -568,40 +612,6 @@ public sealed class EurekaClientTest
     [Fact]
     public async Task GetVipAsync_SendsRequestToServer()
     {
-        const string jsonResponse = """
-            {
-                "applications": {
-                    "versions__delta":"3",
-                    "apps__hashcode":"UP_1_",
-                    "application":[{
-                        "name":"FOO",
-                        "instance":[{
-                            "instanceId":"localhost:foo",
-                            "hostName":"localhost",
-                            "app":"FOO",
-                            "ipAddr":"192.168.56.1",
-                            "status":"UP",
-                            "overriddenStatus":"UNKNOWN",
-                            "port":{"$":8080,"@enabled":"true"},
-                            "securePort":{"$":443,"@enabled":"false"},
-                            "countryId":1,
-                            "dataCenterInfo":{"@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo","name":"MyOwn"},
-                            "leaseInfo":{"renewalIntervalInSecs":30,"durationInSecs":90,"registrationTimestamp":1457714988223,"lastRenewalTimestamp":1457716158319,"evictionTimestamp":0,"serviceUpTimestamp":1457714988223},
-                            "metadata":{"@class":"java.util.Collections$EmptyMap"},
-                            "homePageUrl":"http://localhost:8080/",
-                            "statusPageUrl":"http://localhost:8080/info",
-                            "healthCheckUrl":"http://localhost:8080/health",
-                            "vipAddress":"foo",
-                            "isCoordinatingDiscoveryServer":"false",
-                            "lastUpdatedTimestamp":"1457714988223",
-                            "lastDirtyTimestamp":"1457714988172",
-                            "actionType":"MODIFIED"
-                        }]
-                    }]
-                }
-            }
-            """;
-
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddOptions<EurekaClientOptions>();
@@ -609,7 +619,7 @@ public sealed class EurekaClientTest
         services.AddSingleton<EurekaClient>();
 
         var httpClientHandler = new DelegateToMockHttpClientHandler();
-        httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/vips/foo").Respond("application/json", jsonResponse);
+        httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/vips/foo").Respond("application/json", GetApplicationsFullJsonResponse);
         services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();

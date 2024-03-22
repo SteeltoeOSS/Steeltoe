@@ -19,7 +19,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public sealed class EurekaApplicationHealthContributorTest
 {
     [Fact]
-    public void GetApplicationsFromConfig_ReturnsExpected()
+    public void GetApplicationsFromConfiguration_ReturnsExpected()
     {
         (EurekaApplicationsHealthContributor contributor, EurekaClientOptions clientOptions) = CreateHealthContributor();
 

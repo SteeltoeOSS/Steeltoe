@@ -11,7 +11,7 @@ namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 public sealed class ApplicationsTest
 {
     [Fact]
-    public void ApplicationListConstructor__AddsAppsFromList()
+    public void ApplicationsConstructor_AddsAppsFromList()
     {
         var app1 = new Application("app1");
         app1.Add(new InstanceInfoBuilder().WithId("id1").Build());
@@ -722,7 +722,7 @@ public sealed class ApplicationsTest
             Applications = [application]
         };
 
-        var apps = Applications.FromJson(applications);
+        Applications apps = Applications.FromJson(applications);
 
         Assert.Equal("AppsHashCode", apps.AppsHashCode);
         Assert.Equal(1, apps.Version);
@@ -853,7 +853,7 @@ public sealed class ApplicationsTest
             Applications = [application]
         };
 
-        var apps = Applications.FromJson(applications);
+        Applications apps = Applications.FromJson(applications);
 
         Assert.Equal("AppsHashCode", apps.AppsHashCode);
         Assert.Equal(1, apps.Version);

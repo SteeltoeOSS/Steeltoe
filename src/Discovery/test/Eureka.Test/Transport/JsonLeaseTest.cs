@@ -15,12 +15,12 @@ public sealed class JsonLeaseTest
     {
         const string json = """
             {
-                "renewalIntervalInSecs":30,
-                "durationInSecs":90,
-                "registrationTimestamp":1457714988223,
-                "lastRenewalTimestamp":1457716158319,
-                "evictionTimestamp":0,
-                "serviceUpTimestamp":1457714988223
+              "renewalIntervalInSecs": 30,
+              "durationInSecs": 90,
+              "registrationTimestamp": 1457714988223,
+              "lastRenewalTimestamp": 1457716158319,
+              "evictionTimestamp": 0,
+              "serviceUpTimestamp": 1457714988223
             }
             """;
 

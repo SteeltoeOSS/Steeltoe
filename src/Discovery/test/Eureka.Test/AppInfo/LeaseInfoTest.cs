@@ -56,7 +56,7 @@ public sealed class LeaseInfoTest
     }
 
     [Fact]
-    public void FromConfig_Correct()
+    public void FromConfiguration_Correct()
     {
         var instanceOptions = new EurekaInstanceOptions();
         LeaseInfo info = LeaseInfo.FromConfiguration(instanceOptions);

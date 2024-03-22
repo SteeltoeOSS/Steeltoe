@@ -12,6 +12,9 @@ using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka;
 
+/// <summary>
+/// Reports whether the Eureka server is reachable.
+/// </summary>
 public sealed class EurekaServerHealthContributor : IHealthContributor
 {
     private readonly EurekaDiscoveryClient _discoveryClient;
@@ -36,7 +39,7 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (!_clientOptionsMonitor.CurrentValue.Health.Enabled)
+        if (!_clientOptionsMonitor.CurrentValue.Health.ContributorEnabled)
         {
             return Task.FromResult<HealthCheckResult?>(null);
         }

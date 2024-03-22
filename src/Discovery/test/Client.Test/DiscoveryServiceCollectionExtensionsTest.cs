@@ -41,7 +41,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     };
 
     [Fact]
-    public void AddDiscoveryClient_WithEurekaConfig_AddsDiscoveryClient()
+    public void AddDiscoveryClient_WithEurekaConfiguration_AddsDiscoveryClient()
     {
         const string appsettings = """
             {
@@ -82,7 +82,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddDiscoveryClient_WithEurekaInetConfig_AddsDiscoveryClient()
+    public void AddDiscoveryClient_WithEurekaInetConfiguration_AddsDiscoveryClient()
     {
         var appsettings = new Dictionary<string, string?>(FastEureka)
         {
@@ -107,7 +107,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public async Task AddDiscoveryClient_WithEurekaClientCertConfig_AddsDiscoveryClient()
+    public async Task AddDiscoveryClient_WithEurekaClientCertificateConfiguration_AddsDiscoveryClient()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -140,7 +140,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public async Task AddDiscoveryClient_WithNoConfig_AddsNoOpDiscoveryClient()
+    public async Task AddDiscoveryClient_WithNoConfiguration_AddsNoOpDiscoveryClient()
     {
         var appsettings = new Dictionary<string, string?>
         {
@@ -391,7 +391,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddServiceDiscovery_WithEurekaConfig_AddsDiscoveryClient()
+    public void AddServiceDiscovery_WithEurekaConfiguration_AddsDiscoveryClient()
     {
         const string appsettings = """
             {
@@ -432,7 +432,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddServiceDiscovery_WithEurekaInetConfig_AddsDiscoveryClient()
+    public void AddServiceDiscovery_WithEurekaInetConfiguration_AddsDiscoveryClient()
     {
         var appsettings = new Dictionary<string, string?>
         {

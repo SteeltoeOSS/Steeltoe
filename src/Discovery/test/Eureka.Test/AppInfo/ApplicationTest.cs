@@ -134,7 +134,7 @@ public sealed class ApplicationTest
             Instances = [instanceInfo]
         };
 
-        var app = Application.FromJson(application);
+        Application? app = Application.FromJson(application);
 
         // Verify
         Assert.NotNull(app);

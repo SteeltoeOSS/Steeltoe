@@ -12,20 +12,6 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public sealed class EurekaClientOptionsTest
 {
     [Fact]
-    public void DefaultConstructor_InitializedWithDefaults()
-    {
-        var clientOptions = new EurekaClientOptions();
-
-        Assert.Equal(EurekaClientOptions.DefaultRegistryFetchIntervalSeconds, clientOptions.RegistryFetchIntervalSeconds);
-        Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
-        Assert.Equal(EurekaServerOptions.DefaultConnectTimeoutSeconds, clientOptions.EurekaServer.ConnectTimeoutSeconds);
-        Assert.True(clientOptions.ShouldRegisterWithEureka);
-        Assert.False(clientOptions.IsFetchDeltaDisabled);
-        Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
-        Assert.True(clientOptions.ShouldFetchRegistry);
-    }
-
-    [Fact]
     public void Constructor_Initializes_Defaults()
     {
         var clientOptions = new EurekaClientOptions();
@@ -45,8 +31,8 @@ public sealed class EurekaClientOptionsTest
         Assert.Null(clientOptions.RegistryRefreshSingleVipAddress);
         Assert.Equal(EurekaClientOptions.DefaultServerServiceUrl, clientOptions.EurekaServerServiceUrls);
         Assert.NotNull(clientOptions.Health);
-        Assert.True(clientOptions.Health.Enabled); // Health contributor enabled
-        Assert.True(clientOptions.Health.CheckEnabled); // Health check enabled
+        Assert.True(clientOptions.Health.ContributorEnabled);
+        Assert.True(clientOptions.Health.CheckEnabled);
         Assert.Null(clientOptions.Health.MonitoredApps);
     }
 
@@ -55,56 +41,56 @@ public sealed class EurekaClientOptionsTest
     {
         const string appsettings = """
             {
-                "eureka": {
-                    "client": {
-                        "eurekaServer": {
-                            "proxyHost": "proxyHost",
-                            "proxyPort": 100,
-                            "proxyUserName": "proxyUserName",
-                            "proxyPassword": "proxyPassword",
-                            "shouldGZipContent": true,
-                            "connectTimeoutSeconds": 100
-                        },
-                        "allowRedirects": true,
-                        "shouldDisableDelta": true,
-                        "shouldFilterOnlyUpInstances": true,
-                        "shouldFetchRegistry": true,
-                        "registryRefreshSingleVipAddress":"registryRefreshSingleVipAddress",
-                        "shouldOnDemandUpdateStatusChange": true,
-                        "shouldRegisterWithEureka": true,
-                        "registryFetchIntervalSeconds": 100,
-                        "instanceInfoReplicationIntervalSeconds": 100,
-                        "serviceUrl": "https://foo.bar:8761/eureka/"
-                    },
-                    "instance": {
-                        "registrationMethod" : "foobar",
-                        "hostName": "myHostName",
-                        "instanceId": "instanceId",
-                        "appName": "appName",
-                        "appGroup": "appGroup",
-                        "instanceEnabledOnInit": true,
-                        "port": 100,
-                        "securePort": 100,
-                        "nonSecurePortEnabled": true,
-                        "securePortEnabled": true,
-                        "leaseExpirationDurationInSeconds":100,
-                        "leaseRenewalIntervalInSeconds": 100,
-                        "secureVipAddress": "secureVipAddress",
-                        "vipAddress": "vipAddress",
-                        "asgName": "asgName",
-                        "metadataMap": {
-                            "foo": "bar",
-                            "bar": "foo"
-                        },
-                        "statusPageUrlPath": "statusPageUrlPath",
-                        "statusPageUrl": "statusPageUrl",
-                        "homePageUrlPath":"homePageUrlPath",
-                        "homePageUrl": "homePageUrl",
-                        "healthCheckUrlPath": "healthCheckUrlPath",
-                        "healthCheckUrl":"healthCheckUrl",
-                        "secureHealthCheckUrl":"secureHealthCheckUrl"
-                    }
+              "eureka": {
+                "client": {
+                  "eurekaServer": {
+                    "proxyHost": "proxyHost",
+                    "proxyPort": 100,
+                    "proxyUserName": "proxyUserName",
+                    "proxyPassword": "proxyPassword",
+                    "shouldGZipContent": true,
+                    "connectTimeoutSeconds": 100
+                  },
+                  "allowRedirects": true,
+                  "shouldDisableDelta": true,
+                  "shouldFilterOnlyUpInstances": true,
+                  "shouldFetchRegistry": true,
+                  "registryRefreshSingleVipAddress": "registryRefreshSingleVipAddress",
+                  "shouldOnDemandUpdateStatusChange": true,
+                  "shouldRegisterWithEureka": true,
+                  "registryFetchIntervalSeconds": 100,
+                  "instanceInfoReplicationIntervalSeconds": 100,
+                  "serviceUrl": "https://foo.bar:8761/eureka/"
+                },
+                "instance": {
+                  "registrationMethod": "foobar",
+                  "hostName": "myHostName",
+                  "instanceId": "instanceId",
+                  "appName": "appName",
+                  "appGroup": "appGroup",
+                  "instanceEnabledOnInit": true,
+                  "port": 100,
+                  "securePort": 100,
+                  "nonSecurePortEnabled": true,
+                  "securePortEnabled": true,
+                  "leaseExpirationDurationInSeconds": 100,
+                  "leaseRenewalIntervalInSeconds": 100,
+                  "secureVipAddress": "secureVipAddress",
+                  "vipAddress": "vipAddress",
+                  "asgName": "asgName",
+                  "metadataMap": {
+                    "foo": "bar",
+                    "bar": "foo"
+                  },
+                  "statusPageUrlPath": "statusPageUrlPath",
+                  "statusPageUrl": "statusPageUrl",
+                  "homePageUrlPath": "homePageUrlPath",
+                  "homePageUrl": "homePageUrl",
+                  "healthCheckUrlPath": "healthCheckUrlPath",
+                  "healthCheckUrl": "healthCheckUrl",
+                  "secureHealthCheckUrl": "secureHealthCheckUrl"
                 }
+              }
             }
             """;
 
@@ -136,8 +122,8 @@ public sealed class EurekaClientOptionsTest
         Assert.True(clientOptions.EurekaServer.ShouldGZipContent);
         Assert.True(clientOptions.ShouldRegisterWithEureka);
         Assert.NotNull(clientOptions.Health);
-        Assert.True(clientOptions.Health.Enabled); // Health contributor enabled
-        Assert.True(clientOptions.Health.CheckEnabled); // Health check enabled
+        Assert.True(clientOptions.Health.ContributorEnabled);
+        Assert.True(clientOptions.Health.CheckEnabled);
         Assert.Null(clientOptions.Health.MonitoredApps);
     }
 }

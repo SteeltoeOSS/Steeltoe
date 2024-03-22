@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public sealed class EurekaDiscoveryClientExtensionTest
 {
     [Fact]
-    public void ClientEnabledByDefault()
+    public void Client_EnabledByDefault()
     {
         var services = new ServiceCollection();
         var extension = new EurekaDiscoveryClientExtension();
@@ -33,7 +33,7 @@ public sealed class EurekaDiscoveryClientExtensionTest
     }
 
     [Fact]
-    public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
+    public void ClientDisabledBySpringCloudDiscovery_EnabledFalse()
     {
         var services = new ServiceCollection();
         var extension = new EurekaDiscoveryClientExtension();
@@ -54,7 +54,7 @@ public sealed class EurekaDiscoveryClientExtensionTest
     }
 
     [Fact]
-    public void ClientFavorsEurekaClientEnabled()
+    public void Client_FavorsEurekaClientEnabled()
     {
         var services = new ServiceCollection();
         var extension = new EurekaDiscoveryClientExtension();

@@ -85,56 +85,56 @@ public sealed class EurekaInstanceOptionsTest
     {
         const string appsettings = """
             {
-                "eureka": {
-                    "client": {
-                        "eurekaServer": {
-                            "proxyHost": "proxyHost",
-                            "proxyPort": 100,
-                            "proxyUserName": "proxyUserName",
-                            "proxyPassword": "proxyPassword",
-                            "shouldGZipContent": true,
-                            "connectTimeoutSeconds": 100
-                        },
-                        "allowRedirects": true,
-                        "shouldDisableDelta": true,
-                        "shouldFilterOnlyUpInstances": true,
-                        "shouldFetchRegistry": true,
-                        "registryRefreshSingleVipAddress":"registryRefreshSingleVipAddress",
-                        "shouldOnDemandUpdateStatusChange": true,
-                        "shouldRegisterWithEureka": true,
-                        "registryFetchIntervalSeconds": 100,
-                        "instanceInfoReplicationIntervalSeconds": 100,
-                        "serviceUrl": "http://localhost:8761/eureka/"
-                    },
-                    "instance": {
-                        "registrationMethod" : "foobar",
-                        "hostName": "myHostName",
-                        "instanceId": "instanceId",
-                        "appName": "appName",
-                        "appGroup": "appGroup",
-                        "instanceEnabledOnInit": true,
-                        "port": 100,
-                        "securePort": 100,
-                        "nonSecurePortEnabled": true,
-                        "securePortEnabled": true,
-                        "leaseExpirationDurationInSeconds":100,
-                        "leaseRenewalIntervalInSeconds": 100,
-                        "secureVipAddress": "secureVipAddress",
-                        "vipAddress": "vipAddress",
-                        "asgName": "asgName",
-                        "metadataMap": {
-                            "foo": "bar",
-                            "bar": "foo"
-                        },
-                        "statusPageUrlPath": "statusPageUrlPath",
-                        "statusPageUrl": "statusPageUrl",
-                        "homePageUrlPath":"homePageUrlPath",
-                        "homePageUrl": "homePageUrl",
-                        "healthCheckUrlPath": "healthCheckUrlPath",
-                        "healthCheckUrl":"healthCheckUrl",
-                        "secureHealthCheckUrl":"secureHealthCheckUrl"
-                    }
+              "eureka": {
+                "client": {
+                  "eurekaServer": {
+                    "proxyHost": "proxyHost",
+                    "proxyPort": 100,
+                    "proxyUserName": "proxyUserName",
+                    "proxyPassword": "proxyPassword",
+                    "shouldGZipContent": true,
+                    "connectTimeoutSeconds": 100
+                  },
+                  "allowRedirects": true,
+                  "shouldDisableDelta": true,
+                  "shouldFilterOnlyUpInstances": true,
+                  "shouldFetchRegistry": true,
+                  "registryRefreshSingleVipAddress": "registryRefreshSingleVipAddress",
+                  "shouldOnDemandUpdateStatusChange": true,
+                  "shouldRegisterWithEureka": true,
+                  "registryFetchIntervalSeconds": 100,
+                  "instanceInfoReplicationIntervalSeconds": 100,
+                  "serviceUrl": "http://localhost:8761/eureka/"
+                },
+                "instance": {
+                  "registrationMethod": "foobar",
+                  "hostName": "myHostName",
+                  "instanceId": "instanceId",
+                  "appName": "appName",
+                  "appGroup": "appGroup",
+                  "instanceEnabledOnInit": true,
+                  "port": 100,
+                  "securePort": 100,
+                  "nonSecurePortEnabled": true,
+                  "securePortEnabled": true,
+                  "leaseExpirationDurationInSeconds": 100,
+                  "leaseRenewalIntervalInSeconds": 100,
+                  "secureVipAddress": "secureVipAddress",
+                  "vipAddress": "vipAddress",
+                  "asgName": "asgName",
+                  "metadataMap": {
+                    "foo": "bar",
+                    "bar": "foo"
+                  },
+                  "statusPageUrlPath": "statusPageUrlPath",
+                  "statusPageUrl": "statusPageUrl",
+                  "homePageUrlPath": "homePageUrlPath",
+                  "homePageUrl": "homePageUrl",
+                  "healthCheckUrlPath": "healthCheckUrlPath",
+                  "healthCheckUrl": "healthCheckUrl",
+                  "secureHealthCheckUrl": "secureHealthCheckUrl"
                 }
+              }
             }
             """;
 
@@ -297,7 +297,7 @@ public sealed class EurekaInstanceOptionsTest
         Assert.Equal(1234, instanceOptions.SecurePort);
         Assert.Equal(1233, instanceOptions.NonSecurePort);
         Assert.True(instanceOptions.IsSecurePortEnabled);
-        Assert.False(instanceOptions.IsNonSecurePortEnabled);
+        Assert.True(instanceOptions.IsNonSecurePortEnabled);
     }
 
     [Fact]
@@ -317,7 +317,7 @@ public sealed class EurekaInstanceOptionsTest
         Assert.Equal(80, instanceOptions.NonSecurePort);
         Assert.Equal(443, instanceOptions.SecurePort);
         Assert.True(instanceOptions.IsSecurePortEnabled);
-        Assert.False(instanceOptions.IsNonSecurePortEnabled);
+        Assert.True(instanceOptions.IsNonSecurePortEnabled);
     }
 
     [Fact]
