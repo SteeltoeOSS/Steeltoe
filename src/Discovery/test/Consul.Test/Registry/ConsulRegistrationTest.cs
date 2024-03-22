@@ -69,11 +69,10 @@ public sealed class ConsulRegistrationTest
 
         var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
         var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(new ConfigurationBuilder().Build()));
-        IList<string> tags = registration.Tags;
 
-        Assert.Equal(2, tags.Count);
-        Assert.Contains("foo", tags);
-        Assert.Contains("bar", tags);
+        Assert.Equal(2, registration.Tags.Count);
+        Assert.Contains("foo", registration.Tags);
+        Assert.Contains("bar", registration.Tags);
     }
 
     [Fact]

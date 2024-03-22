@@ -1,0 +1,12 @@
+#nullable enable
+static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions.AddDiscoveryClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions.AddDiscoveryClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, string? serviceName) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions.AddServiceDiscovery(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration, System.Action<Steeltoe.Discovery.Client.DiscoveryClientBuilder!>? builderAction) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+Steeltoe.Discovery.Client.DiscoveryClientAssemblyAttribute
+Steeltoe.Discovery.Client.DiscoveryClientAssemblyAttribute.DiscoveryClientAssemblyAttribute(System.Type! discoveryClientExtensionType) -> void
+Steeltoe.Discovery.Client.DiscoveryClientBuilder
+Steeltoe.Discovery.Client.DiscoveryClientBuilder.Extensions.get -> System.Collections.Generic.IList<Steeltoe.Discovery.Client.IDiscoveryClientExtension!>!
+Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions
+Steeltoe.Discovery.Client.IDiscoveryClientExtension
+Steeltoe.Discovery.Client.IDiscoveryClientExtension.ApplyServices(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+Steeltoe.Discovery.Client.IDiscoveryClientExtension.IsConfigured(Microsoft.Extensions.Configuration.IConfiguration! configuration, Steeltoe.Connectors.Services.IServiceInfo? serviceInfo) -> bool

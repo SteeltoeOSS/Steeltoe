@@ -8,6 +8,10 @@ namespace Steeltoe.Discovery.Client;
 
 public sealed class DiscoveryClientBuilder
 {
+    internal DiscoveryClientBuilder()
+    {
+    }
+
     /// <summary>
     /// Gets the list of extensions to use when configuring an <see cref="IDiscoveryClient" />.
     /// </summary>

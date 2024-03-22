@@ -30,7 +30,7 @@ public sealed class ConsulServiceInstance : IServiceInstance
     /// <inheritdoc />
     public Uri Uri { get; }
 
-    public IList<string> Tags { get; }
+    public IReadOnlyList<string> Tags { get; }
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string?> Metadata { get; }
@@ -41,7 +41,7 @@ public sealed class ConsulServiceInstance : IServiceInstance
     /// <param name="serviceEntry">
     /// The service entry from the Consul server.
     /// </param>
-    public ConsulServiceInstance(ServiceEntry serviceEntry)
+    internal ConsulServiceInstance(ServiceEntry serviceEntry)
     {
         ArgumentGuard.NotNull(serviceEntry);
 

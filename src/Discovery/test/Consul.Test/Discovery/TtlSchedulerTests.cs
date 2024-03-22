@@ -47,10 +47,7 @@ public sealed class TtlSchedulerTests
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions
-        {
-            Heartbeat = new ConsulHeartbeatOptions()
-        });
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions());
 
         var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
@@ -78,11 +75,7 @@ public sealed class TtlSchedulerTests
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions
-        {
-            Heartbeat = new ConsulHeartbeatOptions()
-        });
-
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
         var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
         scheduler.Add("foobar");
 
@@ -101,7 +94,7 @@ public sealed class TtlSchedulerTests
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(new ConsulDiscoveryOptions
+        var optionsMonitor = TestOptionsMonitor.Create(new ConsulDiscoveryOptions
         {
             Heartbeat = new ConsulHeartbeatOptions
             {

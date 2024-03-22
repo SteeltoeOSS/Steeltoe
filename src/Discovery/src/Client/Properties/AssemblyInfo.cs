@@ -5,5 +5,6 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Client.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Configuration.Test")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

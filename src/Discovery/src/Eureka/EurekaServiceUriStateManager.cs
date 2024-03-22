@@ -37,7 +37,7 @@ public sealed class EurekaServiceUriStateManager
     /// <returns>
     /// The Eureka servers, with the last-known working server at the top, if available.
     /// </returns>
-    public ServiceUrisSnapshot GetSnapshot()
+    internal ServiceUrisSnapshot GetSnapshot()
     {
         return new ServiceUrisSnapshot(this);
     }
@@ -101,7 +101,7 @@ public sealed class EurekaServiceUriStateManager
     /// <param name="serviceUri">
     /// The URI of the Eureka server.
     /// </param>
-    public void MarkWorkingServiceUri(Uri serviceUri)
+    internal void MarkWorkingServiceUri(Uri serviceUri)
     {
         ArgumentGuard.NotNull(serviceUri);
 
@@ -118,7 +118,7 @@ public sealed class EurekaServiceUriStateManager
     /// <param name="serviceUri">
     /// The URI of the Eureka server.
     /// </param>
-    public void MarkFailingServiceUri(Uri serviceUri)
+    internal void MarkFailingServiceUri(Uri serviceUri)
     {
         ArgumentGuard.NotNull(serviceUri);
 
@@ -131,7 +131,7 @@ public sealed class EurekaServiceUriStateManager
     /// <summary>
     /// Provides a method to sequentially try all available Eureka servers.
     /// </summary>
-    public sealed class ServiceUrisSnapshot
+    internal sealed class ServiceUrisSnapshot
     {
         private readonly IList<Uri> _availableServiceUrisSnapshot;
         private int _nextIndex;

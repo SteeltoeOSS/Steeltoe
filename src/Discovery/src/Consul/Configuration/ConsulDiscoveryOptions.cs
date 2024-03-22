@@ -55,7 +55,7 @@ public sealed class ConsulDiscoveryOptions
     /// <summary>
     /// Gets or sets values related to retrying requests.
     /// </summary>
-    public ConsulRetryOptions? Retry { get; set; } = new();
+    public ConsulRetryOptions Retry { get; } = new();
 
     /// <summary>
     /// Gets or sets the tag to query for in the service list, if one is not listed in serverListQueryTags.

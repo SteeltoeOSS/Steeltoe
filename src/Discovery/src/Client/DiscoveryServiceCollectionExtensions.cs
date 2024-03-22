@@ -141,7 +141,7 @@ public static class DiscoveryServiceCollectionExtensions
     /// <exception cref="ConnectorException">
     /// Thrown when no service info with the expected name or type was found.
     /// </exception>
-    public static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration configuration, string serviceName)
+    internal static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration configuration, string serviceName)
     {
         ArgumentGuard.NotNull(configuration);
 
@@ -169,7 +169,7 @@ public static class DiscoveryServiceCollectionExtensions
     /// <exception cref="ConnectorException">
     /// Thrown when multiple service infos were found.
     /// </exception>
-    public static IServiceInfo? GetSingleDiscoveryServiceInfo(IConfiguration configuration)
+    internal static IServiceInfo? GetSingleDiscoveryServiceInfo(IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configuration);
 

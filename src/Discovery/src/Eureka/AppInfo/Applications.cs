@@ -43,21 +43,21 @@ public sealed class Applications
         }
     }
 
-    public Application? GetRegisteredApplication(string appName)
+    internal Application? GetRegisteredApplication(string appName)
     {
         ArgumentGuard.NotNullOrWhiteSpace(appName);
 
         return ApplicationMap.GetValueOrDefault(appName.ToUpperInvariant());
     }
 
-    public IReadOnlyList<InstanceInfo> GetInstancesBySecureVirtualHostName(string secureVirtualHostName)
+    internal IReadOnlyList<InstanceInfo> GetInstancesBySecureVirtualHostName(string secureVirtualHostName)
     {
         ArgumentGuard.NotNullOrWhiteSpace(secureVirtualHostName);
 
         return GetByVirtualHostName(secureVirtualHostName, SecureVirtualHostInstanceMap);
     }
 
-    public IReadOnlyList<InstanceInfo> GetInstancesByVirtualHostName(string virtualHostName)
+    internal IReadOnlyList<InstanceInfo> GetInstancesByVirtualHostName(string virtualHostName)
     {
         ArgumentGuard.NotNullOrWhiteSpace(virtualHostName);
 

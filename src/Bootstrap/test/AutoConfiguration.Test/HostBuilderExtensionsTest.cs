@@ -42,7 +42,6 @@ using Steeltoe.Connectors.PostgreSql;
 using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Connectors.Redis;
 using Steeltoe.Connectors.SqlServer;
-using Steeltoe.Discovery;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;

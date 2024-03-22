@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Configuration;
-using Steeltoe.Discovery.Consul.Discovery;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 
@@ -70,7 +69,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
-    public async Task StartAsync(CancellationToken cancellationToken)
+    internal async Task StartAsync(CancellationToken cancellationToken)
     {
         if (!Options.Enabled)
         {

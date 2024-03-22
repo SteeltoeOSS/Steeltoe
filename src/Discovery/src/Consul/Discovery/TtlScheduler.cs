@@ -57,7 +57,7 @@ public sealed class TtlScheduler : IAsyncDisposable
     /// <param name="instanceId">
     /// The instance ID.
     /// </param>
-    public void Add(string instanceId)
+    internal void Add(string instanceId)
     {
         ArgumentGuard.NotNullOrWhiteSpace(instanceId);
 
@@ -86,7 +86,7 @@ public sealed class TtlScheduler : IAsyncDisposable
     /// <param name="instanceId">
     /// The instance ID.
     /// </param>
-    public async Task RemoveAsync(string instanceId)
+    internal async Task RemoveAsync(string instanceId)
     {
         ArgumentGuard.NotNullOrWhiteSpace(instanceId);
 

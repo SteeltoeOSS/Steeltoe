@@ -44,7 +44,7 @@ public sealed class ConsulRegistration : IServiceInstance
     /// <inheritdoc />
     public Uri Uri => new($"{_optionsMonitor.CurrentValue.Scheme}://{Host}:{Port}");
 
-    public IList<string> Tags { get; }
+    public IReadOnlyList<string> Tags { get; }
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string?> Metadata { get; }
@@ -58,7 +58,7 @@ public sealed class ConsulRegistration : IServiceInstance
     /// <param name="optionsMonitor">
     /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
-    public ConsulRegistration(AgentServiceRegistration innerRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
+    internal ConsulRegistration(AgentServiceRegistration innerRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
         ArgumentGuard.NotNull(innerRegistration);
         ArgumentGuard.NotNull(optionsMonitor);
@@ -83,7 +83,7 @@ public sealed class ConsulRegistration : IServiceInstance
     /// <param name="applicationInfo">
     /// Info about this app instance.
     /// </param>
-    public static ConsulRegistration Create(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IApplicationInstanceInfo applicationInfo)
+    internal static ConsulRegistration Create(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IApplicationInstanceInfo applicationInfo)
     {
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(applicationInfo);

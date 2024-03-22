@@ -13,9 +13,9 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]
 public enum InstanceStatus
 {
+    Unknown,
     Up,
     Down,
     Starting,
-    OutOfService,
-    Unknown
+    OutOfService
 }
