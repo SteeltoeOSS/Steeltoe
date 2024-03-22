@@ -17,7 +17,7 @@ public interface IDiscoveryClient
     string Description { get; }
 
     /// <summary>
-    /// Gets information used to register the local service (this app) to the discovery server.
+    /// Gets information used to register the local service instance (this app) to the discovery server.
     /// </summary>
     /// <returns>
     /// The service instance that represents this app.

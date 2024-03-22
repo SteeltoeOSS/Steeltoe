@@ -52,7 +52,7 @@ public sealed class ConsulDiscoveryOptions
     public ConsulHeartbeatOptions? Heartbeat { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets values related to retrying requests.
+    /// Gets values related to retrying requests.
     /// </summary>
     public ConsulRetryOptions Retry { get; } = new();
 
