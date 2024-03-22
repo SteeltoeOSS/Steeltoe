@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Http.LoadBalancer;
 using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Client.SimpleClients;
+using Steeltoe.Discovery.Configuration;
 using Xunit;
 
 namespace Steeltoe.Common.Http.Test.LoadBalancer;

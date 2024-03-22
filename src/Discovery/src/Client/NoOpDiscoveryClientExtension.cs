@@ -8,7 +8,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Connectors.Services;
 
-namespace Steeltoe.Discovery.Client.SimpleClients;
+namespace Steeltoe.Discovery.Client;
 
 internal sealed class NoOpDiscoveryClientExtension : IDiscoveryClientExtension
 {

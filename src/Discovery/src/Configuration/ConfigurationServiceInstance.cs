@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using Steeltoe.Common.Discovery;
 
-namespace Steeltoe.Discovery.Client.SimpleClients;
+namespace Steeltoe.Discovery.Configuration;
 
 // Justification: Nullability doesn't match IServiceInstance because this type is loaded from configuration. [Required] usage should protect against nulls.
 #pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).

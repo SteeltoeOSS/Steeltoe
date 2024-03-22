@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Discovery;
 
-namespace Steeltoe.Discovery.Client.SimpleClients;
+namespace Steeltoe.Discovery.Configuration;
 
 /// <summary>
 /// Provides access to <see cref="IServiceInstance" />s stored in app configuration. used by <see cref="ConfigurationDiscoveryClient" />.

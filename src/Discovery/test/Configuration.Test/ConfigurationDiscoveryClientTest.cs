@@ -4,10 +4,9 @@
 
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Discovery.Client.SimpleClients;
 using Xunit;
 
-namespace Steeltoe.Discovery.Client.Test;
+namespace Steeltoe.Discovery.Configuration.Test;
 
 public sealed class ConfigurationDiscoveryClientTest
 {

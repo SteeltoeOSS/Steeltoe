@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
-namespace Steeltoe.Discovery.Client.SimpleClients;
+namespace Steeltoe.Discovery.Configuration;
 
 /// <summary>
 /// A discovery client that reads service instances from app configuration.

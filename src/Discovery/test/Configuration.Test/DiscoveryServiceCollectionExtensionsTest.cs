@@ -22,7 +22,7 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Connectors.CloudFoundry;
-using Steeltoe.Discovery.Client.SimpleClients;
+using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
@@ -30,7 +30,7 @@ using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Xunit;
 
-namespace Steeltoe.Discovery.Client.Test;
+namespace Steeltoe.Discovery.Configuration.Test;
 
 public sealed class DiscoveryServiceCollectionExtensionsTest
 {

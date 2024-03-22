@@ -8,8 +8,9 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Connectors.Services;
+using Steeltoe.Discovery.Client;
 
-namespace Steeltoe.Discovery.Client.SimpleClients;
+namespace Steeltoe.Discovery.Configuration;
 
 internal sealed class ConfigurationDiscoveryClientExtension : IDiscoveryClientExtension
 {

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
-namespace Steeltoe.Discovery.Client.SimpleClients;
+namespace Steeltoe.Discovery.Client;
 
 internal sealed class NoOpDiscoveryClient : IDiscoveryClient
 {

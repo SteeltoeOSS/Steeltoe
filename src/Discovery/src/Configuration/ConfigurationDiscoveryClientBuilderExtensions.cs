@@ -3,15 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common;
-using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery.Client;
 
-namespace Steeltoe.Discovery.Client.SimpleClients;
+namespace Steeltoe.Discovery.Configuration;
 
 public static class ConfigurationDiscoveryClientBuilderExtensions
 {
     /// <summary>
-    /// Configures <see cref="ConfigurationDiscoveryClient" /> as the <see cref="IDiscoveryClient" /> of choice. Reads service instances from app
-    /// configuration, instead of a hosted service registry.
+    /// Configures <see cref="ConfigurationDiscoveryClient" /> as the discovery client of choice. Reads service instances from app configuration, instead of
+    /// a hosted service registry.
     /// </summary>
     /// <param name="clientBuilder">
     /// The builder to register configuration-based discovery on.

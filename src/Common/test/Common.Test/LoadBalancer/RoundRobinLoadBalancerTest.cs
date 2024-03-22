@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Discovery.Client.SimpleClients;
+using Steeltoe.Discovery.Configuration;
 using Xunit;
 
 namespace Steeltoe.Common.Test.LoadBalancer;

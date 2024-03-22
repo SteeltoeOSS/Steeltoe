@@ -6,10 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Utils.IO;
-using Steeltoe.Discovery.Client.SimpleClients;
+using Steeltoe.Discovery.Client;
 using Xunit;
 
-namespace Steeltoe.Discovery.Client.Test;
+namespace Steeltoe.Discovery.Configuration.Test;
 
 public sealed class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
 {

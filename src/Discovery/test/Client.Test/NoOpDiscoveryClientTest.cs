@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Steeltoe.Discovery.Client.SimpleClients;
 using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
