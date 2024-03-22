@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
-using Steeltoe.Discovery.Consul.Discovery;
 
 namespace Steeltoe.Discovery.Consul.Configuration;
 

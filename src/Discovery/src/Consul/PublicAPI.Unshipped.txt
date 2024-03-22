@@ -99,28 +99,25 @@ Steeltoe.Discovery.Consul.Configuration.ConsulRetryOptions.MaxInterval.get -> in
 Steeltoe.Discovery.Consul.Configuration.ConsulRetryOptions.MaxInterval.set -> void
 Steeltoe.Discovery.Consul.Configuration.ConsulRetryOptions.Multiplier.get -> double
 Steeltoe.Discovery.Consul.Configuration.ConsulRetryOptions.Multiplier.set -> void
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.ConsulDiscoveryClient(Consul.IConsulClient! client, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions!>! optionsMonitor, Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistrar? registrar, Microsoft.Extensions.Logging.ILogger<Steeltoe.Discovery.Consul.ConsulDiscoveryClient!>! logger) -> void
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.Description.get -> string!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetAllInstancesAsync(Consul.QueryOptions! queryOptions, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Common.Discovery.IServiceInstance!>!>!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetInstancesAsync(string! serviceId, Consul.QueryOptions! queryOptions, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Common.Discovery.IServiceInstance!>!>!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetInstancesAsync(string! serviceId, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Common.Discovery.IServiceInstance!>!>!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetServiceIdsAsync(Consul.QueryOptions! queryOptions, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<string!>!>!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetServiceIdsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<string!>!>!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.ShutdownAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Consul.ConsulDiscoveryClientBuilderExtensions
-Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient
-Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient.ConsulDiscoveryClient(Consul.IConsulClient! client, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions!>! optionsMonitor, Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistrar? registrar, Microsoft.Extensions.Logging.ILogger<Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient!>! logger) -> void
-Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient.Description.get -> string!
-Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient.GetAllInstancesAsync(Consul.QueryOptions! queryOptions, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Common.Discovery.IServiceInstance!>!>!
-Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient.GetInstancesAsync(string! serviceId, Consul.QueryOptions! queryOptions, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Common.Discovery.IServiceInstance!>!>!
-Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient.GetInstancesAsync(string! serviceId, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Common.Discovery.IServiceInstance!>!>!
-Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance!
-Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient.GetServiceIdsAsync(Consul.QueryOptions! queryOptions, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<string!>!>!
-Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient.GetServiceIdsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<string!>!>!
-Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient.ShutdownAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
-Steeltoe.Discovery.Consul.Discovery.ConsulServiceInstance
-Steeltoe.Discovery.Consul.Discovery.ConsulServiceInstance.Host.get -> string!
-Steeltoe.Discovery.Consul.Discovery.ConsulServiceInstance.IsSecure.get -> bool
-Steeltoe.Discovery.Consul.Discovery.ConsulServiceInstance.Metadata.get -> System.Collections.Generic.IReadOnlyDictionary<string!, string?>!
-Steeltoe.Discovery.Consul.Discovery.ConsulServiceInstance.Port.get -> int
-Steeltoe.Discovery.Consul.Discovery.ConsulServiceInstance.ServiceId.get -> string!
-Steeltoe.Discovery.Consul.Discovery.ConsulServiceInstance.Tags.get -> System.Collections.Generic.IReadOnlyList<string!>!
-Steeltoe.Discovery.Consul.Discovery.ConsulServiceInstance.Uri.get -> System.Uri!
-Steeltoe.Discovery.Consul.Discovery.TtlScheduler
-Steeltoe.Discovery.Consul.Discovery.TtlScheduler.DisposeAsync() -> System.Threading.Tasks.ValueTask
-Steeltoe.Discovery.Consul.Discovery.TtlScheduler.TtlScheduler(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions!>! optionsMonitor, Consul.IConsulClient! client, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Discovery.Consul.ConsulServiceInstance
+Steeltoe.Discovery.Consul.ConsulServiceInstance.Host.get -> string!
+Steeltoe.Discovery.Consul.ConsulServiceInstance.IsSecure.get -> bool
+Steeltoe.Discovery.Consul.ConsulServiceInstance.Metadata.get -> System.Collections.Generic.IReadOnlyDictionary<string!, string?>!
+Steeltoe.Discovery.Consul.ConsulServiceInstance.Port.get -> int
+Steeltoe.Discovery.Consul.ConsulServiceInstance.ServiceId.get -> string!
+Steeltoe.Discovery.Consul.ConsulServiceInstance.Tags.get -> System.Collections.Generic.IReadOnlyList<string!>!
+Steeltoe.Discovery.Consul.ConsulServiceInstance.Uri.get -> System.Uri!
 Steeltoe.Discovery.Consul.Registry.ConsulRegistration
 Steeltoe.Discovery.Consul.Registry.ConsulRegistration.Host.get -> string!
 Steeltoe.Discovery.Consul.Registry.ConsulRegistration.InstanceId.get -> string!
@@ -135,9 +132,12 @@ Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistrar.ConsulServiceRegistrar
 Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistrar.DisposeAsync() -> System.Threading.Tasks.ValueTask
 Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistrar.Registration.get -> Steeltoe.Discovery.Consul.Registry.ConsulRegistration!
 Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistry
-Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistry.ConsulServiceRegistry(Consul.IConsulClient! client, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions!>! optionsMonitor, Steeltoe.Discovery.Consul.Discovery.TtlScheduler? scheduler, Microsoft.Extensions.Logging.ILogger<Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistry!>! logger) -> void
+Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistry.ConsulServiceRegistry(Consul.IConsulClient! client, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions!>! optionsMonitor, Steeltoe.Discovery.Consul.TtlScheduler? scheduler, Microsoft.Extensions.Logging.ILogger<Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistry!>! logger) -> void
 Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistry.DeregisterAsync(Steeltoe.Discovery.Consul.Registry.ConsulRegistration! registration, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistry.DisposeAsync() -> System.Threading.Tasks.ValueTask
 Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistry.GetStatusAsync(Steeltoe.Discovery.Consul.Registry.ConsulRegistration! registration, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<string!>!
 Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistry.RegisterAsync(Steeltoe.Discovery.Consul.Registry.ConsulRegistration! registration, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Consul.Registry.ConsulServiceRegistry.SetStatusAsync(Steeltoe.Discovery.Consul.Registry.ConsulRegistration! registration, string! status, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+Steeltoe.Discovery.Consul.TtlScheduler
+Steeltoe.Discovery.Consul.TtlScheduler.DisposeAsync() -> System.Threading.Tasks.ValueTask
+Steeltoe.Discovery.Consul.TtlScheduler.TtlScheduler(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions!>! optionsMonitor, Consul.IConsulClient! client, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void

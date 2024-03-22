@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Consul.Discovery;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test;

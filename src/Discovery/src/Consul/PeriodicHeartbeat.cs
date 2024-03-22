@@ -6,7 +6,7 @@ using Consul;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 
-namespace Steeltoe.Discovery.Consul.Discovery;
+namespace Steeltoe.Discovery.Consul;
 
 internal sealed class PeriodicHeartbeat : IAsyncDisposable
 {

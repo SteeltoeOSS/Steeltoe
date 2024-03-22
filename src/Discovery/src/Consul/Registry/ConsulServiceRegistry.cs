@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Configuration;
-using Steeltoe.Discovery.Consul.Discovery;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 

@@ -8,7 +8,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Util;
 
-namespace Steeltoe.Discovery.Consul.Discovery;
+namespace Steeltoe.Discovery.Consul;
 
 /// <summary>
 /// A service instance returned from a Consul server.

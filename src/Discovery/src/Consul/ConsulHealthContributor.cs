@@ -7,7 +7,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
-namespace Steeltoe.Discovery.Consul.Discovery;
+namespace Steeltoe.Discovery.Consul;
 
 /// <summary>
 /// A health contributor that provides the health of the Consul server connection.

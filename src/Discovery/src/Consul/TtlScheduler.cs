@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Configuration;
 
-namespace Steeltoe.Discovery.Consul.Discovery;
+namespace Steeltoe.Discovery.Consul;
 
 /// <summary>
 /// Scheduler used to issue TTL (time-to-live) requests to the Consul server.

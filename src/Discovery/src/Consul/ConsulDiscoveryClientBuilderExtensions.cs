@@ -5,7 +5,6 @@
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Consul.Discovery;
 
 namespace Steeltoe.Discovery.Consul;
 

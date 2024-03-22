@@ -6,7 +6,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 
-namespace Steeltoe.Discovery.Consul.Discovery;
+namespace Steeltoe.Discovery.Consul;
 
 /// <summary>
 /// Represents the service instance for the currently running application.

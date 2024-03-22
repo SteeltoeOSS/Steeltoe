@@ -5,7 +5,6 @@
 using Consul;
 using Moq;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Discovery.Consul.Discovery;
 using Xunit;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 

@@ -9,7 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul;
-using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Eureka;
 using Xunit;
 
