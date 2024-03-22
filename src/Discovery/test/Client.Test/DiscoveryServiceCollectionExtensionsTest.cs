@@ -890,7 +890,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         handler.Mock.VerifyNoOutstandingExpectation();
 
         Assert.NotNull(applications);
-        applications.GetRegisteredApplications().Should().HaveCount(1);
+        applications.RegisteredApplications.Should().HaveCount(1);
     }
 
     [Fact]
@@ -960,7 +960,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
         handler.Mock.VerifyNoOutstandingExpectation();
 
         Assert.NotNull(applications);
-        applications.GetRegisteredApplications().Should().HaveCount(1);
+        applications.RegisteredApplications.Should().HaveCount(1);
     }
 
     private sealed class TestApplicationLifetime : IHostApplicationLifetime

@@ -11,6 +11,9 @@ using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
+/// <summary>
+/// Represents a collection of applications in Eureka server.
+/// </summary>
 public sealed class Applications
 {
     private readonly object _addRemoveInstanceLock = new();
@@ -19,7 +22,7 @@ public sealed class Applications
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap { get; } = new();
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new();
 
-    public IReadOnlyCollection<Application> Items => new List<Application>(ApplicationMap.Values);
+    public IReadOnlyList<Application> RegisteredApplications => new List<Application>(ApplicationMap.Values);
     public string? AppsHashCode { get; internal set; }
     public long? Version { get; private set; }
     public bool ReturnUpInstancesOnly { get; set; }
@@ -40,28 +43,23 @@ public sealed class Applications
         }
     }
 
-    public IList<Application> GetRegisteredApplications()
-    {
-        return ApplicationMap.Values.ToList();
-    }
-
     public Application? GetRegisteredApplication(string appName)
     {
-        ArgumentGuard.NotNullOrEmpty(appName);
+        ArgumentGuard.NotNullOrWhiteSpace(appName);
 
         return ApplicationMap.GetValueOrDefault(appName.ToUpperInvariant());
     }
 
-    public IList<InstanceInfo> GetInstancesBySecureVirtualHostName(string secureVirtualHostName)
+    public IReadOnlyList<InstanceInfo> GetInstancesBySecureVirtualHostName(string secureVirtualHostName)
     {
-        ArgumentGuard.NotNullOrEmpty(secureVirtualHostName);
+        ArgumentGuard.NotNullOrWhiteSpace(secureVirtualHostName);
 
         return GetByVirtualHostName(secureVirtualHostName, SecureVirtualHostInstanceMap);
     }
 
-    public IList<InstanceInfo> GetInstancesByVirtualHostName(string virtualHostName)
+    public IReadOnlyList<InstanceInfo> GetInstancesByVirtualHostName(string virtualHostName)
     {
-        ArgumentGuard.NotNullOrEmpty(virtualHostName);
+        ArgumentGuard.NotNullOrWhiteSpace(virtualHostName);
 
         return GetByVirtualHostName(virtualHostName, VirtualHostInstanceMap);
     }
@@ -161,7 +159,7 @@ public sealed class Applications
     {
         ArgumentGuard.NotNull(delta);
 
-        foreach (Application app in delta.GetRegisteredApplications())
+        foreach (Application app in delta.RegisteredApplications)
         {
             foreach (InstanceInfo instance in app.Instances)
             {
@@ -195,7 +193,7 @@ public sealed class Applications
     {
         var statusMap = new Dictionary<string, int>();
 
-        foreach (Application app in GetRegisteredApplications())
+        foreach (Application app in RegisteredApplications)
         {
             foreach (InstanceInfo instance in app.Instances)
             {
@@ -248,7 +246,7 @@ public sealed class Applications
         return apps;
     }
 
-    private IList<InstanceInfo> GetByVirtualHostName(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
+    private IReadOnlyList<InstanceInfo> GetByVirtualHostName(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dictionary)
     {
         var result = new List<InstanceInfo>();
 

@@ -53,7 +53,7 @@ public sealed class EurekaInstanceOptions
     public IDictionary<string, string?> MetadataMap { get; } = new Dictionary<string, string?>();
 
     /// <summary>
-    /// Gets or sets configuration property: eureka:instance:hostName.
+    /// Gets or sets the hostname of this instance. Configuration property: eureka:instance:hostName.
     /// </summary>
     public string? HostName
     {
@@ -62,8 +62,7 @@ public sealed class EurekaInstanceOptions
     }
 
     /// <summary>
-    /// Gets or sets the IP address of the instance. This information is for academic purposes only, as the communication from other instances primarily
-    /// happens using the information supplied in <see cref="HostName" />.
+    /// Gets or sets the IP address of the instance.
     /// </summary>
     public string? IPAddress
     {
@@ -72,22 +71,24 @@ public sealed class EurekaInstanceOptions
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether usage of IP address should be preferred. Configuration property: eureka:instance:preferIPAddress.
+    /// Gets or sets a value indicating whether usage of <see cref="IPAddress" />> should be preferred over <see cref="HostName" />. Configuration property:
+    /// eureka:instance:preferIPAddress.
     /// </summary>
     public bool PreferIPAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets the virtual host name(s) defined for this instance. Multiple values can be specified as a comma-separated list. This is typically the
-    /// way other instances would find this instance by using the virtual host name. Think of this as similar to the fully qualified domain name, that the
-    /// users of your services will need to find this instance. Configuration property: eureka:instance:vipAddress.
+    /// Gets or sets the virtual host name(s) defined for this instance. Corresponds to Eureka VIP Address. Multiple values can be specified as a
+    /// comma-separated list. This is typically the way other instances would find this instance by using the virtual host name. Think of this as similar to
+    /// the fully qualified domain name, that the users of your services will need to find this instance. Configuration property: eureka:instance:vipAddress.
     /// </summary>
     [ConfigurationKeyName("VipAddress")]
     public string? VirtualHostName { get; set; }
 
     /// <summary>
-    /// Gets or sets the secure virtual host name(s) defined for this instance. Multiple values can be specified as a comma-separated list. This is typically
-    /// the way other instances would find this instance by using the virtual host name. Think of this as similar to the fully qualified domain name, that
-    /// the users of your services will need to find this instance. Configuration property: eureka:instance:secureVipAddress.
+    /// Gets or sets the secure virtual host name(s) defined for this instance. Corresponds to Eureka Secure VIP Address. Multiple values can be specified as
+    /// a comma-separated list. This is typically the way other instances would find this instance by using the virtual host name. Think of this as similar
+    /// to the fully qualified domain name, that the users of your services will need to find this instance. Configuration property:
+    /// eureka:instance:secureVipAddress.
     /// </summary>
     [ConfigurationKeyName("SecureVipAddress")]
     public string? SecureVirtualHostName { get; set; }

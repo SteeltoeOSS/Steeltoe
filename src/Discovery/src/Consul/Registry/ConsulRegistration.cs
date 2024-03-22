@@ -9,22 +9,19 @@ using Consul;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Util;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
-/// The registration to be used when registering with the Consul server.
+/// Represents the local application instance, to be registered with the Consul server.
 /// </summary>
 public sealed class ConsulRegistration : IServiceInstance
 {
     private const char Separator = '-';
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
 
-    /// <summary>
-    /// Gets the underlying Consul service registration.
-    /// </summary>
     internal AgentServiceRegistration InnerRegistration { get; }
 
     /// <inheritdoc />
@@ -172,7 +169,7 @@ public sealed class ConsulRegistration : IServiceInstance
         if (serviceId == null || !char.IsLetter(serviceId[0]) || !char.IsLetterOrDigit(serviceId[^1]))
         {
             throw new ArgumentException(
-                $"Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {serviceId}",
+                $"Consul service IDs must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {serviceId}",
                 nameof(serviceId));
         }
 

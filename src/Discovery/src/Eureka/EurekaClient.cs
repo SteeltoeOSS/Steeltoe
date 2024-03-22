@@ -23,7 +23,7 @@ using Steeltoe.Discovery.Eureka.Util;
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
-/// Performs HTTP requests to Eureka servers.
+/// Sends HTTP requests to Eureka servers.
 /// </summary>
 public sealed class EurekaClient
 {
@@ -154,7 +154,7 @@ public sealed class EurekaClient
         // A Eureka server returns 404 when our lastDirtyTimeUtc is newer, then it wants us to re-register because it believes to be outdated.
         // This can happen in a cluster of Eureka servers where not all servers are in sync.
         // Because we're sequentially sending a heartbeat to all known servers until one succeeds, we leave it up to the servers
-        // to keep each other in sync. So the client should only try to re-register when none of the Eureka servers reported success.
+        // to keep each other in sync. So the caller of this method should only try to re-register when none of the Eureka servers reported success.
 
         Dictionary<string, string>? queryString = lastDirtyTimeUtc != null
             ? new Dictionary<string, string>

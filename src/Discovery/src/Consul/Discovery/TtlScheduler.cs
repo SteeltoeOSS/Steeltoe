@@ -8,11 +8,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// Scheduler used to issue TTL requests to the Consul server.
+/// Scheduler used to issue TTL (time-to-live) requests to the Consul server.
 /// </summary>
 public sealed class TtlScheduler : IAsyncDisposable
 {
@@ -22,8 +23,9 @@ public sealed class TtlScheduler : IAsyncDisposable
     private readonly IConsulClient _client;
     private readonly ILogger<TtlScheduler> _schedulerLogger;
     private readonly ILogger<PeriodicHeartbeat> _heartbeatLogger;
-    internal ConcurrentDictionary<string, PeriodicHeartbeat> ServiceHeartbeats { get; } = new(StringComparer.OrdinalIgnoreCase);
     private bool _isDisposed;
+
+    internal ConcurrentDictionary<string, PeriodicHeartbeat> ServiceHeartbeats { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TtlScheduler" /> class.

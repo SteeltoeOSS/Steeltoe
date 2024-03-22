@@ -14,7 +14,7 @@ namespace Steeltoe.Discovery.Eureka;
 /// <summary>
 /// Reports whether the configured list of apps this app depends on are reachable.
 /// </summary>
-public sealed class EurekaApplicationsHealthContributor : IHealthContributor
+internal sealed class EurekaApplicationsHealthContributor : IHealthContributor
 {
     private readonly EurekaDiscoveryClient _discoveryClient;
     private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
@@ -87,8 +87,7 @@ public sealed class EurekaApplicationsHealthContributor : IHealthContributor
             return configuredApplications;
         }
 
-        IList<Application> registeredApplications = _discoveryClient.Applications.GetRegisteredApplications();
-        return registeredApplications.Select(app => app.Name).ToList();
+        return _discoveryClient.Applications.RegisteredApplications.Select(app => app.Name).ToList();
     }
 
     internal IList<string>? GetApplicationsFromConfiguration()

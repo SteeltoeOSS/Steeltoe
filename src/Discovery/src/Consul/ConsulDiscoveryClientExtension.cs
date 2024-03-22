@@ -12,6 +12,7 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Net;
 using Steeltoe.Connectors.Services;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 

@@ -7,6 +7,9 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
+/// <summary>
+/// Lists the statuses a Eureka application instance can have.
+/// </summary>
 [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]
 public enum InstanceStatus
 {

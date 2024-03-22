@@ -186,7 +186,7 @@ public sealed class DiscoveryClientTest
         Assert.Equal(1, applications.Version);
         Assert.Equal("UP_1_", applications.AppsHashCode);
 
-        IList<Application> registeredApplications = applications.GetRegisteredApplications();
+        IReadOnlyList<Application> registeredApplications = applications.RegisteredApplications;
         Assert.NotNull(registeredApplications);
         Assert.Single(registeredApplications);
         Assert.Equal("FOO", registeredApplications[0].Name);
@@ -231,7 +231,7 @@ public sealed class DiscoveryClientTest
         Assert.Equal(3, result.Version);
         Assert.Equal("UP_1_", result.AppsHashCode);
 
-        IList<Application> registeredApplications = result.GetRegisteredApplications();
+        IReadOnlyList<Application> registeredApplications = result.RegisteredApplications;
         Assert.NotNull(registeredApplications);
         Assert.Single(registeredApplications);
         Assert.Equal("FOO", registeredApplications[0].Name);
@@ -435,7 +435,7 @@ public sealed class DiscoveryClientTest
             ])
         ]);
 
-        IList<InstanceInfo> result = discoveryClient.GetInstancesByVipAddress("vapp1", false);
+        IReadOnlyList<InstanceInfo> result = discoveryClient.GetInstancesByVipAddress("vapp1", false);
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);

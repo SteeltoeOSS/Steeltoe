@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
-using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul;
 

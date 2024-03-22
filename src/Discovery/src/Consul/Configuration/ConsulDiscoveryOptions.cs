@@ -4,8 +4,9 @@
 
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
+using Steeltoe.Discovery.Consul.Discovery;
 
-namespace Steeltoe.Discovery.Consul.Discovery;
+namespace Steeltoe.Discovery.Consul.Configuration;
 
 /// <summary>
 /// Configuration options for <see cref="ConsulDiscoveryClient" />.
@@ -18,6 +19,16 @@ public sealed class ConsulDiscoveryOptions
     private string? _scheme = "http";
 
     internal InetUtils? NetUtils { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether heart beats are enabled.
+    /// </summary>
+    internal bool IsHeartbeatEnabled => Heartbeat is { Enabled: true };
+
+    /// <summary>
+    /// Gets a value indicating whether retries are enabled.
+    /// </summary>
+    internal bool IsRetryEnabled => Retry is { Enabled: true };
 
     /// <summary>
     /// Gets or sets a value indicating whether the Consul discovery client is enabled.
@@ -171,16 +182,6 @@ public sealed class ConsulDiscoveryOptions
     /// Gets or sets a value indicating whether to use automatic de-registration of a service in consul.
     /// </summary>
     public bool Deregister { get; set; } = true;
-
-    /// <summary>
-    /// Gets a value indicating whether heart beats are enabled.
-    /// </summary>
-    public bool IsHeartbeatEnabled => Heartbeat is { Enabled: true };
-
-    /// <summary>
-    /// Gets a value indicating whether retries are enabled.
-    /// </summary>
-    public bool IsRetryEnabled => Retry is { Enabled: true };
 
     /// <summary>
     /// Gets or sets a value indicating whether to register url from ASP.NET Core configuration.

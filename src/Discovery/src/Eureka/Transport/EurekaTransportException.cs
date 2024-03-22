@@ -4,6 +4,9 @@
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
+/// <summary>
+/// The exception that is thrown when a communication failure with a Eureka server occurs.
+/// </summary>
 public sealed class EurekaTransportException : Exception
 {
     public EurekaTransportException(string? message)

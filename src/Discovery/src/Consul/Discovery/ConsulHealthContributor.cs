@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 /// <summary>
 /// A health contributor that provides the health of the Consul server connection.
 /// </summary>
-public sealed class ConsulHealthContributor : IHealthContributor
+internal sealed class ConsulHealthContributor : IHealthContributor
 {
     private readonly IConsulClient _client;
 

@@ -11,7 +11,7 @@ using Steeltoe.Discovery.Eureka.Transport;
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
-/// Keeps track of working and broken Eureka service URIs that are configured.
+/// Keeps track of working and broken Eureka service URIs that are configured, with stickiness to the last working server.
 /// </summary>
 public sealed class EurekaServiceUriStateManager
 {

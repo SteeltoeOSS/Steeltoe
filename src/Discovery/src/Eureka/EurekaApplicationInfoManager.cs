@@ -11,7 +11,7 @@ using Steeltoe.Discovery.Eureka.Configuration;
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
-/// Provides access to the Eureka instance that represents the currently running app.
+/// Provides access to the Eureka instance that represents the currently running application.
 /// </summary>
 public sealed class EurekaApplicationInfoManager : IDisposable
 {
@@ -28,7 +28,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
     private IReadOnlyDictionary<string, string?>? _explicitMetadata;
 
     /// <summary>
-    /// Gets the instance that represents the currently running app.
+    /// Gets the instance that represents the currently running application.
     /// </summary>
     public InstanceInfo Instance => _instance;
 
@@ -61,7 +61,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
     }
 
     /// <summary>
-    /// Updates the status of the instance that represents the currently running app.
+    /// Atomically updates <see cref="Instance" /> by refreshing from configuration and applying the requested changes.
     /// </summary>
     /// <param name="newStatus">
     /// The status to assign, or <c>null</c> to preserve the current status.
@@ -70,8 +70,8 @@ public sealed class EurekaApplicationInfoManager : IDisposable
     /// The overridden status to assign, or <c>null</c> to preserve the current overridden status.
     /// </param>
     /// <param name="newMetadata">
-    /// The metadata to assign, or <c>null</c> to preserve the current metadata. Once this has been assigned from code, metadata changes in configuration are
-    /// ignored.
+    /// The metadata to assign, or <c>null</c> to preserve the current metadata. Once metadata has been assigned from code, future metadata changes from
+    /// configuration are ignored.
     /// </param>
     public void UpdateInstance(InstanceStatus? newStatus, InstanceStatus? newOverriddenStatus, IReadOnlyDictionary<string, string?>? newMetadata)
     {
@@ -165,6 +165,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
         InnerUpdateInstance(_instanceOptionsMonitor.CurrentValue, false, newStatus);
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         _instanceOptionsChangeToken?.Dispose();

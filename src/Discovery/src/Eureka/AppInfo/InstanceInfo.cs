@@ -11,6 +11,9 @@ using Steeltoe.Discovery.Eureka.Util;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
+/// <summary>
+/// Represents an application instance in Eureka server.
+/// </summary>
 public sealed class InstanceInfo
 {
     private static readonly ReadOnlyDictionary<string, string?> EmptyMetadata = new(new Dictionary<string, string?>());
@@ -217,7 +220,7 @@ public sealed class InstanceInfo
         }
     }
 
-    public InstanceInfo(string instanceId, string appName, string hostName, string ipAddress, DataCenterInfo dataCenterInfo)
+    internal InstanceInfo(string instanceId, string appName, string hostName, string ipAddress, DataCenterInfo dataCenterInfo)
     {
         // These are required to register an instance to Eureka server, so they should always be available.
         ArgumentGuard.NotNullOrWhiteSpace(instanceId);

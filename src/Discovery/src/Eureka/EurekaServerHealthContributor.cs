@@ -15,7 +15,7 @@ namespace Steeltoe.Discovery.Eureka;
 /// <summary>
 /// Reports whether the Eureka server is reachable.
 /// </summary>
-public sealed class EurekaServerHealthContributor : IHealthContributor
+internal sealed class EurekaServerHealthContributor : IHealthContributor
 {
     private readonly EurekaDiscoveryClient _discoveryClient;
     private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
@@ -168,9 +168,7 @@ public sealed class EurekaServerHealthContributor : IHealthContributor
     {
         var apps = new Dictionary<string, int>();
 
-        IList<Application> registered = applications.GetRegisteredApplications();
-
-        foreach (Application app in registered)
+        foreach (Application app in applications.RegisteredApplications)
         {
             int instanceCount = app.Instances.Count;
 

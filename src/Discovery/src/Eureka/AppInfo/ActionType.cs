@@ -7,21 +7,24 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
+/// <summary>
+/// Lists the types of change used when fetching the delta of Eureka applications.
+/// </summary>
 [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]
 public enum ActionType
 {
     /// <summary>
-    /// Added in the discovery server.
+    /// Added in Eureka server, since the last fetch.
     /// </summary>
     Added,
 
     /// <summary>
-    /// Changed in the discovery server.
+    /// Changed in Eureka server, since the last fetch.
     /// </summary>
     Modified,
 
     /// <summary>
-    /// Deleted from the discovery server.
+    /// Deleted from Eureka server, since the last fetch.
     /// </summary>
     Deleted
 }

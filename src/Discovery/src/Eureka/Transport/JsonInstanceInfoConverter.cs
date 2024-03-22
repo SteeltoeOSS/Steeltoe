@@ -22,6 +22,6 @@ internal sealed class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstan
 
     public override void Write(Utf8JsonWriter writer, IList<JsonInstanceInfo?> value, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

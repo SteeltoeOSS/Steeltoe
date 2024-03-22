@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Discovery.Consul;
+namespace Steeltoe.Discovery.Consul.Configuration;
 
 /// <summary>
 /// Configuration options to use in creating a Consul client. See the documentation of the Consul client for more details.

@@ -8,6 +8,9 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
 
+/// <summary>
+/// Represents an application instance in Eureka.
+/// </summary>
 internal sealed class EurekaServiceInstance : IServiceInstance
 {
     private readonly InstanceInfo _instance;

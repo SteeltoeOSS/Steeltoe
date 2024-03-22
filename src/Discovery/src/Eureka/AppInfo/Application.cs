@@ -9,12 +9,15 @@ using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
+/// <summary>
+/// Represents an application in Eureka server.
+/// </summary>
 public sealed class Application
 {
     private readonly ConcurrentDictionary<string, InstanceInfo> _instanceMap = new();
 
     public string Name { get; }
-    public IList<InstanceInfo> Instances => new List<InstanceInfo>(_instanceMap.Values);
+    public IReadOnlyList<InstanceInfo> Instances => new List<InstanceInfo>(_instanceMap.Values);
 
     internal Application(string name)
         : this(name, Array.Empty<InstanceInfo>())

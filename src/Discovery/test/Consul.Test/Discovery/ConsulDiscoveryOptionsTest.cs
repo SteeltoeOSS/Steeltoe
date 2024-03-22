@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common.Net;
-using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Configuration;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;

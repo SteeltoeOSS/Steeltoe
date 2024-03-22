@@ -10,7 +10,7 @@ namespace Steeltoe.Discovery.Eureka.Transport;
 
 internal sealed class JsonInstanceInfo
 {
-    // All fields are nullable, so the client won't send unspecified values with
+    // All fields are nullable, so the client won't send unspecified values using
     // JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull.
 
     [JsonPropertyName("instanceId")]

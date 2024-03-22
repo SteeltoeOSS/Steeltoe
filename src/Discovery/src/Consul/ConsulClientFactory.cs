@@ -5,6 +5,7 @@
 using System.Net;
 using Consul;
 using Steeltoe.Common;
+using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Util;
 
 namespace Steeltoe.Discovery.Consul;

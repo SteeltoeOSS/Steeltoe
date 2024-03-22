@@ -129,18 +129,19 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
     internal Application? GetApplication(string appName)
     {
-        ArgumentGuard.NotNullOrEmpty(appName);
+        ArgumentGuard.NotNullOrWhiteSpace(appName);
 
         return Applications.GetRegisteredApplication(appName);
     }
 
-    internal IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure)
+    internal IReadOnlyList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure)
     {
-        ArgumentGuard.NotNullOrEmpty(vipAddress);
+        ArgumentGuard.NotNullOrWhiteSpace(vipAddress);
 
         return secure ? Applications.GetInstancesBySecureVirtualHostName(vipAddress) : Applications.GetInstancesByVirtualHostName(vipAddress);
     }
 
+    /// <inheritdoc />
     public async Task ShutdownAsync(CancellationToken cancellationToken)
     {
         int shutdownValue = Interlocked.Exchange(ref _isShutdown, 1);
@@ -297,7 +298,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
             EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
 
             bool requireFullFetch = doFullUpdate || !string.IsNullOrWhiteSpace(clientOptions.RegistryRefreshSingleVipAddress) ||
-                clientOptions.IsFetchDeltaDisabled || _remoteApps.GetRegisteredApplications().Count == 0;
+                clientOptions.IsFetchDeltaDisabled || _remoteApps.RegisteredApplications.Count == 0;
 
             Applications fetched = requireFullFetch ? await FetchFullRegistryAsync(cancellationToken) : await FetchRegistryDeltaAsync(cancellationToken);
 
@@ -440,12 +441,9 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
-        Applications applications = Applications;
-
-        IList<Application> registered = applications.GetRegisteredApplications();
         IList<string> names = new List<string>();
 
-        foreach (Application app in registered)
+        foreach (Application app in Applications.RegisteredApplications)
         {
             if (app.Instances.Count == 0)
             {
@@ -463,8 +461,8 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
-        IList<InstanceInfo> nonSecureInstances = GetInstancesByVipAddress(serviceId, false);
-        IList<InstanceInfo> secureInstances = GetInstancesByVipAddress(serviceId, true);
+        IReadOnlyList<InstanceInfo> nonSecureInstances = GetInstancesByVipAddress(serviceId, false);
+        IReadOnlyList<InstanceInfo> secureInstances = GetInstancesByVipAddress(serviceId, true);
 
         InstanceInfo[] instances = secureInstances.Concat(nonSecureInstances).DistinctBy(instance => instance.InstanceId).ToArray();
         IList<IServiceInstance> serviceInstances = instances.Select(instance => new EurekaServiceInstance(instance)).Cast<IServiceInstance>().ToList();

@@ -22,6 +22,6 @@ internal sealed class JsonApplicationConverter : JsonConverter<IList<JsonApplica
 
     public override void Write(Utf8JsonWriter writer, IList<JsonApplication?> value, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 }

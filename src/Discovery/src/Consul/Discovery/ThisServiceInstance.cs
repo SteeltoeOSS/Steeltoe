@@ -9,7 +9,7 @@ using Steeltoe.Discovery.Consul.Registry;
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// Represents the service instance for the currently running app.
+/// Represents the service instance for the currently running application.
 /// </summary>
 internal sealed class ThisServiceInstance : IServiceInstance
 {

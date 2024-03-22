@@ -4,7 +4,7 @@
 
 using Steeltoe.Discovery.Consul.Util;
 
-namespace Steeltoe.Discovery.Consul.Discovery;
+namespace Steeltoe.Discovery.Consul.Configuration;
 
 /// <summary>
 /// Configuration values used for the heartbeat checks.

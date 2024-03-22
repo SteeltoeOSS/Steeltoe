@@ -96,7 +96,7 @@ public sealed class ApplicationsTest
         Assert.True(apps.ApplicationMap.ContainsKey("app2".ToUpperInvariant()));
         Application app = apps.ApplicationMap["app1".ToUpperInvariant()];
         Assert.NotNull(app);
-        IList<InstanceInfo> instances = app.Instances;
+        IReadOnlyList<InstanceInfo> instances = app.Instances;
         Assert.NotNull(instances);
 
         foreach (InstanceInfo instance in instances)
@@ -149,7 +149,7 @@ public sealed class ApplicationsTest
             ])
         ]);
 
-        IList<Application> registered = apps.GetRegisteredApplications();
+        IReadOnlyList<Application> registered = apps.RegisteredApplications;
         Assert.NotNull(registered);
         Assert.Equal(2, registered.Count);
         Assert.True(registered[0].Name is "app1" or "app2");
@@ -242,7 +242,7 @@ public sealed class ApplicationsTest
             app2
         ]);
 
-        IList<InstanceInfo> result = apps.GetInstancesBySecureVirtualHostName("svapp1");
+        IReadOnlyList<InstanceInfo> result = apps.GetInstancesBySecureVirtualHostName("svapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -278,7 +278,7 @@ public sealed class ApplicationsTest
             app2
         ]);
 
-        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
+        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -331,7 +331,7 @@ public sealed class ApplicationsTest
         Assert.NotNull(registered.Instances);
         Assert.Equal(2, registered.Instances.Count);
 
-        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
+        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -397,7 +397,7 @@ public sealed class ApplicationsTest
         Assert.NotNull(registered.Instances);
         Assert.Single(registered.Instances);
 
-        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
+        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -462,7 +462,7 @@ public sealed class ApplicationsTest
         Assert.NotNull(registered.Instances);
         Assert.Equal(3, registered.Instances.Count);
 
-        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
+        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -530,7 +530,7 @@ public sealed class ApplicationsTest
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
-        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
+        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -597,7 +597,7 @@ public sealed class ApplicationsTest
             Assert.Equal(InstanceStatus.Up, instance.Status);
         }
 
-        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
+        IReadOnlyList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);

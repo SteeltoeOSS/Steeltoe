@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.TestResources;
+using Steeltoe.Discovery.Consul.Configuration;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test;

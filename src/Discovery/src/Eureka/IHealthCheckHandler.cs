@@ -6,6 +6,9 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
 
+/// <summary>
+/// Used to determine the status of this application instance, before sending it to Eureka.
+/// </summary>
 public interface IHealthCheckHandler
 {
     Task<InstanceStatus> GetStatusAsync(CancellationToken cancellationToken);
