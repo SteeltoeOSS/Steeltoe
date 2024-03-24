@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.Environment;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 
@@ -13,6 +14,7 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
 {
     private readonly IOptionsMonitor<RefreshEndpointOptions> _optionsMonitor;
     private readonly IConfiguration _configuration;
+    private readonly Sanitizer _sanitizer;
     private readonly ILogger<RefreshEndpointHandler> _logger;
 
     public EndpointOptions Options => _optionsMonitor.CurrentValue;
@@ -25,6 +27,7 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
 
         _optionsMonitor = optionsMonitor;
         _configuration = configuration;
+        _sanitizer = new Sanitizer(optionsMonitor.CurrentValue.KeysToSanitize);
         _logger = loggerFactory.CreateLogger<RefreshEndpointHandler>();
     }
 
@@ -43,6 +46,8 @@ internal sealed class RefreshEndpointHandler : IRefreshEndpointHandler
         {
             foreach (KeyValuePair<string, string?> kvp in _configuration.AsEnumerable())
             {
+                // _sanitizer.Sanitize(kvp.Key, kvp.Value);
+
                 keys.Add(kvp.Key);
             }
         }

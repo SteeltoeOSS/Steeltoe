@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
@@ -11,8 +12,32 @@ internal sealed class ConfigureRefreshEndpointOptions : ConfigureEndpointOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:refresh";
 
+    private static readonly string[] DefaultKeysToSanitize =
+    {
+        "password",
+        "secret",
+        "key",
+        "token",
+        ".*credentials.*",
+        "vcap_services"
+    };
+
     public ConfigureRefreshEndpointOptions(IConfiguration configuration)
         : base(configuration, ManagementInfoPrefix, "refresh")
     {
+    }
+
+    public override void Configure(RefreshEndpointOptions options)
+    {
+        ArgumentGuard.NotNull(options);
+
+        base.Configure(options);
+
+        // It's not possible to distinguish between null and an empty list in configuration.
+        // See https://github.com/dotnet/extensions/issues/1341.
+        if (options.KeysToSanitize.Count == 0)
+        {
+            options.KeysToSanitize = DefaultKeysToSanitize;
+        }
     }
 }
