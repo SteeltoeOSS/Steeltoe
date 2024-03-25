@@ -148,13 +148,8 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     }
 
     /// <inheritdoc />
-    public IServiceInstance GetLocalServiceInstance()
+    public IServiceInstance? GetLocalServiceInstance()
     {
-        if (_thisServiceInstance == null)
-        {
-            throw new NotSupportedException("Local service instance is unavailable.");
-        }
-
         return _thisServiceInstance;
     }
 

@@ -4,7 +4,7 @@ Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient
 Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.ConfigurationDiscoveryClient(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Configuration.ConfigurationDiscoveryOptions!>! optionsMonitor) -> void
 Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.Description.get -> string!
 Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.GetInstancesAsync(string! serviceId, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<Steeltoe.Common.Discovery.IServiceInstance!>!>!
-Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance!
+Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance?
 Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.GetServiceIdsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IList<string!>!>!
 Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient.ShutdownAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClientBuilderExtensions

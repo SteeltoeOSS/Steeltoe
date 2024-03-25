@@ -43,9 +43,9 @@ public sealed class ConfigurationDiscoveryClient : IDiscoveryClient
     }
 
     /// <inheritdoc />
-    public IServiceInstance GetLocalServiceInstance()
+    public IServiceInstance? GetLocalServiceInstance()
     {
-        throw new NotSupportedException("Configuration does not support a local service instance.");
+        return null;
     }
 
     /// <inheritdoc />

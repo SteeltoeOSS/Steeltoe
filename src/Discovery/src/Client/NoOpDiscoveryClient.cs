@@ -9,6 +9,9 @@ using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Client;
 
+/// <summary>
+/// A discovery client that does nothing.
+/// </summary>
 internal sealed class NoOpDiscoveryClient : IDiscoveryClient
 {
     public string Description => "A discovery client that passes through to underlying infrastructure.";
@@ -27,6 +30,7 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
         }
     }
 
+    /// <inheritdoc />
     public Task<IList<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult<IList<string>>([]);
@@ -62,16 +66,19 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
         return clientsWithConfig;
     }
 
+    /// <inheritdoc />
     public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
         return Task.FromResult<IList<IServiceInstance>>([]);
     }
 
-    public IServiceInstance GetLocalServiceInstance()
+    /// <inheritdoc />
+    public IServiceInstance? GetLocalServiceInstance()
     {
-        throw new NotSupportedException("Local service instance is not available.");
+        return null;
     }
 
+    /// <inheritdoc />
     public Task ShutdownAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;

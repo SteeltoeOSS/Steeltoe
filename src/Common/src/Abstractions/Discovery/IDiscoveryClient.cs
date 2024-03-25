@@ -20,9 +20,9 @@ public interface IDiscoveryClient
     /// Gets information used to register the local service instance (this app) to the discovery server.
     /// </summary>
     /// <returns>
-    /// The service instance that represents this app.
+    /// The service instance that represents this app, or <c>null</c> when unavailable.
     /// </returns>
-    IServiceInstance GetLocalServiceInstance();
+    IServiceInstance? GetLocalServiceInstance();
 
     /// <summary>
     /// Gets all registered service IDs from the discovery server.

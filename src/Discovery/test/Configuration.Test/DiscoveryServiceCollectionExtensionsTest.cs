@@ -101,8 +101,9 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var client = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
         Assert.NotNull(client);
-        IServiceInstance instanceInfo = client.GetLocalServiceInstance();
-        Assert.Equal("fromtest", instanceInfo.Host);
+        IServiceInstance? serviceInstance = client.GetLocalServiceInstance();
+        Assert.NotNull(serviceInstance);
+        Assert.Equal("fromtest", serviceInstance.Host);
     }
 
     [Fact]
@@ -453,8 +454,9 @@ public sealed class DiscoveryServiceCollectionExtensionsTest
 
         var client = services.BuildServiceProvider(true).GetService<IDiscoveryClient>();
         Assert.NotNull(client);
-        IServiceInstance instanceInfo = client.GetLocalServiceInstance();
-        Assert.Equal("fromtest", instanceInfo.Host);
+        IServiceInstance? serviceInstance = client.GetLocalServiceInstance();
+        Assert.NotNull(serviceInstance);
+        Assert.Equal("fromtest", serviceInstance.Host);
     }
 
     [Fact]
