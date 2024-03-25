@@ -215,7 +215,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         if (timer != null && interval > TimeSpan.Zero)
         {
-            timer.Change(interval.Value, interval.Value);
+            timer.Change(TimeSpan.Zero, interval.Value);
         }
     }
 
