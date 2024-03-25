@@ -39,7 +39,7 @@ public sealed class EurekaDiscoveryClientTest
 
         IServiceInstance thisService = discoveryClient.GetLocalServiceInstance();
         Assert.NotNull(thisService);
-        Assert.Equal(instanceOptions.ResolveHostName(false), thisService.Host);
+        Assert.Equal(instanceOptions.HostName, thisService.Host);
         Assert.Equal(instanceOptions.IsSecurePortEnabled, thisService.IsSecure);
         Assert.NotNull(thisService.Metadata);
         Assert.Equal(instanceOptions.NonSecurePort, thisService.Port);
@@ -47,7 +47,7 @@ public sealed class EurekaDiscoveryClientTest
         Assert.NotNull(thisService.Uri);
         string scheme = instanceOptions.IsSecurePortEnabled ? "https" : "http";
         int uriPort = instanceOptions.IsSecurePortEnabled ? instanceOptions.SecurePort : instanceOptions.NonSecurePort;
-        var uri = new Uri($"{scheme}://{instanceOptions.ResolveHostName(false)}:{uriPort}");
+        var uri = new Uri($"{scheme}://{instanceOptions.HostName}:{uriPort}");
         Assert.Equal(uri, thisService.Uri);
     }
 }

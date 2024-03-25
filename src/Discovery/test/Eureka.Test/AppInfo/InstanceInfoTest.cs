@@ -265,7 +265,7 @@ public sealed class InstanceInfoTest
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
 
         Assert.NotNull(instance);
-        Assert.Equal(instanceOptions.ResolveHostName(false), instance.HostName);
+        Assert.Equal(instanceOptions.HostName, instance.HostName);
         Assert.Equal($"{instance.HostName}:unknown:80", instance.InstanceId);
         Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), instance.AppName);
         Assert.Null(instance.AppGroupName);
@@ -275,9 +275,9 @@ public sealed class InstanceInfoTest
         Assert.True(instance.IsNonSecurePortEnabled);
         Assert.Equal(443, instance.SecurePort);
         Assert.False(instance.IsSecurePortEnabled);
-        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/", instance.HomePageUrl);
-        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/info", instance.StatusPageUrl);
-        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/health", instance.HealthCheckUrl);
+        Assert.Equal($"http://{instanceOptions.HostName}:80/", instance.HomePageUrl);
+        Assert.Equal($"http://{instanceOptions.HostName}:80/info", instance.StatusPageUrl);
+        Assert.Equal($"http://{instanceOptions.HostName}:80/health", instance.HealthCheckUrl);
         Assert.Null(instance.SecureHealthCheckUrl);
         Assert.Null(instance.VipAddress);
         Assert.Null(instance.SecureVipAddress);
@@ -418,7 +418,7 @@ public sealed class InstanceInfoTest
         InstanceInfo instance = InstanceInfo.FromConfiguration(instanceOptions);
         JsonInstanceInfo jsonInstance = instance.ToJson();
 
-        Assert.Equal(instanceOptions.ResolveHostName(false), jsonInstance.HostName);
+        Assert.Equal(instanceOptions.HostName, jsonInstance.HostName);
         Assert.Equal($"{jsonInstance.HostName}:unknown:80", jsonInstance.InstanceId);
         Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), jsonInstance.AppName);
         Assert.Null(jsonInstance.AppGroupName);
@@ -430,9 +430,9 @@ public sealed class InstanceInfoTest
         Assert.NotNull(jsonInstance.SecurePort);
         Assert.False(jsonInstance.SecurePort.Enabled);
         Assert.Equal(EurekaInstanceOptions.DefaultSecurePort, jsonInstance.SecurePort.Port);
-        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/", jsonInstance.HomePageUrl);
-        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/info", jsonInstance.StatusPageUrl);
-        Assert.Equal($"http://{instanceOptions.ResolveHostName(false)}:80/health", jsonInstance.HealthCheckUrl);
+        Assert.Equal($"http://{instanceOptions.HostName}:80/", jsonInstance.HomePageUrl);
+        Assert.Equal($"http://{instanceOptions.HostName}:80/info", jsonInstance.StatusPageUrl);
+        Assert.Equal($"http://{instanceOptions.HostName}:80/health", jsonInstance.HealthCheckUrl);
         Assert.Null(jsonInstance.SecureHealthCheckUrl);
         Assert.Null(jsonInstance.VipAddress);
         Assert.Null(jsonInstance.SecureVipAddress);
@@ -440,7 +440,6 @@ public sealed class InstanceInfoTest
         Assert.NotNull(jsonInstance.DataCenterInfo);
         Assert.Equal("MyOwn", jsonInstance.DataCenterInfo.Name);
         Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", jsonInstance.DataCenterInfo.ClassName);
-        Assert.Equal(instanceOptions.ResolveHostName(false), jsonInstance.HostName);
         Assert.Equal(InstanceStatus.Up, jsonInstance.Status);
         Assert.Null(jsonInstance.OverriddenStatus);
         Assert.Null(jsonInstance.OverriddenStatusLegacy);

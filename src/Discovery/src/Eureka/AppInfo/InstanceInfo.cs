@@ -272,7 +272,7 @@ public sealed class InstanceInfo
                 $"Configuration setting {EurekaInstanceOptions.ConfigurationPrefix}:{nameof(EurekaInstanceOptions.IPAddress)} must be provided.");
         }
 
-        string? hostName = options.ResolveHostName(false);
+        string? hostName = options.HostName;
         string? instanceId = string.IsNullOrWhiteSpace(options.InstanceId) ? hostName : options.InstanceId;
 
         if (string.IsNullOrWhiteSpace(instanceId))

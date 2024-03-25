@@ -133,7 +133,7 @@ internal static class EurekaPostConfigurer
                     portNumber = Random.Shared.Next(90_000, 99_999);
                 }
 
-                options.InstanceId = $"{options.ResolveHostName(false)}:{options.AppName}:{portNumber}";
+                options.InstanceId = $"{options.HostName}:{options.AppName}:{portNumber}";
             }
         }
     }

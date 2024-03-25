@@ -22,7 +22,6 @@ public sealed class EurekaInstanceOptions
     internal const string DefaultHomePageUrlPath = "/";
 
     private string? _ipAddress;
-    private string? _hostName;
     private string? _thisHostAddress;
 
     internal InetUtils? NetUtils { get; set; }
@@ -55,11 +54,7 @@ public sealed class EurekaInstanceOptions
     /// <summary>
     /// Gets or sets the hostname of this instance. Configuration property: eureka:instance:hostName.
     /// </summary>
-    public string? HostName
-    {
-        get => ResolveHostName(false);
-        set => _hostName = value;
-    }
+    public string? HostName { get; set; }
 
     /// <summary>
     /// Gets or sets the IP address of the instance.
@@ -230,7 +225,7 @@ public sealed class EurekaInstanceOptions
 
     public EurekaInstanceOptions()
     {
-        HostName = ResolveHostName(true);
+        HostName = DnsTools.ResolveHostName();
         _thisHostAddress = GetHostAddress(true);
         IPAddress = _thisHostAddress;
         InstanceId = $"{HostName}:{AppName}:{NonSecurePort}";
@@ -244,39 +239,13 @@ public sealed class EurekaInstanceOptions
             {
                 _thisHostAddress = NetUtils.FindFirstNonLoopbackAddress()?.ToString();
             }
-            else
+            else if (!string.IsNullOrEmpty(HostName))
             {
-                string? hostName = ResolveHostName(refresh);
-
-                if (!string.IsNullOrEmpty(hostName))
-                {
-                    _thisHostAddress = DnsTools.ResolveHostAddress(hostName);
-                }
+                _thisHostAddress = DnsTools.ResolveHostAddress(HostName);
             }
         }
 
         return _thisHostAddress;
-    }
-
-    /// <summary>
-    /// Gets the hostname associated with this instance. This is the exact name that would be used by other instances to make calls.
-    /// </summary>
-    /// <param name="refresh">
-    /// Indicates whether to refresh the current hostname.
-    /// </param>
-    internal string? ResolveHostName(bool refresh)
-    {
-        if (_hostName != null)
-        {
-            return _hostName;
-        }
-
-        if (refresh || string.IsNullOrEmpty(_hostName))
-        {
-            _hostName = DnsTools.ResolveHostName();
-        }
-
-        return _hostName;
     }
 
     internal void ApplyConfigUrls(List<Uri> addresses)

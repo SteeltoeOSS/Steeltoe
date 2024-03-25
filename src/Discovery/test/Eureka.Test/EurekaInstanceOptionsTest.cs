@@ -173,7 +173,6 @@ public sealed class EurekaInstanceOptionsTest
         Assert.Equal("healthCheckUrlPath", instanceOptions.HealthCheckUrlPath);
         Assert.Equal("healthCheckUrl", instanceOptions.HealthCheckUrl);
         Assert.Equal("secureHealthCheckUrl", instanceOptions.SecureHealthCheckUrl);
-        Assert.Equal("myHostName", instanceOptions.ResolveHostName(false));
         Assert.Equal("myHostName", instanceOptions.HostName);
         Assert.Equal("foobar", instanceOptions.RegistrationMethod);
         IDictionary<string, string?> map = instanceOptions.MetadataMap;
