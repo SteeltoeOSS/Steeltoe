@@ -65,24 +65,6 @@ public static class ConfigurationBuilderExtensions
     /// <param name="optional">
     /// Whether the directory path is optional.
     /// </param>
-    /// <returns>
-    /// The <see cref="IConfigurationBuilder" />.
-    /// </returns>
-    public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional)
-    {
-        return builder.AddKubernetesServiceBindings(optional, DefaultReloadOnChange, DefaultIgnoreKeyPredicate, DefaultReader, NullLoggerFactory.Instance);
-    }
-
-    /// <summary>
-    /// Adds configuration using files from the directory path specified by the environment variable "SERVICE_BINDING_ROOT". File name and directory paths
-    /// are used as the key, and the file contents are used as the values.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IConfigurationBuilder" /> to add to.
-    /// </param>
-    /// <param name="optional">
-    /// Whether the directory path is optional.
-    /// </param>
     /// <param name="reloadOnChange">
     /// Whether the configuration should be reloaded if the files are changed, added or removed.
     /// </param>

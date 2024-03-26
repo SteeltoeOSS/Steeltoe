@@ -95,7 +95,7 @@ public static class ConfigServerConfigurationBuilderExtensions
 
         if (configurationBuilder.Sources.All(source => source is not KubernetesServiceBindingConfigurationSource))
         {
-            configurationBuilder.AddKubernetesServiceBindings(true);
+            configurationBuilder.AddKubernetesServiceBindings();
         }
 
         if (configurationBuilder.Sources.All(source => source is not PlaceholderResolverSource))
