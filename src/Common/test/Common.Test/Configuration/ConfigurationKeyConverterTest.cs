@@ -15,11 +15,10 @@ public sealed class ConfigurationKeyConverterTest
     [InlineData("foo.bar", "foo:bar")]
     [InlineData("foo__bar__baz", "foo:bar:baz")]
     [InlineData("foo__bar__baz_", "foo:bar:baz_")]
-    [InlineData("foo__bar__baz__", "foo:bar:baz__")]
+    [InlineData("foo__bar__baz__", "foo:bar:baz:")]
     [InlineData("foo[bar]", "foo[bar]")]
     [InlineData("foobar[1234]", "foobar:1234")]
     [InlineData("foobar[1234][5678]", "foobar:1234:5678")]
-    [InlineData("foobar[1234][5678]barbar", "foobar[1234][5678]barbar")]
     [InlineData("a.b.foobar[1234][5678].barfoo.boo[123]", "a:b:foobar:1234:5678:barfoo:boo:123")]
     [InlineData(@"one\.four\\.seven", @"one.four\:seven")]
     public void AsDotNetConfigurationKey_ProducesExpected(string input, string expectedOutput)

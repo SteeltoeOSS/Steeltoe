@@ -11,8 +11,6 @@ pr:
     - .config/dotnet-tools.json
     - build/templates
     - build/connectors.yml
-    - src/Common
-    - src/Configuration
     - src/Connectors
 
 jobs:

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Common.Configuration;
 
-public static class ConfigurationKeyConverter
+internal static class ConfigurationKeyConverter
 {
     private const string DotDelimiterString = ".";
     private const char DotDelimiterChar = '.';
@@ -61,7 +61,7 @@ public static class ConfigurationKeyConverter
                 segmentStart = i + 1;
             }
 
-            if (!readEscapeChar && source[i] == UnderscoreDelimiterChar && i < source.Length - 2 && source[i + 1] == UnderscoreDelimiterChar)
+            if (!readEscapeChar && source[i] == UnderscoreDelimiterChar && i < source.Length - 1 && source[i + 1] == UnderscoreDelimiterChar)
             {
                 result.Add(UnEscapeString(source[segmentStart..i]));
                 segmentStart = i + 2;
