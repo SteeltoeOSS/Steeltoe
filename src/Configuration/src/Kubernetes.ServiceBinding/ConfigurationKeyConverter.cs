@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace Steeltoe.Common.Configuration;
 
-internal static class StringExtensions
+internal static class ConfigurationKeyConverter
 {
     private const string DotDelimiterString = ".";
     private const char DotDelimiterChar = '.';
@@ -19,9 +19,9 @@ internal static class StringExtensions
     private const char EscapeChar = '\\';
     private const string EscapeString = "\\";
 
-    private static readonly Regex ArrayRegex = new (@"(\[[0-9]+\])*$");
+    private static readonly Regex ArrayRegex = new (@"\[(?<digits>\d+)\]", RegexOptions.Compiled | RegexOptions.Singleline);
 
-    internal static string AsDotNetConfigurationKey(this string key)
+    public static string AsDotNetConfigurationKey(string key)
     {
         if (string.IsNullOrEmpty(key))
         {
@@ -42,7 +42,7 @@ internal static class StringExtensions
 
     private static IEnumerable<string> UniversalHierarchySplit(string source)
     {
-        if (source == null)
+        if (source is null)
         {
             throw new ArgumentNullException(nameof(source));
         }
@@ -67,7 +67,7 @@ internal static class StringExtensions
                 segmentStart = i + 1;
             }
 
-            if (!readEscapeChar && source[i] == UnderscoreDelimiterChar && i < source.Length - 2 && source[i + 1] == UnderscoreDelimiterChar)
+            if (!readEscapeChar && source[i] == UnderscoreDelimiterChar && i < source.Length - 1 && source[i + 1] == UnderscoreDelimiterChar)
             {
                 result.Add(UnEscapeString(source[segmentStart..i]));
                 segmentStart = i + 2;
