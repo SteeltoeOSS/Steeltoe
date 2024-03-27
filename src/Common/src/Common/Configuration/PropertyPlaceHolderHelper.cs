@@ -139,7 +139,9 @@ public static class PropertyPlaceholderHelper
                 // Attempt to resolve as a spring-compatible placeholder
                 if (propVal == null)
                 {
-                    propVal = configuration[ConfigurationKeyConverter.AsDotNetConfigurationKey(placeholder)];
+                    // Replace Spring delimiters ('.') with MS-friendly delimiters (':') so Spring placeholders can also be resolved
+                    lookup = placeholder.Replace('.', ':');
+                    propVal = configuration[lookup];
                 }
 
                 if (propVal != null)
