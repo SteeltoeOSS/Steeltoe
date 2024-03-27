@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Steeltoe.Common;
-using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Configuration.SpringBoot;
 
@@ -40,7 +39,8 @@ internal sealed class SpringBootCommandLineProvider : ConfigurationProvider
 
             if (key.StartsWith(KeyPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                Data[ConfigurationKeyConverter.AsDotNetConfigurationKey(key)] = pair.Value;
+                string newKey = key.Replace('.', ':');
+                Data[newKey] = pair.Value;
             }
         }
     }
