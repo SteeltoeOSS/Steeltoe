@@ -11,15 +11,15 @@ namespace Steeltoe.Common.Test.Configuration;
 public sealed class ConfigurationKeyConverterTest
 {
     [Theory]
-    [InlineData("foobar", "foobar")]
-    [InlineData("foo.bar", "foo:bar")]
-    [InlineData("foo__bar__baz", "foo:bar:baz")]
-    [InlineData("foo__bar__baz_", "foo:bar:baz_")]
-    [InlineData("foo__bar__baz__", "foo:bar:baz:")]
-    [InlineData("foo[bar]", "foo[bar]")]
-    [InlineData("foobar[1234]", "foobar:1234")]
-    [InlineData("foobar[1234][5678]", "foobar:1234:5678")]
-    [InlineData("a.b.foobar[1234][5678].barfoo.boo[123]", "a:b:foobar:1234:5678:barfoo:boo:123")]
+    [InlineData("unchanged", "unchanged")]
+    [InlineData("unchanged[index]", "unchanged[index]")]
+    [InlineData("one.four.seven", "one:four:seven")]
+    [InlineData("one__four__seven", "one:four:seven")]
+    [InlineData("one__four__seven__", "one:four:seven:")]
+    [InlineData("_one__four__and_seven_", "_one:four:and_seven_")]
+    [InlineData("one[1]", "one:1")]
+    [InlineData("one[12][3456]", "one:12:3456")]
+    [InlineData("one.four.seven[0][1].twelve.thirteen[12]", "one:four:seven:0:1:twelve:thirteen:12")]
     [InlineData(@"one\.four\\.seven", @"one.four\:seven")]
     public void AsDotNetConfigurationKey_ProducesExpected(string input, string expectedOutput)
     {
