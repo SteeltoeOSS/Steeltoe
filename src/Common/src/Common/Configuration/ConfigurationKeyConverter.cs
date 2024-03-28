@@ -84,6 +84,6 @@ internal static class ConfigurationKeyConverter
 
     private static string ConvertArrayKey(string key)
     {
-        return ArrayRegex.Replace(key, match => match.Value.Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal));
+        return ArrayRegex.Replace(key, ":${digits}");
     }
 }
