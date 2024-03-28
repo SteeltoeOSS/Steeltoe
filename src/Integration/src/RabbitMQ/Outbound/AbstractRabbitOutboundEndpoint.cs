@@ -159,9 +159,9 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
                             connection.Close();
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception exception)
                     {
-                        _logger?.LogError("Failed to eagerly establish the connection.", e);
+                        _logger?.LogError(exception, "Failed to eagerly establish the connection.");
                     }
                 }
 

@@ -54,7 +54,7 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
             }
             catch (Exception errorDeliveryError)
             {
-                _logger?.LogWarning("Error message was not delivered.", errorDeliveryError);
+                _logger?.LogWarning(errorDeliveryError, "Error message was not delivered.");
             }
         }
 
@@ -67,7 +67,7 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
             }
             else
             {
-                _logger?.LogError("failure occurred in messaging task", exception);
+                _logger?.LogError(exception, "failure occurred in messaging task.");
             }
         }
 

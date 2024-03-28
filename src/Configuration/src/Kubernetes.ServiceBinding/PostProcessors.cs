@@ -3,9 +3,43 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Configuration;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding;
+
+internal sealed class ApplicationConfigurationServicePostProcessor : IConfigurationPostProcessor
+{
+    internal const string BindingType = "config";
+
+    public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string> configurationData)
+    {
+        if (!provider.IsBindingTypeEnabled(BindingType))
+        {
+            return;
+        }
+
+        foreach (string bindingKey in configurationData.Filter(
+                     ServiceBindingConfigurationProvider.KubernetesBindingsPrefix,
+                     ServiceBindingConfigurationProvider.TypeKey,
+                     BindingType))
+        {
+            var mapper = new ServiceBindingMapper(configurationData, bindingKey);
+
+            IEnumerable<string> keysToMap = configurationData.Keys.Select(s => s.Split($"{bindingKey}:")[^1]).Except(new List<string>
+            {
+                ServiceBindingConfigurationProvider.ProviderKey,
+                ServiceBindingConfigurationProvider.TypeKey
+            }).ToList();
+
+            foreach (string key in keysToMap)
+            {
+                mapper.MapFromTo(key, ConfigurationKeyConverter.AsDotNetConfigurationKey(key));
+            }
+        }
+    }
+}
 
 internal sealed class ArtemisPostProcessor : IConfigurationPostProcessor
 {

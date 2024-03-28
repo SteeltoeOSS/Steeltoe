@@ -23,7 +23,7 @@ public class ServiceBindingsTest
     {
         var path = new PhysicalFileProvider(GetK8SResourcesDirectory());
         var b = new ServiceBindingConfigurationProvider.ServiceBindings(path);
-        Assert.Equal(3, b.Bindings.Count);
+        Assert.Equal(4, b.Bindings.Count);
     }
 
     private static string GetK8SResourcesDirectory()
