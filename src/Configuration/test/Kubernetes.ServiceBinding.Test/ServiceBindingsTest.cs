@@ -22,7 +22,7 @@ public sealed class ServiceBindingsTest
     {
         var path = new PhysicalFileProvider(GetK8SResourcesDirectory());
         var b = new KubernetesServiceBindingConfigurationProvider.ServiceBindings(path);
-        b.Bindings.Count.Should().Be(3);
+        b.Bindings.Count.Should().Be(4);
     }
 
     private static string GetK8SResourcesDirectory()

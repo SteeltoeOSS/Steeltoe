@@ -151,7 +151,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.Mtls.Test", "Security\test\Authentication.Mtls.Test\Steeltoe.Security.Authentication.Mtls.Test.csproj", "{0134F5C0-7595-497E-91BE-CCCD2290CF8E}"
 EndProject
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connectors.CloudFoundry", "Connectors\src\CloudFoundry\Steeltoe.Connectors.CloudFoundry.csproj", "{AFD6152E-A432-4CD4-AB73-A5DC2411EAB1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connectors.CloudFoundry.Test", "Connectors\test\CloudFoundry.Test\Steeltoe.Connectors.CloudFoundry.Test.csproj", "{7B4E0A71-F3AE-4F7A-AA01-519DE4AFD08E}"

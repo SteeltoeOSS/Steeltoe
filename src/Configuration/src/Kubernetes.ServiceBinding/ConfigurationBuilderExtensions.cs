@@ -110,9 +110,10 @@ public static class ConfigurationBuilderExtensions
 
     private static void RegisterPostProcessors(KubernetesServiceBindingConfigurationSource source)
     {
+        source.RegisterPostProcessor(new ApplicationConfigurationServicePostProcessor());
+        source.RegisterPostProcessor(new MongoDbKubernetesPostProcessor());
         source.RegisterPostProcessor(new MySqlKubernetesPostProcessor());
         source.RegisterPostProcessor(new PostgreSqlKubernetesPostProcessor());
-        source.RegisterPostProcessor(new MongoDbKubernetesPostProcessor());
         source.RegisterPostProcessor(new RabbitMQKubernetesPostProcessor());
         source.RegisterPostProcessor(new RedisKubernetesPostProcessor());
     }
