@@ -2,14 +2,65 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.ServiceBinding.Test;
 
 public class PostProcessorsTest : BasePostProcessorsTest
 {
+    [Fact]
+    public void Processes_ApplicationConfigurationService_ConfigurationData()
+    {
+        var postProcessor = new ApplicationConfigurationServicePostProcessor();
+
+        Dictionary<string, string> configurationData = GetConfigData(
+            _testBindingName,
+            ApplicationConfigurationServicePostProcessor.BindingType,
+            Tuple.Create("provider", "acs"),
+            Tuple.Create("random", "data"),
+            Tuple.Create("from", "some-source"),
+            Tuple.Create("secret", "password"),
+            Tuple.Create("secret.one", "password1"),
+            Tuple.Create("secret__two", "password2"));
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor, ApplicationConfigurationServicePostProcessor.BindingType, true);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        configurationData["random"].Should().Be("data");
+        configurationData["from"].Should().Be("some-source");
+        configurationData["secret"].Should().Be("password");
+        configurationData["secret:one"].Should().Be("password1");
+        configurationData["secret:two"].Should().Be("password2");
+        configurationData.Should().NotContainKey("type");
+        configurationData.Should().NotContainKey("provider");
+    }
+
+    [Fact]
+    public void PopulatesDotNetFriendlyKeysFromOtherFormats()
+    {
+        string rootDirectory = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "resources", "k8s");
+        var source = new ServiceBindingConfigurationSource(rootDirectory);
+        var postProcessor = new ApplicationConfigurationServicePostProcessor();
+        source.RegisterPostProcessor(postProcessor);
+
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string> { { "steeltoe:kubernetes:bindings:enable", "true" } })
+            .Add(source).Build();
+
+        configuration["test-secret-key"].Should().Be("test-secret-value");
+        configuration["key:with:periods"].Should().Be("test-secret-value.");
+        configuration["key:with:double:underscores"].Should().Be("test-secret-value0");
+        configuration["key:with:double:underscores_"].Should().Be("test-secret-value1");
+        configuration["key:with:double:underscores:"].Should().Be("test-secret-value2");
+    }
+
     [Fact]
     public void ArtemisTest_BindingTypeDisabled()
     {
