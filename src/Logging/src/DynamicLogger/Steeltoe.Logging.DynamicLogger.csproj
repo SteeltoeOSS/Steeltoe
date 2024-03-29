@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Steeltoe Dynamic Console Logger</Description>
-    <PackageTags>logging;dynamic logging;console;management;monitoring</PackageTags>
+    <PackageTags>logging;dynamic-logging;console;log-management;monitoring</PackageTags>
     <IsPackable>true</IsPackable>
     <Nullable>enable</Nullable>
   </PropertyGroup>

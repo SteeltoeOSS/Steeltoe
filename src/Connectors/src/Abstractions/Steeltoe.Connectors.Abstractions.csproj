@@ -3,7 +3,7 @@
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Connectors</RootNamespace>
     <Description>Abstractions for working with backing services</Description>
-    <PackageTags>connectors;services</PackageTags>
+    <PackageTags>abstractions;connectors;services</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

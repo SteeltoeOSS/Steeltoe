@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Steeltoe common library</Description>
-    <PackageTags>NET Core; availability; health; health checks;loadbalancer;logging;net;reflection;utilities</PackageTags>
+    <PackageTags>availability;health;health-checks;loadbalancer;logging;reflection;utilities</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

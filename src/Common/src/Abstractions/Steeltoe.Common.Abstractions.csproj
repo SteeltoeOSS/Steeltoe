@@ -3,7 +3,7 @@
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Common</RootNamespace>
     <Description>Abstractions commonly used across Steeltoe components</Description>
-    <PackageTags>NET Core; availability; health; health checks;loadbalancer;utilities</PackageTags>
+    <PackageTags>abstractions;availability;health;health-checks;load-balancer</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

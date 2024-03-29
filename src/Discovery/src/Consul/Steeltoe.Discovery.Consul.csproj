@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Steeltoe compatibility package for service discovery and registration with Hashicorp Consul</Description>
-    <PackageTags>service discovery;service registryaspnetcore;Consul;hashicorp</PackageTags>
+    <PackageTags>service-discovery;service-registry;Consul;hashicorp</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
