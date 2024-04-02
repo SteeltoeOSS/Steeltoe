@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Description>Steeltoe library for enabling dynamic management of Serilog.</Description>
-    <PackageTags>logging;dynamic logging;serilog;management;monitoring;Spring Cloud;</PackageTags>
+    <PackageTags>logging;dynamic-logging;serilog;log-management;monitoring</PackageTags>
     <IsPackable>true</IsPackable>
     <Nullable>enable</Nullable>
   </PropertyGroup>
