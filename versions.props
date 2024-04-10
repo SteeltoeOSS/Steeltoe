@@ -28,7 +28,7 @@
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>9.11.*</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>8.0.*</SourceLinkGitHubVersion>
-    <StackExchangeVersion>2.6.*</StackExchangeVersion>
+    <StackExchangeVersion>2.7.*</StackExchangeVersion>
     <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
     <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
     <TestSdkVersion>17.8.*</TestSdkVersion>
