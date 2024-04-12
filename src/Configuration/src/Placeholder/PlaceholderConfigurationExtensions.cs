@@ -48,15 +48,18 @@ public static class PlaceholderConfigurationExtensions
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(loggerFactory);
 
-        if (builder is IConfigurationRoot configuration)
+        if (!builder.Sources.Any(source => source is PlaceholderResolverSource))
         {
-            builder.Add(new PlaceholderResolverSource(configuration, loggerFactory));
-        }
-        else
-        {
-            var resolver = new PlaceholderResolverSource(builder.Sources, loggerFactory);
-            builder.Sources.Clear();
-            builder.Add(resolver);
+            if (builder is IConfigurationRoot configuration)
+            {
+                builder.Add(new PlaceholderResolverSource(configuration, loggerFactory));
+            }
+            else
+            {
+                var resolver = new PlaceholderResolverSource(builder.Sources, loggerFactory);
+                builder.Sources.Clear();
+                builder.Add(resolver);
+            }
         }
 
         return builder;
@@ -100,6 +103,11 @@ public static class PlaceholderConfigurationExtensions
         if (configuration is not IConfigurationRoot root)
         {
             throw new InvalidOperationException($"Configuration must implement '{typeof(IConfigurationRoot)}'.");
+        }
+
+        if (root.Providers.Any(provider => provider is IPlaceholderResolverProvider))
+        {
+            return configuration;
         }
 
         return new ConfigurationRoot(new List<IConfigurationProvider>

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Utils.IO;
@@ -20,6 +21,21 @@ public sealed class PlaceholderConfigurationExtensionsTest
 
         PlaceholderResolverSource? placeholderSource = configurationBuilder.Sources.OfType<PlaceholderResolverSource>().SingleOrDefault();
         Assert.NotNull(placeholderSource);
+    }
+
+    [Fact]
+    public void AddPlaceholderResolver_NoDuplicates()
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+
+        configurationBuilder.AddPlaceholderResolver();
+        configurationBuilder.AddPlaceholderResolver();
+        configurationBuilder.AddPlaceholderResolver();
+
+        PlaceholderResolverSource? source = configurationBuilder.Sources.OfType<PlaceholderResolverSource>().SingleOrDefault();
+        Assert.NotNull(source);
+        Assert.NotNull(source.Sources);
+        Assert.Empty(source.Sources);
     }
 
     [Fact]
@@ -250,5 +266,19 @@ public sealed class PlaceholderConfigurationExtensionsTest
         Assert.Equal("value1", config2["key2"]);
         Assert.Equal("notfound", config2["key3"]);
         Assert.Equal("${nokey}", config2["key4"]);
+    }
+
+    [Fact]
+    public void AddPlaceholderResolver_WithConfiguration_NoDuplicates()
+    {
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+
+        IConfiguration newConfiguration = configurationRoot.AddPlaceholderResolver().AddPlaceholderResolver().AddPlaceholderResolver();
+
+        ConfigurationRoot newConfigurationRoot = newConfiguration.Should().BeOfType<ConfigurationRoot>().Which;
+        newConfigurationRoot.Providers.Should().HaveCount(1);
+
+        PlaceholderResolverProvider? provider = newConfigurationRoot.Providers.Single().Should().BeOfType<PlaceholderResolverProvider>().Which;
+        provider.Providers.Should().BeEmpty();
     }
 }
