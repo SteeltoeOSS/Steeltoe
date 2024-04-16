@@ -44,11 +44,10 @@ public static class TracingCoreServiceCollectionExtensions
 
         action += builder => builder.AddAspNetCoreInstrumentation();
 
-        services.AddOptions<AspNetCoreInstrumentationOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
+        services.AddOptions<AspNetCoreTraceInstrumentationOptions>().PostConfigure<ITracingOptions>((instrumentationOptions, tracingOptions) =>
         {
-            var pathMatcher = new Regex(traceOpts.IngressIgnorePattern);
-            options.EnableGrpcAspNetCoreSupport = traceOpts.EnableGrpcAspNetCoreSupport;
-            options.Filter += context => !pathMatcher.IsMatch(context.Request.Path);
+            var pathMatcher = new Regex(tracingOptions.IngressIgnorePattern);
+            instrumentationOptions.Filter += context => !pathMatcher.IsMatch(context.Request.Path);
         });
 
         return services.AddDistributedTracing(action);

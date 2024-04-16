@@ -12,9 +12,9 @@ internal static class TagExtensions
     {
         var tags = new Dictionary<string, string?>();
 
-        foreach (KeyValuePair<string, object> tag in tagCollection)
+        foreach (KeyValuePair<string, object?> tag in tagCollection)
         {
-            if (string.IsNullOrEmpty(tag.Key) || string.IsNullOrEmpty(tag.Value.ToString()))
+            if (string.IsNullOrEmpty(tag.Key) || tag.Value == null || string.IsNullOrEmpty(tag.Value.ToString()))
             {
                 continue;
             }
