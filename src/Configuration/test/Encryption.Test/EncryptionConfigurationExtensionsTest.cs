@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -22,6 +23,21 @@ public sealed class EncryptionConfigurationExtensionsTest
 
         EncryptionResolverSource? encryptionSource = configurationBuilder.Sources.OfType<EncryptionResolverSource>().SingleOrDefault();
         Assert.NotNull(encryptionSource);
+    }
+
+    [Fact]
+    public void AddEncryptionResolver_NoDuplicates()
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+
+        configurationBuilder.AddEncryptionResolver(_decryptorMock.Object);
+        configurationBuilder.AddEncryptionResolver(_decryptorMock.Object);
+        configurationBuilder.AddEncryptionResolver(_decryptorMock.Object);
+
+        EncryptionResolverSource? source = configurationBuilder.Sources.OfType<EncryptionResolverSource>().SingleOrDefault();
+        Assert.NotNull(source);
+        Assert.NotNull(source.Sources);
+        Assert.Empty(source.Sources);
     }
 
     [Fact]
@@ -119,5 +135,20 @@ public sealed class EncryptionConfigurationExtensionsTest
 
         _decryptorMock.Verify(x => x.Decrypt("something", "keyalias"));
         _decryptorMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public void AddEncryptionResolver_WithConfiguration_NoDuplicates()
+    {
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+
+        IConfiguration newConfiguration = configurationRoot.AddEncryptionResolver(_decryptorMock.Object).AddEncryptionResolver(_decryptorMock.Object)
+            .AddEncryptionResolver(_decryptorMock.Object);
+
+        ConfigurationRoot newConfigurationRoot = newConfiguration.Should().BeOfType<ConfigurationRoot>().Which;
+        newConfigurationRoot.Providers.Should().HaveCount(1);
+
+        EncryptionResolverProvider? provider = newConfigurationRoot.Providers.Single().Should().BeOfType<EncryptionResolverProvider>().Which;
+        provider.Providers.Should().BeEmpty();
     }
 }

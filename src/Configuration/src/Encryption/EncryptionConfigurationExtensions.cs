@@ -55,15 +55,18 @@ public static class EncryptionConfigurationExtensions
         ArgumentGuard.NotNull(loggerFactory);
         ArgumentGuard.NotNull(textDecryptor);
 
-        if (builder is IConfigurationRoot configuration)
+        if (!builder.Sources.Any(source => source is EncryptionResolverSource))
         {
-            builder.Add(new EncryptionResolverSource(configuration, textDecryptor, loggerFactory));
-        }
-        else
-        {
-            var resolver = new EncryptionResolverSource(builder.Sources, textDecryptor, loggerFactory);
-            builder.Sources.Clear();
-            builder.Add(resolver);
+            if (builder is IConfigurationRoot configuration)
+            {
+                builder.Add(new EncryptionResolverSource(configuration, textDecryptor, loggerFactory));
+            }
+            else
+            {
+                var resolver = new EncryptionResolverSource(builder.Sources, textDecryptor, loggerFactory);
+                builder.Sources.Clear();
+                builder.Add(resolver);
+            }
         }
 
         return builder;
@@ -114,6 +117,11 @@ public static class EncryptionConfigurationExtensions
         if (configuration is not IConfigurationRoot root)
         {
             throw new InvalidOperationException($"Configuration must implement '{typeof(IConfigurationRoot)}'.");
+        }
+
+        if (root.Providers.Any(provider => provider is EncryptionResolverProvider))
+        {
+            return configuration;
         }
 
         return new ConfigurationRoot(new List<IConfigurationProvider>
