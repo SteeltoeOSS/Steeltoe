@@ -123,7 +123,7 @@ public static class EncryptionConfigurationExtensions
         {
             return configuration;
         }
-        
+
         return new ConfigurationRoot(new List<IConfigurationProvider>
         {
             new EncryptionResolverProvider(new List<IConfigurationProvider>(root.Providers), textDecryptor, loggerFactory)
