@@ -39,8 +39,7 @@ public sealed class EncryptionConfigurationExtensionsTest
         Assert.NotNull(source.Sources);
         Assert.Empty(source.Sources);
     }
-    
-    
+
     [Fact]
     public void AddEncryptionResolver_CreatesProvider()
     {
@@ -137,14 +136,14 @@ public sealed class EncryptionConfigurationExtensionsTest
         _decryptorMock.Verify(x => x.Decrypt("something", "keyalias"));
         _decryptorMock.VerifyNoOtherCalls();
     }
-    
+
     [Fact]
     public void AddEncryptionResolver_WithConfiguration_NoDuplicates()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        IConfiguration newConfiguration = configurationRoot.AddEncryptionResolver(_decryptorMock.Object).AddEncryptionResolver(_decryptorMock.Object)
-            .AddEncryptionResolver(_decryptorMock.Object);
+        IConfiguration newConfiguration = configurationRoot.AddEncryptionResolver(_decryptorMock.Object)
+            .AddEncryptionResolver(_decryptorMock.Object).AddEncryptionResolver(_decryptorMock.Object);
 
         ConfigurationRoot newConfigurationRoot = newConfiguration.Should().BeOfType<ConfigurationRoot>().Which;
         newConfigurationRoot.Providers.Should().HaveCount(1);

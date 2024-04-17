@@ -8,9 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Instrumentation.Http;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
@@ -19,6 +19,7 @@ using Steeltoe.Logging;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Wavefront.Exporters;
 using B3Propagator = OpenTelemetry.Extensions.Propagators.B3Propagator;
+using Sdk = OpenTelemetry.Sdk;
 
 namespace Steeltoe.Management.Tracing;
 
@@ -60,6 +61,8 @@ public static class TracingBaseServiceCollectionExtensions
         services.TryAddSingleton<ITracingOptions>(serviceProvider =>
             new TracingOptions(serviceProvider.GetRequiredService<IApplicationInstanceInfo>(), serviceProvider.GetRequiredService<IConfiguration>()));
 
+        services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
+
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDynamicMessageProcessor, TracingLogProcessor>());
 
         bool exportToZipkin = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin");
@@ -81,69 +84,72 @@ public static class TracingBaseServiceCollectionExtensions
             ConfigureOpenTelemetryProtocolOptions(services);
         }
 
-        services.AddOpenTelemetry().WithTracing(builder =>
+        services.AddOpenTelemetry().WithTracing(tracerProviderBuilder =>
         {
-            (builder as IDeferredTracerProviderBuilder)?.Configure((serviceProvider, deferredBuilder) =>
-            {
-                string appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>()
-                    .GetApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
-
-                var tracingOptions = serviceProvider.GetRequiredService<ITracingOptions>();
-
-                ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>()
-                    .CreateLogger($"{typeof(TracingBaseServiceCollectionExtensions).Namespace}.Setup");
-
-                logger.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.",
-                    exportToZipkin, exportToJaeger, exportToOpenTelemetryProtocol);
-
-                deferredBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(appName));
-
-                deferredBuilder.AddHttpClientInstrumentation(options =>
-                {
-                    var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern);
-                    options.Filter += requestMessage => !pathMatcher.IsMatch(requestMessage.RequestUri?.PathAndQuery ?? string.Empty);
-                });
-
-                if (tracingOptions.PropagationType.Equals("B3", StringComparison.OrdinalIgnoreCase))
-                {
-                    var propagators = new List<TextMapPropagator>
-                    {
-                        new B3Propagator(tracingOptions.SingleB3Header),
-                        new BaggagePropagator()
-                    };
-
-                    Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator(propagators));
-                }
-
-                if (tracingOptions.NeverSample)
-                {
-                    deferredBuilder.SetSampler(new AlwaysOffSampler());
-                }
-                else if (tracingOptions.AlwaysSample)
-                {
-                    deferredBuilder.SetSampler(new AlwaysOnSampler());
-                }
-            });
+            tracerProviderBuilder.AddHttpClientInstrumentation();
 
             if (exportToZipkin)
             {
-                AddZipkinExporter(builder);
+                AddZipkinExporter(tracerProviderBuilder);
             }
 
             if (exportToJaeger)
             {
-                AddJaegerExporter(builder);
+                AddJaegerExporter(tracerProviderBuilder);
             }
 
             if (exportToOpenTelemetryProtocol)
             {
-                AddOpenTelemetryProtocolExporter(builder);
+                AddOpenTelemetryProtocolExporter(tracerProviderBuilder);
             }
 
-            services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
-            AddWavefrontExporter(builder);
+            action?.Invoke(tracerProviderBuilder);
+        });
 
-            action?.Invoke(builder);
+        services.AddOptions<HttpClientTraceInstrumentationOptions>().Configure<IServiceProvider>((options, serviceProvider) =>
+        {
+            var tracingOptions = serviceProvider.GetRequiredService<ITracingOptions>();
+
+            var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern);
+            options.FilterHttpRequestMessage += requestMessage => !pathMatcher.IsMatch(requestMessage.RequestUri?.PathAndQuery ?? string.Empty);
+        });
+
+        services.ConfigureOpenTelemetryTracerProvider((serviceProvider, tracerProviderBuilder) =>
+        {
+            string appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>()
+                .GetApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
+
+            var tracingOptions = serviceProvider.GetRequiredService<ITracingOptions>();
+
+            ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>()
+                .CreateLogger($"{typeof(TracingBaseServiceCollectionExtensions).Namespace}.Setup");
+
+            logger.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.",
+                exportToZipkin, exportToJaeger, exportToOpenTelemetryProtocol);
+
+            tracerProviderBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(appName));
+
+            if (tracingOptions.PropagationType.Equals("B3", StringComparison.OrdinalIgnoreCase))
+            {
+                var propagators = new List<TextMapPropagator>
+                {
+                    new B3Propagator(tracingOptions.SingleB3Header),
+                    new BaggagePropagator()
+                };
+
+                Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator(propagators));
+            }
+
+            if (tracingOptions.NeverSample)
+            {
+                tracerProviderBuilder.SetSampler(new AlwaysOffSampler());
+            }
+            else if (tracingOptions.AlwaysSample)
+            {
+                tracerProviderBuilder.SetSampler(new AlwaysOnSampler());
+            }
+
+            AddWavefrontExporter(tracerProviderBuilder, serviceProvider);
         });
 
         return services;
@@ -203,20 +209,15 @@ public static class TracingBaseServiceCollectionExtensions
         builder.AddOtlpExporter();
     }
 
-    private static void AddWavefrontExporter(TracerProviderBuilder builder)
+    private static void AddWavefrontExporter(TracerProviderBuilder tracerProviderBuilder, IServiceProvider serviceProvider)
     {
-        var deferredTracerProviderBuilder = (IDeferredTracerProviderBuilder)builder;
+        var wavefrontOptions = serviceProvider.GetRequiredService<IOptions<WavefrontExporterOptions>>();
 
-        deferredTracerProviderBuilder.Configure((serviceProvider, innerBuilder) =>
+        // Only add if wavefront is configured
+        if (!string.IsNullOrEmpty(wavefrontOptions.Value.Uri))
         {
-            var wavefrontOptions = serviceProvider.GetRequiredService<IOptions<WavefrontExporterOptions>>();
-
-            // Only add if wavefront is configured
-            if (!string.IsNullOrEmpty(wavefrontOptions.Value.Uri))
-            {
-                var logger = serviceProvider.GetRequiredService<ILogger<WavefrontTraceExporter>>();
-                innerBuilder.AddWavefrontTraceExporter(wavefrontOptions.Value, logger);
-            }
-        });
+            var logger = serviceProvider.GetRequiredService<ILogger<WavefrontTraceExporter>>();
+            tracerProviderBuilder.AddWavefrontTraceExporter(wavefrontOptions.Value, logger);
+        }
     }
 }
