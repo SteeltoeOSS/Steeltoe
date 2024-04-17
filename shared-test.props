@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <NoWarn>$(NoWarn);S2094</NoWarn>
+    <NoWarn>$(NoWarn);S2094;NU5104</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -44,9 +44,6 @@ public class TracingOptions : ITracingOptions
     public bool SingleB3Header { get; set; } = true;
 
     /// <inheritdoc />
-    public bool EnableGrpcAspNetCoreSupport { get; set; } = true;
-
-    /// <inheritdoc />
     public Uri ExporterEndpoint { get; set; }
 
     public TracingOptions(IApplicationInstanceInfo appInfo, IConfiguration configuration)
