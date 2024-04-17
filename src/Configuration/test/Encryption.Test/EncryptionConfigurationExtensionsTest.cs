@@ -142,8 +142,8 @@ public sealed class EncryptionConfigurationExtensionsTest
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        IConfiguration newConfiguration = configurationRoot.AddEncryptionResolver(_decryptorMock.Object)
-            .AddEncryptionResolver(_decryptorMock.Object).AddEncryptionResolver(_decryptorMock.Object);
+        IConfiguration newConfiguration = configurationRoot.AddEncryptionResolver(_decryptorMock.Object).AddEncryptionResolver(_decryptorMock.Object)
+            .AddEncryptionResolver(_decryptorMock.Object);
 
         ConfigurationRoot newConfigurationRoot = newConfiguration.Should().BeOfType<ConfigurationRoot>().Which;
         newConfigurationRoot.Providers.Should().HaveCount(1);
