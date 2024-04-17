@@ -14,7 +14,7 @@ internal static class TagExtensions
 
         foreach (KeyValuePair<string, object?> tag in tagCollection)
         {
-            if (string.IsNullOrEmpty(tag.Key) || tag.Value == null || string.IsNullOrEmpty(tag.Value.ToString()))
+            if (string.IsNullOrEmpty(tag.Key) || string.IsNullOrEmpty(tag.Value?.ToString()))
             {
                 continue;
             }
