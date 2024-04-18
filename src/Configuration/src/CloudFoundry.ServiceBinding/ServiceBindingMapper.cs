@@ -22,7 +22,8 @@ internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
         BindingType = bindingType;
     }
 
-    public static ServiceBindingMapper Create(IDictionary<string, string?> configurationData, string bindingKey, string bindingType)
+    public static ServiceBindingMapper Create(IDictionary<string, string?> configurationData, string bindingKey, string bindingType,
+        string? overrideToPrefix = null)
     {
         ArgumentGuard.NotNull(bindingType);
         ArgumentGuard.NotNull(bindingKey);
@@ -30,11 +31,21 @@ internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
 
         string bindingName = configurationData[ConfigurationPath.Combine(bindingKey, "name")] ?? string.Empty;
         string bindingProvider = ConfigurationPath.GetSectionKey(ConfigurationPath.GetParentPath(bindingKey)) ?? string.Empty;
+        string[] toPrefix = CreateToPrefix(bindingType, bindingName, overrideToPrefix);
+
+        return new ServiceBindingMapper(configurationData, bindingKey, bindingType, bindingProvider, bindingName, toPrefix);
+    }
+
+    private static string[] CreateToPrefix(string bindingType, string bindingName, string? overrideToPrefix)
+    {
+        if (overrideToPrefix != null)
+        {
+            return overrideToPrefix.Split(ConfigurationPath.KeyDelimiter).ToArray();
+        }
 
         List<string> toPrefix = CloudFoundryServiceBindingConfigurationProvider.ToKeyPrefix.Split(ConfigurationPath.KeyDelimiter).ToList();
         toPrefix.Add(bindingType);
         toPrefix.Add(bindingName);
-
-        return new ServiceBindingMapper(configurationData, bindingKey, bindingType, bindingProvider, bindingName, toPrefix.ToArray());
+        return toPrefix.ToArray();
     }
 }

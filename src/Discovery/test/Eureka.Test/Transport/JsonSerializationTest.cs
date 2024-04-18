@@ -8,19 +8,18 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.Transport;
 
-public sealed class JsonSerializationTest : AbstractBaseTest
+public sealed class JsonSerializationTest
 {
     [Fact]
     public void Deserialize_BadJson_Throws()
     {
-        const string json = @"
-{ 
-    'instanceId':'localhost:foo',
-    'hostName':'localhost',
-    'app':'FOO',
-    'ipAddr':'192.168.56.1',
-    
-";
+        const string json = """
+            {
+                'instanceId':'localhost:foo',
+                'hostName':'localhost',
+                'app':'FOO',
+                'ipAddr':'192.168.56.1',
+            """;
 
         Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<JsonInstanceInfo>(json));
     }

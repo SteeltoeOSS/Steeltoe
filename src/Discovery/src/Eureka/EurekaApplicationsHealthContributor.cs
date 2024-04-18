@@ -2,30 +2,35 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaApplicationsHealthContributor : IHealthContributor
+/// <summary>
+/// Reports whether the configured list of apps this app depends on are reachable.
+/// </summary>
+internal sealed class EurekaApplicationsHealthContributor : IHealthContributor
 {
     private readonly EurekaDiscoveryClient _discoveryClient;
+    private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
 
-    public string Id { get; } = "eurekaApplications";
+    public string Id => "eurekaApplications";
 
-    public EurekaApplicationsHealthContributor(EurekaDiscoveryClient discoveryClient, ILogger<EurekaApplicationsHealthContributor> logger = null)
+    public EurekaApplicationsHealthContributor(EurekaDiscoveryClient discoveryClient, IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor)
     {
+        ArgumentGuard.NotNull(discoveryClient);
+        ArgumentGuard.NotNull(clientOptionsMonitor);
+
         _discoveryClient = discoveryClient;
+        _clientOptionsMonitor = clientOptionsMonitor;
     }
 
-    // Testing
-    internal EurekaApplicationsHealthContributor()
-    {
-    }
-
-    public Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -35,11 +40,11 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
             Description = "No monitored applications"
         };
 
-        IList<string> appNames = GetMonitoredApplications(_discoveryClient.ClientConfiguration);
+        IList<string> appNames = GetMonitoredApplications();
 
         foreach (string appName in appNames)
         {
-            Application app = _discoveryClient.GetApplication(appName);
+            ApplicationInfo? app = _discoveryClient.GetApplication(appName);
             AddApplicationHealthStatus(appName, app, result);
         }
 
@@ -50,16 +55,16 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
         result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         result.Details.Add("statusDescription", result.Description);
 
-        return Task.FromResult(result);
+        return Task.FromResult<HealthCheckResult?>(result);
     }
 
-    internal void AddApplicationHealthStatus(string appName, Application app, HealthCheckResult result)
+    internal void AddApplicationHealthStatus(string appName, ApplicationInfo? app, HealthCheckResult result)
     {
         if (app != null && app.Name == appName)
         {
-            int upCount = app.Instances.Count(x => x.Status == InstanceStatus.Up);
+            int upCount = app.Instances.Count(instance => instance.EffectiveStatus == InstanceStatus.Up);
 
-            if (upCount <= 0)
+            if (upCount == 0)
             {
                 result.Status = HealthStatus.Down;
             }
@@ -73,39 +78,27 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
         }
     }
 
-    private IList<string> GetMonitoredApplications(IEurekaClientConfiguration clientConfiguration)
+    private IList<string> GetMonitoredApplications()
     {
-        IList<string> configApps = GetApplicationsFromConfig(clientConfiguration);
+        IList<string>? configuredApplications = GetApplicationsFromConfiguration();
 
-        if (configApps != null)
+        if (configuredApplications != null)
         {
-            return configApps;
+            return configuredApplications;
         }
 
-        IList<Application> regApps = _discoveryClient.Applications.GetRegisteredApplications();
-        return regApps.Select(app => app.Name).ToList();
+        return _discoveryClient.Applications.RegisteredApplications.Select(app => app.Name).ToList();
     }
 
-    internal IList<string> GetApplicationsFromConfig(IEurekaClientConfiguration clientConfiguration)
+    internal IList<string>? GetApplicationsFromConfiguration()
     {
-        if (clientConfiguration is EurekaClientConfiguration configuration)
+        EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
+
+        string[]? monitoredApps = clientOptions.Health.MonitoredApps?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        if (monitoredApps is { Length: > 0 })
         {
-            string[] monitoredApps = configuration.HealthMonitoredApps?.Split(new[]
-            {
-                ','
-            }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-            if (monitoredApps != null && monitoredApps.Length > 0)
-            {
-                var results = new List<string>();
-
-                foreach (string str in monitoredApps)
-                {
-                    results.Add(str.Trim());
-                }
-
-                return results;
-            }
+            return monitoredApps.ToList();
         }
 
         return null;

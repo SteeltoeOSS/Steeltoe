@@ -10,28 +10,28 @@ namespace Steeltoe.Discovery.Eureka.Transport;
 internal sealed class JsonLeaseInfo
 {
     [JsonPropertyName("renewalIntervalInSecs")]
-    public int RenewalIntervalInSecs { get; set; }
+    public int? RenewalIntervalInSeconds { get; set; }
 
     [JsonPropertyName("durationInSecs")]
-    public int DurationInSecs { get; set; }
+    public int? DurationInSeconds { get; set; }
 
     [JsonPropertyName("registrationTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]
-    public long RegistrationTimestamp { get; set; }
+    public long? RegistrationTimestamp { get; set; }
 
     [JsonPropertyName("lastRenewalTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]
-    public long LastRenewalTimestamp { get; set; }
+    public long? LastRenewalTimestamp { get; set; }
 
     [JsonPropertyName("renewalTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]
-    public long LastRenewalTimestampLegacy { get; set; }
+    public long? LastRenewalTimestampLegacy { get; set; }
 
     [JsonPropertyName("evictionTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]
-    public long EvictionTimestamp { get; set; }
+    public long? EvictionTimestamp { get; set; }
 
     [JsonPropertyName("serviceUpTimestamp")]
     [JsonConverter(typeof(LongStringJsonConverter))]
-    public long ServiceUpTimestamp { get; set; }
+    public long? ServiceUpTimestamp { get; set; }
 }

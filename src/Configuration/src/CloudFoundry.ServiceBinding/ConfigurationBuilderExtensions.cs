@@ -87,15 +87,17 @@ public static class ConfigurationBuilderExtensions
             // WebApplicationBuilder immediately builds the configuration provider and loads it, which executes the post-processors.
             // Therefore adding post-processors afterwards is a no-op.
 
-            RegisterPostProcessors(source);
+            RegisterPostProcessors(source, loggerFactory);
             builder.Add(source);
         }
 
         return builder;
     }
 
-    private static void RegisterPostProcessors(CloudFoundryServiceBindingConfigurationSource source)
+    private static void RegisterPostProcessors(CloudFoundryServiceBindingConfigurationSource source, ILoggerFactory loggerFactory)
     {
+        ILogger<EurekaCloudFoundryPostProcessor> eurekaLogger = loggerFactory.CreateLogger<EurekaCloudFoundryPostProcessor>();
+
         source.RegisterPostProcessor(new CosmosDbCloudFoundryPostProcessor());
         source.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
         source.RegisterPostProcessor(new MySqlCloudFoundryPostProcessor());
@@ -103,5 +105,6 @@ public static class ConfigurationBuilderExtensions
         source.RegisterPostProcessor(new RabbitMQCloudFoundryPostProcessor());
         source.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
         source.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new EurekaCloudFoundryPostProcessor(eurekaLogger));
     }
 }

@@ -3,10 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
-using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Eureka;
 
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.Client.Test")]
-
-[assembly: DiscoveryClientAssembly(typeof(EurekaDiscoveryClientExtension))]
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.HttpClients.Test")]

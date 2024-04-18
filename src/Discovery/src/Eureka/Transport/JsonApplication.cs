@@ -9,9 +9,9 @@ namespace Steeltoe.Discovery.Eureka.Transport;
 internal sealed class JsonApplication
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [JsonPropertyName("instance")]
     [JsonConverter(typeof(JsonInstanceInfoConverter))]
-    public IList<JsonInstanceInfo> Instances { get; set; }
+    public IList<JsonInstanceInfo?>? Instances { get; set; }
 }

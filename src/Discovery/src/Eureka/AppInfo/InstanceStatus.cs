@@ -7,12 +7,31 @@ using Steeltoe.Common.Util;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
+/// <summary>
+/// Lists the statuses a Eureka application instance can have.
+/// </summary>
 [JsonConverter(typeof(SnakeCaseAllCapsEnumMemberJsonConverter))]
 public enum InstanceStatus
 {
+    Unknown,
+
+    /// <summary>
+    /// App is ready to accept traffic.
+    /// </summary>
     Up,
+
+    /// <summary>
+    /// Indicates an unexpected, unplanned outage.
+    /// </summary>
     Down,
+
+    /// <summary>
+    /// App is starting, not ready to accept traffic yet.
+    /// </summary>
     Starting,
-    OutOfService,
-    Unknown
+
+    /// <summary>
+    /// Indicates a planned downtime, typically used for maintenance.
+    /// </summary>
+    OutOfService
 }

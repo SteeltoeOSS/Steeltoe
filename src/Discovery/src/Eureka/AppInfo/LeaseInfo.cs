@@ -2,78 +2,129 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
+using Steeltoe.Common;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
-public class LeaseInfo
+public sealed class LeaseInfo
 {
-    public const int DefaultRenewalIntervalInSecs = 30;
-    public const int DefaultDurationInSecs = 90;
+    /// <summary>
+    /// Gets the client-specified time how often the client sends a heartbeat to renew the lease.
+    /// </summary>
+    public TimeSpan? RenewalInterval { get; private init; }
 
-    public int RenewalIntervalInSecs { get; internal set; }
+    /// <summary>
+    /// Gets the client-specified time for eviction (e.g. how long to wait without renewal).
+    /// </summary>
+    public TimeSpan? Duration { get; private init; }
 
-    public int DurationInSecs { get; internal set; }
+    /// <summary>
+    /// Gets the registration time, in UTC, which is the time when the lease was first registered.
+    /// </summary>
+    public DateTime? RegistrationTimeUtc { get; private init; }
 
-    public long RegistrationTimestamp { get; internal set; }
+    /// <summary>
+    /// Gets the time, in UTC, when the lease was last renewed.
+    /// </summary>
+    public DateTime? LastRenewalTimeUtc { get; private init; }
 
-    public long LastRenewalTimestamp { get; internal set; }
+    /// <summary>
+    /// Gets the de-registration time, in UTC, which is the time when the lease was removed.
+    /// </summary>
+    public DateTime? EvictionTimeUtc { get; private init; }
 
-    public long LastRenewalTimestampLegacy { get; internal set; }
+    /// <summary>
+    /// Gets the time, in UTC, when the leased service was marked as UP.
+    /// </summary>
+    public DateTime? ServiceUpTimeUtc { get; private init; }
 
-    public long EvictionTimestamp { get; internal set; }
-
-    public long ServiceUpTimestamp { get; internal set; }
-
-    internal LeaseInfo()
+    private LeaseInfo()
     {
-        RenewalIntervalInSecs = DefaultRenewalIntervalInSecs;
-        DurationInSecs = DefaultDurationInSecs;
     }
 
-    internal static LeaseInfo FromJson(JsonLeaseInfo leaseInfo)
+    /// <inheritdoc />
+    public override string ToString()
     {
-        var info = new LeaseInfo();
+        return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
+    }
 
-        if (leaseInfo != null)
+    internal static LeaseInfo? FromJson(JsonLeaseInfo? jsonLeaseInfo)
+    {
+        if (jsonLeaseInfo == null)
         {
-            info.RenewalIntervalInSecs = leaseInfo.RenewalIntervalInSecs;
-            info.DurationInSecs = leaseInfo.DurationInSecs;
-            info.RegistrationTimestamp = DateTimeConversions.FromJavaMillis(leaseInfo.RegistrationTimestamp).Ticks;
-            info.LastRenewalTimestamp = DateTimeConversions.FromJavaMillis(leaseInfo.LastRenewalTimestamp).Ticks;
-            info.LastRenewalTimestampLegacy = DateTimeConversions.FromJavaMillis(leaseInfo.LastRenewalTimestampLegacy).Ticks;
-            info.EvictionTimestamp = DateTimeConversions.FromJavaMillis(leaseInfo.EvictionTimestamp).Ticks;
-            info.ServiceUpTimestamp = DateTimeConversions.FromJavaMillis(leaseInfo.ServiceUpTimestamp).Ticks;
+            return null;
         }
 
-        return info;
+        return new LeaseInfo
+        {
+            RenewalInterval = NullableSecondsToTimeSpan(jsonLeaseInfo.RenewalIntervalInSeconds),
+            Duration = NullableSecondsToTimeSpan(jsonLeaseInfo.DurationInSeconds),
+            RegistrationTimeUtc = DateTimeConversions.FromNullableJavaMilliseconds(jsonLeaseInfo.RegistrationTimestamp),
+            LastRenewalTimeUtc =
+                DateTimeConversions.FromNullableJavaMilliseconds(jsonLeaseInfo.LastRenewalTimestamp ?? jsonLeaseInfo.LastRenewalTimestampLegacy),
+            EvictionTimeUtc = DateTimeConversions.FromNullableJavaMilliseconds(jsonLeaseInfo.EvictionTimestamp),
+            ServiceUpTimeUtc = DateTimeConversions.FromNullableJavaMilliseconds(jsonLeaseInfo.ServiceUpTimestamp)
+        };
     }
 
-    internal static LeaseInfo FromConfig(IEurekaInstanceConfig configuration)
+    private static TimeSpan? NullableSecondsToTimeSpan(int? seconds)
     {
-        var info = new LeaseInfo
-        {
-            RenewalIntervalInSecs = configuration.LeaseRenewalIntervalInSeconds,
-            DurationInSecs = configuration.LeaseExpirationDurationInSeconds
-        };
+        return seconds is null ? null : TimeSpan.FromSeconds(seconds.Value);
+    }
 
-        return info;
+    internal static LeaseInfo FromConfiguration(EurekaInstanceOptions options)
+    {
+        ArgumentGuard.NotNull(options);
+
+        return new LeaseInfo
+        {
+            RenewalInterval = options.LeaseRenewalInterval,
+            Duration = options.LeaseExpirationDuration
+        };
     }
 
     internal JsonLeaseInfo ToJson()
     {
-        var leaseInfo = new JsonLeaseInfo
+        return new JsonLeaseInfo
         {
-            RenewalIntervalInSecs = RenewalIntervalInSecs,
-            DurationInSecs = DurationInSecs,
-            RegistrationTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(RegistrationTimestamp, DateTimeKind.Utc)),
-            LastRenewalTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastRenewalTimestamp, DateTimeKind.Utc)),
-            LastRenewalTimestampLegacy = DateTimeConversions.ToJavaMillis(new DateTime(LastRenewalTimestampLegacy, DateTimeKind.Utc)),
-            EvictionTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(EvictionTimestamp, DateTimeKind.Utc)),
-            ServiceUpTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(ServiceUpTimestamp, DateTimeKind.Utc))
+            RenewalIntervalInSeconds = NullableTimeSpanToSeconds(RenewalInterval),
+            DurationInSeconds = NullableTimeSpanToSeconds(Duration),
+            RegistrationTimestamp = DateTimeConversions.ToNullableJavaMilliseconds(RegistrationTimeUtc),
+            LastRenewalTimestampLegacy = DateTimeConversions.ToNullableJavaMilliseconds(LastRenewalTimeUtc),
+            EvictionTimestamp = DateTimeConversions.ToNullableJavaMilliseconds(EvictionTimeUtc),
+            ServiceUpTimestamp = DateTimeConversions.ToNullableJavaMilliseconds(ServiceUpTimeUtc)
         };
+    }
 
-        return leaseInfo;
+    private static int? NullableTimeSpanToSeconds(TimeSpan? timeSpan)
+    {
+        return timeSpan == null ? null : (int)timeSpan.Value.TotalSeconds;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj is not LeaseInfo other)
+        {
+            return false;
+        }
+
+#pragma warning disable S1067 // Expressions should not be too complex
+        return RenewalInterval == other.RenewalInterval && Duration == other.Duration && RegistrationTimeUtc == other.RegistrationTimeUtc &&
+            LastRenewalTimeUtc == other.LastRenewalTimeUtc && EvictionTimeUtc == other.EvictionTimeUtc && ServiceUpTimeUtc == other.ServiceUpTimeUtc;
+#pragma warning restore S1067 // Expressions should not be too complex
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(RenewalInterval, Duration, RegistrationTimeUtc, LastRenewalTimeUtc, EvictionTimeUtc, ServiceUpTimeUtc);
     }
 }

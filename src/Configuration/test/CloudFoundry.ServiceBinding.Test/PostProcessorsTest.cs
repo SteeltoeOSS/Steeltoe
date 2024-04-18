@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 using Xunit;
 
@@ -229,5 +230,33 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData[$"{keyPrefix}:accountEndpoint"].Should().Be("test-endpoint");
         configurationData[$"{keyPrefix}:accountKey"].Should().Be("test-key");
         configurationData[$"{keyPrefix}:database"].Should().Be("test-database");
+    }
+
+    [Fact]
+    public void Processes_Eureka_configuration()
+    {
+        var postProcessor = new EurekaCloudFoundryPostProcessor(NullLogger<EurekaCloudFoundryPostProcessor>.Instance);
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:uri", "test-uri"),
+            Tuple.Create("credentials:client_id", "test-client-id"),
+            Tuple.Create("credentials:client_secret", "test-client-secret"),
+            Tuple.Create("credentials:access_token_uri", "test-access-token-uri")
+        };
+
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(EurekaCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        const string keyPrefix = EurekaCloudFoundryPostProcessor.EurekaConfigurationKeyPrefix;
+        configurationData[$"{keyPrefix}:ServiceUrl"].Should().Be("test-uri/eureka/");
+        configurationData[$"{keyPrefix}:ClientId"].Should().Be("test-client-id");
+        configurationData[$"{keyPrefix}:ClientSecret"].Should().Be("test-client-secret");
+        configurationData[$"{keyPrefix}:AccessTokenUri"].Should().Be("test-access-token-uri");
+        configurationData[$"{keyPrefix}:Enabled"].Should().Be("true");
     }
 }

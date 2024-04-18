@@ -9,5 +9,5 @@ namespace Steeltoe.Discovery.Eureka.Transport;
 internal sealed class JsonApplicationsRoot
 {
     [JsonPropertyName("applications")]
-    public JsonApplications Applications { get; set; }
+    public JsonApplications? Applications { get; set; }
 }
