@@ -9,6 +9,9 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
+// Workaround for Sonar bug, which has been fixed in SonarAnalyzer.CSharp v9.12.
+#pragma warning disable S2589 // Boolean expressions should not be gratuitous
+
 namespace Steeltoe.Discovery.Eureka.Configuration;
 
 public sealed class EurekaInstanceOptions
