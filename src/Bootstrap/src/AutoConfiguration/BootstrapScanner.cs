@@ -26,7 +26,9 @@ using Steeltoe.Connectors.Redis;
 using Steeltoe.Connectors.Redis.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
-using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Configuration;
+using Steeltoe.Discovery.Consul;
+using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Prometheus;
@@ -72,10 +74,10 @@ internal sealed class BootstrapScanner
         WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblyNames.ConfigurationPlaceholder);
         WireIfLoaded(WireConnectors, SteeltoeAssemblyNames.Connectors);
         WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblyNames.LoggingDynamicSerilog);
-        WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblyNames.DiscoveryClient);
-
+        WireIfLoaded(WireDiscoveryConfiguration, SteeltoeAssemblyNames.DiscoveryConfiguration);
+        WireIfLoaded(WireDiscoveryConsul, SteeltoeAssemblyNames.DiscoveryConsul);
+        WireIfLoaded(WireDiscoveryEureka, SteeltoeAssemblyNames.DiscoveryEureka);
         WireIfLoaded(WireAllActuators, SteeltoeAssemblyNames.ManagementEndpoint);
-
         WireIfLoaded(WirePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
         WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
         WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
@@ -190,11 +192,25 @@ internal sealed class BootstrapScanner
         _logger.LogInformation("Configured dynamic console logger for Serilog");
     }
 
-    private void WireDiscoveryClient()
+    private void WireDiscoveryConfiguration()
     {
-        _wrapper.ConfigureServices((context, services) => services.AddDiscoveryClient(context.Configuration));
+        _wrapper.ConfigureServices(services => services.AddConfigurationDiscoveryClient());
 
-        _logger.LogInformation("Configured discovery client");
+        _logger.LogInformation("Configured configuration discovery client");
+    }
+
+    private void WireDiscoveryConsul()
+    {
+        _wrapper.ConfigureServices(services => services.AddConsulDiscoveryClient());
+
+        _logger.LogInformation("Configured Consul discovery client");
+    }
+
+    private void WireDiscoveryEureka()
+    {
+        _wrapper.ConfigureServices(services => services.AddEurekaDiscoveryClient());
+
+        _logger.LogInformation("Configured Eureka discovery client");
     }
 
     private void WireAllActuators()

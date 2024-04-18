@@ -16,7 +16,9 @@ public static class SteeltoeAssemblyNames
     public const string ConfigurationRandomValue = "Steeltoe.Configuration.RandomValue";
     public const string ConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder";
     public const string Connectors = "Steeltoe.Connectors";
-    public const string DiscoveryClient = "Steeltoe.Discovery.Client";
+    public const string DiscoveryConfiguration = "Steeltoe.Discovery.Configuration";
+    public const string DiscoveryConsul = "Steeltoe.Discovery.Consul";
+    public const string DiscoveryEureka = "Steeltoe.Discovery.Eureka";
     public const string LoggingDynamicSerilog = "Steeltoe.Logging.DynamicSerilog";
     public const string ManagementEndpoint = "Steeltoe.Management.Endpoint";
     public const string ManagementPrometheus = "Steeltoe.Management.Prometheus";
@@ -29,9 +31,6 @@ public static class SteeltoeAssemblyNames
 
     internal static IReadOnlySet<string> Only(string assemblyName)
     {
-        return All.Except(new[]
-        {
-            assemblyName
-        }).ToHashSet();
+        return All.Except([assemblyName]).ToHashSet();
     }
 }
