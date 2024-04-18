@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Consul;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
-using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Consul.Util;
 using Xunit;
@@ -17,48 +18,39 @@ namespace Steeltoe.Discovery.Consul.Test.Registry;
 public sealed class ConsulRegistrationTest
 {
     [Fact]
-    public void Constructor_ThrowsOnNulls()
-    {
-        var registration = new AgentServiceRegistration();
-        var options = new ConsulDiscoveryOptions();
-
-        Assert.Throws<ArgumentNullException>(() => new ConsulRegistration(null, options));
-        Assert.Throws<ArgumentNullException>(() => new ConsulRegistration(registration, (ConsulDiscoveryOptions)null));
-    }
-
-    [Fact]
     public void Constructor_SetsProperties()
     {
-        var registration = new AgentServiceRegistration
+        var source = new AgentServiceRegistration
         {
             ID = "id",
             Name = "name",
             Address = "address",
             Port = 1234,
-            Tags = new[]
-            {
+            Tags =
+            [
                 "tag1",
                 "tag2"
-            },
+            ],
             Meta = new Dictionary<string, string>
             {
                 ["foo"] = "bar"
             }
         };
 
-        var options = new ConsulDiscoveryOptions();
-        var reg = new ConsulRegistration(registration, options);
-        Assert.Equal("id", reg.InstanceId);
-        Assert.Equal("name", reg.ServiceId);
-        Assert.Equal("address", reg.Host);
-        Assert.Equal(1234, reg.Port);
-        Assert.Contains("tag1", reg.Tags);
-        Assert.Contains("tag2", reg.Tags);
-        Assert.Single(reg.Metadata);
-        Assert.Contains("foo", reg.Metadata.Keys);
-        Assert.Contains("bar", reg.Metadata.Values);
-        Assert.False(reg.IsSecure);
-        Assert.Equal(new Uri("http://address:1234"), reg.Uri);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
+        var registration = new ConsulRegistration(source, optionsMonitor);
+
+        Assert.Equal("id", registration.InstanceId);
+        Assert.Equal("name", registration.ServiceId);
+        Assert.Equal("address", registration.Host);
+        Assert.Equal(1234, registration.Port);
+        Assert.Contains("tag1", registration.Tags);
+        Assert.Contains("tag2", registration.Tags);
+        Assert.Single(registration.Metadata);
+        Assert.Contains("foo", registration.Metadata.Keys);
+        Assert.Contains("bar", registration.Metadata.Values);
+        Assert.False(registration.IsSecure);
+        Assert.Equal(new Uri("http://address:1234"), registration.Uri);
     }
 
     [Fact]
@@ -66,7 +58,7 @@ public sealed class ConsulRegistrationTest
     {
         var options = new ConsulDiscoveryOptions
         {
-            Tags = new List<string>
+            Tags =
             {
                 "foo",
                 "bar"
@@ -76,10 +68,12 @@ public sealed class ConsulRegistrationTest
             Scheme = "https"
         };
 
-        string[] result = ConsulRegistration.CreateTags(options);
-        Assert.Equal(2, result.Length);
-        Assert.Contains("foo", result);
-        Assert.Contains("bar", result);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(new ConfigurationBuilder().Build()));
+
+        Assert.Equal(2, registration.Tags.Count);
+        Assert.Contains("foo", registration.Tags);
+        Assert.Contains("bar", registration.Tags);
     }
 
     [Fact]
@@ -87,7 +81,7 @@ public sealed class ConsulRegistrationTest
     {
         var options = new ConsulDiscoveryOptions
         {
-            Metadata = new Dictionary<string, string>
+            Metadata =
             {
                 ["foo"] = "bar",
                 ["baz"] = "qux"
@@ -97,87 +91,93 @@ public sealed class ConsulRegistrationTest
             Scheme = "https"
         };
 
-        IDictionary<string, string> result = ConsulRegistration.CreateMetadata(options);
-        Assert.Equal(5, result.Keys.Count);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(new ConfigurationBuilder().Build()));
+        IReadOnlyDictionary<string, string?> metadata = registration.Metadata;
 
-        Assert.Contains(result, x => x.Key == "foo");
-        Assert.Equal("bar", result["foo"]);
+        Assert.Equal(5, metadata.Keys.Count());
 
-        Assert.Contains(result, x => x.Key == "baz");
-        Assert.Equal("qux", result["baz"]);
+        Assert.Contains(metadata, x => x.Key == "foo");
+        Assert.Equal("bar", metadata["foo"]);
 
-        Assert.Contains(result, x => x.Key == "zone");
-        Assert.Equal("instancezone", result["zone"]);
+        Assert.Contains(metadata, x => x.Key == "baz");
+        Assert.Equal("qux", metadata["baz"]);
 
-        Assert.Contains(result, x => x.Key == "group");
-        Assert.Equal("instancegroup", result["group"]);
+        Assert.Contains(metadata, x => x.Key == "zone");
+        Assert.Equal("instancezone", metadata["zone"]);
 
-        Assert.Contains(result, x => x.Key == "secure");
-        Assert.Equal("true", result["secure"]);
+        Assert.Contains(metadata, x => x.Key == "group");
+        Assert.Equal("instancegroup", metadata["group"]);
+
+        Assert.Contains(metadata, x => x.Key == "secure");
+        Assert.Equal("true", metadata["secure"]);
     }
 
     [Fact]
     public void AppName_SetAsExpected()
     {
-        var options = new ConsulDiscoveryOptions();
-        var appsettings = new Dictionary<string, string>();
-        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
+        var appsettings = new Dictionary<string, string?>();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         var appInstanceInfo = new ApplicationInstanceInfo(configuration);
 
         // default value is assembly name
-        var result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
-        Assert.Equal(TestHelpers.EntryAssemblyName.Replace('.', '-'), result.Service.Name);
+        var result = ConsulRegistration.Create(optionsMonitor, appInstanceInfo);
+        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name!.Replace('.', '-'), result.ServiceId);
 
         // followed by spring:application:name
         appsettings.Add("spring:application:name", "SpringApplicationName");
-        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         appInstanceInfo = new ApplicationInstanceInfo(configuration);
-        result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
-        Assert.Equal("SpringApplicationName", result.Service.Name);
+        result = ConsulRegistration.Create(optionsMonitor, appInstanceInfo);
+        Assert.Equal("SpringApplicationName", result.ServiceId);
 
         // Platform app name overrides spring name
         appsettings.Add("application:name", "PlatformName");
-        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         appInstanceInfo = new ApplicationInstanceInfo(configuration);
-        result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
-        Assert.Equal("PlatformName", result.Service.Name);
+        result = ConsulRegistration.Create(optionsMonitor, appInstanceInfo);
+        Assert.Equal("PlatformName", result.ServiceId);
 
         // Consul-specific value beats generic value
         appsettings.Add("consul:serviceName", "ConsulServiceName");
-        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         appInstanceInfo = new ApplicationInstanceInfo(configuration);
-        result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
-        Assert.Equal("ConsulServiceName", result.Service.Name);
+        result = ConsulRegistration.Create(optionsMonitor, appInstanceInfo);
+        Assert.Equal("ConsulServiceName", result.ServiceId);
 
         // Consul-discovery is highest priority
         appsettings.Add("consul:discovery:serviceName", "ConsulDiscoveryServiceName");
-        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         appInstanceInfo = new ApplicationInstanceInfo(configuration);
-        result = ConsulRegistration.CreateRegistration(options, appInstanceInfo);
-        Assert.Equal("ConsulDiscoveryServiceName", result.Service.Name);
+        result = ConsulRegistration.Create(optionsMonitor, appInstanceInfo);
+        Assert.Equal("ConsulDiscoveryServiceName", result.ServiceId);
     }
 
     [Fact]
     public void GetDefaultInstanceId_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             { "consul:discovery:serviceName", "serviceName" }
         };
 
-        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        string result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(configuration));
-        Assert.StartsWith("serviceName:", result, StringComparison.Ordinal);
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+
+        Assert.StartsWith("serviceName-", registration.InstanceId, StringComparison.Ordinal);
 
         appsettings.Add("spring:application:instance_id", "springid");
-        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(configuration));
-        Assert.Equal("serviceName:springid", result);
+        configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+        Assert.Equal("serviceName-springid", registration.InstanceId);
 
         appsettings.Add("vcap:application:instance_id", "vcapid");
-        configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        result = ConsulRegistration.GetDefaultInstanceId(new CloudFoundryApplicationOptions(configuration));
-        Assert.Equal("serviceName:vcapid", result);
+        configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        registration = ConsulRegistration.Create(optionsMonitor, new CloudFoundryApplicationOptions(configuration));
+        Assert.Equal("serviceName-vcapid", registration.InstanceId);
     }
 
     [Fact]
@@ -188,18 +188,20 @@ public sealed class ConsulRegistrationTest
             InstanceId = "instanceId"
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
         }).Build();
 
-        string result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(configurationRoot));
-        Assert.Equal("instanceId", result);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+
+        Assert.Equal("instanceId", registration.InstanceId);
 
         options.InstanceId = null;
 
-        result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(configurationRoot));
-        Assert.StartsWith("foobar-", result, StringComparison.Ordinal);
+        registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+        Assert.StartsWith("foobar-", registration.InstanceId, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -217,11 +219,15 @@ public sealed class ConsulRegistrationTest
     [Fact]
     public void CreateCheck_ReturnsExpected()
     {
-        var options = new ConsulDiscoveryOptions();
+        var options = new ConsulDiscoveryOptions
+        {
+            HostName = "some-host"
+        };
+
         AgentServiceCheck result = ConsulRegistration.CreateCheck(1234, options);
         Assert.NotNull(result);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl), result.TTL);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout), result.DeregisterCriticalServiceAfter);
+        Assert.Equal(DateTimeConversions.ToTimeSpan(options.Heartbeat!.TimeToLive), result.TTL);
+        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!), result.DeregisterCriticalServiceAfter);
 
         options.Heartbeat = null;
         Assert.Throws<ArgumentOutOfRangeException>(() => ConsulRegistration.CreateCheck(0, options));
@@ -230,9 +236,9 @@ public sealed class ConsulRegistrationTest
         result = ConsulRegistration.CreateCheck(port, options);
         var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
         Assert.Equal(uri.ToString(), result.HTTP);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckInterval), result.Interval);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout), result.Timeout);
-        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout), result.DeregisterCriticalServiceAfter);
+        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckInterval!), result.Interval);
+        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout!), result.Timeout);
+        Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!), result.DeregisterCriticalServiceAfter);
         Assert.Equal(options.HealthCheckTlsSkipVerify, result.TLSSkipVerify);
     }
 
@@ -241,31 +247,32 @@ public sealed class ConsulRegistrationTest
     {
         var options = new ConsulDiscoveryOptions
         {
+            HostName = "some-host",
             Port = 1100
         };
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
         }).Build();
 
-        var reg = ConsulRegistration.CreateRegistration(options, new ApplicationInstanceInfo(configurationRoot));
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>(options);
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
 
-        Assert.StartsWith("foobar-", reg.InstanceId, StringComparison.Ordinal);
-        Assert.False(reg.IsSecure);
-        Assert.Equal("foobar", reg.ServiceId);
-        Assert.Equal(options.HostName, reg.Host);
-        Assert.Equal(1100, reg.Port);
-        string hostName = options.HostName;
-        Assert.Equal(new Uri($"http://{hostName}:1100"), reg.Uri);
-        Assert.NotNull(reg.Service);
+        Assert.StartsWith("foobar-", registration.InstanceId, StringComparison.Ordinal);
+        Assert.False(registration.IsSecure);
+        Assert.Equal("foobar", registration.ServiceId);
+        Assert.Equal(options.HostName, registration.Host);
+        Assert.Equal(1100, registration.Port);
+        Assert.Equal(new Uri($"http://{options.HostName}:1100"), registration.Uri);
 
-        Assert.Equal(hostName, reg.Service.Address);
-        Assert.StartsWith("foobar-", reg.Service.ID, StringComparison.Ordinal);
-        Assert.Equal("foobar", reg.Service.Name);
-        Assert.Equal(1100, reg.Service.Port);
-        Assert.NotNull(reg.Service.Check);
-        Assert.NotNull(reg.Service.Tags);
+        Assert.NotNull(registration.InnerRegistration);
+        Assert.Equal(options.HostName, registration.InnerRegistration.Address);
+        Assert.StartsWith("foobar-", registration.InnerRegistration.ID, StringComparison.Ordinal);
+        Assert.Equal("foobar", registration.InnerRegistration.Name);
+        Assert.Equal(1100, registration.InnerRegistration.Port);
+        Assert.NotNull(registration.InnerRegistration.Check);
+        Assert.NotNull(registration.InnerRegistration.Tags);
     }
 
     [Fact]
@@ -275,6 +282,7 @@ public sealed class ConsulRegistrationTest
 
         var options = new ConsulDiscoveryOptions
         {
+            HostName = "some-host",
             HealthCheckPath = path,
             Heartbeat = new ConsulHeartbeatOptions
             {

@@ -2,16 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using Consul;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Util;
 
-namespace Steeltoe.Discovery.Consul.Discovery;
+namespace Steeltoe.Discovery.Consul;
 
 /// <summary>
-/// A Consul service instance constructed from a ServiceEntry.
+/// A service instance returned from a Consul server.
 /// </summary>
-public class ConsulServiceInstance : IServiceInstance
+public sealed class ConsulServiceInstance : IServiceInstance
 {
     /// <inheritdoc />
     public string ServiceId { get; }
@@ -28,36 +30,32 @@ public class ConsulServiceInstance : IServiceInstance
     /// <inheritdoc />
     public Uri Uri { get; }
 
-    public string[] Tags { get; }
+    public IReadOnlyList<string> Tags { get; }
 
     /// <inheritdoc />
-    public IDictionary<string, string> Metadata { get; }
+    public IReadOnlyDictionary<string, string?> Metadata { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceInstance" /> class.
     /// </summary>
     /// <param name="serviceEntry">
-    /// the service entry from the Consul server.
+    /// The service entry from the Consul server.
     /// </param>
-    public ConsulServiceInstance(ServiceEntry serviceEntry)
+    internal ConsulServiceInstance(ServiceEntry serviceEntry)
     {
+        ArgumentGuard.NotNull(serviceEntry);
+
         Host = ConsulServerUtils.FindHost(serviceEntry);
         Tags = serviceEntry.Service.Tags;
-        Metadata = serviceEntry.Service.Meta;
-        IsSecure = GetIsSecure(serviceEntry);
+        Metadata = GetServiceMeta(serviceEntry.Service.Meta);
+        IsSecure = serviceEntry.Service.Meta != null && serviceEntry.Service.Meta.TryGetValue("secure", out string? secureString) && bool.Parse(secureString);
         ServiceId = serviceEntry.Service.Service;
         Port = serviceEntry.Service.Port;
-        string scheme = IsSecure ? "https" : "http";
-        Uri = new Uri($"{scheme}://{Host}:{Port}");
+        Uri = new Uri($"{(IsSecure ? "https" : "http")}://{Host}:{Port}");
     }
 
-    private static bool GetIsSecure(ServiceEntry serviceEntry)
+    private static IReadOnlyDictionary<string, string?> GetServiceMeta(IDictionary<string, string?> serviceMeta)
     {
-        if (serviceEntry.Service.Meta == null)
-        {
-            return false;
-        }
-
-        return serviceEntry.Service.Meta.TryGetValue("secure", out string secureString) && bool.Parse(secureString);
+        return new ReadOnlyDictionary<string, string?>(serviceMeta);
     }
 }

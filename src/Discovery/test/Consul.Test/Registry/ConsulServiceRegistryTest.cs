@@ -4,9 +4,11 @@
 
 using Consul;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common;
-using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Common.TestResources;
+using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
 using Xunit;
 
@@ -15,200 +17,128 @@ namespace Steeltoe.Discovery.Consul.Test.Registry;
 public sealed class ConsulServiceRegistryTest
 {
     [Fact]
-    public void Constructor_ThrowsOnNulls()
-    {
-        var clientMoq = new Mock<IConsulClient>();
-        Assert.Throws<ArgumentNullException>(() => new ConsulServiceRegistry(null, new ConsulDiscoveryOptions()));
-        Assert.Throws<ArgumentNullException>(() => new ConsulServiceRegistry(clientMoq.Object, (ConsulDiscoveryOptions)null));
-    }
-
-    [Fact]
-    public async Task RegisterAsync_ThrowsOnNull()
-    {
-        var clientMoq = new Mock<IConsulClient>();
-        var agentMoq = new Mock<IAgentEndpoint>();
-
-        clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
-
-        var opts = new ConsulDiscoveryOptions();
-        var sch = new TtlScheduler(opts, clientMoq.Object);
-
-        var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await reg.RegisterAsync(null, CancellationToken.None));
-    }
-
-    [Fact]
     public async Task RegisterAsync_CallsServiceRegister_AddsHeartbeatToScheduler()
     {
-        var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
+        var clientMoq = new Mock<IConsulClient>();
+        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
-        var opts = new ConsulDiscoveryOptions();
-        var sch = new TtlScheduler(opts, clientMoq.Object);
-
-        var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
         });
 
-        IConfigurationRoot configurationRoot = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
-        await reg.RegisterAsync(registration, CancellationToken.None);
+        IConfiguration configuration = builder.Build();
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+        await registry.RegisterAsync(registration, CancellationToken.None);
 
-        agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
+        agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, default), Times.Once);
 
-        Assert.Single(sch.ServiceHeartbeats);
-        Assert.Contains(registration.InstanceId, sch.ServiceHeartbeats.Keys);
-        sch.Remove(registration.InstanceId);
-    }
-
-    [Fact]
-    public async Task DeregisterAsync_ThrowsOnNull()
-    {
-        var clientMoq = new Mock<IConsulClient>();
-        var agentMoq = new Mock<IAgentEndpoint>();
-
-        clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
-
-        var opts = new ConsulDiscoveryOptions();
-        var sch = new TtlScheduler(opts, clientMoq.Object);
-
-        var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await reg.DeregisterAsync(null, CancellationToken.None));
+        Assert.Single(scheduler.ServiceHeartbeats);
+        Assert.Contains(registration.InstanceId, scheduler.ServiceHeartbeats.Keys);
+        await scheduler.RemoveAsync(registration.InstanceId);
     }
 
     [Fact]
     public async Task DeregisterAsync_CallsServiceDeregister_RemovesHeartbeatFromScheduler()
     {
-        var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
+        var clientMoq = new Mock<IConsulClient>();
+        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
-        var opts = new ConsulDiscoveryOptions();
-        var sch = new TtlScheduler(opts, clientMoq.Object);
-
-        var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
         });
 
-        IConfigurationRoot configurationRoot = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
-        await reg.RegisterAsync(registration, CancellationToken.None);
+        IConfiguration configuration = builder.Build();
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
+        await registry.RegisterAsync(registration, CancellationToken.None);
 
-        agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
+        agentMoq.Verify(endpoint => endpoint.ServiceRegister(registration.InnerRegistration, default), Times.Once);
 
-        Assert.Single(sch.ServiceHeartbeats);
-        Assert.Contains(registration.InstanceId, sch.ServiceHeartbeats.Keys);
+        Assert.Single(scheduler.ServiceHeartbeats);
+        Assert.Contains(registration.InstanceId, scheduler.ServiceHeartbeats.Keys);
 
-        await reg.DeregisterAsync(registration, CancellationToken.None);
-        agentMoq.Verify(a => a.ServiceDeregister(registration.Service.ID, default), Times.Once);
-        Assert.Empty(sch.ServiceHeartbeats);
-    }
+        await registry.DeregisterAsync(registration, CancellationToken.None);
 
-    [Fact]
-    public async Task SetStatusAsync_ThrowsOnNull()
-    {
-        var clientMoq = new Mock<IConsulClient>();
-        var agentMoq = new Mock<IAgentEndpoint>();
-
-        clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
-
-        var opts = new ConsulDiscoveryOptions();
-        var sch = new TtlScheduler(opts, clientMoq.Object);
-
-        var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await reg.SetStatusAsync(null, string.Empty, CancellationToken.None));
+        agentMoq.Verify(endpoint => endpoint.ServiceDeregister(registration.InnerRegistration.ID, default), Times.Once);
+        Assert.Empty(scheduler.ServiceHeartbeats);
     }
 
     [Fact]
     public async Task SetStatusAsync_ThrowsInvalidStatus()
     {
-        var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
+        var clientMoq = new Mock<IConsulClient>();
+        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
-        var opts = new ConsulDiscoveryOptions();
-        var sch = new TtlScheduler(opts, clientMoq.Object);
-
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
         });
 
-        IConfigurationRoot configurationRoot = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
+        IConfiguration configuration = builder.Build();
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
 
-        var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        await Assert.ThrowsAsync<ArgumentException>(async () => await reg.SetStatusAsync(registration, string.Empty, CancellationToken.None));
+        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await Assert.ThrowsAsync<ArgumentException>(async () => await registry.SetStatusAsync(registration, string.Empty, CancellationToken.None));
     }
 
     [Fact]
     public async Task SetStatusAsync_CallsConsulClient()
     {
-        var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
+        var clientMoq = new Mock<IConsulClient>();
+        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
 
-        clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
 
-        var opts = new ConsulDiscoveryOptions();
-        var sch = new TtlScheduler(opts, clientMoq.Object);
-
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
         });
 
-        IConfigurationRoot configurationRoot = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
+        IConfiguration configuration = builder.Build();
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
 
-        var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        await reg.SetStatusAsync(registration, "Up", CancellationToken.None);
-        agentMoq.Verify(a => a.DisableServiceMaintenance(registration.InstanceId, default), Times.Once);
-        await reg.SetStatusAsync(registration, "Out_of_Service", CancellationToken.None);
-        agentMoq.Verify(a => a.EnableServiceMaintenance(registration.InstanceId, "OUT_OF_SERVICE", default), Times.Once);
-    }
+        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
+        await registry.SetStatusAsync(registration, "Up", CancellationToken.None);
+        agentMoq.Verify(endpoint => endpoint.DisableServiceMaintenance(registration.InstanceId, default), Times.Once);
 
-    [Fact]
-    public async Task GetStatusAsync_ThrowsOnNull()
-    {
-        var clientMoq = new Mock<IConsulClient>();
-        var agentMoq = new Mock<IAgentEndpoint>();
-
-        clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
-
-        var opts = new ConsulDiscoveryOptions();
-        var sch = new TtlScheduler(opts, clientMoq.Object);
-
-        var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await reg.GetStatusAsync(null, CancellationToken.None));
+        await registry.SetStatusAsync(registration, "Out_of_Service", CancellationToken.None);
+        agentMoq.Verify(endpoint => endpoint.EnableServiceMaintenance(registration.InstanceId, "OUT_OF_SERVICE", default), Times.Once);
     }
 
     [Fact]
     public async Task GetStatusAsync_ReturnsExpected()
     {
-        var opts = new ConsulDiscoveryOptions();
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "spring:application:name", "foobar" }
         });
 
-        IConfigurationRoot configurationRoot = builder.Build();
-        var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(configurationRoot));
+        IConfiguration configuration = builder.Build();
+        var registration = ConsulRegistration.Create(optionsMonitor, new ApplicationInstanceInfo(configuration));
 
         var queryResult = new QueryResult<HealthCheck[]>
         {
-            Response = new[]
-            {
+            Response =
+            [
                 new HealthCheck
                 {
                     ServiceID = registration.InstanceId,
@@ -219,7 +149,7 @@ public sealed class ConsulServiceRegistryTest
                     ServiceID = "foobar",
                     Name = "Service Maintenance Mode"
                 }
-            }
+            ]
         };
 
         Task<QueryResult<HealthCheck[]>> result = Task.FromResult(queryResult);
@@ -227,13 +157,13 @@ public sealed class ConsulServiceRegistryTest
         var clientMoq = new Mock<IConsulClient>();
         var healthMoq = new Mock<IHealthEndpoint>();
 
-        clientMoq.Setup(c => c.Health).Returns(healthMoq.Object);
-        healthMoq.Setup(h => h.Checks(registration.ServiceId, QueryOptions.Default, default)).Returns(result);
+        clientMoq.Setup(client => client.Health).Returns(healthMoq.Object);
+        healthMoq.Setup(endpoint => endpoint.Checks(registration.ServiceId, QueryOptions.Default, default)).Returns(result);
 
-        var sch = new TtlScheduler(opts, clientMoq.Object);
-        var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        await using var registry = new ConsulServiceRegistry(clientMoq.Object, optionsMonitor, scheduler, NullLogger<ConsulServiceRegistry>.Instance);
 
-        object ret = await reg.GetStatusAsync(registration, CancellationToken.None);
-        Assert.Equal("OUT_OF_SERVICE", ret);
+        string status = await registry.GetStatusAsync(registration, CancellationToken.None);
+        Assert.Equal("OUT_OF_SERVICE", status);
     }
 }

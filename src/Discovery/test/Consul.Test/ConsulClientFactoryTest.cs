@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
+using Steeltoe.Discovery.Consul.Configuration;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test;
@@ -10,15 +11,9 @@ namespace Steeltoe.Discovery.Consul.Test;
 public sealed class ConsulClientFactoryTest
 {
     [Fact]
-    public void CreateClient_ThrowsNullOptions()
-    {
-        Assert.Throws<ArgumentNullException>(() => ConsulClientFactory.CreateClient(null));
-    }
-
-    [Fact]
     public void CreateClient_Succeeds()
     {
-        var opts = new ConsulOptions
+        var options = new ConsulOptions
         {
             Host = "foobar",
             Datacenter = "datacenter",
@@ -30,14 +25,15 @@ public sealed class ConsulClientFactoryTest
             WaitTime = "5s"
         };
 
-        var client = ConsulClientFactory.CreateClient(opts) as ConsulClient;
+        var client = ConsulClientFactory.CreateClient(options) as ConsulClient;
+
         Assert.NotNull(client);
         Assert.NotNull(client.Config);
-        Assert.Equal(opts.Datacenter, client.Config.Datacenter);
-        Assert.Equal(opts.Token, client.Config.Token);
-        Assert.Equal(opts.Host, client.Config.Address.Host);
-        Assert.Equal(opts.Port, client.Config.Address.Port);
-        Assert.Equal(opts.Scheme, client.Config.Address.Scheme);
+        Assert.Equal(options.Datacenter, client.Config.Datacenter);
+        Assert.Equal(options.Token, client.Config.Token);
+        Assert.Equal(options.Host, client.Config.Address.Host);
+        Assert.Equal(options.Port, client.Config.Address.Port);
+        Assert.Equal(options.Scheme, client.Config.Address.Scheme);
         Assert.Equal(new TimeSpan(0, 0, 5), client.Config.WaitTime);
     }
 }

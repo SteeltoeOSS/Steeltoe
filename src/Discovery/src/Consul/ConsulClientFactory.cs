@@ -5,6 +5,7 @@
 using System.Net;
 using Consul;
 using Steeltoe.Common;
+using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Util;
 
 namespace Steeltoe.Discovery.Consul;
@@ -12,36 +13,30 @@ namespace Steeltoe.Discovery.Consul;
 /// <summary>
 /// A factory to use in configuring and creating a Consul client.
 /// </summary>
-public static class ConsulClientFactory
+internal static class ConsulClientFactory
 {
     /// <summary>
-    /// Create a Consul client using the provided configuration options.
+    /// Creates a Consul client using the provided configuration options.
     /// </summary>
-    /// <param name="options">
-    /// the configuration options.
-    /// </param>
-    /// <returns>
-    /// a Consul client.
-    /// </returns>
     public static IConsulClient CreateClient(ConsulOptions options)
     {
         ArgumentGuard.NotNull(options);
 
-        var client = new ConsulClient(s =>
+        var client = new ConsulClient(configuration =>
         {
-            s.Address = new Uri($"{options.Scheme}://{options.Host}:{options.Port}");
-            s.Token = options.Token;
-            s.Datacenter = options.Datacenter;
+            configuration.Address = new Uri($"{options.Scheme}://{options.Host}:{options.Port}");
+            configuration.Token = options.Token;
+            configuration.Datacenter = options.Datacenter;
 
             if (!string.IsNullOrEmpty(options.WaitTime))
             {
-                s.WaitTime = DateTimeConversions.ToTimeSpan(options.WaitTime);
+                configuration.WaitTime = DateTimeConversions.ToTimeSpan(options.WaitTime);
             }
 
             if (!string.IsNullOrEmpty(options.Password) || !string.IsNullOrEmpty(options.Username))
             {
 #pragma warning disable CS0618 // Type or member is obsolete
-                s.HttpAuth = new NetworkCredential(options.Username, options.Password);
+                configuration.HttpAuth = new NetworkCredential(options.Username, options.Password);
 #pragma warning restore CS0618 // Type or member is obsolete
             }
         });
