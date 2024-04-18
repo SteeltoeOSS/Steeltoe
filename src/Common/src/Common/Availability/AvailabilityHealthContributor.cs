@@ -45,9 +45,9 @@ public abstract class AvailabilityHealthContributor : IHealthContributor
                 health.Status = _stateMappings[currentHealth];
                 health.Details.Add(currentHealth.GetType().Name, currentHealth.ToString());
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                _logger?.LogCritical(e, "Failed to map current availability state");
+                _logger?.LogCritical(exception, "Failed to map current availability state");
                 health.Description = "Failed to map current availability state";
             }
         }

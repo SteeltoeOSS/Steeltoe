@@ -2,26 +2,58 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.TestResources;
 
-public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
+public static class TestOptionsMonitor
 {
-    public T CurrentValue { get; }
-
-    public TestOptionsMonitor(T currentValue)
+    public static TestOptionsMonitor<T> Create<T>(T options)
+        where T : new()
     {
-        CurrentValue = currentValue;
+        return new TestOptionsMonitor<T>(options);
+    }
+}
+
+public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
+    where T : new()
+{
+    private readonly List<Action<T, string?>> _listeners = [];
+
+    public T CurrentValue { get; private set; }
+
+    public TestOptionsMonitor()
+    {
+        CurrentValue = new T();
     }
 
-    public T Get(string name)
+    public TestOptionsMonitor(T options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        CurrentValue = options;
+    }
+
+    public T Get(string? name)
     {
         return CurrentValue;
     }
 
-    public IDisposable OnChange(Action<T, string> listener)
+    public IDisposable OnChange(Action<T, string?> listener)
     {
+        _listeners.Add(listener);
         return EmptyDisposable.Instance;
+    }
+
+    public void Change(T options)
+    {
+        CurrentValue = options;
+
+        foreach (Action<T, string?> listener in _listeners)
+        {
+            listener(CurrentValue, string.Empty);
+        }
     }
 }

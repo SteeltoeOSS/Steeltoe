@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Connectors.CloudFoundry.Test.Services;
@@ -22,8 +22,10 @@ public sealed class ServiceInfoTest
     [Fact]
     public void Constructor_InitializesValues()
     {
-        var info = new ApplicationInstanceInfo(TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>()));
+        IConfiguration configuration = new ConfigurationBuilder().Build();
+        var info = new ApplicationInstanceInfo(configuration);
         var si = new TestServiceInfo("id", info);
+
         Assert.Equal("id", si.Id);
         Assert.Equal(info, si.ApplicationInfo);
     }

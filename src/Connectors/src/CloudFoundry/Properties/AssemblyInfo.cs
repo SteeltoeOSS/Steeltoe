@@ -7,8 +7,6 @@ using Steeltoe.Connectors;
 using Steeltoe.Connectors.CloudFoundry;
 
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.CloudFoundry.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.Client")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundry")]
 
 [assembly: ServiceInfoFactoryAssembly]

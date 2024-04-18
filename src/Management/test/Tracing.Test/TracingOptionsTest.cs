@@ -15,7 +15,7 @@ public sealed class TracingOptionsTest
     [Fact]
     public void InitializedWithDefaults()
     {
-        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>());
+        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string?>());
         var options = new TracingOptions(new ApplicationInstanceInfo(configuration), configuration);
 
         Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name, options.Name);
@@ -29,7 +29,7 @@ public sealed class TracingOptionsTest
     [Fact]
     public void BindsConfigurationCorrectly()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:tracing:name"] = "foobar",
             ["management:tracing:ingressIgnorePattern"] = "pattern",

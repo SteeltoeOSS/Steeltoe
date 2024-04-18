@@ -15,8 +15,7 @@
       "Common\\test\\Common.Security.Test\\Steeltoe.Common.Security.Test.csproj",
       "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
       "Common\\test\\Common.Test\\Steeltoe.Common.Test.csproj",
-      "Common\\test\\Common.Utils.Test\\Steeltoe.Common.Utils.Test.csproj",
-      "Discovery\\src\\Abstractions\\Steeltoe.Discovery.Abstractions.csproj"
+      "Common\\test\\Common.Utils.Test\\Steeltoe.Common.Utils.Test.csproj"
     ]
   }
 }
