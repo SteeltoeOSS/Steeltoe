@@ -86,7 +86,7 @@ public sealed class JsonInstanceInfoTest
         Assert.Equal(0, result.LeaseInfo.EvictionTimestamp);
         Assert.Equal(1_457_714_988_223, result.LeaseInfo.ServiceUpTimestamp);
         Assert.NotNull(result.Metadata);
-        Assert.True(result.Metadata.Count == 1);
+        Assert.Single(result.Metadata);
         Assert.True(result.Metadata.ContainsKey("@class"));
         Assert.Equal("java.util.Collections$EmptyMap", result.Metadata["@class"]);
         Assert.Equal("http://localhost:8080/", result.HomePageUrl);
