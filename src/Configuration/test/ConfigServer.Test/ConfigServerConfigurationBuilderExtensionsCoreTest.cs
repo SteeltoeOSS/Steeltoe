@@ -101,7 +101,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -233,7 +233,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -277,7 +277,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -320,7 +320,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -379,7 +379,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("testName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -481,7 +481,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", settings.AccessTokenUri);
         Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", settings.ClientId);
         Assert.Equal("e8KF1hXvAnGd", settings.ClientSecret);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("my-app", settings.Name);
         Assert.Null(settings.Label);
         Assert.Null(settings.Username);
@@ -588,7 +588,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", settings.AccessTokenUri);
         Assert.Equal("config-client-ea5e13c2-def2-4a3b-b80c-38e690ec284f", settings.ClientId);
         Assert.Equal("e8KF1hXvAnGd", settings.ClientSecret);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("my-app", settings.Name);
         Assert.Null(settings.Label);
         Assert.Null(settings.Username);

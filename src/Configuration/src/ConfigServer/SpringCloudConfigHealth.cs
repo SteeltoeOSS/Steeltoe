@@ -6,6 +6,6 @@ namespace Steeltoe.Configuration.ConfigServer;
 
 public sealed class SpringCloudConfigHealth
 {
-    public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultHealthEnabled;
-    public long TimeToLive { get; set; } = ConfigServerClientSettings.DefaultHealthTimeToLive;
+    public bool Enabled { get; set; } = true;
+    public long TimeToLive { get; set; } = 300_000;
 }

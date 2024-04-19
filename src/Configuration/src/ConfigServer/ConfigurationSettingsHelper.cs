@@ -43,9 +43,9 @@ internal static class ConfigurationSettingsHelper
         settings.AccessTokenUri = GetAccessTokenUri(sectionPrefix, configuration);
         settings.ClientId = GetClientId(sectionPrefix, configuration);
         settings.ClientSecret = GetClientSecret(sectionPrefix, configuration);
-        settings.TokenRenewRate = configurationSection.GetValue("tokenRenewRate", ConfigServerClientSettings.DefaultVaultTokenRenewRate);
-        settings.DisableTokenRenewal = configurationSection.GetValue("disableTokenRenewal", ConfigServerClientSettings.DefaultDisableTokenRenewal);
-        settings.TokenTtl = configurationSection.GetValue("tokenTtl", ConfigServerClientSettings.DefaultVaultTokenTtl);
+        settings.TokenRenewRate = configurationSection.GetValue("tokenRenewRate", 60_000);
+        settings.DisableTokenRenewal = configurationSection.GetValue("disableTokenRenewal", false);
+        settings.TokenTtl = configurationSection.GetValue("tokenTtl", 300_000);
         settings.DiscoveryEnabled = configurationSection.GetValue("discovery:enabled", settings.DiscoveryEnabled);
         settings.DiscoveryServiceId = configurationSection.GetValue("discovery:serviceId", settings.DiscoveryServiceId);
         settings.HealthEnabled = configurationSection.GetValue("health:enabled", settings.HealthEnabled);
@@ -58,7 +58,7 @@ internal static class ConfigurationSettingsHelper
 
     private static string? GetEnvironment(IConfigurationSection section, string? defaultValue)
     {
-        return section.GetValue("env", string.IsNullOrEmpty(defaultValue) ? ConfigServerClientSettings.DefaultEnvironment : defaultValue);
+        return section.GetValue("env", string.IsNullOrEmpty(defaultValue) ? "Production" : defaultValue);
     }
 
     private static bool GetCertificateValidation(IConfigurationSection section, bool defaultValue)
@@ -68,19 +68,19 @@ internal static class ConfigurationSettingsHelper
 
     private static string GetClientSecret(string sectionPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting("credentials:client_secret", configuration, ConfigServerClientSettings.DefaultClientSecret,
+        return ConfigurationValuesHelper.GetSetting("credentials:client_secret", configuration, null,
             VcapServicesConfigserverPrefix, VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
     private static string GetClientId(string sectionPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting("credentials:client_id", configuration, ConfigServerClientSettings.DefaultClientId,
+        return ConfigurationValuesHelper.GetSetting("credentials:client_id", configuration, null,
             VcapServicesConfigserverPrefix, VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
     private static string GetAccessTokenUri(string sectionPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting("credentials:access_token_uri", configuration, ConfigServerClientSettings.DefaultAccessTokenUri,
+        return ConfigurationValuesHelper.GetSetting("credentials:access_token_uri", configuration, null,
             VcapServicesConfigserverPrefix, VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 

@@ -11,9 +11,9 @@ public sealed class ConfigServerClientSettingsOptions : AbstractOptions
 {
     internal const string ConfigurationPrefix = "spring:cloud:config";
 
-    public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultProviderEnabled;
+    public bool Enabled { get; set; } = true;
 
-    public bool FailFast { get; set; } = ConfigServerClientSettings.DefaultFailFast;
+    public bool FailFast { get; set; }
 
     public string? Env { get; set; }
 
@@ -29,10 +29,10 @@ public sealed class ConfigServerClientSettingsOptions : AbstractOptions
 
     public string? Token { get; set; }
 
-    public int Timeout { get; set; } = ConfigServerClientSettings.DefaultTimeoutMilliseconds;
+    public int Timeout { get; set; } = 60_000;
 
     // ReSharper disable once InconsistentNaming
-    public bool Validate_Certificates { get; set; } = ConfigServerClientSettings.DefaultCertificateValidation;
+    public bool Validate_Certificates { get; set; } = true;
 
     public SpringCloudConfigRetry? Retry { get; set; }
 
@@ -46,21 +46,21 @@ public sealed class ConfigServerClientSettingsOptions : AbstractOptions
 
     public bool RetryEnabled => Retry is { Enabled: true };
 
-    public int RetryInitialInterval => Retry?.InitialInterval ?? ConfigServerClientSettings.DefaultInitialRetryInterval;
+    public int RetryInitialInterval => Retry?.InitialInterval ?? 1000;
 
-    public int RetryMaxInterval => Retry?.MaxInterval ?? ConfigServerClientSettings.DefaultMaxRetryInterval;
+    public int RetryMaxInterval => Retry?.MaxInterval ?? 2000;
 
-    public double RetryMultiplier => Retry?.Multiplier ?? ConfigServerClientSettings.DefaultRetryMultiplier;
+    public double RetryMultiplier => Retry?.Multiplier ?? 1.1;
 
-    public int RetryAttempts => Retry?.MaxAttempts ?? ConfigServerClientSettings.DefaultMaxRetryAttempts;
+    public int RetryAttempts => Retry?.MaxAttempts ?? 6;
 
     public bool DiscoveryEnabled => Discovery is { Enabled: true };
 
-    public string? DiscoveryServiceId => Discovery != null ? Discovery.ServiceId : ConfigServerClientSettings.DefaultConfigserverServiceId;
+    public string? DiscoveryServiceId => Discovery != null ? Discovery.ServiceId : "configserver";
 
     public bool HealthEnabled => Health == null || Health.Enabled;
 
-    public long HealthTimeToLive => Health?.TimeToLive ?? ConfigServerClientSettings.DefaultHealthTimeToLive;
+    public long HealthTimeToLive => Health?.TimeToLive ?? 300_000;
 
     // ReSharper disable once InconsistentNaming
     public string? Access_Token_Uri { get; set; }
@@ -71,11 +71,11 @@ public sealed class ConfigServerClientSettingsOptions : AbstractOptions
     // ReSharper disable once InconsistentNaming
     public string? Client_Id { get; set; }
 
-    public int TokenTtl { get; set; } = ConfigServerClientSettings.DefaultVaultTokenTtl;
+    public int TokenTtl { get; set; } = 300_000;
 
-    public int TokenRenewRate { get; set; } = ConfigServerClientSettings.DefaultVaultTokenRenewRate;
+    public int TokenRenewRate { get; set; } = 60_000;
 
-    public bool DisableTokenRenewal { get; set; } = ConfigServerClientSettings.DefaultDisableTokenRenewal;
+    public bool DisableTokenRenewal { get; set; }
 
     public string? AccessTokenUri => Access_Token_Uri;
 

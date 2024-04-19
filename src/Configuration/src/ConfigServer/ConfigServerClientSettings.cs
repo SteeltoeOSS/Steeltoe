@@ -14,128 +14,23 @@ public sealed class ConfigServerClientSettings
     private const char ColonDelimiter = ':';
     private const char CommaDelimiter = ',';
 
-    /// <summary>
-    /// Default Config Server address used by provider.
-    /// </summary>
-    internal const string DefaultUri = "http://localhost:8888";
-
-    /// <summary>
-    /// Default environment used when accessing configuration data.
-    /// </summary>
-    internal const string DefaultEnvironment = "Production";
-
-    /// <summary>
-    /// Default fail-fast setting.
-    /// </summary>
-    internal const bool DefaultFailFast = false;
-
-    /// <summary>
-    /// Default Config Server provider enabled setting.
-    /// </summary>
-    internal const bool DefaultProviderEnabled = true;
-
-    /// <summary>
-    /// Default certificate validation enabled setting.
-    /// </summary>
-    internal const bool DefaultCertificateValidation = true;
-
-    /// <summary>
-    /// Default number of retries to be attempted.
-    /// </summary>
-    internal const int DefaultMaxRetryAttempts = 6;
-
-    /// <summary>
-    /// Default initial retry interval in milliseconds.
-    /// </summary>
-    internal const int DefaultInitialRetryInterval = 1000;
-
-    /// <summary>
-    /// Default multiplier for next retry interval.
-    /// </summary>
-    internal const double DefaultRetryMultiplier = 1.1;
-
-    /// <summary>
-    /// Default initial retry interval in milliseconds.
-    /// </summary>
-    internal const int DefaultMaxRetryInterval = 2000;
-
-    /// <summary>
-    /// Default retry enabled setting.
-    /// </summary>
-    internal const bool DefaultRetryEnabled = false;
-
-    /// <summary>
-    /// Default timeout in milliseconds.
-    /// </summary>
-    internal const int DefaultTimeoutMilliseconds = 60 * 1000;
-
-    /// <summary>
-    /// Default Vault Token time-to-live setting.
-    /// </summary>
-    internal const int DefaultVaultTokenTtl = 300000;
-
-    /// <summary>
-    /// Default Vault Token renewal rate.
-    /// </summary>
-    internal const int DefaultVaultTokenRenewRate = 60000;
-
-    /// <summary>
-    /// Default Disable Vault Token renewal.
-    /// </summary>
-    internal const bool DefaultDisableTokenRenewal = false;
-
-    /// <summary>
-    /// Default address used by provider to obtain a OAuth Access Token.
-    /// </summary>
-    internal const string? DefaultAccessTokenUri = null;
-
-    /// <summary>
-    /// Default client id used by provider to obtain a OAuth Access Token.
-    /// </summary>
-    internal const string? DefaultClientId = null;
-
-    /// <summary>
-    /// Default client secret used by provider to obtain a OAuth Access Token.
-    /// </summary>
-    internal const string? DefaultClientSecret = null;
-
-    /// <summary>
-    /// Default discovery first enabled setting.
-    /// </summary>
-    internal const bool DefaultDiscoveryEnabled = false;
-
-    /// <summary>
-    /// Default discovery first service id setting.
-    /// </summary>
-    internal const string DefaultConfigserverServiceId = "configserver";
-
-    /// <summary>
-    /// Default health check enabled setting.
-    /// </summary>
-    internal const bool DefaultHealthEnabled = true;
-
-    /// <summary>
-    /// Default health check time-to-live setting, in milliseconds.
-    /// </summary>
-    internal const long DefaultHealthTimeToLive = 60 * 5 * 1000;
-
     private string? _username;
     private string? _password;
 
     /// <summary>
-    /// Gets or sets the Config Server address.
+    /// Gets or sets the Config Server address. Default value: "http://localhost:8888".
     /// </summary>
-    public string? Uri { get; set; } = DefaultUri;
+    public string? Uri { get; set; } = "http://localhost:8888";
 
     /// <summary>
-    /// Gets or sets a value indicating whether the Config Server provider is enabled.
+    /// Gets or sets a value indicating whether the Config Server provider is enabled. Default value: true.
     /// </summary>
-    public bool Enabled { get; set; } = DefaultProviderEnabled;
+    public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the environment used when accessing configuration data.
+    /// Gets or sets the environment used when accessing configuration data. Default value: "Production".
     /// </summary>
-    public string? Environment { get; set; } = DefaultEnvironment;
+    public string? Environment { get; set; } = "Production";
 
     /// <summary>
     /// Gets or sets the application name used when accessing configuration data.
@@ -153,59 +48,59 @@ public sealed class ConfigServerClientSettings
     public TimeSpan PollingInterval { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether fail-fast behavior is enabled.
+    /// Gets or sets a value indicating whether fail-fast behavior is enabled. Default value: false.
     /// </summary>
-    public bool FailFast { get; set; } = DefaultFailFast;
+    public bool FailFast { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the provider validates server certificates.
+    /// Gets or sets a value indicating whether the provider validates server certificates. Default value: true.
     /// </summary>
-    public bool ValidateCertificates { get; set; } = DefaultCertificateValidation;
+    public bool ValidateCertificates { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether retries are enabled on failures.
+    /// Gets or sets a value indicating whether retries are enabled on failures. Default value: false.
     /// </summary>
-    public bool RetryEnabled { get; set; } = DefaultRetryEnabled;
+    public bool RetryEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets initial retry interval in milliseconds.
+    /// Gets or sets initial retry interval in milliseconds. Default value: 1000.
     /// </summary>
-    public int RetryInitialInterval { get; set; } = DefaultInitialRetryInterval;
+    public int RetryInitialInterval { get; set; } = 1000;
 
     /// <summary>
-    /// Gets or sets max retry interval in milliseconds.
+    /// Gets or sets max retry interval in milliseconds. Default value: 2000.
     /// </summary>
-    public int RetryMaxInterval { get; set; } = DefaultMaxRetryInterval;
+    public int RetryMaxInterval { get; set; } = 2000;
 
     /// <summary>
-    /// Gets or sets the multiplier for next retry interval.
+    /// Gets or sets the multiplier for next retry interval. Default value: 1.1.
     /// </summary>
-    public double RetryMultiplier { get; set; } = DefaultRetryMultiplier;
+    public double RetryMultiplier { get; set; } = 1.1;
 
     /// <summary>
-    /// Gets or sets the max number of retries the client will attempt.
+    /// Gets or sets the max number of retries the client will attempt. Default value: 6.
     /// </summary>
-    public int RetryAttempts { get; set; } = DefaultMaxRetryAttempts;
+    public int RetryAttempts { get; set; } = 6;
 
     /// <summary>
-    /// Gets or sets a value indicating whether discovery first behavior is enabled.
+    /// Gets or sets a value indicating whether discovery first behavior is enabled. Default value: false.
     /// </summary>
-    public bool DiscoveryEnabled { get; set; } = DefaultDiscoveryEnabled;
+    public bool DiscoveryEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets a value of the service ID used during discovery first behavior.
+    /// Gets or sets a value of the service ID used during discovery first behavior. Default value: "configserver".
     /// </summary>
-    public string? DiscoveryServiceId { get; set; } = DefaultConfigserverServiceId;
+    public string? DiscoveryServiceId { get; set; } = "configserver";
 
     /// <summary>
-    /// Gets or sets a value indicating whether health check is enabled.
+    /// Gets or sets a value indicating whether health check is enabled. Default value: true.
     /// </summary>
-    public bool HealthEnabled { get; set; } = DefaultHealthEnabled;
+    public bool HealthEnabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value for the health check cache time-to-live.
+    /// Gets or sets a value for the health check cache time-to-live. Default value: 300_000 (5 minutes).
     /// </summary>
-    public long HealthTimeToLive { get; set; } = DefaultHealthTimeToLive;
+    public long HealthTimeToLive { get; set; } = 300_000;
 
     /// <summary>
     /// Gets unescaped <see cref="UriComponents.HttpRequestUrl" />s.
@@ -218,38 +113,38 @@ public sealed class ConfigServerClientSettings
     public string? Token { get; set; }
 
     /// <summary>
-    /// Gets or sets the request timeout in milliseconds.
+    /// Gets or sets the request timeout in milliseconds. Default value: 60_000 (1 minute).
     /// </summary>
-    public int Timeout { get; set; } = DefaultTimeoutMilliseconds;
+    public int Timeout { get; set; } = 60_000;
 
     /// <summary>
     /// Gets or sets the address used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public string? AccessTokenUri { get; set; } = DefaultAccessTokenUri;
+    public string? AccessTokenUri { get; set; }
 
     /// <summary>
     /// Gets or sets the client ID used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public string? ClientId { get; set; } = DefaultClientId;
+    public string? ClientId { get; set; }
 
     /// <summary>
     /// Gets or sets the client secret used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public string? ClientSecret { get; set; } = DefaultClientSecret;
+    public string? ClientSecret { get; set; }
 
     public X509Certificate2? ClientCertificate { get; set; }
 
     /// <summary>
-    /// Gets or sets the vault token time-to-live in milliseconds.
+    /// Gets or sets the vault token time-to-live in milliseconds. Default value: 300_000 (5 minutes).
     /// </summary>
-    public int TokenTtl { get; set; } = DefaultVaultTokenTtl;
+    public int TokenTtl { get; set; } = 300_000;
 
     /// <summary>
-    /// Gets or sets the vault token renew rate in milliseconds.
+    /// Gets or sets the vault token renew rate in milliseconds. Default value: 60_000 (1 minute).
     /// </summary>
-    public int TokenRenewRate { get; set; } = DefaultVaultTokenRenewRate;
+    public int TokenRenewRate { get; set; } = 60_000;
 
-    public bool DisableTokenRenewal { get; set; } = DefaultDisableTokenRenewal;
+    public bool DisableTokenRenewal { get; set; }
 
     /// <summary>
     /// Gets headers that will be added to the Config Server request.
