@@ -105,8 +105,8 @@ public sealed class EurekaClient
     /// <summary>
     /// Deregisters an application instance.
     /// </summary>
-    /// <param name="appId">
-    /// The ID of the app to deregister.
+    /// <param name="appName">
+    /// The name of the app to deregister.
     /// </param>
     /// <param name="instanceId">
     /// The ID of the instance to deregister.
@@ -117,20 +117,20 @@ public sealed class EurekaClient
     /// <exception cref="EurekaTransportException">
     /// The operation failed because none of the Eureka servers responded with success.
     /// </exception>
-    public async Task DeregisterAsync(string appId, string instanceId, CancellationToken cancellationToken)
+    public async Task DeregisterAsync(string appName, string instanceId, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(appId);
+        ArgumentGuard.NotNullOrWhiteSpace(appName);
         ArgumentGuard.NotNullOrWhiteSpace(instanceId);
 
-        string path = $"apps/{WebUtility.UrlEncode(appId)}/{WebUtility.UrlEncode(instanceId)}";
+        string path = $"apps/{WebUtility.UrlEncode(appName)}/{WebUtility.UrlEncode(instanceId)}";
         await ExecuteRequestAsync(HttpMethod.Delete, path, null, null, cancellationToken);
     }
 
     /// <summary>
     /// Sends a heartbeat for an application instance.
     /// </summary>
-    /// <param name="appId">
-    /// The ID of the app to send a heartbeat for.
+    /// <param name="appName">
+    /// The name of the app to send a heartbeat for.
     /// </param>
     /// <param name="instanceId">
     /// The ID of the instance to send a heartbeat for.
@@ -144,9 +144,9 @@ public sealed class EurekaClient
     /// <exception cref="EurekaTransportException">
     /// The operation failed because none of the Eureka servers responded with success.
     /// </exception>
-    public async Task HeartbeatAsync(string appId, string instanceId, DateTime? lastDirtyTimeUtc, CancellationToken cancellationToken)
+    public async Task HeartbeatAsync(string appName, string instanceId, DateTime? lastDirtyTimeUtc, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(appId);
+        ArgumentGuard.NotNullOrWhiteSpace(appName);
         ArgumentGuard.NotNullOrWhiteSpace(instanceId);
 
         // NOTES:
@@ -166,7 +166,7 @@ public sealed class EurekaClient
             }
             : null;
 
-        string path = $"apps/{WebUtility.UrlEncode(appId)}/{WebUtility.UrlEncode(instanceId)}";
+        string path = $"apps/{WebUtility.UrlEncode(appName)}/{WebUtility.UrlEncode(instanceId)}";
         await ExecuteRequestAsync(HttpMethod.Put, path, queryString, null, cancellationToken);
     }
 

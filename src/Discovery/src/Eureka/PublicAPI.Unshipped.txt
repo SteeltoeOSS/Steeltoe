@@ -209,12 +209,12 @@ Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager.EurekaApplicationInfoMana
 Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager.Instance.get -> Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo!
 Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager.UpdateInstance(Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus? newStatus, Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus? newOverriddenStatus, System.Collections.Generic.IReadOnlyDictionary<string!, string?>? newMetadata) -> void
 Steeltoe.Discovery.Eureka.EurekaClient
-Steeltoe.Discovery.Eureka.EurekaClient.DeregisterAsync(string! appId, string! instanceId, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+Steeltoe.Discovery.Eureka.EurekaClient.DeregisterAsync(string! appName, string! instanceId, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Eureka.EurekaClient.EurekaClient(System.Net.Http.IHttpClientFactory! httpClientFactory, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Eureka.Configuration.EurekaClientOptions!>! optionsMonitor, Steeltoe.Discovery.Eureka.EurekaServiceUriStateManager! eurekaServiceUriStateManager, Microsoft.Extensions.Logging.ILogger<Steeltoe.Discovery.Eureka.EurekaClient!>! logger) -> void
 Steeltoe.Discovery.Eureka.EurekaClient.GetApplicationsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection!>!
 Steeltoe.Discovery.Eureka.EurekaClient.GetByVipAsync(string! vipAddress, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection!>!
 Steeltoe.Discovery.Eureka.EurekaClient.GetDeltaAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Discovery.Eureka.AppInfo.ApplicationInfoCollection!>!
-Steeltoe.Discovery.Eureka.EurekaClient.HeartbeatAsync(string! appId, string! instanceId, System.DateTime? lastDirtyTimeUtc, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+Steeltoe.Discovery.Eureka.EurekaClient.HeartbeatAsync(string! appName, string! instanceId, System.DateTime? lastDirtyTimeUtc, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Eureka.EurekaClient.RegisterAsync(Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo! instance, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Eureka.EurekaDiscoveryClient
 Steeltoe.Discovery.Eureka.EurekaDiscoveryClient.ApplicationsFetched -> System.EventHandler<Steeltoe.Discovery.Eureka.ApplicationsFetchedEventArgs!>?

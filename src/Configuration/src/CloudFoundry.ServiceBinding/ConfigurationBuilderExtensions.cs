@@ -99,12 +99,12 @@ public static class ConfigurationBuilderExtensions
         ILogger<EurekaCloudFoundryPostProcessor> eurekaLogger = loggerFactory.CreateLogger<EurekaCloudFoundryPostProcessor>();
 
         source.RegisterPostProcessor(new CosmosDbCloudFoundryPostProcessor());
+        source.RegisterPostProcessor(new EurekaCloudFoundryPostProcessor(eurekaLogger));
         source.RegisterPostProcessor(new MongoDbCloudFoundryPostProcessor());
         source.RegisterPostProcessor(new MySqlCloudFoundryPostProcessor());
         source.RegisterPostProcessor(new PostgreSqlCloudFoundryPostProcessor());
         source.RegisterPostProcessor(new RabbitMQCloudFoundryPostProcessor());
         source.RegisterPostProcessor(new RedisCloudFoundryPostProcessor());
         source.RegisterPostProcessor(new SqlServerCloudFoundryPostProcessor());
-        source.RegisterPostProcessor(new EurekaCloudFoundryPostProcessor(eurekaLogger));
     }
 }

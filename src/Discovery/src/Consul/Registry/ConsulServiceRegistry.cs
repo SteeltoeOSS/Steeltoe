@@ -67,7 +67,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
     {
         ArgumentGuard.NotNull(registration);
 
-        _logger.LogInformation("Registering service {ServiceId} with consul.", registration.ServiceId);
+        _logger.LogInformation("Registering service {ServiceId} with Consul.", registration.ServiceId);
 
         try
         {

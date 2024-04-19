@@ -146,7 +146,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
 
         if (newInstance.AppName != previousInstance.AppName)
         {
-            throw new InvalidOperationException("Changed configuration resulted in a different Eureka AppId, which is not supported.");
+            throw new InvalidOperationException("Changed configuration resulted in a different Eureka AppName, which is not supported.");
         }
 
         newInstance.ReplaceStatus(previousInstance.Status);
