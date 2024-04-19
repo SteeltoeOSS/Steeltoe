@@ -68,20 +68,20 @@ internal static class ConfigurationSettingsHelper
 
     private static string GetClientSecret(string sectionPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting("credentials:client_secret", configuration, null,
-            VcapServicesConfigserverPrefix, VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
+        return ConfigurationValuesHelper.GetSetting("credentials:client_secret", configuration, null, VcapServicesConfigserverPrefix,
+            VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
     private static string GetClientId(string sectionPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting("credentials:client_id", configuration, null,
-            VcapServicesConfigserverPrefix, VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
+        return ConfigurationValuesHelper.GetSetting("credentials:client_id", configuration, null, VcapServicesConfigserverPrefix,
+            VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
     private static string GetAccessTokenUri(string sectionPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting("credentials:access_token_uri", configuration, null,
-            VcapServicesConfigserverPrefix, VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
+        return ConfigurationValuesHelper.GetSetting("credentials:access_token_uri", configuration, null, VcapServicesConfigserverPrefix,
+            VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
     private static string? GetApplicationName(string sectionPrefix, IConfiguration configuration, string? defaultValue)
