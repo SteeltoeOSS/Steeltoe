@@ -226,20 +226,15 @@ internal class InetUtils
 
     private string? ResolveHostName()
     {
-        string? result = null;
-
         try
         {
-            result = Dns.GetHostName();
-            IPHostEntry response = Dns.GetHostEntry(result);
-            return response.HostName;
+            return DnsTools.ResolveHostName(true);
         }
         catch (Exception exception)
         {
             _logger.LogWarning(exception, "Unable to resolve hostname.");
+            return null;
         }
-
-        return result;
     }
 
     private IPAddress? GetHostAddress()
