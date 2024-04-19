@@ -35,17 +35,29 @@ internal static class DnsTools
         }
     }
 
-    public static string? ResolveHostName()
+    public static string? ResolveHostName(bool throwOnError = false)
     {
         try
         {
-            string result = Dns.GetHostName();
-            IPHostEntry response = Dns.GetHostEntry(result);
-            return response.HostName;
+            string hostName = Dns.GetHostName();
+
+            if (string.IsNullOrEmpty(hostName))
+            {
+                // Workaround for failure when running on macOS.
+                // See https://github.com/actions/runner-images/issues/1335 and https://github.com/dotnet/runtime/issues/36849.
+                hostName = "localhost";
+            }
+
+            IPHostEntry hostEntry = Dns.GetHostEntry(hostName);
+            return hostEntry.HostName;
         }
         catch (Exception)
         {
-            // Ignore
+            if (throwOnError)
+            {
+                throw;
+            }
+
             return null;
         }
     }

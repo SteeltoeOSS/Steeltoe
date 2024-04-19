@@ -36,6 +36,20 @@ jobs:
   pool:
     vmImage: $(imageName)
   steps:
+  - task: PowerShell@2
+    displayName: Turn off certificates on macOS
+    condition: eq(variables['imageName'], 'macOS-latest')
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Setting DOTNET_GENERATE_ASPNET_CERTIFICATE to "false" makes it easier to determine which test failed on macOS when it tried to start a web server with https enabled.
+        # Without setting this, the following message appears in the logs:
+        #   The application is trying to access the ASP.NET Core developer certificate key. A prompt might appear to ask for permission to access the key.
+        #   When that happens, select 'Always Allow' to grant 'dotnet' access to the certificate key in the future.
+        # and the testrun fails, but without indicating which test caused it. By setting this, the causing test fails with the next message:
+        #   Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.
+        # To prevent the causing test from failing the testrun, disable it on macOS by adding [Trait("Category", "SkipOnMacOS")].
+        echo "##vso[task.setvariable variable=DOTNET_GENERATE_ASPNET_CERTIFICATE]false"
   - checkout: self
     fetchDepth: 0
   - task: UseDotNet@2
