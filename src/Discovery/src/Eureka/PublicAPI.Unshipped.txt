@@ -205,7 +205,7 @@ Steeltoe.Discovery.Eureka.Configuration.EurekaServerOptions.ShouldGZipContent.ge
 Steeltoe.Discovery.Eureka.Configuration.EurekaServerOptions.ShouldGZipContent.set -> void
 Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager
 Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager.Dispose() -> void
-Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager.EurekaApplicationInfoManager(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions!>! instanceOptionsMonitor, Microsoft.Extensions.Logging.ILogger<Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager!>! logger) -> void
+Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager.EurekaApplicationInfoManager(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Eureka.Configuration.EurekaClientOptions!>! clientOptionsMonitor, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions!>! instanceOptionsMonitor, Microsoft.Extensions.Logging.ILogger<Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager!>! logger) -> void
 Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager.Instance.get -> Steeltoe.Discovery.Eureka.AppInfo.InstanceInfo!
 Steeltoe.Discovery.Eureka.EurekaApplicationInfoManager.UpdateInstance(Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus? newStatus, Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus? newOverriddenStatus, System.Collections.Generic.IReadOnlyDictionary<string!, string?>? newMetadata) -> void
 Steeltoe.Discovery.Eureka.EurekaClient

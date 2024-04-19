@@ -15,6 +15,7 @@ namespace Steeltoe.Discovery.Eureka;
 /// </summary>
 public sealed class EurekaApplicationInfoManager : IDisposable
 {
+    private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
     private readonly IOptionsMonitor<EurekaInstanceOptions> _instanceOptionsMonitor;
     private readonly IDisposable? _instanceOptionsChangeToken;
     private readonly ILogger<EurekaApplicationInfoManager> _logger;
@@ -34,16 +35,27 @@ public sealed class EurekaApplicationInfoManager : IDisposable
 
     internal event EventHandler<InstanceChangedEventArgs>? InstanceChanged;
 
-    public EurekaApplicationInfoManager(IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor, ILogger<EurekaApplicationInfoManager> logger)
+    public EurekaApplicationInfoManager(IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor,
+        IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor, ILogger<EurekaApplicationInfoManager> logger)
     {
+        ArgumentGuard.NotNull(clientOptionsMonitor);
         ArgumentGuard.NotNull(instanceOptionsMonitor);
         ArgumentGuard.NotNull(logger);
 
-        _instance = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
+        if (!clientOptionsMonitor.CurrentValue.Enabled)
+        {
+            _instance = InstanceInfo.Disabled;
+            _instanceOptionsChangeToken = null;
+        }
+        else
+        {
+            _instance = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
+            _instanceOptionsChangeToken = instanceOptionsMonitor.OnChange((instanceOptions, _) => HandleInstanceOptionsChanged(instanceOptions));
+        }
 
+        _clientOptionsMonitor = clientOptionsMonitor;
         _logger = logger;
         _instanceOptionsMonitor = instanceOptionsMonitor;
-        _instanceOptionsChangeToken = instanceOptionsMonitor.OnChange((instanceOptions, _) => HandleInstanceOptionsChanged(instanceOptions));
     }
 
     private void HandleInstanceOptionsChanged(EurekaInstanceOptions instanceOptions)
@@ -75,8 +87,11 @@ public sealed class EurekaApplicationInfoManager : IDisposable
     /// </param>
     public void UpdateInstance(InstanceStatus? newStatus, InstanceStatus? newOverriddenStatus, IReadOnlyDictionary<string, string?>? newMetadata)
     {
-        // Execute even when all parameters are null, so it applies updates from configuration only.
-        InnerUpdateInstance(_instanceOptionsMonitor.CurrentValue, true, newStatus, newOverriddenStatus, newMetadata);
+        if (_clientOptionsMonitor.CurrentValue.Enabled)
+        {
+            // Execute even when all parameters are null, so it applies updates from configuration only.
+            InnerUpdateInstance(_instanceOptionsMonitor.CurrentValue, true, newStatus, newOverriddenStatus, newMetadata);
+        }
     }
 
     private void InnerUpdateInstance(EurekaInstanceOptions newInstanceOptions, bool raiseChangeEvent, InstanceStatus? newStatus = null,

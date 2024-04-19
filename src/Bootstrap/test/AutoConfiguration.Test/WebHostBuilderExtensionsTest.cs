@@ -137,7 +137,6 @@ public sealed class WebHostBuilderExtensionsTest
     }
 
     [Fact]
-    [Trait("Category", "SkipOnMacOS")]
     public void ServiceDiscoveryClients_AreAutowired()
     {
         var assembliesToInclude = new HashSet<string>

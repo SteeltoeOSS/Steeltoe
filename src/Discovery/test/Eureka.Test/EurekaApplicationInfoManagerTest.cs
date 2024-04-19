@@ -27,8 +27,9 @@ public sealed class EurekaApplicationInfoManagerTest
             AppName = "demo"
         };
 
-        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         appManager.Instance.IsDirty = false;
         InstanceStatus? previousStatus = appManager.Instance.Status;
         using var eventMonitor = new EventMonitor(appManager);
@@ -54,8 +55,9 @@ public sealed class EurekaApplicationInfoManagerTest
             AppName = "demo"
         };
 
-        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         appManager.Instance.IsDirty = false;
         using var eventMonitor = new EventMonitor(appManager);
 
@@ -71,6 +73,35 @@ public sealed class EurekaApplicationInfoManagerTest
     }
 
     [Fact]
+    public void UpdateInstance_NoChangeWhenEurekaTurnedOff()
+    {
+        var clientOptions = new EurekaClientOptions
+        {
+            Enabled = false
+        };
+
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            IPAddress = "192.168.0.1",
+            HostName = "localhost",
+            InstanceId = "demo",
+            AppName = "demo"
+        };
+
+        TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
+        TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        appManager.Instance.IsDirty = false;
+        using var eventMonitor = new EventMonitor(appManager);
+
+        appManager.UpdateInstance(InstanceStatus.OutOfService, null, null);
+
+        appManager.Instance.Status.Should().BeNull();
+
+        eventMonitor.EventArgs.Should().BeNull();
+    }
+
+    [Fact]
     public void ChangeConfiguration_AppliesChanges()
     {
         var instanceOptions = new EurekaInstanceOptions
@@ -82,13 +113,14 @@ public sealed class EurekaApplicationInfoManagerTest
             AppName = "demo"
         };
 
-        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         appManager.Instance.IsDirty = false;
         using var eventMonitor = new EventMonitor(appManager);
 
         instanceOptions.VipAddress = "other";
-        optionsMonitor.Change(instanceOptions);
+        instanceOptionsMonitor.Change(instanceOptions);
 
         appManager.Instance.VipAddress.Should().Be("other");
         appManager.Instance.IsDirty.Should().BeTrue();
@@ -110,15 +142,16 @@ public sealed class EurekaApplicationInfoManagerTest
             AppName = "demo"
         };
 
-        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         appManager.Instance.IsDirty = false;
 
         using var eventMonitor = new EventMonitor(appManager);
 
         instanceOptions.MetadataMap.Add("key1", null);
         instanceOptions.MetadataMap.Add("key2", string.Empty);
-        optionsMonitor.Change(instanceOptions);
+        instanceOptionsMonitor.Change(instanceOptions);
 
         appManager.Instance.IsDirty.Should().BeFalse();
 
@@ -136,14 +169,15 @@ public sealed class EurekaApplicationInfoManagerTest
             AppName = "demo"
         };
 
-        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         appManager.Instance.IsDirty = false;
 
         using var eventMonitor = new EventMonitor(appManager);
 
         instanceOptions.InstanceId = "other";
-        optionsMonitor.Change(instanceOptions);
+        instanceOptionsMonitor.Change(instanceOptions);
 
         appManager.Instance.InstanceId.Should().Be("some");
 
@@ -161,12 +195,13 @@ public sealed class EurekaApplicationInfoManagerTest
             AppName = "demo"
         };
 
-        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
         appManager.Instance.IsDirty = true;
         using var eventMonitor = new EventMonitor(appManager);
 
-        optionsMonitor.Change(new EurekaInstanceOptions());
+        instanceOptionsMonitor.Change(new EurekaInstanceOptions());
 
         appManager.Instance.IsDirty.Should().BeTrue();
 
@@ -188,8 +223,9 @@ public sealed class EurekaApplicationInfoManagerTest
             }
         };
 
-        TestOptionsMonitor<EurekaInstanceOptions> optionsMonitor = TestOptionsMonitor.Create(instanceOptions);
-        var appManager = new EurekaApplicationInfoManager(optionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.UpdateInstance(InstanceStatus.OutOfService, null, new Dictionary<string, string?>
         {
@@ -200,7 +236,7 @@ public sealed class EurekaApplicationInfoManagerTest
 
         using var eventMonitor = new EventMonitor(appManager);
 
-        optionsMonitor.Change(instanceOptions);
+        instanceOptionsMonitor.Change(instanceOptions);
 
         appManager.Instance.Status.Should().Be(InstanceStatus.OutOfService);
         appManager.Instance.Metadata.Should().ContainKey("appKey");

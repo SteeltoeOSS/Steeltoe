@@ -25,6 +25,11 @@ public sealed class InstanceInfo
     private volatile NullableValueWrapper<DateTime> _lastDirtyTimeUtc = new(null);
     private volatile bool _isDirty;
 
+    internal static InstanceInfo Disabled { get; } = new("disabled", "disabled", "disabled", "disabled", new DataCenterInfo
+    {
+        Name = DataCenterName.MyOwn
+    });
+
     /// <summary>
     /// Gets the ID that uniquely identifies this instance within a Eureka server.
     /// </summary>
