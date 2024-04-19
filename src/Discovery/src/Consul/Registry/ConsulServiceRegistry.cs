@@ -115,7 +115,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
         }
         catch (Exception exception)when (!exception.IsCancellation())
         {
-            _logger.LogError(exception, "Error deregistering service {ServiceId} with consul.", registration.ServiceId);
+            _logger.LogError(exception, "Error deregistering service {ServiceId} with Consul.", registration.ServiceId);
         }
     }
 
