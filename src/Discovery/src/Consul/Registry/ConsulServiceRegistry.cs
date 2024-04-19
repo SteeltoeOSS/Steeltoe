@@ -82,7 +82,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
         {
             if (Options.FailFast)
             {
-                _logger.LogError(exception, "Error registering service {ServiceId} with consul.", registration.ServiceId);
+                _logger.LogError(exception, "Error registering service {ServiceId} with Consul.", registration.ServiceId);
                 throw;
             }
 
