@@ -34,6 +34,11 @@ internal sealed class EurekaApplicationsHealthContributor : IHealthContributor
     {
         cancellationToken.ThrowIfCancellationRequested();
 
+        if (!_clientOptionsMonitor.CurrentValue.Enabled)
+        {
+            return Task.FromResult<HealthCheckResult?>(null);
+        }
+
         var result = new HealthCheckResult
         {
             Status = HealthStatus.Up,

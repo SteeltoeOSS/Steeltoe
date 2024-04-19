@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,21 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public sealed class EurekaApplicationsHealthContributorTest
 {
+    [Fact]
+    public async Task CheckHealthAsync_EurekaDisabled()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["eureka:client:enabled"] = "false"
+        };
+
+        (EurekaApplicationsHealthContributor contributor, _) = CreateHealthContributor(appSettings);
+
+        HealthCheckResult? result = await contributor.CheckHealthAsync(CancellationToken.None);
+
+        result.Should().BeNull();
+    }
+
     [Fact]
     public void GetApplicationsFromConfiguration_ReturnsExpected()
     {
@@ -80,9 +96,17 @@ public sealed class EurekaApplicationsHealthContributorTest
         Assert.Equal("0 instances with UP status", result.Details["app2"]);
     }
 
-    private static (EurekaApplicationsHealthContributor Contributor, EurekaClientOptions ClientOptions) CreateHealthContributor()
+    private static (EurekaApplicationsHealthContributor Contributor, EurekaClientOptions ClientOptions) CreateHealthContributor(
+        IDictionary<string, string?>? appSettings = null)
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
+        var configurationBuilder = new ConfigurationBuilder();
+
+        if (appSettings != null)
+        {
+            configurationBuilder.AddInMemoryCollection(appSettings);
+        }
+
+        IConfiguration configuration = configurationBuilder.Build();
 
         var services = new ServiceCollection();
         services.AddSingleton(configuration);

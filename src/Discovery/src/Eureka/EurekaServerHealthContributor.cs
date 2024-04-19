@@ -39,7 +39,9 @@ internal sealed class EurekaServerHealthContributor : IHealthContributor
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (!_clientOptionsMonitor.CurrentValue.Health.ContributorEnabled)
+        EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
+
+        if (!clientOptions.Enabled || !clientOptions.Health.ContributorEnabled)
         {
             return Task.FromResult<HealthCheckResult?>(null);
         }
