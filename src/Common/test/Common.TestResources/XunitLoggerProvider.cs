@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace Steeltoe.Common.TestResources;
 
 /// <summary>
-/// Writes log messages to XUnit output.
+/// Writes log messages to xUnit output.
 /// </summary>
 public sealed class XunitLoggerProvider : ILoggerProvider
 {

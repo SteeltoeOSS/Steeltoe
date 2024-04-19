@@ -66,7 +66,7 @@ public sealed class ConsulDiscoveryOptions
     public bool QueryPassing { get; set; }
 
     /// <summary>
-    /// Gets or sets Whether to register an http or https service.
+    /// Gets or sets whether to register an http or https service.
     /// </summary>
     public string? Scheme { get; set; } = "http";
 
@@ -96,7 +96,7 @@ public sealed class ConsulDiscoveryOptions
     public string? HealthCheckTimeout { get; set; } = "10s";
 
     /// <summary>
-    /// Gets or sets the timeout to deregister services critical for longer than timeout (e.g. 30m). Requires consul version 7.x or higher.
+    /// Gets or sets the timeout to deregister services critical for longer than timeout (e.g. 30m). Requires Consul version 7.x or higher.
     /// </summary>
     public string? HealthCheckCriticalTimeout { get; set; } = "30m";
 
@@ -161,12 +161,12 @@ public sealed class ConsulDiscoveryOptions
     public bool FailFast { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether to register as a service in consul.
+    /// Gets or sets a value indicating whether to register as a service in Consul.
     /// </summary>
     public bool Register { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether to use automatic de-registration of a service in consul.
+    /// Gets or sets a value indicating whether to use automatic de-registration of a service in Consul.
     /// </summary>
     public bool Deregister { get; set; } = true;
 
