@@ -86,7 +86,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
                 throw;
             }
 
-            _logger.LogWarning(exception, "FailFast is false. Error registering service {ServiceId} with consul.", registration.ServiceId);
+            _logger.LogWarning(exception, "FailFast is false. Error registering service {ServiceId} with Consul.", registration.ServiceId);
         }
     }
 
