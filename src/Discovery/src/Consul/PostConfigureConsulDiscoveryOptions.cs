@@ -28,34 +28,30 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
 
     public void PostConfigure(string? name, ConsulDiscoveryOptions options)
     {
-        if (options.UseNetworkInterfaces)
-        {
-            HostInfo host = _inetUtils.FindFirstNonLoopbackHostInfo();
-            options.HostName = host.Hostname;
-            options.IPAddress = host.IPAddress;
-        }
-        else
-        {
-            string? hostName = DnsTools.ResolveHostName();
-            string? ipAddress = hostName == null ? null : DnsTools.ResolveHostAddress(hostName);
+        HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
+        options.HostName ??= hostInfo != null ? hostInfo.Hostname : DnsTools.ResolveHostName();
 
-            if (options.HostName == null && hostName != null)
+        if (string.IsNullOrWhiteSpace(options.IPAddress))
+        {
+            if (hostInfo != null)
             {
-                options.HostName = hostName;
+                options.IPAddress = hostInfo.IPAddress;
             }
-
-            if (options.IPAddress == null && ipAddress != null)
+            else if (!string.IsNullOrEmpty(options.HostName))
             {
-                options.IPAddress = ipAddress;
+                options.IPAddress = DnsTools.ResolveHostAddress(options.HostName);
             }
         }
 
-        ICollection<string> addresses = _configuration.GetListenAddresses();
-        SetPortsFromListenAddresses(options, addresses);
-
-        if (options.PreferIPAddress)
+        if (options.PreferIPAddress && !string.IsNullOrEmpty(options.IPAddress))
         {
             options.HostName = options.IPAddress;
+        }
+
+        if (options.Port == 0)
+        {
+            ICollection<string> addresses = _configuration.GetListenAddresses();
+            SetPortsFromListenAddresses(options, addresses);
         }
     }
 
