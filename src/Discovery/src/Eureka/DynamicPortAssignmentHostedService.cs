@@ -133,6 +133,8 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
 
         public void PostConfigure(string? name, EurekaInstanceOptions options)
         {
+            ArgumentGuard.NotNull(options);
+
             if (_listenState.ListenOnAddresses != null)
             {
                 options.SetPortsFromListenAddresses(_listenState.ListenOnAddresses, "address features", _optionsLogger);

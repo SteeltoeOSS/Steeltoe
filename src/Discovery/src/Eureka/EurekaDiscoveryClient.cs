@@ -69,8 +69,8 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         ArgumentGuard.NotNull(appInfoManager);
         ArgumentGuard.NotNull(eurekaClient);
         ArgumentGuard.NotNull(clientOptionsMonitor);
-        ArgumentGuard.NotNull(logger);
         ArgumentGuard.NotNull(healthCheckHandlerProvider);
+        ArgumentGuard.NotNull(logger);
 
         _appInfoManager = appInfoManager;
         _eurekaClient = eurekaClient;
@@ -500,6 +500,8 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
+        ArgumentGuard.NotNullOrWhiteSpace(serviceId);
+
         IReadOnlyList<InstanceInfo> nonSecureInstances = GetInstancesByVipAddress(serviceId, false);
         IReadOnlyList<InstanceInfo> secureInstances = GetInstancesByVipAddress(serviceId, true);
 

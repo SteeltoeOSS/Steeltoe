@@ -46,6 +46,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
     {
         ArgumentGuard.NotNull(client);
         ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(logger);
 
         _client = client;
         _optionsMonitor = optionsMonitor;
@@ -133,6 +134,7 @@ public sealed class ConsulServiceRegistry : IAsyncDisposable
     public async Task SetStatusAsync(ConsulRegistration registration, string status, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
+        ArgumentGuard.NotNull(status);
 
         if (string.Equals(status, OutOfService, StringComparison.OrdinalIgnoreCase))
         {

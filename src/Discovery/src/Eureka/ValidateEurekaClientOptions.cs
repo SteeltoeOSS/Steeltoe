@@ -12,6 +12,8 @@ internal sealed class ValidateEurekaClientOptions : IValidateOptions<EurekaClien
 {
     public ValidateOptionsResult Validate(string? name, EurekaClientOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         if (options is not { Enabled: true } or { ShouldRegisterWithEureka: false, ShouldFetchRegistry: false })
         {
             return ValidateOptionsResult.Success;

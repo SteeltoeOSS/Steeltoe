@@ -21,6 +21,8 @@ internal sealed class ValidateConsulOptions : IValidateOptions<ConsulOptions>
 
     public ValidateOptionsResult Validate(string? name, ConsulOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         if (_discoveryOptionsMonitor.CurrentValue.Enabled && (Platform.IsContainerized || Platform.IsCloudHosted) && options.Host == "localhost")
         {
             return ValidateOptionsResult.Fail(

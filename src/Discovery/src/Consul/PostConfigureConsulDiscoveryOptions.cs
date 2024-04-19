@@ -28,6 +28,8 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
 
     public void PostConfigure(string? name, ConsulDiscoveryOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
         options.HostName ??= hostInfo != null ? hostInfo.Hostname : DnsTools.ResolveHostName();
 

@@ -44,6 +44,8 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
     public void PostConfigure(string? name, EurekaInstanceOptions options)
     {
+        ArgumentGuard.NotNull(options);
+
         SetRegistrationMethod(options);
         SetHostNameAndIpAddress(options);
         SetPorts(options);
