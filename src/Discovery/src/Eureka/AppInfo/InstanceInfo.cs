@@ -2,105 +2,209 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text;
-using System.Text.Json.Serialization;
+using System.Collections.ObjectModel;
+using System.Text.Json;
+using Steeltoe.Common;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
-public class InstanceInfo
+/// <summary>
+/// Represents an application instance in Eureka server.
+/// </summary>
+public sealed class InstanceInfo
 {
-    private string _sid;
+    private static readonly ReadOnlyDictionary<string, string?> EmptyMetadata = new(new Dictionary<string, string?>());
 
-    private InstanceStatus _status;
+    private volatile IReadOnlyDictionary<string, string?> _metadata = EmptyMetadata;
+    private volatile NullableValueWrapper<InstanceStatus> _status = new(null);
+    private volatile NullableValueWrapper<InstanceStatus> _overriddenStatus = new(null);
+    private volatile NullableValueWrapper<DateTime> _lastUpdatedTimeUtc = new(null);
+    private volatile NullableValueWrapper<DateTime> _lastDirtyTimeUtc = new(null);
+    private volatile bool _isDirty;
 
-    private Dictionary<string, string> _metaData;
-
-    private bool _isDirty;
-
-    public string InstanceId { get; internal set; }
-
-    public string AppName { get; internal set; }
-
-    public string AppGroupName { get; internal set; }
-
-    [JsonPropertyName("IpAddr")]
-    public string IPAddress { get; internal set; }
-
-    public string Sid
+    internal static InstanceInfo Disabled { get; } = new("disabled", "disabled", "disabled", "disabled", new DataCenterInfo
     {
-        get => _sid;
-        internal set
-        {
-            _sid = value;
-            IsDirty = true;
-        }
+        Name = DataCenterName.MyOwn
+    });
+
+    /// <summary>
+    /// Gets the ID that uniquely identifies this instance within a Eureka server.
+    /// </summary>
+    public string InstanceId { get; }
+
+    /// <summary>
+    /// Gets the application name of the instance. This is mostly used in querying of instances.
+    /// </summary>
+    public string AppName { get; }
+
+    public string? AppGroupName { get; init; }
+
+    /// <summary>
+    /// Gets the fully qualified hostname of this running instance. This is mostly used in constructing the URL for communicating with the instance.
+    /// </summary>
+    public string HostName { get; }
+
+    /// <summary>
+    /// Gets the IP address of this running instance.
+    /// </summary>
+    public string IPAddress { get; }
+
+    /// <summary>
+    /// Gets the datacenter information for where this instance is running.
+    /// </summary>
+    public DataCenterInfo DataCenterInfo { get; }
+
+    /// <summary>
+    /// Gets the Virtual Internet Protocol address(es) for this instance. Multiple values can be specified as a comma-separated list. When using service
+    /// discovery, virtual addresses are resolved into real addresses on outgoing HTTP requests.
+    /// </summary>
+    public string? VipAddress { get; init; }
+
+    /// <summary>
+    /// Gets the Secure Virtual Internet Protocol address(es) for this instance. Multiple values can be specified as a comma-separated list. When using
+    /// service discovery, virtual addresses are resolved into real addresses on outgoing HTTP requests.
+    /// </summary>
+    public string? SecureVipAddress { get; init; }
+
+    /// <summary>
+    /// Gets the port number that is used to service requests.
+    /// </summary>
+    public int NonSecurePort { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether <see cref="NonSecurePort" /> is enabled.
+    /// </summary>
+    public bool IsNonSecurePortEnabled { get; init; }
+
+    /// <summary>
+    /// Gets the secure port number that is used to service requests.
+    /// </summary>
+    public int SecurePort { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether <see cref="SecurePort" /> is enabled.
+    /// </summary>
+    public bool IsSecurePortEnabled { get; init; }
+
+    /// <summary>
+    /// Gets the status of the instance. The status <see cref="InstanceStatus.Up" /> means the instance is ready to service requests.
+    /// </summary>
+    public InstanceStatus? Status
+    {
+        get => _status.Value;
+        init => _status = new NullableValueWrapper<InstanceStatus>(value);
     }
 
-    public int Port { get; internal set; }
-
-    public int SecurePort { get; internal set; }
-
-    public string HomePageUrl { get; internal set; }
-
-    public string StatusPageUrl { get; internal set; }
-
-    public string HealthCheckUrl { get; internal set; }
-
-    public string SecureHealthCheckUrl { get; internal set; }
-
-    public string VipAddress { get; internal set; }
-
-    public string SecureVipAddress { get; internal set; }
-
-    public int CountryId { get; internal set; }
-
-    public IDataCenterInfo DataCenterInfo { get; internal set; }
-
-    public string HostName { get; internal set; }
-
-    public InstanceStatus Status
+    /// <summary>
+    /// Gets the status being overridden by some other external process. This is mostly used in putting an instance out of service to block traffic to it.
+    /// </summary>
+    public InstanceStatus? OverriddenStatus
     {
-        get => _status;
-        internal set
+        get => _overriddenStatus.Value;
+        init => _overriddenStatus = new NullableValueWrapper<InstanceStatus>(value);
+    }
+
+    /// <summary>
+    /// Gets the (possibly overridden) instance status.
+    /// </summary>
+    public InstanceStatus EffectiveStatus
+    {
+        get
         {
-            if (value != _status)
+            if (OverriddenStatus != null && OverriddenStatus != InstanceStatus.Unknown)
             {
-                _status = value;
-                IsDirty = true;
+                return OverriddenStatus.Value;
             }
+
+            return Status ?? InstanceStatus.Unknown;
         }
     }
 
-    public InstanceStatus OverriddenStatus { get; internal set; }
+    /// <summary>
+    /// Gets the computed URL for the home page. Prefers secure when both ports are enabled.
+    /// </summary>
+    public string? HomePageUrl { get; init; }
 
-    public LeaseInfo LeaseInfo { get; internal set; }
+    /// <summary>
+    /// Gets the computed URL for the status page. Prefers secure when both ports are enabled.
+    /// </summary>
+    public string? StatusPageUrl { get; init; }
 
-    public bool IsCoordinatingDiscoveryServer { get; internal set; }
+    /// <summary>
+    /// Gets the computed URL for health checks. Prefers secure when both ports are enabled.
+    /// </summary>
+    public string? HealthCheckUrl { get; init; }
 
-    public Dictionary<string, string> Metadata
+    /// <summary>
+    /// Gets the computed URL for secure health checks. This is only available if the secure port is enabled.
+    /// </summary>
+    public string? SecureHealthCheckUrl { get; init; }
+
+    /// <summary>
+    /// Gets the lease information for this instance.
+    /// </summary>
+    public LeaseInfo? LeaseInfo { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether this instance is the coordinating discovery server.
+    /// </summary>
+    public bool? IsCoordinatingDiscoveryServer { get; init; }
+
+    /// <summary>
+    /// Gets application-specific metadata on the instance.
+    /// </summary>
+    public IReadOnlyDictionary<string, string?> Metadata
     {
-        get => _metaData;
-        internal set
+        get => _metadata;
+        init
         {
-            _metaData = value;
-            IsDirty = true;
+            ArgumentGuard.NotNull(value);
+            _metadata = WithoutEmptyMetadataValues(value);
         }
     }
 
-    public long LastUpdatedTimestamp { get; internal set; }
+    /// <summary>
+    /// Gets the time, in UTC, when the instance status was last updated.
+    /// </summary>
+    public DateTime? LastUpdatedTimeUtc
+    {
+        get => _lastUpdatedTimeUtc.Value;
+        init => _lastUpdatedTimeUtc = new NullableValueWrapper<DateTime>(value);
+    }
 
-    public long LastDirtyTimestamp { get; internal set; }
+    /// <summary>
+    /// Gets the time, in UTC, when this instance was last touched.
+    /// </summary>
+    // Suppressed because this needs to be public init-only, while private settable.
+    public DateTime? LastDirtyTimeUtc
+    {
+        get => _lastDirtyTimeUtc.Value;
+        init => _lastDirtyTimeUtc = new NullableValueWrapper<DateTime>(value);
+    }
 
-    public ActionType ActionType { get; internal set; }
+    /// <summary>
+    /// Gets the type of action done on the instance in the server. Primarily used for updating deltas in the <see cref="EurekaDiscoveryClient" /> instance.
+    /// </summary>
+    public ActionType? ActionType { get; init; }
 
-    public string AsgName { get; internal set; }
+    /// <summary>
+    /// Gets the AWS autoscaling group name for this instance.
+    /// </summary>
+    public string? AutoScalingGroupName { get; init; }
 
-    public bool IsInsecurePortEnabled { get; internal set; }
+    public int? CountryId { get; init; }
 
-    public bool IsSecurePortEnabled { get; internal set; }
+    /// <summary>
+    /// Gets the identity of this application instance (deprecated).
+    /// </summary>
+    public string? Sid { get; init; }
 
+    /// <summary>
+    /// Gets a value indicating whether any state changed, so that <see cref="EurekaDiscoveryClient" /> re-registers on the next heartbeat.
+    /// </summary>
     public bool IsDirty
     {
         get => _isDirty;
@@ -108,30 +212,36 @@ public class InstanceInfo
         {
             if (value)
             {
-                LastDirtyTimestamp = DateTime.UtcNow.Ticks;
-            }
+                DateTime now = DateTime.UtcNow;
 
-            _isDirty = value;
+                _lastDirtyTimeUtc = new NullableValueWrapper<DateTime>(now);
+                _lastUpdatedTimeUtc = new NullableValueWrapper<DateTime>(now);
+                _isDirty = true;
+            }
+            else
+            {
+                _isDirty = false;
+            }
         }
     }
 
-    internal InstanceInfo()
+    internal InstanceInfo(string instanceId, string appName, string hostName, string ipAddress, DataCenterInfo dataCenterInfo)
     {
-        OverriddenStatus = InstanceStatus.Unknown;
-        IsSecurePortEnabled = false;
-        IsCoordinatingDiscoveryServer = false;
-        IsInsecurePortEnabled = true;
-        CountryId = 1;
-        Port = 7001;
-        SecurePort = 7002;
-        LastUpdatedTimestamp = LastDirtyTimestamp = DateTime.UtcNow.Ticks;
-        _sid = "na";
-        _metaData = new Dictionary<string, string>();
-        _isDirty = false;
-        _status = InstanceStatus.Up;
+        // These are required to register an instance to Eureka server, so they should always be available.
+        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
+        ArgumentGuard.NotNullOrWhiteSpace(appName);
+        ArgumentGuard.NotNullOrWhiteSpace(hostName);
+        ArgumentGuard.NotNullOrWhiteSpace(ipAddress);
+        ArgumentGuard.NotNull(dataCenterInfo);
+
+        InstanceId = instanceId;
+        AppName = appName;
+        HostName = hostName;
+        IPAddress = ipAddress;
+        DataCenterInfo = dataCenterInfo;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(this, obj))
         {
@@ -148,230 +258,302 @@ public class InstanceInfo
 
     public override int GetHashCode()
     {
-        return InstanceId?.GetHashCode() ?? 0;
+        return InstanceId.GetHashCode();
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
-        var sb = new StringBuilder("Instance[");
-        sb.Append($"InstanceId={InstanceId}");
-        sb.Append(',');
-        sb.Append($"HostName={HostName}");
-        sb.Append(',');
-        sb.Append($"IpAddr={IPAddress}");
-        sb.Append(',');
-        sb.Append($"Status={Status}");
-        sb.Append(',');
-        sb.Append($"IsInsecurePortEnabled={IsInsecurePortEnabled}");
-        sb.Append(',');
-        sb.Append($"Port={Port}");
-        sb.Append(',');
-        sb.Append($"IsSecurePortEnabled={IsSecurePortEnabled}");
-        sb.Append(',');
-        sb.Append($"SecurePort={SecurePort}");
-        sb.Append(',');
-        sb.Append($"VipAddress={VipAddress}");
-        sb.Append(',');
-        sb.Append($"SecureVipAddress={SecureVipAddress}");
-        sb.Append(',');
-        sb.Append($"ActionType={ActionType}");
-        sb.Append(']');
-        return sb.ToString();
+        return JsonSerializer.Serialize(this, DebugSerializerOptions.Instance);
     }
 
-    internal static InstanceInfo FromInstanceConfiguration(IEurekaInstanceConfig instanceConfig)
+    internal static InstanceInfo FromConfiguration(EurekaInstanceOptions options)
     {
-        var info = new InstanceInfo
+        ArgumentGuard.NotNull(options);
+
+        if (string.IsNullOrWhiteSpace(options.IPAddress))
         {
-            LeaseInfo = LeaseInfo.FromConfig(instanceConfig),
-            InstanceId = instanceConfig.InstanceId
+            throw new InvalidOperationException(
+                $"Configuration setting {EurekaInstanceOptions.ConfigurationPrefix}:{nameof(EurekaInstanceOptions.IPAddress)} must be provided.");
+        }
+
+        if (string.IsNullOrWhiteSpace(options.HostName))
+        {
+            throw new InvalidOperationException(
+                $"Configuration setting {EurekaInstanceOptions.ConfigurationPrefix}:{nameof(EurekaInstanceOptions.HostName)} must be provided.");
+        }
+
+        if (string.IsNullOrWhiteSpace(options.InstanceId))
+        {
+            throw new InvalidOperationException(
+                $"Configuration setting {EurekaInstanceOptions.ConfigurationPrefix}:{nameof(EurekaInstanceOptions.InstanceId)} must be provided.");
+        }
+
+        if (string.IsNullOrWhiteSpace(options.AppName))
+        {
+            throw new InvalidOperationException(
+                $"Configuration setting {EurekaInstanceOptions.ConfigurationPrefix}:{nameof(EurekaInstanceOptions.AppName)} must be provided.");
+        }
+
+        int nonSecurePort = options.NonSecurePort is null or <= 0 ? 0 : options.NonSecurePort.Value;
+        int securePort = options.SecurePort is null or <= 0 ? 0 : options.SecurePort.Value;
+
+        int? nullableNonSecurePort = options.IsNonSecurePortEnabled ? nonSecurePort : null;
+        int? nullableSecurePort = options.IsSecurePortEnabled ? securePort : null;
+
+        return new InstanceInfo(options.InstanceId, options.AppName.ToUpperInvariant(), options.HostName, options.IPAddress, options.DataCenterInfo)
+        {
+            AppGroupName = options.AppGroupName?.ToUpperInvariant(),
+            VipAddress = options.VipAddress,
+            SecureVipAddress = options.SecureVipAddress,
+            NonSecurePort = nonSecurePort,
+            IsNonSecurePortEnabled = options.IsNonSecurePortEnabled,
+            SecurePort = securePort,
+            IsSecurePortEnabled = options.IsSecurePortEnabled,
+            Status = options.IsInstanceEnabledOnInit ? InstanceStatus.Up : InstanceStatus.Starting,
+            HomePageUrl = MakeUrl(options.HostName, nullableSecurePort, nullableNonSecurePort, options.HomePageUrlPath, options.HomePageUrl),
+            StatusPageUrl = MakeUrl(options.HostName, nullableSecurePort, nullableNonSecurePort, options.StatusPageUrlPath, options.StatusPageUrl),
+            HealthCheckUrl = MakeUrl(options.HostName, nullableSecurePort, nullableNonSecurePort, options.HealthCheckUrlPath, options.HealthCheckUrl),
+            SecureHealthCheckUrl = MakeUrl(options.HostName, nullableSecurePort, null, options.HealthCheckUrlPath, options.SecureHealthCheckUrl),
+            LeaseInfo = LeaseInfo.FromConfiguration(options),
+            Metadata = new ReadOnlyDictionary<string, string?>(options.MetadataMap),
+            AutoScalingGroupName = options.AutoScalingGroupName,
+            IsDirty = true
         };
-
-        if (string.IsNullOrEmpty(info.InstanceId))
-        {
-            info.InstanceId = instanceConfig.ResolveHostName(false);
-        }
-
-        string defaultAddress = instanceConfig.ResolveHostName(false);
-
-        if (instanceConfig.PreferIPAddress || string.IsNullOrEmpty(defaultAddress))
-        {
-            defaultAddress = instanceConfig.IPAddress;
-        }
-
-        info.AppName = instanceConfig.AppName.ToUpperInvariant();
-        info.AppGroupName = instanceConfig.AppGroupName?.ToUpperInvariant();
-        info.DataCenterInfo = instanceConfig.DataCenterInfo;
-        info.IPAddress = instanceConfig.IPAddress;
-        info.HostName = defaultAddress;
-        info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceConfiguration.DefaultNonSecurePort : instanceConfig.NonSecurePort;
-        info.IsInsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
-        info.SecurePort = instanceConfig.SecurePort == -1 ? EurekaInstanceConfiguration.DefaultSecurePort : instanceConfig.SecurePort;
-        info.IsSecurePortEnabled = instanceConfig.SecurePortEnabled;
-        info.VipAddress = instanceConfig.VirtualHostName;
-        info.SecureVipAddress = instanceConfig.SecureVirtualHostName;
-        info.HomePageUrl = MakeUrl(info, instanceConfig.HomePageUrlPath, instanceConfig.HomePageUrl);
-        info.StatusPageUrl = MakeUrl(info, instanceConfig.StatusPageUrlPath, instanceConfig.StatusPageUrl);
-        info.AsgName = instanceConfig.AsgName;
-        info.HealthCheckUrl = MakeUrl(info, instanceConfig.HealthCheckUrlPath, instanceConfig.HealthCheckUrl, instanceConfig.SecureHealthCheckUrl);
-
-        if (!instanceConfig.IsInstanceEnabledOnInit)
-        {
-            info._status = InstanceStatus.Starting;
-        }
-
-        if (!string.IsNullOrEmpty(info.InstanceId))
-        {
-            InstanceInfo me = ApplicationInfoManager.Instance.InstanceInfo;
-
-            if (me != null && info.InstanceId == me.InstanceId)
-            {
-                info.IsCoordinatingDiscoveryServer = true;
-            }
-        }
-
-        if (instanceConfig.MetadataMap != null && instanceConfig.MetadataMap.Count > 0)
-        {
-            info._metaData = new Dictionary<string, string>(instanceConfig.MetadataMap);
-        }
-
-        return info;
     }
 
-    internal static InstanceInfo FromJsonInstance(JsonInstanceInfo json)
+    internal static InstanceInfo? FromJson(JsonInstanceInfo? jsonInstance)
     {
-        var info = new InstanceInfo();
-
-        if (json != null)
+        if (jsonInstance == null)
         {
-            info._sid = json.Sid ?? "na";
-            info.AppName = json.AppName;
-            info.AppGroupName = json.AppGroupName;
-            info.IPAddress = json.IPAddress;
-            info.Port = json.Port?.Port ?? 0;
-            info.IsInsecurePortEnabled = json.Port != null && json.Port.Enabled;
-            info.SecurePort = json.SecurePort?.Port ?? 0;
-            info.IsSecurePortEnabled = json.SecurePort != null && json.SecurePort.Enabled;
-            info.HomePageUrl = json.HomePageUrl;
-            info.StatusPageUrl = json.StatusPageUrl;
-            info.HealthCheckUrl = json.HealthCheckUrl;
-            info.SecureHealthCheckUrl = json.SecureHealthCheckUrl;
-            info.VipAddress = json.VipAddress;
-            info.SecureVipAddress = json.SecureVipAddress;
-            info.CountryId = json.CountryId;
-            info.DataCenterInfo = json.DataCenterInfo == null ? null : AppInfo.DataCenterInfo.FromJson(json.DataCenterInfo);
-            info.HostName = json.HostName;
-            info.Status = json.Status;
-            info.OverriddenStatus = json.OverriddenStatus;
-            info.LeaseInfo = LeaseInfo.FromJson(json.LeaseInfo);
-            info.IsCoordinatingDiscoveryServer = json.IsCoordinatingDiscoveryServer;
-            info.LastUpdatedTimestamp = DateTimeConversions.FromJavaMillis(json.LastUpdatedTimestamp).Ticks;
-            info.LastDirtyTimestamp = DateTimeConversions.FromJavaMillis(json.LastDirtyTimestamp).Ticks;
-            info.ActionType = json.ActionType;
-            info.AsgName = json.AsgName;
-            info._metaData = GetMetaDataFromJson(json.Metadata);
-            info.InstanceId = GetInstanceIdFromJson(json, info._metaData);
+            return null;
         }
 
-        return info;
+        string? instanceId = GetInstanceIdFromJson(jsonInstance);
+
+        if (instanceId == null || string.IsNullOrWhiteSpace(jsonInstance.AppName) || string.IsNullOrWhiteSpace(jsonInstance.HostName) ||
+            string.IsNullOrWhiteSpace(jsonInstance.IPAddress))
+        {
+            return null;
+        }
+
+        DataCenterInfo? dataCenterInfo = DataCenterInfo.FromJson(jsonInstance.DataCenterInfo);
+
+        if (dataCenterInfo == null)
+        {
+            return null;
+        }
+
+        return new InstanceInfo(instanceId, jsonInstance.AppName, jsonInstance.HostName, jsonInstance.IPAddress, dataCenterInfo)
+        {
+            AppGroupName = jsonInstance.AppGroupName,
+            VipAddress = jsonInstance.VipAddress,
+            SecureVipAddress = jsonInstance.SecureVipAddress,
+            NonSecurePort = jsonInstance.Port?.Port ?? 0,
+            IsNonSecurePortEnabled = jsonInstance.Port is { Enabled: true },
+            SecurePort = jsonInstance.SecurePort?.Port ?? 0,
+            IsSecurePortEnabled = jsonInstance.SecurePort is { Enabled: true },
+            Status = jsonInstance.Status,
+            OverriddenStatus = jsonInstance.OverriddenStatus ?? jsonInstance.OverriddenStatusLegacy,
+            HomePageUrl = jsonInstance.HomePageUrl,
+            StatusPageUrl = jsonInstance.StatusPageUrl,
+            HealthCheckUrl = jsonInstance.HealthCheckUrl,
+            SecureHealthCheckUrl = jsonInstance.SecureHealthCheckUrl,
+            LeaseInfo = LeaseInfo.FromJson(jsonInstance.LeaseInfo),
+            IsCoordinatingDiscoveryServer = jsonInstance.IsCoordinatingDiscoveryServer,
+            Metadata = GetMetaDataFromJson(jsonInstance.Metadata),
+            LastUpdatedTimeUtc = DateTimeConversions.FromNullableJavaMilliseconds(jsonInstance.LastUpdatedTimestamp),
+            LastDirtyTimeUtc = DateTimeConversions.FromNullableJavaMilliseconds(jsonInstance.LastDirtyTimestamp),
+            ActionType = jsonInstance.ActionType,
+            AutoScalingGroupName = jsonInstance.AutoScalingGroupName,
+            CountryId = jsonInstance.CountryId,
+            Sid = jsonInstance.Sid,
+            _isDirty = false
+        };
     }
 
-    internal JsonInstanceInfo ToJsonInstance()
+    internal JsonInstanceInfo ToJson()
     {
-        var instanceInfo = new JsonInstanceInfo
+        return new JsonInstanceInfo
         {
             InstanceId = InstanceId,
-            Sid = Sid ?? "na",
             AppName = AppName,
             AppGroupName = AppGroupName,
+            HostName = HostName,
             IPAddress = IPAddress,
-            Port = new JsonInstanceInfo.JsonPortWrapper(IsInsecurePortEnabled, Port),
-            SecurePort = new JsonInstanceInfo.JsonPortWrapper(IsSecurePortEnabled, SecurePort),
+            DataCenterInfo = DataCenterInfo.ToJson(),
+            VipAddress = VipAddress,
+            SecureVipAddress = SecureVipAddress,
+            Port = new JsonPortWrapper
+            {
+                // Always send non-secure/secure ports, otherwise Eureka silently assumes 7000/7001.
+                Enabled = IsNonSecurePortEnabled,
+                Port = NonSecurePort
+            },
+            SecurePort = new JsonPortWrapper
+            {
+                Enabled = IsSecurePortEnabled,
+                Port = SecurePort
+            },
+            Status = Status,
+            // Workaround for https://github.com/Netflix/eureka/issues/1541.
+            OverriddenStatusLegacy = OverriddenStatus ?? InstanceStatus.Unknown,
             HomePageUrl = HomePageUrl,
             StatusPageUrl = StatusPageUrl,
             HealthCheckUrl = HealthCheckUrl,
             SecureHealthCheckUrl = SecureHealthCheckUrl,
-            VipAddress = VipAddress,
-            SecureVipAddress = SecureVipAddress,
-            CountryId = CountryId,
-            DataCenterInfo = ((DataCenterInfo)DataCenterInfo)?.ToJson(),
-            HostName = HostName,
-            Status = Status,
-            OverriddenStatus = OverriddenStatus,
             LeaseInfo = LeaseInfo?.ToJson(),
             IsCoordinatingDiscoveryServer = IsCoordinatingDiscoveryServer,
-            LastUpdatedTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastUpdatedTimestamp, DateTimeKind.Utc)),
-            LastDirtyTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastDirtyTimestamp, DateTimeKind.Utc)),
-            ActionType = ActionType,
-            AsgName = AsgName,
             Metadata = Metadata.Count == 0
-                ? new Dictionary<string, string>
+                ? new Dictionary<string, string?>
                 {
                     { "@class", "java.util.Collections$EmptyMap" }
                 }
-                : Metadata
+                : Metadata.ToDictionary(pair => pair.Key, pair => pair.Value),
+            LastUpdatedTimestamp = DateTimeConversions.ToNullableJavaMilliseconds(LastUpdatedTimeUtc),
+            LastDirtyTimestamp = DateTimeConversions.ToNullableJavaMilliseconds(LastDirtyTimeUtc),
+            ActionType = ActionType,
+            AutoScalingGroupName = AutoScalingGroupName,
+            CountryId = CountryId,
+            Sid = Sid
         };
-
-        return instanceInfo;
     }
 
-    private static Dictionary<string, string> GetMetaDataFromJson(Dictionary<string, string> json)
+    private static IReadOnlyDictionary<string, string?> GetMetaDataFromJson(IDictionary<string, string?>? jsonMetaData)
     {
-        if (json == null)
+        if (jsonMetaData == null || (jsonMetaData.TryGetValue("@class", out string? value) && value == "java.util.Collections$EmptyMap"))
         {
-            return new Dictionary<string, string>();
+            return EmptyMetadata;
         }
 
-        if (json.TryGetValue("@class", out string value) && value == "java.util.Collections$EmptyMap")
-        {
-            return new Dictionary<string, string>();
-        }
-
-        return new Dictionary<string, string>(json);
+        return new ReadOnlyDictionary<string, string?>(jsonMetaData);
     }
 
-    private static string GetInstanceIdFromJson(JsonInstanceInfo instanceInfo, Dictionary<string, string> metaData)
+    private static string? GetInstanceIdFromJson(JsonInstanceInfo jsonInstance)
     {
-        if (string.IsNullOrEmpty(instanceInfo.InstanceId))
+        if (string.IsNullOrWhiteSpace(jsonInstance.InstanceId))
         {
-            if (metaData == null)
+            if (jsonInstance.Metadata == null)
             {
                 return null;
             }
 
-            if (metaData.TryGetValue("instanceId", out string mid))
+            if (jsonInstance.Metadata.TryGetValue("instanceId", out string? metaDataInstanceId) && !string.IsNullOrEmpty(metaDataInstanceId))
             {
-                return $"{instanceInfo.HostName}:{mid}";
+                return $"{jsonInstance.HostName}:{metaDataInstanceId}";
             }
 
             return null;
         }
 
-        return instanceInfo.InstanceId;
+        return jsonInstance.InstanceId;
     }
 
-    private static string MakeUrl(InstanceInfo info, string relativeUrl, string explicitUrl, string secureExplicitUrl = null)
+    private static string? MakeUrl(string hostName, int? securePort, int? nonSecurePort, string? relativeUrl, string? explicitUrl)
     {
-        if (!string.IsNullOrEmpty(explicitUrl))
+        if (!string.IsNullOrWhiteSpace(explicitUrl))
         {
-            return explicitUrl;
+            return explicitUrl.Replace("${eureka.hostname}", hostName, StringComparison.Ordinal);
         }
 
-        if (!string.IsNullOrEmpty(relativeUrl) && info.IsInsecurePortEnabled)
+        if (!string.IsNullOrWhiteSpace(relativeUrl))
         {
-            return $"http://{info.HostName}:{info.Port}{relativeUrl}";
+            if (securePort != null)
+            {
+                return $"https://{hostName}:{securePort}{relativeUrl}";
+            }
+
+            if (nonSecurePort != null)
+            {
+                return $"http://{hostName}:{nonSecurePort}{relativeUrl}";
+            }
         }
 
-        if (!string.IsNullOrEmpty(secureExplicitUrl))
+        return null;
+    }
+
+    internal void DetectChanges(InstanceInfo previousInstance)
+    {
+        ArgumentGuard.NotNull(previousInstance);
+
+        if (previousInstance.IsDirty)
         {
-            return secureExplicitUrl;
+            // For some reason, the previous dirty instance was never sent, so we'll need to catch up.
+            IsDirty = true;
+        }
+        else
+        {
+            // Intentionally skipping LastUpdatedTimeUtc and LastDirtyTimeUtc below, because they are not real changes.
+
+#pragma warning disable S1067 // Expressions should not be too complex
+            IsDirty = InstanceId != previousInstance.InstanceId || AppName != previousInstance.AppName || AppGroupName != previousInstance.AppGroupName ||
+                HostName != previousInstance.HostName || IPAddress != previousInstance.IPAddress ||
+                DataCenterInfo.Name != previousInstance.DataCenterInfo.Name || VipAddress != previousInstance.VipAddress ||
+                SecureVipAddress != previousInstance.SecureVipAddress || NonSecurePort != previousInstance.NonSecurePort ||
+                IsNonSecurePortEnabled != previousInstance.IsNonSecurePortEnabled || SecurePort != previousInstance.SecurePort ||
+                IsSecurePortEnabled != previousInstance.IsSecurePortEnabled || Status != previousInstance.Status ||
+                OverriddenStatus != previousInstance.OverriddenStatus || HomePageUrl != previousInstance.HomePageUrl ||
+                StatusPageUrl != previousInstance.StatusPageUrl || HealthCheckUrl != previousInstance.HealthCheckUrl ||
+                SecureHealthCheckUrl != previousInstance.SecureHealthCheckUrl || !Equals(LeaseInfo, previousInstance.LeaseInfo) ||
+                IsCoordinatingDiscoveryServer != previousInstance.IsCoordinatingDiscoveryServer ||
+                (!ReferenceEquals(Metadata, previousInstance.Metadata) && !Metadata.SequenceEqual(previousInstance.Metadata)) ||
+                ActionType != previousInstance.ActionType || AutoScalingGroupName != previousInstance.AutoScalingGroupName ||
+                CountryId != previousInstance.CountryId || Sid != previousInstance.Sid;
+#pragma warning restore S1067 // Expressions should not be too complex
+        }
+    }
+
+    // CAUTION: All Replace* methods must only be invoked from EurekaApplicationInfoManager, inside an exclusive lock.
+    // This is needed to avoid sending a partially updated instance to Eureka, and to prevent concurrent updates overwriting in-flight changes.
+
+    internal void ReplaceMetadata(IReadOnlyDictionary<string, string?> newMetadata)
+    {
+        ArgumentGuard.NotNull(newMetadata);
+
+        newMetadata = WithoutEmptyMetadataValues(newMetadata);
+        bool hasChanged = !ReferenceEquals(Metadata, newMetadata) && !Metadata.SequenceEqual(newMetadata);
+
+        if (hasChanged)
+        {
+            _metadata = newMetadata;
+            IsDirty = true;
+        }
+    }
+
+    internal void ReplaceStatus(InstanceStatus? newStatus)
+    {
+        bool hasChanged = _status.Value != newStatus;
+
+        if (hasChanged)
+        {
+            _status = new NullableValueWrapper<InstanceStatus>(newStatus);
+            IsDirty = true;
+        }
+    }
+
+    internal void ReplaceOverriddenStatus(InstanceStatus? newOverriddenStatus)
+    {
+        bool hasChanged = _overriddenStatus.Value != newOverriddenStatus;
+
+        if (hasChanged)
+        {
+            _overriddenStatus = new NullableValueWrapper<InstanceStatus>(newOverriddenStatus);
+            IsDirty = true;
+        }
+    }
+
+    private static IReadOnlyDictionary<string, string?> WithoutEmptyMetadataValues(IReadOnlyDictionary<string, string?> source)
+    {
+        if (source.Count > 0)
+        {
+            Dictionary<string, string?> pruned = source.Where(pair => !string.IsNullOrEmpty(pair.Value)).ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            if (pruned.Count > 0)
+            {
+                return new ReadOnlyDictionary<string, string?>(pruned);
+            }
         }
 
-        if (info.IsSecurePortEnabled)
-        {
-            return $"https://{info.HostName}:{info.SecurePort}{relativeUrl}";
-        }
-
-        return string.Empty;
+        return EmptyMetadata;
     }
 }

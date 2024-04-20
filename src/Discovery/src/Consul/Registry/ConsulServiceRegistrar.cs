@@ -3,65 +3,59 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
 /// A registrar used to register a service in a Consul server.
 /// </summary>
-public class ConsulServiceRegistrar : IConsulServiceRegistrar
+public sealed class ConsulServiceRegistrar : IAsyncDisposable
 {
     private const int NotRunning = 0;
     private const int Running = 1;
 
-    private readonly ILogger<ConsulServiceRegistrar> _logger;
-    private readonly IConsulServiceRegistry _registry;
+    private readonly ConsulServiceRegistry _registry;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
-    private readonly ConsulDiscoveryOptions _options;
+    private readonly ILogger<ConsulServiceRegistrar> _logger;
 
     private bool _isDisposed;
-    internal int IsRunning;
+    private int _isRunning;
 
-    internal ConsulDiscoveryOptions Options
-    {
-        get
-        {
-            if (_optionsMonitor != null)
-            {
-                return _optionsMonitor.CurrentValue;
-            }
+    private ConsulDiscoveryOptions Options => _optionsMonitor.CurrentValue;
 
-            return _options;
-        }
-    }
+    internal bool IsRunning => _isRunning == Running;
 
-    /// <inheritdoc />
-    public IConsulRegistration Registration { get; }
+    /// <summary>
+    /// Gets the registration that the registrar is to register with Consul.
+    /// </summary>
+    public ConsulRegistration Registration { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistrar" /> class.
     /// </summary>
     /// <param name="registry">
-    /// the Consul service registry to use when doing registrations.
+    /// The Consul service registry to use when doing registrations.
     /// </param>
     /// <param name="optionsMonitor">
-    /// configuration options to use.
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     /// <param name="registration">
-    /// the registration to register with Consul.
+    /// The registration to register with Consul.
     /// </param>
     /// <param name="logger">
-    /// optional logger.
+    /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public ConsulServiceRegistrar(IConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulRegistration registration,
-        ILogger<ConsulServiceRegistrar> logger = null)
+    public ConsulServiceRegistrar(ConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulRegistration registration,
+        ILogger<ConsulServiceRegistrar> logger)
     {
         ArgumentGuard.NotNull(registry);
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(registration);
+        ArgumentGuard.NotNull(logger);
 
         _registry = registry;
         _optionsMonitor = optionsMonitor;
@@ -70,84 +64,59 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulServiceRegistrar" /> class.
+    /// Starts the service registrar.
     /// </summary>
-    /// <param name="registry">
-    /// the Consul service registry to use when doing registrations.
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
     /// </param>
-    /// <param name="options">
-    /// configuration options to use.
-    /// </param>
-    /// <param name="registration">
-    /// the registration to register with Consul.
-    /// </param>
-    /// <param name="logger">
-    /// optional logger.
-    /// </param>
-    public ConsulServiceRegistrar(IConsulServiceRegistry registry, ConsulDiscoveryOptions options, IConsulRegistration registration,
-        ILogger<ConsulServiceRegistrar> logger = null)
-    {
-        ArgumentGuard.NotNull(registry);
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(registration);
-
-        _registry = registry;
-        _options = options;
-        Registration = registration;
-        _logger = logger;
-    }
-
-    /// <inheritdoc />
-    public void Start()
+    internal async Task StartAsync(CancellationToken cancellationToken)
     {
         if (!Options.Enabled)
         {
-            _logger?.LogDebug("Discovery Lifecycle disabled. Not starting");
+            _logger.LogDebug("Discovery Lifecycle disabled. Not starting");
             return;
         }
 
-        if (Interlocked.CompareExchange(ref IsRunning, Running, NotRunning) == NotRunning)
+        if (Interlocked.CompareExchange(ref _isRunning, Running, NotRunning) == NotRunning)
         {
-            if (Options.IsRetryEnabled && Options.FailFast)
+            if (Options is { IsRetryEnabled: true, FailFast: true, Retry: not null })
             {
-                DoWithRetry(Register, Options.Retry);
+                await DoWithRetryAsync(RegisterAsync, Options.Retry, cancellationToken);
             }
             else
             {
-                Register();
+                await RegisterAsync(cancellationToken);
             }
         }
     }
 
-    /// <inheritdoc />
-    public void Register()
+    private async Task RegisterAsync(CancellationToken cancellationToken)
     {
         if (!Options.Register)
         {
-            _logger?.LogDebug("Registration disabled");
+            _logger.LogDebug("Registration disabled");
             return;
         }
 
-        _registry.Register(Registration);
+        await _registry.RegisterAsync(Registration, cancellationToken);
     }
 
-    /// <inheritdoc />
-    public void Deregister()
+    private async Task DeregisterAsync(CancellationToken cancellationToken)
     {
         if (!Options.Register || !Options.Deregister)
         {
-            _logger?.LogDebug("Deregistration disabled");
+            _logger.LogDebug("Deregistration disabled");
             return;
         }
 
-        _registry.Deregister(Registration);
+        await _registry.DeregisterAsync(Registration, cancellationToken);
     }
 
-    private void DoWithRetry(Action retryable, ConsulRetryOptions options)
+    private async Task DoWithRetryAsync(Func<CancellationToken, Task> retryable, ConsulRetryOptions options, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(retryable);
 
-        _logger?.LogDebug("Starting retryable action ..");
+        _logger.LogDebug("Starting retryable action.");
 
         int attempts = 0;
         int backOff = options.InitialInterval;
@@ -156,24 +125,24 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         {
             try
             {
-                retryable();
-                _logger?.LogDebug("Finished retryable action ..");
+                await retryable(cancellationToken);
+                _logger.LogDebug("Finished retryable action.");
                 return;
             }
-            catch (Exception e)
+            catch (Exception exception) when (!exception.IsCancellation())
             {
                 attempts++;
 
                 if (attempts < options.MaxAttempts)
                 {
-                    _logger?.LogError(e, "Exception during {attempt} attempts of retryable action, will retry", attempts);
+                    _logger.LogError(exception, "Exception during {Attempt} attempts of retryable action, will retry", attempts);
                     Thread.CurrentThread.Join(backOff);
                     int nextBackOff = (int)(backOff * options.Multiplier);
                     backOff = Math.Min(nextBackOff, options.MaxInterval);
                 }
                 else
                 {
-                    _logger?.LogError(e, "Exception during {attempt} attempts of retryable action, done with retry", attempts);
+                    _logger.LogError(exception, "Exception during {Attempt} attempts of retryable action, done with retry", attempts);
                     throw;
                 }
             }
@@ -182,23 +151,16 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     }
 
     /// <inheritdoc />
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing && !_isDisposed)
+        if (!_isDisposed)
         {
-            if (Interlocked.CompareExchange(ref IsRunning, NotRunning, Running) == Running)
+            if (Interlocked.CompareExchange(ref _isRunning, NotRunning, Running) == Running)
             {
-                Deregister();
+                await DeregisterAsync(CancellationToken.None);
             }
 
-            _registry.Dispose();
-
+            await _registry.DisposeAsync();
             _isDisposed = true;
         }
     }

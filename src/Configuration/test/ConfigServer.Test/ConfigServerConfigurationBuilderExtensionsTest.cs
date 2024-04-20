@@ -15,103 +15,107 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerConfigurationBuilderExtensionsTest
 {
-    private const string VcapApplication = @" 
-                {
-                    ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
-                    ""application_name"": ""foo"",
-                    ""application_uris"": [
-                        ""foo.10.244.0.34.xip.io""
-                    ],
-                    ""application_version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"",
-                    ""limits"": {
-                        ""disk"": 1024,
-                        ""fds"": 16384,
-                        ""mem"": 256
-                    },
-                    ""name"": ""foo"",
-                    ""space_id"": ""06450c72-4669-4dc6-8096-45f9777db68a"",
-                    ""space_name"": ""my-space"",
-                    ""uris"": [
-                        ""foo.10.244.0.34.xip.io""
-                    ],
-                    ""users"": null,
-                    ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
-                }";
+    private const string VcapApplication = """
+        {
+            "application_id": "fa05c1a9-0fc1-4fbd-bae1-139850dec7a3",
+            "application_name": "foo",
+            "application_uris": [
+                "foo.10.244.0.34.xip.io"
+            ],
+            "application_version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca",
+            "limits": {
+                "disk": 1024,
+                "fds": 16384,
+                "mem": 256
+            },
+            "name": "foo",
+            "space_id": "06450c72-4669-4dc6-8096-45f9777db68a",
+            "space_name": "my-space",
+            "uris": [
+                "foo.10.244.0.34.xip.io"
+            ],
+            "users": null,
+            "version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"
+        }
+        """;
 
-    private const string VcapServicesV2 = @"
-                {
-                    ""p-config-server"": [
-                    {
-                        ""name"": ""config-server"",
-                        ""instance_name"": ""config-server"",
-                        ""binding_name"": null,
-                        ""credentials"": {
-                            ""uri"": ""https://uri-from-vcap-services"",
-                            ""client_secret"": ""some-secret"",
-                            ""client_id"": ""some-client-id"",
-                            ""access_token_uri"": ""https://uaa-uri-from-vcap-services/oauth/token""
-                        },
-                        ""syslog_drain_url"": null,
-                        ""volume_mounts"": [],
-                        ""label"": ""p-config-server"",
-                        ""plan"": ""standard"",
-                        ""provider"": null,
-                        ""tags"": [
-                            ""configuration"",
-                            ""spring-cloud""
-                        ]
-                    }]
-                }";
+    private const string VcapServicesV2 = """
+        {
+            "p-config-server": [
+            {
+                "name": "config-server",
+                "instance_name": "config-server",
+                "binding_name": null,
+                "credentials": {
+                    "uri": "https://uri-from-vcap-services",
+                    "client_secret": "some-secret",
+                    "client_id": "some-client-id",
+                    "access_token_uri": "https://uaa-uri-from-vcap-services/oauth/token"
+                },
+                "syslog_drain_url": null,
+                "volume_mounts": [],
+                "label": "p-config-server",
+                "plan": "standard",
+                "provider": null,
+                "tags": [
+                    "configuration",
+                    "spring-cloud"
+                ]
+            }]
+        }
+        """;
 
-    private const string VcapServicesV3 = @"
-                {
-                    ""p.config-server"": [
-                    {
-                        ""name"": ""config-server"",
-                        ""instance_name"": ""config-server"",
-                        ""binding_name"": null,
-                        ""credentials"": {
-                            ""uri"": ""https://uri-from-vcap-services"",
-                            ""client_secret"": ""some-secret"",
-                            ""client_id"": ""some-client-id"",
-                            ""access_token_uri"": ""https://uaa-uri-from-vcap-services/oauth/token""
-                        },
-                        ""syslog_drain_url"": null,
-                        ""volume_mounts"": [],
-                        ""label"": ""p-config-server"",
-                        ""plan"": ""standard"",
-                        ""provider"": null,
-                        ""tags"": [
-                            ""configuration"",
-                            ""spring-cloud""
-                        ]
-                    }]
-                }";
+    private const string VcapServicesV3 = """
+        {
+            "p.config-server": [
+            {
+                "name": "config-server",
+                "instance_name": "config-server",
+                "binding_name": null,
+                "credentials": {
+                    "uri": "https://uri-from-vcap-services",
+                    "client_secret": "some-secret",
+                    "client_id": "some-client-id",
+                    "access_token_uri": "https://uaa-uri-from-vcap-services/oauth/token"
+                },
+                "syslog_drain_url": null,
+                "volume_mounts": [],
+                "label": "p-config-server",
+                "plan": "standard",
+                "provider": null,
+                "tags": [
+                    "configuration",
+                    "spring-cloud"
+                ]
+            }]
+        }
+        """;
 
-    private const string VcapServicesAlt = @"
-                {
-                    ""config-server"": [
-                    {
-                        ""name"": ""config-server"",
-                        ""instance_name"": ""config-server"",
-                        ""binding_name"": null,
-                        ""credentials"": {
-                            ""uri"": ""https://uri-from-vcap-services"",
-                            ""client_secret"": ""some-secret"",
-                            ""client_id"": ""some-client-id"",
-                            ""access_token_uri"": ""https://uaa-uri-from-vcap-services/oauth/token""
-                        },
-                        ""syslog_drain_url"": null,
-                        ""volume_mounts"": [],
-                        ""label"": ""p-config-server"",
-                        ""plan"": ""standard"",
-                        ""provider"": null,
-                        ""tags"": [
-                            ""configuration"",
-                            ""spring-cloud""
-                        ]
-                    }]
-                }";
+    private const string VcapServicesAlt = """
+        {
+            "config-server": [
+            {
+                "name": "config-server",
+                "instance_name": "config-server",
+                "binding_name": null,
+                "credentials": {
+                    "uri": "https://uri-from-vcap-services",
+                    "client_secret": "some-secret",
+                    "client_id": "some-client-id",
+                    "access_token_uri": "https://uaa-uri-from-vcap-services/oauth/token"
+                },
+                "syslog_drain_url": null,
+                "volume_mounts": [],
+                "label": "p-config-server",
+                "plan": "standard",
+                "provider": null,
+                "tags": [
+                    "configuration",
+                    "spring-cloud"
+                ]
+            }]
+        }
+        """;
 
     [Fact]
     public void AddConfigServer_WithPemFiles_AddsConfigServerSourceWithCertificate()
@@ -161,33 +165,34 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_JsonAppSettingsConfiguresClient()
     {
-        const string appsettings = @"
-                {
-                    ""spring"": {
-                        ""application"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""uri"": ""https://user:password@foo.com:9999"",
-                            ""enabled"": false,
-                            ""failFast"": false,
-                            ""label"": ""myLabel"",
-                            ""username"": ""myUsername"",
-                            ""password"": ""myPassword"",
-                            ""timeout"": 10000,
-                            ""token"" : ""vaulttoken"",
-                            ""retry"": {
-                                ""enabled"":""false"",
-                                ""initialInterval"":55555,
-                                ""maxInterval"": 55555,
-                                ""multiplier"": 5.5,
-                                ""maxAttempts"": 55555
-                            }
+        const string appsettings = """
+            {
+                "spring": {
+                    "application": {
+                        "name": "myName"
+                },
+                  "cloud": {
+                    "config": {
+                        "uri": "https://user:password@foo.com:9999",
+                        "enabled": false,
+                        "failFast": false,
+                        "label": "myLabel",
+                        "username": "myUsername",
+                        "password": "myPassword",
+                        "timeout": 10000,
+                        "token" : "vaulttoken",
+                        "retry": {
+                            "enabled":"false",
+                            "initialInterval":55555,
+                            "maxInterval": 55555,
+                            "multiplier": 5.5,
+                            "maxAttempts": 55555
                         }
-                      }
                     }
-                }";
+                  }
+                }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
@@ -210,7 +215,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -227,22 +232,23 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_XmlAppSettingsConfiguresClient()
     {
-        const string appsettings = @"
-<settings>
-    <spring>
-      <cloud>
-        <config>
-            <uri>https://foo.com:9999</uri>
-            <enabled>false</enabled>
-            <failFast>false</failFast>
-            <label>myLabel</label>
-            <name>myName</name>
-            <username>myUsername</username>
-            <password>myPassword</password>
-        </config>
-      </cloud>
-    </spring>
-</settings>";
+        const string appsettings = """
+            <settings>
+                <spring>
+                  <cloud>
+                    <config>
+                        <uri>https://foo.com:9999</uri>
+                        <enabled>false</enabled>
+                        <failFast>false</failFast>
+                        <label>myLabel</label>
+                        <name>myName</name>
+                        <username>myUsername</username>
+                        <password>myPassword</password>
+                    </config>
+                  </cloud>
+                </spring>
+            </settings>
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
@@ -265,7 +271,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -275,16 +281,16 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_IniAppSettingsConfiguresClient()
     {
-        const string appsettings = @"
-[spring:cloud:config]
-    uri=https://foo.com:9999
-    enabled=false
-    failFast=false
-    label=myLabel
-    name=myName
-    username=myUsername
-    password=myPassword
-";
+        const string appsettings = """
+            [spring:cloud:config]
+                uri=https://foo.com:9999
+                enabled=false
+                failFast=false
+                label=myLabel
+                name=myName
+                username=myUsername
+                password=myPassword
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
@@ -307,7 +313,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -346,7 +352,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -356,30 +362,31 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_HandlesPlaceHolders()
     {
-        const string appsettings = @"
-                {
-                    ""foo"": {
-                        ""bar"": {
-                            ""name"": ""testName""
-                        },
+        const string appsettings = """
+            {
+                "foo": {
+                    "bar": {
+                        "name": "testName"
                     },
-                    ""spring"": {
-                        ""application"": {
-                            ""name"": ""myName""
-                        },
-                      ""cloud"": {
-                        ""config"": {
-                            ""uri"": ""https://user:password@foo.com:9999"",
-                            ""enabled"": false,
-                            ""failFast"": false,
-                            ""name"": ""${foo:bar:name?foobar}"",
-                            ""label"": ""myLabel"",
-                            ""username"": ""myUsername"",
-                            ""password"": ""myPassword""
-                        }
-                      }
+                },
+                "spring": {
+                    "application": {
+                        "name": "myName"
+                    },
+                  "cloud": {
+                    "config": {
+                        "uri": "https://user:password@foo.com:9999",
+                        "enabled": false,
+                        "failFast": false,
+                        "name": "${foo:bar:name?foobar}",
+                        "label": "myLabel",
+                        "username": "myUsername",
+                        "password": "myPassword"
                     }
-                }";
+                  }
+                }
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appsettings);
@@ -403,7 +410,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("Production", settings.Environment);
         Assert.Equal("testName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);

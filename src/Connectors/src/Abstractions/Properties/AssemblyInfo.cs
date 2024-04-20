@@ -6,8 +6,5 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.CloudFoundry")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.CloudFoundry.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.Client")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundry")]
 [assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundry.Test")]

@@ -30,7 +30,7 @@ public sealed class TracingLogProcessorTest
     {
         using TracerProvider? openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
 
-        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>
+        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string?>
         {
             ["management:tracing:name"] = "foobar"
         });
@@ -64,7 +64,7 @@ public sealed class TracingLogProcessorTest
     [Fact]
     public void Process_UseShortTraceIds()
     {
-        var appsettings = new Dictionary<string, string>
+        var appsettings = new Dictionary<string, string?>
         {
             ["management:tracing:name"] = "foobar",
             ["management:tracing:useShortTraceIds"] = "true"

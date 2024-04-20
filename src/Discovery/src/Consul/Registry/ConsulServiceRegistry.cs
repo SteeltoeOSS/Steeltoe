@@ -4,76 +4,49 @@
 
 using Consul;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
-/// An implementation of a Consul service registry.
+/// A service registry that uses Consul.
 /// </summary>
-public class ConsulServiceRegistry : IConsulServiceRegistry
+public sealed class ConsulServiceRegistry : IAsyncDisposable
 {
     private const string Up = "UP";
     private const string OutOfService = "OUT_OF_SERVICE";
 
     private readonly IConsulClient _client;
-    private readonly IScheduler _scheduler;
+    private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
+    private readonly TtlScheduler? _scheduler;
     private readonly ILogger<ConsulServiceRegistry> _logger;
 
-    private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
-    private readonly ConsulDiscoveryOptions _options;
-
-    private ConsulDiscoveryOptions Options => _optionsMonitor != null ? _optionsMonitor.CurrentValue : _options;
+    private ConsulDiscoveryOptions Options => _optionsMonitor.CurrentValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistry" /> class.
     /// </summary>
     /// <param name="client">
-    /// the Consul client to use.
-    /// </param>
-    /// <param name="options">
-    /// the configuration options.
-    /// </param>
-    /// <param name="scheduler">
-    /// a scheduler to use for heart beats.
-    /// </param>
-    /// <param name="logger">
-    /// an optional logger.
-    /// </param>
-    public ConsulServiceRegistry(IConsulClient client, ConsulDiscoveryOptions options, IScheduler scheduler = null,
-        ILogger<ConsulServiceRegistry> logger = null)
-    {
-        ArgumentGuard.NotNull(client);
-        ArgumentGuard.NotNull(options);
-
-        _client = client;
-        _options = options;
-        _scheduler = scheduler;
-        _logger = logger;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulServiceRegistry" /> class.
-    /// </summary>
-    /// <param name="client">
-    /// the Consul client to use.
+    /// The Consul client to use.
     /// </param>
     /// <param name="optionsMonitor">
-    /// the configuration options.
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     /// <param name="scheduler">
-    /// a scheduler to use for heart beats.
+    /// An optional scheduler to use for heartbeats.
     /// </param>
     /// <param name="logger">
-    /// an optional logger.
+    /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IScheduler scheduler = null,
-        ILogger<ConsulServiceRegistry> logger = null)
+    public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, TtlScheduler? scheduler,
+        ILogger<ConsulServiceRegistry> logger)
     {
         ArgumentGuard.NotNull(client);
         ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(logger);
 
         _client = client;
         _optionsMonitor = optionsMonitor;
@@ -81,98 +54,120 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         _logger = logger;
     }
 
-    /// <inheritdoc />
-    public Task RegisterAsync(IConsulRegistration registration, CancellationToken cancellationToken)
+    /// <summary>
+    /// Registers the provided registration in Consul.
+    /// </summary>
+    /// <param name="registration">
+    /// The registration to register.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    public async Task RegisterAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
 
-        return RegisterInternalAsync(registration, cancellationToken);
-    }
-
-    private async Task RegisterInternalAsync(IConsulRegistration registration, CancellationToken cancellationToken)
-    {
-        _logger?.LogInformation("Registering service with consul {serviceId} ", registration.ServiceId);
+        _logger.LogInformation("Registering service {ServiceId} with Consul.", registration.ServiceId);
 
         try
         {
-            await _client.Agent.ServiceRegister(registration.Service, cancellationToken);
+            await _client.Agent.ServiceRegister(registration.InnerRegistration, cancellationToken);
 
-            if (Options.IsHeartBeatEnabled && _scheduler != null)
+            if (Options.IsHeartbeatEnabled && _scheduler != null)
             {
                 _scheduler.Add(registration.InstanceId);
             }
         }
-        catch (Exception e)
+        catch (Exception exception) when (!exception.IsCancellation())
         {
             if (Options.FailFast)
             {
-                _logger?.LogError(e, "Error registering service with consul {serviceId} ", registration.ServiceId);
+                _logger.LogError(exception, "Error registering service {ServiceId} with Consul.", registration.ServiceId);
                 throw;
             }
 
-            _logger?.LogWarning(e, "FailFast is false. Error registering service with consul {serviceId} ", registration.ServiceId);
+            _logger.LogWarning(exception, "FailFast is false. Error registering service {ServiceId} with Consul.", registration.ServiceId);
         }
     }
 
-    /// <inheritdoc />
-    public Task DeregisterAsync(IConsulRegistration registration, CancellationToken cancellationToken)
+    /// <summary>
+    /// Deregisters the provided registration in Consul.
+    /// </summary>
+    /// <param name="registration">
+    /// The registration to deregister.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    public async Task DeregisterAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
 
-        return DeregisterInternalAsync(registration);
-    }
-
-    private Task DeregisterInternalAsync(IConsulRegistration registration)
-    {
-        if (Options.IsHeartBeatEnabled && _scheduler != null)
+        try
         {
-            _scheduler.Remove(registration.InstanceId);
+            if (Options.IsHeartbeatEnabled && _scheduler != null)
+            {
+                await _scheduler.RemoveAsync(registration.InstanceId);
+            }
+
+            _logger.LogInformation("Deregistering service {instanceId} with Consul.", registration.InstanceId);
+            await _client.Agent.ServiceDeregister(registration.InstanceId, cancellationToken);
         }
-
-        _logger?.LogInformation("Deregistering service with consul {instanceId} ", registration.InstanceId);
-
-        return _client.Agent.ServiceDeregister(registration.InstanceId);
+        catch (Exception exception)when (!exception.IsCancellation())
+        {
+            _logger.LogError(exception, "Error deregistering service {ServiceId} with Consul.", registration.ServiceId);
+        }
     }
 
-    /// <inheritdoc />
-    public Task SetStatusAsync(IConsulRegistration registration, string status, CancellationToken cancellationToken)
+    /// <summary>
+    /// Sets the status of the provided registration in Consul.
+    /// </summary>
+    /// <param name="registration">
+    /// The registration whose status to set.
+    /// </param>
+    /// <param name="status">
+    /// The status value to set.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    public async Task SetStatusAsync(ConsulRegistration registration, string status, CancellationToken cancellationToken)
+    {
+        ArgumentGuard.NotNull(registration);
+        ArgumentGuard.NotNull(status);
+
+        if (string.Equals(status, OutOfService, StringComparison.OrdinalIgnoreCase))
+        {
+            await _client.Agent.EnableServiceMaintenance(registration.InstanceId, OutOfService, cancellationToken);
+        }
+        else if (string.Equals(status, Up, StringComparison.OrdinalIgnoreCase))
+        {
+            await _client.Agent.DisableServiceMaintenance(registration.InstanceId, cancellationToken);
+        }
+        else
+        {
+            throw new ArgumentException($"Unknown status: {status}", nameof(status));
+        }
+    }
+
+    /// <summary>
+    /// Gets the status of the provided registration in Consul.
+    /// </summary>
+    /// <param name="registration">
+    /// The registration whose status to obtain.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    public async Task<string> GetStatusAsync(ConsulRegistration registration, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(registration);
 
-        return SetStatusInternalAsync(registration, status, cancellationToken);
-    }
+        QueryResult<HealthCheck[]> queryResult = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default, cancellationToken);
 
-    private Task SetStatusInternalAsync(IConsulRegistration registration, string status, CancellationToken cancellationToken)
-    {
-        if (OutOfService.Equals(status, StringComparison.OrdinalIgnoreCase))
+        foreach (HealthCheck check in queryResult.Response)
         {
-            return _client.Agent.EnableServiceMaintenance(registration.InstanceId, OutOfService, cancellationToken);
-        }
-
-        if (Up.Equals(status, StringComparison.OrdinalIgnoreCase))
-        {
-            return _client.Agent.DisableServiceMaintenance(registration.InstanceId, cancellationToken);
-        }
-
-        throw new ArgumentException($"Unknown status: {status}", nameof(status));
-    }
-
-    /// <inheritdoc />
-    public Task<object> GetStatusAsync(IConsulRegistration registration, CancellationToken cancellationToken)
-    {
-        ArgumentGuard.NotNull(registration);
-
-        return GetStatusInternalAsync(registration, cancellationToken);
-    }
-
-    private async Task<object> GetStatusInternalAsync(IConsulRegistration registration, CancellationToken cancellationToken)
-    {
-        QueryResult<HealthCheck[]> response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default, cancellationToken);
-        HealthCheck[] checks = response.Response;
-
-        foreach (HealthCheck check in checks)
-        {
-            if (check.ServiceID == registration.InstanceId && check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
+            if (check.ServiceID == registration.InstanceId && string.Equals(check.Name, "Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
             {
                 return OutOfService;
             }
@@ -182,44 +177,11 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     }
 
     /// <inheritdoc />
-    public void Register(IConsulRegistration registration)
+    public async ValueTask DisposeAsync()
     {
-        RegisterAsync(registration, CancellationToken.None).GetAwaiter().GetResult();
-    }
-
-    /// <inheritdoc />
-    public void Deregister(IConsulRegistration registration)
-    {
-        DeregisterAsync(registration, CancellationToken.None).GetAwaiter().GetResult();
-    }
-
-    /// <inheritdoc />
-    public void SetStatus(IConsulRegistration registration, string status)
-    {
-        SetStatusAsync(registration, status, CancellationToken.None).GetAwaiter().GetResult();
-    }
-
-    /// <inheritdoc />
-    public TStatus GetStatus<TStatus>(IConsulRegistration registration)
-        where TStatus : class
-    {
-        object result = GetStatusAsync(registration, CancellationToken.None).GetAwaiter().GetResult();
-
-        return (TStatus)result;
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
+        if (_scheduler != null)
         {
-            _scheduler?.Dispose();
+            await _scheduler.DisposeAsync();
         }
     }
 }

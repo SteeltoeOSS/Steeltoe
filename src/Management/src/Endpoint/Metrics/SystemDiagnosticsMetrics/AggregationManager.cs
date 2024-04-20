@@ -215,9 +215,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics
                     intervalStartTime = nextIntervalStartTime;
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                _collectionError(e);
+                _collectionError(exception);
             }
         }
 
@@ -376,9 +376,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics
             {
                 _listener.RecordObservableInstruments();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                _observableInstrumentCallbackError(e);
+                _observableInstrumentCallbackError(exception);
             }
 
             foreach (KeyValuePair<Instrument, InstrumentState> kv in _instrumentStates)

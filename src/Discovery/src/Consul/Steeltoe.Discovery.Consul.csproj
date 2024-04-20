@@ -4,19 +4,20 @@
     <Description>Steeltoe compatibility package for service discovery and registration with Hashicorp Consul</Description>
     <PackageTags>service-discovery;service-registry;Consul;hashicorp</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Consul" Version="$(ConsulVersion)" />
-    <PackageReference Include="System.Net.Http.WinHttpHandler" Version="$(FoundationalVersion)" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common.Net\Steeltoe.Common.Net.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\src\Abstractions\Steeltoe.Connectors.Abstractions.csproj" />
-    <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
-    <ProjectReference Include="..\Client\Steeltoe.Discovery.Client.csproj" />
+    <PackageReference Include="Consul" Version="$(ConsulVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
   </ItemGroup>
 </Project>

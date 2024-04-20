@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
-using Steeltoe.Discovery;
+using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -15,26 +15,27 @@ namespace Steeltoe.Configuration.ConfigServer;
 internal sealed class ConfigServerHostedService : IHostedService
 {
     private readonly ConfigServerConfigurationProvider _configurationProvider;
-    private readonly IDiscoveryClient? _discoveryClient;
+    private readonly ICollection<IDiscoveryClient> _discoveryClients;
 
     public ConfigServerHostedService(IConfigurationRoot configuration)
-        : this(configuration, null)
+        : this(configuration, [])
     {
     }
 
-    public ConfigServerHostedService(IConfigurationRoot configuration, IDiscoveryClient? discoveryClient)
+    public ConfigServerHostedService(IConfigurationRoot configuration, IEnumerable<IDiscoveryClient> discoveryClients)
     {
         ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(discoveryClients);
 
         _configurationProvider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>() ??
             throw new ArgumentException("ConfigServerConfigurationProvider was not found in configuration.", nameof(configuration));
 
-        _discoveryClient = discoveryClient;
+        _discoveryClients = discoveryClients.ToArray();
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await _configurationProvider.ProvideRuntimeReplacementsAsync(_discoveryClient, cancellationToken);
+        await _configurationProvider.ProvideRuntimeReplacementsAsync(_discoveryClients, cancellationToken);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

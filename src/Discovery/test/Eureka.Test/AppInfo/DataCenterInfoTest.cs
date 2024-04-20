@@ -3,25 +3,34 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Eureka.AppInfo;
+using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.AppInfo;
 
-public sealed class DataCenterInfoTest : AbstractBaseTest
+public sealed class DataCenterInfoTest
 {
     [Fact]
     public void Constructor_InitializesName()
     {
-        var info = new DataCenterInfo(DataCenterName.MyOwn);
+        var info = new DataCenterInfo
+        {
+            Name = DataCenterName.MyOwn
+        };
+
         Assert.Equal(DataCenterName.MyOwn, info.Name);
     }
 
     [Fact]
     public void ToJson_Correct()
     {
-        var info = new DataCenterInfo(DataCenterName.MyOwn);
-        JsonInstanceInfo.JsonDataCenterInfo json = info.ToJson();
+        var info = new DataCenterInfo
+        {
+            Name = DataCenterName.MyOwn
+        };
+
+        JsonDataCenterInfo json = info.ToJson();
         Assert.NotNull(json);
         Assert.Equal(DataCenterName.MyOwn.ToString(), json.Name);
         Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", json.ClassName);
@@ -30,16 +39,27 @@ public sealed class DataCenterInfoTest : AbstractBaseTest
     [Fact]
     public void FromJson_Correct()
     {
-        var info = new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", "MyOwn");
-        IDataCenterInfo result = DataCenterInfo.FromJson(info);
+        var jsonInfo = new JsonDataCenterInfo
+        {
+            ClassName = "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+            Name = "MyOwn"
+        };
+
+        DataCenterInfo? result = DataCenterInfo.FromJson(jsonInfo);
+        Assert.NotNull(result);
         Assert.Equal(DataCenterName.MyOwn, result.Name);
     }
 
     [Fact]
     public void FromJson_Throws_Invalid()
     {
-        var info = new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", "FooBar");
-        var ex = Assert.Throws<ArgumentException>(() => DataCenterInfo.FromJson(info));
+        var jsonInfo = new JsonDataCenterInfo
+        {
+            ClassName = "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+            Name = "FooBar"
+        };
+
+        var ex = Assert.Throws<ArgumentException>(() => DataCenterInfo.FromJson(jsonInfo));
         Assert.Contains("Unsupported datacenter name", ex.Message, StringComparison.Ordinal);
     }
 }

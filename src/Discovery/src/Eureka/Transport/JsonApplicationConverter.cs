@@ -7,48 +7,21 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
-internal sealed class JsonApplicationConverter : JsonConverter<List<JsonApplication>>
+internal sealed class JsonApplicationConverter : JsonConverter<IList<JsonApplication?>>
 {
-    public override bool CanConvert(Type typeToConvert)
+    public override IList<JsonApplication?> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return typeToConvert == typeof(IList<JsonApplication>);
-    }
-
-    public override List<JsonApplication> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        List<JsonApplication> result = null;
-
-        try
+        if (reader.TokenType == JsonTokenType.StartArray)
         {
-            if (reader.TokenType == JsonTokenType.StartArray)
-            {
-                result = JsonSerializer.Deserialize<List<JsonApplication>>(ref reader, options);
-            }
-            else
-            {
-                var singleInst = JsonSerializer.Deserialize<JsonApplication>(ref reader, options);
-
-                if (singleInst != null)
-                {
-                    result = new List<JsonApplication>
-                    {
-                        singleInst
-                    };
-                }
-            }
-        }
-        catch (Exception)
-        {
-            result = new List<JsonApplication>();
+            return JsonSerializer.Deserialize<List<JsonApplication?>>(ref reader, options)!;
         }
 
-        result ??= new List<JsonApplication>();
-
-        return result;
+        var application = JsonSerializer.Deserialize<JsonApplication>(ref reader, options);
+        return application != null ? [application] : [];
     }
 
-    public override void Write(Utf8JsonWriter writer, List<JsonApplication> value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, IList<JsonApplication?> value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString());
+        throw new NotSupportedException();
     }
 }

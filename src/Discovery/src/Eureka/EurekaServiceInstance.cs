@@ -2,43 +2,48 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
 
-public class EurekaServiceInstance : IServiceInstance
+/// <summary>
+/// Represents an application instance in Eureka.
+/// </summary>
+internal sealed class EurekaServiceInstance : IServiceInstance
 {
-    private readonly InstanceInfo _info;
+    public string ServiceId { get; }
+    public string Host { get; }
+    public int Port { get; }
+    public bool IsSecure { get; }
+    public Uri Uri { get; }
+    public IReadOnlyDictionary<string, string?> Metadata { get; }
 
-    public bool IsSecure => _info.IsSecurePortEnabled;
-
-    public IDictionary<string, string> Metadata => _info.Metadata;
-
-    public int Port => IsSecure ? _info.SecurePort : _info.Port;
-
-    public string ServiceId => _info.AppName;
-
-    public Uri Uri
+    public EurekaServiceInstance(InstanceInfo instance)
     {
-        get
+        ArgumentGuard.NotNull(instance);
+
+        ServiceId = instance.AppName;
+        Host = instance.HostName;
+        Port = GetPort(instance);
+        IsSecure = instance.IsSecurePortEnabled;
+        Uri = new Uri($"{(IsSecure ? "https" : "http")}://{Host}:{Port}");
+        Metadata = instance.Metadata;
+    }
+
+    private static int GetPort(InstanceInfo instance)
+    {
+        if (instance.IsSecurePortEnabled)
         {
-            string scheme = IsSecure ? "https" : "http";
-            return new Uri($"{scheme}://{GetHostName()}:{Port}");
+            return instance.SecurePort;
         }
-    }
 
-    public string Host => GetHostName();
+        if (instance.IsNonSecurePortEnabled)
+        {
+            return instance.NonSecurePort;
+        }
 
-    public string InstanceId => _info.InstanceId;
-
-    public EurekaServiceInstance(InstanceInfo info)
-    {
-        _info = info;
-    }
-
-    public string GetHostName()
-    {
-        return _info.HostName;
+        return 0;
     }
 }

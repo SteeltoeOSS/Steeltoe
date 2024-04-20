@@ -6,9 +6,9 @@ namespace Steeltoe.Configuration.ConfigServer;
 
 public sealed class SpringCloudConfigRetry
 {
-    public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultRetryEnabled;
-    public int InitialInterval { get; set; } = ConfigServerClientSettings.DefaultInitialRetryInterval;
-    public int MaxInterval { get; set; } = ConfigServerClientSettings.DefaultMaxRetryInterval;
-    public double Multiplier { get; set; } = ConfigServerClientSettings.DefaultRetryMultiplier;
-    public int MaxAttempts { get; set; } = ConfigServerClientSettings.DefaultMaxRetryAttempts;
+    public bool Enabled { get; set; }
+    public int InitialInterval { get; set; } = 1000;
+    public int MaxInterval { get; set; } = 2000;
+    public double Multiplier { get; set; } = 1.1;
+    public int MaxAttempts { get; set; } = 6;
 }

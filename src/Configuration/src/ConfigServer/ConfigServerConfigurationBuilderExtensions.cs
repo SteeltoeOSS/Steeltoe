@@ -26,7 +26,7 @@ public static class ConfigServerConfigurationBuilderExtensions
 
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ILoggerFactory loggerFactory)
     {
-        return AddConfigServer(configurationBuilder, ConfigServerClientSettings.DefaultEnvironment, loggerFactory);
+        return AddConfigServer(configurationBuilder, "Production", loggerFactory);
     }
 
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string? environment)
@@ -51,7 +51,7 @@ public static class ConfigServerConfigurationBuilderExtensions
         var settings = new ConfigServerClientSettings
         {
             Name = applicationName ?? Assembly.GetEntryAssembly()?.GetName().Name,
-            Environment = environment ?? ConfigServerClientSettings.DefaultEnvironment
+            Environment = environment ?? "Production"
         };
 
         return AddConfigServer(configurationBuilder, settings, loggerFactory);

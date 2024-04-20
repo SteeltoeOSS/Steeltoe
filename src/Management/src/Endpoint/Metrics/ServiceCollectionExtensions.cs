@@ -88,7 +88,7 @@ public static class ServiceCollectionExtensions
             {
                 foreach (string filter in exporterOptions.IncludedMetrics)
                 {
-                    string[] filterParts = filter.Split(":");
+                    string[] filterParts = filter.Split(':');
 
                     if (filterParts.Length == 2)
                     {

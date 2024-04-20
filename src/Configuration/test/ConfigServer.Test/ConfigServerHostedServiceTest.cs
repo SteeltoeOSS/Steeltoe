@@ -24,7 +24,7 @@ public sealed class ConfigServerHostedServiceTest
             }, NullLoggerFactory.Instance)
         });
 
-        var service = new ConfigServerHostedService(configurationRoot, null);
+        var service = new ConfigServerHostedService(configurationRoot, []);
 
         Func<Task> startStopAction = async () =>
         {
@@ -51,7 +51,7 @@ public sealed class ConfigServerHostedServiceTest
             placeholder
         });
 
-        var service = new ConfigServerHostedService(configurationRoot, null);
+        var service = new ConfigServerHostedService(configurationRoot, []);
 
         Func<Task> startStopAction = async () =>
         {
@@ -68,7 +68,7 @@ public sealed class ConfigServerHostedServiceTest
         var configurationManager = new ConfigurationManager();
         configurationManager.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
         configurationManager.AddConfigServer();
-        var service = new ConfigServerHostedService(configurationManager, null);
+        var service = new ConfigServerHostedService(configurationManager, []);
 
         Func<Task> startStopAction = async () =>
         {

@@ -13,10 +13,7 @@ namespace Steeltoe.Common.Http;
 
 public static class HttpClientHelper
 {
-    internal const int DefaultGetAccessTokenTimeout = 10000; // Milliseconds
-    internal const bool DefaultValidateCertificates = true;
-
-    public static string SteeltoeUserAgent { get; } = $"Steeltoe/{typeof(HttpClientHelper).Assembly.GetName().Version}";
+    private static readonly string SteeltoeUserAgent = $"Steeltoe/{typeof(HttpClientExtensions).Assembly.GetName().Version}";
 
     /// <summary>
     /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent" />.

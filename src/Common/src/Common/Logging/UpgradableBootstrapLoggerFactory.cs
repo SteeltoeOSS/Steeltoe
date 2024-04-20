@@ -63,7 +63,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
     }
 
     /// <summary>
-    /// Updates existing loggers to use final LoggerFactory as constructed by DI container.
+    /// Updates existing loggers to use final LoggerFactory as constructed by IoC container.
     /// </summary>
     public void Update(ILoggerFactory value)
     {

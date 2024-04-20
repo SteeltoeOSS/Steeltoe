@@ -5,6 +5,7 @@
 using System.Net;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Net;
+using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Common.Test.Net;
@@ -14,17 +15,21 @@ public sealed class InetUtilsTest
     [Fact]
     public void TestGetFirstNonLoopbackHostInfo()
     {
-        var utils = new InetUtils(new InetOptions(), NullLogger.Instance);
+        var optionsMonitor = new TestOptionsMonitor<InetOptions>();
+        var utils = new InetUtils(optionsMonitor, NullLogger<InetUtils>.Instance);
+
         Assert.NotNull(utils.FindFirstNonLoopbackHostInfo());
     }
 
     [Fact]
     public void TestGetFirstNonLoopbackAddress()
     {
-        var utils = new InetUtils(new InetOptions
+        var optionsMonitor = TestOptionsMonitor.Create(new InetOptions
         {
             UseOnlySiteLocalInterfaces = true
-        }, NullLogger.Instance);
+        });
+
+        var utils = new InetUtils(optionsMonitor, NullLogger<InetUtils>.Instance);
 
         Assert.NotNull(utils.FindFirstNonLoopbackAddress());
     }
@@ -32,92 +37,101 @@ public sealed class InetUtilsTest
     [Fact]
     public void TestConvert()
     {
-        var utils = new InetUtils(new InetOptions(), NullLogger.Instance);
-        Assert.NotNull(utils.ConvertAddress(Dns.GetHostEntry("localhost").AddressList[0]));
+        var optionsMonitor = new TestOptionsMonitor<InetOptions>();
+        var utils = new InetUtils(optionsMonitor, NullLogger<InetUtils>.Instance);
+
+        Assert.NotNull(utils.ConvertAddress(Dns.GetHostEntry("localhost").AddressList[0], optionsMonitor.CurrentValue));
     }
 
     [Fact]
     public void TestHostInfo()
     {
-        var utils = new InetUtils(new InetOptions(), NullLogger.Instance);
+        var optionsMonitor = new TestOptionsMonitor<InetOptions>();
+        var utils = new InetUtils(optionsMonitor, NullLogger<InetUtils>.Instance);
         HostInfo info = utils.FindFirstNonLoopbackHostInfo();
+
         Assert.NotNull(info.IPAddress);
     }
 
     [Fact]
     public void TestIgnoreInterface()
     {
-        var properties = new InetOptions
+        var optionsMonitor = TestOptionsMonitor.Create(new InetOptions
         {
             IgnoredInterfaces = "docker0,veth.*"
-        };
+        });
 
-        var inetUtils = new InetUtils(properties);
+        var inetUtils = new InetUtils(optionsMonitor, NullLogger<InetUtils>.Instance);
 
-        Assert.True(inetUtils.IgnoreInterface("docker0"));
-        Assert.True(inetUtils.IgnoreInterface("vethAQI2QT"));
-        Assert.False(inetUtils.IgnoreInterface("docker1"));
+        Assert.True(inetUtils.IgnoreInterface("docker0", optionsMonitor.CurrentValue));
+        Assert.True(inetUtils.IgnoreInterface("vethAQI2QT", optionsMonitor.CurrentValue));
+        Assert.False(inetUtils.IgnoreInterface("docker1", optionsMonitor.CurrentValue));
     }
 
     [Fact]
     public void TestDefaultIgnoreInterface()
     {
-        var inetUtils = new InetUtils(new InetOptions(), NullLogger.Instance);
-        Assert.False(inetUtils.IgnoreInterface("docker0"));
+        var optionsMonitor = new TestOptionsMonitor<InetOptions>();
+        var inetUtils = new InetUtils(optionsMonitor, NullLogger<InetUtils>.Instance);
+
+        Assert.False(inetUtils.IgnoreInterface("docker0", optionsMonitor.CurrentValue));
     }
 
     [Fact]
     public void TestSiteLocalAddresses()
     {
-        var properties = new InetOptions
+        var optionsMonitor = TestOptionsMonitor.Create(new InetOptions
         {
             UseOnlySiteLocalInterfaces = true
-        };
+        });
 
-        var utils = new InetUtils(properties);
-        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
-        Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
+        var utils = new InetUtils(optionsMonitor, NullLogger<InetUtils>.Instance);
+
+        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1"), optionsMonitor.CurrentValue));
+        Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1"), optionsMonitor.CurrentValue));
     }
 
     [Fact]
     public void TestPreferredNetworksRegex()
     {
-        var properties = new InetOptions
+        var optionsMonitor = TestOptionsMonitor.Create(new InetOptions
         {
             PreferredNetworks = "192.168.*,10.0.*"
-        };
+        });
 
-        var utils = new InetUtils(properties, NullLogger.Instance);
-        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
-        Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
-        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.0.10.1")));
-        Assert.False(utils.IsPreferredAddress(IPAddress.Parse("10.255.10.1")));
+        var utils = new InetUtils(optionsMonitor, NullLogger<InetUtils>.Instance);
+
+        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1"), optionsMonitor.CurrentValue));
+        Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1"), optionsMonitor.CurrentValue));
+        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.0.10.1"), optionsMonitor.CurrentValue));
+        Assert.False(utils.IsPreferredAddress(IPAddress.Parse("10.255.10.1"), optionsMonitor.CurrentValue));
     }
 
     [Fact]
     public void TestPreferredNetworksSimple()
     {
-        var properties = new InetOptions
+        var optionsMonitor = TestOptionsMonitor.Create(new InetOptions
         {
             PreferredNetworks = "192,10.0"
-        };
+        });
 
-        var utils = new InetUtils(properties, NullLogger.Instance);
-        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
-        Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
-        Assert.False(utils.IsPreferredAddress(IPAddress.Parse("10.255.10.1")));
-        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.0.10.1")));
+        var utils = new InetUtils(optionsMonitor, NullLogger<InetUtils>.Instance);
+
+        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1"), optionsMonitor.CurrentValue));
+        Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1"), optionsMonitor.CurrentValue));
+        Assert.False(utils.IsPreferredAddress(IPAddress.Parse("10.255.10.1"), optionsMonitor.CurrentValue));
+        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.0.10.1"), optionsMonitor.CurrentValue));
     }
 
     [Fact]
     public void TestPreferredNetworksListIsEmpty()
     {
-        var properties = new InetOptions();
+        var optionsMonitor = new TestOptionsMonitor<InetOptions>();
+        var utils = new InetUtils(optionsMonitor, NullLogger<InetUtils>.Instance);
 
-        var utils = new InetUtils(properties, NullLogger.Instance);
-        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
-        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
-        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.255.10.1")));
-        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.0.10.1")));
+        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1"), optionsMonitor.CurrentValue));
+        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1"), optionsMonitor.CurrentValue));
+        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.255.10.1"), optionsMonitor.CurrentValue));
+        Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.0.10.1"), optionsMonitor.CurrentValue));
     }
 }

@@ -16,7 +16,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
-using Steeltoe.Discovery;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -176,9 +175,9 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         {
             await DoLoadAsync(true, CancellationToken.None);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Logger.LogWarning(e, "Could not reload configuration during polling");
+            Logger.LogWarning(exception, "Could not reload configuration during polling");
         }
     }
 
@@ -220,9 +219,9 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 {
                     return await DoLoadAsync(updateDictionary, cancellationToken);
                 }
-                catch (ConfigServerException e)
+                catch (ConfigServerException exception)
                 {
-                    Logger.LogInformation(e, "Failed fetching configuration from server at: {uri}.", Settings.Uri);
+                    Logger.LogInformation(exception, "Failed fetching configuration from server at: {uri}.", Settings.Uri);
                     attempts++;
 
                     if (attempts < Settings.RetryAttempts)
@@ -360,9 +359,9 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         foreach (IServiceInstance instance in instances)
         {
             string uri = instance.Uri.ToString();
-            IDictionary<string, string> metaData = instance.Metadata;
+            IReadOnlyDictionary<string, string?> metaData = instance.Metadata;
 
-            if (metaData != null)
+            if (metaData.Count > 0)
             {
                 if (metaData.TryGetValue("password", out string? password))
                 {
@@ -372,7 +371,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                     settings.Password = password;
                 }
 
-                if (metaData.TryGetValue("configPath", out string? path))
+                if (metaData.TryGetValue("configPath", out string? path) && path != null)
                 {
                     if (uri.EndsWith('/') && path.StartsWith('/'))
                     {
@@ -394,11 +393,11 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         }
     }
 
-    internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient? discoveryClientFromDi, CancellationToken cancellationToken)
+    internal async Task ProvideRuntimeReplacementsAsync(ICollection<IDiscoveryClient> discoveryClientsFromServiceProvider, CancellationToken cancellationToken)
     {
         if (_configServerDiscoveryService is not null)
         {
-            await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientFromDi, cancellationToken);
+            await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientsFromServiceProvider, cancellationToken);
         }
     }
 

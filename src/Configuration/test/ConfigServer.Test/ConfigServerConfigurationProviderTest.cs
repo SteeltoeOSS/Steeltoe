@@ -285,7 +285,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
@@ -308,7 +308,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
@@ -344,7 +344,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         var settings = new ConfigServerClientSettings
         {
@@ -387,7 +387,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         var settings = new ConfigServerClientSettings
         {
@@ -432,7 +432,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         var settings = new ConfigServerClientSettings
         {
@@ -485,7 +485,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.Label = "label,testlabel";
@@ -525,7 +525,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
@@ -564,7 +564,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.Uri = "http://localhost:8888, http://localhost:8888";
@@ -592,7 +592,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.Uri = "http://localhost:8888, http://localhost:8888";
@@ -616,7 +616,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
@@ -639,7 +639,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.FailFast = true;
@@ -659,7 +659,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         using HttpClient client = server.CreateClient();
         var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
@@ -686,7 +686,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.FailFast = true;
@@ -712,7 +712,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         settings.FailFast = true;
@@ -743,7 +743,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         var settings = new ConfigServerClientSettings
         {
@@ -787,7 +787,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
@@ -831,7 +831,7 @@ public sealed class ConfigServerConfigurationProviderTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
-        server.BaseAddress = new Uri(ConfigServerClientSettings.DefaultUri);
+        server.BaseAddress = new Uri("http://localhost:8888");
 
         ConfigServerClientSettings settings = _commonSettings;
         using HttpClient client = server.CreateClient();
@@ -940,7 +940,7 @@ public sealed class ConfigServerConfigurationProviderTest
             Assert.True(provider.TryGet("spring:cloud:config:discovery:enabled", out value));
             Assert.Equal("False", value);
             Assert.True(provider.TryGet("spring:cloud:config:discovery:serviceId", out value));
-            Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceId, value);
+            Assert.Equal("configserver", value);
             Assert.True(provider.TryGet("spring:cloud:config:retry:multiplier", out value));
             Assert.Equal("1.1", value);
         }
@@ -1152,12 +1152,12 @@ public sealed class ConfigServerConfigurationProviderTest
         Assert.Null(settings.Password);
         Assert.Equal("http://localhost:8888/", settings.Uri);
 
-        var metadata1 = new Dictionary<string, string>
+        var metadata1 = new Dictionary<string, string?>
         {
             { "password", "firstPassword" }
         };
 
-        var metadata2 = new Dictionary<string, string>
+        var metadata2 = new Dictionary<string, string?>
         {
             { "password", "secondPassword" },
             { "user", "secondUser" },
@@ -1166,8 +1166,8 @@ public sealed class ConfigServerConfigurationProviderTest
 
         var instances = new List<IServiceInstance>
         {
-            new TestServiceInfo(new Uri("https://foo.bar:8888/"), metadata1),
-            new TestServiceInfo(new Uri("https://foo.bar.baz:9999/"), metadata2)
+            new TestServiceInstance("i1", new Uri("https://foo.bar:8888/"), metadata1),
+            new TestServiceInstance("i2", new Uri("https://foo.bar.baz:9999/"), metadata2)
         };
 
         provider.UpdateSettingsFromDiscovery(instances, settings);
@@ -1290,18 +1290,21 @@ public sealed class ConfigServerConfigurationProviderTest
         }
     }
 
-    private sealed class TestServiceInfo : IServiceInstance
+    private sealed class TestServiceInstance : IServiceInstance
     {
-        public string? ServiceId { get; }
-        public string? Host { get; }
+        public string ServiceId { get; }
+        public string Host { get; }
         public int Port { get; }
         public bool IsSecure { get; }
         public Uri Uri { get; }
+        public IReadOnlyDictionary<string, string?> Metadata { get; }
 
-        public IDictionary<string, string> Metadata { get; }
-
-        public TestServiceInfo(Uri uri, IDictionary<string, string> metadata)
+        public TestServiceInstance(string serviceId, Uri uri, IReadOnlyDictionary<string, string?> metadata)
         {
+            ServiceId = serviceId;
+            Host = uri.Host;
+            Port = uri.Port;
+            IsSecure = uri.Scheme == Uri.UriSchemeHttps;
             Uri = uri;
             Metadata = metadata;
         }

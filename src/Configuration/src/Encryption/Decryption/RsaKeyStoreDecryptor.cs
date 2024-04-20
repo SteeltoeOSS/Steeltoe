@@ -94,9 +94,9 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
             var decryptor = new AesTextDecryptor(secret, _salt, _strong);
             return decryptor.Decrypt(cipherTextBytes);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            throw new DecryptionException("Failed to decrypt cipher", ex);
+            throw new DecryptionException("Failed to decrypt cipher", exception);
         }
     }
 

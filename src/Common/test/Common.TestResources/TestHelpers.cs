@@ -2,8 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Immutable;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -36,18 +37,17 @@ public static class TestHelpers
                 ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
             }";
 
-    public static readonly ImmutableDictionary<string, string> FastTestsConfiguration = new Dictionary<string, string>
+    public static readonly ImmutableDictionary<string, string?> FastTestsConfiguration = new Dictionary<string, string?>
     {
         { "spring:cloud:config:enabled", "false" },
         { "eureka:client:serviceUrl", "http://127.0.0.1" },
         { "eureka:client:enabled", "false" },
+        { "consul:discovery:enabled", "false" },
         { "management:endpoints:actuator:exposure:include:0", "*" },
         { "management:metrics:export:wavefront:uri", "proxy://localhost:7828" }
     }.ToImmutableDictionary();
 
-    public static string EntryAssemblyName => Assembly.GetEntryAssembly().GetName().Name;
-
-    public static IConfiguration GetConfigurationFromDictionary(IDictionary<string, string> collection)
+    public static IConfiguration GetConfigurationFromDictionary(IDictionary<string, string?> collection)
     {
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(collection);
@@ -56,7 +56,7 @@ public static class TestHelpers
 
     public static WebApplicationBuilder GetTestWebApplicationBuilder()
     {
-        return GetTestWebApplicationBuilder(null);
+        return GetTestWebApplicationBuilder([]);
     }
 
     public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args)
@@ -67,5 +67,18 @@ public static class TestHelpers
         webAppBuilder.WebHost.UseTestServer();
         webAppBuilder.Services.AddActionDescriptorCollectionProvider();
         return webAppBuilder;
+    }
+
+    public static Stream StringToStream(string text)
+    {
+        var stream = new MemoryStream();
+
+        using (var writer = new StreamWriter(stream, leaveOpen: true))
+        {
+            writer.Write(text);
+        }
+
+        stream.Seek(0, SeekOrigin.Begin);
+        return stream;
     }
 }

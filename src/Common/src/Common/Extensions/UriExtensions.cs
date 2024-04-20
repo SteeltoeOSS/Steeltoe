@@ -2,11 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 namespace Steeltoe.Common.Extensions;
 
-public static class UriExtensions
+internal static class UriExtensions
 {
     public static string ToMaskedString(this Uri source)
     {
@@ -33,28 +36,23 @@ public static class UriExtensions
         return builder.Uri;
     }
 
-    /// <summary>
-    /// Parse a querystring into a dictionary of key value pairs.
-    /// </summary>
-    /// <param name="querystring">
-    /// The querystring to parse.
-    /// </param>
-    /// <returns>
-    /// Pairs of keys and values.
-    /// </returns>
-    public static Dictionary<string, string> ParseQuerystring(string querystring)
+    public static bool TryGetUsernamePassword(this Uri uri, [NotNullWhen(true)] out string? username, [NotNullWhen(true)] out string? password)
     {
-        var result = new Dictionary<string, string>();
+        ArgumentGuard.NotNull(uri);
 
-        foreach (string pair in querystring.Split('&'))
+        string userInfo = uri.GetComponents(UriComponents.UserInfo, UriFormat.UriEscaped);
+
+        string[] parts = userInfo.Split(':');
+
+        if (parts.Length == 2)
         {
-            if (!string.IsNullOrEmpty(pair))
-            {
-                string[] kvp = pair.Split('=');
-                result.Add(WebUtility.UrlDecode(kvp[0]), WebUtility.UrlDecode(kvp[1]));
-            }
+            username = WebUtility.UrlDecode(parts[0]);
+            password = WebUtility.UrlDecode(parts[1]);
+            return true;
         }
 
-        return result;
+        username = null;
+        password = null;
+        return false;
     }
 }

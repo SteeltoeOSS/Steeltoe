@@ -214,7 +214,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Single(result.Details.Keys);
-        Assert.True(result.Groups.Count == 2);
+        Assert.Equal(2, result.Groups.Count);
     }
 
     [Fact]
@@ -246,8 +246,8 @@ public sealed class HealthEndpointTest : BaseTest
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
         Assert.Equal(HealthStatus.Up, result.Status);
-        Assert.True(result.Details.Keys.Count == 1);
-        Assert.True(result.Groups.Count == 2);
+        Assert.Single(result.Details.Keys);
+        Assert.Equal(2, result.Groups.Count);
     }
 
     [Fact]
@@ -307,8 +307,8 @@ public sealed class HealthEndpointTest : BaseTest
         HealthEndpointResponse result = await handler.InvokeAsync(healthRequest, CancellationToken.None);
 
         Assert.Equal(HealthStatus.OutOfService, result.Status);
-        Assert.True(result.Details.Keys.Count == 4);
-        Assert.True(result.Groups.Count == 2);
+        Assert.Equal(4, result.Details.Keys.Count);
+        Assert.Equal(2, result.Groups.Count);
     }
 
     [Fact]

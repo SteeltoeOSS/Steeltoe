@@ -1,25 +1,4 @@
 #nullable enable
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultAccessTokenUri = null -> string?
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultCertificateValidation = true -> bool
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultClientId = null -> string?
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultClientSecret = null -> string?
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultConfigserverServiceId = "configserver" -> string!
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultDisableTokenRenewal = false -> bool
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultDiscoveryEnabled = false -> bool
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultEnvironment = "Production" -> string!
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultFailFast = false -> bool
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultHealthEnabled = true -> bool
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultHealthTimeToLive = 300000 -> long
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultInitialRetryInterval = 1000 -> int
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultMaxRetryAttempts = 6 -> int
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultMaxRetryInterval = 2000 -> int
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultProviderEnabled = true -> bool
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultRetryEnabled = false -> bool
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultRetryMultiplier = 1.1 -> double
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultTimeoutMilliseconds = 60000 -> int
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultUri = "http://localhost:8888" -> string!
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultVaultTokenRenewRate = 60000 -> int
-const Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DefaultVaultTokenTtl = 300000 -> int
 static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
 static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment! environment) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
 static Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions.AddConfigServer(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Microsoft.Extensions.Hosting.IHostEnvironment! environment, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!

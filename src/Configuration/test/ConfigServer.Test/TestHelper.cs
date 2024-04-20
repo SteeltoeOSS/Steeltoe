@@ -11,26 +11,26 @@ internal static class TestHelper
 {
     public static void VerifyDefaults(ConfigServerClientSettings settings)
     {
-        Assert.Equal(ConfigServerClientSettings.DefaultProviderEnabled, settings.Enabled);
-        Assert.Equal(ConfigServerClientSettings.DefaultFailFast, settings.FailFast);
-        Assert.Equal(ConfigServerClientSettings.DefaultUri, settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
-        Assert.Equal(ConfigServerClientSettings.DefaultAccessTokenUri, settings.AccessTokenUri);
-        Assert.Equal(ConfigServerClientSettings.DefaultClientId, settings.ClientId);
-        Assert.Equal(ConfigServerClientSettings.DefaultClientSecret, settings.ClientSecret);
-        Assert.Equal(ConfigServerClientSettings.DefaultCertificateValidation, settings.ValidateCertificates);
-        Assert.Equal(ConfigServerClientSettings.DefaultInitialRetryInterval, settings.RetryInitialInterval);
-        Assert.Equal(ConfigServerClientSettings.DefaultMaxRetryAttempts, settings.RetryAttempts);
-        Assert.Equal(ConfigServerClientSettings.DefaultRetryEnabled, settings.RetryEnabled);
-        Assert.Equal(ConfigServerClientSettings.DefaultRetryMultiplier, settings.RetryMultiplier);
-        Assert.Equal(ConfigServerClientSettings.DefaultMaxRetryInterval, settings.RetryMaxInterval);
-        Assert.Equal(ConfigServerClientSettings.DefaultTimeoutMilliseconds, settings.Timeout);
-        Assert.Equal(ConfigServerClientSettings.DefaultVaultTokenRenewRate, settings.TokenRenewRate);
-        Assert.Equal(ConfigServerClientSettings.DefaultVaultTokenTtl, settings.TokenTtl);
-        Assert.Equal(ConfigServerClientSettings.DefaultDiscoveryEnabled, settings.DiscoveryEnabled);
-        Assert.Equal(ConfigServerClientSettings.DefaultConfigserverServiceId, settings.DiscoveryServiceId);
-        Assert.Equal(ConfigServerClientSettings.DefaultHealthEnabled, settings.HealthEnabled);
-        Assert.Equal(ConfigServerClientSettings.DefaultHealthTimeToLive, settings.HealthTimeToLive);
+        Assert.True(settings.Enabled);
+        Assert.False(settings.FailFast);
+        Assert.Equal("http://localhost:8888", settings.Uri);
+        Assert.Equal("Production", settings.Environment);
+        Assert.Null(settings.AccessTokenUri);
+        Assert.Null(settings.ClientId);
+        Assert.Null(settings.ClientSecret);
+        Assert.True(settings.ValidateCertificates);
+        Assert.Equal(1000, settings.RetryInitialInterval);
+        Assert.Equal(6, settings.RetryAttempts);
+        Assert.False(settings.RetryEnabled);
+        Assert.Equal(1.1, settings.RetryMultiplier);
+        Assert.Equal(2000, settings.RetryMaxInterval);
+        Assert.Equal(60_000, settings.Timeout);
+        Assert.Equal(60_000, settings.TokenRenewRate);
+        Assert.Equal(300_000, settings.TokenTtl);
+        Assert.False(settings.DiscoveryEnabled);
+        Assert.Equal("configserver", settings.DiscoveryServiceId);
+        Assert.True(settings.HealthEnabled);
+        Assert.Equal(300_000, settings.HealthTimeToLive);
 
         if (settings.Name != null)
         {

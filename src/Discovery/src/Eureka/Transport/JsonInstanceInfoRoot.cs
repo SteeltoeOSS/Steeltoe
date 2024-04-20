@@ -9,5 +9,5 @@ namespace Steeltoe.Discovery.Eureka.Transport;
 internal sealed class JsonInstanceInfoRoot
 {
     [JsonPropertyName("instance")]
-    public JsonInstanceInfo Instance { get; set; }
+    public JsonInstanceInfo? Instance { get; set; }
 }

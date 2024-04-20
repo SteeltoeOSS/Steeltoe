@@ -24,6 +24,7 @@ using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using StackExchange.Redis;
 using Steeltoe.Common;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
@@ -42,7 +43,8 @@ using Steeltoe.Connectors.PostgreSql;
 using Steeltoe.Connectors.RabbitMQ;
 using Steeltoe.Connectors.Redis;
 using Steeltoe.Connectors.SqlServer;
-using Steeltoe.Discovery;
+using Steeltoe.Discovery.Configuration;
+using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
@@ -135,13 +137,23 @@ public sealed class WebHostBuilderExtensionsTest
     }
 
     [Fact]
-    public void ServiceDiscovery_IsAutowired()
+    public void ServiceDiscoveryClients_AreAutowired()
     {
-        using IWebHost host = GetWebHostForOnly(SteeltoeAssemblyNames.DiscoveryClient);
+        var assembliesToInclude = new HashSet<string>
+        {
+            SteeltoeAssemblyNames.DiscoveryConfiguration,
+            SteeltoeAssemblyNames.DiscoveryConsul,
+            SteeltoeAssemblyNames.DiscoveryEureka
+        };
+
+        using IWebHost host = GetWebHostExcluding(SteeltoeAssemblyNames.All.Except(assembliesToInclude).ToHashSet());
+
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
 
-        discoveryClients.Should().HaveCount(1);
-        discoveryClients[0].Should().BeOfType<EurekaDiscoveryClient>();
+        discoveryClients.Should().HaveCount(3);
+        discoveryClients.Should().ContainSingle(discoveryClient => discoveryClient is ConfigurationDiscoveryClient);
+        discoveryClients.Should().ContainSingle(discoveryClient => discoveryClient is ConsulDiscoveryClient);
+        discoveryClients.Should().ContainSingle(discoveryClient => discoveryClient is EurekaDiscoveryClient);
     }
 
     [Fact]

@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Net;
 using System.Net.Sockets;
 
 namespace Steeltoe.Common.Net;
 
-public static class DnsTools
+internal static class DnsTools
 {
     /// <summary>
     /// Get the first listed <see cref="AddressFamily.InterNetwork" /> for the host name.
@@ -18,8 +20,10 @@ public static class DnsTools
     /// <returns>
     /// String representation of the IP Address or <see langword="null" />.
     /// </returns>
-    public static string ResolveHostAddress(string hostName)
+    public static string? ResolveHostAddress(string hostName)
     {
+        ArgumentGuard.NotNull(hostName);
+
         try
         {
             return Array.Find(Dns.GetHostAddresses(hostName), ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
@@ -31,25 +35,30 @@ public static class DnsTools
         }
     }
 
-    public static string ResolveHostName()
+    public static string? ResolveHostName(bool throwOnError = false)
     {
-        string result = null;
-
         try
         {
-            result = Dns.GetHostName();
+            string hostName = Dns.GetHostName();
 
-            if (!string.IsNullOrEmpty(result))
+            if (string.IsNullOrEmpty(hostName))
             {
-                IPHostEntry response = Dns.GetHostEntry(result);
-                return response.HostName;
+                // Workaround for failure when running on macOS.
+                // See https://github.com/actions/runner-images/issues/1335 and https://github.com/dotnet/runtime/issues/36849.
+                hostName = "localhost";
             }
+
+            IPHostEntry hostEntry = Dns.GetHostEntry(hostName);
+            return hostEntry.HostName;
         }
         catch (Exception)
         {
-            // Ignore
-        }
+            if (throwOnError)
+            {
+                throw;
+            }
 
-        return result;
+            return null;
+        }
     }
 }

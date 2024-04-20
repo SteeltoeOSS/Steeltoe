@@ -2,22 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 namespace Steeltoe.Common.Net;
 
-public class HostInfo
+internal sealed class HostInfo
 {
-    public string Hostname { get; set; }
+    public string Hostname { get; }
+    public string IPAddress { get; }
 
-    public string IPAddress { get; set; }
-
-    public bool Override { get; set; }
-
-    public HostInfo()
+    public HostInfo(string hostname, string ipAddress)
     {
-    }
+        ArgumentGuard.NotNull(hostname);
+        ArgumentGuard.NotNull(ipAddress);
 
-    public HostInfo(string hostname)
-    {
         Hostname = hostname;
+        IPAddress = ipAddress;
     }
 }

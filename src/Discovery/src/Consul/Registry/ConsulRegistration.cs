@@ -2,172 +2,124 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 using Consul;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Discovery.Consul.Discovery;
+using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Util;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
-/// The registration to be used when registering with the Consul server.
+/// Represents the local application instance, to be registered with the Consul server.
 /// </summary>
-public class ConsulRegistration : IConsulRegistration
+public sealed class ConsulRegistration : IServiceInstance
 {
     private const char Separator = '-';
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
-    private readonly ConsulDiscoveryOptions _options;
 
-    internal ConsulDiscoveryOptions Options
-    {
-        get
-        {
-            if (_optionsMonitor != null)
-            {
-                return _optionsMonitor.CurrentValue;
-            }
-
-            return _options;
-        }
-    }
+    internal AgentServiceRegistration InnerRegistration { get; }
 
     /// <inheritdoc />
-    public AgentServiceRegistration Service { get; }
-
-    /// <inheritdoc />
-    public string InstanceId { get; private set; }
-
-    /// <inheritdoc />
-    public string ServiceId { get; private set; }
-
-    /// <inheritdoc />
-    public string Host { get; private set; }
-
-    /// <inheritdoc />
-    public int Port { get; private set; }
-
-    /// <inheritdoc />
-    public bool IsSecure => Options.Scheme == "https";
-
-    /// <inheritdoc />
-    public Uri Uri => new($"{Options.Scheme}://{Host}:{Port}");
-
-    public string[] Tags { get; private set; }
-
-    /// <inheritdoc />
-    public IDictionary<string, string> Metadata { get; private set; }
+    public string ServiceId { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulRegistration" /> class.
+    /// Gets the instance ID as registered by the Consul server.
     /// </summary>
-    /// <param name="agentServiceRegistration">
-    /// a Consul service registration to use.
-    /// </param>
-    /// <param name="options">
-    /// configuration options.
-    /// </param>
-    public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, ConsulDiscoveryOptions options)
-    {
-        ArgumentGuard.NotNull(agentServiceRegistration);
-        ArgumentGuard.NotNull(options);
+    public string InstanceId { get; }
 
-        Service = agentServiceRegistration;
-        _options = options;
+    /// <inheritdoc />
+    public string Host { get; }
 
-        Initialize(agentServiceRegistration);
-    }
+    /// <inheritdoc />
+    public int Port { get; }
+
+    /// <inheritdoc />
+    public bool IsSecure => _optionsMonitor.CurrentValue.Scheme == "https";
+
+    /// <inheritdoc />
+    public Uri Uri => new($"{_optionsMonitor.CurrentValue.Scheme}://{Host}:{Port}");
+
+    public IReadOnlyList<string> Tags { get; }
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<string, string?> Metadata { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulRegistration" /> class.
+    /// Initializes a new instance of the <see cref="ConsulRegistration" /> class. Wraps an existing registration.
     /// </summary>
-    /// <param name="agentServiceRegistration">
-    /// a Consul service registration to use.
+    /// <param name="innerRegistration">
+    /// The Consul service registration to wrap.
     /// </param>
     /// <param name="optionsMonitor">
-    /// configuration options.
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
-    public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
+    internal ConsulRegistration(AgentServiceRegistration innerRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(agentServiceRegistration);
+        ArgumentGuard.NotNull(innerRegistration);
         ArgumentGuard.NotNull(optionsMonitor);
 
-        Service = agentServiceRegistration;
+        InnerRegistration = innerRegistration;
         _optionsMonitor = optionsMonitor;
 
-        Initialize(agentServiceRegistration);
-    }
-
-    // For testing
-    internal ConsulRegistration()
-    {
-    }
-
-    internal void Initialize(AgentServiceRegistration agentServiceRegistration)
-    {
-        InstanceId = agentServiceRegistration.ID;
-        ServiceId = agentServiceRegistration.Name;
-        Host = agentServiceRegistration.Address;
-        Port = agentServiceRegistration.Port;
-        Tags = agentServiceRegistration.Tags;
-        Metadata = agentServiceRegistration.Meta;
+        ServiceId = innerRegistration.Name;
+        InstanceId = innerRegistration.ID;
+        Host = innerRegistration.Address;
+        Port = innerRegistration.Port;
+        Tags = innerRegistration.Tags;
+        Metadata = new ReadOnlyDictionary<string, string?>(innerRegistration.Meta);
     }
 
     /// <summary>
-    /// Create a Consul registration.
+    /// Creates a registration for the currently running app, to be submitted to the Consul server.
     /// </summary>
-    /// <param name="options">
-    /// configuration options to use.
+    /// <param name="optionsMonitor">
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
     /// <param name="applicationInfo">
     /// Info about this app instance.
     /// </param>
-    /// <returns>
-    /// a registration.
-    /// </returns>
-    public static ConsulRegistration CreateRegistration(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
+    internal static ConsulRegistration Create(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IApplicationInstanceInfo applicationInfo)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(applicationInfo);
 
-        var service = new AgentServiceRegistration();
-        service.ID = GetInstanceId(options, applicationInfo);
+        ConsulDiscoveryOptions options = optionsMonitor.CurrentValue;
+
+        var agentServiceRegistration = new AgentServiceRegistration
+        {
+            ID = GetInstanceId(options, applicationInfo)
+        };
 
         if (!options.PreferAgentAddress)
         {
-            service.Address = options.HostName;
+            agentServiceRegistration.Address = options.HostName;
         }
 
-        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery,
-            $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
+        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConfigurationPrefix}:serviceName");
 
-        service.Name = NormalizeForConsul(appName);
-        service.Tags = CreateTags(options);
-        service.Meta = CreateMetadata(options);
+        agentServiceRegistration.Name = NormalizeForConsul(appName);
+        agentServiceRegistration.Tags = CreateTags(options);
+        agentServiceRegistration.Meta = CreateMetadata(options);
 
         if (options.Port != 0)
         {
-            service.Port = options.Port;
-            SetCheck(service, options);
+            agentServiceRegistration.Port = options.Port;
+            SetCheck(agentServiceRegistration, options);
         }
 
-        return new ConsulRegistration(service, options);
+        return new ConsulRegistration(agentServiceRegistration, optionsMonitor);
     }
 
-    internal static IDictionary<string, string> CreateMetadata(ConsulDiscoveryOptions options)
+    private static IDictionary<string, string> CreateMetadata(ConsulDiscoveryOptions options)
     {
-        var metadata = new Dictionary<string, string>();
+        Dictionary<string, string> metadata = options.Metadata.ToDictionary(pair => pair.Key, pair => pair.Value);
 
-        if (options.Metadata != null && options.Metadata.Any())
-        {
-            foreach (KeyValuePair<string, string> m in options.Metadata)
-            {
-                metadata.Add(m.Key, m.Value);
-            }
-        }
-
-        if (!string.IsNullOrEmpty(options.InstanceZone))
+        if (!string.IsNullOrEmpty(options.InstanceZone) && !string.IsNullOrEmpty(options.DefaultZoneMetadataName))
         {
             metadata.Add(options.DefaultZoneMetadataName, options.InstanceZone);
         }
@@ -178,24 +130,17 @@ public class ConsulRegistration : IConsulRegistration
         }
 
         // store the secure flag in the metadata so that clients will be able to figure out whether to use http or https automatically
-#pragma warning disable S4040 // Strings should be normalized to uppercase
-        metadata.Add("secure", (options.Scheme == "https").ToString(CultureInfo.InvariantCulture).ToLowerInvariant());
-#pragma warning restore S4040 // Strings should be normalized to uppercase
+        metadata.Add("secure", options.Scheme == "https" ? "true" : "false");
 
         return metadata;
     }
 
-    internal static string[] CreateTags(ConsulDiscoveryOptions options)
+    private static string[] CreateTags(ConsulDiscoveryOptions options)
     {
-        if (options.Tags == null || !options.Tags.Any())
-        {
-            return Array.Empty<string>();
-        }
-
         return options.Tags.ToArray();
     }
 
-    internal static string GetInstanceId(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
+    private static string GetInstanceId(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
     {
         if (string.IsNullOrEmpty(options.InstanceId))
         {
@@ -205,10 +150,9 @@ public class ConsulRegistration : IConsulRegistration
         return NormalizeForConsul(options.InstanceId);
     }
 
-    internal static string GetDefaultInstanceId(IApplicationInstanceInfo applicationInfo)
+    private static string GetDefaultInstanceId(IApplicationInstanceInfo applicationInfo)
     {
-        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery,
-            $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
+        string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConfigurationPrefix}:serviceName");
 
         string instanceId = applicationInfo.InstanceId;
 
@@ -225,7 +169,7 @@ public class ConsulRegistration : IConsulRegistration
         if (serviceId == null || !char.IsLetter(serviceId[0]) || !char.IsLetterOrDigit(serviceId[^1]))
         {
             throw new ArgumentException(
-                $"Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {serviceId}",
+                $"Consul service IDs must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {serviceId}",
                 nameof(serviceId));
         }
 
@@ -240,7 +184,7 @@ public class ConsulRegistration : IConsulRegistration
             {
                 toAppend = ch;
             }
-            else if (prev == default(char) || prev != Separator)
+            else if (prev is default(char) or not Separator)
             {
                 toAppend = Separator;
             }
@@ -264,9 +208,9 @@ public class ConsulRegistration : IConsulRegistration
             check.DeregisterCriticalServiceAfter = DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout);
         }
 
-        if (options.IsHeartBeatEnabled)
+        if (options is { IsHeartbeatEnabled: true, Heartbeat: not null })
         {
-            check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl);
+            check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.TimeToLive);
             return check;
         }
 
@@ -299,7 +243,7 @@ public class ConsulRegistration : IConsulRegistration
         return check;
     }
 
-    internal static void SetCheck(AgentServiceRegistration service, ConsulDiscoveryOptions options)
+    private static void SetCheck(AgentServiceRegistration service, ConsulDiscoveryOptions options)
     {
         if (options.RegisterHealthCheck && service.Check == null)
         {

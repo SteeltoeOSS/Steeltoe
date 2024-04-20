@@ -17,7 +17,7 @@ internal sealed class ApplicationConfigurationServicePostProcessor : IConfigurat
         {
             var mapper = new ServiceBindingMapper(configurationData, bindingKey);
 
-            string[] keysToMap = configurationData.Keys.Select(s => s.Split($"{bindingKey}:")[^1]).Except([
+            string[] keysToMap = configurationData.Keys.Select(key => key.Split($"{bindingKey}:")[^1]).Except([
                 KubernetesServiceBindingConfigurationProvider.ProviderKey,
                 KubernetesServiceBindingConfigurationProvider.TypeKey
             ]).ToArray();

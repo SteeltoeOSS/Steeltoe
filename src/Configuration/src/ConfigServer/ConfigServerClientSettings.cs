@@ -14,128 +14,23 @@ public sealed class ConfigServerClientSettings
     private const char ColonDelimiter = ':';
     private const char CommaDelimiter = ',';
 
-    /// <summary>
-    /// Default Config Server address used by provider.
-    /// </summary>
-    public const string DefaultUri = "http://localhost:8888";
-
-    /// <summary>
-    /// Default environment used when accessing configuration data.
-    /// </summary>
-    public const string DefaultEnvironment = "Production";
-
-    /// <summary>
-    /// Default fail-fast setting.
-    /// </summary>
-    public const bool DefaultFailFast = false;
-
-    /// <summary>
-    /// Default Config Server provider enabled setting.
-    /// </summary>
-    public const bool DefaultProviderEnabled = true;
-
-    /// <summary>
-    /// Default certificate validation enabled setting.
-    /// </summary>
-    public const bool DefaultCertificateValidation = true;
-
-    /// <summary>
-    /// Default number of retries to be attempted.
-    /// </summary>
-    public const int DefaultMaxRetryAttempts = 6;
-
-    /// <summary>
-    /// Default initial retry interval in milliseconds.
-    /// </summary>
-    public const int DefaultInitialRetryInterval = 1000;
-
-    /// <summary>
-    /// Default multiplier for next retry interval.
-    /// </summary>
-    public const double DefaultRetryMultiplier = 1.1;
-
-    /// <summary>
-    /// Default initial retry interval in milliseconds.
-    /// </summary>
-    public const int DefaultMaxRetryInterval = 2000;
-
-    /// <summary>
-    /// Default retry enabled setting.
-    /// </summary>
-    public const bool DefaultRetryEnabled = false;
-
-    /// <summary>
-    /// Default timeout in milliseconds.
-    /// </summary>
-    public const int DefaultTimeoutMilliseconds = 60 * 1000;
-
-    /// <summary>
-    /// Default Vault Token time-to-live setting.
-    /// </summary>
-    public const int DefaultVaultTokenTtl = 300000;
-
-    /// <summary>
-    /// Default Vault Token renewal rate.
-    /// </summary>
-    public const int DefaultVaultTokenRenewRate = 60000;
-
-    /// <summary>
-    /// Default Disable Vault Token renewal.
-    /// </summary>
-    public const bool DefaultDisableTokenRenewal = false;
-
-    /// <summary>
-    /// Default address used by provider to obtain a OAuth Access Token.
-    /// </summary>
-    public const string? DefaultAccessTokenUri = null;
-
-    /// <summary>
-    /// Default client id used by provider to obtain a OAuth Access Token.
-    /// </summary>
-    public const string? DefaultClientId = null;
-
-    /// <summary>
-    /// Default client secret used by provider to obtain a OAuth Access Token.
-    /// </summary>
-    public const string? DefaultClientSecret = null;
-
-    /// <summary>
-    /// Default discovery first enabled setting.
-    /// </summary>
-    public const bool DefaultDiscoveryEnabled = false;
-
-    /// <summary>
-    /// Default discovery first service id setting.
-    /// </summary>
-    public const string DefaultConfigserverServiceId = "configserver";
-
-    /// <summary>
-    /// Default health check enabled setting.
-    /// </summary>
-    public const bool DefaultHealthEnabled = true;
-
-    /// <summary>
-    /// Default health check time-to-live setting, in milliseconds.
-    /// </summary>
-    public const long DefaultHealthTimeToLive = 60 * 5 * 1000;
-
     private string? _username;
     private string? _password;
 
     /// <summary>
-    /// Gets or sets the Config Server address.
+    /// Gets or sets the Config Server address. Default value: "http://localhost:8888".
     /// </summary>
-    public string? Uri { get; set; }
+    public string? Uri { get; set; } = "http://localhost:8888";
 
     /// <summary>
-    /// Gets or sets a value indicating whether the Config Server provider is enabled.
+    /// Gets or sets a value indicating whether the Config Server provider is enabled. Default value: true.
     /// </summary>
-    public bool Enabled { get; set; }
+    public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the environment used when accessing configuration data.
+    /// Gets or sets the environment used when accessing configuration data. Default value: "Production".
     /// </summary>
-    public string? Environment { get; set; }
+    public string? Environment { get; set; } = "Production";
 
     /// <summary>
     /// Gets or sets the application name used when accessing configuration data.
@@ -153,59 +48,59 @@ public sealed class ConfigServerClientSettings
     public TimeSpan PollingInterval { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether fail-fast behavior is enabled.
+    /// Gets or sets a value indicating whether fail-fast behavior is enabled. Default value: false.
     /// </summary>
     public bool FailFast { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the provider validates server certificates.
+    /// Gets or sets a value indicating whether the provider validates server certificates. Default value: true.
     /// </summary>
-    public bool ValidateCertificates { get; set; }
+    public bool ValidateCertificates { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether retries are enabled on failures.
+    /// Gets or sets a value indicating whether retries are enabled on failures. Default value: false.
     /// </summary>
     public bool RetryEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets initial retry interval in milliseconds.
+    /// Gets or sets initial retry interval in milliseconds. Default value: 1000.
     /// </summary>
-    public int RetryInitialInterval { get; set; }
+    public int RetryInitialInterval { get; set; } = 1000;
 
     /// <summary>
-    /// Gets or sets max retry interval in milliseconds.
+    /// Gets or sets max retry interval in milliseconds. Default value: 2000.
     /// </summary>
-    public int RetryMaxInterval { get; set; }
+    public int RetryMaxInterval { get; set; } = 2000;
 
     /// <summary>
-    /// Gets or sets the multiplier for next retry interval.
+    /// Gets or sets the multiplier for next retry interval. Default value: 1.1.
     /// </summary>
-    public double RetryMultiplier { get; set; }
+    public double RetryMultiplier { get; set; } = 1.1;
 
     /// <summary>
-    /// Gets or sets the max number of retries the client will attempt.
+    /// Gets or sets the max number of retries the client will attempt. Default value: 6.
     /// </summary>
-    public int RetryAttempts { get; set; }
+    public int RetryAttempts { get; set; } = 6;
 
     /// <summary>
-    /// Gets or sets a value indicating whether discovery first behavior is enabled.
+    /// Gets or sets a value indicating whether discovery first behavior is enabled. Default value: false.
     /// </summary>
     public bool DiscoveryEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets a value of the service ID used during discovery first behavior.
+    /// Gets or sets a value of the service ID used during discovery first behavior. Default value: "configserver".
     /// </summary>
-    public string? DiscoveryServiceId { get; set; }
+    public string? DiscoveryServiceId { get; set; } = "configserver";
 
     /// <summary>
-    /// Gets or sets a value indicating whether health check is enabled.
+    /// Gets or sets a value indicating whether health check is enabled. Default value: true.
     /// </summary>
-    public bool HealthEnabled { get; set; }
+    public bool HealthEnabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value for the health check cache time-to-live.
+    /// Gets or sets a value for the health check cache time-to-live. Default value: 300_000 (5 minutes).
     /// </summary>
-    public long HealthTimeToLive { get; set; }
+    public long HealthTimeToLive { get; set; } = 300_000;
 
     /// <summary>
     /// Gets unescaped <see cref="UriComponents.HttpRequestUrl" />s.
@@ -218,38 +113,38 @@ public sealed class ConfigServerClientSettings
     public string? Token { get; set; }
 
     /// <summary>
-    /// Gets or sets the request timeout in milliseconds.
+    /// Gets or sets the request timeout in milliseconds. Default value: 60_000 (1 minute).
     /// </summary>
-    public int Timeout { get; set; }
+    public int Timeout { get; set; } = 60_000;
 
     /// <summary>
     /// Gets or sets the address used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public string? AccessTokenUri { get; set; } = DefaultAccessTokenUri;
+    public string? AccessTokenUri { get; set; }
 
     /// <summary>
     /// Gets or sets the client ID used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public string? ClientId { get; set; } = DefaultClientId;
+    public string? ClientId { get; set; }
 
     /// <summary>
     /// Gets or sets the client secret used by the provider to obtain a OAuth Access Token.
     /// </summary>
-    public string? ClientSecret { get; set; } = DefaultClientSecret;
+    public string? ClientSecret { get; set; }
 
     public X509Certificate2? ClientCertificate { get; set; }
 
     /// <summary>
-    /// Gets or sets the vault token time-to-live in milliseconds.
+    /// Gets or sets the vault token time-to-live in milliseconds. Default value: 300_000 (5 minutes).
     /// </summary>
-    public int TokenTtl { get; set; } = DefaultVaultTokenTtl;
+    public int TokenTtl { get; set; } = 300_000;
 
     /// <summary>
-    /// Gets or sets the vault token renew rate in milliseconds.
+    /// Gets or sets the vault token renew rate in milliseconds. Default value: 60_000 (1 minute).
     /// </summary>
-    public int TokenRenewRate { get; set; } = DefaultVaultTokenRenewRate;
+    public int TokenRenewRate { get; set; } = 60_000;
 
-    public bool DisableTokenRenewal { get; set; } = DefaultDisableTokenRenewal;
+    public bool DisableTokenRenewal { get; set; }
 
     /// <summary>
     /// Gets headers that will be added to the Config Server request.
@@ -272,31 +167,6 @@ public sealed class ConfigServerClientSettings
     {
         get => GetPassword(Uri);
         set => _password = value;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerClientSettings" /> class.
-    /// </summary>
-    /// <remarks>
-    /// Initializes the Config Server client settings with defaults.
-    /// </remarks>
-    public ConfigServerClientSettings()
-    {
-        ValidateCertificates = DefaultCertificateValidation;
-        FailFast = DefaultFailFast;
-        Environment = DefaultEnvironment;
-        Enabled = DefaultProviderEnabled;
-        Uri = DefaultUri;
-        RetryEnabled = DefaultRetryEnabled;
-        RetryInitialInterval = DefaultInitialRetryInterval;
-        RetryMaxInterval = DefaultMaxRetryInterval;
-        RetryAttempts = DefaultMaxRetryAttempts;
-        RetryMultiplier = DefaultRetryMultiplier;
-        Timeout = DefaultTimeoutMilliseconds;
-        DiscoveryEnabled = DefaultDiscoveryEnabled;
-        DiscoveryServiceId = DefaultConfigserverServiceId;
-        HealthEnabled = DefaultHealthEnabled;
-        HealthTimeToLive = DefaultHealthTimeToLive;
     }
 
     internal static bool IsMultiServerConfiguration(string uris)

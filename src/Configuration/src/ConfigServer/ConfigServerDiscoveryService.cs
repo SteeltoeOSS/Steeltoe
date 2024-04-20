@@ -2,14 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Discovery;
-using Steeltoe.Discovery.Client;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Discovery.Configuration;
+using Steeltoe.Discovery.Consul;
+using Steeltoe.Discovery.Eureka;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -19,8 +21,8 @@ internal sealed class ConfigServerDiscoveryService
     private readonly ConfigServerClientSettings _settings;
     private readonly ILogger _logger;
 
-    private bool _usingInitialDiscoveryClient = true;
-    internal IDiscoveryClient DiscoveryClient { get; private set; }
+    private bool _isUsingTemporaryDiscoveryClients = true;
+    internal ICollection<IDiscoveryClient> DiscoveryClients { get; private set; }
 
     public ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientSettings settings, ILoggerFactory loggerFactory)
     {
@@ -31,52 +33,100 @@ internal sealed class ConfigServerDiscoveryService
         _configuration = configuration;
         _settings = settings;
         _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
-        DiscoveryClient = SetupDiscoveryClient(loggerFactory);
+        DiscoveryClients = SetupDiscoveryClients(loggerFactory);
     }
 
-    // Create a discovery client to be used (hopefully only) during startup
-    private IDiscoveryClient SetupDiscoveryClient(ILoggerFactory loggerFactory)
+    // Create discovery clients to be used (hopefully only) during startup
+    private ICollection<IDiscoveryClient> SetupDiscoveryClients(ILoggerFactory loggerFactory)
     {
         var tempServices = new ServiceCollection();
         tempServices.AddSingleton(loggerFactory);
-        tempServices.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
+        tempServices.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
         // force settings to make sure we don't register the app here
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(new Dictionary<string, string?>
+        IConfigurationRoot tempConfiguration = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "Eureka:Client:ShouldRegisterWithEureka", "false" },
             { "Consul:Discovery:Register", "false" }
-        });
+        }).Build();
 
-        tempServices.AddSingleton<IConfiguration>(builder.Build());
-        tempServices.AddDiscoveryClient(_configuration);
+        tempServices.AddSingleton<IConfiguration>(tempConfiguration);
 
-        using ServiceProvider tempServiceProvider = tempServices.BuildServiceProvider();
+        if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Discovery.Configuration"))
+        {
+            WireConfigurationDiscoveryClient(tempServices);
+        }
 
-        var discoveryClient = tempServiceProvider.GetRequiredService<IDiscoveryClient>();
-        _logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", discoveryClient.GetType());
+        if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Discovery.Consul"))
+        {
+            WireConsulDiscoveryClient(tempServices);
+        }
 
-        return discoveryClient;
+        if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Discovery.Eureka"))
+        {
+            WireEurekaDiscoveryClient(tempServices);
+        }
+
+        return GetDiscoveryClientsFromServiceCollectionAsync(tempServices).GetAwaiter().GetResult();
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WireConfigurationDiscoveryClient(IServiceCollection tempServices)
+    {
+        tempServices.AddConfigurationDiscoveryClient();
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WireConsulDiscoveryClient(IServiceCollection tempServices)
+    {
+        tempServices.AddConsulDiscoveryClient();
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WireEurekaDiscoveryClient(IServiceCollection tempServices)
+    {
+        tempServices.AddEurekaDiscoveryClient();
+    }
+
+    private async Task<ICollection<IDiscoveryClient>> GetDiscoveryClientsFromServiceCollectionAsync(ServiceCollection services)
+    {
+        await using ServiceProvider tempServiceProvider = services.BuildServiceProvider();
+
+        IDiscoveryClient[] discoveryClients = tempServiceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+
+        foreach (IDiscoveryClient discoveryClient in discoveryClients)
+        {
+            _logger.LogDebug("Found discovery client of type {DiscoveryClientType}", discoveryClient.GetType());
+        }
+
+        return discoveryClients;
     }
 
     internal async Task<IEnumerable<IServiceInstance>> GetConfigServerInstancesAsync(CancellationToken cancellationToken)
     {
         int attempts = 0;
         int backOff = _settings.RetryInitialInterval;
-        IList<IServiceInstance> instances;
+        List<IServiceInstance> instances = [];
 
         do
         {
             try
             {
                 _logger.LogDebug("Locating configserver {serviceId} via discovery", _settings.DiscoveryServiceId);
-                instances = await DiscoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
+
+                if (_settings.DiscoveryServiceId != null)
+                {
+                    foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
+                    {
+                        IList<IServiceInstance> serviceInstances = await discoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
+                        instances.AddRange(serviceInstances);
+                    }
+                }
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
                 _logger.LogError(exception, "Exception invoking GetInstances() during config server lookup");
-
-                instances = new List<IServiceInstance>();
+                instances = [];
             }
 
             if (!_settings.RetryEnabled || instances.Any())
@@ -102,22 +152,26 @@ internal sealed class ConfigServerDiscoveryService
         return instances;
     }
 
-    internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient? discoveryClientFromDI, CancellationToken cancellationToken)
+    internal async Task ProvideRuntimeReplacementsAsync(ICollection<IDiscoveryClient> discoveryClientsFromServiceProvider, CancellationToken cancellationToken)
     {
-        if (discoveryClientFromDI is not null)
-        {
-            _logger.LogInformation("Replacing the IDiscoveryClient built at startup with one for runtime");
-            await DiscoveryClient.ShutdownAsync(cancellationToken);
-            DiscoveryClient = discoveryClientFromDI;
-            _usingInitialDiscoveryClient = false;
-        }
+        ArgumentGuard.NotNull(discoveryClientsFromServiceProvider);
+
+        _logger.LogInformation("Replacing the IDiscoveryClient(s) built at startup with the ones for runtime");
+
+        await ShutdownAsync(cancellationToken);
+
+        DiscoveryClients = discoveryClientsFromServiceProvider;
+        _isUsingTemporaryDiscoveryClients = false;
     }
 
     internal async Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        if (_usingInitialDiscoveryClient)
+        if (_isUsingTemporaryDiscoveryClients)
         {
-            await DiscoveryClient.ShutdownAsync(cancellationToken);
+            foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
+            {
+                await discoveryClient.ShutdownAsync(cancellationToken);
+            }
         }
     }
 }
