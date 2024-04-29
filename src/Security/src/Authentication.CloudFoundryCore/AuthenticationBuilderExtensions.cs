@@ -46,18 +46,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="config">Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider"/></param>
     /// <returns><see cref="AuthenticationBuilder"/> configured to use OAuth with UAA or Pivotal SSO</returns>
     public static AuthenticationBuilder AddCloudFoundryOAuth(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config)
-    {
-        builder.AddOAuth<CloudFoundryOAuthOptions, CloudFoundryOAuthHandler>(authenticationScheme, displayName, (options) =>
-        {
-            var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
-            securitySection.Bind(options);
-            options.SetEndpoints(GetAuthDomain(securitySection));
-
-            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-            CloudFoundryOAuthConfigurer.Configure(info, options);
-        });
-        return builder;
-    }
+        => builder.AddCloudFoundryOAuth(authenticationScheme, displayName, config, (_, _) => { });
 
     /// <summary>
     /// Adds OAuth middleware and configuration for using UAA or Pivotal SSO for user authentication
@@ -93,6 +82,13 @@ public static class AuthenticationBuilderExtensions
     {
         builder.AddOAuth<CloudFoundryOAuthOptions, CloudFoundryOAuthHandler>(authenticationScheme, displayName, (options) =>
         {
+            var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
+            securitySection.Bind(options);
+            options.SetEndpoints(GetAuthDomain(securitySection));
+
+            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+            CloudFoundryOAuthConfigurer.Configure(info, options);
+
             configurer(options, config);
         });
         return builder;
@@ -126,18 +122,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="config">Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider"/></param>
     /// <returns><see cref="AuthenticationBuilder"/> configured to use OpenID Connect with UAA or Pivotal SSO</returns>
     public static AuthenticationBuilder AddCloudFoundryOpenIdConnect(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config)
-    {
-        builder.AddOpenIdConnect(authenticationScheme, displayName, options =>
-        {
-            var cloudFoundryOptions = new CloudFoundryOpenIdConnectOptions();
-            var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
-            securitySection.Bind(cloudFoundryOptions);
-
-            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-            CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOptions);
-        });
-        return builder;
-    }
+        => builder.AddCloudFoundryOpenIdConnect(authenticationScheme, CloudFoundryDefaults.DisplayName, config, (_, _) => { });
 
     /// <summary>
     /// Adds OpenID Connect middleware and configuration for using UAA or Pivotal SSO for user authentication
@@ -213,19 +198,7 @@ public static class AuthenticationBuilderExtensions
     /// <param name="config">Your application configuration. Be sure to include the <see cref="CloudFoundryConfigurationProvider"/></param>
     /// <returns><see cref="AuthenticationBuilder"/> configured to use JWT Bearer tokens from UAA or Pivotal SSO</returns>
     public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config)
-    {
-        builder.AddJwtBearer(authenticationScheme, displayName, (options) =>
-        {
-            var cloudFoundryOptions = new CloudFoundryJwtBearerOptions();
-            var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
-            securitySection.Bind(cloudFoundryOptions);
-            cloudFoundryOptions.SetEndpoints(GetAuthDomain(securitySection));
-
-            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-            CloudFoundryJwtBearerConfigurer.Configure(info, options, cloudFoundryOptions);
-        });
-        return builder;
-    }
+        => builder.AddCloudFoundryJwtBearer(authenticationScheme, JwtBearerDefaults.AuthenticationScheme, config, (_, _) => { });
 
     /// <summary>
     /// Adds JWT middleware and configuration for using UAA or Pivotal SSO for bearer token authentication
@@ -259,9 +232,17 @@ public static class AuthenticationBuilderExtensions
     /// <returns><see cref="AuthenticationBuilder"/> configured to use JWT Bearer tokens from UAA or Pivotal SSO</returns>
     public static AuthenticationBuilder AddCloudFoundryJwtBearer(this AuthenticationBuilder builder, string authenticationScheme, string displayName, IConfiguration config, Action<JwtBearerOptions, IConfiguration> configurer)
     {
-        builder.AddJwtBearer(authenticationScheme, displayName, (jwtoptions) =>
+        builder.AddJwtBearer(authenticationScheme, displayName, jwtBearerOptions =>
         {
-            configurer(jwtoptions, config);
+            var cloudFoundryOptions = new CloudFoundryJwtBearerOptions();
+            var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
+            securitySection.Bind(cloudFoundryOptions);
+            cloudFoundryOptions.SetEndpoints(GetAuthDomain(securitySection));
+
+            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+            CloudFoundryJwtBearerConfigurer.Configure(info, jwtBearerOptions, cloudFoundryOptions);
+
+            configurer(jwtBearerOptions, config);
         });
         return builder;
     }
