@@ -20,8 +20,8 @@ internal sealed class ConfigServerDiscoveryService
     private readonly IConfiguration _configuration;
     private readonly ConfigServerClientSettings _settings;
     private readonly ILogger _logger;
+    private ServiceProvider? _temporaryServiceProviderForDiscoveryClients;
 
-    private bool _isUsingTemporaryDiscoveryClients = true;
     internal ICollection<IDiscoveryClient> DiscoveryClients { get; private set; }
 
     public ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientSettings settings, ILoggerFactory loggerFactory)
@@ -47,6 +47,7 @@ internal sealed class ConfigServerDiscoveryService
         IConfigurationRoot tempConfiguration = new ConfigurationBuilder().AddConfiguration(_configuration).AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "Eureka:Client:ShouldRegisterWithEureka", "false" },
+            { "Eureka:Client:ShouldFetchRegistry", "true" },
             { "Consul:Discovery:Register", "false" }
         }).Build();
 
@@ -67,7 +68,7 @@ internal sealed class ConfigServerDiscoveryService
             WireEurekaDiscoveryClient(tempServices);
         }
 
-        return GetDiscoveryClientsFromServiceCollectionAsync(tempServices).GetAwaiter().GetResult();
+        return GetDiscoveryClientsFromServiceCollection(tempServices);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -88,11 +89,11 @@ internal sealed class ConfigServerDiscoveryService
         tempServices.AddEurekaDiscoveryClient();
     }
 
-    private async Task<ICollection<IDiscoveryClient>> GetDiscoveryClientsFromServiceCollectionAsync(ServiceCollection services)
+    private ICollection<IDiscoveryClient> GetDiscoveryClientsFromServiceCollection(ServiceCollection services)
     {
-        await using ServiceProvider tempServiceProvider = services.BuildServiceProvider();
+        _temporaryServiceProviderForDiscoveryClients = services.BuildServiceProvider();
 
-        IDiscoveryClient[] discoveryClients = tempServiceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = _temporaryServiceProviderForDiscoveryClients.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
 
         foreach (IDiscoveryClient discoveryClient in discoveryClients)
         {
@@ -110,23 +111,22 @@ internal sealed class ConfigServerDiscoveryService
 
         do
         {
-            try
-            {
-                _logger.LogDebug("Locating configserver {serviceId} via discovery", _settings.DiscoveryServiceId);
+            _logger.LogDebug("Locating ConfigServer {serviceId} via discovery", _settings.DiscoveryServiceId);
 
-                if (_settings.DiscoveryServiceId != null)
+            if (_settings.DiscoveryServiceId != null)
+            {
+                foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
                 {
-                    foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
+                    try
                     {
                         IList<IServiceInstance> serviceInstances = await discoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
                         instances.AddRange(serviceInstances);
                     }
+                    catch (Exception exception) when (!exception.IsCancellation())
+                    {
+                        _logger.LogError(exception, "Failed to get instances during ConfigServer lookup from {DiscoveryClient}.", discoveryClient.GetType());
+                    }
                 }
-            }
-            catch (Exception exception) when (!exception.IsCancellation())
-            {
-                _logger.LogError(exception, "Exception invoking GetInstances() during config server lookup");
-                instances = [];
             }
 
             if (!_settings.RetryEnabled || instances.Any())
@@ -161,17 +161,19 @@ internal sealed class ConfigServerDiscoveryService
         await ShutdownAsync(cancellationToken);
 
         DiscoveryClients = discoveryClientsFromServiceProvider;
-        _isUsingTemporaryDiscoveryClients = false;
     }
 
     internal async Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        if (_isUsingTemporaryDiscoveryClients)
+        if (_temporaryServiceProviderForDiscoveryClients != null)
         {
             foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
             {
                 await discoveryClient.ShutdownAsync(cancellationToken);
             }
+
+            await _temporaryServiceProviderForDiscoveryClients.DisposeAsync();
+            _temporaryServiceProviderForDiscoveryClients = null;
         }
     }
 }

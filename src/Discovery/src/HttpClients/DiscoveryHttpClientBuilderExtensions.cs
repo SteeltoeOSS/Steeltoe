@@ -46,6 +46,7 @@ public static class DiscoveryHttpClientBuilderExtensions
         {
             // The built-in load balancers are safe for concurrent usage. Any custom load balancer needs to be registered explicitly.
             builder.Services.TryAddSingleton<TLoadBalancer>();
+            builder.Services.AddSingleton<ServiceInstancesResolver>();
         }
 
         builder.AddHttpMessageHandler(serviceProvider => new DiscoveryHttpDelegatingHandler<TLoadBalancer>(serviceProvider));
