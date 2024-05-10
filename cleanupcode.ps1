@@ -28,17 +28,17 @@ if ($revision) {
 
     if ($baseCommitHash -eq $headCommitHash) {
         Write-Output "Running code cleanup on staged/unstaged files."
-        dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --max-runs=5 --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f staged,modified
+        dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --max-runs=5 --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:NuGetAudit=false --jb --verbosity=WARN -f staged,modified
         VerifySuccessExitCode
     }
     else {
         Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash, including staged/unstaged files."
-        dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --max-runs=5 --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f staged,modified,commits -a $headCommitHash -b $baseCommitHash
+        dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --max-runs=5 --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:NuGetAudit=false --jb --verbosity=WARN -f staged,modified,commits -a $headCommitHash -b $baseCommitHash
         VerifySuccessExitCode
     }
 }
 else {
     Write-Output "Running code cleanup on all files."
-    dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN
+    dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb --dotnetcoresdk=$(dotnet --version) --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --properties:NuGetAudit=false --jb --verbosity=WARN
     VerifySuccessExitCode
 }
