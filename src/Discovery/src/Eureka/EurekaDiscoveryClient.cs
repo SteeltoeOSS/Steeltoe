@@ -176,7 +176,10 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
         try
         {
-            await DeregisterAsync(cancellationToken);
+            if (!ReferenceEquals(_appInfoManager.Instance, InstanceInfo.Disabled))
+            {
+                await DeregisterAsync(cancellationToken);
+            }
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
