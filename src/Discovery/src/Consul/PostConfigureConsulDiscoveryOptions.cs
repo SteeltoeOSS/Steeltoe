@@ -35,7 +35,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
 
         if (string.IsNullOrWhiteSpace(options.IPAddress))
         {
-            if (hostInfo != null)
+            if (hostInfo != null && !string.IsNullOrWhiteSpace(hostInfo.IPAddress))
             {
                 options.IPAddress = hostInfo.IPAddress;
             }
