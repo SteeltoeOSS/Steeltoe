@@ -184,12 +184,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{656A78
 		..\build\integration.yml = ..\build\integration.yml
 		..\build\logging.yml = ..\build\logging.yml
 		..\build\management.yml = ..\build\management.yml
-		..\build\messaging.yml = ..\build\messaging.yml
 		..\build\package.yml = ..\build\package.yml
 		..\build\pr-code-cleanup.yml = ..\build\pr-code-cleanup.yml
 		..\build\security.yml = ..\build\security.yml
 		..\build\sonar-analyze.yml = ..\build\sonar-analyze.yml
-		..\build\stream.yml = ..\build\stream.yml
 		..\build\verify-code-style.yml = ..\build\verify-code-style.yml
 	EndProjectSection
 EndProject

@@ -28,7 +28,9 @@ jobs:
         sonarAnalyze: true
         integrationTests: true
       MacOS:
-        imageName: macOS-latest
+        # Downgrade to macOS-12 because 'latest' fails to resolve localhost.
+        # https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml
+        imageName: macOS-12
         skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
       Windows:
         imageName: windows-latest
@@ -38,7 +40,7 @@ jobs:
   steps:
   - task: PowerShell@2
     displayName: Turn off certificates on macOS
-    condition: eq(variables['imageName'], 'macOS-latest')
+    condition: eq(variables['imageName'], 'macOS-12')
     inputs:
       targetType: 'inline'
       script: |
@@ -62,7 +64,7 @@ jobs:
       version: 8.0.x
   - task: DotNetCoreCLI@2
     displayName: Install Nerdbank.GitVersioning tool
-    condition: eq(variables['imageName'], 'macOS-latest')
+    condition: eq(variables['imageName'], 'macOS-12')
     inputs:
       command: custom
       custom: tool
