@@ -63,7 +63,7 @@ public sealed class ConsulDiscoveryOptions
     /// Gets or sets a value indicating whether to add the "passing" parameter to /v1/health/service/serviceName. This pushes health check passing to the
     /// server.
     /// </summary>
-    public bool QueryPassing { get; set; }
+    public bool QueryPassing { get; set; } = true;
 
     /// <summary>
     /// Gets or sets whether to register an http or https service.
