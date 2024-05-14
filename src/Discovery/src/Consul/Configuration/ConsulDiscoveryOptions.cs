@@ -13,160 +13,167 @@ public sealed class ConsulDiscoveryOptions
 {
     internal const string ConfigurationPrefix = "consul:discovery";
 
-    /// <summary>
-    /// Gets a value indicating whether heart beats are enabled.
-    /// </summary>
     internal bool IsHeartbeatEnabled => Heartbeat is { Enabled: true };
-
-    /// <summary>
-    /// Gets a value indicating whether retries are enabled.
-    /// </summary>
     internal bool IsRetryEnabled => Retry is { Enabled: true };
 
     /// <summary>
-    /// Gets or sets a value indicating whether the Consul discovery client is enabled.
+    /// Gets or sets a value indicating whether to enable the Consul client. Default value: true.
     /// </summary>
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets tags to use when registering a service.
+    /// Gets the tags used when registering the running app.
     /// </summary>
     public IList<string> Tags { get; } = new List<string>();
 
     /// <summary>
-    /// Gets metadata to use when registering a service.
+    /// Gets metadata key/value pairs used when registering the running app.
     /// </summary>
     public IDictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
 
     /// <summary>
     /// Gets or sets a value indicating whether <see cref="NetworkInterface.GetAllNetworkInterfaces" /> is used to determine <see cref="IPAddress" /> and
-    /// <see cref="HostName" /> .
+    /// <see cref="HostName" />. Default value: false.
     /// </summary>
     public bool UseNetworkInterfaces { get; set; }
 
     /// <summary>
-    /// Gets or sets values related to heartbeat.
+    /// Gets or sets settings related to heartbeats.
     /// </summary>
     public ConsulHeartbeatOptions? Heartbeat { get; set; } = new();
 
     /// <summary>
-    /// Gets values related to retrying requests.
+    /// Gets settings related to retrying requests.
     /// </summary>
     public ConsulRetryOptions Retry { get; } = new();
 
     /// <summary>
-    /// Gets or sets the tag to query for in the service list, if one is not listed in serverListQueryTags.
+    /// Gets or sets the tag to filter on when querying for service instances.
     /// </summary>
     public string? DefaultQueryTag { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether to add the "passing" parameter to /v1/health/service/serviceName. This pushes health check passing to the
-    /// server.
+    /// Gets or sets a value indicating whether to filter on health status 'passing' when querying for service instances. Default value: true.
     /// </summary>
     public bool QueryPassing { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether to register an http or https service.
+    /// Gets or sets the scheme to register the running app with ("http" or "https"). Default value: http.
     /// </summary>
     public string? Scheme { get; set; } = "http";
 
     /// <summary>
-    /// Gets or sets a value indicating whether to register health checks in Consul. Useful during development of a service.
+    /// Gets or sets a value indicating whether to enable periodic health checking for the running app. Default value: true.
     /// </summary>
     public bool RegisterHealthCheck { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a custom health check url, to override the default.
+    /// Gets or sets the absolute URL to the health endpoint of the running app (overrides <see cref="HealthCheckPath" />).
     /// </summary>
+    /// <remarks>
+    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true and <see cref="ConsulHeartbeatOptions.Enabled" /> is false.
+    /// </remarks>
     public string? HealthCheckUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets an alternate server path to invoke for health checking.
+    /// Gets or sets the relative URL to the health endpoint of the running app. Default value: /actuator/health.
     /// </summary>
+    /// <remarks>
+    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true and <see cref="ConsulHeartbeatOptions.Enabled" /> is false.
+    /// </remarks>
     public string? HealthCheckPath { get; set; } = "/actuator/health";
 
     /// <summary>
-    /// Gets or sets how often to perform the health check (e.g. 10s), defaults to 10s.
+    /// Gets or sets how often Concur should perform an HTTP health check. Default value: 10s.
     /// </summary>
+    /// <remarks>
+    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true and <see cref="ConsulHeartbeatOptions.Enabled" /> is false.
+    /// </remarks>
     public string? HealthCheckInterval { get; set; } = "10s";
 
     /// <summary>
-    /// Gets or sets the timeout for health checks (e.g. 10s), defaults to 10s.
+    /// Gets or sets the timeout Concur should use for an HTTP health check. Default value: 10s.
     /// </summary>
+    /// <remarks>
+    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true and <see cref="ConsulHeartbeatOptions.Enabled" /> is false.
+    /// </remarks>
     public string? HealthCheckTimeout { get; set; } = "10s";
 
     /// <summary>
-    /// Gets or sets the timeout to deregister services critical for longer than timeout (e.g. 30m). Requires Consul version 7.x or higher.
+    /// Gets or sets the duration after which Consul deregisters the running app when in state critical. Default value: 30m.
     /// </summary>
+    /// <remarks>
+    /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true.
+    /// </remarks>
     public string? HealthCheckCriticalTimeout { get; set; } = "30m";
 
     /// <summary>
-    /// Gets or sets a value indicating whether health check verifies TLS.
+    /// Gets or sets a value indicating whether Concur should skip TLS verification for HTTP health checks. Default value: false.
     /// </summary>
     public bool HealthCheckTlsSkipVerify { get; set; }
 
     /// <summary>
-    /// Gets or sets the hostname to use when accessing the Consul server.
+    /// Gets or sets the host name to register the running app with (if <see cref="PreferIPAddress" /> is false).
     /// </summary>
     public string? HostName { get; set; }
 
     /// <summary>
-    /// Gets or sets the IP address to use when accessing the service (must also set <see cref="PreferIPAddress" /> to use).
+    /// Gets or sets the IP address to register the running app with (if <see cref="PreferIPAddress" /> is true).
     /// </summary>
     public string? IPAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets the port to register the service under.
+    /// Gets or sets the port number to register the running app with.
     /// </summary>
     public int Port { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether to use an IP address rather than a hostname during registration.
+    /// Gets or sets a value indicating whether to register the running app with IP address instead of host name. Default: false.
     /// </summary>
     public bool PreferIPAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets the service name.
+    /// Gets or sets the friendly name to register the running app with.
     /// </summary>
     public string? ServiceName { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique service instance ID.
+    /// Gets or sets the unique ID to register the running app under.
     /// </summary>
     public string? InstanceId { get; set; }
 
     /// <summary>
-    /// Gets or sets the instance zone to use during registration.
+    /// Gets or sets the metadata zone value to use when registering the running app.
     /// </summary>
     public string? InstanceZone { get; set; }
 
     /// <summary>
-    /// Gets or sets the instance group to use during registration.
+    /// Gets or sets the metadata "group" value to use when registering the running app.
     /// </summary>
     public string? InstanceGroup { get; set; }
 
     /// <summary>
-    /// Gets or sets the metadata tag name of the zone.
+    /// Gets or sets the metadata key name for <see cref="InstanceZone" />.
     /// </summary>
     public string? DefaultZoneMetadataName { get; set; } = "zone";
 
     /// <summary>
-    /// Gets or sets a value indicating whether to throw exceptions during service registration. If false, logs warnings. Defaults to true.
+    /// Gets or sets a value indicating whether to throw an exception (instead of logging an error) if registration fails. Default value: true.
     /// </summary>
     public bool FailFast { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether to register as a service in Consul.
+    /// Gets or sets a value indicating whether to register the running app as a service instance. Default value: true.
     /// </summary>
     public bool Register { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether to use automatic de-registration of a service in Consul.
+    /// Gets or sets a value indicating whether to de-register the running app on shutdown. Default value: true.
     /// </summary>
     public bool Deregister { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether to determine <see cref="Port" /> from ASP.NET Core listening addresses configuration.
+    /// Gets or sets a value indicating whether to register with the port number ASP.NET Core is listening on. Default value: true.
     /// </summary>
     public bool UseAspNetCoreUrls { get; set; } = true;
 }
