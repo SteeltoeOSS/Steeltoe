@@ -136,11 +136,6 @@ public sealed class ConsulDiscoveryOptions
     public string? InstanceId { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether to use agent address or hostname.
-    /// </summary>
-    public bool PreferAgentAddress { get; set; }
-
-    /// <summary>
     /// Gets or sets the instance zone to use during registration.
     /// </summary>
     public string? InstanceZone { get; set; }

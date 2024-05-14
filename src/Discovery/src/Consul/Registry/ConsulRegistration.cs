@@ -92,13 +92,9 @@ public sealed class ConsulRegistration : IServiceInstance
 
         var agentServiceRegistration = new AgentServiceRegistration
         {
-            ID = GetInstanceId(options, applicationInfo)
+            ID = GetInstanceId(options, applicationInfo),
+            Address = options.HostName
         };
-
-        if (!options.PreferAgentAddress)
-        {
-            agentServiceRegistration.Address = options.HostName;
-        }
 
         string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConfigurationPrefix}:serviceName");
 

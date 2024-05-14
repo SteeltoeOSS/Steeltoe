@@ -40,7 +40,6 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         Assert.Null(options.InstanceGroup);
         Assert.Null(options.InstanceZone);
         Assert.False(options.PreferIPAddress);
-        Assert.False(options.PreferAgentAddress);
         Assert.False(options.QueryPassing);
         Assert.Equal("http", options.Scheme);
         Assert.Null(options.ServiceName);
