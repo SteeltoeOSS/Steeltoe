@@ -84,7 +84,7 @@ public sealed class ConsulDiscoveryOptions
     public string? HealthCheckPath { get; set; } = "/actuator/health";
 
     /// <summary>
-    /// Gets or sets how often Concur should perform an HTTP health check. Default value: 10s.
+    /// Gets or sets how often Consul should perform an HTTP health check. Default value: 10s.
     /// </summary>
     /// <remarks>
     /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true and <see cref="ConsulHeartbeatOptions.Enabled" /> is false.
@@ -92,7 +92,7 @@ public sealed class ConsulDiscoveryOptions
     public string? HealthCheckInterval { get; set; } = "10s";
 
     /// <summary>
-    /// Gets or sets the timeout Concur should use for an HTTP health check. Default value: 10s.
+    /// Gets or sets the timeout Consul should use for an HTTP health check. Default value: 10s.
     /// </summary>
     /// <remarks>
     /// This setting only has effect when <see cref="RegisterHealthCheck" /> is true and <see cref="ConsulHeartbeatOptions.Enabled" /> is false.
@@ -108,7 +108,7 @@ public sealed class ConsulDiscoveryOptions
     public string? HealthCheckCriticalTimeout { get; set; } = "30m";
 
     /// <summary>
-    /// Gets or sets a value indicating whether Concur should skip TLS verification for HTTP health checks. Default value: false.
+    /// Gets or sets a value indicating whether Consul should skip TLS verification for HTTP health checks. Default value: false.
     /// </summary>
     public bool HealthCheckTlsSkipVerify { get; set; }
 
