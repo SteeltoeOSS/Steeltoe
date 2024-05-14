@@ -121,16 +121,16 @@ public sealed class ConsulRegistration : IServiceInstance
 
         if (!string.IsNullOrEmpty(options.InstanceZone) && !string.IsNullOrEmpty(options.DefaultZoneMetadataName))
         {
-            metadata.Add(options.DefaultZoneMetadataName, options.InstanceZone);
+            metadata.TryAdd(options.DefaultZoneMetadataName, options.InstanceZone);
         }
 
         if (!string.IsNullOrEmpty(options.InstanceGroup))
         {
-            metadata.Add("group", options.InstanceGroup);
+            metadata.TryAdd("group", options.InstanceGroup);
         }
 
         // store the secure flag in the metadata so that clients will be able to figure out whether to use http or https automatically
-        metadata.Add("secure", options.Scheme == "https" ? "true" : "false");
+        metadata.TryAdd("secure", options.Scheme == "https" ? "true" : "false");
 
         return metadata;
     }
