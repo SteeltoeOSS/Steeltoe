@@ -39,8 +39,6 @@ Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.IPAddress.set -> 
 Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.Metadata.get -> System.Collections.Generic.IDictionary<string!, string!>!
 Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.Port.get -> int
 Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.Port.set -> void
-Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.PreferAgentAddress.get -> bool
-Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.PreferAgentAddress.set -> void
 Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.PreferIPAddress.get -> bool
 Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.PreferIPAddress.set -> void
 Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.QueryPassing.get -> bool
