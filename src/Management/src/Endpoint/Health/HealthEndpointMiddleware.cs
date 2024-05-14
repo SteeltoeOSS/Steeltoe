@@ -6,6 +6,7 @@ using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
@@ -83,11 +84,21 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
             return;
         }
 
-        if (ManagementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse)
+        if (ManagementOptionsMonitor.CurrentValue.UseStatusCodeFromResponse || UseStatusCodeFromResponseInHeader(context.Request.Headers))
         {
             context.Response.StatusCode = ((HealthEndpointHandler)EndpointHandler).GetStatusCode(result);
         }
 
         await base.WriteResponseAsync(result, context, cancellationToken);
+    }
+
+    private static bool UseStatusCodeFromResponseInHeader(IHeaderDictionary requestHeaders)
+    {
+        if (requestHeaders.TryGetValue("X-Use-Status-Code-From-Response", out StringValues headerValue) && bool.TryParse(headerValue, out bool useStatusCode))
+        {
+            return useStatusCode;
+        }
+
+        return false;
     }
 }

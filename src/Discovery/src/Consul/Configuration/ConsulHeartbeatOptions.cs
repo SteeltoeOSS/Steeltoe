@@ -11,28 +11,29 @@ namespace Steeltoe.Discovery.Consul.Configuration;
 /// </summary>
 public sealed class ConsulHeartbeatOptions
 {
-    /// <summary>
-    /// Gets the time-to-live setting.
-    /// </summary>
     internal string TimeToLive => $"{TtlValue}{TtlUnit}";
 
     /// <summary>
-    /// Gets or sets a value indicating whether heartbeats are enabled, default true.
+    /// Gets or sets a value indicating whether the running app periodically sends TTL (time-to-live) heartbeats. Default value: true.
     /// </summary>
+    /// <remarks>
+    /// This setting only has effect when <see cref="ConsulDiscoveryOptions.RegisterHealthCheck" /> is true.
+    /// </remarks>
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the time to live heartbeat time, default 30.
+    /// Gets or sets how often a TTL heartbeat must be sent to be considered healthy. Default value: 30.
     /// </summary>
     public int TtlValue { get; set; } = 30;
 
     /// <summary>
-    /// Gets or sets the time unit of the TtlValue, default "s".
+    /// Gets or sets the unit for <see cref="TtlValue" /> ("ms", "s", "m" or "h"). Default value: s.
     /// </summary>
     public string? TtlUnit { get; set; } = "s";
 
     /// <summary>
-    /// Gets or sets the interval ratio.
+    /// Gets or sets the rate at which the running app sends TTL heartbeats, relative to <see cref="TtlValue" /> and <see cref="TtlUnit" />. Default value:
+    /// 0.66.
     /// </summary>
     public double IntervalRatio { get; set; } = 2.0 / 3.0;
 

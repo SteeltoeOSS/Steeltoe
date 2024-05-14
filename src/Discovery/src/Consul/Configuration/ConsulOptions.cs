@@ -12,42 +12,42 @@ public sealed class ConsulOptions
     internal const string ConfigurationPrefix = "consul";
 
     /// <summary>
-    /// Gets or sets the host address of the Consul server, default localhost.
+    /// Gets or sets the host name or IP address of the Consul server. Default value: localhost.
     /// </summary>
     public string? Host { get; set; } = "localhost";
 
     /// <summary>
-    /// Gets or sets the scheme used for the Consul server, default http.
+    /// Gets or sets the scheme to connect with the Consul server ("http" or "https"). Default value: http.
     /// </summary>
     public string? Scheme { get; set; } = "http";
 
     /// <summary>
-    /// Gets or sets the port number used for the Consul server, default 8500.
+    /// Gets or sets the port number the Consul server is listening on. Default value: 8500.
     /// </summary>
     public int Port { get; set; } = 8500;
 
     /// <summary>
-    /// Gets or sets the data center to use.
+    /// Gets or sets the datacenter name passed in each request to the server.
     /// </summary>
     public string? Datacenter { get; set; }
 
     /// <summary>
-    /// Gets or sets the access token to use.
+    /// Gets or sets the authentication token passed in each request to the server.
     /// </summary>
     public string? Token { get; set; }
 
     /// <summary>
-    /// Gets or sets the wait time to use.
+    /// Gets or sets the maximum duration for a blocking request.
     /// </summary>
     public string? WaitTime { get; set; }
 
     /// <summary>
-    /// Gets or sets the username to use.
+    /// Gets or sets the username for HTTP authentication.
     /// </summary>
     public string? Username { get; set; }
 
     /// <summary>
-    /// Gets or sets password to use.
+    /// Gets or sets password for HTTP authentication.
     /// </summary>
     public string? Password { get; set; }
 }

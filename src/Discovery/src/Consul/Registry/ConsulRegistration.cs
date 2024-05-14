@@ -92,13 +92,9 @@ public sealed class ConsulRegistration : IServiceInstance
 
         var agentServiceRegistration = new AgentServiceRegistration
         {
-            ID = GetInstanceId(options, applicationInfo)
+            ID = GetInstanceId(options, applicationInfo),
+            Address = options.HostName
         };
-
-        if (!options.PreferAgentAddress)
-        {
-            agentServiceRegistration.Address = options.HostName;
-        }
 
         string appName = applicationInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConfigurationPrefix}:serviceName");
 
@@ -106,7 +102,7 @@ public sealed class ConsulRegistration : IServiceInstance
         agentServiceRegistration.Tags = CreateTags(options);
         agentServiceRegistration.Meta = CreateMetadata(options);
 
-        if (options.Port != 0)
+        if (options.Port > 0)
         {
             agentServiceRegistration.Port = options.Port;
             SetCheck(agentServiceRegistration, options);
@@ -121,16 +117,16 @@ public sealed class ConsulRegistration : IServiceInstance
 
         if (!string.IsNullOrEmpty(options.InstanceZone) && !string.IsNullOrEmpty(options.DefaultZoneMetadataName))
         {
-            metadata.Add(options.DefaultZoneMetadataName, options.InstanceZone);
+            metadata.TryAdd(options.DefaultZoneMetadataName, options.InstanceZone);
         }
 
         if (!string.IsNullOrEmpty(options.InstanceGroup))
         {
-            metadata.Add("group", options.InstanceGroup);
+            metadata.TryAdd("group", options.InstanceGroup);
         }
 
         // store the secure flag in the metadata so that clients will be able to figure out whether to use http or https automatically
-        metadata.Add("secure", options.Scheme == "https" ? "true" : "false");
+        metadata.TryAdd("secure", options.Scheme == "https" ? "true" : "false");
 
         return metadata;
     }
@@ -214,11 +210,6 @@ public sealed class ConsulRegistration : IServiceInstance
             return check;
         }
 
-        if (port <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(port), port, "Port must be greater than zero.");
-        }
-
         if (!string.IsNullOrEmpty(options.HealthCheckUrl))
         {
             check.HTTP = options.HealthCheckUrl;
@@ -228,6 +219,12 @@ public sealed class ConsulRegistration : IServiceInstance
             var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
             check.HTTP = uri.ToString();
         }
+
+        check.Header = new Dictionary<string, List<string>>
+        {
+            // Override Management:Endpoints:UseStatusCodeFromResponse, Consul only looks at HTTP status code.
+            ["X-Use-Status-Code-From-Response"] = ["true"]
+        };
 
         if (!string.IsNullOrEmpty(options.HealthCheckInterval))
         {

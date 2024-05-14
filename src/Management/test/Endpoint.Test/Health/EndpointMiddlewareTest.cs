@@ -334,6 +334,26 @@ public sealed class EndpointMiddlewareTest : BaseTest
             Assert.NotNull(downJson);
             Assert.Contains("\"status\":\"DOWN\"", downJson, StringComparison.Ordinal);
         }
+
+        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
+            new Dictionary<string, string?>(_appSettings)
+            {
+                ["HealthCheckType"] = "down",
+                ["management:endpoints:UseStatusCodeFromResponse"] = "false"
+            }));
+
+        using (var server = new TestServer(builder))
+        {
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/health"));
+            requestMessage.Headers.Add("X-Use-Status-Code-From-Response", "true");
+
+            HttpClient client = server.CreateClient();
+            HttpResponseMessage downResult = await client.SendAsync(requestMessage);
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, downResult.StatusCode);
+            string downJson = await downResult.Content.ReadAsStringAsync();
+            Assert.NotNull(downJson);
+            Assert.Contains("\"status\":\"DOWN\"", downJson, StringComparison.Ordinal);
+        }
     }
 
     [Fact]

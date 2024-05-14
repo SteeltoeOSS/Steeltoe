@@ -15,9 +15,9 @@ public sealed class ConsulRetryOptionsTest
         var options = new ConsulRetryOptions();
 
         Assert.False(options.Enabled);
-        Assert.Equal(ConsulRetryOptions.DefaultMaxRetryAttempts, options.MaxAttempts);
-        Assert.Equal(ConsulRetryOptions.DefaultInitialRetryInterval, options.InitialInterval);
-        Assert.Equal(ConsulRetryOptions.DefaultRetryMultiplier, options.Multiplier);
-        Assert.Equal(ConsulRetryOptions.DefaultMaxRetryInterval, options.MaxInterval);
+        Assert.Equal(6, options.MaxAttempts);
+        Assert.Equal(1000, options.InitialInterval);
+        Assert.Equal(1.1, options.Multiplier);
+        Assert.Equal(2000, options.MaxInterval);
     }
 }
