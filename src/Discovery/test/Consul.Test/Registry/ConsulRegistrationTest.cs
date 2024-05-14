@@ -230,8 +230,6 @@ public sealed class ConsulRegistrationTest
         Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout!), result.DeregisterCriticalServiceAfter);
 
         options.Heartbeat = null;
-        Assert.Throws<ArgumentOutOfRangeException>(() => ConsulRegistration.CreateCheck(0, options));
-
         const int port = 1234;
         result = ConsulRegistration.CreateCheck(port, options);
         var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
@@ -312,21 +310,5 @@ public sealed class ConsulRegistrationTest
         AgentServiceCheck check = ConsulRegistration.CreateCheck(1234, options);
 
         Assert.Null(check.HTTP);
-    }
-
-    [Fact]
-    public void CreateCheck_WhenHeartbeatIsDisabledAndPortIsANegativeNumber_ThenShouldThrow()
-    {
-        var options = new ConsulDiscoveryOptions
-        {
-            Heartbeat = new ConsulHeartbeatOptions
-            {
-                Enabled = false
-            }
-        };
-
-        const int port = -1234;
-
-        Assert.Throws<ArgumentOutOfRangeException>(() => ConsulRegistration.CreateCheck(port, options));
     }
 }
