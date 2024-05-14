@@ -9,11 +9,6 @@ namespace Steeltoe.Discovery.Consul.Configuration;
 /// </summary>
 public sealed class ConsulRetryOptions
 {
-    internal const int DefaultMaxRetryAttempts = 6;
-    internal const int DefaultInitialRetryInterval = 1000;
-    internal const double DefaultRetryMultiplier = 1.1;
-    internal const int DefaultMaxRetryInterval = 2000;
-
     /// <summary>
     /// Gets or sets a value indicating whether retries are enabled, default false.
     /// </summary>
@@ -22,20 +17,20 @@ public sealed class ConsulRetryOptions
     /// <summary>
     /// Gets or sets the initial interval to use during retries, default 1000ms.
     /// </summary>
-    public int InitialInterval { get; set; } = DefaultInitialRetryInterval;
+    public int InitialInterval { get; set; } = 1000;
 
     /// <summary>
     /// Gets or sets the maximum interval to use during retries, default 2000ms.
     /// </summary>
-    public int MaxInterval { get; set; } = DefaultMaxRetryInterval;
+    public int MaxInterval { get; set; } = 2000;
 
     /// <summary>
     /// Gets or sets the multiplier used when doing retries, default 1.1.
     /// </summary>
-    public double Multiplier { get; set; } = DefaultRetryMultiplier;
+    public double Multiplier { get; set; } = 1.1;
 
     /// <summary>
     /// Gets or sets the maximum number of attempts, default 6.
     /// </summary>
-    public int MaxAttempts { get; set; } = DefaultMaxRetryAttempts;
+    public int MaxAttempts { get; set; } = 6;
 }
