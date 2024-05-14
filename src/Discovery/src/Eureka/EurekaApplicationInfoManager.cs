@@ -152,17 +152,21 @@ public sealed class EurekaApplicationInfoManager : IDisposable
 
     private InstanceInfo MergeInstanceWithConfiguration(EurekaInstanceOptions instanceOptions, InstanceInfo previousInstance)
     {
+        if (instanceOptions.InstanceId != previousInstance.InstanceId)
+        {
+            // A change of InstanceId would require unregister, then re-register.
+            _logger.LogWarning("Discarding change of InstanceId, which is not supported.");
+            instanceOptions.InstanceId = previousInstance.InstanceId;
+        }
+
+        if (instanceOptions.AppName != previousInstance.AppName)
+        {
+            // A change of AppName would require unregister, then re-register.
+            _logger.LogWarning("Discarding change of AppName, which is not supported.");
+            instanceOptions.AppName = previousInstance.AppName;
+        }
+
         InstanceInfo newInstance = InstanceInfo.FromConfiguration(instanceOptions);
-
-        if (newInstance.InstanceId != previousInstance.InstanceId)
-        {
-            throw new InvalidOperationException("Changed configuration resulted in a different Eureka InstanceId, which is not supported.");
-        }
-
-        if (newInstance.AppName != previousInstance.AppName)
-        {
-            throw new InvalidOperationException("Changed configuration resulted in a different Eureka AppName, which is not supported.");
-        }
 
         newInstance.ReplaceStatus(previousInstance.Status);
         newInstance.ReplaceOverriddenStatus(previousInstance.OverriddenStatus);

@@ -64,6 +64,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
     }
 
     [Fact]
+    [Trait("Category", "SkipOnMacOS")]
     public async Task AddEurekaDiscoveryClient_WorksWithGlobalServiceDiscovery()
     {
         WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();

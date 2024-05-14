@@ -5,6 +5,8 @@
 using Consul;
 using Moq;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
+using Steeltoe.Discovery.Consul.Configuration;
 using Xunit;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
@@ -21,7 +23,8 @@ public sealed class ConsulHealthContributorTest
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Status).Returns(statusMoq.Object);
 
-        var healthContributor = new ConsulHealthContributor(clientMoq.Object);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
+        var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
         string result = await healthContributor.GetLeaderStatusAsync(CancellationToken.None);
 
         Assert.Equal("thestatus", result);
@@ -55,7 +58,8 @@ public sealed class ConsulHealthContributorTest
         var clientMoq = new Mock<IConsulClient>();
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
 
-        var healthContributor = new ConsulHealthContributor(clientMoq.Object);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
+        var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
         Dictionary<string, string[]> result = await healthContributor.GetCatalogServicesAsync(CancellationToken.None);
 
         Assert.Equal(2, result.Count);
@@ -95,7 +99,8 @@ public sealed class ConsulHealthContributorTest
         clientMoq.Setup(client => client.Status).Returns(statusMoq.Object);
         clientMoq.Setup(client => client.Catalog).Returns(catalogMoq.Object);
 
-        var healthContributor = new ConsulHealthContributor(clientMoq.Object);
+        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
+        var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
         HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
         Assert.NotNull(result);
@@ -103,5 +108,23 @@ public sealed class ConsulHealthContributorTest
         Assert.Equal(2, result.Details.Count);
         Assert.Contains("leader", result.Details.Keys);
         Assert.Contains("services", result.Details.Keys);
+    }
+
+    [Fact]
+    public async Task CheckHealthAsync_ConsulDisabled()
+    {
+        var options = new ConsulDiscoveryOptions
+        {
+            Enabled = false
+        };
+
+        var clientMoq = new Mock<IConsulClient>();
+        clientMoq.Setup(client => client.Catalog).Throws<NotImplementedException>();
+
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        var healthContributor = new ConsulHealthContributor(clientMoq.Object, optionsMonitor);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
+
+        Assert.Null(result);
     }
 }

@@ -159,7 +159,7 @@ public sealed class EurekaApplicationInfoManagerTest
     }
 
     [Fact]
-    public void ChangeConfiguration_IgnoresConflict()
+    public void ChangeConfiguration_IgnoresConflictingChanges()
     {
         var instanceOptions = new EurekaInstanceOptions
         {
@@ -177,11 +177,55 @@ public sealed class EurekaApplicationInfoManagerTest
         using var eventMonitor = new EventMonitor(appManager);
 
         instanceOptions.InstanceId = "other";
+        instanceOptions.AppName = "other";
+
         instanceOptionsMonitor.Change(instanceOptions);
 
         appManager.Instance.InstanceId.Should().Be("some");
+        appManager.Instance.AppName.Should().Be("DEMO");
 
         eventMonitor.EventArgs.Should().BeNull();
+    }
+
+    [Fact]
+    public void ChangeConfiguration_AppliesOnlyNonConflictingChanges()
+    {
+        var instanceOptions = new EurekaInstanceOptions
+        {
+            InstanceId = "some",
+            IPAddress = "192.168.0.1",
+            HostName = "localhost",
+            AppName = "demo"
+        };
+
+        var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
+        TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
+        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, NullLogger<EurekaApplicationInfoManager>.Instance);
+        appManager.Instance.IsDirty = false;
+
+        using var eventMonitor = new EventMonitor(appManager);
+
+        instanceOptions.InstanceId = "new-instance-id";
+        instanceOptions.AppName = "new-app-name";
+        instanceOptions.HostName = "new-host";
+        instanceOptions.IPAddress = "192.168.0.2";
+
+        instanceOptionsMonitor.Change(instanceOptions);
+
+        appManager.Instance.InstanceId.Should().Be("some");
+        appManager.Instance.AppName.Should().Be("DEMO");
+        appManager.Instance.HostName.Should().Be("new-host");
+        appManager.Instance.IPAddress.Should().Be("192.168.0.2");
+
+        eventMonitor.EventArgs.Should().NotBeNull();
+        eventMonitor.EventArgs!.PreviousInstance.InstanceId.Should().Be("some");
+        eventMonitor.EventArgs.NewInstance.InstanceId.Should().Be("some");
+        eventMonitor.EventArgs!.PreviousInstance.AppName.Should().Be("DEMO");
+        eventMonitor.EventArgs.NewInstance.AppName.Should().Be("DEMO");
+        eventMonitor.EventArgs!.PreviousInstance.HostName.Should().Be("localhost");
+        eventMonitor.EventArgs.NewInstance.HostName.Should().Be("new-host");
+        eventMonitor.EventArgs!.PreviousInstance.IPAddress.Should().Be("192.168.0.1");
+        eventMonitor.EventArgs.NewInstance.IPAddress.Should().Be("192.168.0.2");
     }
 
     [Fact]

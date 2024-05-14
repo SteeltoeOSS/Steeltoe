@@ -87,7 +87,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
         if (string.IsNullOrWhiteSpace(options.IPAddress))
         {
-            if (hostInfo != null)
+            if (hostInfo != null && !string.IsNullOrWhiteSpace(hostInfo.IPAddress))
             {
                 options.IPAddress = hostInfo.IPAddress;
             }

@@ -12,12 +12,12 @@ using Steeltoe.Common.Discovery;
 namespace Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 /// <summary>
-/// Returns service instances in round-robin fashion, optionally using distributed caching for service lookups and for determining the next instance.
+/// Returns service instances in round-robin fashion, optionally using distributed caching for determining the next instance.
 /// </summary>
 public sealed class RoundRobinLoadBalancer : ILoadBalancer
 {
     private const string CacheKeyPrefix = "Steeltoe-LoadBalancerIndex-";
-    private readonly IList<IDiscoveryClient> _discoveryClients;
+    private readonly ServiceInstancesResolver _serviceInstancesResolver;
     private readonly IDistributedCache? _distributedCache;
     private readonly DistributedCacheEntryOptions _cacheEntryOptions;
     private readonly ILogger<RoundRobinLoadBalancer> _logger;
@@ -26,25 +26,25 @@ public sealed class RoundRobinLoadBalancer : ILoadBalancer
     /// <summary>
     /// Initializes a new instance of the <see cref="RoundRobinLoadBalancer" /> class.
     /// </summary>
-    /// <param name="discoveryClients">
+    /// <param name="serviceInstancesResolver">
     /// Used to retrieve the available service instances.
     /// </param>
     /// <param name="logger">
     /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public RoundRobinLoadBalancer(IEnumerable<IDiscoveryClient> discoveryClients, ILogger<RoundRobinLoadBalancer> logger)
-        : this(discoveryClients, null, null, logger)
+    public RoundRobinLoadBalancer(ServiceInstancesResolver serviceInstancesResolver, ILogger<RoundRobinLoadBalancer> logger)
+        : this(serviceInstancesResolver, null, null, logger)
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RoundRobinLoadBalancer" /> class.
     /// </summary>
-    /// <param name="discoveryClients">
+    /// <param name="serviceInstancesResolver">
     /// Used to retrieve the available service instances.
     /// </param>
     /// <param name="distributedCache">
-    /// For caching service instances and the last-used instance.
+    /// For caching the last-used instance.
     /// </param>
     /// <param name="cacheEntryOptions">
     /// Configuration for <paramref name="distributedCache" />.
@@ -52,21 +52,16 @@ public sealed class RoundRobinLoadBalancer : ILoadBalancer
     /// <param name="logger">
     /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
-    public RoundRobinLoadBalancer(IEnumerable<IDiscoveryClient> discoveryClients, IDistributedCache? distributedCache,
+    public RoundRobinLoadBalancer(ServiceInstancesResolver serviceInstancesResolver, IDistributedCache? distributedCache,
         DistributedCacheEntryOptions? cacheEntryOptions, ILogger<RoundRobinLoadBalancer> logger)
     {
-        ArgumentGuard.NotNull(discoveryClients);
+        ArgumentGuard.NotNull(serviceInstancesResolver);
         ArgumentGuard.NotNull(logger);
 
-        _discoveryClients = discoveryClients.ToArray();
+        _serviceInstancesResolver = serviceInstancesResolver;
         _distributedCache = distributedCache;
         _cacheEntryOptions = cacheEntryOptions ?? new DistributedCacheEntryOptions();
         _logger = logger;
-
-        if (_discoveryClients.Count == 0)
-        {
-            _logger.LogWarning("No discovery clients are registered.");
-        }
     }
 
     /// <inheritdoc />
@@ -77,9 +72,7 @@ public sealed class RoundRobinLoadBalancer : ILoadBalancer
         string serviceName = requestUri.Host;
         _logger.LogTrace("Resolving service instance for '{serviceName}'.", serviceName);
 
-        IList<IServiceInstance> availableServiceInstances =
-            await CachingServiceInstancesResolver.GetInstancesWithCacheAsync(_discoveryClients, serviceName, _distributedCache, _cacheEntryOptions, null,
-                cancellationToken);
+        IList<IServiceInstance> availableServiceInstances = await _serviceInstancesResolver.ResolveInstancesAsync(serviceName, cancellationToken);
 
         if (availableServiceInstances.Count == 0)
         {

@@ -3,8 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Discovery.Consul.Configuration;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Discovery.Consul;
@@ -15,6 +17,7 @@ namespace Steeltoe.Discovery.Consul;
 internal sealed class ConsulHealthContributor : IHealthContributor
 {
     private readonly IConsulClient _client;
+    private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
 
     public string Id => "consul";
 
@@ -24,16 +27,26 @@ internal sealed class ConsulHealthContributor : IHealthContributor
     /// <param name="client">
     /// The Consul client to use for health checks.
     /// </param>
-    public ConsulHealthContributor(IConsulClient client)
+    /// <param name="optionsMonitor">
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
+    /// </param>
+    public ConsulHealthContributor(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
+        ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(client);
 
         _client = client;
+        _optionsMonitor = optionsMonitor;
     }
 
     /// <inheritdoc />
     public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
+        if (!_optionsMonitor.CurrentValue.Enabled)
+        {
+            return null;
+        }
+
         string leaderStatus = await GetLeaderStatusAsync(cancellationToken);
         Dictionary<string, string[]> services = await GetCatalogServicesAsync(cancellationToken);
 

@@ -19,8 +19,7 @@ public sealed class DynamicPortAssignmentTest
         var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
-            ["Eureka:Instance:InstanceId"] = "DEMO"
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();

@@ -17,12 +17,13 @@ namespace Steeltoe.Discovery.HttpClients.Test.LoadBalancers;
 public sealed class RoundRobinLoadBalancerTest
 {
     [Fact]
-    public async Task ResolveServiceInstance_ResolvesAndIncrementsServiceIndex()
+    public async Task ResolveServiceInstanceAsync_ResolvesAndIncrementsServiceIndex()
     {
         ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
         var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
-        var loadBalancer = new RoundRobinLoadBalancer([client], null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
+        var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
+        var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
         Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
         _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
@@ -46,13 +47,14 @@ public sealed class RoundRobinLoadBalancerTest
     }
 
     [Fact]
-    public async Task ResolveServiceInstance_ResolvesAndIncrementsServiceIndex_WithDistributedCache()
+    public async Task ResolveServiceInstanceAsync_ResolvesAndIncrementsServiceIndex_WithDistributedCache()
     {
         ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
         var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
         IDistributedCache distributedCache = GetCache();
-        var loadBalancer = new RoundRobinLoadBalancer([client], distributedCache, null, NullLogger<RoundRobinLoadBalancer>.Instance);
+        var loadBalancer = new RoundRobinLoadBalancer(resolver, distributedCache, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
         Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
         _ = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"), CancellationToken.None);
@@ -80,7 +82,8 @@ public sealed class RoundRobinLoadBalancerTest
     public async Task ResolveServiceInstanceAsync_NonDefaultPort_ReturnsOriginalURI()
     {
         IDiscoveryClient client = new TestDiscoveryClient();
-        var loadBalancer = new RoundRobinLoadBalancer([client], NullLogger<RoundRobinLoadBalancer>.Instance);
+        var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
+        var loadBalancer = new RoundRobinLoadBalancer(resolver, NullLogger<RoundRobinLoadBalancer>.Instance);
         var uri = new Uri("https://foo:8080/test");
 
         Uri result = await loadBalancer.ResolveServiceInstanceAsync(uri, CancellationToken.None);
@@ -91,7 +94,8 @@ public sealed class RoundRobinLoadBalancerTest
     public async Task ResolveServiceInstanceAsync_DoesNotFindService_ReturnsOriginalURI()
     {
         IDiscoveryClient client = new TestDiscoveryClient();
-        var handler = new RoundRobinLoadBalancer([client], NullLogger<RoundRobinLoadBalancer>.Instance);
+        var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
+        var handler = new RoundRobinLoadBalancer(resolver, NullLogger<RoundRobinLoadBalancer>.Instance);
         var uri = new Uri("https://foo/test");
 
         Uri result = await handler.ResolveServiceInstanceAsync(uri, CancellationToken.None);
@@ -102,11 +106,62 @@ public sealed class RoundRobinLoadBalancerTest
     public async Task ResolveServiceInstanceAsync_FindsService_ReturnsURI()
     {
         IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("https://foundit:5555")));
-        var handler = new RoundRobinLoadBalancer([client], NullLogger<RoundRobinLoadBalancer>.Instance);
+        var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
+        var handler = new RoundRobinLoadBalancer(resolver, NullLogger<RoundRobinLoadBalancer>.Instance);
         var uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
 
         Uri result = await handler.ResolveServiceInstanceAsync(uri, CancellationToken.None);
         Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
+    }
+
+    [Fact]
+    public async Task ResolveServiceInstanceAsync_SkipsOverThrowingDiscoveryClients()
+    {
+        ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
+        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+
+        IDiscoveryClient[] clients =
+        [
+            new ThrowingDiscoveryClient(),
+            new ConfigurationDiscoveryClient(optionsMonitor)
+        ];
+
+        var resolver = new ServiceInstancesResolver(clients, NullLogger<ServiceInstancesResolver>.Instance);
+        var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
+
+        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
+        fruitUri.Should().Be("https://fruitball:8000/api");
+    }
+
+    [Fact]
+    public async Task ResolveServiceInstanceAsync_CachesInstances()
+    {
+        ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
+        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        IDistributedCache distributedCache = GetCache();
+        var resolver = new ServiceInstancesResolver([client], distributedCache, null, NullLogger<ServiceInstancesResolver>.Instance);
+        var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
+
+        Uri fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
+        fruitUri.Should().Be("https://fruitball:8000/api");
+
+        optionsMonitor.Change(new ConfigurationDiscoveryOptions
+        {
+            Services =
+            {
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitservice",
+                    Host = "CHANGED",
+                    Port = 8000,
+                    IsSecure = true
+                }
+            }
+        });
+
+        fruitUri = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"), CancellationToken.None);
+        fruitUri.Should().Be("https://fruitball:8000/api");
     }
 
     private static ConfigurationDiscoveryOptions CreateTestServiceInstances()
@@ -236,6 +291,31 @@ public sealed class RoundRobinLoadBalancerTest
         public Task ShutdownAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    private sealed class ThrowingDiscoveryClient : IDiscoveryClient
+    {
+        public string Description => throw new NotImplementedException();
+
+        public IServiceInstance GetLocalServiceInstance()
+        {
+            throw new InvalidOperationException();
+        }
+
+        public Task<ISet<string>> GetServiceIdsAsync(CancellationToken cancellationToken)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public Task ShutdownAsync(CancellationToken cancellationToken)
+        {
+            throw new InvalidOperationException();
         }
     }
 }
