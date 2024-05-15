@@ -41,7 +41,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
     private bool IsAlive => Interlocked.Add(ref _isShutdown, 0) == 0;
 
-    private IHealthCheckHandler? HealthCheckHandler => _healthCheckHandlerProvider.GetHandler();
+    private IHealthCheckHandler HealthCheckHandler => _healthCheckHandlerProvider.GetHandler();
 
     internal bool IsHeartbeatTimerStarted => _heartbeatTimer != null;
     internal bool IsCacheRefreshTimerStarted => _cacheRefreshTimer != null;
@@ -403,7 +403,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
     internal async Task RunHealthChecksAsync(CancellationToken cancellationToken)
     {
-        if (_clientOptionsMonitor.CurrentValue.Health.CheckEnabled && HealthCheckHandler != null)
+        if (_clientOptionsMonitor.CurrentValue.Health.CheckEnabled)
         {
             try
             {
@@ -412,7 +412,8 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
                 InstanceInfo snapshot = _appInfoManager.Instance;
 
-                if (aggregatedStatus != snapshot.Status)
+                // When running the first time, EurekaServerHealthContributor returns UNKNOWN. Don't take this app out of service because of that.
+                if (aggregatedStatus != InstanceStatus.Unknown && aggregatedStatus != snapshot.Status)
                 {
                     _logger.LogDebug("Changing instance status from {LocalStatus} to {RemoteStatus}.", snapshot.Status, aggregatedStatus);
                     _appInfoManager.UpdateStatusWithoutRaisingEvent(aggregatedStatus);

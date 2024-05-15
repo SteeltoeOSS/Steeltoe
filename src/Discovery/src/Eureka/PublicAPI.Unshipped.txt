@@ -225,7 +225,7 @@ Steeltoe.Discovery.Eureka.EurekaDiscoveryClient.GetLocalServiceInstance() -> Ste
 Steeltoe.Discovery.Eureka.EurekaDiscoveryClient.GetServiceIdsAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.ISet<string!>!>!
 Steeltoe.Discovery.Eureka.EurekaDiscoveryClient.ShutdownAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Eureka.EurekaHealthCheckHandler
-Steeltoe.Discovery.Eureka.EurekaHealthCheckHandler.EurekaHealthCheckHandler(System.IServiceProvider! serviceProvider, Microsoft.Extensions.Logging.ILogger<Steeltoe.Discovery.Eureka.EurekaHealthCheckHandler!>! logger) -> void
+Steeltoe.Discovery.Eureka.EurekaHealthCheckHandler.EurekaHealthCheckHandler(Steeltoe.Common.HealthChecks.IHealthAggregator! healthAggregator, Microsoft.Extensions.Options.IOptionsMonitor<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckServiceOptions!>! healthOptionsMonitor, System.IServiceProvider! serviceProvider) -> void
 Steeltoe.Discovery.Eureka.EurekaHealthCheckHandler.GetStatusAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus>!
 Steeltoe.Discovery.Eureka.EurekaServiceCollectionExtensions
 Steeltoe.Discovery.Eureka.EurekaServiceUriStateManager

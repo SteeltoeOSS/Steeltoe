@@ -561,15 +561,16 @@ public sealed class EurekaDiscoveryClientTest
         var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Client:Health:CheckEnabled"] = "true"
         };
 
         var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddEurekaDiscoveryClient();
         builder.Services.AddSingleton<IHealthCheckHandler>(myHandler);
+        builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication webApplication = builder.Build();
 

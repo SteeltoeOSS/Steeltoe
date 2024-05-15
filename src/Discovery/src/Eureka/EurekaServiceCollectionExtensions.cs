@@ -83,6 +83,9 @@ public static class EurekaServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IHostedService), typeof(DiscoveryClientHostedService)));
 
         AddEurekaClient(services);
+
+        services.TryAddSingleton<IHealthCheckHandler, EurekaHealthCheckHandler>();
+        services.TryAddSingleton<IHealthAggregator, HealthRegistrationsAggregator>();
     }
 
     private static void AddEurekaClient(IServiceCollection services)

@@ -36,7 +36,7 @@ public sealed class EurekaClientOptionsTest
         Assert.Equal(EurekaClientOptions.DefaultServerServiceUrl, clientOptions.EurekaServerServiceUrls);
         Assert.NotNull(clientOptions.Health);
         Assert.True(clientOptions.Health.ContributorEnabled);
-        Assert.True(clientOptions.Health.CheckEnabled);
+        Assert.False(clientOptions.Health.CheckEnabled);
         Assert.Null(clientOptions.Health.MonitoredApps);
     }
 
@@ -63,7 +63,10 @@ public sealed class EurekaClientOptionsTest
                   "shouldRegisterWithEureka": true,
                   "registryFetchIntervalSeconds": 100,
                   "instanceInfoReplicationIntervalSeconds": 100,
-                  "serviceUrl": "https://foo.bar:8761/eureka/"
+                  "serviceUrl": "https://foo.bar:8761/eureka/",
+                  "Health": {
+                    "CheckEnabled": "true"
+                  }
                 },
                 "instance": {
                   "registrationMethod": "foobar",

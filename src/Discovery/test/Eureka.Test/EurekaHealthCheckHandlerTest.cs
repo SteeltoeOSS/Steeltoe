@@ -7,7 +7,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
@@ -15,6 +15,8 @@ using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Xunit;
+using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
@@ -23,10 +25,10 @@ public sealed class EurekaHealthCheckHandlerTest
     [Theory]
     [InlineData(HealthStatus.Down, InstanceStatus.Down)]
     [InlineData(HealthStatus.Up, InstanceStatus.Up)]
-    [InlineData(HealthStatus.Warning, InstanceStatus.Unknown)]
+    [InlineData(HealthStatus.Warning, InstanceStatus.Up)]
     [InlineData(HealthStatus.Unknown, InstanceStatus.Unknown)]
     [InlineData(HealthStatus.OutOfService, InstanceStatus.OutOfService)]
-    [InlineData(null, InstanceStatus.Unknown)]
+    [InlineData(null, InstanceStatus.Up)]
     public async Task Maps_contributor_status_to_instance_status(HealthStatus? contributorStatus, InstanceStatus expectedStatus)
     {
         var contributor = new TestHealthContributor(contributorStatus);
@@ -35,24 +37,24 @@ public sealed class EurekaHealthCheckHandlerTest
         services.AddSingleton<IHealthContributor>(contributor);
         await using ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        var handler = new EurekaHealthCheckHandler(serviceProvider, NullLogger<EurekaHealthCheckHandler>.Instance);
-
+        var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
+        var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
         InstanceStatus result = await handler.GetStatusAsync(CancellationToken.None);
 
         result.Should().Be(expectedStatus);
     }
 
     [Fact]
-    public async Task Instance_status_is_unknown_when_no_health_contributors()
+    public async Task Instance_status_is_up_when_no_health_contributors()
     {
         var services = new ServiceCollection();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        var handler = new EurekaHealthCheckHandler(serviceProvider, NullLogger<EurekaHealthCheckHandler>.Instance);
-
+        var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
+        var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
         InstanceStatus result = await handler.GetStatusAsync(CancellationToken.None);
 
-        result.Should().Be(InstanceStatus.Unknown);
+        result.Should().Be(InstanceStatus.Up);
     }
 
     [Fact]
@@ -61,22 +63,42 @@ public sealed class EurekaHealthCheckHandlerTest
         var contributor = new TestHealthContributor(new Exception("Health check failed."));
 
         var services = new ServiceCollection();
-        services.AddSingleton(contributor);
+        services.AddSingleton<IHealthContributor>(contributor);
         await using ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        var handler = new EurekaHealthCheckHandler(serviceProvider, NullLogger<EurekaHealthCheckHandler>.Instance);
-
+        var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
+        var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
         InstanceStatus result = await handler.GetStatusAsync(CancellationToken.None);
 
         result.Should().Be(InstanceStatus.Unknown);
     }
 
     [Theory]
-    [InlineData(HealthStatus.Down, HealthStatus.Up, InstanceStatus.Down)]
-    [InlineData(HealthStatus.Up, HealthStatus.Down, InstanceStatus.Down)]
-    [InlineData(HealthStatus.Up, HealthStatus.OutOfService, InstanceStatus.OutOfService)]
+    [InlineData(HealthStatus.Up, HealthStatus.Up, InstanceStatus.Up)]
     [InlineData(HealthStatus.Up, HealthStatus.Warning, InstanceStatus.Up)]
-    [InlineData(HealthStatus.Warning, HealthStatus.Warning, InstanceStatus.Unknown)]
+    [InlineData(HealthStatus.Up, HealthStatus.Unknown, InstanceStatus.Unknown)]
+    [InlineData(HealthStatus.Up, HealthStatus.OutOfService, InstanceStatus.OutOfService)]
+    [InlineData(HealthStatus.Up, HealthStatus.Down, InstanceStatus.Down)]
+    [InlineData(HealthStatus.Warning, HealthStatus.Up, InstanceStatus.Up)]
+    [InlineData(HealthStatus.Warning, HealthStatus.Warning, InstanceStatus.Up)]
+    [InlineData(HealthStatus.Warning, HealthStatus.Unknown, InstanceStatus.Unknown)]
+    [InlineData(HealthStatus.Warning, HealthStatus.OutOfService, InstanceStatus.OutOfService)]
+    [InlineData(HealthStatus.Warning, HealthStatus.Down, InstanceStatus.Down)]
+    [InlineData(HealthStatus.Unknown, HealthStatus.Up, InstanceStatus.Unknown)]
+    [InlineData(HealthStatus.Unknown, HealthStatus.Warning, InstanceStatus.Unknown)]
+    [InlineData(HealthStatus.Unknown, HealthStatus.Unknown, InstanceStatus.Unknown)]
+    [InlineData(HealthStatus.Unknown, HealthStatus.OutOfService, InstanceStatus.OutOfService)]
+    [InlineData(HealthStatus.Unknown, HealthStatus.Down, InstanceStatus.Down)]
+    [InlineData(HealthStatus.OutOfService, HealthStatus.Up, InstanceStatus.OutOfService)]
+    [InlineData(HealthStatus.OutOfService, HealthStatus.Warning, InstanceStatus.OutOfService)]
+    [InlineData(HealthStatus.OutOfService, HealthStatus.Unknown, InstanceStatus.OutOfService)]
+    [InlineData(HealthStatus.OutOfService, HealthStatus.OutOfService, InstanceStatus.OutOfService)]
+    [InlineData(HealthStatus.OutOfService, HealthStatus.Down, InstanceStatus.Down)]
+    [InlineData(HealthStatus.Down, HealthStatus.Up, InstanceStatus.Down)]
+    [InlineData(HealthStatus.Down, HealthStatus.Warning, InstanceStatus.Down)]
+    [InlineData(HealthStatus.Down, HealthStatus.Unknown, InstanceStatus.Down)]
+    [InlineData(HealthStatus.Down, HealthStatus.OutOfService, InstanceStatus.Down)]
+    [InlineData(HealthStatus.Down, HealthStatus.Down, InstanceStatus.Down)]
     public async Task Instance_status_is_aggregated_from_health_contributors(HealthStatus contributorStatus1, HealthStatus contributorStatus2,
         InstanceStatus expectedStatus)
     {
@@ -91,8 +113,8 @@ public sealed class EurekaHealthCheckHandlerTest
         services.AddSingleton(contributors[1]);
         await using ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-        var handler = new EurekaHealthCheckHandler(serviceProvider, NullLogger<EurekaHealthCheckHandler>.Instance);
-
+        var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
+        var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
         InstanceStatus result = await handler.GetStatusAsync(CancellationToken.None);
 
         result.Should().Be(expectedStatus);
@@ -111,12 +133,12 @@ public sealed class EurekaHealthCheckHandlerTest
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
             ["eureka:instance:leaseRenewalIntervalInSeconds"] = "1",
             ["eureka:client:eurekaServer:retryCount"] = "0",
+            ["Eureka:Client:Health:CheckEnabled"] = "true",
             ["Eureka:Instance:AppName"] = "FOO"
         };
 
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
-        builder.Services.AddSingleton<IHealthCheckHandler, EurekaHealthCheckHandler>();
 
         var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NoContent);

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Logging.DynamicSerilog;

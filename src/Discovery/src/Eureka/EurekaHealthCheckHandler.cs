@@ -3,106 +3,83 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
+using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
-/// Computes the Eureka <see cref="InstanceStatus" /> from all Steeltoe <see cref="IHealthContributor" />s registered for the application. When this
-/// handler is added to the container, it registers with the discovery client as a <see cref="IHealthCheckHandler" />. The discovery client will then
-/// call it each time it is computing the instance status of the application.
+/// Computes the Eureka <see cref="InstanceStatus" /> from ASP.NET health checks and all registered Steeltoe <see cref="IHealthContributor" />s.
 /// </summary>
 public sealed class EurekaHealthCheckHandler : IHealthCheckHandler
 {
+    private static readonly List<HealthStatus> HealthStatusOrder =
+    [
+        HealthStatus.Up,
+        HealthStatus.Warning,
+        HealthStatus.Unknown,
+        HealthStatus.OutOfService,
+        HealthStatus.Down
+    ];
+
+    private readonly IHealthAggregator _healthAggregator;
+    private readonly IOptionsMonitor<HealthCheckServiceOptions> _healthOptionsMonitor;
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger _logger;
 
-    public EurekaHealthCheckHandler(IServiceProvider serviceProvider, ILogger<EurekaHealthCheckHandler> logger)
+    public EurekaHealthCheckHandler(IHealthAggregator healthAggregator, IOptionsMonitor<HealthCheckServiceOptions> healthOptionsMonitor,
+        IServiceProvider serviceProvider)
     {
+        ArgumentGuard.NotNull(healthAggregator);
+        ArgumentGuard.NotNull(healthOptionsMonitor);
         ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(logger);
 
+        _healthAggregator = healthAggregator;
+        _healthOptionsMonitor = healthOptionsMonitor;
         _serviceProvider = serviceProvider;
-        _logger = logger;
     }
 
     public async Task<InstanceStatus> GetStatusAsync(CancellationToken cancellationToken)
     {
         await using AsyncServiceScope serviceScope = _serviceProvider.CreateAsyncScope();
+
         IHealthContributor[] healthContributors = serviceScope.ServiceProvider.GetRequiredService<IEnumerable<IHealthContributor>>().ToArray();
+        ICollection<HealthCheckRegistration> registrations = _healthOptionsMonitor.CurrentValue.Registrations;
 
-        List<HealthCheckResult> results = await DoHealthChecksAsync(healthContributors, cancellationToken);
-        HealthStatus status = AggregateStatus(results);
-        return MapToInstanceStatus(status);
+        HealthCheckResult result = _healthAggregator is IHealthRegistrationsAggregator registrationAggregator
+            ? await registrationAggregator.AggregateAsync(healthContributors, registrations, serviceScope.ServiceProvider, cancellationToken)
+            : await _healthAggregator.AggregateAsync(healthContributors, cancellationToken);
+
+        return AggregateStatus(result);
     }
 
-    private async Task<List<HealthCheckResult>> DoHealthChecksAsync(IEnumerable<IHealthContributor> healthContributors, CancellationToken cancellationToken)
+    private static InstanceStatus AggregateStatus(HealthCheckResult result)
     {
-        var results = new List<HealthCheckResult>();
+        var healthStatus = HealthStatus.Up;
 
-        foreach (IHealthContributor contributor in healthContributors)
+        foreach (HealthCheckResult nextResult in result.Details.Values.OfType<HealthCheckResult>())
         {
-            try
+            if (HealthStatusOrder.IndexOf(healthStatus) < HealthStatusOrder.IndexOf(nextResult.Status))
             {
-                HealthCheckResult? result = await contributor.CheckHealthAsync(cancellationToken);
-
-                if (result != null)
-                {
-                    results.Add(result);
-                }
-            }
-            catch (Exception exception) when (!exception.IsCancellation())
-            {
-                _logger?.LogError(exception, "Health Contributor {id} failed, status not included!", contributor.Id);
+                healthStatus = nextResult.Status;
             }
         }
 
-        return results;
-    }
-
-    private static HealthStatus AggregateStatus(List<HealthCheckResult> results)
-    {
-        var considered = new List<HealthStatus>();
-
-        // Filter out warnings, ignored
-        foreach (HealthCheckResult result in results)
-        {
-            if (result.Status != HealthStatus.Warning)
-            {
-                considered.Add(result.Status);
-            }
-        }
-
-        // Nothing left
-        if (considered.Count == 0)
-        {
-            return HealthStatus.Unknown;
-        }
-
-        // Compute final
-        var final = HealthStatus.Unknown;
-
-        foreach (HealthStatus status in considered)
-        {
-            if (status > final)
-            {
-                final = status;
-            }
-        }
-
-        return final;
+        return MapToInstanceStatus(healthStatus);
     }
 
     private static InstanceStatus MapToInstanceStatus(HealthStatus status)
     {
         return status switch
         {
+            HealthStatus.Up => InstanceStatus.Up,
+            HealthStatus.Warning => InstanceStatus.Up,
             HealthStatus.OutOfService => InstanceStatus.OutOfService,
             HealthStatus.Down => InstanceStatus.Down,
-            HealthStatus.Up => InstanceStatus.Up,
             _ => InstanceStatus.Unknown
         };
     }
