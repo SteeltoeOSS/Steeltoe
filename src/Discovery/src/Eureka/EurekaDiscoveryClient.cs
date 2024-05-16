@@ -407,6 +407,12 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             try
             {
+                if (_appInfoManager.Instance.Status == InstanceStatus.Starting)
+                {
+                    _logger.LogDebug("Skipping health check handler in starting state.");
+                    return;
+                }
+
                 InstanceStatus aggregatedStatus = await HealthCheckHandler.GetStatusAsync(cancellationToken);
                 _logger.LogDebug("Health check handler returned status {Status}.", aggregatedStatus);
 

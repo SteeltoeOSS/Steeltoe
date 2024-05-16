@@ -584,6 +584,35 @@ public sealed class EurekaDiscoveryClientTest
     }
 
     [Fact]
+    public async Task RunHealthChecksAsync_SkipsHealthCheckHandler_WhenInStartingState()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Client:Health:CheckEnabled"] = "true",
+            ["Eureka:Instance:InstanceEnabledOnInit"] = "false"
+        };
+
+        var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IHealthCheckHandler>(myHandler);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        await using WebApplication webApplication = builder.Build();
+
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+        var appInfoManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
+
+        await discoveryClient.RunHealthChecksAsync(CancellationToken.None);
+
+        Assert.False(myHandler.Awaited);
+        Assert.Equal(InstanceStatus.Starting, appInfoManager.Instance.Status);
+    }
+
+    [Fact]
     public async Task Can_manipulate_request_headers()
     {
         var extraHeadersHandler = new ExtraRequestHeadersDelegatingHandler();
