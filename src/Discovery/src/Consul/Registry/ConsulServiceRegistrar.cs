@@ -73,7 +73,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
     {
         if (!Options.Enabled)
         {
-            _logger.LogDebug("Discovery Lifecycle disabled. Not starting");
+            _logger.LogDebug("Consul discovery client is turned off.");
             return;
         }
 
@@ -94,7 +94,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
     {
         if (!Options.Register)
         {
-            _logger.LogDebug("Registration disabled");
+            _logger.LogDebug("Consul registration is turned off.");
             return;
         }
 
@@ -105,7 +105,7 @@ public sealed class ConsulServiceRegistrar : IAsyncDisposable
     {
         if (!Options.Register || !Options.Deregister)
         {
-            _logger.LogDebug("Deregistration disabled");
+            _logger.LogDebug("Consul deregistration is turned off.");
             return;
         }
 
