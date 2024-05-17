@@ -134,7 +134,8 @@ public sealed class EurekaHealthCheckHandlerTest
             ["eureka:instance:leaseRenewalIntervalInSeconds"] = "1",
             ["eureka:client:eurekaServer:retryCount"] = "0",
             ["Eureka:Client:Health:CheckEnabled"] = "true",
-            ["Eureka:Instance:AppName"] = "FOO"
+            ["Eureka:Instance:AppName"] = "FOO",
+            ["Eureka:Instance:InstanceId"] = "localhost:foo"
         };
 
         builder.Configuration.AddInMemoryCollection(appSettings);
@@ -142,6 +143,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NoContent);
+        handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond("application/json", "{}");
 
         WebApplication app = builder.Build();
 
