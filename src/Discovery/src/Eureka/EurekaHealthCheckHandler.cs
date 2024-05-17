@@ -16,7 +16,7 @@ namespace Steeltoe.Discovery.Eureka;
 /// <summary>
 /// Computes the Eureka <see cref="InstanceStatus" /> from ASP.NET health checks and all registered Steeltoe <see cref="IHealthContributor" />s.
 /// </summary>
-public sealed class EurekaHealthCheckHandler : IHealthCheckHandler
+internal sealed class EurekaHealthCheckHandler : IHealthCheckHandler
 {
     private static readonly List<HealthStatus> HealthStatusOrder =
     [
