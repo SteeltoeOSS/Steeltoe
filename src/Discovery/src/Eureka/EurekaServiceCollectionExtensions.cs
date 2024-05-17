@@ -31,8 +31,11 @@ public static class EurekaServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        ConfigureEurekaServices(services);
-        AddEurekaServices(services);
+        if (services.All(descriptor => descriptor.ImplementationType != typeof(EurekaDiscoveryClient)))
+        {
+            ConfigureEurekaServices(services);
+            AddEurekaServices(services);
+        }
 
         return services;
     }
@@ -79,7 +82,7 @@ public static class EurekaServiceCollectionExtensions
         services.AddSingleton<EurekaApplicationInfoManager>();
 
         services.TryAddSingleton<EurekaDiscoveryClient>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IDiscoveryClient), typeof(EurekaDiscoveryClient)));
+        services.AddSingleton<IDiscoveryClient>(serviceProvider => serviceProvider.GetRequiredService<EurekaDiscoveryClient>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IHostedService), typeof(DiscoveryClientHostedService)));
 
         AddEurekaClient(services);
