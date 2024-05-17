@@ -21,8 +21,8 @@ public sealed class HealthCheckHandlerProvider
         _serviceProvider = serviceProvider;
     }
 
-    internal IHealthCheckHandler? GetHandler()
+    internal IHealthCheckHandler GetHandler()
     {
-        return _serviceProvider.GetService<IHealthCheckHandler>();
+        return _serviceProvider.GetRequiredService<IHealthCheckHandler>();
     }
 }

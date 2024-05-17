@@ -206,8 +206,7 @@ public sealed class ConfigServerHealthContributorTest
         var contributor = new ConfigServerHealthContributor(configurationRoot, NullLogger<ConfigServerHealthContributor>.Instance);
         Assert.NotNull(contributor.Provider);
         HealthCheckResult? health = await contributor.CheckHealthAsync(CancellationToken.None);
-        Assert.NotNull(health);
-        Assert.Equal(HealthStatus.Unknown, health.Status);
+        Assert.Null(health);
     }
 
     [Fact]

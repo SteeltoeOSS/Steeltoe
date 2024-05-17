@@ -68,9 +68,9 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
             healthCheckRegistrations = _healthOptionsMonitor.CurrentValue.Registrations;
         }
 
-        HealthCheckResult result = _healthAggregator is not IHealthRegistrationsAggregator registrationAggregator
-            ? await _healthAggregator.AggregateAsync(filteredContributors, cancellationToken)
-            : await registrationAggregator.AggregateAsync(filteredContributors, healthCheckRegistrations, _serviceProvider, cancellationToken);
+        HealthCheckResult result = _healthAggregator is IHealthRegistrationsAggregator registrationAggregator
+            ? await registrationAggregator.AggregateAsync(filteredContributors, healthCheckRegistrations, _serviceProvider, cancellationToken)
+            : await _healthAggregator.AggregateAsync(filteredContributors, cancellationToken);
 
         var response = new HealthEndpointResponse(result);
 

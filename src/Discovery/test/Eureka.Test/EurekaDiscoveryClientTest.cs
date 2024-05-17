@@ -561,15 +561,16 @@ public sealed class EurekaDiscoveryClientTest
         var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Client:Health:CheckEnabled"] = "true"
         };
 
         var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddEurekaDiscoveryClient();
         builder.Services.AddSingleton<IHealthCheckHandler>(myHandler);
+        builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication webApplication = builder.Build();
 
@@ -580,6 +581,35 @@ public sealed class EurekaDiscoveryClientTest
 
         Assert.True(myHandler.Awaited);
         Assert.Equal(InstanceStatus.Down, appInfoManager.Instance.Status);
+    }
+
+    [Fact]
+    public async Task RunHealthChecksAsync_SkipsHealthCheckHandler_WhenInStartingState()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Eureka:Client:Health:CheckEnabled"] = "true",
+            ["Eureka:Instance:InstanceEnabledOnInit"] = "false"
+        };
+
+        var myHandler = new TestHealthCheckHandler(InstanceStatus.Down);
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IHealthCheckHandler>(myHandler);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        await using WebApplication webApplication = builder.Build();
+
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+        var appInfoManager = webApplication.Services.GetRequiredService<EurekaApplicationInfoManager>();
+
+        await discoveryClient.RunHealthChecksAsync(CancellationToken.None);
+
+        Assert.False(myHandler.Awaited);
+        Assert.Equal(InstanceStatus.Starting, appInfoManager.Instance.Status);
     }
 
     [Fact]
@@ -687,7 +717,7 @@ public sealed class EurekaDiscoveryClientTest
             _status = status;
         }
 
-        public async Task<InstanceStatus> GetStatusAsync(CancellationToken cancellationToken)
+        public async Task<InstanceStatus> GetStatusAsync(bool hasFirstHeartbeatCompleted, CancellationToken cancellationToken)
         {
             await Task.Yield();
 

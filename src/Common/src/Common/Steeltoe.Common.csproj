@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(FoundationalVersion)" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(FoundationalVersion)" />

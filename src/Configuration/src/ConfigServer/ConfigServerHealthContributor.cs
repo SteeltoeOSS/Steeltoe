@@ -46,10 +46,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
         if (!IsEnabled())
         {
-            _logger.LogDebug("Config Server health check disabled");
-            health.Status = HealthStatus.Unknown;
-            health.Details.Add("info", "Health check disabled");
-            return health;
+            return null;
         }
 
         IList<PropertySource>? sources = await GetPropertySourcesAsync(Provider, cancellationToken);

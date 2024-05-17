@@ -159,7 +159,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
             instanceOptions.InstanceId = previousInstance.InstanceId;
         }
 
-        if (instanceOptions.AppName != previousInstance.AppName)
+        if (!string.Equals(instanceOptions.AppName, previousInstance.AppName, StringComparison.OrdinalIgnoreCase))
         {
             // A change of AppName would require unregister, then re-register.
             _logger.LogWarning("Discarding change of AppName, which is not supported.");

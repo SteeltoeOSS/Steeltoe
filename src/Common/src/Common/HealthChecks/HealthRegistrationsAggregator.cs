@@ -2,17 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Steeltoe.Common;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 using MicrosoftHealthCheckResult = Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult;
 using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 using SteeltoeHealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 using SteeltoeHealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
-namespace Steeltoe.Management.Endpoint.Health;
+namespace Steeltoe.Common.HealthChecks;
 
 internal sealed class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
 {

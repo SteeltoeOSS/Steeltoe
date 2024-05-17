@@ -22,5 +22,5 @@ public sealed class EurekaHealthOptions
     /// <summary>
     /// Gets or sets a value indicating whether to enable the Eureka health check handler. Configuration property: eureka:client:health:checkEnabled.
     /// </summary>
-    public bool CheckEnabled { get; set; } = true;
+    public bool CheckEnabled { get; set; }
 }

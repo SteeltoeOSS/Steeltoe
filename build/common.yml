@@ -20,9 +20,4 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Common
-      OS: macOS
-      skipFilter: --filter "Category!=SkipOnMacOS"
-  - template: templates/component-build.yaml
-    parameters:
-      component: Common
       OS: windows

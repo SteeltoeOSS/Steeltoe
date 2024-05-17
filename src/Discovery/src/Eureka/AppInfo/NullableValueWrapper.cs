@@ -16,4 +16,9 @@ internal sealed class NullableValueWrapper<T>
     {
         Value = value;
     }
+
+    public override string ToString()
+    {
+        return $"NullableValueWrapper: {Value}";
+    }
 }

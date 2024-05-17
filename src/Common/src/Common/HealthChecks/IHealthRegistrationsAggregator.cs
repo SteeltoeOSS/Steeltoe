@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Steeltoe.Common.HealthChecks;
-using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+#nullable enable
 
-namespace Steeltoe.Management.Endpoint.Health;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
+namespace Steeltoe.Common.HealthChecks;
 
 public interface IHealthRegistrationsAggregator : IHealthAggregator
 {
