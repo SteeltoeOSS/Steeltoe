@@ -39,7 +39,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
         var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
-        InstanceStatus result = await handler.GetStatusAsync(CancellationToken.None);
+        InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
 
         result.Should().Be(expectedStatus);
     }
@@ -52,7 +52,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
         var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
-        InstanceStatus result = await handler.GetStatusAsync(CancellationToken.None);
+        InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
 
         result.Should().Be(InstanceStatus.Up);
     }
@@ -68,7 +68,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
         var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
-        InstanceStatus result = await handler.GetStatusAsync(CancellationToken.None);
+        InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
 
         result.Should().Be(InstanceStatus.Unknown);
     }
@@ -115,7 +115,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
         var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
-        InstanceStatus result = await handler.GetStatusAsync(CancellationToken.None);
+        InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
 
         result.Should().Be(expectedStatus);
     }

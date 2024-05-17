@@ -31,6 +31,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     private readonly Timer? _cacheRefreshTimer;
     private readonly SemaphoreSlim _registerUnregisterAsyncLock = new(1);
     private readonly SemaphoreSlim _registryFetchAsyncLock = new(1);
+    private volatile bool _hasFirstHeartbeatCompleted;
 
     private volatile ApplicationInfoCollection _remoteApps;
     private volatile NullableValueWrapper<DateTime> _lastGoodHeartbeatTimeUtc = new(null);
@@ -296,6 +297,10 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
             await RegisterAsync(false, cancellationToken);
         }
+        finally
+        {
+            _hasFirstHeartbeatCompleted = true;
+        }
     }
 
     internal async Task FetchRegistryAsync(bool doFullUpdate, CancellationToken cancellationToken)
@@ -405,21 +410,20 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     {
         if (_clientOptionsMonitor.CurrentValue.Health.CheckEnabled)
         {
+            if (_appInfoManager.Instance.Status == InstanceStatus.Starting)
+            {
+                _logger.LogDebug("Skipping health check handler in starting state.");
+                return;
+            }
+
             try
             {
-                if (_appInfoManager.Instance.Status == InstanceStatus.Starting)
-                {
-                    _logger.LogDebug("Skipping health check handler in starting state.");
-                    return;
-                }
-
-                InstanceStatus aggregatedStatus = await HealthCheckHandler.GetStatusAsync(cancellationToken);
+                InstanceStatus aggregatedStatus = await HealthCheckHandler.GetStatusAsync(_hasFirstHeartbeatCompleted, cancellationToken);
                 _logger.LogDebug("Health check handler returned status {Status}.", aggregatedStatus);
 
                 InstanceInfo snapshot = _appInfoManager.Instance;
 
-                // When running the first time, EurekaServerHealthContributor returns UNKNOWN. Don't take this app out of service because of that.
-                if (aggregatedStatus != InstanceStatus.Unknown && aggregatedStatus != snapshot.Status)
+                if (aggregatedStatus != snapshot.Status)
                 {
                     _logger.LogDebug("Changing instance status from {LocalStatus} to {RemoteStatus}.", snapshot.Status, aggregatedStatus);
                     _appInfoManager.UpdateStatusWithoutRaisingEvent(aggregatedStatus);

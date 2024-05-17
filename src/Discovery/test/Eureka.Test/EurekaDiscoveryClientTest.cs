@@ -717,7 +717,7 @@ public sealed class EurekaDiscoveryClientTest
             _status = status;
         }
 
-        public async Task<InstanceStatus> GetStatusAsync(CancellationToken cancellationToken)
+        public async Task<InstanceStatus> GetStatusAsync(bool hasFirstHeartbeatCompleted, CancellationToken cancellationToken)
         {
             await Task.Yield();
 

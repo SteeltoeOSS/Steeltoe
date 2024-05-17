@@ -226,14 +226,14 @@ Steeltoe.Discovery.Eureka.EurekaDiscoveryClient.GetServiceIdsAsync(System.Thread
 Steeltoe.Discovery.Eureka.EurekaDiscoveryClient.ShutdownAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Eureka.EurekaHealthCheckHandler
 Steeltoe.Discovery.Eureka.EurekaHealthCheckHandler.EurekaHealthCheckHandler(Steeltoe.Common.HealthChecks.IHealthAggregator! healthAggregator, Microsoft.Extensions.Options.IOptionsMonitor<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckServiceOptions!>! healthOptionsMonitor, System.IServiceProvider! serviceProvider) -> void
-Steeltoe.Discovery.Eureka.EurekaHealthCheckHandler.GetStatusAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus>!
+Steeltoe.Discovery.Eureka.EurekaHealthCheckHandler.GetStatusAsync(bool hasFirstHeartbeatCompleted, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus>!
 Steeltoe.Discovery.Eureka.EurekaServiceCollectionExtensions
 Steeltoe.Discovery.Eureka.EurekaServiceUriStateManager
 Steeltoe.Discovery.Eureka.EurekaServiceUriStateManager.EurekaServiceUriStateManager(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Eureka.Configuration.EurekaClientOptions!>! optionsMonitor, Microsoft.Extensions.Logging.ILogger<Steeltoe.Discovery.Eureka.EurekaServiceUriStateManager!>! logger) -> void
 Steeltoe.Discovery.Eureka.HealthCheckHandlerProvider
 Steeltoe.Discovery.Eureka.HealthCheckHandlerProvider.HealthCheckHandlerProvider(System.IServiceProvider! serviceProvider) -> void
 Steeltoe.Discovery.Eureka.IHealthCheckHandler
-Steeltoe.Discovery.Eureka.IHealthCheckHandler.GetStatusAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus>!
+Steeltoe.Discovery.Eureka.IHealthCheckHandler.GetStatusAsync(bool hasFirstHeartbeatCompleted, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus>!
 Steeltoe.Discovery.Eureka.Transport.EurekaTransportException
 Steeltoe.Discovery.Eureka.Transport.EurekaTransportException.EurekaTransportException(string? message) -> void
 Steeltoe.Discovery.Eureka.Transport.EurekaTransportException.EurekaTransportException(string? message, System.Exception? innerException) -> void

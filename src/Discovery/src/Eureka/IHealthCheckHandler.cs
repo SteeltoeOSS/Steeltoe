@@ -11,5 +11,5 @@ namespace Steeltoe.Discovery.Eureka;
 /// </summary>
 public interface IHealthCheckHandler
 {
-    Task<InstanceStatus> GetStatusAsync(CancellationToken cancellationToken);
+    Task<InstanceStatus> GetStatusAsync(bool hasFirstHeartbeatCompleted, CancellationToken cancellationToken);
 }

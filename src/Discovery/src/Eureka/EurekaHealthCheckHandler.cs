@@ -43,12 +43,19 @@ public sealed class EurekaHealthCheckHandler : IHealthCheckHandler
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<InstanceStatus> GetStatusAsync(CancellationToken cancellationToken)
+    public async Task<InstanceStatus> GetStatusAsync(bool hasFirstHeartbeatCompleted, CancellationToken cancellationToken)
     {
         await using AsyncServiceScope serviceScope = _serviceProvider.CreateAsyncScope();
 
-        IHealthContributor[] healthContributors = serviceScope.ServiceProvider.GetRequiredService<IEnumerable<IHealthContributor>>().ToArray();
+        List<IHealthContributor> healthContributors = serviceScope.ServiceProvider.GetRequiredService<IEnumerable<IHealthContributor>>().ToList();
         ICollection<HealthCheckRegistration> registrations = _healthOptionsMonitor.CurrentValue.Registrations;
+
+        if (!hasFirstHeartbeatCompleted)
+        {
+            // We're being called during preparation for the first heartbeat. EurekaServerHealthContributor will return UNKNOWN because its
+            // dependent information hasn't been gathered yet. Skip it, to avoid the local Eureka instance temporarily being taken out of service.
+            healthContributors.RemoveAll(contributor => contributor is EurekaServerHealthContributor);
+        }
 
         HealthCheckResult result = _healthAggregator is IHealthRegistrationsAggregator registrationAggregator
             ? await registrationAggregator.AggregateAsync(healthContributors, registrations, serviceScope.ServiceProvider, cancellationToken)
