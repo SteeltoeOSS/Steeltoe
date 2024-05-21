@@ -12,7 +12,7 @@ public sealed class ConsulOptions
     internal const string ConfigurationPrefix = "consul";
 
     /// <summary>
-    /// Gets or sets the host name or IP address of the Consul server. Default value: localhost.
+    /// Gets or sets the hostname or IP address of the Consul server. Default value: localhost.
     /// </summary>
     public string? Host { get; set; } = "localhost";
 

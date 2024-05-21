@@ -21,7 +21,7 @@ public sealed class EurekaClientOptionsTest
         var clientOptions = new EurekaClientOptions();
 
         Assert.True(clientOptions.Enabled);
-        Assert.Equal(EurekaClientOptions.DefaultRegistryFetchIntervalSeconds, clientOptions.RegistryFetchIntervalSeconds);
+        Assert.Equal(30, clientOptions.RegistryFetchIntervalSeconds);
         Assert.Null(clientOptions.EurekaServer.ProxyHost);
         Assert.Equal(0, clientOptions.EurekaServer.ProxyPort);
         Assert.Null(clientOptions.EurekaServer.ProxyUserName);
@@ -33,7 +33,7 @@ public sealed class EurekaClientOptionsTest
         Assert.True(clientOptions.ShouldFilterOnlyUpInstances);
         Assert.True(clientOptions.ShouldFetchRegistry);
         Assert.Null(clientOptions.RegistryRefreshSingleVipAddress);
-        Assert.Equal(EurekaClientOptions.DefaultServerServiceUrl, clientOptions.EurekaServerServiceUrls);
+        Assert.Equal("http://localhost:8761/eureka/", clientOptions.EurekaServerServiceUrls);
         Assert.NotNull(clientOptions.Health);
         Assert.True(clientOptions.Health.ContributorEnabled);
         Assert.False(clientOptions.Health.CheckEnabled);

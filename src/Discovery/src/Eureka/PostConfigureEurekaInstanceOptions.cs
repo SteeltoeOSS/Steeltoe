@@ -131,7 +131,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
         if (string.IsNullOrWhiteSpace(options.AppName))
         {
             string? springAppName = _appInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery);
-            options.AppName = !string.IsNullOrWhiteSpace(springAppName) ? springAppName : EurekaInstanceOptions.DefaultAppName;
+            options.AppName = !string.IsNullOrWhiteSpace(springAppName) ? springAppName : "UNKNOWN";
         }
     }
 

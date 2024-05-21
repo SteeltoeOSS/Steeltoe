@@ -113,7 +113,7 @@ public sealed class ConsulDiscoveryOptions
     public bool HealthCheckTlsSkipVerify { get; set; }
 
     /// <summary>
-    /// Gets or sets the host name to register the running app with (if <see cref="PreferIPAddress" /> is false).
+    /// Gets or sets the hostname to register the running app with (if <see cref="PreferIPAddress" /> is false).
     /// </summary>
     public string? HostName { get; set; }
 
@@ -128,7 +128,7 @@ public sealed class ConsulDiscoveryOptions
     public int Port { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether to register the running app with IP address instead of host name. Default: false.
+    /// Gets or sets a value indicating whether to register the running app with IP address instead of hostname. Default: false.
     /// </summary>
     public bool PreferIPAddress { get; set; }
 

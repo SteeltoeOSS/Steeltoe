@@ -294,7 +294,7 @@ public sealed class InstanceInfoTest
         Assert.NotNull(instance);
         Assert.Equal(instanceOptions.HostName, instance.HostName);
         Assert.Equal("foo", instance.InstanceId);
-        Assert.Equal(EurekaInstanceOptions.DefaultAppName.ToUpperInvariant(), instance.AppName);
+        Assert.Equal("UNKNOWN", instance.AppName);
         Assert.Null(instance.AppGroupName);
         Assert.Equal(instanceOptions.IPAddress, instance.IPAddress);
         Assert.Null(instance.Sid);

@@ -32,13 +32,13 @@ public sealed class EurekaInstanceOptionsTest
         Assert.False(instanceOptions.IsSecurePortEnabled);
         Assert.Null(instanceOptions.RegistrationMethod);
         Assert.True(instanceOptions.IsInstanceEnabledOnInit);
-        Assert.Equal(EurekaInstanceOptions.DefaultLeaseRenewalIntervalInSeconds, instanceOptions.LeaseRenewalIntervalInSeconds);
-        Assert.Equal(EurekaInstanceOptions.DefaultLeaseExpirationDurationInSeconds, instanceOptions.LeaseExpirationDurationInSeconds);
-        Assert.Equal(EurekaInstanceOptions.DefaultStatusPageUrlPath, instanceOptions.StatusPageUrlPath);
+        Assert.Equal(30, instanceOptions.LeaseRenewalIntervalInSeconds);
+        Assert.Equal(90, instanceOptions.LeaseExpirationDurationInSeconds);
+        Assert.Equal("/info", instanceOptions.StatusPageUrlPath);
         Assert.Null(instanceOptions.StatusPageUrl);
-        Assert.Equal(EurekaInstanceOptions.DefaultHomePageUrlPath, instanceOptions.HomePageUrlPath);
+        Assert.Equal("/", instanceOptions.HomePageUrlPath);
         Assert.Null(instanceOptions.HomePageUrl);
-        Assert.Equal(EurekaInstanceOptions.DefaultHealthCheckUrlPath, instanceOptions.HealthCheckUrlPath);
+        Assert.Equal("/health", instanceOptions.HealthCheckUrlPath);
         Assert.Null(instanceOptions.HealthCheckUrl);
         Assert.Null(instanceOptions.SecureHealthCheckUrl);
         Assert.Null(instanceOptions.AutoScalingGroupName);
