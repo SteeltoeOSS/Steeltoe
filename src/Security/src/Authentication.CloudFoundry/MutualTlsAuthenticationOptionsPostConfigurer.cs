@@ -14,13 +14,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry;
 public class MutualTlsAuthenticationOptionsPostConfigurer : IPostConfigureOptions<MutualTlsAuthenticationOptions>
 {
     private readonly IOptionsMonitor<CertificateOptions> _containerIdentityOptions;
-    private readonly ILogger<CloudFoundryInstanceCertificate> _logger;
+    private readonly ILogger<CloudFoundryInstanceCertificate> _cloudFoundryLogger;
 
-    public MutualTlsAuthenticationOptionsPostConfigurer(IOptionsMonitor<CertificateOptions> containerIdentityOptions,
-        ILogger<CloudFoundryInstanceCertificate> logger = null)
+    public MutualTlsAuthenticationOptionsPostConfigurer(IOptionsMonitor<CertificateOptions> containerIdentityOptions, ILoggerFactory loggerFactory)
     {
         _containerIdentityOptions = containerIdentityOptions;
-        _logger = logger;
+        _cloudFoundryLogger = loggerFactory?.CreateLogger<CloudFoundryInstanceCertificate>();
     }
 
     public void PostConfigure(string name, MutualTlsAuthenticationOptions options)
@@ -33,7 +32,7 @@ public class MutualTlsAuthenticationOptionsPostConfigurer : IPostConfigureOption
             {
                 var claims = new List<Claim>(context.Principal.Claims);
 
-                if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out CloudFoundryInstanceCertificate cfCert, _logger))
+                if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out CloudFoundryInstanceCertificate cfCert, _cloudFoundryLogger))
                 {
                     claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryInstanceId, cfCert.InstanceId, ClaimValueTypes.String,
                         context.Options.ClaimsIssuer));
