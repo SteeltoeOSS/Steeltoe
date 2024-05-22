@@ -52,9 +52,9 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
                 }
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException exception)
         {
-            _logger.LogDebug("Stop sending periodic Consul heartbeats for '{ServiceId}'.", _serviceId);
+            _logger.LogDebug(exception, "Stop sending periodic Consul heartbeats for '{ServiceId}'.", _serviceId);
         }
     }
 
