@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -109,8 +110,7 @@ internal sealed class SecurityUtils
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger.LogError(exception, "Exception extracting permissions from {json}", SecurityUtilities.SanitizeInput(json));
-            throw;
+            throw new SecurityException($"Exception extracting permissions from json: {SecurityUtilities.SanitizeInput(json)}", exception);
         }
 
         _logger.LogDebug("GetPermissionsAsync returning: {permissions}", permissions);
