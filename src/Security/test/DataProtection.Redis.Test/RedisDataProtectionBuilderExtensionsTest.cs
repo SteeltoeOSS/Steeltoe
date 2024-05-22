@@ -77,7 +77,7 @@ public sealed class RedisDataProtectionBuilderExtensionsTest
             return Task.CompletedTask;
         });
 
-        app.Start();
+        await app.StartAsync();
 
         using var httpClient = new HttpClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost:5000/set-session"));

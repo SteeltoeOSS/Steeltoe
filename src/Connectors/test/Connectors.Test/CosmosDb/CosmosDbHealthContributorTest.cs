@@ -101,7 +101,7 @@ public sealed class CosmosDbHealthContributorTest
         using var healthContributor = new CosmosDbHealthContributor(cosmosClientMock.Object, "localhost", NullLogger<CosmosDbHealthContributor>.Instance);
 
         using var source = new CancellationTokenSource();
-        source.Cancel();
+        await source.CancelAsync();
 
         Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
 
