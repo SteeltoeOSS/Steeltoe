@@ -60,7 +60,7 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
             new UpContributor(5000)
         };
 
-        var source = new CancellationTokenSource();
+        using var source = new CancellationTokenSource();
         await source.CancelAsync();
 
         var aggregator = new DefaultHealthAggregator();
