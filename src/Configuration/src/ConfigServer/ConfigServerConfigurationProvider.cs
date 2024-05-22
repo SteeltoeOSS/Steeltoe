@@ -552,8 +552,6 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             {
                 error = exception;
 
-                Logger.LogError(exception, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
-
                 if (IsSocketError(exception))
                 {
                     continue;
