@@ -82,7 +82,7 @@ public static class TaskWebHostExtensions
             {
                 var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
                 ILogger logger = loggerFactory.CreateLogger($"{typeof(TaskWebHostExtensions).Namespace}.CloudFoundryTasks");
-                logger.LogError($"No task with name {taskName} is found registered in service container");
+                logger.LogError("No task with name {TaskName} is found registered in service container", taskName);
             }
 
             return true;

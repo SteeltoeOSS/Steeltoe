@@ -215,7 +215,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
         {
             if (!exception.IsCancellation())
             {
-                _logger.LogError(exception, $"Failed to handle {nameof(EurekaApplicationInfoManager.InstanceChanged)} event.");
+                _logger.LogError(exception, "Failed to handle {EventName} event.", nameof(EurekaApplicationInfoManager.InstanceChanged));
             }
         }
     }
@@ -353,7 +353,7 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError(exception, $"Failed to handle {nameof(ApplicationsFetched)} event.");
+                    _logger.LogError(exception, "Failed to handle {EventName} event.", nameof(ApplicationsFetched));
                 }
             });
         }
