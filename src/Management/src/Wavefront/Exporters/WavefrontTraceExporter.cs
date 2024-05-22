@@ -80,7 +80,7 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
             }
         }
 
-        _logger.LogTrace($"Exported {spanCount} spans to {_options.Uri}");
+        _logger.LogTrace("Exported {Count} spans to {Uri}", spanCount, _options.Uri);
         return ExportResult.Success;
     }
 
