@@ -61,7 +61,7 @@ public sealed class DefaultHealthAggregatorTest : BaseTest
         };
 
         var source = new CancellationTokenSource();
-        source.Cancel();
+        await source.CancelAsync();
 
         var aggregator = new DefaultHealthAggregator();
         Func<Task> action = async () => await aggregator.AggregateAsync(contributors, source.Token);

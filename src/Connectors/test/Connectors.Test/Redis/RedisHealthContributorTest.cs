@@ -76,7 +76,7 @@ public sealed class RedisHealthContributorTest
         using var healthContributor = new RedisHealthContributor("localhost", NullLogger<RedisHealthContributor>.Instance);
 
         using var source = new CancellationTokenSource();
-        source.Cancel();
+        await source.CancelAsync();
 
         Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
 

@@ -113,7 +113,7 @@ public sealed class RabbitMQHealthContributorTest
         using var healthContributor = new RabbitMQHealthContributor(connectionFactoryMock.Object, "localhost", NullLogger<RabbitMQHealthContributor>.Instance);
 
         using var source = new CancellationTokenSource();
-        source.Cancel();
+        await source.CancelAsync();
 
         Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
 
