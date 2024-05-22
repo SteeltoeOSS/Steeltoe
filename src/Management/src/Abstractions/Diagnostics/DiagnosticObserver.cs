@@ -41,7 +41,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
             _subscription?.Dispose();
             _subscription = null;
 
-            _logger.LogInformation("DiagnosticObserver {observer} Disposed", ObserverName);
+            _logger.LogInformation("DiagnosticObserver {Observer} Disposed", ObserverName);
         }
     }
 
@@ -57,7 +57,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
             }
 
             _subscription = listener.Subscribe(this);
-            _logger.LogInformation("DiagnosticObserver {observer} Subscribed to {listener}", ObserverName, listener.Name);
+            _logger.LogInformation("DiagnosticObserver {Observer} Subscribed to {Listener}", ObserverName, listener.Name);
         }
     }
 

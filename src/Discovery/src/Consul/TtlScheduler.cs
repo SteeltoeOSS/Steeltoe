@@ -65,7 +65,7 @@ public sealed class TtlScheduler : IAsyncDisposable
 
         if (heartbeatOptions != null)
         {
-            _schedulerLogger.LogDebug("Adding instance '{instanceId}'.", instanceId);
+            _schedulerLogger.LogDebug("Adding instance '{InstanceId}'.", instanceId);
 
             TimeSpan interval = heartbeatOptions.ComputeHeartbeatInterval();
             string checkId = instanceId;
@@ -92,7 +92,7 @@ public sealed class TtlScheduler : IAsyncDisposable
 
         if (ServiceHeartbeats.TryRemove(instanceId, out PeriodicHeartbeat? heartbeat))
         {
-            _schedulerLogger.LogDebug("Removing instance '{instanceId}'.", instanceId);
+            _schedulerLogger.LogDebug("Removing instance '{InstanceId}'.", instanceId);
             await heartbeat.DisposeAsync();
         }
     }

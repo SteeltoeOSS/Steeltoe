@@ -40,7 +40,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Registering with Spring Boot Admin Server at {url}", _clientOptions.Url);
+        _logger.LogInformation("Registering with Spring Boot Admin Server at {Url}", _clientOptions.Url);
 
         if (_clientOptions.BasePath == null || _clientOptions.ApplicationName == null)
         {

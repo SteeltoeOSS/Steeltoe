@@ -111,7 +111,7 @@ internal sealed class ConfigServerDiscoveryService
 
         do
         {
-            _logger.LogDebug("Locating ConfigServer {serviceId} via discovery", _settings.DiscoveryServiceId);
+            _logger.LogDebug("Locating ConfigServer {ServiceId} via discovery", _settings.DiscoveryServiceId);
 
             if (_settings.DiscoveryServiceId != null)
             {

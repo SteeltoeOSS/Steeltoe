@@ -46,7 +46,7 @@ public sealed class CloudFoundrySecurityMiddleware
     {
         ArgumentGuard.NotNull(context);
 
-        _logger.LogDebug("InvokeAsync({requestPath})", context.Request.Path.Value);
+        _logger.LogDebug("InvokeAsync({RequestPath})", context.Request.Path.Value);
         CloudFoundryEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
 
         if (Platform.IsCloudFoundry && endpointOptions.IsEnabled(_managementOptionsMonitor.CurrentValue) &&
@@ -166,13 +166,13 @@ public sealed class CloudFoundrySecurityMiddleware
 
     private void LogError(HttpContext context, SecurityResult error)
     {
-        _logger.LogError("Actuator Security Error: {code} - {message}", error.Code, error.Message);
+        _logger.LogError("Actuator Security Error: {Code} - {Message}", error.Code, error.Message);
 
         if (_logger.IsEnabled(LogLevel.Trace))
         {
             foreach (KeyValuePair<string, StringValues> header in context.Request.Headers)
             {
-                _logger.LogTrace("Header: {key} - {value}", header.Key, header.Value);
+                _logger.LogTrace("Header: {Key} - {Value}", header.Key, header.Value);
             }
         }
     }
