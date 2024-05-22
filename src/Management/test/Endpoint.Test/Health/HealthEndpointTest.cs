@@ -98,7 +98,7 @@ public sealed class HealthEndpointTest : BaseTest
 
         var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
 
-        var source = new CancellationTokenSource();
+        using var source = new CancellationTokenSource();
         await source.CancelAsync();
 
         HealthEndpointRequest healthRequest = GetHealthRequest();
