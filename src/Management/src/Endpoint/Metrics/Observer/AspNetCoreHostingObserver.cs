@@ -64,7 +64,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
         if (eventName == StopEventName)
         {
-            _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {Thread}", Thread.CurrentThread.ManagedThreadId);
 
             var context = GetPropertyOrDefault<HttpContext>(value, "HttpContext");
 
@@ -73,7 +73,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
                 HandleStopEvent(current, context);
             }
 
-            _logger.LogTrace("HandleStopEvent finish {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finish {Thread}", Thread.CurrentThread.ManagedThreadId);
         }
     }
 
@@ -84,7 +84,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
         if (ShouldIgnoreRequest(context.Request.Path))
         {
-            _logger.LogDebug("HandleStopEvent: Ignoring path: {path}", context.Request.Path);
+            _logger.LogDebug("HandleStopEvent: Ignoring path: {Path}", context.Request.Path);
             return;
         }
 

@@ -60,7 +60,7 @@ internal class InetUtils
             {
                 if (networkInterface is { OperationalStatus: OperationalStatus.Up, IsReceiveOnly: false })
                 {
-                    _logger.LogTrace("Testing interface: {name}, {id}", networkInterface.Name, networkInterface.Id);
+                    _logger.LogTrace("Testing interface: {Name}, {Id}", networkInterface.Name, networkInterface.Id);
 
                     IPInterfaceProperties properties = networkInterface.GetIPProperties();
                     IPv4InterfaceProperties iPv4Properties = properties.GetIPv4Properties();
@@ -82,7 +82,7 @@ internal class InetUtils
 
                             if (IsInet4Address(address) && !IsLoopbackAddress(address) && IsPreferredAddress(address, inetOptions))
                             {
-                                _logger.LogTrace("Found non-loopback interface: {name}", networkInterface.Name);
+                                _logger.LogTrace("Found non-loopback interface: {Name}", networkInterface.Name);
                                 result = address;
                             }
                         }
@@ -121,7 +121,7 @@ internal class InetUtils
 
             if (!siteLocalAddress)
             {
-                _logger.LogTrace("Ignoring address: {address} [UseOnlySiteLocalInterfaces=true, this address is not]", address);
+                _logger.LogTrace("Ignoring address: {Address} [UseOnlySiteLocalInterfaces=true, this address is not]", address);
             }
 
             return siteLocalAddress;
@@ -145,7 +145,7 @@ internal class InetUtils
             }
         }
 
-        _logger.LogTrace("Ignoring address: {address}", address);
+        _logger.LogTrace("Ignoring address: {Address}", address);
         return false;
     }
 
@@ -162,7 +162,7 @@ internal class InetUtils
 
             if (matcher.IsMatch(interfaceName))
             {
-                _logger.LogTrace("Ignoring interface: {name}", interfaceName);
+                _logger.LogTrace("Ignoring interface: {Name}", interfaceName);
                 return true;
             }
         }

@@ -90,7 +90,7 @@ internal sealed class ActuatorEndpointMapper
             }
             else
             {
-                _logger.LogError("Skipping over duplicate path at {path}", requestPath);
+                _logger.LogError("Skipping over duplicate path at {Path}", requestPath);
             }
         }
     }

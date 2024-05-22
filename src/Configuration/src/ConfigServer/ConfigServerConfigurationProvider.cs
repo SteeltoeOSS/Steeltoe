@@ -213,7 +213,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
             do
             {
-                Logger.LogInformation("Fetching configuration from server at: {uri}", Settings.Uri);
+                Logger.LogInformation("Fetching configuration from server at: {Uri}", Settings.Uri);
 
                 try
                 {
@@ -221,7 +221,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 }
                 catch (ConfigServerException exception)
                 {
-                    Logger.LogInformation(exception, "Failed fetching configuration from server at: {uri}.", Settings.Uri);
+                    Logger.LogInformation(exception, "Failed fetching configuration from server at: {Uri}.", Settings.Uri);
                     attempts++;
 
                     if (attempts < Settings.RetryAttempts)
@@ -239,7 +239,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             while (true);
         }
 
-        Logger.LogInformation("Fetching configuration from server at: {uri}", Settings.Uri);
+        Logger.LogInformation("Fetching configuration from server at: {Uri}", Settings.Uri);
         return await DoLoadAsync(updateDictionary, cancellationToken);
     }
 
@@ -265,7 +265,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 // Update configuration Data dictionary with any results
                 if (env != null)
                 {
-                    Logger.LogInformation("Located environment name: {name}, profiles: {profiles}, labels: {label}, version: {version}, state: {state}",
+                    Logger.LogInformation("Located environment name: {Name}, profiles: {Profiles}, labels: {Label}, version: {Version}, state: {State}",
                         env.Name, env.Profiles, env.Label, env.Version, env.State);
 
                     if (updateDictionary)
@@ -525,7 +525,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             {
                 using HttpResponseMessage response = await HttpClient.SendAsync(request, cancellationToken);
 
-                Logger.LogInformation("Config Server returned status: {statusCode} invoking path: {requestUri}", response.StatusCode,
+                Logger.LogInformation("Config Server returned status: {StatusCode} invoking path: {RequestUri}", response.StatusCode,
                     WebUtility.UrlEncode(requestUri));
 
                 if (response.StatusCode != HttpStatusCode.OK)
@@ -634,7 +634,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             }
             catch (Exception exception)
             {
-                Logger.LogError(exception, "Config Server exception, property: {key}={type}", pair.Key, pair.Value.GetType());
+                Logger.LogError(exception, "Config Server exception, property: {Key}={Type}", pair.Key, pair.Value.GetType());
             }
         }
     }
@@ -701,18 +701,18 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             Uri uri = GetVaultRenewUri();
             HttpRequestMessage message = await GetVaultRenewMessageAsync(uri, cancellationToken);
 
-            Logger.LogInformation("Renewing Vault token {token} for {ttl} milliseconds at Uri {uri}", obscuredToken, Settings.TokenTtl, uri);
+            Logger.LogInformation("Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}", obscuredToken, Settings.TokenTtl, uri);
 
             using HttpResponseMessage response = await HttpClient.SendAsync(message, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                Logger.LogWarning("Renewing Vault token {token} returned status: {status}", obscuredToken, response.StatusCode);
+                Logger.LogWarning("Renewing Vault token {Token} returned status: {Status}", obscuredToken, response.StatusCode);
             }
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            Logger.LogError(exception, "Unable to renew Vault token {token}. Is the token invalid or expired?", obscuredToken);
+            Logger.LogError(exception, "Unable to renew Vault token {Token}. Is the token invalid or expired?", obscuredToken);
         }
     }
 

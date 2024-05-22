@@ -89,7 +89,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
                 source.AddInstrumentation();
             }
 
-            _logger.LogTrace("Subscribed to EventListeners: {eventListeners}", string.Join(",", _eventListeners.Select(listener => listener.GetType().Name)));
+            _logger.LogTrace("Subscribed to EventListeners: {EventListeners}", string.Join(",", _eventListeners.Select(listener => listener.GetType().Name)));
         }
     }
 
