@@ -268,7 +268,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         Assert.Equal("spambarcelonaSpring Cloud Sampleshttps://github.com/spring-cloud-samples", result);
     }
 
-    [Fact(Skip = "Config Server image needs to be enhanced to support discovery-first")]
+    [Fact(Skip = "Integration test - Requires local Eureka server and local Config Server with discovery-first enabled")]
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
     {
