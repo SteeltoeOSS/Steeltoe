@@ -46,7 +46,7 @@ public static class TracingCoreServiceCollectionExtensions
 
         services.AddOptions<AspNetCoreTraceInstrumentationOptions>().PostConfigure<ITracingOptions>((instrumentationOptions, tracingOptions) =>
         {
-            var pathMatcher = new Regex(tracingOptions.IngressIgnorePattern);
+            var pathMatcher = new Regex(tracingOptions.IngressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1));
             instrumentationOptions.Filter += context => !pathMatcher.IsMatch(context.Request.Path);
         });
 

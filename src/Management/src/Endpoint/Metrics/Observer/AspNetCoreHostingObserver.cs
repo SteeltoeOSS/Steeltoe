@@ -38,7 +38,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
         if (ingressIgnorePattern != null)
         {
-            SetPathMatcher(new Regex(ingressIgnorePattern));
+            SetPathMatcher(new Regex(ingressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1)));
         }
 
         Meter meter = SteeltoeMetrics.Meter;

@@ -137,7 +137,7 @@ internal class InetUtils
         foreach (string regex in preferredNetworks)
         {
             string hostAddress = address.ToString();
-            var matcher = new Regex(regex);
+            var matcher = new Regex(regex, RegexOptions.None, TimeSpan.FromSeconds(1));
 
             if (matcher.IsMatch(hostAddress) || hostAddress.StartsWith(regex, StringComparison.Ordinal))
             {
@@ -158,7 +158,7 @@ internal class InetUtils
 
         foreach (string regex in inetOptions.GetIgnoredInterfaces())
         {
-            var matcher = new Regex(regex);
+            var matcher = new Regex(regex, RegexOptions.None, TimeSpan.FromSeconds(1));
 
             if (matcher.IsMatch(interfaceName))
             {
