@@ -44,7 +44,7 @@ public class TokenExchanger
     {
         List<KeyValuePair<string, string>> requestParameters = AuthCodeTokenRequestParameters(code);
         HttpRequestMessage requestMessage = GetTokenRequestMessage(requestParameters, targetUrl);
-        _logger?.LogDebug("Exchanging code {code} for token at {accessTokenUrl}", code, targetUrl);
+        _logger?.LogDebug("Exchanging code {Code} for token at {AccessTokenUrl}", code, targetUrl);
 
         return await _httpClient.SendAsync(requestMessage, cancellationToken);
     }
@@ -67,15 +67,15 @@ public class TokenExchanger
             _logger?.LogTrace("Successfully exchanged auth code for a token");
             var tokens = JsonSerializer.Deserialize<OpenIdTokenResponse>(await response.Content.ReadAsStringAsync());
 #if DEBUG
-            _logger?.LogTrace("Identity token received: {identityToken}", tokens.IdentityToken);
-            _logger?.LogTrace("Access token received: {accessToken}", tokens.AccessToken);
+            _logger?.LogTrace("Identity token received: {IdentityToken}", tokens.IdentityToken);
+            _logger?.LogTrace("Access token received: {AccessToken}", tokens.AccessToken);
 #endif
             var securityToken = new JwtSecurityToken(tokens.IdentityToken);
 
             return BuildIdentityWithClaims(securityToken.Claims, tokens.Scope, tokens.AccessToken);
         }
 
-        _logger?.LogError("Failed call to exchange code for token: {status}", response.StatusCode);
+        _logger?.LogError("Failed call to exchange code for token: {Status}", response.StatusCode);
         _logger?.LogWarning(response.ReasonPhrase);
         _logger?.LogInformation(await response.Content.ReadAsStringAsync());
 
@@ -170,7 +170,7 @@ public class TokenExchanger
 #if DEBUG
         foreach (Claim claim in claims)
         {
-            _logger?.LogTrace("{type} : {value}", claim.Type, claim.Value);
+            _logger?.LogTrace("{Type} : {Value}", claim.Type, claim.Value);
         }
 #endif
         string[] typedClaimNames =

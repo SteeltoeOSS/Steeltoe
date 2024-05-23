@@ -83,7 +83,7 @@ internal sealed class DbMigrationsEndpointHandler : IDbMigrationsEndpointHandler
                 }
                 catch (DbException exception) when (exception.Message.Contains("exist", StringComparison.Ordinal))
                 {
-                    _logger.LogWarning(exception, "Encountered exception loading migrations: {exception}", exception.Message);
+                    _logger.LogWarning(exception, "Encountered exception loading migrations: {Exception}", exception.Message);
                     AddRange(descriptor.PendingMigrations, _scanner.GetMigrations(dbContext));
                 }
             }

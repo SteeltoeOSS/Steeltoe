@@ -71,15 +71,18 @@ public static class ServiceCollectionExtensions
             var logger = provider.GetRequiredService<ILogger<MetricsExporter>>();
 
             var aggregationManager = new AggregationManager(exporterOptions.MaxTimeSeries, exporterOptions.MaxHistograms, exporter.AddMetrics,
-                (intervalStartTime, nextIntervalStartTime) => logger.LogTrace($"Begin collection from {intervalStartTime} to {nextIntervalStartTime}"),
-                (intervalStartTime, nextIntervalStartTime) => logger.LogTrace($"End collection from {intervalStartTime} to {nextIntervalStartTime}"),
-                instrument => logger.LogTrace($"Begin measurements from {instrument.Name} for {instrument.Meter.Name}"),
-                instrument => logger.LogTrace($"End measurements from {instrument.Name} for {instrument.Meter.Name}"),
-                instrument => logger.LogTrace($"Instrument {instrument.Name} published for {instrument.Meter.Name}"),
+                (intervalStartTime, nextIntervalStartTime) => logger.LogTrace("Begin collection from {IntervalStartTime} to {NextIntervalStartTime}",
+                    intervalStartTime, nextIntervalStartTime),
+                (intervalStartTime, nextIntervalStartTime) => logger.LogTrace("End collection from {IntervalStartTime} to {NextIntervalStartTime}",
+                    intervalStartTime, nextIntervalStartTime),
+                instrument => logger.LogTrace("Begin measurements from {InstrumentName} for {MeterName}", instrument.Name, instrument.Meter.Name),
+                instrument => logger.LogTrace("End measurements from {InstrumentName} for {MeterName}", instrument.Name, instrument.Meter.Name),
+                instrument => logger.LogTrace("Instrument {InstrumentName} published for {MeterName}", instrument.Name, instrument.Meter.Name),
                 () => logger.LogTrace("Steeltoe metrics collector started."), exception => logger.LogError(exception, "An error occurred while collecting"),
-                () => logger.LogWarning($"Cannot collect any more time series because the configured limit of {exporterOptions.MaxTimeSeries} was reached"),
-                () => logger.LogWarning($"Cannot collect any more Histograms because the configured limit of {exporterOptions.MaxHistograms} was reached"),
-                exception => logger.LogError(exception, "An error occurred while collecting observable instruments"));
+                () => logger.LogWarning("Cannot collect any more time series because the configured limit of {MaxTimeSeries} was reached",
+                    exporterOptions.MaxTimeSeries),
+                () => logger.LogWarning("Cannot collect any more Histograms because the configured limit of {MaxHistograms} was reached",
+                    exporterOptions.MaxHistograms), exception => logger.LogError(exception, "An error occurred while collecting observable instruments"));
 
             exporter.SetCollect(aggregationManager.Collect);
             aggregationManager.Include(SteeltoeMetrics.InstrumentationName); // Default to Steeltoe Metrics

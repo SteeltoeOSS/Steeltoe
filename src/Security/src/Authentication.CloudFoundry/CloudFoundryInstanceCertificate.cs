@@ -37,11 +37,13 @@ public class CloudFoundryInstanceCertificate
             return false;
         }
 
-        Match cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty, StringComparison.Ordinal), CloudFoundryInstanceCertSubjectRegex);
+        Match cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty, StringComparison.Ordinal), CloudFoundryInstanceCertSubjectRegex,
+            RegexOptions.None, TimeSpan.FromSeconds(1));
 
         if (!cfInstanceMatch.Success)
         {
-            cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty, StringComparison.Ordinal), ValidInstanceCertSubjectRegex);
+            cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty, StringComparison.Ordinal), ValidInstanceCertSubjectRegex,
+                RegexOptions.None, TimeSpan.FromSeconds(1));
         }
 
         if (cfInstanceMatch.Success)

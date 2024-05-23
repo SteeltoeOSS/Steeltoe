@@ -29,7 +29,7 @@ internal sealed class HeapDumpEndpointMiddleware : EndpointMiddleware<object?, s
 
     protected override async Task WriteResponseAsync(string? fileName, HttpContext context, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Returning: {fileName}", fileName);
+        _logger.LogDebug("Returning: {FileName}", fileName);
 
         if (!File.Exists(fileName))
         {

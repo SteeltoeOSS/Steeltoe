@@ -42,7 +42,7 @@ internal sealed class MetricsEndpointHandler : IMetricsEndpointHandler
         {
             if (metricNames.Contains(request.MetricName))
             {
-                _logger.LogTrace("Fetching metrics for " + request.MetricName);
+                _logger.LogTrace("Fetching metrics for {Name}", request.MetricName);
                 IList<MetricSample> sampleList = GetMetricSamplesByTags(measurements, request.MetricName, request.Tags);
 
                 response = GetMetric(request, sampleList, availableTags.GetOrAdd(request.MetricName, new List<MetricTag>()));

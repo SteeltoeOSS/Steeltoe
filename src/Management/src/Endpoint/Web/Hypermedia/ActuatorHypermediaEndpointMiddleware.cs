@@ -27,7 +27,7 @@ internal sealed class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<
     {
         ArgumentGuard.NotNull(context);
 
-        _logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        _logger.LogDebug("InvokeAsync({Method}, {Path})", context.Request.Method, context.Request.Path.Value);
         string requestUri = GetRequestUri(context.Request);
         return await EndpointHandler.InvokeAsync(requestUri, cancellationToken);
     }

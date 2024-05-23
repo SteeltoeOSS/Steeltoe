@@ -61,7 +61,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
         }
 
         value = GetRandomValue(key[_prefix.Length..]);
-        _logger.LogDebug("Generated random value {value} for '{key}'", value, key);
+        _logger.LogDebug("Generated random value {Value} for '{Key}'", value, key);
         return true;
     }
 

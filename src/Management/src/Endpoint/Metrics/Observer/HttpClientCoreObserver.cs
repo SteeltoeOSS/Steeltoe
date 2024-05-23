@@ -37,7 +37,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
 
         if (egressIgnorePattern != null)
         {
-            SetPathMatcher(new Regex(egressIgnorePattern));
+            SetPathMatcher(new Regex(egressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1)));
         }
 
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");
@@ -68,21 +68,21 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
 
         if (eventName == StopEventName)
         {
-            _logger.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent start {Thread}", Thread.CurrentThread.ManagedThreadId);
 
             var response = GetPropertyOrDefault<HttpResponseMessage>(value, "Response");
             var requestStatus = GetPropertyOrDefault<TaskStatus>(value, "RequestTaskStatus");
             HandleStopEvent(current, request, response, requestStatus);
 
-            _logger.LogTrace("HandleStopEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleStopEvent finished {Thread}", Thread.CurrentThread.ManagedThreadId);
         }
         else if (eventName == ExceptionEvent)
         {
-            _logger.LogTrace("HandleExceptionEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleExceptionEvent start {Thread}", Thread.CurrentThread.ManagedThreadId);
 
             HandleExceptionEvent(current, request);
 
-            _logger.LogTrace("HandleExceptionEvent finished {thread}", Thread.CurrentThread.ManagedThreadId);
+            _logger.LogTrace("HandleExceptionEvent finished {Thread}", Thread.CurrentThread.ManagedThreadId);
         }
     }
 
@@ -95,7 +95,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
     {
         if (ShouldIgnoreRequest(request.RequestUri?.AbsolutePath))
         {
-            _logger.LogDebug("HandleStopEvent: Ignoring path: {path}", SecurityUtilities.SanitizeInput(request.RequestUri?.AbsolutePath));
+            _logger.LogDebug("HandleStopEvent: Ignoring path: {Path}", SecurityUtilities.SanitizeInput(request.RequestUri?.AbsolutePath));
             return;
         }
 

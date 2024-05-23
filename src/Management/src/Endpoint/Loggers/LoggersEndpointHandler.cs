@@ -44,7 +44,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
     {
         ArgumentGuard.NotNull(request);
 
-        _logger.LogDebug("Invoke({request})", SecurityUtilities.SanitizeInput(request.ToString()));
+        _logger.LogDebug("Invoke({Request})", SecurityUtilities.SanitizeInput(request.ToString()));
 
         IDictionary<string, object> result;
 
@@ -74,7 +74,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
 
         foreach (DynamicLoggerConfiguration configuration in configurations.OrderBy(entry => entry.CategoryName))
         {
-            _logger.LogTrace("Adding {configuration}", configuration);
+            _logger.LogTrace("Adding {Configuration}", configuration);
             var levels = new LoggerLevels(configuration.ConfigurationMinLevel, configuration.EffectiveMinLevel);
             loggers.Add(configuration.CategoryName, levels);
         }

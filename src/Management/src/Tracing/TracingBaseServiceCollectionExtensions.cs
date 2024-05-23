@@ -110,7 +110,7 @@ public static class TracingBaseServiceCollectionExtensions
         {
             var tracingOptions = serviceProvider.GetRequiredService<ITracingOptions>();
 
-            var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern);
+            var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1));
             options.FilterHttpRequestMessage += requestMessage => !pathMatcher.IsMatch(requestMessage.RequestUri?.PathAndQuery ?? string.Empty);
         });
 
@@ -124,7 +124,7 @@ public static class TracingBaseServiceCollectionExtensions
             ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>()
                 .CreateLogger($"{typeof(TracingBaseServiceCollectionExtensions).Namespace}.Setup");
 
-            logger.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.",
+            logger.LogTrace("Found Zipkin exporter: {ExportToZipkin}. Found Jaeger exporter: {ExportToJaeger}. Found OTLP exporter: {ExportToOtlp}.",
                 exportToZipkin, exportToJaeger, exportToOpenTelemetryProtocol);
 
             tracerProviderBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(appName));

@@ -16,7 +16,7 @@ internal static class ConfigurationKeyConverter
     private const char EscapeChar = '\\';
     private const string EscapeString = "\\";
 
-    private static readonly Regex ArrayRegex = new(@"\[(?<digits>\d+)\]", RegexOptions.Compiled | RegexOptions.Singleline);
+    private static readonly Regex ArrayRegex = new(@"\[(?<digits>\d+)\]", RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
 
     public static string AsDotNetConfigurationKey(string key)
     {

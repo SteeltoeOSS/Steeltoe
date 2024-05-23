@@ -182,7 +182,7 @@ public sealed class RelationalDatabaseHealthContributorTest
             new RelationalDatabaseHealthContributor(connectionMock.Object, "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance);
 
         using var source = new CancellationTokenSource();
-        source.Cancel();
+        await source.CancelAsync();
 
         Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
 
