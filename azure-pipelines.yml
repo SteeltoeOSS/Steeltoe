@@ -3,12 +3,14 @@ pr:
     include:
     - main
     - release/*
+    - delete-all-files
 
 trigger:
   branches:
     include:
     - main
     - release/*
+    - delete-all-files
   paths:
     exclude:
     - README.md
