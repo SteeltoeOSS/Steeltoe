@@ -56,9 +56,6 @@ internal sealed class AssemblyLoader
 
         public static Assembly? LoadAnyVersion(object? sender, ResolveEventArgs args)
         {
-            // Workaround for Sonar bug at https://github.com/SonarSource/sonar-dotnet/issues/8371.
-            _ = sender;
-
             // Load whatever version is available (ignore Version, Culture and PublicKeyToken).
             string assemblySimpleName = new AssemblyName(args.Name).Name!;
 

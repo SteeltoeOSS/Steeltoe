@@ -83,7 +83,7 @@ public sealed class EventPipeThreadDumper
         finally
         {
             long totalMemory = GC.GetTotalMemory(true);
-            _logger.LogDebug("Total Memory {memory}", totalMemory);
+            _logger.LogDebug("Total Memory {Memory}", totalMemory);
         }
 
         return results;
@@ -143,7 +143,7 @@ public sealed class EventPipeThreadDumper
 
                 foreach ((int threadId, List<StackSourceSample> samples) in samplesForThread)
                 {
-                    _logger.LogDebug("Found {stacks} stacks for thread {thread}", samples.Count, threadId);
+                    _logger.LogDebug("Found {Stacks} stacks for thread {Thread}", samples.Count, threadId);
 
                     var threadInfo = new ThreadInfo
                     {
@@ -200,7 +200,7 @@ public sealed class EventPipeThreadDumper
     private List<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource,
         SymbolReader symbolReader)
     {
-        _logger.LogDebug("Processing thread with ID: {thread}", threadId);
+        _logger.LogDebug("Processing thread with ID: {Thread}", threadId);
 
         var result = new List<StackTraceElement>();
 
@@ -408,7 +408,7 @@ public sealed class EventPipeThreadDumper
             {
                 if (moduleFile.PdbSignature != Guid.Empty && symbolReaderModule.PdbGuid != moduleFile.PdbSignature)
                 {
-                    _logger.LogTrace("ERROR: the PDB we opened does not match the PDB desired. PDB GUID = {pdbGuid}, DESIRED GUID = {desiredGuid}",
+                    _logger.LogTrace("ERROR: the PDB we opened does not match the PDB desired. PDB GUID = {PdbGuid}, DESIRED GUID = {DesiredGuid}",
                         symbolReaderModule.PdbGuid, moduleFile.PdbSignature);
 
                     return null;

@@ -45,8 +45,10 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
         bool isCloudFoundryEndpoint = requestPath.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath);
         bool returnValue = isCloudFoundryEndpoint ? managementOptions.IsCloudFoundryEnabled && isEnabled : isEnabled && isExposed;
 
-        _logger.LogDebug($"Returned {returnValue} for endpointHandler: {EndpointOptions.Id}, requestPath: {requestPath}, isEnabled: {isEnabled}, " +
-            $"isExposed: {isExposed}, isCloudFoundryEndpoint: {isCloudFoundryEndpoint}, isCloudFoundryEnabled: {managementOptions.IsCloudFoundryEnabled}");
+        _logger.LogDebug(
+            "Returned {ReturnValue} for endpointHandler: {EndpointHandler}, requestPath: {RequestPath}, isEnabled: {IsEnabled}, " +
+            "isExposed: {IsExposed}, isCloudFoundryEndpoint: {IsCloudFoundryEndpoint}, isCloudFoundryEnabled: {IsCloudFoundryEnabled}", returnValue,
+            EndpointOptions.Id, requestPath, isEnabled, isExposed, isCloudFoundryEndpoint, managementOptions.IsCloudFoundryEnabled);
 
         return returnValue;
     }

@@ -26,7 +26,7 @@ internal sealed class Sanitizer
         foreach (string key in keysToSanitize)
         {
             string regexPattern = IsRegex(key) ? key : $".*{key}$";
-            _matchers.Add(new Regex(regexPattern, RegexOptions.IgnoreCase));
+            _matchers.Add(new Regex(regexPattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1)));
         }
     }
 

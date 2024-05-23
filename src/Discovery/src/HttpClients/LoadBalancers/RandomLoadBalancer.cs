@@ -41,13 +41,13 @@ public sealed class RandomLoadBalancer : ILoadBalancer
         ArgumentGuard.NotNull(requestUri);
 
         string serviceName = requestUri.Host;
-        _logger.LogTrace("Resolving service instance for '{serviceName}'.", serviceName);
+        _logger.LogTrace("Resolving service instance for '{ServiceName}'.", serviceName);
 
         IList<IServiceInstance> availableServiceInstances = await _serviceInstancesResolver.ResolveInstancesAsync(serviceName, cancellationToken);
 
         if (availableServiceInstances.Count == 0)
         {
-            _logger.LogWarning("No service instances are available for '{serviceName}'.", serviceName);
+            _logger.LogWarning("No service instances are available for '{ServiceName}'.", serviceName);
             return requestUri;
         }
 
@@ -55,7 +55,7 @@ public sealed class RandomLoadBalancer : ILoadBalancer
         int index = Random.Shared.Next(availableServiceInstances.Count);
         IServiceInstance serviceInstance = availableServiceInstances[index];
 
-        _logger.LogDebug("Resolved '{serviceName}' to '{serviceInstance}'.", serviceName, serviceInstance.Uri);
+        _logger.LogDebug("Resolved '{ServiceName}' to '{ServiceInstance}'.", serviceName, serviceInstance.Uri);
         return new Uri(serviceInstance.Uri, requestUri.PathAndQuery);
     }
 

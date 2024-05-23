@@ -72,7 +72,7 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
         foreach (PropertySource source in sources)
         {
-            _logger.LogDebug("Returning property source: {propertySource}", source.Name);
+            _logger.LogDebug("Returning property source: {PropertySource}", source.Name);
             names.Add(source.Name);
         }
 

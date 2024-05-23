@@ -63,7 +63,7 @@ public class ApplicationAvailability
             throw new InvalidOperationException($"{stateKey} state can only be of type {stateKey}State");
         }
 
-        _logger?.LogTrace("{stateKey} availability has been set to {newState} by {caller}", stateKey, newState, caller ?? "unspecified");
+        _logger?.LogTrace("{StateKey} availability has been set to {NewState} by {Caller}", stateKey, newState, caller ?? "unspecified");
         _availabilityStates[stateKey] = newState;
 
         if (stateKey == LivenessKey)

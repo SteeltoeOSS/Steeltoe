@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -61,7 +62,7 @@ internal sealed class SecurityUtils
 
         try
         {
-            _logger.LogDebug("GetPermissionsAsync({uri}, {accessToken})", checkPermissionsUri, SecurityUtilities.SanitizeInput(accessToken));
+            _logger.LogDebug("GetPermissionsAsync({Uri}, {AccessToken})", checkPermissionsUri, SecurityUtilities.SanitizeInput(accessToken));
             _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
             using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
 
@@ -97,7 +98,7 @@ internal sealed class SecurityUtils
         {
             json = await response.Content.ReadAsStringAsync(cancellationToken);
 
-            _logger.LogDebug("GetPermissionsAsync returned json: {json}", SecurityUtilities.SanitizeInput(json));
+            _logger.LogDebug("GetPermissionsAsync returned json: {Json}", SecurityUtilities.SanitizeInput(json));
 
             var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
@@ -109,11 +110,10 @@ internal sealed class SecurityUtils
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            _logger.LogError(exception, "Exception extracting permissions from {json}", SecurityUtilities.SanitizeInput(json));
-            throw;
+            throw new SecurityException($"Exception extracting permissions from json: {SecurityUtilities.SanitizeInput(json)}", exception);
         }
 
-        _logger.LogDebug("GetPermissionsAsync returning: {permissions}", permissions);
+        _logger.LogDebug("GetPermissionsAsync returning: {Permissions}", permissions);
         return permissions;
     }
 }

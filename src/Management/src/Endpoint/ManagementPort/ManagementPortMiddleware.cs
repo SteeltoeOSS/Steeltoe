@@ -32,7 +32,7 @@ internal sealed class ManagementPortMiddleware
         ArgumentGuard.NotNull(context);
 
         ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
-        _logger.LogDebug("InvokeAsync({requestPath}), optionsPath: {optionsPath}", context.Request.Path.Value, managementOptions.Path);
+        _logger.LogDebug("InvokeAsync({RequestPath}), optionsPath: {OptionsPath}", context.Request.Path.Value, managementOptions.Path);
 
         bool isManagementPath = context.Request.Path.StartsWithSegments(managementOptions.Path);
 
@@ -62,7 +62,7 @@ internal sealed class ManagementPortMiddleware
             defaultPort = context.Request.Scheme == "http" ? 80 : 443;
         }
 
-        _logger.LogError("ManagementMiddleWare Error: Access denied on {port} since Management Port is set to {managementPort}",
+        _logger.LogError("ManagementMiddleWare Error: Access denied on {Port} since Management Port is set to {ManagementPort}",
             defaultPort ?? context.Request.Host.Port, managementPort);
 
         context.Response.StatusCode = StatusCodes.Status404NotFound;

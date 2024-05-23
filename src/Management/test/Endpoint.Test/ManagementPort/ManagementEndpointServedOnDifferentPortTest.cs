@@ -36,7 +36,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         await using WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
-        app.Start();
+        await app.StartAsync();
 
         var addressFeature = ((IApplicationBuilder)app).ServerFeatures.Get<IServerAddressesFeature>();
         addressFeature.Should().NotBeNull();
@@ -59,7 +59,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         await using WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
-        app.Start();
+        await app.StartAsync();
 
         using var httpClient = new HttpClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost:9090/actuator"));
@@ -85,7 +85,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         await using WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
-        app.Start();
+        await app.StartAsync();
 
         var addressFeature = ((IApplicationBuilder)app).ServerFeatures.Get<IServerAddressesFeature>();
         addressFeature.Should().NotBeNull();
@@ -109,7 +109,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         await using WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
-        app.Start();
+        await app.StartAsync();
 
         using var httpClient = new HttpClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost:9090/actuator"));
@@ -139,7 +139,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
 
         await using WebApplication app = hostBuilder.Build();
         app.MapGet("/", () => "Hello World!");
-        app.Start();
+        await app.StartAsync();
 
         using var httpClient = new HttpClient(new HttpClientHandler
         {
@@ -189,7 +189,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         });
 
         using IHost host = hostBuilder.Build();
-        host.Start();
+        await host.StartAsync();
 
         using var httpClient = new HttpClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost:9090/actuator"));
@@ -237,7 +237,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         });
 
         using IHost host = hostBuilder.Build();
-        host.Start();
+        await host.StartAsync();
 
         using var httpClient = new HttpClient();
         HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost:9090/actuator"));
@@ -264,7 +264,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         });
 
         using IHost host = hostBuilder.Build();
-        host.Start();
+        await host.StartAsync();
 
         using var httpClient = new HttpClient(new HttpClientHandler
         {

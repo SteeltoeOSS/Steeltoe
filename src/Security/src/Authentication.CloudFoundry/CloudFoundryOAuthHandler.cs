@@ -32,7 +32,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
 
     protected internal virtual Dictionary<string, string> GetTokenInfoRequestParameters(OAuthTokenResponse tokens)
     {
-        _logger?.LogDebug("GetTokenInfoRequestParameters() using token: {token}", tokens.AccessToken);
+        _logger?.LogDebug("GetTokenInfoRequestParameters() using token: {Token}", tokens.AccessToken);
 
         return new Dictionary<string, string>
         {
@@ -42,7 +42,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
 
     protected internal virtual HttpRequestMessage GetTokenInfoRequestMessage(OAuthTokenResponse tokens)
     {
-        _logger?.LogDebug("GetTokenInfoRequestMessage({token}) with {clientId}", tokens.AccessToken, Options.ClientId);
+        _logger?.LogDebug("GetTokenInfoRequestMessage({Token}) with {ClientId}", tokens.AccessToken, Options.ClientId);
 
         Dictionary<string, string> tokenRequestParameters = GetTokenInfoRequestParameters(tokens);
 
@@ -69,7 +69,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
 
     protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(OAuthCodeExchangeContext context)
     {
-        _logger?.LogDebug("ExchangeCodeAsync({code}, {redirectUri})", context.Code, context.RedirectUri);
+        _logger?.LogDebug("ExchangeCodeAsync({Code}, {RedirectUri})", context.Code, context.RedirectUri);
 
         AuthServerOptions options = Options.BaseOptions();
         options.CallbackUrl = context.RedirectUri;
@@ -81,7 +81,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
         {
             string result = await response.Content.ReadAsStringAsync();
 
-            _logger?.LogDebug("ExchangeCodeAsync() received json: {json}", result);
+            _logger?.LogDebug("ExchangeCodeAsync() received json: {Json}", result);
             JsonDocument payload = JsonDocument.Parse(result);
             OAuthTokenResponse tokenResponse = OAuthTokenResponse.Success(payload);
 
@@ -104,13 +104,13 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger?.LogDebug("CreateTicketAsync() failure getting token info from {requestUri}", request.RequestUri);
+            _logger?.LogDebug("CreateTicketAsync() failure getting token info from {RequestUri}", request.RequestUri);
             throw new HttpRequestException($"An error occurred while retrieving token information ({response.StatusCode}).");
         }
 
         string resp = await response.Content.ReadAsStringAsync();
 
-        _logger?.LogDebug("CreateTicketAsync() received json: {json}", resp);
+        _logger?.LogDebug("CreateTicketAsync() received json: {Json}", resp);
         JsonElement payload = JsonDocument.Parse(resp).RootElement;
         var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, payload);
         context.RunClaimActions();
@@ -129,7 +129,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
 
     protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri)
     {
-        _logger?.LogDebug("BuildChallengeUrl({redirectUri}) with {clientId}", redirectUri, Options.ClientId);
+        _logger?.LogDebug("BuildChallengeUrl({RedirectUri}) with {ClientId}", redirectUri, Options.ClientId);
 
         string scope = FormatScope();
 
