@@ -75,7 +75,7 @@ public sealed class MongoDbHealthContributorTest
         var healthContributor = new MongoDbHealthContributor(mongoClientMock.Object, "localhost", NullLogger<MongoDbHealthContributor>.Instance);
 
         using var source = new CancellationTokenSource();
-        source.Cancel();
+        await source.CancelAsync();
 
         Func<Task> action = async () => await healthContributor.CheckHealthAsync(source.Token);
 

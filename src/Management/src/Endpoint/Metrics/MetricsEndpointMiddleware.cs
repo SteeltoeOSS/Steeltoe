@@ -32,7 +32,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
     private MetricsRequest? GetMetricsRequest(HttpContext context)
     {
         HttpRequest request = context.Request;
-        _logger.LogDebug("Handling metrics for path: {path}", request.Path.Value);
+        _logger.LogDebug("Handling metrics for path: {Path}", request.Path.Value);
 
         string metricName = GetMetricName(request);
 

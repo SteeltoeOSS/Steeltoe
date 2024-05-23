@@ -67,7 +67,7 @@ public static class PropertyPlaceholderHelper
         foreach (KeyValuePair<string, string> entry in configuration.AsEnumerable().Where(e =>
             e.Value != null && e.Value.Contains(Prefix, StringComparison.Ordinal) && e.Value.Contains(Suffix, StringComparison.Ordinal)))
         {
-            logger?.LogTrace("Found a property placeholder '{placeholder}' to resolve for key '{key}", entry.Value, entry.Key);
+            logger?.LogTrace("Found a property placeholder '{Placeholder}' to resolve for key '{Key}", entry.Value, entry.Key);
             resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, configuration, visitedPlaceholders, logger, useEmptyStringIfNotFound));
         }
 
@@ -150,7 +150,7 @@ public static class PropertyPlaceholderHelper
                     // previously resolved placeholder value.
                     propVal = ParseStringValue(propVal, configuration, visitedPlaceHolders);
                     result.Replace(startIndex, endIndex + Suffix.Length, propVal);
-                    logger?.LogDebug("Resolved placeholder '{placeholder}'", placeholder);
+                    logger?.LogDebug("Resolved placeholder '{Placeholder}'", placeholder);
                     startIndex = result.IndexOf(Prefix, startIndex + propVal.Length);
                 }
                 else

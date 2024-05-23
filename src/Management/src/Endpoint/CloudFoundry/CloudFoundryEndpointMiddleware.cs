@@ -32,7 +32,7 @@ internal sealed class CloudFoundryEndpointMiddleware : EndpointMiddleware<string
     {
         ArgumentGuard.NotNull(context);
 
-        _logger.LogDebug("InvokeAsync({method}, {path})", context.Request.Method, context.Request.Path.Value);
+        _logger.LogDebug("InvokeAsync({Method}, {Path})", context.Request.Method, context.Request.Path.Value);
         string uri = GetRequestUri(context);
         return await EndpointHandler.InvokeAsync(uri, cancellationToken);
     }

@@ -41,7 +41,7 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
         if (context.Request.Method == "POST")
         {
             // POST - change a logger level
-            _logger.LogDebug("Incoming path: {path}", request.Path.Value);
+            _logger.LogDebug("Incoming path: {Path}", request.Path.Value);
             string? baseRequestPath = ManagementOptionsMonitor.CurrentValue.GetBaseRequestPath(context.Request);
 
             string? path = EndpointHandler.Options.Path;
@@ -60,13 +60,13 @@ internal sealed class LoggersEndpointMiddleware : EndpointMiddleware<LoggersRequ
 
                 change.TryGetValue("configuredLevel", out string? level);
 
-                _logger.LogDebug("Change Request: {name}, {level}", loggerName, level ?? "RESET");
+                _logger.LogDebug("Change Request: {Name}, {Level}", loggerName, level ?? "RESET");
 
                 if (!string.IsNullOrEmpty(loggerName))
                 {
                     if (!string.IsNullOrEmpty(level) && LoggerLevels.StringToLogLevel(level) == null)
                     {
-                        _logger.LogDebug("Invalid LogLevel specified: {level}", level);
+                        _logger.LogDebug("Invalid LogLevel specified: {Level}", level);
                         return null;
                     }
 

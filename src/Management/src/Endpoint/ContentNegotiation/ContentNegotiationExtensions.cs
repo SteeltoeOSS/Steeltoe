@@ -35,14 +35,14 @@ internal static class ContentNegotiationExtensions
 
     private static void LogContentType(ILogger logger, IHeaderDictionary requestHeaders, string contentType)
     {
-        logger.LogTrace("setting contentType to {type}", contentType);
+        logger.LogTrace("setting contentType to {Type}", contentType);
         bool? logTrace = logger.IsEnabled(LogLevel.Trace);
 
         if (logTrace.GetValueOrDefault())
         {
             foreach (KeyValuePair<string, StringValues> header in requestHeaders)
             {
-                logger.LogTrace("Header: {key} - {value}", header.Key, header.Value);
+                logger.LogTrace("Header: {Key} - {Value}", header.Key, header.Value);
             }
         }
     }

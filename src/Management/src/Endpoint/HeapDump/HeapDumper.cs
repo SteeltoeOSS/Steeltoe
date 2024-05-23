@@ -64,7 +64,7 @@ public sealed class HeapDumper
                 dumpType = DumpType.Full;
             }
 
-            _logger.LogInformation($"Attempting to create a '{dumpType}' dump");
+            _logger.LogInformation("Attempting to create a '{DumpType}' dump", dumpType);
             var client = new DiagnosticsClient(process.Id);
             client.WriteDump(dumpType, fileName);
             return fileName;
