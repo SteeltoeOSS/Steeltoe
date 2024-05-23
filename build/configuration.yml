@@ -1,0 +1,20 @@
+pr:
+  paths:
+    exclude:
+    - build
+    - src
+    include:
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
+    - .config/dotnet-tools.json
+    - build/templates
+    - build/configuration.yml
+    - src/Configuration
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Configuration
+      runConfigServer: true

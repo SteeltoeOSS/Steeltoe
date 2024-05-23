@@ -1,0 +1,23 @@
+pr:
+  paths:
+    exclude:
+    - build
+    - src
+    include:
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
+    - .config/dotnet-tools.json
+    - build/templates
+    - build/common.yml
+    - src/Common
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Common
+  - template: templates/component-build.yaml
+    parameters:
+      component: Common
+      OS: windows
