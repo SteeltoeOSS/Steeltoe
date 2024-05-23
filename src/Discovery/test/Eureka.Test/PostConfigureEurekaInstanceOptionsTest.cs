@@ -50,13 +50,13 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         instanceOptions.SecurePort.Should().BeNull();
         instanceOptions.RegistrationMethod.Should().BeNull();
         instanceOptions.IsInstanceEnabledOnInit.Should().BeTrue();
-        instanceOptions.LeaseRenewalIntervalInSeconds.Should().Be(EurekaInstanceOptions.DefaultLeaseRenewalIntervalInSeconds);
-        instanceOptions.LeaseExpirationDurationInSeconds.Should().Be(EurekaInstanceOptions.DefaultLeaseExpirationDurationInSeconds);
-        instanceOptions.StatusPageUrlPath.Should().Be(EurekaInstanceOptions.DefaultStatusPageUrlPath);
+        instanceOptions.LeaseRenewalIntervalInSeconds.Should().Be(30);
+        instanceOptions.LeaseExpirationDurationInSeconds.Should().Be(90);
+        instanceOptions.StatusPageUrlPath.Should().Be("/info");
         instanceOptions.StatusPageUrl.Should().BeNull();
-        instanceOptions.HomePageUrlPath.Should().Be(EurekaInstanceOptions.DefaultHomePageUrlPath);
+        instanceOptions.HomePageUrlPath.Should().Be("/");
         instanceOptions.HomePageUrl.Should().BeNull();
-        instanceOptions.HealthCheckUrlPath.Should().Be(EurekaInstanceOptions.DefaultHealthCheckUrlPath);
+        instanceOptions.HealthCheckUrlPath.Should().Be("/health");
         instanceOptions.HealthCheckUrl.Should().BeNull();
         instanceOptions.SecureHealthCheckUrl.Should().BeNull();
         instanceOptions.AutoScalingGroupName.Should().BeNull();

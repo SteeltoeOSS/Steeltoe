@@ -12,10 +12,10 @@ namespace Steeltoe.Common.Net;
 internal static class DnsTools
 {
     /// <summary>
-    /// Get the first listed <see cref="AddressFamily.InterNetwork" /> for the host name.
+    /// Get the first listed <see cref="AddressFamily.InterNetwork" /> for the hostname.
     /// </summary>
     /// <param name="hostName">
-    /// The host name or address to use.
+    /// The hostname or address to use.
     /// </param>
     /// <returns>
     /// String representation of the IP Address or <see langword="null" />.

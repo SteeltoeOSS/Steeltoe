@@ -7,7 +7,7 @@ namespace Steeltoe.Discovery.HttpClients.LoadBalancers;
 public interface ILoadBalancer
 {
     /// <summary>
-    /// Evaluates a URI for a host name that can be resolved into a service instance.
+    /// Evaluates a URI for a hostname that can be resolved into a service instance.
     /// </summary>
     /// <param name="requestUri">
     /// A URI containing a service name that can be resolved into one or more service instances.
