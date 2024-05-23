@@ -37,7 +37,8 @@ public class PemConfigureCertificateOptions : IConfigureNamedOptions<Certificate
             return;
         }
 
-        List<X509Certificate2> certChain = Regex.Matches(pemCert, "-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Singleline)
+        List<X509Certificate2> certChain = Regex
+            .Matches(pemCert, "-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Singleline, TimeSpan.FromSeconds(1))
             .Select(x => new X509Certificate2(Encoding.Default.GetBytes(x.Value))).ToList();
 
         options.Certificate = certChain.FirstOrDefault().CopyWithPrivateKey(ReadRsaKeyFromString(pemKey));

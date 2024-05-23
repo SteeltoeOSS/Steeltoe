@@ -37,7 +37,7 @@ internal sealed class HttpClientCoreObserver : MetricsObserver
 
         if (egressIgnorePattern != null)
         {
-            SetPathMatcher(new Regex(egressIgnorePattern));
+            SetPathMatcher(new Regex(egressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1)));
         }
 
         _clientTimeMeasure = SteeltoeMetrics.Meter.CreateHistogram<double>("http.client.request.time");

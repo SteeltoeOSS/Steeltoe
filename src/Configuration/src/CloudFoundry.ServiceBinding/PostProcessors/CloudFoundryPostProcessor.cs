@@ -9,7 +9,8 @@ namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;
 
 internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
 {
-    private static readonly Regex TagsConfigurationKeyRegex = new("^vcap:services:[^:]+:[0-9]+:tags:[0-9]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex TagsConfigurationKeyRegex =
+        new("^vcap:services:[^:]+:[0-9]+:tags:[0-9]+", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     public abstract void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData);
 

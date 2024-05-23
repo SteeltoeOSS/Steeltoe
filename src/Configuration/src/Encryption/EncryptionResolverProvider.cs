@@ -20,7 +20,7 @@ namespace Steeltoe.Configuration.Encryption;
 internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisposable
 {
     // regex for matching {cipher}{key:keyAlias} at the start of the string
-    private readonly Regex _cipherRegex = new("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)");
+    private readonly Regex _cipherRegex = new("^{cipher}({key:(?<alias>.*)})?(?<cipher>.*)", RegexOptions.None, TimeSpan.FromSeconds(1));
     private bool _isDisposed;
 
     /// <summary>
