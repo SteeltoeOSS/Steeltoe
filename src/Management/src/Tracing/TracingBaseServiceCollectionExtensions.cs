@@ -110,7 +110,7 @@ public static class TracingBaseServiceCollectionExtensions
         {
             var tracingOptions = serviceProvider.GetRequiredService<ITracingOptions>();
 
-            var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern);
+            var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1));
             options.FilterHttpRequestMessage += requestMessage => !pathMatcher.IsMatch(requestMessage.RequestUri?.PathAndQuery ?? string.Empty);
         });
 
