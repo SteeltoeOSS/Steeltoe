@@ -1,0 +1,109 @@
+parameters:
+  component: ''
+  runConfigServer: false
+  runRabbitMQ: false
+  skipFilter: ''
+  OS: ubuntu
+
+jobs:
+- job: ${{parameters.component}}_${{parameters.OS}}
+  variables:
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    # Setting DOTNET_GENERATE_ASPNET_CERTIFICATE to "false" makes it easier to determine which test failed on macOS when it tried to start a web server with https enabled.
+    # Without setting this, the following message appears in the logs:
+    #   The application is trying to access the ASP.NET Core developer certificate key. A prompt might appear to ask for permission to access the key.
+    #   When that happens, select 'Always Allow' to grant 'dotnet' access to the certificate key in the future.
+    # and the testrun fails, but without indicating which test caused it. By setting this, the causing test fails with the next message:
+    #   Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.
+    # To prevent the causing test from failing the testrun, disable it on macOS by adding [Trait("Category", "SkipOnMacOS")].
+    ${{ if eq(parameters.OS, 'macOS') }}:
+      DOTNET_GENERATE_ASPNET_CERTIFICATE: false
+    SolutionFile: src/Steeltoe.${{parameters.component}}.slnf
+    CommonTestArgs: --blame-crash --blame-hang-timeout 3m --no-build -c Release --collect "XPlat Code Coverage" -maxcpucount:1 --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)
+  pool:
+    vmImage: ${{parameters.OS}}-latest
+  steps:
+  - checkout: self
+    fetchDepth: 0
+  - task: UseDotNet@2
+    displayName: Install .NET 6
+    inputs:
+      version: 6.0.x
+  - task: UseDotNet@2
+    displayName: Install .NET 8
+    inputs:
+      version: 8.0.x
+  - task: DotNetCoreCLI@2
+    displayName: Install Nerdbank.GitVersioning tool
+    condition: eq('${{parameters.OS}}', 'macOS')
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install --global nbgv
+  - task: PowerShell@2
+    displayName: Set package version
+    inputs:
+      targetType: 'inline'
+      script: |
+        nbgv cloud
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      verbosityRestore: Minimal
+      projects: $(SolutionFile)
+      feedsToUse: config
+      nugetConfigPath: nuget.config
+  - task: DotNetCoreCLI@2
+    displayName: dotnet build
+    inputs:
+      command: build
+      projects: $(SolutionFile)
+      arguments: --no-restore -c Release -v minimal
+  - script: docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management; sleep 10s
+    condition: eq(${{parameters.runRabbitMQ}}, 'true')
+    displayName: Start RabbitMQ
+  - script: docker run -d --name configserver -p 8888:8888 steeltoeoss/config-server --spring.cloud.config.server.git.default-label=main; sleep 10s
+    condition: eq(${{parameters.runConfigServer}}, 'true')
+    displayName: Start Config Server
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test 6.0
+    inputs:
+      command: test
+      projects: $(SolutionFile)
+      arguments: -f net6.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test 8.0
+    inputs:
+      command: test
+      projects: $(SolutionFile)
+      arguments: -f net8.0 ${{parameters.skipFilter}} $(CommonTestArgs)
+      publishTestResults: false
+  - task: CopyFiles@2
+    condition: failed()
+    inputs:
+      contents: $(Build.SourcesDirectory)/**/*.dmp
+      targetFolder: $(Build.ArtifactStagingDirectory)/hangdumps
+  - publish: $(Build.ArtifactStagingDirectory)/hangdumps
+    condition: failed()
+    displayName: Publish test result files if tests fail
+    artifact: FailedTestOutput-$(Agent.JobName)
+  - script: |
+      docker kill rabbitmq
+      docker rm rabbitmq
+    condition: eq(${{parameters.runRabbitMQ}}, 'true')
+    displayName: Stop RabbitMQ
+  - script: |
+      docker kill configserver
+      docker rm configserver
+    condition: eq(${{parameters.runConfigServer}}, 'true')
+    displayName: Stop Config Server
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    displayName: Publish test results
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '*.trx'
+      mergeTestResults: true

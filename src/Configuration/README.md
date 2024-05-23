@@ -1,6 +1,6 @@
 # .NET Configuration Providers
 
-[Custom configuration providers](https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-config-providers) for use with Microsoft's [application configuration](https://docs.asp.net/en/latest/fundamentals/configuration.html) for accessing configuration settings for an application.
+[Custom configuration providers](https://docs.asp.net/en/latest/fundamentals/configuration.html#custom-configuration-provider) for use with Microsoft's [application configuration](https://docs.asp.net/en/latest/fundamentals/configuration.html) for accessing configuration settings for an application.
 
 Steeltoe configuration providers can:
 
@@ -20,10 +20,6 @@ See the `Configuration` directory inside the [Samples](https://github.com/Steelt
 ### Unstructured data files
 
 Unlike the Java version of the configuration server client, the Steeltoe client currently only supports property and yaml files; not plain text.
-
-### Client decryption
-
-Steeltoe client only supports clear text communication with the configuration server. Client decryption is on our road map, but not currently supported. For now, you cannot send encrypted data to the client.
 
 ### Server initiated reload
 

@@ -1,0 +1,31 @@
+parameters:
+  - name: JobNames
+    type: object
+    default: {}
+jobs:
+- job: Consolidate_Coverage
+  dependsOn:
+  - ${{ each value in parameters.JobNames }}:
+    - ${{ value }}
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - ${{ each value in parameters.JobNames }}:
+    - download: current
+      artifact: coverageResults-${{ value }}
+      condition: succeededOrFailed()
+      displayName: Download test coverage results from ${{ value }}
+      continueOnError: true
+  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+    condition: succeededOrFailed()
+    displayName: Consolidate code coverage results
+    inputs:
+      reports: $(Pipeline.Workspace)/**/Cobertura.xml
+      targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage
+      reporttypes: Cobertura
+  - task: PublishCodeCoverageResults@1
+    condition: succeededOrFailed()
+    displayName: Publish code coverage to Azure DevOps
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: $(Build.ArtifactStagingDirectory)/CodeCoverage/Cobertura.xml

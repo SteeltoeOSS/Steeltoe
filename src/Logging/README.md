@@ -1,10 +1,10 @@
 # .NET Logging Extensions
 
-Logging extensions that, when used with Steeltoe Management, enable changing the Logging levels for a running application at run-time, without restarting the app.
+Logging extensions that, when used with Steeltoe Management, enable changing the minimum log levels for a running application at run-time, without restarting the app.
 
-Currently supporting the Microsoft Console Logger and Serilog.
+Supports the Microsoft Console Logger and [Serilog](https://serilog.net/).
 
-For more information on how to use these components see the [Steeltoe documentation](https://steeltoe.io/).
+For more information on how to use these components, see the [Steeltoe documentation](https://steeltoe.io/).
 
 ## Sample Applications
 

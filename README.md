@@ -1,111 +1,33 @@
-# Steeltoe
+# Steeltoe .NET Open Source Software
 
-[![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/SteeltoeOSS.steeltoe?branchName=2.x)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=2.x)
+[![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/Steeltoe.All?branchName=main)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=main)
 
-* [Introduction](#introduction)
-* [Project Repositories](#project-repositories)
-* [Roadmaps](#roadmaps)
-* [Getting Started](#getting-started)
-* [Getting the Code](#getting-the-code)
-* [Contributing](#contributing)
-* [Governance Model](#governance-model)
-* [Licenses](#licenses)
+## Why Steeltoe?
 
-## Introduction
+Are you looking to create .NET microservices? Modernizing existing applications? Moving apps to containers? Steeltoe can help you!
 
-Steeltoe is an open source project aimed at developing cloud native .NET microservice applications.  This project provides libraries that follow similar development patterns from well-known and proven microservice libraries like Netflix OSS, Spring Cloud and others. 
+[Steeltoe](https://steeltoe.io) is an open source project that provides a collection of libraries that helps users build production-grade cloud-native applications using externalized configuration, service discovery, distributed tracing, application management, and more.
 
-Steeltoe libraries are built on top of .NET APIs, following the .NET Standard 2.0 specification. Therefore, Steeltoe allows you work with .NET Core and .NET Framework 4.x. 
+We have also built several tools to get you started:
 
-Today, most Steeltoe components work in a stand-alone environment as well other PaaS implementations.
+* [Steeltoe Initializr](https://start.steeltoe.io) - Pick and choose what type of application you would like to build and let us generate the initial project for you
+  * Not only have we built Steeltoe Initializr site, but our templates are also available as an option from the `dotnet` CLI
+  * We also have the ability to load these project templates inside of Visual Studio
+* [Steeltoe Samples](https://github.com/SteeltoeOSS/Samples) - Here we have working samples for trying out features and to use as code references
 
-Steeltoe components typically build on other technology offerings, such as Netflix OSS and Spring Cloud by providing several packages that enable .NET developers to quickly leverage these tools when implementing some of the basic patterns (for example: centralized configuration management, service discovery, circuit breakers, etc.) typically found in highly scalable and resilient distributed applications.
+## Project Information
 
-Steeltoe provides services that broadly fall into two categories:
+For more project information, please see our [Steeltoe Wiki](https://github.com/SteeltoeOSS/Steeltoe/wiki)
 
-* Services that simplify using .NET and ASP.NET on cloud platforms like Cloud Foundry:
-  * Connectors (MySql, PostgreSQL, Microsoft SQL Server, RabbitMQ, Redis, OAuth, etc)
-  * Configuration
-  * Security (OAuth SSO, JWT, Redis Key Ring Storage, etc.)
-  * Logging
+See our [website](https://steeltoe.io) for lots of information, blogs, documentation, and getting started guides
 
-* Services that enable .NET and ASP.NET developers to leverage Netflix OSS, Spring Cloud and other industry leading services:
-  * Configuration providers (Spring Cloud, Vault, etc.)
-  * Service Discovery client (Netflix Eureka, etc.)
-  * CircuitBreaker (Netflix Hystrix, etc.)
-  * Management
+For community support, we recommend our [Steeltoe OSS Slack](https://slack.steeltoe.io) channels or [StackOverflow](https://stackoverflow.com/questions/tagged/steeltoe)
 
-[Steeltoe is freely available](https://www.nuget.org/packages?q=steeltoe) for production application usage today. Be sure to visit the [official Steeltoe site](https://steeltoe.io/).
+For production support, we recommend you reach out to [VMware Tanzu Support](https://tanzu.vmware.com/support)
 
-## Project Repositories
+Other questions or feedback [open an issue](https://github.com/SteeltoeOSS/Steeltoe/issues/new?assignees=&labels=Type%2Fquestion&template=question.md&title=%5BQUESTION%5D+)
 
-Steeltoe is fully open source and is found under the SteeltoeOSS organization on GitHub. 
+### Conduct
 
-#### Steeltoe Core Components: 
-These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) repository:
-
-* Configuration - configuration providers which extend the reach of [.NET Configuration](https://github.com/aspnet/Configuration) services
-* Common - Common packages to other Steeltoe components
-* CircuitBreaker - monitor and isolate requests to remote dependent services with latency and fault tolerance logic
-* Connectors - simplify the process of configuring and using back-end services locally and in the cloud
-* Discovery - provide the ability to register and discover services locally and in the cloud
-* Logging - adds logging extensions
-* Management - add monitoring and management to production based application
-* Security - simplify integration of security services provided by the cloud platform
-
-#### Other Repositories
-
-* [Samples](https://github.com/SteeltoeOSS/Samples) - Our collection of Sample applications used as a reference for Steeltoe .NET Application development
-* [Initializr](https://github.com/SteeltoeOSS/initializr) - The [Steeltoe Initializr](https://start.steeltoe.io) source code
-* [Tooling](https://github.com/SteeltoeOSS/Tooling) - Steeltoe SDK and Tooling
-* [Dockerfiles](https://github.com/SteeltoeOSS/Dockerfiles) - Our collection of docker files we have on dockerhub
-* [eShopOnContainers](https://github.com/SteeltoeOSS/eShopOnContainers) - Sample reference microservice and container based application with added Steeltoe capabilities (Forked and updated from dotnet-architecture org)
-* [MainSite](https://github.com/SteeltoeOSS/MainSite) - All of the steeltoe.io website and documentation artifacts
-
-## Roadmaps
-* [3.0.0](roadmaps/3.0.0.md) - In Progress
-* [2.5.0](roadmaps/2.5.0.md) - In Progress
-* [2.4.0](roadmaps/2.4.0.md) - Released
-* [2.3.0](roadmaps/2.3.0.md) - Released
-* [2.2.0](roadmaps/2.2.0.md) - Released
-* [2.1.0](roadmaps/2.1.0.md) - Released
-* [2.0.0](roadmaps/2.0.0.md) - Released
-
-## Getting Started
-
-1. Follow any "Get Started" link on the [Steeltoe site](https://steeltoe.io/)
-1. Review, run, and modify the extensive collection of [Samples](https://github.com/SteeltoeOSS/Samples) available on Github
-1. To get down into the details of any Steeltoe project, read the [documentation](https://steeltoe.io/docs/)
-
-## Contributing
-
-The Steeltoe project welcomes contributions on GitHub both by filing issues and through PRs. You are also welcome to join our discussions on [Slack](https://slack.steeltoe.io/)
-
-Check out the [contributing guidelines](https://github.com/SteeltoeOSS/.github/blob/master/CONTRIBUTING.md) page to see how you can get involved and contribute to Steeltoe.
-
-Also its worth noting, the Steeltoe project has adopted the code of conduct defined by the [Contributor Covenant](https://contributor-covenant.org/).
-If you'd like more information, see the [.NET Foundation Code of Conduct](https://www.dotnetfoundation.org/code-of-conduct) write-up.
-
-## Getting the Code
-
-The development of the core components of Steeltoe is done out of the [steeltoe](/) repository on the `master` branch.
-
-Maintenance branches are created after each major release (i.e. 2.x) and minor branches (i.e. 2.2.x) are created as needed for regressions, and/or security issues.
-
-All release and release candidate packages are listed under the tags section on GitHub (e.g. 2.2.0).
-
-The latest Steeltoe packages from each branch can be found on [MyGet](https://myget.org/gallery/steeltoedev).
-
-The released and release candidates can be found on [NuGet](https://www.nuget.org/profiles/steeltoe).
-
-## Building from Source
-
-Steeltoe components can be built from source with a recent version of the [.NET Core SDK](https://dotnet.microsoft.com/download/visual-studio-sdks) on Windows, Linux or MacOS. Any IDE that supports .NET is expected to work - core contributors regularly use Visual Studio, Visual Studio Code and JetBrains Rider. Visual Studio Solution (`.sln`) files are provided for each component, along with a single `.sln` file that will load all components.
-
-## Governance Model
-
-As a member of the [.NET Foundation](https://dotnetfoundation.org/), the Steeltoe project has adopted a [project governance](https://github.com/dotnet/home/blob/master/governance/project-governance.md) model in line with that recommended by the Foundation.
-
-## Licenses
-
-The Steeltoe project uses the [Apache License Version 2.0](https://github.com/SteeltoeOSS/.github/blob/master/LICENSE.md) license for all of its code.  See the [contribution licensing](https://github.com/SteeltoeOSS/.github/blob/master/contributing-docs/contributing-license.md) document for more details.
+This project has adopted the code of conduct defined by the Contributor Covenant to clarify expected behavior in our community.
+For more information see the [.NET Foundation Code of Conduct](https://dotnetfoundation.org/code-of-conduct).

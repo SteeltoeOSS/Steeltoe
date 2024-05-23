@@ -1,19 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Steeltoe Library for common hosting-related utilities</Description>
-    <TargetFrameworks>netcoreapp3.1;netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Common.Hosting</AssemblyName>
-    <PackageId>Steeltoe.Common.Hosting</PackageId>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+    <Description>Steeltoe library for common hosting-related utilities</Description>
     <PackageTags>NET Core;Cloud Hosting;</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
 </Project>

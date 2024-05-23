@@ -1,114 +1,73 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.OpenSsl;
-using Org.BouncyCastle.Pkcs;
-using Org.BouncyCastle.Security;
-using Org.BouncyCastle.X509;
-using System;
-using System.IO;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using MS = System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common.Options;
 
-namespace Steeltoe.Common.Security
+namespace Steeltoe.Common.Security;
+
+public class PemConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
-    public class PemConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
+    private readonly IConfiguration _configuration;
+
+    public PemConfigureCertificateOptions(IConfiguration configuration)
     {
-        private readonly IConfiguration _config;
-        private readonly ILogger _logger;
+        ArgumentGuard.NotNull(configuration);
 
-        public PemConfigureCertificateOptions(IConfiguration config, ILogger logger = null)
+        _configuration = configuration;
+    }
+
+    public void Configure(string name, CertificateOptions options)
+    {
+        ArgumentGuard.NotNull(options);
+
+        options.Name = name;
+
+        string pemCert = _configuration["certificate"];
+        string pemKey = _configuration["privateKey"];
+
+        if (string.IsNullOrEmpty(pemCert) || string.IsNullOrEmpty(pemKey))
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            _config = config;
-            _logger = logger;
+            return;
         }
 
-        public void Configure(string name, CertificateOptions options)
+        List<X509Certificate2> certChain = Regex.Matches(pemCert, "-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Singleline)
+            .Select(x => new X509Certificate2(Encoding.Default.GetBytes(x.Value))).ToList();
+
+        options.Certificate = certChain.FirstOrDefault().CopyWithPrivateKey(ReadRsaKeyFromString(pemKey));
+
+        options.IssuerChain = certChain.Skip(1).Select(c => new X509Certificate2(c.GetRawCertData())).ToList();
+    }
+
+    public void Configure(CertificateOptions options)
+    {
+        Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
+    }
+
+    // source: https://stackoverflow.com/a/53439332/761468
+    internal static RSA ReadRsaKeyFromString(string pemContents)
+    {
+        const string rsaPrivateKeyHeader = "-----BEGIN RSA PRIVATE KEY-----";
+        const string rsaPrivateKeyFooter = "-----END RSA PRIVATE KEY-----";
+
+        if (pemContents.StartsWith(rsaPrivateKeyHeader, StringComparison.Ordinal))
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            int endIdx = pemContents.IndexOf(rsaPrivateKeyFooter, rsaPrivateKeyHeader.Length, StringComparison.Ordinal);
 
-            options.Name = name;
+            string base64 = pemContents[rsaPrivateKeyHeader.Length..endIdx];
 
-            var pemCert = _config["certificate"];
-            var pemKey = _config["privateKey"];
-
-            if (string.IsNullOrEmpty(pemCert) || string.IsNullOrEmpty(pemKey))
-            {
-                return;
-            }
-
-            var certBytes = Encoding.Default.GetBytes(pemCert);
-            var keyBytes = Encoding.Default.GetBytes(pemKey);
-
-            var cert = ReadCertificate(certBytes);
-            var keys = ReadKeys(keyBytes);
-
-            var pfxBytes = CreatePfxContainer(cert, keys);
-            options.Certificate = new MS.X509Certificate2(pfxBytes);
+            byte[] der = Convert.FromBase64String(base64);
+            var rsa = RSA.Create();
+            rsa.ImportRSAPrivateKey(der, out _);
+            return rsa;
         }
 
-        public void Configure(CertificateOptions options)
-        {
-            Configure(Options.DefaultName, options);
-        }
-
-        internal byte[] CreatePfxContainer(X509Certificate cert, AsymmetricCipherKeyPair keys)
-        {
-            var certEntry = new X509CertificateEntry(cert);
-
-            var pkcs12Store = new Pkcs12StoreBuilder()
-                .SetUseDerEncoding(true)
-                .Build();
-            var keyEntry = new AsymmetricKeyEntry(keys.Private);
-            pkcs12Store.SetKeyEntry("ServerInstance", keyEntry, new X509CertificateEntry[] { certEntry });
-
-            using var stream = new MemoryStream();
-            pkcs12Store.Save(stream, null, new SecureRandom());
-            var bytes = stream.ToArray();
-            return Pkcs12Utilities.ConvertToDefiniteLength(bytes);
-        }
-
-        internal AsymmetricCipherKeyPair ReadKeys(byte[] keyBytes)
-        {
-            try
-            {
-                using var reader = new StreamReader(new MemoryStream(keyBytes));
-                return new PemReader(reader).ReadObject() as AsymmetricCipherKeyPair;
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Unable to read PEM encoded keys");
-            }
-
-            return null;
-        }
-
-        internal X509Certificate ReadCertificate(byte[] certBytes)
-        {
-            try
-            {
-                using var reader = new StreamReader(new MemoryStream(certBytes));
-                return new PemReader(reader).ReadObject() as X509Certificate;
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError(e, "Unable to read PEM encoded certificate");
-            }
-
-            return null;
-        }
+        throw new InvalidOperationException();
     }
 }

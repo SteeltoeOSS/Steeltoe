@@ -1,22 +1,22 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Steeltoe Common Security Library</Description>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Common.Security</AssemblyName>
-    <PackageId>Steeltoe.Common.Security</PackageId>
-    <PackageTags>NET Core;NET Framework</PackageTags>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+    <Description>Steeltoe common library for security</Description>
+    <PackageTags>security;pem;certificate</PackageTags>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Portable.BouncyCastle" Version="$(BouncyCastleVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(FoundationalVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Abstractions\Steeltoe.Common.Abstractions.csproj" />
+  </ItemGroup>
 </Project>

@@ -1,61 +1,84 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System.IO;
+#nullable enable
 
-namespace Steeltoe.Common
+using System.Collections.Immutable;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+
+namespace Steeltoe.Common.TestResources;
+
+public static class TestHelpers
 {
-    public class TestHelpers
-    {
-        public static string CreateTempFile(string contents)
-        {
-            var tempFile = Path.GetTempFileName();
-            File.WriteAllText(tempFile, contents);
-            return tempFile;
-        }
-
-        public static Stream StringToStream(string str)
-        {
-            var memStream = new MemoryStream();
-            var textWriter = new StreamWriter(memStream);
-            textWriter.Write(str);
-            textWriter.Flush();
-            memStream.Seek(0, SeekOrigin.Begin);
-
-            return memStream;
-        }
-
-        public static string StreamToString(Stream stream)
-        {
-            stream.Seek(0, SeekOrigin.Begin);
-            var reader = new StreamReader(stream);
-
-            return reader.ReadToEnd();
-        }
-
-        public static ILoggerFactory GetLoggerFactory()
-        {
-            IServiceCollection serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-            serviceCollection.AddLogging(builder => builder.AddConsole((opts) =>
+    public const string VcapApplication = @"
             {
-                opts.DisableColors = true;
-            }));
-            serviceCollection.AddLogging(builder => builder.AddDebug());
-            return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
+                ""limits"": {
+                    ""fds"": 16384,
+                    ""mem"": 1024,
+                    ""disk"": 1024
+                },
+                ""application_name"": ""spring-cloud-broker"",
+                ""application_uris"": [
+                    ""spring-cloud-broker.apps.testcloud.com""
+                ],
+                ""name"": ""spring-cloud-broker"",
+                ""space_name"": ""p-spring-cloud-services"",
+                ""space_id"": ""65b73473-94cc-4640-b462-7ad52838b4ae"",
+                ""uris"": [
+                    ""spring-cloud-broker.apps.testcloud.com""
+                ],
+                ""users"": null,
+                ""version"": ""07e112f7-2f71-4f5a-8a34-db51dbed30a3"",
+                ""application_version"": ""07e112f7-2f71-4f5a-8a34-db51dbed30a3"",
+                ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
+            }";
+
+    public static readonly ImmutableDictionary<string, string?> FastTestsConfiguration = new Dictionary<string, string?>
+    {
+        { "spring:cloud:config:enabled", "false" },
+        { "eureka:client:serviceUrl", "http://127.0.0.1" },
+        { "eureka:client:enabled", "false" },
+        { "consul:discovery:enabled", "false" },
+        { "management:endpoints:actuator:exposure:include:0", "*" },
+        { "management:metrics:export:wavefront:uri", "proxy://localhost:7828" }
+    }.ToImmutableDictionary();
+
+    public static IConfiguration GetConfigurationFromDictionary(IDictionary<string, string?> collection)
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(collection);
+        return builder.Build();
+    }
+
+    public static WebApplicationBuilder GetTestWebApplicationBuilder()
+    {
+        return GetTestWebApplicationBuilder([]);
+    }
+
+    public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args)
+    {
+        WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder(args);
+        webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        webAppBuilder.Configuration.AddInMemoryCollection(FastTestsConfiguration);
+        webAppBuilder.WebHost.UseTestServer();
+        webAppBuilder.Services.AddActionDescriptorCollectionProvider();
+        return webAppBuilder;
+    }
+
+    public static Stream StringToStream(string text)
+    {
+        var stream = new MemoryStream();
+
+        using (var writer = new StreamWriter(stream, leaveOpen: true))
+        {
+            writer.Write(text);
         }
+
+        stream.Seek(0, SeekOrigin.Begin);
+        return stream;
     }
 }

@@ -1,0 +1,69 @@
+<Project>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>Steeltoe,VMware</Authors>
+    <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>See https://github.com/SteeltoeOSS/Steeltoe/releases.</PackageReleaseNotes>
+    <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <!--
+      While deterministic builds are enabled by default in .NET SDK projects, there is an extra property, ContinuousIntegrationBuild,
+      to set on the build server to normalize stored file paths. These should not be enabled during local dev or the debugger won't
+      be able to find the local source files.
+    -->
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)\build\icon.png" Pack="true" PackagePath="\" Visible="false" />
+    <!-- Add a PackageReadme.md file in the project directory to override the default one. -->
+    <None Condition="Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildProjectDirectory)\PackageReadme.md" Visible="false" Pack="True"
+      PackagePath="" />
+    <None Condition="!Exists('$(MSBuildProjectDirectory)\PackageReadme.md')" Include="$(MSBuildThisFileDirectory)\PackageReadme.md" Visible="false" Pack="True"
+      PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All" />
+  </ItemGroup>
+
+  <Target Name="ValidatePackage" AfterTargets="BeforeBuild">
+    <Error Text="The 'Description' property must be set for packable project '$(MSBuildProjectName)'." Condition="'$(Description)' == ''" />
+    <Error Text="The 'PackageTags' property must be set for packable project '$(MSBuildProjectName)'." Condition="'$(PackageTags)' == ''" />
+  </Target>
+
+  <ItemGroup
+    Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Management')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Connectors')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Logging')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Bootstrap')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Discovery')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Security.DataProtection'))">
+
+    <!-- Widen the condition above as we're completing more public API reviews -->
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="$(PublicApiAnalyzersVersion)" PrivateAssets="All" />
+  </ItemGroup>
+
+  <PropertyGroup
+    Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Management')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Connectors')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Logging')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Bootstrap')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Discovery')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Security.DataProtection'))">
+
+    <!-- Narrow the condition above as we're completing more public API reviews -->
+    <NoWarn>$(NoWarn);SA1401;S1168;S2360;S3900;S3956;S4004;S4023</NoWarn>
+  </PropertyGroup>
+</Project>

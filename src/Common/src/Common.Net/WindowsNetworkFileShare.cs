@@ -1,263 +1,247 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Steeltoe.Common.Net
-{
-    /// <summary>
-    /// For interacting with SMB network file shares on Windows
-    /// </summary>
-    public class WindowsNetworkFileShare : IDisposable
-    {
-        // private const int NO_ERROR = 0
-        private const int ERROR_ACCESS_DENIED = 5;
-        private const int ERROR_ALREADY_ASSIGNED = 85;
-        private const int ERROR_PATH_NOT_FOUND = 53;
-        private const int ERROR_BAD_DEVICE = 1200;
-        private const int ERROR_BAD_NET_NAME = 67;
-        private const int ERROR_BAD_PROVIDER = 1204;
-        private const int ERROR_CANCELLED = 1223;
-        private const int ERROR_EXTENDED_ERROR = 1208;
-        private const int ERROR_INVALID_ADDRESS = 487;
-        private const int ERROR_INVALID_PARAMETER = 87;
-        private const int ERROR_INVALID_PASSWORD = 86;
-        private const int ERROR_INVALID_PASSWORDNAME = 1216;
-        private const int ERROR_MORE_DATA = 234;
-        private const int ERROR_NO_MORE_ITEMS = 259;
-        private const int ERROR_NO_NET_OR_BAD_PATH = 1203;
-        private const int ERROR_NO_NETWORK = 1222;
-        private const int ERROR_BAD_PROFILE = 1206;
-        private const int ERROR_CANNOT_OPEN_PROFILE = 1205;
-        private const int ERROR_DEVICE_IN_USE = 2404;
-        private const int ERROR_NOT_CONNECTED = 2250;
-        private const int ERROR_OPEN_FILES = 2401;
-        private const int ERROR_LOGON_FAILURE = 1326;
+#pragma warning disable S3874 // "out" and "ref" parameters should not be used
 
-        // Created with excel formula:
-        // ="new ErrorClass("&A1&", """&PROPER(SUBSTITUTE(MID(A1,7,LEN(A1)-6), "_", " "))&"""), "
-        private static readonly ErrorClass[] Error_list = new ErrorClass[]
+namespace Steeltoe.Common.Net;
+
+/// <summary>
+/// For interacting with SMB network file shares on Windows.
+/// </summary>
+public class WindowsNetworkFileShare : IDisposable
+{
+    // private const int NO_ERROR = 0
+    private const int ErrorAccessDenied = 5;
+    private const int ErrorAlreadyAssigned = 85;
+    private const int ErrorPathNotFound = 53;
+    private const int ErrorBadDevice = 1200;
+    private const int ErrorBadNetName = 67;
+    private const int ErrorBadProvider = 1204;
+    private const int ErrorCancelled = 1223;
+    private const int ErrorExtendedError = 1208;
+    private const int ErrorInvalidAddress = 487;
+    private const int ErrorInvalidParameter = 87;
+    private const int ErrorInvalidPassword = 86;
+    private const int ErrorInvalidPasswordName = 1216;
+    private const int ErrorMoreData = 234;
+    private const int ErrorNoMoreItems = 259;
+    private const int ErrorNoNetOrBadPath = 1203;
+    private const int ErrorNoNetwork = 1222;
+    private const int ErrorBadProfile = 1206;
+    private const int ErrorCannotOpenProfile = 1205;
+    private const int ErrorDeviceInUse = 2404;
+    private const int ErrorNotConnected = 2250;
+    private const int ErrorOpenFiles = 2401;
+    private const int ErrorLogonFailure = 1326;
+
+    // Created with excel formula:
+    // ="new ErrorClass("&A1&", """&PROPER(SUBSTITUTE(MID(A1,7,LEN(A1)-6), "_", " "))&"""), "
+    private static readonly ErrorClass[] ErrorList =
+    {
+        new(ErrorAccessDenied, "Error: Access Denied"),
+        new(ErrorAlreadyAssigned, "Error: Already Assigned"),
+        new(ErrorBadDevice, "Error: Bad Device"),
+        new(ErrorBadNetName, "Error: Bad Net Name"),
+        new(ErrorBadProvider, "Error: Bad Provider"),
+        new(ErrorCancelled, "Error: Cancelled"),
+        new(ErrorExtendedError, "Error: Extended Error"),
+        new(ErrorInvalidAddress, "Error: Invalid Address"),
+        new(ErrorInvalidParameter, "Error: Invalid Parameter"),
+        new(ErrorInvalidPassword, "Error: Invalid Password"),
+        new(ErrorInvalidPasswordName, "Error: Invalid Password Format"),
+        new(ErrorMoreData, "Error: More Data"),
+        new(ErrorNoMoreItems, "Error: No More Items"),
+        new(ErrorNoNetOrBadPath, "Error: No Net Or Bad Path"),
+        new(ErrorNoNetwork, "Error: No Network"),
+        new(ErrorBadProfile, "Error: Bad Profile"),
+        new(ErrorCannotOpenProfile, "Error: Cannot Open Profile"),
+        new(ErrorDeviceInUse, "Error: Device In Use"),
+        new(ErrorExtendedError, "Error: Extended Error"),
+        new(ErrorNotConnected, "Error: Not Connected"),
+        new(ErrorOpenFiles, "Error: Open Files"),
+        new(ErrorLogonFailure, "The user name or password is incorrect"),
+        new(ErrorPathNotFound, "The network path not found")
+    };
+
+    private readonly string _networkName;
+    private readonly IMultipleProviderRouter _multipleProviderRouter;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WindowsNetworkFileShare" /> class.
+    /// </summary>
+    /// <param name="networkName">
+    /// Address of the file share.
+    /// </param>
+    /// <param name="credentials">
+    /// Username and password for accessing the file share.
+    /// </param>
+    /// <param name="multipleProviderRouter">
+    /// A class that handles calls to mpr.dll or performs same operations.
+    /// </param>
+    public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMultipleProviderRouter multipleProviderRouter = null)
+    {
+        _multipleProviderRouter = multipleProviderRouter ?? new MultipleProviderRouter();
+
+        _networkName = networkName;
+
+        var netResource = new NetResource
         {
-            new ErrorClass(ERROR_ACCESS_DENIED, "Error: Access Denied"),
-            new ErrorClass(ERROR_ALREADY_ASSIGNED, "Error: Already Assigned"),
-            new ErrorClass(ERROR_BAD_DEVICE, "Error: Bad Device"),
-            new ErrorClass(ERROR_BAD_NET_NAME, "Error: Bad Net Name"),
-            new ErrorClass(ERROR_BAD_PROVIDER, "Error: Bad Provider"),
-            new ErrorClass(ERROR_CANCELLED, "Error: Cancelled"),
-            new ErrorClass(ERROR_EXTENDED_ERROR, "Error: Extended Error"),
-            new ErrorClass(ERROR_INVALID_ADDRESS, "Error: Invalid Address"),
-            new ErrorClass(ERROR_INVALID_PARAMETER, "Error: Invalid Parameter"),
-            new ErrorClass(ERROR_INVALID_PASSWORD, "Error: Invalid Password"),
-            new ErrorClass(ERROR_INVALID_PASSWORDNAME, "Error: Invalid Password Format"),
-            new ErrorClass(ERROR_MORE_DATA, "Error: More Data"),
-            new ErrorClass(ERROR_NO_MORE_ITEMS, "Error: No More Items"),
-            new ErrorClass(ERROR_NO_NET_OR_BAD_PATH, "Error: No Net Or Bad Path"),
-            new ErrorClass(ERROR_NO_NETWORK, "Error: No Network"),
-            new ErrorClass(ERROR_BAD_PROFILE, "Error: Bad Profile"),
-            new ErrorClass(ERROR_CANNOT_OPEN_PROFILE, "Error: Cannot Open Profile"),
-            new ErrorClass(ERROR_DEVICE_IN_USE, "Error: Device In Use"),
-            new ErrorClass(ERROR_EXTENDED_ERROR, "Error: Extended Error"),
-            new ErrorClass(ERROR_NOT_CONNECTED, "Error: Not Connected"),
-            new ErrorClass(ERROR_OPEN_FILES, "Error: Open Files"),
-            new ErrorClass(ERROR_LOGON_FAILURE, "The user name or password is incorrect"),
-            new ErrorClass(ERROR_PATH_NOT_FOUND, "The network path not found")
+            Scope = ResourceScope.GlobalNetwork,
+            ResourceType = ResourceType.Disk,
+            DisplayType = ResourceDisplayType.Share,
+            RemoteName = networkName
         };
 
-        private readonly string _networkName;
-        private readonly IMPR _mpr;
+        string userName = string.IsNullOrEmpty(credentials.Domain) ? credentials.UserName : $@"{credentials.Domain}\{credentials.UserName}";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WindowsNetworkFileShare"/> class.
-        /// </summary>
-        /// <param name="networkName">Address of the file share</param>
-        /// <param name="credentials">Username and password for accessing the file share</param>
-        /// <param name="mpr">A class that handles calls to mpr.dll or performs same operations</param>
-        public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMPR mpr = null)
+        int result = _multipleProviderRouter.UseConnection(IntPtr.Zero, netResource, credentials.Password, userName, 0, null, null, null);
+
+        if (result != 0)
         {
-            _mpr = mpr ?? new MPR();
+            throw new ExternalException($"Error connecting to remote share - Code: {result}, {GetErrorForNumber(result)}");
+        }
+    }
 
-            _networkName = networkName;
+    /// <summary>
+    /// Retrieves the most recent extended error code set by a WNet function.
+    /// <para />
+    /// Wraps an underlying P/Invoke call to mpr.dll.
+    /// <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora" />
+    /// </summary>
+    /// <param name="error">
+    /// The error code reported by the network provider.
+    /// </param>
+    /// <param name="errorBuf">
+    /// String variable to receive the description of the error.
+    /// </param>
+    /// <param name="errorBufSize">
+    /// Size of error buffer.
+    /// </param>
+    /// <param name="nameBuf">
+    /// String variable to receive the network provider raising the error.
+    /// </param>
+    /// <param name="nameBufSize">
+    /// Size of name buffer.
+    /// </param>
+    /// <returns>
+    /// If the function succeeds, and it obtains the last error that the network provider reported, the return value is NO_ERROR.
+    /// <para />
+    /// If the caller supplies an invalid buffer, the return value is ERROR_INVALID_ADDRESS.
+    /// </returns>
+    public int GetLastError(out int error, out StringBuilder errorBuf, int errorBufSize, out StringBuilder nameBuf, int nameBufSize)
+    {
+        return _multipleProviderRouter.GetLastError(out error, out errorBuf, errorBufSize, out nameBuf, nameBufSize);
+    }
 
-            var netResource = new NetResource
-            {
-                Scope = ResourceScope.GlobalNetwork,
-                ResourceType = ResourceType.Disk,
-                DisplayType = ResourceDisplaytype.Share,
-                RemoteName = networkName
-            };
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-            var userName = string.IsNullOrEmpty(credentials.Domain)
-                ? credentials.UserName
-                : string.Format(@"{0}\{1}", credentials.Domain, credentials.UserName);
-
-            var result = _mpr.UseConnection(IntPtr.Zero, netResource, credentials.Password, userName, 0, null, null, null);
-
-            if (result != 0)
-            {
-                throw new ExternalException("Error connecting to remote share - Code: " + result + ", " + GetErrorForNumber(result));
-            }
+    /// <summary>
+    /// Get a description for an error returned by a P/Invoke call.
+    /// </summary>
+    /// <param name="errNum">
+    /// Error code.
+    /// </param>
+    /// <returns>
+    /// An error message.
+    /// </returns>
+    internal static string GetErrorForNumber(int errNum)
+    {
+        if (!Array.Exists(ErrorList, e => e.Num == errNum))
+        {
+            return $"Error: Unknown, {errNum}";
         }
 
-        /// <summary>
-        /// Finalizes an instance of the <see cref="WindowsNetworkFileShare"/> class.
-        /// </summary>
-        ~WindowsNetworkFileShare()
+        return ErrorList.First(e => e.Num == errNum).Message;
+    }
+
+    /// <summary>
+    /// Disposes the object, cancels connection with file share.
+    /// </summary>
+    /// <param name="disposing">
+    /// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+        // With the current design, it's not possible to disconnect the network share from the finalizer,
+        // because the _mpr instance may have already been garbage-collected.
+        if (disposing)
         {
-            Dispose(false);
+            _multipleProviderRouter.CancelConnection(_networkName, 0, true);
         }
+    }
 
-        /// <summary>
-        /// Scope of the file share
-        /// </summary>
-        public enum ResourceScope
-        {
-            Connected = 1,
-            GlobalNetwork,
-            Remembered,
-            Recent,
-            Context
-        }
+    /// <summary>
+    /// Scope of the file share.
+    /// </summary>
+    public enum ResourceScope
+    {
+        Connected = 1,
+        GlobalNetwork,
+        Remembered,
+        Recent,
+        Context
+    }
 
-        /// <summary>
-        /// Type of network resource
-        /// </summary>
-        public enum ResourceType
-        {
-            Any = 0,
-            Disk = 1,
-            Print = 2,
-#pragma warning disable S4016 // Enumeration members should not be named "Reserved"
-            Reserved = 8,
-#pragma warning restore S4016 // Enumeration members should not be named "Reserved"
-        }
+    /// <summary>
+    /// Type of network resource.
+    /// </summary>
+    public enum ResourceType
+    {
+        Any = 0,
+        Disk = 1,
+        Print = 2,
+        Reserved = 8
+    }
 
-        /// <summary>
-        /// The display options for the network object in a network browsing user interface
-        /// </summary>
-        public enum ResourceDisplaytype
-        {
-            Generic = 0x0,
-            Domain = 0x01,
-            Server = 0x02,
-            Share = 0x03,
-            File = 0x04,
-            Group = 0x05,
-            Network = 0x06,
-            Root = 0x07,
-            Shareadmin = 0x08,
-            Directory = 0x09,
-            Tree = 0x0a,
-            Ndscontainer = 0x0b
-        }
+    /// <summary>
+    /// The display options for the network object in a network browsing user interface.
+    /// </summary>
+    public enum ResourceDisplayType
+    {
+        Generic = 0x0,
+        Domain = 0x01,
+        Server = 0x02,
+        Share = 0x03,
+        File = 0x04,
+        Group = 0x05,
+        Network = 0x06,
+        Root = 0x07,
+        ShareAdmin = 0x08,
+        Directory = 0x09,
+        Tree = 0x0a,
+        NdsContainer = 0x0b
+    }
 
-#pragma warning disable S4200 // Native methods should be wrapped
-#pragma warning disable S4214 // "P/Invoke" methods should not be visible
-        /// <summary>
-        /// Retrieves the most recent extended error code set by a WNet function
-        /// <para/>P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora"/>
-        /// </summary>
-        /// <param name="error">The error code reported by the network provider.</param>
-        /// <param name="errorBuf">String variable to receive the description of the error</param>
-        /// <param name="errorBufSize">Size of error buffer</param>
-        /// <param name="nameBuf">String variable to receive the network provider raising the error</param>
-        /// <param name="nameBufSize">Size of name buffer</param>
-        /// <returns>If the function succeeds, and it obtains the last error that the network provider reported, the return value is NO_ERROR.<para/>If the caller supplies an invalid buffer, the return value is ERROR_INVALID_ADDRESS.</returns>
-        [Obsolete("Use GetLastError instead. This direct call to mpr.dll will be removed in a future release")]
-        [DllImport("mpr.dll", CharSet = CharSet.Auto)]
-        public static extern int WNetGetLastError(
-            out int error,
-            out StringBuilder errorBuf,
-            int errorBufSize,
-            out StringBuilder nameBuf,
-            int nameBufSize);
-#pragma warning restore S4214 // "P/Invoke" methods should not be visible
-#pragma warning restore S4200 // Native methods should be wrapped
+    private record struct ErrorClass(int Num, string Message)
+    {
+        public readonly int Num = Num;
+        public readonly string Message = Message;
+    }
 
-        /// <summary>
-        /// Retrieves the most recent extended error code set by a WNet function
-        /// <para/>Wraps an underlying P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora"/>
-        /// </summary>
-        /// <param name="error">The error code reported by the network provider.</param>
-        /// <param name="errorBuf">String variable to receive the description of the error</param>
-        /// <param name="errorBufSize">Size of error buffer</param>
-        /// <param name="nameBuf">String variable to receive the network provider raising the error</param>
-        /// <param name="nameBufSize">Size of name buffer</param>
-        /// <returns>If the function succeeds, and it obtains the last error that the network provider reported, the return value is NO_ERROR.<para/>If the caller supplies an invalid buffer, the return value is ERROR_INVALID_ADDRESS.</returns>
-        public int GetLastError(
-            out int error,
-            out StringBuilder errorBuf,
-            int errorBufSize,
-            out StringBuilder nameBuf,
-            int nameBufSize)
-        {
-            return _mpr.GetLastError(out error, out errorBuf, errorBufSize, out nameBuf, nameBufSize);
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Get a description for an error returned by a P/Invoke call
-        /// </summary>
-        /// <param name="errNum">Error code</param>
-        /// <returns>An error message</returns>
-        internal static string GetErrorForNumber(int errNum)
-        {
-            if (!Error_list.Any(e => e.Num == errNum))
-            {
-                return "Error: Unknown, " + errNum;
-            }
-            else
-            {
-                return Error_list.First(e => e.Num == errNum).Message;
-            }
-        }
-
-        /// <summary>
-        /// Disposes the object, cancels connection with file share
-        /// </summary>
-        /// <param name="disposing">Not used</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            _mpr.CancelConnection(_networkName, 0, true);
-        }
-
-        private struct ErrorClass
-        {
-            public int Num;
-            public string Message;
-
-            public ErrorClass(int num, string message)
-            {
-                Num = num;
-                Message = message;
-            }
-        }
-
-        /// <summary>
-        /// The NETRESOURCE structure contains information about a network resource.
-        /// More info on NetResource: <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba"/>
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        public class NetResource
-        {
-            public ResourceScope Scope;
-            public ResourceType ResourceType;
-            public ResourceDisplaytype DisplayType;
-            public int Usage;
-            public string LocalName;
-            public string RemoteName;
-            public string Comment;
-            public string Provider;
-        }
+    /// <summary>
+    /// The NETRESOURCE structure contains information about a network resource. More info on NetResource:
+    /// <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba" />.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public class NetResource
+    {
+        public ResourceScope Scope;
+        public ResourceType ResourceType;
+        public ResourceDisplayType DisplayType;
+        public int Usage;
+        public string LocalName;
+        public string RemoteName;
+        public string Comment;
+        public string Provider;
     }
 }

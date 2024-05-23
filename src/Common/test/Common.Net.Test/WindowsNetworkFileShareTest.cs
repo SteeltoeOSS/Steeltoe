@@ -2,69 +2,59 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Net;
 using System.Runtime.InteropServices;
 using Xunit;
 
-namespace Steeltoe.Common.Net.Test
+namespace Steeltoe.Common.Net.Test;
+
+public sealed class WindowsNetworkFileShareTest
 {
-    public class WindowsNetworkFileShareTest
+    [Fact]
+    public void GetErrorForKnownNumber_ReturnsKnownError()
     {
-        [Fact]
-        public void GetErrorForKnownNumber_ReturnsKnownError()
-        {
-            Assert.Equal("Error: Access Denied", WindowsNetworkFileShare.GetErrorForNumber(5));
-            Assert.Equal("Error: No Network", WindowsNetworkFileShare.GetErrorForNumber(1222));
-        }
+        Assert.Equal("Error: Access Denied", WindowsNetworkFileShare.GetErrorForNumber(5));
+        Assert.Equal("Error: No Network", WindowsNetworkFileShare.GetErrorForNumber(1222));
+    }
 
-        [Fact]
-        public void GetErrorForUnknownNumber_ReturnsUnKnownError()
-        {
-            Assert.Equal("Error: Unknown, 9999", WindowsNetworkFileShare.GetErrorForNumber(9999));
-        }
+    [Fact]
+    public void GetErrorForUnknownNumber_ReturnsUnKnownError()
+    {
+        Assert.Equal("Error: Unknown, 9999", WindowsNetworkFileShare.GetErrorForNumber(9999));
+    }
 
-        [Fact]
-        public void WindowsNetworkFileShare_Constructor_SetsValuesOn_ConnectSuccess()
-        {
-            // arrange
-            var fakeMPR = new FakeMPR();
+    [Fact]
+    public void WindowsNetworkFileShare_Constructor_SetsValuesOn_ConnectSuccess()
+    {
+        var fakeMpr = new FakeMultipleProviderRouter();
 
-            // act
-            _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), fakeMPR);
+        _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), fakeMpr);
 
-            // assert
-            Assert.Equal("user", fakeMPR._username);
-            Assert.Equal("password", fakeMPR._password);
-            Assert.Equal(@"\\server\path", fakeMPR._networkpath);
-        }
+        Assert.Equal("user", fakeMpr.Username);
+        Assert.Equal("password", fakeMpr.Password);
+        Assert.Equal(@"\\server\path", fakeMpr.NetworkPath);
+    }
 
-        [Fact]
-        public void WindowsNetworkFileShare_Constructor_ConcatsUserAndDomain()
-        {
-            // arrange
-            var fakeMPR = new FakeMPR();
+    [Fact]
+    public void WindowsNetworkFileShare_Constructor_ConcatenatesUserAndDomain()
+    {
+        var fakeMpr = new FakeMultipleProviderRouter();
 
-            // act
-            _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), fakeMPR);
+        _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), fakeMpr);
 
-            // assert
-            Assert.Equal(@"domain\user", fakeMPR._username);
-            Assert.Equal("password", fakeMPR._password);
-            Assert.Equal(@"\\server\path", fakeMPR._networkpath);
-        }
+        Assert.Equal(@"domain\user", fakeMpr.Username);
+        Assert.Equal("password", fakeMpr.Password);
+        Assert.Equal(@"\\server\path", fakeMpr.NetworkPath);
+    }
 
-        [Fact]
-        public void WindowsNetworkFileShare_Constructor_ThrowsOn_ConnectFail()
-        {
-            // arrange
-            var fakeMPR = new FakeMPR(false);
+    [Fact]
+    public void WindowsNetworkFileShare_Constructor_ThrowsOn_ConnectFail()
+    {
+        var fakeMpr = new FakeMultipleProviderRouter(false);
 
-            // act
-            var exception = Assert.Throws<ExternalException>(() => new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), fakeMPR));
+        var exception = Assert.Throws<ExternalException>(() =>
+            new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), fakeMpr));
 
-            // assert
-            Assert.Equal("Error connecting to remote share - Code: 1200, Error: Bad Device", exception.Message);
-        }
+        Assert.Equal("Error connecting to remote share - Code: 1200, Error: Bad Device", exception.Message);
     }
 }

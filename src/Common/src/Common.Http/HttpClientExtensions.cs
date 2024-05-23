@@ -1,171 +1,84 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
-using System;
-using System.Net.Http;
+#nullable enable
+
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json.Serialization;
 
-namespace Steeltoe.Common.Http
+namespace Steeltoe.Common.Http;
+
+internal static class HttpClientExtensions
 {
-    [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-    public static class HttpClientExtensions
+    private static readonly string SteeltoeUserAgent = $"Steeltoe/{typeof(HttpClientExtensions).Assembly.GetName().Version}";
+
+    /// <summary>
+    /// Sends an HTTP GET request to obtain an access token.
+    /// </summary>
+    /// <param name="httpClient">
+    /// An unused <see cref="HttpClient" /> instance. Its inner <see cref="HttpClientHandler" /> can be long-lived or pooled. See
+    /// https://github.com/dotnet/aspnetcore/issues/10542#issuecomment-603085670.
+    /// </param>
+    /// <param name="accessTokenUri">
+    /// The URI to send the GET request to.
+    /// </param>
+    /// <param name="username">
+    /// The username to authenticate.
+    /// </param>
+    /// <param name="password">
+    /// The password to authenticate.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// The access token.
+    /// </returns>
+    public static async Task<string> GetAccessTokenAsync(this HttpClient httpClient, Uri accessTokenUri, string? username, string? password,
+        CancellationToken cancellationToken)
     {
-        /// <summary>
-        /// Convert an object to JSON and POST it
-        /// </summary>
-        /// <typeparam name="T">Type of object to serialize</typeparam>
-        /// <param name="httpClient">HttpClient doing the sending</param>
-        /// <param name="url">Url to POST to</param>
-        /// <param name="data">Object to send</param>
-        /// <returns>Task to be awaited</returns>
-        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-        public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, string url, T data)
+        ArgumentGuard.NotNull(httpClient);
+        ArgumentGuard.NotNull(accessTokenUri);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri)
         {
-            return PostAsJsonAsync(httpClient, new Uri(url), data);
+            Headers =
+            {
+                Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")))
+            },
+            Content = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                ["grant_type"] = "client_credentials"
+            })
+        };
+
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
+
+        using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+#if NET6_0
+        var responseDocument = await response.Content.ReadFromJsonAsync<AccessTokenResponse>(cancellationToken: cancellationToken);
+#else
+        var responseDocument = await response.Content.ReadFromJsonAsync<AccessTokenResponse>(cancellationToken);
+#endif
+
+        string? accessToken = responseDocument?.AccessToken;
+
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            throw new HttpRequestException($"No access token was returned from '{accessTokenUri}'.", null, response.StatusCode);
         }
 
-        /// <summary>
-        /// Convert an object to JSON and POST it
-        /// </summary>
-        /// <typeparam name="T">Type of object to serialize</typeparam>
-        /// <param name="httpClient">HttpClient doing the sending</param>
-        /// <param name="url">Url to POST to</param>
-        /// <param name="data">Object to send</param>
-        /// <returns>Task to be awaited</returns>
-        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-        public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data)
-        {
-            var dataAsString = JsonConvert.SerializeObject(data);
-            var content = new StringContent(dataAsString);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            return httpClient.PostAsync(url, content);
-        }
+        return accessToken;
+    }
 
-        /// <summary>
-        /// Convert an object to JSON and POST it
-        /// </summary>
-        /// <typeparam name="T">Type of object to serialize</typeparam>
-        /// <param name="httpClient">HttpClient doing the sending</param>
-        /// <param name="url">Url to POST to</param>
-        /// <param name="data">Object to send</param>
-        /// <param name="settings">Your Serializer Settings</param>
-        /// <returns>Task to be awaited</returns>
-        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-        public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, string url, T data, JsonSerializerSettings settings)
-        {
-            return PostAsJsonAsync(httpClient, new Uri(url), data, settings);
-        }
-
-        /// <summary>
-        /// Convert an object to JSON and POST it
-        /// </summary>
-        /// <typeparam name="T">Type of object to serialize</typeparam>
-        /// <param name="httpClient">HttpClient doing the sending</param>
-        /// <param name="url">Url to POST to</param>
-        /// <param name="data">Object to send</param>
-        /// <param name="settings">Your Serializer Settings</param>
-        /// <returns>Task to be awaited</returns>
-        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-        public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data, JsonSerializerSettings settings)
-        {
-            var dataAsString = JsonConvert.SerializeObject(data, settings);
-            var content = new StringContent(dataAsString);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            return httpClient.PostAsync(url, content);
-        }
-
-        /// <summary>
-        /// Convert an object to JSON and PUT it
-        /// </summary>
-        /// <typeparam name="T">the type of the data</typeparam>
-        /// <param name="httpClient">provided HttpClient</param>
-        /// <param name="url">the http endpoint to Put to</param>
-        /// <param name="data">the data to put</param>
-        /// <returns>Task to be awaited</returns>
-        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-        public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, string url, T data)
-        {
-            return PutAsJsonAsync(httpClient, new Uri(url), data);
-        }
-
-        /// <summary>
-        /// Convert an object to JSON and PUT it
-        /// </summary>
-        /// <typeparam name="T">the type of the data</typeparam>
-        /// <param name="httpClient">provided HttpClient</param>
-        /// <param name="url">the http endpoint to Put to</param>
-        /// <param name="data">the data to put</param>
-        /// <returns>Task to be awaited</returns>
-        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-        public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data)
-        {
-            var dataAsString = JsonConvert.SerializeObject(data);
-            var content = new StringContent(dataAsString);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            return httpClient.PutAsync(url, content);
-        }
-
-        /// <summary>
-        /// Convert an object to JSON and PUT it
-        /// </summary>
-        /// <typeparam name="T">the type of the data</typeparam>
-        /// <param name="httpClient">provided HttpClient</param>
-        /// <param name="url">the http endpoint to Put to</param>
-        /// <param name="data">the data to put</param>
-        /// <param name="settings">the serialization setttings to use</param>
-        /// <returns>Task to be awaited</returns>
-        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-        public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, string url, T data, JsonSerializerSettings settings)
-        {
-            return PutAsJsonAsync(httpClient, new Uri(url), data, settings);
-        }
-
-        /// <summary>
-        /// Convert an object to JSON and PUT it
-        /// </summary>
-        /// <typeparam name="T">the type of the data</typeparam>
-        /// <param name="httpClient">provided HttpClient</param>
-        /// <param name="url">the http endpoint to Put to</param>
-        /// <param name="data">the data to put</param>
-        /// <param name="settings">the serialization setttings to use</param>
-        /// <returns>Task to be awaited</returns>
-        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-        public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data, JsonSerializerSettings settings)
-        {
-            var dataAsString = JsonConvert.SerializeObject(data, settings);
-            var content = new StringContent(dataAsString);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            return httpClient.PutAsync(url, content);
-        }
-
-        /// <summary>
-        /// Convert JSON in HttpContent to a POCO
-        /// </summary>
-        /// <typeparam name="T">Type to deserialize into</typeparam>
-        /// <param name="content">Content to be deserialized</param>
-        /// <returns>Your data, typed as your type</returns>
-        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-        public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
-        {
-            var dataAsString = await content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<T>(dataAsString);
-        }
-
-        /// <summary>
-        /// Convert JSON in HttpContent to a POCO
-        /// </summary>
-        /// <typeparam name="T">Type to deserialize into</typeparam>
-        /// <param name="content">Content to be deserialized</param>
-        /// <param name="settings">Your Serializer Settings</param>
-        /// <returns>Your data, typed as your type</returns>
-        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
-        public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content, JsonSerializerSettings settings)
-        {
-            var dataAsString = await content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<T>(dataAsString, settings);
-        }
+    internal sealed class AccessTokenResponse
+    {
+        [JsonPropertyName("access_token")]
+        public string AccessToken { get; set; } = null!;
     }
 }

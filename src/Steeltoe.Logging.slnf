@@ -1,0 +1,16 @@
+{
+  "solution": {
+    "path": "Steeltoe.All.sln",
+    "projects": [
+      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
+      "Common\\src\\Common.Hosting\\Steeltoe.Common.Hosting.csproj",
+      "Common\\src\\Common\\Steeltoe.Common.csproj",
+      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Logging\\src\\Abstractions\\Steeltoe.Logging.Abstractions.csproj",
+      "Logging\\src\\DynamicLogger\\Steeltoe.Logging.DynamicLogger.csproj",
+      "Logging\\src\\DynamicSerilog\\Steeltoe.Logging.DynamicSerilog.csproj",
+      "Logging\\test\\DynamicLogger.Test\\Steeltoe.Logging.DynamicLogger.Test.csproj",
+      "Logging\\test\\DynamicSerilog.Test\\Steeltoe.Logging.DynamicSerilog.Test.csproj"
+    ]
+  }
+}

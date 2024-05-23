@@ -1,184 +1,163 @@
+pr:
+  branches:
+    include:
+    - main
+    - release/*
+
 trigger:
   branches:
     include:
-    - release/2.5
+    - main
+    - release/*
   paths:
     exclude:
     - README.md
-    - project-docs/*
     - roadmaps/*
-pr:
-- release/2.5
 
 jobs:
 - job: Steeltoe_CI
+  timeoutInMinutes: 60
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    PackageVersion: $[format('2.5.6-ci{0}', variables['Build.BuildId'])]
-    disable.coverage.autogenerate: 'true'
   strategy:
     matrix:
-      Linux_standard:
+      Linux:
         imageName: ubuntu-latest
-        skipFilter: '--filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnLinux"'
-        testProjects: '**/*.Test/*.csproj'
+        skipFilter: '--filter "Category!=SkipOnLinux"'
         sonarAnalyze: true
-      Linux_integration_and_Hystrix:
-        imageName: ubuntu-latest
-        skipFilter: '--filter "(Category=Integration|FullyQualifiedName~CircuitBreaker)&Category!=SkipOnLinux"'
-        testProjects: '**/*Hystrix*.Test/*.csproj'
         integrationTests: true
-      MacOS_standard:
-        imageName: macOS-latest
-        skipFilter: '--filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnMacOS"'
-        testProjects: '**/*.Test/*.csproj'
-      MacOS_Hystrix:
-        imageName: macOS-latest
-        skipFilter: '--filter "Category!=Integration&FullyQualifiedName~CircuitBreaker&Category!=SkipOnMacOS"'
-        testProjects: '**/*Hystrix*.Test/*.csproj'
-      Windows_standard:
+      # MacOS is turned off because it causes flaky builds.
+      #MacOS:
+      #  imageName: macOS-latest
+      #  skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
+      Windows:
         imageName: windows-latest
-        skipFilter: '--filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
-        testProjects: 'src/Steeltoe.All.sln'
-        package: true
-      Windows_Hystrix:
-        imageName: windows-latest
-        skipFilter: '--filter "Category!=Integration&FullyQualifiedName~CircuitBreaker"'
-        testProjects: '**/*Hystrix*.Test/*.csproj'
+        skipFilter: '--filter "Category!=Integration"'
   pool:
-    vmImage: $(imageName) 
+    vmImage: $(imageName)
   steps:
-  - pwsh: |
-      if ($env:PackageVersionOverride){
-          $env:PackageVersion = $env:PackageVersionOverride
-      }
-      Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
-      Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
-      $prefix = $env:PackageVersion.Split('-')[0]
-      $suffix = $env:PackageVersion.Split('-')[1]
-      Write-Host "##vso[task.setvariable variable=VersionPrefix;]$prefix"
-      Write-Host "##vso[task.setvariable variable=VersionSuffix;]$suffix"
-    displayName: Set Build Variables
-    env:
-      PackageVersion: $(PackageVersion)
-      PackageVersionOverride: $(PackageVersionOverride)
   - task: PowerShell@2
-    displayName: 'Get GemFire NativeClient assemblies'
+    displayName: Turn off certificates on macOS
+    condition: eq(variables['imageName'], 'macOS-latest')
     inputs:
-      filePath: src/Connectors/EnableGemFire.ps1
-      arguments: $(PivNetAPIToken)
-  - task: UseDotNet@2
-    displayName: Install .NET Core 3.1
-    inputs:
-      version: 3.1.x
+      targetType: 'inline'
+      script: |
+        # Setting DOTNET_GENERATE_ASPNET_CERTIFICATE to "false" makes it easier to determine which test failed on macOS when it tried to start a web server with https enabled.
+        # Without setting this, the following message appears in the logs:
+        #   The application is trying to access the ASP.NET Core developer certificate key. A prompt might appear to ask for permission to access the key.
+        #   When that happens, select 'Always Allow' to grant 'dotnet' access to the certificate key in the future.
+        # and the testrun fails, but without indicating which test caused it. By setting this, the causing test fails with the next message:
+        #   Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.
+        # To prevent the causing test from failing the testrun, disable it on macOS by adding [Trait("Category", "SkipOnMacOS")].
+        echo "##vso[task.setvariable variable=DOTNET_GENERATE_ASPNET_CERTIFICATE]false"
+  - checkout: self
+    fetchDepth: 0
   - task: UseDotNet@2
     displayName: Install .NET 6
     inputs:
       version: 6.0.x
-      includePreviewVersions: true
+  - task: UseDotNet@2
+    displayName: Install .NET 8
+    inputs:
+      version: 8.0.x
+  - task: DotNetCoreCLI@2
+    displayName: Install Nerdbank.GitVersioning tool
+    condition: eq(variables['imageName'], 'macOS-latest')
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install --global nbgv
+  - task: PowerShell@2
+    displayName: Set package version
+    inputs:
+      targetType: 'inline'
+      script: |
+        nbgv cloud
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
       command: restore
+      verbosityRestore: Minimal
       projects: src/Steeltoe.All.sln
       feedsToUse: config
       nugetConfigPath: nuget.config
   - task: SonarCloudPrepare@1
-    condition: eq( variables['sonarAnalyze'], 'true' )
-    displayName: 'Prepare analysis on SonarCloud'
+    condition: eq(variables['sonarAnalyze'], 'true')
+    displayName: Prepare analysis on SonarCloud
     inputs:
       SonarCloud: SonarCloud
-      organization: 'steeltoeoss'
-      projectKey: 'SteeltoeOSS_steeltoe'
+      organization: steeltoeoss
+      projectKey: SteeltoeOSS_steeltoe
       extraProperties: |
-        sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/*opencover.xml
-        sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/*.trx
-        sonar.exclusions=$(Build.SourcesDirectory)/src/Management/src/OpenCensus*
-        sonar.coverage.exclusions=**/*Test*/**/*,**/OpenCensus/**,**/OpenCensus.*/**
+          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/*opencover.xml
+          sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/*.trx
+          sonar.coverage.exclusions=**/test/**/*
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
       command: build
       projects: src/Steeltoe.All.sln
-      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
-  - task: DotNetCoreCLI@2
-    displayName: dotnet test
-    inputs:
-      command: test
-      projects: $(testProjects)
-      arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
-      publishTestResults: false
+      arguments: --no-restore -c $(buildConfiguration) -v minimal
   - script: |
-      docker run -d --name configserver -p 8888:8888 steeltoeoss/config-server
+      docker run -d --name configserver -p 8888:8888 steeltoeoss/config-server --spring.cloud.config.server.git.default-label=main
+      docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
     condition: eq(variables['integrationTests'], 'true')
-    displayName: 'Start Docker services'
+    displayName: Start Docker services
   - task: DotNetCoreCLI@2
-    condition: eq(variables['integrationTests'], 'true')
-    displayName: Integration tests
+    displayName: dotnet test 6.0
     inputs:
       command: test
-      projects: '**/*.ITest/*.csproj'
-      arguments: '--blame -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      projects: '**/*.csproj'
+      arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test 8.0
+    inputs:
+      command: test
+      projects: '**/*.csproj'
+      arguments: '--blame-hang-timeout 3m -f net8.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - task: CopyFiles@2
+    condition: failed()
+    inputs:
+      contents: $(Build.SourcesDirectory)/**/*.dmp
+      targetFolder: $(Build.ArtifactStagingDirectory)/hangdumps
+  - publish: $(Build.ArtifactStagingDirectory)/hangdumps
+    condition: failed()
+    displayName: Publish test result files if tests fail
+    artifact: FailedTestOutput-$(Agent.JobName)
   - script: |
       docker kill configserver
       docker rm configserver
+      docker kill rabbitmq
+      docker rm rabbitmq
     condition: eq(variables['integrationTests'], 'true')
-    displayName: 'Stop Docker services'
+    displayName: Stop Docker services
   - task: PublishTestResults@2
     condition: succeededOrFailed()
+    displayName: Publish test results
     inputs:
       testResultsFormat: VSTest
       testResultsFiles: '*.trx'
       mergeTestResults: true
   - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
-    condition: and(succeededOrFailed(), or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true')))
+    condition: and(succeededOrFailed(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Consolidate coverage for this job
     inputs:
-      reports: '$(Build.SourcesDirectory)/**/coverage.opencover.xml'
-      targetdir: '$(Build.ArtifactStagingDirectory)/CodeCoverage-$(Agent.JobName)'
-      reporttypes: 'Cobertura'
-  - task: PublishBuildArtifacts@1
-    condition: and(succeededOrFailed(), or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true')))
+      reports: $(Build.SourcesDirectory)/**/*opencover.xml
+      targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
+      reporttypes: Cobertura
+  - publish: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
+    condition: and(succeeded(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Publish code coverage artifacts
-    inputs:
-      PathtoPublish: $(Build.ArtifactStagingDirectory)/CodeCoverage-$(Agent.JobName)
-      ArtifactName: coverageResults-$(Agent.JobName)
-  - bash: bash <(curl -s https://codecov.io/bash)
-    condition: and(succeededOrFailed(), or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true')))
-    displayName: 'Upload to codecov.io'
+    artifact: coverageResults-$(Agent.JobName)
   - task: SonarCloudAnalyze@1
-    condition: and(succeededOrFailed(), eq( variables['sonarAnalyze'], 'true' ))
-    displayName: Run Code Analysis
+    condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
+    displayName: Run code analysis
   - task: SonarCloudPublish@1
-    condition: and(succeededOrFailed(), eq( variables['sonarAnalyze'], 'true' ))
-    displayName: Publish Quality Gate Result
-  - task: DotNetCoreCLI@2
-    condition: and(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
-    displayName: dotnet pack
-    inputs:
-      command: pack
-      feedsToUse: select
-      packagesToPack: src/Steeltoe.All.sln
-      versioningScheme: byEnvVar
-      versionEnvVar: PackageVersion
-      nobuild: true
-  - task: PowerShell@2
-    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')), eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
-    displayName: Authenticode Sign Packages
-    inputs:
-      filePath: build/sign-packages.ps1
-    env:
-      SignClientUser: $(SignClientUser)
-      SignClientSecret: $(SignClientSecret)
-      ArtifactDirectory: $(Build.ArtifactStagingDirectory)
-  - task: PublishBuildArtifacts@1
-    condition: eq( variables['Agent.OS'], 'Windows_NT' )
-    inputs:
-      PathtoPublish: $(Build.ArtifactStagingDirectory)
-      ArtifactName: Packages
-      publishLocation: Container
+    condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
+    displayName: Publish quality gate result
 - job: Wrap_up
   dependsOn:
   - Steeltoe_CI
@@ -186,30 +165,25 @@ jobs:
     vmImage: ubuntu-latest
   steps:
   - download: current
-    artifact: coverageResults-Steeltoe_CI Linux_integration_and_Hystrix
+    artifact: coverageResults-Steeltoe_CI Linux
     condition: succeededOrFailed()
-    displayName: Download integration test coverage results
+    displayName: Download test coverage results from Linux
     continueOnError: true
   - download: current
-    artifact: coverageResults-Steeltoe_CI Windows_standard
+    artifact: coverageResults-Steeltoe_CI Windows
     condition: succeededOrFailed()
-    displayName: Download Windows non-Hystrix code coverage results
-    continueOnError: true
-  - download: current
-    artifact: coverageResults-Steeltoe_CI Windows_Hystrix
-    condition: succeededOrFailed()
-    displayName: Download Windows Hystrix code coverage results
+    displayName: Download test coverage results from Windows
     continueOnError: true
   - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
     condition: succeededOrFailed()
     displayName: Consolidate code coverage results
     inputs:
-      reports: '$(Pipeline.Workspace)/**/Cobertura.xml'
-      targetdir: '$(Build.ArtifactStagingDirectory)/CodeCoverage'
-      reporttypes: 'Cobertura'
+      reports: $(Pipeline.Workspace)/**/Cobertura.xml
+      targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage
+      reporttypes: Cobertura
   - task: PublishCodeCoverageResults@1
     condition: succeededOrFailed()
     displayName: Publish code coverage to Azure DevOps
     inputs:
       codeCoverageTool: Cobertura
-      summaryFileLocation: '$(Build.ArtifactStagingDirectory)/CodeCoverage/Cobertura.xml'
+      summaryFileLocation: $(Build.ArtifactStagingDirectory)/CodeCoverage/Cobertura.xml

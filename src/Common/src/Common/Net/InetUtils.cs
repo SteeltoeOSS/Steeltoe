@@ -1,264 +1,253 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
+#nullable enable
+
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Common.Net
+namespace Steeltoe.Common.Net;
+
+// Non-sealed because this type is mocked by tests.
+internal class InetUtils
 {
-    public class InetUtils
+    private readonly IOptionsMonitor<InetOptions> _optionsMonitor;
+    private readonly ILogger<InetUtils> _logger;
+
+    public InetUtils(IOptionsMonitor<InetOptions> optionsMonitor, ILogger<InetUtils> logger)
     {
-        private readonly InetOptions _options;
-        private readonly ILogger _logger;
+        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(logger);
 
-        public InetUtils(InetOptions options, ILogger logger = null)
+        _optionsMonitor = optionsMonitor;
+        _logger = logger;
+    }
+
+    public virtual HostInfo FindFirstNonLoopbackHostInfo()
+    {
+        InetOptions inetOptions = _optionsMonitor.CurrentValue;
+
+        IPAddress? address = FindFirstNonLoopbackAddress(inetOptions);
+
+        if (address != null)
         {
-            _options = options;
-            _logger = logger;
+            return ConvertAddress(address, inetOptions);
         }
 
-        public virtual HostInfo FindFirstNonLoopbackHostInfo()
-        {
-            var address = FindFirstNonLoopbackAddress();
-            if (address != null)
-            {
-                return ConvertAddress(address);
-            }
+        return new HostInfo(inetOptions.DefaultHostname!, inetOptions.DefaultIPAddress!);
+    }
 
-            var hostInfo = new HostInfo
-            {
-                Hostname = _options.DefaultHostname,
-                IpAddress = _options.DefaultIpAddress
-            };
-            return hostInfo;
-        }
+    public IPAddress? FindFirstNonLoopbackAddress()
+    {
+        return FindFirstNonLoopbackAddress(_optionsMonitor.CurrentValue);
+    }
 
-        public IPAddress FindFirstNonLoopbackAddress()
+    private IPAddress? FindFirstNonLoopbackAddress(InetOptions inetOptions)
+    {
+        IPAddress? result = null;
+
+        try
         {
-            IPAddress result = null;
-            try
+            int lowest = int.MaxValue;
+            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            foreach (NetworkInterface networkInterface in networkInterfaces)
             {
-                var lowest = int.MaxValue;
-                var ifaces = NetworkInterface.GetAllNetworkInterfaces();
-                for (var i = 0; i < ifaces.Length; i++)
+                if (networkInterface is { OperationalStatus: OperationalStatus.Up, IsReceiveOnly: false })
                 {
-                    var ifc = ifaces[i];
+                    _logger.LogTrace("Testing interface: {name}, {id}", networkInterface.Name, networkInterface.Id);
 
-                    if (ifc.OperationalStatus == OperationalStatus.Up && !ifc.IsReceiveOnly)
+                    IPInterfaceProperties properties = networkInterface.GetIPProperties();
+                    IPv4InterfaceProperties iPv4Properties = properties.GetIPv4Properties();
+
+                    if (iPv4Properties.Index < lowest || result == null)
                     {
-                        _logger?.LogTrace("Testing interface: {name}, {id}", ifc.Name, ifc.Id);
+                        lowest = iPv4Properties.Index;
+                    }
+                    else
+                    {
+                        continue;
+                    }
 
-                        var props = ifc.GetIPProperties();
-                        var ipprops = props.GetIPv4Properties();
+                    if (!IgnoreInterface(networkInterface.Name, inetOptions))
+                    {
+                        foreach (UnicastIPAddressInformation addressInfo in properties.UnicastAddresses)
+                        {
+                            IPAddress address = addressInfo.Address;
 
-                        if (ipprops.Index < lowest || result == null)
-                        {
-                            lowest = ipprops.Index;
-                        }
-                        else if (result != null)
-                        {
-                            continue;
-                        }
-
-                        if (!IgnoreInterface(ifc.Name))
-                        {
-                            foreach (var addressInfo in props.UnicastAddresses)
+                            if (IsInet4Address(address) && !IsLoopbackAddress(address) && IsPreferredAddress(address, inetOptions))
                             {
-                                var address = addressInfo.Address;
-                                if (IsInet4Address(address)
-                                    && !IsLoopbackAddress(address)
-                                    && IsPreferredAddress(address))
-                                {
-                                    _logger?.LogTrace("Found non-loopback interface: {name}", ifc.Name);
-                                    result = address;
-                                }
+                                _logger.LogTrace("Found non-loopback interface: {name}", networkInterface.Name);
+                                result = address;
                             }
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Cannot get first non-loopback address");
-            }
-
-            if (result != null)
-            {
-                return result;
-            }
-
-            return GetHostAddress();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Cannot get first non-loopback address");
         }
 
-        internal bool IsInet4Address(IPAddress address)
+        if (result != null)
         {
-            return address.AddressFamily == AddressFamily.InterNetwork;
+            return result;
         }
 
-        internal bool IsLoopbackAddress(IPAddress address)
-        {
-            return IPAddress.IsLoopback(address);
-        }
+        return GetHostAddress();
+    }
 
-        internal bool IsPreferredAddress(IPAddress address)
+    private static bool IsInet4Address(IPAddress address)
+    {
+        return address.AddressFamily == AddressFamily.InterNetwork;
+    }
+
+    private static bool IsLoopbackAddress(IPAddress address)
+    {
+        return IPAddress.IsLoopback(address);
+    }
+
+    internal bool IsPreferredAddress(IPAddress address, InetOptions inetOptions)
+    {
+        if (inetOptions.UseOnlySiteLocalInterfaces)
         {
-            if (_options.UseOnlySiteLocalInterfaces)
+            bool siteLocalAddress = IsSiteLocalAddress(address);
+
+            if (!siteLocalAddress)
             {
-                var siteLocalAddress = IsSiteLocalAddress(address);
-                if (!siteLocalAddress)
-                {
-                    _logger?.LogTrace("Ignoring address: {address} [UseOnlySiteLocalInterfaces=true, this address is not]", address.ToString());
-                }
-
-                return siteLocalAddress;
+                _logger.LogTrace("Ignoring address: {address} [UseOnlySiteLocalInterfaces=true, this address is not]", address);
             }
 
-            var preferredNetworks = _options.GetPreferredNetworks();
-            if (!preferredNetworks.Any())
+            return siteLocalAddress;
+        }
+
+        string[] preferredNetworks = inetOptions.GetPreferredNetworks().ToArray();
+
+        if (preferredNetworks.Length == 0)
+        {
+            return true;
+        }
+
+        foreach (string regex in preferredNetworks)
+        {
+            string hostAddress = address.ToString();
+            var matcher = new Regex(regex);
+
+            if (matcher.IsMatch(hostAddress) || hostAddress.StartsWith(regex, StringComparison.Ordinal))
             {
                 return true;
             }
+        }
 
-            foreach (var regex in preferredNetworks)
-            {
-                var hostAddress = address.ToString();
-                var matcher = new Regex(regex);
-                if (matcher.IsMatch(hostAddress) || hostAddress.StartsWith(regex))
-                {
-                    return true;
-                }
-            }
+        _logger.LogTrace("Ignoring address: {address}", address);
+        return false;
+    }
 
-            _logger?.LogTrace("Ignoring address: {address}", address.ToString());
+    internal bool IgnoreInterface(string interfaceName, InetOptions inetOptions)
+    {
+        if (string.IsNullOrEmpty(interfaceName))
+        {
             return false;
         }
 
-        internal bool IgnoreInterface(string interfaceName)
+        foreach (string regex in inetOptions.GetIgnoredInterfaces())
         {
-            if (string.IsNullOrEmpty(interfaceName))
-            {
-                return false;
-            }
+            var matcher = new Regex(regex);
 
-            foreach (var regex in _options.GetIgnoredInterfaces())
+            if (matcher.IsMatch(interfaceName))
             {
-                var matcher = new Regex(regex);
-                if (matcher.IsMatch(interfaceName))
-                {
-                    _logger?.LogTrace("Ignoring interface: {name}", interfaceName);
-                    return true;
-                }
+                _logger.LogTrace("Ignoring interface: {name}", interfaceName);
+                return true;
             }
-
-            return false;
         }
 
-        internal HostInfo ConvertAddress(IPAddress address)
+        return false;
+    }
+
+    internal HostInfo ConvertAddress(IPAddress address, InetOptions inetOptions)
+    {
+        string hostname;
+
+        if (!inetOptions.SkipReverseDnsLookup)
         {
-            var hostInfo = new HostInfo();
-            if (!_options.SkipReverseDnsLookup)
-            {
-                string hostname;
-                try
-                {
-                    // warning: this might take a few seconds...
-                    var hostEntry = Dns.GetHostEntry(address);
-                    hostname = hostEntry.HostName;
-                }
-                catch (Exception e)
-                {
-                    _logger?.LogInformation(e, "Cannot determine local hostname");
-                    hostname = "localhost";
-                }
-
-                hostInfo.Hostname = hostname;
-            }
-            else
-            {
-                hostInfo.Hostname = _options.DefaultHostname;
-            }
-
-            hostInfo.IpAddress = address.ToString();
-            return hostInfo;
-        }
-
-        internal IPAddress ResolveHostAddress(string hostName)
-        {
-            IPAddress result = null;
             try
             {
-                var results = Dns.GetHostAddresses(hostName);
-                if (results != null && results.Length > 0)
+                // warning: this might take a few seconds...
+                IPHostEntry hostEntry = Dns.GetHostEntry(address);
+                hostname = hostEntry.HostName;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogInformation(exception, "Cannot determine local hostname.");
+                hostname = "localhost";
+            }
+        }
+        else
+        {
+            hostname = inetOptions.DefaultHostname!;
+        }
+
+        return new HostInfo(hostname, address.ToString());
+    }
+
+    private IPAddress? ResolveHostAddress(string hostName)
+    {
+        IPAddress? result = null;
+
+        try
+        {
+            IPAddress[] results = Dns.GetHostAddresses(hostName);
+
+            if (results.Length > 0)
+            {
+                foreach (IPAddress address in results)
                 {
-                    foreach (var addr in results)
+                    if (address.AddressFamily == AddressFamily.InterNetwork)
                     {
-                        if (addr.AddressFamily.Equals(AddressFamily.InterNetwork))
-                        {
-                            result = addr;
-                            break;
-                        }
+                        result = address;
+                        break;
                     }
                 }
             }
-            catch (Exception e)
-            {
-                _logger?.LogWarning(e, "Unable to resolve host address");
-            }
-
-            return result;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Unable to resolve host address.");
         }
 
-        internal string ResolveHostName()
-        {
-            string result = null;
-            try
-            {
-                result = Dns.GetHostName();
-                if (!string.IsNullOrEmpty(result))
-                {
-                    var response = Dns.GetHostEntry(result);
-                    if (response != null)
-                    {
-                        return response.HostName;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                _logger?.LogWarning(e, "Unable to resolve hostname");
-            }
+        return result;
+    }
 
-            return result;
+    private string? ResolveHostName()
+    {
+        try
+        {
+            return DnsTools.ResolveHostName(true);
         }
-
-        internal string GetHostName()
+        catch (Exception exception)
         {
-            return ResolveHostName();
-        }
-
-        internal IPAddress GetHostAddress()
-        {
-            var hostName = GetHostName();
-            if (!string.IsNullOrEmpty(hostName))
-            {
-                return ResolveHostAddress(hostName);
-            }
-
+            _logger.LogWarning(exception, "Unable to resolve hostname.");
             return null;
         }
+    }
 
-        internal bool IsSiteLocalAddress(IPAddress address)
-        {
-            var addr = address.ToString();
-            return addr.StartsWith("10.") ||
-                addr.StartsWith("172.16.") ||
-                addr.StartsWith("192.168.");
-        }
+    private IPAddress? GetHostAddress()
+    {
+        string? hostName = ResolveHostName();
+        return !string.IsNullOrEmpty(hostName) ? ResolveHostAddress(hostName) : null;
+    }
+
+    private static bool IsSiteLocalAddress(IPAddress address)
+    {
+        string text = address.ToString();
+
+        return text.StartsWith("10.", StringComparison.Ordinal) || text.StartsWith("172.16.", StringComparison.Ordinal) ||
+            text.StartsWith("192.168.", StringComparison.Ordinal);
     }
 }

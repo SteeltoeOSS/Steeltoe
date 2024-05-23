@@ -1,98 +1,103 @@
 <Project>
-  <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
-    <VersionPrefix>2.5.6</VersionPrefix>
-  </PropertyGroup>
   <PropertyGroup>
-    <CoreFxVersion>4.4.0</CoreFxVersion>
-    <CSharpVersion>4.5.0</CSharpVersion>
-    <DriveInfoVersion>4.3.1</DriveInfoVersion>
-    <EFCoreVersion>2.0.0</EFCoreVersion>
-    <HttpVersion>4.3.4</HttpVersion>
-    <WinHttpHandlerVersion>4.7.0</WinHttpHandlerVersion>
-    <HttpClientVersion>4.3.4</HttpClientVersion>
-    <JwtTokensVersion>5.2.2</JwtTokensVersion>
-    <SymReaderVersion>1.2.0</SymReaderVersion>
-    <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
-    <SystemDiagnosticsVersion>4.7.1</SystemDiagnosticsVersion>
-    <SystemJsonVersion>4.6.0</SystemJsonVersion>
-    <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
-    <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
-    <MongoDbClientVersion>2.5.0</MongoDbClientVersion>
+    <!--
+      Non-exposed dependencies, only referenced from test projects, benchmarks or build infrastructure.
+      It's safe to update these at any time, so wildcards are allowed.
+    -->
 
-    <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
-    <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
-    <MySqlV8>8.0.23</MySqlV8>
-    <NpgsqlVersion>4.0.0</NpgsqlVersion>
-    <SqlClientVersion>4.8.1</SqlClientVersion>
-    <StackExchangeVersion>2.0.513</StackExchangeVersion>
-
-    <AutofacVersion>4.6.1</AutofacVersion>
-    <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
-    <ConsulVersion>0.7.2.6</ConsulVersion>
-    <CoverletVersion>3.0.3</CoverletVersion>
-    <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
-    <HttpExtensionsVersion>2.1.0</HttpExtensionsVersion>
-    <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
-    <JsonNetVersion>11.0.2</JsonNetVersion>
-    <MockHttpVersion>6.0.0</MockHttpVersion>
-    <MoqVersion>4.13.1</MoqVersion>
-    <OpenCensusVersion>0.1.0-alpha-42253</OpenCensusVersion>
-    <RabbitClientVersion>5.0.1</RabbitClientVersion>
-    <ReactiveVersion>4.1.5</ReactiveVersion>
-    <TestSdkVersion>16.9.1</TestSdkVersion>
-    <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
-    <XunitVersion>2.4.1</XunitVersion>
-    <XunitStudioVersion>2.4.3</XunitStudioVersion>
-
-    <HealthChecksMySqlVersion>2.2.0</HealthChecksMySqlVersion>
-    <HealthChecksMongoDbVersion>2.2.2</HealthChecksMongoDbVersion>
-    <HealthChecksNpgSqlVersion>2.2.0</HealthChecksNpgSqlVersion>
-    <HealthChecksRabbitmqVersion>2.2.1</HealthChecksRabbitmqVersion>
-    <HealthChecksRedisVersion>2.2.3</HealthChecksRedisVersion>
-    <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
-
-    <SonarAnalyzerVersion>8.19.0.28253</SonarAnalyzerVersion>
-    <SourceLinkGitHubVersion>1.0.0</SourceLinkGitHubVersion>
-    <StyleCopVersion>1.1.118</StyleCopVersion>
+    <CoverletVersion>6.0.*</CoverletVersion>
+    <EntityFrameworkCoreTestVersion>7.0.*</EntityFrameworkCoreTestVersion>
+    <FluentAssertionsJsonVersion>6.1.*</FluentAssertionsJsonVersion>
+    <FluentAssertionsVersion>6.12.*</FluentAssertionsVersion>
+    <MicrosoftAzureCosmosVersion>3.35.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftSqlClientVersion>5.1.*</MicrosoftSqlClientVersion>
+    <MockHttpVersion>6.0.*</MockHttpVersion>
+    <MongoDbDriverVersion>2.22.*</MongoDbDriverVersion>
+    <MoqVersion>4.20.69</MoqVersion>
+    <MySqlConnectorVersion>2.2.*</MySqlConnectorVersion>
+    <MySqlEntityFrameworkCoreTestVersion>
+      <!-- Temporary workaround because net6.0 target has disappeared in v7.0.10. -->
+      7.0.5
+    </MySqlEntityFrameworkCoreTestVersion>
+    <MySqlDataVersion>8.1.*</MySqlDataVersion>
+    <NerdbankGitVersioningVersion>3.6.*</NerdbankGitVersioningVersion>
+    <NpgsqlVersion>7.0.*</NpgsqlVersion>
+    <PublicApiAnalyzersVersion>3.3.*</PublicApiAnalyzersVersion>
+    <RabbitClientTestVersion>6.5.*</RabbitClientTestVersion>
+    <SerilogEnrichersThreadVersion>3.1.*</SerilogEnrichersThreadVersion>
+    <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
+    <SonarAnalyzerVersion>9.11.*</SonarAnalyzerVersion>
+    <SourceLinkGitHubVersion>8.0.*</SourceLinkGitHubVersion>
+    <StackExchangeVersion>2.7.*</StackExchangeVersion>
+    <StyleCopVersion>1.2.0-beta.435</StyleCopVersion>
+    <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
+    <TestSdkVersion>17.8.*</TestSdkVersion>
+    <XunitAbstractionsVersion>2.0.*</XunitAbstractionsVersion>
+    <XunitVersion>2.6.*</XunitVersion>
+    <XunitVisualStudioVersion>
+      <!-- Pinned version to workaround https://github.com/xunit/visualstudio.xunit/issues/396 -->
+      2.5.4
+    </XunitVisualStudioVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net461'">
-    <AspNetVersion>5.2.4</AspNetVersion>
-    <OwinVersion>4.0.0</OwinVersion>
-    <OwinOAuthVersion>4.0.0</OwinOAuthVersion>
-    <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
-    <EFCoreTestVersion>2.1.0</EFCoreTestVersion>
-    <EF6Version>6.2.0</EF6Version>
-    <NpgsqlEFCoreVersion>2.1.0</NpgsqlEFCoreVersion>
-    <PomeloEFCoreVersion>2.1.0</PomeloEFCoreVersion>
-    <OracleEFCoreVersion>2.19.30</OracleEFCoreVersion>
-    <ExtensionsVersion>2.2.0</ExtensionsVersion>
-    <HealthChecksVersion>2.2.0</HealthChecksVersion>
-    <LoggingVersion>2.2.0</LoggingVersion>
-    <MicrosoftExtensionsRedisVersion>2.2.0</MicrosoftExtensionsRedisVersion>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <AspNetCoreHealthChecksVersion>7.0.*</AspNetCoreHealthChecksVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'netstandard2.1'">
-    <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
-    <EFCoreTestVersion>3.1.6</EFCoreTestVersion>
-    <EF6Version>6.3.0</EF6Version>
-    <MySqlEFCoreVersion>3.1.10</MySqlEFCoreVersion>
-    <NpgsqlEFCoreVersion>3.1.0</NpgsqlEFCoreVersion>
-    <PomeloEFCoreVersion>3.1.0</PomeloEFCoreVersion>
-    <OracleEFCoreVersion>3.19.80</OracleEFCoreVersion>
-    <ExtensionsVersion>3.1.0</ExtensionsVersion>
-    <HealthChecksVersion>3.1.0</HealthChecksVersion>
-    <LoggingVersion>3.1.0</LoggingVersion>
-    <MicrosoftExtensionsRedisVersion>3.1.0</MicrosoftExtensionsRedisVersion>
-  </PropertyGroup>
+
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <AspNetCoreVersion>6.0.0-preview.7.21378.6</AspNetCoreVersion>
-    <EFCoreTestVersion>6.0.0-preview.7.21378.4</EFCoreTestVersion>
-    <EF6Version>6.4.0</EF6Version>
-    <MySqlEFCoreVersion>6.0.0-preview3</MySqlEFCoreVersion>
-    <NpgsqlEFCoreVersion>6.0.0-preview7</NpgsqlEFCoreVersion>
-    <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
-    <PomeloEFCoreVersion>6.0.0-preview.5</PomeloEFCoreVersion>
-    <ExtensionsVersion>6.0.0-preview.7.21377.19</ExtensionsVersion>
-    <MicrosoftExtensionsRedisVersion>6.0.0-preview.7.21378.6</MicrosoftExtensionsRedisVersion>
+    <AspNetCoreHealthChecksVersion>6.0.*</AspNetCoreHealthChecksVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--
+      Exposed dependencies, observable by Steeltoe consumers.
+      Be cautious with updates:
+      - Wildcards are only allowed when starting work on the next major version, until its release.
+      - Before release of the next major version, pin these down and never change them between minor/patch releases.
+    -->
+
+    <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
+    <ConsulVersion>1.6.10.*</ConsulVersion>
+    <DiagnosticsNetCoreClientVersion>0.2.*</DiagnosticsNetCoreClientVersion>
+    <DiagnosticsTracingVersion>3.1.*</DiagnosticsTracingVersion>
+    <EntityFrameworkCoreVersion>6.0.*</EntityFrameworkCoreVersion>
+    <FoundationalVersion>
+      <!--
+        Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
+        For example, v6 explicitly targets .NET 6; v7 explicitly targets .NET 6 and 7; v8 explicitly targets .NET 6, 7 and 8.
+      -->
+      8.0.*
+    </FoundationalVersion>
+    <OpenTelemetryExporterJaegerVersion>1.6.*-*</OpenTelemetryExporterJaegerVersion>
+    <OpenTelemetryExporterPrometheusVersion>1.8.*-*</OpenTelemetryExporterPrometheusVersion>
+    <OpenTelemetryVersion>1.8.*</OpenTelemetryVersion>
+    <SerilogExtensionsLoggingVersion>7.0.*</SerilogExtensionsLoggingVersion>
+    <SerilogSettingsConfigurationVersion>7.0.*</SerilogSettingsConfigurationVersion>
+    <SerilogSinksConsoleVersion>4.1.*</SerilogSinksConsoleVersion>
+    <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
+    <SymReaderVersion>2.0.*</SymReaderVersion>
+    <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      8.0.*
+    </MatchTargetFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      6.0.*
+    </MatchTargetFrameworkVersion>
   </PropertyGroup>
 </Project>

@@ -2,10 +2,10 @@
 <RunSettings>
   <DataCollectionRunSettings>
     <DataCollectors>
-      <DataCollector friendlyName="XPlat code coverage">
+      <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>opencover</Format>          
-          <Exclude>[*.Test*]*,[*]Microsoft.Diagnostics*,[*OpenCensus*]*</Exclude>
+          <Exclude>[*.Test*]*,[*]Microsoft.Diagnostics*</Exclude>
           <Include>[Steeltoe.*]*</Include>
           <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
           <UseSourceLink>true</UseSourceLink>

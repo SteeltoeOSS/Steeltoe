@@ -1,0 +1,10 @@
+#nullable enable
+static Steeltoe.Management.Tracing.TracingBaseServiceCollectionExtensions.AddDistributedTracing(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Tracing.TracingBaseServiceCollectionExtensions.AddDistributedTracing(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<OpenTelemetry.Trace.TracerProviderBuilder!>? action) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<OpenTelemetry.Trace.TracerProviderBuilder!>? action) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+Steeltoe.Management.Tracing.TracingBaseServiceCollectionExtensions
+Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions
+Steeltoe.Management.Tracing.TracingLogProcessor
+Steeltoe.Management.Tracing.TracingLogProcessor.Process(string! message) -> string!
+Steeltoe.Management.Tracing.TracingLogProcessor.TracingLogProcessor(Steeltoe.Common.ITracingOptions! options) -> void

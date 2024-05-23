@@ -1,53 +1,42 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Options;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Common.Test.Options
+namespace Steeltoe.Common.Test.Options;
+
+public sealed class AbstractOptionsTest
 {
-    public class AbstractOptionsTest
+    [Fact]
+    public void Constructors_BindsValues()
     {
-        [Fact]
-        public void Constructors_ThrowsOnNulls()
+        var builder1 = new ConfigurationBuilder();
+
+        builder1.AddInMemoryCollection(new Dictionary<string, string>
         {
-            IConfigurationRoot root = null;
-            IConfiguration config = null;
+            { "foo", "bar" }
+        });
 
-            Assert.Throws<ArgumentNullException>(() => new TestOptions(root, "foobar"));
-            Assert.Throws<ArgumentNullException>(() => new TestOptions(config));
-        }
+        IConfigurationRoot root = builder1.Build();
+        IConfiguration configuration = root;
 
-        [Fact]
-        public void Constructors_BindsValues()
+        var options1 = new TestOptions(root, null);
+        Assert.Equal("bar", options1.Foo);
+
+        var options2 = new TestOptions(configuration, null);
+        Assert.Equal("bar", options2.Foo);
+
+        var builder2 = new ConfigurationBuilder();
+
+        builder2.AddInMemoryCollection(new Dictionary<string, string>
         {
-            var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(new Dictionary<string, string>()
-            {
-                { "foo", "bar" }
-            });
+            { "prefix:foo", "bar" }
+        });
 
-            var root = builder.Build();
-            IConfiguration config = root;
-
-            var opt1 = new TestOptions(root);
-            Assert.Equal("bar", opt1.Foo);
-
-            var opt2 = new TestOptions(config);
-            Assert.Equal("bar", opt2.Foo);
-
-            var builder2 = new ConfigurationBuilder();
-            builder2.AddInMemoryCollection(new Dictionary<string, string>()
-            {
-                { "prefix:foo", "bar" }
-            });
-            var root2 = builder2.Build();
-            var opt3 = new TestOptions(root2, "prefix");
-            Assert.Equal("bar", opt3.Foo);
-        }
+        IConfigurationRoot root2 = builder2.Build();
+        var options3 = new TestOptions(root2, "prefix");
+        Assert.Equal("bar", options3.Foo);
     }
 }

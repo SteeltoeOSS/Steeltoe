@@ -1,0 +1,19 @@
+pr:
+  paths:
+    exclude:
+    - build
+    - src
+    include:
+    - .editorconfig
+    - stylecop.json
+    - '*.props'
+    - '*.ruleset'
+    - .config/dotnet-tools.json
+    - build/templates
+    - build/logging.yml
+    - src/Logging
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Logging

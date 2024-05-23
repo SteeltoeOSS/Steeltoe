@@ -1,0 +1,38 @@
+#nullable enable
+override Steeltoe.Management.Wavefront.Exporters.WavefrontMetricsExporter.Export(in OpenTelemetry.Batch<OpenTelemetry.Metrics.Metric!> batch) -> OpenTelemetry.ExportResult
+override Steeltoe.Management.Wavefront.Exporters.WavefrontTraceExporter.Export(in OpenTelemetry.Batch<System.Diagnostics.Activity!> batch) -> OpenTelemetry.ExportResult
+static Steeltoe.Management.Wavefront.Exporters.WavefrontTraceExtensions.AddWavefrontTraceExporter(this OpenTelemetry.Trace.TracerProviderBuilder! builder, Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions! options, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Wavefront.Exporters.WavefrontTraceExporter!>! logger) -> OpenTelemetry.Trace.TracerProviderBuilder!
+static Steeltoe.Management.Wavefront.WavefrontExtensions.AddWavefrontExporter(this OpenTelemetry.Metrics.MeterProviderBuilder! builder) -> OpenTelemetry.Metrics.MeterProviderBuilder!
+static Steeltoe.Management.Wavefront.WavefrontExtensions.AddWavefrontMetrics(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions
+Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.Name.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.Name.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.Service.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.Service.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.Source.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.Source.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontApplicationOptions.WavefrontApplicationOptions() -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.ApiToken.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.ApiToken.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.BatchSize.get -> int
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.BatchSize.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.MaxQueueSize.get -> int
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.MaxQueueSize.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Name.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Name.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Service.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Service.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Source.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Source.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Step.get -> int
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Step.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Uri.get -> string?
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.Uri.set -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions.WavefrontExporterOptions() -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontMetricsExporter
+Steeltoe.Management.Wavefront.Exporters.WavefrontMetricsExporter.WavefrontMetricsExporter(Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions! options, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Wavefront.Exporters.WavefrontMetricsExporter!>! logger) -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontTraceExporter
+Steeltoe.Management.Wavefront.Exporters.WavefrontTraceExporter.WavefrontTraceExporter(Steeltoe.Management.Wavefront.Exporters.WavefrontExporterOptions! options, Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Wavefront.Exporters.WavefrontTraceExporter!>! logger) -> void
+Steeltoe.Management.Wavefront.Exporters.WavefrontTraceExtensions
+Steeltoe.Management.Wavefront.WavefrontExtensions
