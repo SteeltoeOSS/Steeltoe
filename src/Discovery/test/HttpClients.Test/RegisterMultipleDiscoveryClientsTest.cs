@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
@@ -132,7 +133,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Configuration.AddPemFiles("instance.crt", "instance.key");
+        builder.Configuration.AddPemFiles(ClientCertificates.Eureka, "instance.crt", "instance.key");
 
         builder.Services.AddOptions();
         builder.Services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();

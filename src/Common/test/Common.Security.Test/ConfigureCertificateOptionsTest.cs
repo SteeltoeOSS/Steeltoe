@@ -10,13 +10,15 @@ namespace Steeltoe.Common.Security.Test;
 
 public sealed class ConfigureCertificateOptionsTest
 {
+    private const string CertificateName = "test";
+
     [Fact]
     public void ConfigureCertificateOptions_ThrowsOnNull()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
-        var configCertOpts = new ConfigureCertificateOptions(configurationRoot);
+        var configCertOpts = new ConfigureNamedCertificateOptions(configurationRoot);
 
-        var constructorException = Assert.Throws<ArgumentNullException>(() => new ConfigureCertificateOptions(null));
+        var constructorException = Assert.Throws<ArgumentNullException>(() => new ConfigureNamedCertificateOptions(null));
         Assert.Equal("configuration", constructorException.ParamName);
         var configureException = Assert.Throws<ArgumentNullException>(() => configCertOpts.Configure(null, null));
         Assert.Equal("options", configureException.ParamName);
@@ -27,27 +29,27 @@ public sealed class ConfigureCertificateOptionsTest
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
-            { "certificate", string.Empty }
+            { $"{CertificateOptions.ConfigurationPrefix}:{CertificateName}:certificate", string.Empty }
         }).Build();
 
-        Assert.NotNull(configurationRoot["certificate"]);
-        var options = new ConfigureCertificateOptions(configurationRoot);
+        Assert.NotNull(configurationRoot[$"{CertificateOptions.ConfigurationPrefix}:{CertificateName}:certificate"]);
+        var options = new ConfigureNamedCertificateOptions(configurationRoot);
         var opts = new CertificateOptions();
-        options.Configure(opts);
+        options.Configure(CertificateName, opts);
         Assert.Null(opts.Certificate);
-        Assert.Equal(Microsoft.Extensions.Options.Options.DefaultName, opts.Name);
+        Assert.Equal(CertificateName, opts.Name);
     }
 
     [Fact]
     public void ConfigureCertificateOptions_ReadsFile_CreatesCertificate()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificateFile("instance.p12").Build();
-        Assert.NotNull(configurationRoot["certificate"]);
-        var options = new ConfigureCertificateOptions(configurationRoot);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificateFile(CertificateName, "instance.p12").Build();
+        Assert.NotNull(configurationRoot[$"{CertificateOptions.ConfigurationPrefix}:{CertificateName}:certificate"]);
+        var options = new ConfigureNamedCertificateOptions(configurationRoot);
         var opts = new CertificateOptions();
-        options.Configure(opts);
+        options.Configure(CertificateName, opts);
         Assert.NotNull(opts.Certificate);
-        Assert.Equal(Microsoft.Extensions.Options.Options.DefaultName, opts.Name);
+        Assert.Equal(CertificateName, opts.Name);
         Assert.True(opts.Certificate.HasPrivateKey);
     }
 }

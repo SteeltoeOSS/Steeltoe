@@ -3,7 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
+using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
@@ -107,7 +110,7 @@ public sealed class CloudFoundryContainerIdentityMtlsTest : IClassFixture<Client
 
         private static string GetFullyQualifiedFilePath(string filename)
         {
-            string filePath = Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", filename);
+            string filePath = Path.Combine(LocalCertificateWriter.ApplicationBasePath, "GeneratedCertificates", filename);
 
             if (!File.Exists(filePath))
             {

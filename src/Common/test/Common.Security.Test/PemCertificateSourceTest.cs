@@ -11,6 +11,6 @@ public sealed class PemCertificateSourceTest
     [Fact]
     public void PemCertificateSource_HasOptionsConfigurer()
     {
-        Assert.NotNull(new PemCertificateSource("somePath", "somePath").OptionsConfigurer);
+        Assert.NotNull(new PemCertificateSource("test", "somePath", "somePath").OptionsConfigurer);
     }
 }

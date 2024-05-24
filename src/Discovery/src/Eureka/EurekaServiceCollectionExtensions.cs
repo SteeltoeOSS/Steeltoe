@@ -110,6 +110,7 @@ public static class EurekaServiceCollectionExtensions
             validateCertificatesHandler.Configure(handler);
 
             var clientCertificateConfigurer = serviceProvider.GetRequiredService<ClientCertificateHttpClientHandlerConfigurer>();
+            clientCertificateConfigurer.SetCertificateName(ClientCertificates.Eureka);
             clientCertificateConfigurer.Configure(handler);
 
             var eurekaConfigurer = serviceProvider.GetRequiredService<EurekaHttpClientHandlerConfigurer>();

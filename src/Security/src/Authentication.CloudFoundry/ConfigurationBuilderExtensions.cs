@@ -35,10 +35,10 @@ public static class ConfigurationBuilderExtensions
             task.Write(orgGuid, spaceGuid);
 
             Environment.SetEnvironmentVariable("CF_INSTANCE_CERT",
-                Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"));
+                Path.Combine(LocalCertificateWriter.ApplicationBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"));
 
             Environment.SetEnvironmentVariable("CF_INSTANCE_KEY",
-                Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"));
+                Path.Combine(LocalCertificateWriter.ApplicationBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"));
         }
 
         string certFile = Environment.GetEnvironmentVariable("CF_INSTANCE_CERT");
@@ -49,6 +49,6 @@ public static class ConfigurationBuilderExtensions
             return builder;
         }
 
-        return builder.AddPemFiles(certFile, keyFile);
+        return builder.AddPemFiles(ClientCertificates.ContainerIdentity, certFile, keyFile);
     }
 }

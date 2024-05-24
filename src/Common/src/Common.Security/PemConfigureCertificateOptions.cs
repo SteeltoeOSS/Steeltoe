@@ -4,15 +4,15 @@
 
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.RegularExpressions;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common.Security;
 
-public class PemConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
+public sealed class PemConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
     private readonly IConfiguration _configuration;
 
@@ -23,14 +23,22 @@ public class PemConfigureCertificateOptions : IConfigureNamedOptions<Certificate
         _configuration = configuration;
     }
 
+    public void Configure(CertificateOptions options)
+    {
+        Configure(options.Name, options);
+    }
+
     public void Configure(string name, CertificateOptions options)
     {
+        if (string.IsNullOrEmpty(name))
+        {
+            return;
+        }
+
         ArgumentGuard.NotNull(options);
 
-        options.Name = name;
-
-        string pemCert = _configuration["certificate"];
-        string pemKey = _configuration["privateKey"];
+        string pemCert = _configuration[$"{CertificateOptions.ConfigurationPrefix}:{name}:certificate"];
+        string pemKey = _configuration[$"{CertificateOptions.ConfigurationPrefix}:{name}:privateKey"];
 
         if (string.IsNullOrEmpty(pemCert) || string.IsNullOrEmpty(pemKey))
         {
@@ -44,11 +52,6 @@ public class PemConfigureCertificateOptions : IConfigureNamedOptions<Certificate
         options.Certificate = certChain.FirstOrDefault().CopyWithPrivateKey(ReadRsaKeyFromString(pemKey));
 
         options.IssuerChain = certChain.Skip(1).Select(c => new X509Certificate2(c.GetRawCertData())).ToList();
-    }
-
-    public void Configure(CertificateOptions options)
-    {
-        Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
     }
 
     // source: https://stackoverflow.com/a/53439332/761468

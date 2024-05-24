@@ -11,6 +11,6 @@ public sealed class CertificateSourceTest
     [Fact]
     public void CertificateSource_HasOptionsConfigurer()
     {
-        Assert.NotNull(new CertificateSource("somePath").OptionsConfigurer);
+        Assert.NotNull(new CertificateSource("testCertificate", "somePath").OptionsConfigurer);
     }
 }

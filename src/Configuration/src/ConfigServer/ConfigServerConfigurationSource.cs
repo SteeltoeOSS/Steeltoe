@@ -128,7 +128,11 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
             var certificateConfigurer =
                 (IConfigureNamedOptions<CertificateOptions>)Activator.CreateInstance(certificateSource.OptionsConfigurer, Configuration)!;
 
-            var options = new CertificateOptions();
+            var options = new CertificateOptions
+            {
+                Name = ClientCertificates.ConfigServer
+            };
+
             certificateConfigurer.Configure(options);
             DefaultSettings.ClientCertificate = options.Certificate;
         }

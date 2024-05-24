@@ -3,16 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common.Security;
 
-public class CertificateProvider : ConfigurationProvider
+internal sealed class CertificateProvider : ConfigurationProvider
 {
     private readonly IConfigurationProvider _certificateProvider;
+    private readonly string _certificateName;
     private readonly string _certificatePath;
 
-    internal CertificateProvider(FileSource certificateSource)
+    internal CertificateProvider(string certificateName, FileSource certificateSource)
     {
+        _certificateName = certificateName;
         _certificateProvider = certificateSource.Build(new ConfigurationBuilder());
         _certificateProvider.GetReloadToken().RegisterChangeCallback(NotifyCertChanged, null);
         _certificatePath = Path.Combine(certificateSource.BasePath, certificateSource.Path);
@@ -27,17 +30,12 @@ public class CertificateProvider : ConfigurationProvider
     {
         value = null;
 
-        if (key == "certificate")
+        if (key.Equals($"{CertificateOptions.ConfigurationPrefix}:{_certificateName}:certificate", StringComparison.InvariantCultureIgnoreCase))
         {
             value = _certificatePath;
         }
 
-        if (!string.IsNullOrEmpty(value))
-        {
-            return true;
-        }
-
-        return false;
+        return !string.IsNullOrEmpty(value);
     }
 
     private void NotifyCertChanged(object state)

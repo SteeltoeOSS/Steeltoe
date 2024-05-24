@@ -8,7 +8,7 @@ namespace Steeltoe.Common.Security;
 
 internal sealed class FileSource : FileConfigurationSource
 {
-    internal string BasePath { get; set; }
+    internal string BasePath { get; init; }
 
     internal string Key { get; }
 

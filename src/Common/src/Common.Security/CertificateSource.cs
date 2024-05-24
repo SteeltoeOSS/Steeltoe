@@ -3,19 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common.Security;
 
-public class CertificateSource : ICertificateSource
+internal sealed class CertificateSource(string certificateName, string certificateFilePath) : ICertificateSource
 {
-    private readonly string _certFilePath;
+    private readonly string _certificateName = certificateName;
+    private readonly string _certFilePath = Path.GetFullPath(certificateFilePath);
 
-    public Type OptionsConfigurer => typeof(ConfigureCertificateOptions);
-
-    public CertificateSource(string certFilePath)
-    {
-        _certFilePath = Path.GetFullPath(certFilePath);
-    }
+    public Type OptionsConfigurer => typeof(ConfigureNamedCertificateOptions);
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
@@ -24,7 +21,9 @@ public class CertificateSource : ICertificateSource
             throw new InvalidOperationException($"Required certificate file not found:{_certFilePath}");
         }
 
-        var certSource = new FileSource("certificate")
+        var keyPrefix = CertificateOptions.ConfigurationPrefix + ConfigurationPath.KeyDelimiter + _certificateName + ConfigurationPath.KeyDelimiter;
+
+        var certSource = new FileSource(keyPrefix + "certificate")
         {
             FileProvider = null,
             Path = Path.GetFileName(_certFilePath),
@@ -34,6 +33,6 @@ public class CertificateSource : ICertificateSource
             BasePath = Path.GetDirectoryName(_certFilePath)
         };
 
-        return new CertificateProvider(certSource);
+        return new CertificateProvider(_certificateName, certSource);
     }
 }

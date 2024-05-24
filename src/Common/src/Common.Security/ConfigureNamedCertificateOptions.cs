@@ -10,15 +10,20 @@ using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common.Security;
 
-public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
+public sealed class ConfigureNamedCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
     private readonly IConfiguration _configuration;
 
-    public ConfigureCertificateOptions(IConfiguration configuration)
+    public ConfigureNamedCertificateOptions(IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configuration);
 
         _configuration = configuration;
+    }
+
+    public void Configure(CertificateOptions options)
+    {
+        Configure(options.Name, options);
     }
 
     public void Configure(string name, CertificateOptions options)
@@ -27,7 +32,7 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
 
         options.Name = name;
 
-        string certPath = _configuration["certificate"];
+        string certPath = _configuration[$"{CertificateOptions.ConfigurationPrefix}:{name}:certificate"];
 
         if (string.IsNullOrEmpty(certPath))
         {
@@ -37,10 +42,5 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
         options.Certificate = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
             ? new X509Certificate2(certPath)
             : new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
-    }
-
-    public void Configure(CertificateOptions options)
-    {
-        Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
     }
 }

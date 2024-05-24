@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
@@ -127,7 +128,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             Timeout = 10
         };
 
-        configurationBuilder.AddPemFiles("instance.crt", "instance.key").AddConfigServer(settings);
+        configurationBuilder.AddPemFiles(ClientCertificates.ConfigServer,"instance.crt", "instance.key").AddConfigServer(settings);
         configurationBuilder.Build();
 
         var source = configurationBuilder.FindConfigurationSource<ConfigServerConfigurationSource>();

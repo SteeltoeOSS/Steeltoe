@@ -3,34 +3,39 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common.Security;
 
-public class PemCertificateSource : ICertificateSource
+internal sealed class PemCertificateSource : ICertificateSource
 {
-    private readonly string _certFilePath;
+    private readonly string _certificateName;
+    private readonly string _certificateFilePath;
     private readonly string _keyFilePath;
 
-    public Type OptionsConfigurer => typeof(PemConfigureCertificateOptions);
-
-    public PemCertificateSource(string certFilePath, string keyFilePath)
+    public PemCertificateSource(string certificateName, string certFilePath, string keyFilePath)
     {
-        _certFilePath = Path.GetFullPath(certFilePath);
+        _certificateName = certificateName;
+        _certificateFilePath = Path.GetFullPath(certFilePath);
         _keyFilePath = Path.GetFullPath(keyFilePath);
     }
 
+    public Type OptionsConfigurer => typeof(PemConfigureCertificateOptions);
+
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        var certSource = new FileSource("certificate")
+        var keyPrefix = CertificateOptions.ConfigurationPrefix + ConfigurationPath.KeyDelimiter + _certificateName + ConfigurationPath.KeyDelimiter;
+
+        var certSource = new FileSource(keyPrefix + "certificate")
         {
             FileProvider = null,
-            Path = Path.GetFileName(_certFilePath),
+            Path = Path.GetFileName(_certificateFilePath),
             Optional = false,
             ReloadOnChange = true,
             ReloadDelay = 1000
         };
 
-        var keySource = new FileSource("privateKey")
+        var keySource = new FileSource(keyPrefix + "privateKey")
         {
             FileProvider = null,
             Path = Path.GetFileName(_keyFilePath),
@@ -39,7 +44,7 @@ public class PemCertificateSource : ICertificateSource
             ReloadDelay = 1000
         };
 
-        IConfigurationRoot certProvider = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(_certFilePath)).Add(certSource).Build();
+        IConfigurationRoot certProvider = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(_certificateFilePath)).Add(certSource).Build();
 
         IConfigurationRoot keyProvider = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(_keyFilePath)).Add(keySource).Build();
 

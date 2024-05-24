@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Common.Security;
 
-public class PemCertificateProvider : ConfigurationProvider
+internal sealed class PemCertificateProvider : ConfigurationProvider
 {
     private readonly IConfigurationRoot _certFileProvider;
     private readonly IConfigurationRoot _keyFileProvider;
@@ -35,12 +35,7 @@ public class PemCertificateProvider : ConfigurationProvider
 
         value = _keyFileProvider[key];
 
-        if (!string.IsNullOrEmpty(value))
-        {
-            return true;
-        }
-
-        return false;
+        return !string.IsNullOrEmpty(value);
     }
 
     private void NotifyCertChanged(object state)

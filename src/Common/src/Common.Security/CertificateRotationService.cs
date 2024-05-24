@@ -8,7 +8,7 @@ using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common.Security;
 
-public class CertificateRotationService : IDisposable, ICertificateRotationService
+public sealed class CertificateRotationService : IDisposable
 {
     private readonly IOptionsMonitor<CertificateOptions> _optionsMonitor;
     private readonly IDisposable _subscription;
@@ -32,7 +32,7 @@ public class CertificateRotationService : IDisposable, ICertificateRotationServi
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (disposing)
         {

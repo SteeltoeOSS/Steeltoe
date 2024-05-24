@@ -236,7 +236,7 @@ public sealed class HostBuilderExtensionsTest
         configuration.FindConfigurationProvider<PemCertificateProvider>().Should().NotBeNull();
 
         host.Services.GetService<IOptions<CertificateOptions>>().Should().NotBeNull();
-        host.Services.GetService<ICertificateRotationService>().Should().NotBeNull();
+        host.Services.GetService<CertificateRotationService>().Should().NotBeNull();
         host.Services.GetService<IAuthorizationHandler>().Should().NotBeNull();
     }
 

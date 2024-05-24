@@ -28,15 +28,15 @@ public class CertificateRotationServiceTest
         string filename = sandbox.CreateFile("fakeCertificate.p12");
         File.Copy("instance.p12", filename, true);
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificateFile(filename).Build();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificateFile(ClientCertificates.ContainerIdentity, filename).Build();
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(configuration);
         services.AddOptions();
-        services.AddSingleton<IConfigureOptions<CertificateOptions>, ConfigureCertificateOptions>();
-        services.AddSingleton<ICertificateRotationService, CertificateRotationService>();
+        services.AddSingleton<IConfigureNamedOptions<CertificateOptions>, ConfigureNamedCertificateOptions>();
+        services.AddSingleton<CertificateRotationService>();
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var service = serviceProvider.GetRequiredService<ICertificateRotationService>();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var service = serviceProvider.GetRequiredService<CertificateRotationService>();
 
         service.Start();
 
@@ -45,7 +45,7 @@ public class CertificateRotationServiceTest
 
         collection.Should().NotBeNull();
 
-        if (!File.Exists(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
+        if (!File.Exists(Path.Combine(LocalCertificateWriter.ApplicationBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
         {
             var orgId = Guid.NewGuid();
             var spaceId = Guid.NewGuid();
@@ -55,8 +55,8 @@ public class CertificateRotationServiceTest
         }
 
         X509Certificate2 certificate =
-            GetX509FromCertKeyPair(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"),
-                Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"));
+            GetX509FromCertKeyPair(Path.Combine(LocalCertificateWriter.ApplicationBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"),
+                Path.Combine(LocalCertificateWriter.ApplicationBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"));
 
         await File.WriteAllBytesAsync(filename, certificate.Export(X509ContentType.Pkcs12));
         await Task.Delay(2000);

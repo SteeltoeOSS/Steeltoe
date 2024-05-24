@@ -3,22 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common.Security;
 
-namespace Steeltoe.Security.Authentication.Mtls;
+namespace Steeltoe.Common.Security;
 
-public class CertificateRotationHostedService : IHostedService
+internal sealed class CertificateRotationHostedService(CertificateRotationService certificateRotationService) : IHostedService
 {
-    private readonly ICertificateRotationService _certificateRotationService;
-
-    public CertificateRotationHostedService(ICertificateRotationService certificateRotationService)
-    {
-        _certificateRotationService = certificateRotationService;
-    }
-
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _certificateRotationService.Start();
+        certificateRotationService.Start();
         return Task.CompletedTask;
     }
 

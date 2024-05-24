@@ -6,19 +6,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Common.Security;
 
-internal sealed class FileProvider : FileConfigurationProvider
+internal sealed class FileProvider(FileSource source) : FileConfigurationProvider(source)
 {
-    public FileProvider(FileConfigurationSource source)
-        : base(source)
-    {
-    }
-
     public override void Load(Stream stream)
     {
-        var source = Source as FileSource;
-        string key = source.Key;
         using var reader = new StreamReader(stream);
         string value = reader.ReadToEnd();
-        Data[key] = value;
+        Data[source.Key] = value;
     }
 }

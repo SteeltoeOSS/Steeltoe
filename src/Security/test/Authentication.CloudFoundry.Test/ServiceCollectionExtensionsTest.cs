@@ -34,7 +34,7 @@ public sealed class ServiceCollectionExtensionsTest
         ServiceProvider provider = services.BuildServiceProvider(true);
 
         Assert.NotNull(provider.GetRequiredService<IOptions<CertificateOptions>>());
-        Assert.NotNull(provider.GetRequiredService<ICertificateRotationService>());
+        Assert.NotNull(provider.GetRequiredService<CertificateRotationService>());
         Assert.NotNull(provider.GetRequiredService<IAuthorizationHandler>());
         var mtlsOpts = provider.GetRequiredService<IOptions<MutualTlsAuthenticationOptions>>();
         Assert.NotNull(mtlsOpts);

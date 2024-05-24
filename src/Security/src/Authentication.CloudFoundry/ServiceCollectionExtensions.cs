@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
         services.AddSingleton<IPostConfigureOptions<MutualTlsAuthenticationOptions>, MutualTlsAuthenticationOptionsPostConfigurer>();
         services.AddOptions<CertificateOptions>();
-        services.AddSingleton<ICertificateRotationService, CertificateRotationService>();
+        services.AddSingleton<CertificateRotationService>();
         services.AddHostedService<CertificateRotationHostedService>();
         services.AddSingleton<IAuthorizationHandler, CloudFoundryCertificateIdentityAuthorizationHandler>();
         services.AddCertificateForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");
