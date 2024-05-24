@@ -14,7 +14,8 @@ internal sealed class LocalCertificateWriter
 
     internal string CertificateFilenamePrefix { get; set; } = "SteeltoeInstance";
 
-    public string RootCertificateAuthorityPfxPath { get; set; } = Path.Combine(Directory.GetParent(ApplicationBasePath).ToString(), "GeneratedCertificates", "SteeltoeCA.pfx");
+    public string RootCertificateAuthorityPfxPath { get; set; } =
+        Path.Combine(Directory.GetParent(ApplicationBasePath).ToString(), "GeneratedCertificates", "SteeltoeCA.pfx");
 
     public string IntermediatePfxPath { get; set; } =
         Path.Combine(Directory.GetParent(ApplicationBasePath).ToString(), "GeneratedCertificates", "SteeltoeIntermediate.pfx");
@@ -50,6 +51,7 @@ internal sealed class LocalCertificateWriter
 
         // Create the intermediate certificate if it doesn't already exist (can be shared by multiple applications)
         X509Certificate2 intermediateCertificate;
+
         if (!File.Exists(IntermediatePfxPath))
         {
             intermediateCertificate = CreateIntermediateCertificate("CN=SteeltoeGeneratedIntermediate", rootAuthorityCertificate);
@@ -70,14 +72,9 @@ internal sealed class LocalCertificateWriter
 
         string chainedCertificateContents;
 #if NET8_0_OR_GREATER
-        chainedCertificateContents = clientCertificate.ExportCertificatePem() + "\r\n" +
-            intermediateCertificate.ExportCertificatePem();
+        chainedCertificateContents = clientCertificate.ExportCertificatePem() + "\r\n" + intermediateCertificate.ExportCertificatePem();
 #else
-        chainedCertificateContents = "-----BEGIN CERTIFICATE-----\r\n" +
-            Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) +
-            "\r\n-----END CERTIFICATE-----\r\n" + "-----BEGIN CERTIFICATE-----\r\n" +
-            Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) +
-            "\r\n-----END CERTIFICATE-----\r\n";
+        chainedCertificateContents = "-----BEGIN CERTIFICATE-----\r\n" + Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END CERTIFICATE-----\r\n" + "-----BEGIN CERTIFICATE-----\r\n" + Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END CERTIFICATE-----\r\n";
 #endif
 
         string keyContents = "-----BEGIN RSA PRIVATE KEY-----\r\n" +
@@ -91,7 +88,9 @@ internal sealed class LocalCertificateWriter
     private static X509Certificate2 CreateRootCertificate(string distinguishedName)
     {
         using var privateKey = RSA.Create();
-        var certificateRequest = new CertificateRequest(new X500DistinguishedName(distinguishedName), privateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+        var certificateRequest =
+            new CertificateRequest(new X500DistinguishedName(distinguishedName), privateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
         certificateRequest.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true));
 
@@ -111,17 +110,18 @@ internal sealed class LocalCertificateWriter
         return certificateRequest.Create(issuerCertificate, DateTimeOffset.UtcNow, issuerCertificate.NotAfter, serialNumber).CopyWithPrivateKey(privateKey);
     }
 
-    private static X509Certificate2 CreateClientCertificate(string subjectName, X509Certificate2 issuerCertificate, SubjectAlternativeNameBuilder alternativeNames, DateTimeOffset? notAfter = null)
+    private static X509Certificate2 CreateClientCertificate(string subjectName, X509Certificate2 issuerCertificate,
+        SubjectAlternativeNameBuilder alternativeNames, DateTimeOffset? notAfter = null)
     {
         using var privateKey = RSA.Create();
         var request = new CertificateRequest(subjectName, privateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
         request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
         request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, false));
-        request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(
-        [
+
+        request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension([
             new Oid("1.3.6.1.5.5.7.3.1"), // serverAuth
-            new Oid("1.3.6.1.5.5.7.3.2")  // clientAuth
+            new Oid("1.3.6.1.5.5.7.3.2") // clientAuth
         ], false));
 
         if (alternativeNames != null)
@@ -136,7 +136,8 @@ internal sealed class LocalCertificateWriter
             randomNumberGenerator.GetBytes(serialNumber);
         }
 
-        X509Certificate2 signedCertificate = request.Create(issuerCertificate, DateTimeOffset.UtcNow, notAfter ?? DateTimeOffset.UtcNow.AddDays(1), serialNumber);
+        X509Certificate2 signedCertificate =
+            request.Create(issuerCertificate, DateTimeOffset.UtcNow, notAfter ?? DateTimeOffset.UtcNow.AddDays(1), serialNumber);
 
         return signedCertificate.CopyWithPrivateKey(privateKey);
     }

@@ -4,8 +4,8 @@
 
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;

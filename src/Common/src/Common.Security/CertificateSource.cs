@@ -21,7 +21,7 @@ internal sealed class CertificateSource(string certificateName, string certifica
             throw new InvalidOperationException($"Required certificate file not found:{_certFilePath}");
         }
 
-        var keyPrefix = CertificateOptions.ConfigurationPrefix + ConfigurationPath.KeyDelimiter + _certificateName + ConfigurationPath.KeyDelimiter;
+        string keyPrefix = CertificateOptions.ConfigurationPrefix + ConfigurationPath.KeyDelimiter + _certificateName + ConfigurationPath.KeyDelimiter;
 
         var certSource = new FileSource(keyPrefix + "certificate")
         {

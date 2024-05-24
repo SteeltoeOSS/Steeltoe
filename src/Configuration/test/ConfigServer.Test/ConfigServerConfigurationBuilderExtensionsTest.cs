@@ -128,7 +128,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             Timeout = 10
         };
 
-        configurationBuilder.AddPemFiles(ClientCertificates.ConfigServer,"instance.crt", "instance.key").AddConfigServer(settings);
+        configurationBuilder.AddPemFiles(ClientCertificates.ConfigServer, "instance.crt", "instance.key").AddConfigServer(settings);
         configurationBuilder.Build();
 
         var source = configurationBuilder.FindConfigurationSource<ConfigServerConfigurationSource>();

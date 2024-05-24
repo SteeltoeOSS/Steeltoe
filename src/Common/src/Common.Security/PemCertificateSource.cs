@@ -13,6 +13,8 @@ internal sealed class PemCertificateSource : ICertificateSource
     private readonly string _certificateFilePath;
     private readonly string _keyFilePath;
 
+    public Type OptionsConfigurer => typeof(PemConfigureCertificateOptions);
+
     public PemCertificateSource(string certificateName, string certFilePath, string keyFilePath)
     {
         _certificateName = certificateName;
@@ -20,11 +22,9 @@ internal sealed class PemCertificateSource : ICertificateSource
         _keyFilePath = Path.GetFullPath(keyFilePath);
     }
 
-    public Type OptionsConfigurer => typeof(PemConfigureCertificateOptions);
-
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        var keyPrefix = CertificateOptions.ConfigurationPrefix + ConfigurationPath.KeyDelimiter + _certificateName + ConfigurationPath.KeyDelimiter;
+        string keyPrefix = CertificateOptions.ConfigurationPrefix + ConfigurationPath.KeyDelimiter + _certificateName + ConfigurationPath.KeyDelimiter;
 
         var certSource = new FileSource(keyPrefix + "certificate")
         {

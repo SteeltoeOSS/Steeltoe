@@ -26,7 +26,8 @@ public sealed class LocalCertificateWriterTest
         rsa.ImportFromPem(File.ReadAllText(Path.Combine(LocalCertificateWriter.ApplicationBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem")));
 
         X509Certificate2 clientCert =
-            new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.ApplicationBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
+            new X509Certificate2(
+                    File.ReadAllBytes(Path.Combine(LocalCertificateWriter.ApplicationBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
                 .CopyWithPrivateKey(rsa);
 
         rootCertificate.Should().NotBeNull();

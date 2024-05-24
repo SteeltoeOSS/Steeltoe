@@ -93,17 +93,21 @@ public sealed class ConfigurationExtensionsTest
         const string filename = "fakeCertificate.p12";
         await File.WriteAllTextAsync(filename, "cert1");
 
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificateFile(CertificateName,filename).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificateFile(CertificateName, filename).Build();
 
         bool changeCalled = false;
         IChangeToken token = configurationRoot.GetReloadToken();
         token.RegisterChangeCallback(_ => changeCalled = true, "state");
-        (await File.ReadAllTextAsync(configurationRoot[$"{CertificateOptions.ConfigurationPrefix}:{CertificateName}:certificate"]!)).Should().BeEquivalentTo("cert1");
+
+        (await File.ReadAllTextAsync(configurationRoot[$"{CertificateOptions.ConfigurationPrefix}:{CertificateName}:certificate"]!)).Should()
+            .BeEquivalentTo("cert1");
 
         await File.WriteAllTextAsync(filename, "barfoo");
         await Task.Delay(2000);
 
-        (await File.ReadAllTextAsync(configurationRoot[$"{CertificateOptions.ConfigurationPrefix}:{CertificateName}:certificate"]!)).Should().BeEquivalentTo("barfoo");
+        (await File.ReadAllTextAsync(configurationRoot[$"{CertificateOptions.ConfigurationPrefix}:{CertificateName}:certificate"]!)).Should()
+            .BeEquivalentTo("barfoo");
+
         changeCalled.Should().BeTrue();
 
         // cleanup
