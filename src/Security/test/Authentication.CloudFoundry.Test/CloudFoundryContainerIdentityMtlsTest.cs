@@ -93,28 +93,15 @@ public sealed class CloudFoundryContainerIdentityMtlsTest : IClassFixture<Client
 
     private static class Certificates
     {
-        public static X509Certificate2 OrgAndSpaceMatch { get; } =
-            new X509Certificate2(GetFullyQualifiedFilePath("OrgAndSpaceMatchCert.pem")).CopyWithPrivateKey(
-                PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(GetFullyQualifiedFilePath("OrgAndSpaceMatchKey.pem"))));
+        private static readonly Func<string, string> GetFilePath = fileName =>
+            Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", fileName);
 
-        public static X509Certificate2 OrgMatch { get; } =
-            new X509Certificate2(GetFullyQualifiedFilePath("OrgMatchCert.pem")).CopyWithPrivateKey(
-                PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(GetFullyQualifiedFilePath("OrgMatchKey.pem"))));
+        public static X509Certificate2 OrgAndSpaceMatch { get; } =
+            X509Certificate2.CreateFromPemFile(GetFilePath("OrgAndSpaceMatchCert.pem"), GetFilePath("OrgAndSpaceMatchKey.pem"));
+
+        public static X509Certificate2 OrgMatch { get; } = X509Certificate2.CreateFromPemFile(GetFilePath("OrgMatchCert.pem"), GetFilePath("OrgMatchKey.pem"));
 
         public static X509Certificate2 SpaceMatch { get; } =
-            new X509Certificate2(GetFullyQualifiedFilePath("SpaceMatchCert.pem")).CopyWithPrivateKey(
-                PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(GetFullyQualifiedFilePath("SpaceMatchKey.pem"))));
-
-        private static string GetFullyQualifiedFilePath(string filename)
-        {
-            string filePath = Path.Combine(LocalCertificateWriter.ApplicationBasePath, "GeneratedCertificates", filename);
-
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException(filePath);
-            }
-
-            return filePath;
-        }
+            X509Certificate2.CreateFromPemFile(GetFilePath("SpaceMatchCert.pem"), GetFilePath("SpaceMatchKey.pem"));
     }
 }

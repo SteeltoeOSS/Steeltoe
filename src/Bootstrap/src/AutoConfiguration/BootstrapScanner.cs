@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
@@ -259,7 +260,9 @@ internal sealed class BootstrapScanner
     private void WireCloudFoundryContainerIdentity()
     {
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCloudFoundryContainerIdentity());
-        _wrapper.ConfigureServices(services => services.AddCloudFoundryCertificateAuth());
+
+        _wrapper.ConfigureServices((host, services) =>
+            services.AddCloudFoundryCertificateAuth(host.Configuration, CertificateAuthenticationDefaults.AuthenticationScheme));
 
         _logger.LogInformation("Configured Cloud Foundry mTLS security");
     }

@@ -26,7 +26,6 @@ using StackExchange.Redis;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Options;
-using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
@@ -234,10 +233,11 @@ public sealed class WebApplicationBuilderExtensionsTest
         using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        configuration.FindConfigurationProvider<PemCertificateProvider>().Should().NotBeNull();
+        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:ContainerIdentity:CertificateFilePath"].Should().NotBeNull();
+        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:ContainerIdentity:PrivateKeyFilePath"].Should().NotBeNull();
 
         host.Services.GetService<IOptions<CertificateOptions>>().Should().NotBeNull();
-        host.Services.GetService<CertificateRotationService>().Should().NotBeNull();
+        host.Services.GetService<IOptionsChangeTokenSource<CertificateOptions>>().Should().NotBeNull();
         host.Services.GetService<IAuthorizationHandler>().Should().NotBeNull();
     }
 
