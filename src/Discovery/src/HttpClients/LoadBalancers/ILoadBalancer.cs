@@ -16,7 +16,7 @@ public interface ILoadBalancer
     /// The token to monitor for cancellation requests.
     /// </param>
     /// <returns>
-    /// The original URI, with the service name replaced by the host and port of a service instance.
+    /// The original URI, with the scheme and service name replaced by the scheme, host and port of a service instance.
     /// </returns>
     Task<Uri> ResolveServiceInstanceAsync(Uri requestUri, CancellationToken cancellationToken);
 
