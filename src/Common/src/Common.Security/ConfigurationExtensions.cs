@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Security;
 public static class ConfigurationExtensions
 {
     /// <summary>
-    /// Adds information on a certificate file to configuration, for use with <see cref="CertificateOptions" />.
+    /// Adds file path information for a certificate and (optional) private key to configuration, for use with <see cref="CertificateOptions" />.
     /// </summary>
     /// <param name="builder">
     /// Your <see cref="IConfigurationBuilder" />.
