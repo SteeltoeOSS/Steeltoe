@@ -28,7 +28,8 @@ public static class CertificateServiceCollectionExtensions
     /// <param name="fileProvider">
     /// Provides access to the file system.
     /// </param>
-    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, IConfiguration configuration, string certificateName, IFileProvider? fileProvider)
+    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, IConfiguration configuration, string certificateName,
+        IFileProvider? fileProvider)
     {
         fileProvider ??= new PhysicalFileProvider(Environment.CurrentDirectory);
 

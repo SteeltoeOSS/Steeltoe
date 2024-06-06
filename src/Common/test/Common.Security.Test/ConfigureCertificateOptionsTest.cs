@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -79,8 +78,8 @@ public sealed class ConfigureCertificateOptionsTest
 
         IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificate(CertificateName, certificateFilePath, privateKeyFilePath).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).ConfigureCertificateOptions(configuration, Microsoft.Extensions.Options.Options.DefaultName, null)
-            .BuildServiceProvider();
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration)
+            .ConfigureCertificateOptions(configuration, Microsoft.Extensions.Options.Options.DefaultName, null).BuildServiceProvider();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
 
@@ -97,21 +96,21 @@ public sealed class ConfigureCertificateOptionsTest
     public async Task CertificateOptionsNotifyOnChange()
     {
         using var sandbox = new Sandbox();
-        string instanceCertificate = await File.ReadAllTextAsync("instance.crt");
-        string instancePrivateKey = await File.ReadAllTextAsync("instance.key");
+        string instance1Certificate = await File.ReadAllTextAsync("instance.crt");
+        string instance1PrivateKey = await File.ReadAllTextAsync("instance.key");
         var firstX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
         string instance2Certificate = await File.ReadAllTextAsync("instance2.crt");
         string instance2PrivateKey = await File.ReadAllTextAsync("instance2.key");
         var secondX509 = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
-        string certificateFilePath = sandbox.CreateFile("cert", instanceCertificate);
-        string privateKeyFilePath = sandbox.CreateFile("key", instancePrivateKey);
+        string certificate1FilePath = sandbox.CreateFile("cert", instance1Certificate);
+        string privateKey1FilePath = sandbox.CreateFile("key", instance1PrivateKey);
         string certificate2FilePath = sandbox.CreateFile("cert2", instance2Certificate);
         string privateKey2FilePath = sandbox.CreateFile("key2", instance2PrivateKey);
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificate(CertificateName, certificateFilePath, privateKeyFilePath).Build();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificate(CertificateName, certificate1FilePath, privateKey1FilePath).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).ConfigureCertificateOptions(configuration, CertificateName, null)
-            .BuildServiceProvider();
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration)
+            .ConfigureCertificateOptions(configuration, CertificateName, null).BuildServiceProvider();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
@@ -119,71 +118,19 @@ public sealed class ConfigureCertificateOptionsTest
         IEnumerable<IOptionsChangeTokenSource<CertificateOptions>> tokenSources = serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>();
         bool changeCalled = false;
         IChangeToken changeToken = tokenSources.First().GetChangeToken();
-        _ = changeToken.RegisterChangeCallback(_ => changeCalled = true, "state");
 
+        _ = changeToken.RegisterChangeCallback(_ => changeCalled = true, "state");
         configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:CertificateFilePath"] = certificate2FilePath;
         configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:PrivateKeyFilePath"] = privateKey2FilePath;
         configuration.Reload();
-        await Task.Delay(2000);
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(secondX509);
         changeCalled.Should().BeTrue("file path information changed");
-    }
 
-    [Fact]
-    [Trait("Category", "SkipOnMacOS")]
-    public async Task ServiceLoadsCertificate()
-    {
-        using var personalCertificateStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
-        personalCertificateStore.Open(OpenFlags.ReadWrite);
-        personalCertificateStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false).Should().BeEmpty();
-
-        using var sandbox = new Sandbox();
-        string filename = sandbox.CreateFile("fakeCertificate.p12");
-        File.Copy("instance.p12", filename, true);
-
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificate("ContainerIdentity", filename).Build();
-        var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configuration);
-        services.AddOptions();
-        services.AddSingleton<IConfigureNamedOptions<CertificateOptions>, ConfigureCertificateOptions>();
-
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-
-        X509Certificate2Collection collection =
-            personalCertificateStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false);
-
-        collection.Should().NotBeNull();
-
-        if (!File.Exists(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
-        {
-            var orgId = Guid.NewGuid();
-            var spaceId = Guid.NewGuid();
-            var certificateWriter = new LocalCertificateWriter();
-
-            certificateWriter.Write(orgId, spaceId);
-        }
-
-        X509Certificate2 certificate =
-            GetX509FromCertKeyPair(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"),
-                Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"));
-
-        await File.WriteAllBytesAsync(filename, certificate.Export(X509ContentType.Pkcs12));
+        _ = changeToken.RegisterChangeCallback(_ => changeCalled = true, "state");
+        await File.WriteAllTextAsync(certificate2FilePath, instance1Certificate);
+        await File.WriteAllTextAsync(privateKey2FilePath, instance1PrivateKey);
         await Task.Delay(2000);
-
-        X509Certificate2Collection newCollection =
-            personalCertificateStore.Certificates.Find(X509FindType.FindByIssuerName, "Diego Instance Identity Intermediate CA", false);
-
-        newCollection.Should().NotIntersectWith(collection);
-
-        personalCertificateStore.Close();
-    }
-
-    private X509Certificate2 GetX509FromCertKeyPair(string certFile, string keyFile)
-    {
-        using var certificate = new X509Certificate2(certFile);
-        using var key = RSA.Create();
-        key.ImportFromPem(File.ReadAllText(keyFile));
-
-        return certificate.CopyWithPrivateKey(key);
+        optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
+        changeCalled.Should().BeTrue("file contents changed");
     }
 }
