@@ -33,7 +33,6 @@ public sealed class ConfigureCertificateOptionsTest
         options.Configure(CertificateName, opts);
 
         opts.Certificate.Should().BeNull();
-        CertificateName.Should().Be(opts.Name);
     }
 
     [Fact]
@@ -47,7 +46,6 @@ public sealed class ConfigureCertificateOptionsTest
         options.Configure(CertificateName, opts);
 
         opts.Certificate.Should().NotBeNull();
-        CertificateName.Should().Be(opts.Name);
         opts.Certificate!.HasPrivateKey.Should().BeTrue();
     }
 
@@ -58,15 +56,11 @@ public sealed class ConfigureCertificateOptionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(certificateName, "instance.crt", "instance.key").Build();
         var pemConfig = new ConfigureCertificateOptions(configurationRoot);
 
-        var opts = new CertificateOptions
-        {
-            Name = certificateName
-        };
+        var opts = new CertificateOptions();
 
         pemConfig.Configure(certificateName, opts);
 
         opts.Certificate.Should().NotBeNull();
-        certificateName.Should().BeEquivalentTo(opts.Name);
         opts.Certificate!.HasPrivateKey.Should().BeTrue();
     }
 
@@ -85,7 +79,7 @@ public sealed class ConfigureCertificateOptionsTest
 
         IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificate(CertificateName, certificateFilePath, privateKeyFilePath).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).ConfigureCertificateOptions(configuration, null)
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).ConfigureCertificateOptions(configuration, Microsoft.Extensions.Options.Options.DefaultName, null)
             .BuildServiceProvider();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
@@ -116,7 +110,7 @@ public sealed class ConfigureCertificateOptionsTest
 
         IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificate(CertificateName, certificateFilePath, privateKeyFilePath).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).ConfigureCertificateOptions(configuration, null)
+        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration).ConfigureCertificateOptions(configuration, CertificateName, null)
             .BuildServiceProvider();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();

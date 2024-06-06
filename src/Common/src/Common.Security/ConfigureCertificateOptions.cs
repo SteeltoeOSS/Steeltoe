@@ -26,14 +26,17 @@ public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certifi
 
     public void Configure(CertificateOptions options)
     {
-        Configure(options.Name, options);
+        Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
     }
 
     public void Configure(string? name, CertificateOptions options)
     {
         ArgumentGuard.NotNull(options);
 
-        options.Name = name;
+        if (options.Certificate != null)
+        {
+            return;
+        }
 
         string? certificateFilePath = _configuration.GetValue<string>(GetConfigurationKey(name, "CertificateFilePath"));
 
@@ -53,11 +56,15 @@ public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certifi
                 .Select(x => new X509Certificate2(Encoding.Default.GetBytes(x.Value))).ToList();
 
             string keyData = File.ReadAllText(privateKeyFilePath);
-            var key = RSA.Create();
+            using var key = RSA.Create();
             key.ImportFromPem(keyData.ToCharArray());
 
             options.Certificate = certChain[0].CopyWithPrivateKey(key);
-            options.IssuerChain = certChain.Skip(1).ToList();
+
+            foreach (X509Certificate2 issuer in certChain.Skip(1))
+            {
+                options.IssuerChain.Add(issuer);
+            }
         }
         else
         {

@@ -7,10 +7,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
-using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common;
 
@@ -26,58 +22,5 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddSingleton<IApplicationInstanceInfo>(serviceProvider =>
             new ApplicationInstanceInfo(serviceProvider.GetRequiredService<IConfiguration>(), true));
-    }
-
-    /// <summary>
-    /// Refreshes <see cref="IOptionsMonitor{TOptions}" /> when the file path in the specified property changes on disk, or the property value changes.
-    /// </summary>
-    /// <typeparam name="TOptions">
-    /// The options type that contains <paramref name="pathPropertyName" />.
-    /// </typeparam>
-    /// <param name="services">
-    /// The <see cref="IServiceCollection" /> to add services to.
-    /// </param>
-    /// <param name="configuration">
-    /// The root <see cref="IConfiguration" /> to monitor for changes.
-    /// </param>
-    /// <param name="key">
-    /// The configuration key that <typeparamref name="TOptions" /> is bound to.
-    /// </param>
-    /// <param name="optionName">
-    /// The named option, which gets added to <paramref name="key" />.
-    /// </param>
-    /// <param name="pathPropertyName">
-    /// The name of the property that contains a file path, whose value is relative to the root of <paramref name="fileProvider" />.
-    /// </param>
-    /// <param name="fileProvider">
-    /// Provides access to the file system.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="services" />, so that additional calls can be chained.
-    /// </returns>
-    internal static IServiceCollection WatchFilePathInOptions<TOptions>(this IServiceCollection services, IConfiguration configuration, string key,
-        string? optionName, string pathPropertyName, IFileProvider fileProvider)
-    {
-        string filePath = GetFilePath(configuration, key, optionName, pathPropertyName);
-        var watcher = new FilePathInOptionsChangeTokenSource<TOptions>(optionName, filePath, fileProvider);
-
-        services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(watcher);
-
-        _ = ChangeToken.OnChange(configuration.GetReloadToken, () =>
-        {
-            string newFilePath = GetFilePath(configuration, key, optionName, pathPropertyName);
-            watcher.ChangePath(newFilePath);
-        });
-
-        return services;
-    }
-
-    private static string GetFilePath(IConfiguration configuration, string key, string? optionName, string propertyName)
-    {
-        string? filePath = configuration.GetValue<string>(string.IsNullOrEmpty(optionName)
-            ? $"{key}{ConfigurationPath.KeyDelimiter}{propertyName}"
-            : $"{key}{ConfigurationPath.KeyDelimiter}{optionName}{ConfigurationPath.KeyDelimiter}{propertyName}");
-
-        return filePath ?? string.Empty;
     }
 }

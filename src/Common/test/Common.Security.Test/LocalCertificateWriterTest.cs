@@ -17,7 +17,7 @@ public sealed class LocalCertificateWriterTest
         var orgId = Guid.NewGuid();
         var spaceId = Guid.NewGuid();
         var certWriter = new LocalCertificateWriter();
-        var rsa = RSA.Create();
+        using var rsa = RSA.Create();
 
         certWriter.Write(orgId, spaceId);
         var rootCertificate = new X509Certificate2(certWriter.RootCaPfxPath);

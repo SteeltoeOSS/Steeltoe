@@ -14,9 +14,7 @@ public sealed class CertificateOptions
 {
     public const string ConfigurationKeyPrefix = "ClientCertificates";
 
-    public string? Name { get; set; }
-
     public X509Certificate2? Certificate { get; set; }
 
-    public List<X509Certificate2> IssuerChain { get; set; } = [];
+    public List<X509Certificate2> IssuerChain { get; } = [];
 }

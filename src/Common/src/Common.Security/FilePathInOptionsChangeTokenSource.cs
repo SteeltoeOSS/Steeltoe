@@ -9,7 +9,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
-namespace Steeltoe.Common.Options;
+namespace Steeltoe.Common.Security;
 
 internal sealed class FilePathInOptionsChangeTokenSource<T> : IOptionsChangeTokenSource<T>
 {
