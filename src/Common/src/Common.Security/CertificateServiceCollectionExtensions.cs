@@ -25,6 +25,23 @@ public static class CertificateServiceCollectionExtensions
     /// <param name="certificateName">
     /// Name of the certificate used in configuration and IOptions.
     /// </param>
+    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, IConfiguration configuration, string certificateName)
+    {
+        return ConfigureCertificateOptions(services, configuration, certificateName, null);
+    }
+
+    /// <summary>
+    /// Configure <see cref="CertificateOptions" /> for use with client certificates.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="configuration">
+    /// The root <see cref="IConfiguration" /> to monitor for changes.
+    /// </param>
+    /// <param name="certificateName">
+    /// Name of the certificate used in configuration and IOptions.
+    /// </param>
     /// <param name="fileProvider">
     /// Provides access to the file system.
     /// </param>
