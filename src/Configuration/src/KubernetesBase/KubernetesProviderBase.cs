@@ -24,6 +24,8 @@ internal class KubernetesProviderBase : ConfigurationProvider
 
     protected ILogger Logger => Settings.LoggerFactory?.CreateLogger(this.GetType());
 
+    private ActivitySource _kubernetesActivity = new ActivitySource("Steeltoe.Extensions.Configuration.Kubernetes.KubernetesProviderBase");
+
     internal KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken token = default)
     {
         if (kubernetes is null)
@@ -58,13 +60,16 @@ internal class KubernetesProviderBase : ConfigurationProvider
                 Polling = true;
                 while (Polling)
                 {
-                    Thread.Sleep(TimeSpan.FromSeconds(interval));
-                    Logger?.LogTrace("Interval completed for {namespace}.{name}, beginning reload", Settings.Namespace, Settings.Name);
-                    Load();
-                    if (CancellationToken.IsCancellationRequested)
+                    using (var activity = _kubernetesActivity.StartActivity(nameof(StartPolling)))
                     {
-                        Logger?.LogTrace("Cancellation requested for {namespace}.{name}, shutting down", Settings.Namespace, Settings.Name);
-                        break;
+                        Thread.Sleep(TimeSpan.FromSeconds(interval));
+                        Logger?.LogTrace("Interval completed for {namespace}.{name}, beginning reload", Settings.Namespace, Settings.Name);
+                        Load();
+                        if (CancellationToken.IsCancellationRequested)
+                        {
+                            Logger?.LogTrace("Cancellation requested for {namespace}.{name}, shutting down", Settings.Namespace, Settings.Name);
+                            break;
+                        }
                     }
                 }
             },
