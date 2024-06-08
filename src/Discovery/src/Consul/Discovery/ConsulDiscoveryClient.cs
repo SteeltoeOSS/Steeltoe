@@ -9,6 +9,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,6 +26,7 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     private readonly ConsulDiscoveryOptions _options;
     private readonly IServiceInstance _thisServiceInstance;
     private readonly IConsulServiceRegistrar _registrar;
+    private ActivitySource _consulActivity = new ActivitySource("Steeltoe.Discovery.Consul.Discovery.ConsulDiscoveryClient");
 
     internal ConsulDiscoveryOptions Options
     {
@@ -131,7 +133,10 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <returns>the list of service instances</returns>
     public IList<IServiceInstance> GetInstances(string serviceId, QueryOptions queryOptions = null)
     {
-        return GetInstancesAsync(serviceId, queryOptions).GetAwaiter().GetResult();
+        using (var activity = _consulActivity.StartActivity(nameof(GetInstances)))
+        {
+            return GetInstancesAsync(serviceId, queryOptions).GetAwaiter().GetResult();
+        }
     }
 
     /// <summary>
@@ -141,7 +146,10 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <returns>the list of service instances</returns>
     public IList<IServiceInstance> GetAllInstances(QueryOptions queryOptions = null)
     {
-        return GetAllInstancesAsync().GetAwaiter().GetResult();
+        using (var activity = _consulActivity.StartActivity(nameof(GetAllInstances)))
+        {
+            return GetAllInstancesAsync().GetAwaiter().GetResult();
+        }
 
         async Task<IList<IServiceInstance>> GetAllInstancesAsync()
         {
@@ -164,8 +172,11 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <returns>the list of services</returns>
     public IList<string> GetServices(QueryOptions queryOptions = null)
     {
-        queryOptions ??= QueryOptions.Default;
-        return GetServicesAsync(queryOptions).GetAwaiter().GetResult();
+        using (var activity = _consulActivity.StartActivity(nameof(GetServices)))
+        {
+            queryOptions ??= QueryOptions.Default;
+            return GetServicesAsync(queryOptions).GetAwaiter().GetResult();
+        }
     }
 
     internal async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions)
