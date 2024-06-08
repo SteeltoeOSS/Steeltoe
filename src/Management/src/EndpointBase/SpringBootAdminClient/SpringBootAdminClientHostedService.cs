@@ -9,6 +9,7 @@ using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
@@ -26,6 +27,8 @@ internal class SpringBootAdminClientHostedService : IHostedService
 
     internal static RegistrationResult RegistrationResult { get; set; }
 
+    private ActivitySource _endpointActivity = new ActivitySource("Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientHostedService");
+
     public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions mgmtOptions, HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger logger = null)
     {
         _options = options;
@@ -37,37 +40,43 @@ internal class SpringBootAdminClientHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Registering with Spring Boot Admin Server at {0}", _options.Url);
-        var basePath = _options.BasePath.TrimEnd('/');
-        var app = new Application()
+        using (var activity = _endpointActivity.StartActivity(nameof(StartAsync)))
         {
-            Name = _options.ApplicationName ?? "Steeltoe",
-            HealthUrl = new Uri($"{basePath}{_mgmtOptions.Path}/{_healthOptions.Path}"),
-            ManagementUrl = new Uri($"{basePath}{_mgmtOptions.Path}"),
-            ServiceUrl = new Uri($"{basePath}/"),
-            Metadata = new Dictionary<string, object> { { "startup", DateTime.Now } },
-        };
-        app.Metadata.Merge(_options.Metadata);
+            _logger.LogInformation("Registering with Spring Boot Admin Server at {0}", _options.Url);
+            var basePath = _options.BasePath.TrimEnd('/');
+            var app = new Application()
+            {
+                Name = _options.ApplicationName ?? "Steeltoe",
+                HealthUrl = new Uri($"{basePath}{_mgmtOptions.Path}/{_healthOptions.Path}"),
+                ManagementUrl = new Uri($"{basePath}{_mgmtOptions.Path}"),
+                ServiceUrl = new Uri($"{basePath}/"),
+                Metadata = new Dictionary<string, object> { { "startup", DateTime.Now } },
+            };
+            app.Metadata.Merge(_options.Metadata);
 
-        _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMS);
-        var result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app);
-        if (result.IsSuccessStatusCode)
-        {
-            RegistrationResult = await result.Content.ReadFromJsonAsync<RegistrationResult>();
-        }
-        else
-        {
-            _logger.LogError($"Error registering with SpringBootAdmin {result}");
+            _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMS);
+            var result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app);
+            if (result.IsSuccessStatusCode)
+            {
+                RegistrationResult = await result.Content.ReadFromJsonAsync<RegistrationResult>();
+            }
+            else
+            {
+                _logger.LogError($"Error registering with SpringBootAdmin {result}");
+            }
         }
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (RegistrationResult == null || string.IsNullOrEmpty(RegistrationResult.Id))
+        using (var activity = _endpointActivity.StartActivity(nameof(StopAsync)))
         {
-            return;
-        }
+            if (RegistrationResult == null || string.IsNullOrEmpty(RegistrationResult.Id))
+            {
+                return;
+            }
 
-        await _httpClient.DeleteAsync($"{_options.Url}/instances/{RegistrationResult.Id}");
+            await _httpClient.DeleteAsync($"{_options.Url}/instances/{RegistrationResult.Id}");
+        }
     }
 }

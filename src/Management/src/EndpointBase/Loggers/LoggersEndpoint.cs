@@ -7,6 +7,7 @@ using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -28,6 +29,7 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
 
     private readonly ILogger<LoggersEndpoint> _logger;
     private readonly IDynamicLoggerProvider _cloudFoundryLoggerProvider;
+    private ActivitySource _endpointActivity = new ActivitySource("Steeltoe.Management.Endpoint.Loggers.LoggersEndpoint");
 
     public LoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null, ILogger<LoggersEndpoint> logger = null)
         : base(options)
@@ -46,9 +48,12 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
 
     public override Dictionary<string, object> Invoke(LoggersChangeRequest request)
     {
-        _logger?.LogDebug("Invoke({0})", SecurityUtilities.SanitizeInput(request?.ToString()));
+        using (var activity = _endpointActivity.StartActivity(nameof(Invoke)))
+        {
+            _logger?.LogDebug("Invoke({0})", SecurityUtilities.SanitizeInput(request?.ToString()));
 
-        return DoInvoke(_cloudFoundryLoggerProvider, request);
+            return DoInvoke(_cloudFoundryLoggerProvider, request);
+        }
     }
 
     public virtual Dictionary<string, object> DoInvoke(IDynamicLoggerProvider provider, LoggersChangeRequest request)
@@ -84,29 +89,35 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
 
     public virtual ICollection<ILoggerConfiguration> GetLoggerConfigurations(IDynamicLoggerProvider provider)
     {
-        if (provider == null)
+        using (var activity = _endpointActivity.StartActivity(nameof(GetLoggerConfigurations)))
         {
-            _logger?.LogInformation("Unable to access the Dynamic Logging provider, log configuration unavailable");
-            return new List<ILoggerConfiguration>();
-        }
+            if (provider == null)
+            {
+                _logger?.LogInformation("Unable to access the Dynamic Logging provider, log configuration unavailable");
+                return new List<ILoggerConfiguration>();
+            }
 
-        return provider.GetLoggerConfigurations();
+            return provider.GetLoggerConfigurations();
+        }
     }
 
     public virtual void SetLogLevel(IDynamicLoggerProvider provider, string name, string level)
     {
-        if (provider == null)
+        using (var activity = _endpointActivity.StartActivity(nameof(SetLogLevel)))
         {
-            _logger?.LogInformation("Unable to access the Dynamic Logging provider, log level not changed");
-            return;
-        }
+            if (provider == null)
+            {
+                _logger?.LogInformation("Unable to access the Dynamic Logging provider, log level not changed");
+                return;
+            }
 
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException(nameof(name));
-        }
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException(nameof(name));
+            }
 
-        provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));
+            provider.SetLogLevel(name, LoggerLevels.MapLogLevel(level));
+        }
     }
 
     public Dictionary<string, string> DeserializeRequest(Stream stream)
