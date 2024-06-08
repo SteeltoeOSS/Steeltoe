@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Steeltoe.Connector.EFCore;
@@ -24,6 +25,8 @@ public class MigrateDbContextTask<T> : IApplicationTask
     private readonly T _db;
     private readonly ILogger _logger;
 
+    private ActivitySource _taskActivity = new ActivitySource("Steeltoe.ConnectorConnector.EFCore.MigrateDbContextTask");
+
     public MigrateDbContextTask(T db, ILogger<MigrateDbContextTask<T>> logger)
     {
         _db = db;
@@ -34,35 +37,38 @@ public class MigrateDbContextTask<T> : IApplicationTask
 
     public void Run()
     {
-        var isNewDb = false;
-        var migrations = new List<string>();
-        try
+        using (var activity = _taskActivity.StartActivity(nameof(Run)))
         {
-            migrations = _db.Database.GetPendingMigrations().ToList();
-        }
-        catch
-        {
-            isNewDb = true; // might not be true source of the error, but we'll catch real cause as part of Migrate call
-        }
-
-        _logger.LogInformation("Starting database migration...");
-        _db.Database.Migrate();
-        if (isNewDb)
-        {
-            migrations = _db.Database.GetAppliedMigrations().ToList();
-        }
-
-        if (migrations.Any())
-        {
-            _logger.LogInformation("The following migrations have been successfully applied:");
-            foreach (var migration in migrations)
+            var isNewDb = false;
+            var migrations = new List<string>();
+            try
             {
-                _logger.LogInformation(migration);
+                migrations = _db.Database.GetPendingMigrations().ToList();
             }
-        }
-        else
-        {
-            _logger.LogInformation("Database is already up to date");
+            catch
+            {
+                isNewDb = true; // might not be true source of the error, but we'll catch real cause as part of Migrate call
+            }
+
+            _logger.LogInformation("Starting database migration...");
+            _db.Database.Migrate();
+            if (isNewDb)
+            {
+                migrations = _db.Database.GetAppliedMigrations().ToList();
+            }
+
+            if (migrations.Any())
+            {
+                _logger.LogInformation("The following migrations have been successfully applied:");
+                foreach (var migration in migrations)
+                {
+                    _logger.LogInformation(migration);
+                }
+            }
+            else
+            {
+                _logger.LogInformation("Database is already up to date");
+            }
         }
     }
 }

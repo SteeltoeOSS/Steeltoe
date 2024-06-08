@@ -10,6 +10,7 @@ using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -24,6 +25,8 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
     private const string ConfigFileKeySuffix = "json";
 
     private Watcher<V1ConfigMap> ConfigMapWatcher { get; set; }
+
+    private ActivitySource _kubernetesActivity = new ActivitySource("Steeltoe.Extensions.Configuration.Kubernetes.KubernetesConfigMapProvider");
 
     internal KubernetesConfigMapProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
         : base(kubernetes, settings, cancellationToken)
@@ -118,6 +121,7 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
                         },
                         onClosed: () => { Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); }).GetAwaiter().GetResult();
                     }
+
                     break;
                 case ReloadMethods.Polling:
                     StartPolling(Settings.ReloadSettings.Period);
