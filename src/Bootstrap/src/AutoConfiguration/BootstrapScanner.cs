@@ -259,8 +259,7 @@ internal sealed class BootstrapScanner
     private void WireCloudFoundryContainerIdentity()
     {
         _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCloudFoundryContainerIdentity());
-
-        _wrapper.ConfigureServices((_, services) => services.AddCloudFoundryCertificateAuth());
+        _wrapper.ConfigureServices(services => services.AddCloudFoundryCertificateAuth());
 
         _logger.LogInformation("Configured Cloud Foundry mTLS security");
     }

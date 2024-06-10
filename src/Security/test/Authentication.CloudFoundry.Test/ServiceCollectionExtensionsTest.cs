@@ -43,11 +43,11 @@ public sealed class ServiceCollectionExtensionsTest
         provider.GetRequiredService<IConfigureOptions<CertificateOptions>>().Should().NotBeNull();
         provider.GetRequiredService<IOptionsChangeTokenSource<CertificateOptions>>().Should().NotBeNull();
         provider.GetRequiredService<IAuthorizationHandler>().Should().NotBeNull();
-        var mtlsOpts = provider.GetRequiredService<IOptions<MutualTlsAuthenticationOptions>>();
-        mtlsOpts.Should().NotBeNull();
+        var mtlsOptions = provider.GetRequiredService<IOptions<MutualTlsAuthenticationOptions>>();
+        mtlsOptions.Should().NotBeNull();
 
         // confirm Events was set (in MutualTlsAuthenticationOptionsPostConfigurer.cs) vs being null by default
-        mtlsOpts.Value.Events.Should().NotBeNull();
+        mtlsOptions.Value.Events.Should().NotBeNull();
         new CertificateAuthenticationOptions().Events.Should().BeNull();
     }
 }
