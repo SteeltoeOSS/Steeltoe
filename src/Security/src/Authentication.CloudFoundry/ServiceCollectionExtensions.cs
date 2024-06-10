@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
@@ -22,18 +21,15 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Service collection.
     /// </param>
-    /// <param name="configuration">
-    /// The root <see cref="IConfiguration" /> to monitor for changes.
-    /// </param>
     /// <param name="fileProvider">
     /// Provides access to the file system.
     /// </param>
-    public static void AddCloudFoundryContainerIdentity(this IServiceCollection services, IConfiguration configuration, IFileProvider fileProvider)
+    public static void AddCloudFoundryContainerIdentity(this IServiceCollection services, IFileProvider fileProvider)
     {
         ArgumentGuard.NotNull(services);
 
         services.ConfigureCertificateOptions("ContainerIdentity", fileProvider);
-        services.AddSingleton<IPostConfigureOptions<CertificateAuthenticationOptions>, MutualTlsAuthenticationOptionsPostConfigurer>();
+        services.AddSingleton<IPostConfigureOptions<MutualTlsAuthenticationOptions>, MutualTlsAuthenticationOptionsPostConfigurer>();
         services.AddSingleton<IAuthorizationHandler, CloudFoundryCertificateIdentityAuthorizationHandler>();
         services.AddCertificateForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");
     }
@@ -44,12 +40,9 @@ public static class ServiceCollectionExtensions
     /// <param name="services">
     /// Service collection.
     /// </param>
-    /// <param name="configuration">
-    /// The root <see cref="IConfiguration" /> to monitor for changes.
-    /// </param>
-    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, IConfiguration configuration)
+    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services)
     {
-        AddCloudFoundryCertificateAuth(services, configuration, CertificateAuthenticationDefaults.AuthenticationScheme);
+        AddCloudFoundryCertificateAuth(services, CertificateAuthenticationDefaults.AuthenticationScheme);
     }
 
     /// <summary>
@@ -57,17 +50,13 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">
     /// Service collection.
-    /// </param>
-    /// <param name="configuration">
-    /// The root <see cref="IConfiguration" /> to monitor for changes.
     /// </param>
     /// <param name="configurer">
     /// Used to configure the <see cref="MutualTlsAuthenticationOptions" />.
     /// </param>
-    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, IConfiguration configuration,
-        Action<CertificateAuthenticationOptions> configurer)
+    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, Action<MutualTlsAuthenticationOptions> configurer)
     {
-        AddCloudFoundryCertificateAuth(services, configuration, CertificateAuthenticationDefaults.AuthenticationScheme, configurer, null);
+        AddCloudFoundryCertificateAuth(services, CertificateAuthenticationDefaults.AuthenticationScheme, configurer, null);
     }
 
     /// <summary>
@@ -75,16 +64,13 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">
     /// Service collection.
-    /// </param>
-    /// <param name="configuration">
-    /// The root <see cref="IConfiguration" /> to monitor for changes.
     /// </param>
     /// <param name="authenticationScheme">
     /// An identifier for this authentication mechanism. Default value is <see cref="CertificateAuthenticationDefaults.AuthenticationScheme" />.
     /// </param>
-    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, IConfiguration configuration, string authenticationScheme)
+    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, string authenticationScheme)
     {
-        AddCloudFoundryCertificateAuth(services, configuration, authenticationScheme, null, null);
+        AddCloudFoundryCertificateAuth(services, authenticationScheme, null, null);
     }
 
     /// <summary>
@@ -92,9 +78,6 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">
     /// Service collection.
-    /// </param>
-    /// <param name="configuration">
-    /// The root <see cref="IConfiguration" /> to monitor for changes.
     /// </param>
     /// <param name="authenticationScheme">
     /// An identifier for this authentication mechanism. Default value is <see cref="CertificateAuthenticationDefaults.AuthenticationScheme" />.
@@ -105,12 +88,12 @@ public static class ServiceCollectionExtensions
     /// <param name="fileProvider">
     /// Provides access to the file system.
     /// </param>
-    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, IConfiguration configuration, string authenticationScheme,
-        Action<CertificateAuthenticationOptions> configurer, IFileProvider fileProvider)
+    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, string authenticationScheme,
+        Action<MutualTlsAuthenticationOptions> configurer, IFileProvider fileProvider)
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddCloudFoundryContainerIdentity(configuration, fileProvider);
+        services.AddCloudFoundryContainerIdentity(fileProvider);
 
         services.AddAuthentication(authenticationScheme).AddCloudFoundryIdentityCertificate(authenticationScheme, configurer);
 

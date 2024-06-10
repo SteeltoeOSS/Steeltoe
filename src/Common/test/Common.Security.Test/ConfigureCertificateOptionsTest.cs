@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -22,12 +23,7 @@ public sealed class ConfigureCertificateOptionsTest
     [Fact]
     public void ConfigureCertificateOptions_NoPath_NoCertificate()
     {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", string.Empty }
-        }).Build();
-
-        var configureOptions = new ConfigureCertificateOptions(configurationRoot, NullLogger<ConfigureCertificateOptions>.Instance);
+        var configureOptions = new ConfigureCertificateOptions(new ConfigurationBuilder().Build());
         var options = new CertificateOptions();
 
         configureOptions.Configure(CertificateName, options);
@@ -36,17 +32,28 @@ public sealed class ConfigureCertificateOptionsTest
     }
 
     [Fact]
-    public void ConfigureCertificateOptions_EmptyFile_NoCertificate()
+    public void ConfigureCertificateOptions_EmptyFile_Crashes()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "empty.crt" }
         }).Build();
 
-        var configureOptions = new ConfigureCertificateOptions(configurationRoot, NullLogger<ConfigureCertificateOptions>.Instance);
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
-        configureOptions.Configure(CertificateName, options);
+#if NET6_0
+        try
+        {
+            configureOptions.Configure(CertificateName, options);
+        }
+        catch (Exception ex)
+        {
+            ex.Message.Should().Contain("Unspecified");
+        }
+#else
+        Assert.Throws<CryptographicException>(() => configureOptions.Configure(CertificateName, options));
+#endif
 
         options.Certificate.Should().BeNull();
     }
@@ -60,10 +67,10 @@ public sealed class ConfigureCertificateOptionsTest
             { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:privateKeyFilePath", "empty.key" }
         }).Build();
 
-        var configureOptions = new ConfigureCertificateOptions(configurationRoot, NullLogger<ConfigureCertificateOptions>.Instance);
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
-        Assert.Throws<ArgumentException>("input", () => configureOptions.Configure(CertificateName, options));
+        Assert.Throws<CryptographicException>(() => configureOptions.Configure(CertificateName, options));
 
         options.Certificate.Should().BeNull();
     }
@@ -73,7 +80,7 @@ public sealed class ConfigureCertificateOptionsTest
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(CertificateName, "instance.p12").Build();
         configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath"].Should().NotBeNull();
-        var configureOptions = new ConfigureCertificateOptions(configurationRoot, NullLogger<ConfigureCertificateOptions>.Instance);
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
         configureOptions.Configure(CertificateName, options);
@@ -86,7 +93,7 @@ public sealed class ConfigureCertificateOptionsTest
     public void ConfigureCertificateOptions_ReadsPemFiles_CreatesCertificate()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(CertificateName, "instance.crt", "instance.key").Build();
-        var configureOptions = new ConfigureCertificateOptions(configurationRoot, NullLogger<ConfigureCertificateOptions>.Instance);
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
         configureOptions.Configure(CertificateName, options);

@@ -43,7 +43,7 @@ public static class CertificateAuthenticationBuilderExtensions
     /// <param name="configureOptions">
     /// Additional options configuration.
     /// </param>
-    public static AuthenticationBuilder AddMutualTls(this AuthenticationBuilder builder, Action<CertificateAuthenticationOptions> configureOptions)
+    public static AuthenticationBuilder AddMutualTls(this AuthenticationBuilder builder, Action<MutualTlsAuthenticationOptions> configureOptions)
     {
         return builder.AddMutualTls(CertificateAuthenticationDefaults.AuthenticationScheme, configureOptions);
     }
@@ -61,8 +61,8 @@ public static class CertificateAuthenticationBuilderExtensions
     /// Additional options configuration.
     /// </param>
     public static AuthenticationBuilder AddMutualTls(this AuthenticationBuilder builder, string authenticationScheme,
-        Action<CertificateAuthenticationOptions> configureOptions)
+        Action<MutualTlsAuthenticationOptions> configureOptions)
     {
-        return builder.AddScheme<CertificateAuthenticationOptions, MutualTlsAuthenticationHandler>(authenticationScheme, configureOptions);
+        return builder.AddScheme<MutualTlsAuthenticationOptions, MutualTlsAuthenticationHandler>(authenticationScheme, configureOptions);
     }
 }

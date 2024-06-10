@@ -124,7 +124,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 
         if (!string.IsNullOrEmpty(clientCertificatePath) && DefaultSettings.ClientCertificate == null)
         {
-            var certificateConfigurer = new ConfigureCertificateOptions(Configuration, LoggerFactory.CreateLogger<ConfigureCertificateOptions>());
+            var certificateConfigurer = new ConfigureCertificateOptions(Configuration);
 
             var options = new CertificateOptions();
             certificateConfigurer.Configure("ConfigServer", options);

@@ -2,13 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Configuration;
 
@@ -20,14 +17,12 @@ public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certifi
         TimeSpan.FromSeconds(1));
 
     private readonly IConfiguration _configuration;
-    private readonly ILogger<ConfigureCertificateOptions> _logger;
 
-    public ConfigureCertificateOptions(IConfiguration configuration, ILogger<ConfigureCertificateOptions> logger)
+    public ConfigureCertificateOptions(IConfiguration configuration)
     {
         ArgumentGuard.NotNull(configuration);
 
         _configuration = configuration;
-        _logger = logger;
     }
 
     public void Configure(CertificateOptions options)
@@ -39,43 +34,25 @@ public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certifi
     {
         ArgumentGuard.NotNull(options);
 
-        if (options.Certificate != null)
-        {
-            return;
-        }
-
         string? certificateFilePath = _configuration.GetValue<string>(GetConfigurationKey(name, "CertificateFilePath"));
-        string? certificateContents = SafeReadAllText(certificateFilePath);
 
-        if (string.IsNullOrEmpty(certificateFilePath) || string.IsNullOrEmpty(certificateContents))
+        if (options.Certificate != null || certificateFilePath == null || !File.Exists(certificateFilePath))
         {
             return;
         }
 
         string? privateKeyFilePath = _configuration.GetValue<string>(GetConfigurationKey(name, "PrivateKeyFilePath"));
 
-        if (!string.IsNullOrEmpty(privateKeyFilePath))
+        options.Certificate = privateKeyFilePath != null && File.Exists(privateKeyFilePath)
+            ? X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath)
+            : new X509Certificate2(certificateFilePath);
+
+        List<X509Certificate2> certChain = CertificateRegex.Matches(File.ReadAllText(certificateFilePath!))
+            .Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value))).ToList();
+
+        foreach (X509Certificate2 issuer in certChain.Skip(1))
         {
-            List<X509Certificate2> certChain = CertificateRegex.Matches(certificateContents).Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value)))
-                .ToList();
-
-            string? keyData = SafeReadAllText(privateKeyFilePath);
-
-            using var key = RSA.Create();
-            key.ImportFromPem(keyData!.ToCharArray());
-
-            options.Certificate = certChain[0].CopyWithPrivateKey(key);
-
-            foreach (X509Certificate2 issuer in certChain.Skip(1))
-            {
-                options.IssuerChain.Add(issuer);
-            }
-        }
-        else
-        {
-            options.Certificate = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
-                ? new X509Certificate2(certificateFilePath)
-                : new X509Certificate2(certificateFilePath, string.Empty, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
+            options.IssuerChain.Add(issuer);
         }
     }
 
@@ -84,22 +61,5 @@ public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certifi
         return string.IsNullOrEmpty(optionName)
             ? string.Join(ConfigurationPath.KeyDelimiter, CertificateOptions.ConfigurationKeyPrefix, propertyName)
             : string.Join(ConfigurationPath.KeyDelimiter, CertificateOptions.ConfigurationKeyPrefix, optionName, propertyName);
-    }
-
-    private string? SafeReadAllText(string? path)
-    {
-        if (path != null)
-        {
-            try
-            {
-                return File.ReadAllText(path);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError(exception, "Failed to read file while configuring certificates.");
-            }
-        }
-
-        return null;
     }
 }

@@ -23,7 +23,7 @@ public sealed class TestServerCertificateStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCloudFoundryCertificateAuth(Configuration);
+        services.AddCloudFoundryCertificateAuth();
     }
 
     public void Configure(IApplicationBuilder app, IAuthorizationService authorizationService)

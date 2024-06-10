@@ -497,7 +497,7 @@ public static class AuthenticationBuilderExtensions
     /// <see cref="AuthenticationBuilder" /> configured to use application identity certificates.
     /// </returns>
     public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder,
-        Action<CertificateAuthenticationOptions> configurer)
+        Action<MutualTlsAuthenticationOptions> configurer)
     {
         return builder.AddCloudFoundryIdentityCertificate(CertificateAuthenticationDefaults.AuthenticationScheme, configurer);
     }
@@ -535,7 +535,7 @@ public static class AuthenticationBuilderExtensions
     /// <see cref="AuthenticationBuilder" /> configured to use application identity certificates.
     /// </returns>
     public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder, string authenticationScheme,
-        Action<CertificateAuthenticationOptions> configurer)
+        Action<MutualTlsAuthenticationOptions> configurer)
     {
         builder.AddMutualTls(authenticationScheme, options =>
         {

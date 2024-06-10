@@ -19,7 +19,7 @@ namespace Steeltoe.Security.Authentication.Mtls;
 /// <summary>
 /// This class is based on <see cref="CertificateAuthenticationHandler" />, but allows side-loading a root CA.
 /// </summary>
-internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<CertificateAuthenticationOptions>
+internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<MutualTlsAuthenticationOptions>
 {
     private static readonly Oid ClientCertificateOid = new("1.3.6.1.5.5.7.3.2");
     private readonly IOptionsMonitor<CertificateOptions> _certificateOptionsMonitor;
@@ -31,10 +31,10 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Cer
     private new CertificateAuthenticationEvents Events => (CertificateAuthenticationEvents)base.Events;
 
 #if NET6_0
-    public MutualTlsAuthenticationHandler(IOptionsMonitor<CertificateAuthenticationOptions> options, IOptionsMonitor<CertificateOptions> certificateOptionsMonitor, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+    public MutualTlsAuthenticationHandler(IOptionsMonitor<MutualTlsAuthenticationOptions> options, IOptionsMonitor<CertificateOptions> certificateOptionsMonitor, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
 #else
-    public MutualTlsAuthenticationHandler(IOptionsMonitor<CertificateAuthenticationOptions> options,
+    public MutualTlsAuthenticationHandler(IOptionsMonitor<MutualTlsAuthenticationOptions> options,
         IOptionsMonitor<CertificateOptions> certificateOptionsMonitor, ILoggerFactory logger, UrlEncoder encoder)
         : base(options, logger, encoder)
 #endif
