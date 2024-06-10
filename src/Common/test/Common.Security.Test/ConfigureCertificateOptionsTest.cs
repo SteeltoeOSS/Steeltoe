@@ -64,7 +64,7 @@ public sealed class ConfigureCertificateOptionsTest
     }
 
     [Fact]
-    public async Task CertificateOptionsUpdateOnFileChange()
+    public async Task CertificateOptionsUpdateOnFileContentChange()
     {
         using var sandbox = new Sandbox();
         string firstCertificateContent = await File.ReadAllTextAsync("instance.crt");
@@ -93,7 +93,7 @@ public sealed class ConfigureCertificateOptionsTest
     }
 
     [Fact]
-    public async Task CertificateOptionsNotifyOnChange()
+    public async Task CertificateOptionsUpdateOnFileLocationChange()
     {
         using var sandbox = new Sandbox();
         string instance1Certificate = await File.ReadAllTextAsync("instance.crt");
