@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Options;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Security.Authentication.Mtls;
 

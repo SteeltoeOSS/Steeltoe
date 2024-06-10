@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Options;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Common.Security;
 
-public static class ConfigurationExtensions
+internal static class ConfigurationExtensions
 {
     /// <summary>
     /// Adds file path information for a certificate and (optional) private key to configuration, for use with <see cref="CertificateOptions" />.
@@ -16,7 +16,7 @@ public static class ConfigurationExtensions
     /// Your <see cref="IConfigurationBuilder" />.
     /// </param>
     /// <param name="certificateName">
-    /// Name of the certificate, or <see cref="string.Empty"/> for an unnamed certificate.
+    /// Name of the certificate, or <see cref="string.Empty" /> for an unnamed certificate.
     /// </param>
     /// <param name="certificateFilePath">
     /// The path on disk to locate a valid certificate file.
@@ -24,7 +24,7 @@ public static class ConfigurationExtensions
     /// <param name="privateKeyFilePath">
     /// The path on disk to locate a valid PEM-encoded RSA key file.
     /// </param>
-    public static IConfigurationBuilder AddCertificate(this IConfigurationBuilder builder, string certificateName, string certificateFilePath,
+    internal static IConfigurationBuilder AddCertificate(this IConfigurationBuilder builder, string certificateName, string certificateFilePath,
         string? privateKeyFilePath = null)
     {
         ArgumentGuard.NotNull(builder);

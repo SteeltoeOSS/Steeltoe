@@ -10,7 +10,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace Steeltoe.Common.Security;
 
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Refreshes <see cref="IOptionsMonitor{TOptions}" /> when the file path in the specified property changes on disk, or the property value changes.
@@ -20,9 +20,6 @@ public static class ServiceCollectionExtensions
     /// </typeparam>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
-    /// </param>
-    /// <param name="configuration">
-    /// The root <see cref="IConfiguration" /> to monitor for changes.
     /// </param>
     /// <param name="key">
     /// The configuration key that <typeparamref name="TOptions" /> is bound to.
@@ -39,18 +36,22 @@ public static class ServiceCollectionExtensions
     /// <returns>
     /// The incoming <paramref name="services" />, so that additional calls can be chained.
     /// </returns>
-    internal static IServiceCollection WatchFilePathInOptions<TOptions>(this IServiceCollection services, IConfiguration configuration, string key,
-        string? optionName, string pathPropertyName, IFileProvider fileProvider)
+    public static IServiceCollection WatchFilePathInOptions<TOptions>(this IServiceCollection services, string key, string? optionName, string pathPropertyName,
+        IFileProvider fileProvider)
     {
-        string filePath = GetFilePath(configuration, key, optionName, pathPropertyName);
-        var watcher = new FilePathInOptionsChangeTokenSource<TOptions>(optionName, filePath, fileProvider);
-
-        services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(watcher);
-
-        _ = ChangeToken.OnChange(configuration.GetReloadToken, () =>
+        services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(serviceProvider =>
         {
-            string newFilePath = GetFilePath(configuration, key, optionName, pathPropertyName);
-            watcher.ChangePath(newFilePath);
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            string filePath = GetFilePath(configuration, key, optionName, pathPropertyName);
+            var watcher = new FilePathInOptionsChangeTokenSource<TOptions>(optionName, filePath, fileProvider);
+
+            _ = ChangeToken.OnChange(configuration.GetReloadToken, () =>
+            {
+                string newFilePath = GetFilePath(configuration, key, optionName, pathPropertyName);
+                watcher.ChangePath(newFilePath);
+            });
+
+            return watcher;
         });
 
         return services;

@@ -8,20 +8,26 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Options;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Common.Security;
 
 public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
-    private readonly IConfiguration _configuration;
+    private static readonly Regex CertificateRegex = new("-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Compiled | RegexOptions.Singleline,
+        TimeSpan.FromSeconds(1));
 
-    public ConfigureCertificateOptions(IConfiguration configuration)
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<ConfigureCertificateOptions> _logger;
+
+    public ConfigureCertificateOptions(IConfiguration configuration, ILogger<ConfigureCertificateOptions> logger)
     {
         ArgumentGuard.NotNull(configuration);
 
         _configuration = configuration;
+        _logger = logger;
     }
 
     public void Configure(CertificateOptions options)
@@ -39,8 +45,9 @@ public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certifi
         }
 
         string? certificateFilePath = _configuration.GetValue<string>(GetConfigurationKey(name, "CertificateFilePath"));
+        string? certificateContents = SafeReadAllText(certificateFilePath);
 
-        if (string.IsNullOrEmpty(certificateFilePath))
+        if (string.IsNullOrEmpty(certificateFilePath) || string.IsNullOrEmpty(certificateContents))
         {
             return;
         }
@@ -49,15 +56,13 @@ public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certifi
 
         if (!string.IsNullOrEmpty(privateKeyFilePath))
         {
-            string certificateContents = File.ReadAllText(certificateFilePath);
+            List<X509Certificate2> certChain = CertificateRegex.Matches(certificateContents).Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value)))
+                .ToList();
 
-            List<X509Certificate2> certChain = Regex
-                .Matches(certificateContents, "-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Singleline, TimeSpan.FromSeconds(1))
-                .Select(x => new X509Certificate2(Encoding.Default.GetBytes(x.Value))).ToList();
+            string? keyData = SafeReadAllText(privateKeyFilePath);
 
-            string keyData = File.ReadAllText(privateKeyFilePath);
             using var key = RSA.Create();
-            key.ImportFromPem(keyData.ToCharArray());
+            key.ImportFromPem(keyData!.ToCharArray());
 
             options.Certificate = certChain[0].CopyWithPrivateKey(key);
 
@@ -79,5 +84,22 @@ public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certifi
         return string.IsNullOrEmpty(optionName)
             ? string.Join(ConfigurationPath.KeyDelimiter, CertificateOptions.ConfigurationKeyPrefix, propertyName)
             : string.Join(ConfigurationPath.KeyDelimiter, CertificateOptions.ConfigurationKeyPrefix, optionName, propertyName);
+    }
+
+    private string? SafeReadAllText(string? path)
+    {
+        if (path != null)
+        {
+            try
+            {
+                return File.ReadAllText(path);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to read file while configuring certificates.");
+            }
+        }
+
+        return null;
     }
 }

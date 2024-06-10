@@ -4,7 +4,6 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Options;
 using Xunit;
 
 namespace Steeltoe.Common.Security.Test;
@@ -17,7 +16,7 @@ public sealed class ConfigurationExtensionsTest
     public void AddCertificate_SetsPaths()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(CertificateName, "instance.crt", "instance.key").Build();
-        configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath"].Should().Be("instance.crt");
-        configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:privateKeyFilePath"].Should().Be("instance.key");
+        configurationRoot[$"ClientCertificates:{CertificateName}:certificateFilePath"].Should().Be("instance.crt");
+        configurationRoot[$"ClientCertificates:{CertificateName}:privateKeyFilePath"].Should().Be("instance.key");
     }
 }

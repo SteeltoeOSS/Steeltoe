@@ -22,4 +22,13 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(FoundationalVersion)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="empty.key">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="empty.crt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

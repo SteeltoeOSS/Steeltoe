@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Options;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Common.Security;
 
@@ -19,15 +19,12 @@ public static class CertificateServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    /// <param name="configuration">
-    /// The root <see cref="IConfiguration" /> to monitor for changes.
-    /// </param>
     /// <param name="certificateName">
-    /// Name of the certificate used in configuration and IOptions, or <see cref="string.Empty"/> for an unnamed certificate.
+    /// Name of the certificate used in configuration and IOptions, or <see cref="string.Empty" /> for an unnamed certificate.
     /// </param>
-    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, IConfiguration configuration, string certificateName)
+    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string certificateName)
     {
-        return ConfigureCertificateOptions(services, configuration, certificateName, null);
+        return ConfigureCertificateOptions(services, certificateName, null);
     }
 
     /// <summary>
@@ -36,17 +33,13 @@ public static class CertificateServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    /// <param name="configuration">
-    /// The root <see cref="IConfiguration" /> to monitor for changes.
-    /// </param>
     /// <param name="certificateName">
-    /// Name of the certificate used in configuration and IOptions, or <see cref="string.Empty"/> for an unnamed certificate.
+    /// Name of the certificate used in configuration and IOptions, or <see cref="string.Empty" /> for an unnamed certificate.
     /// </param>
     /// <param name="fileProvider">
     /// Provides access to the file system.
     /// </param>
-    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, IConfiguration configuration, string certificateName,
-        IFileProvider? fileProvider)
+    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string certificateName, IFileProvider? fileProvider)
     {
         fileProvider ??= new PhysicalFileProvider(Environment.CurrentDirectory);
 
@@ -54,9 +47,9 @@ public static class CertificateServiceCollectionExtensions
             ? CertificateOptions.ConfigurationKeyPrefix
             : ConfigurationPath.Combine(CertificateOptions.ConfigurationKeyPrefix, certificateName);
 
-        services.Configure<CertificateOptions>(configuration.GetSection(configurationKey));
-        services.WatchFilePathInOptions<CertificateOptions>(configuration, configurationKey, certificateName, "CertificateFileName", fileProvider);
-        services.WatchFilePathInOptions<CertificateOptions>(configuration, configurationKey, certificateName, "PrivateKeyFileName", fileProvider);
+        services.AddOptions<CertificateOptions>().BindConfiguration(configurationKey);
+        services.WatchFilePathInOptions<CertificateOptions>(configurationKey, certificateName, "CertificateFileName", fileProvider);
+        services.WatchFilePathInOptions<CertificateOptions>(configurationKey, certificateName, "PrivateKeyFileName", fileProvider);
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<CertificateOptions>, ConfigureCertificateOptions>());
         return services;

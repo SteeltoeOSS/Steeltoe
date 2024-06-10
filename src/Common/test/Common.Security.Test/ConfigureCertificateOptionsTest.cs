@@ -6,9 +6,10 @@ using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common.Options;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
@@ -26,12 +27,45 @@ public sealed class ConfigureCertificateOptionsTest
             { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", string.Empty }
         }).Build();
 
-        var options = new ConfigureCertificateOptions(configurationRoot);
-        var opts = new CertificateOptions();
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot, NullLogger<ConfigureCertificateOptions>.Instance);
+        var options = new CertificateOptions();
 
-        options.Configure(CertificateName, opts);
+        configureOptions.Configure(CertificateName, options);
 
-        opts.Certificate.Should().BeNull();
+        options.Certificate.Should().BeNull();
+    }
+
+    [Fact]
+    public void ConfigureCertificateOptions_EmptyFile_NoCertificate()
+    {
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "empty.crt" }
+        }).Build();
+
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot, NullLogger<ConfigureCertificateOptions>.Instance);
+        var options = new CertificateOptions();
+
+        configureOptions.Configure(CertificateName, options);
+
+        options.Certificate.Should().BeNull();
+    }
+
+    [Fact]
+    public void ConfigureCertificateOptions_ThrowsOnInvalidKey()
+    {
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "instance.crt" },
+            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:privateKeyFilePath", "empty.key" }
+        }).Build();
+
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot, NullLogger<ConfigureCertificateOptions>.Instance);
+        var options = new CertificateOptions();
+
+        Assert.Throws<ArgumentException>("input", () => configureOptions.Configure(CertificateName, options));
+
+        options.Certificate.Should().BeNull();
     }
 
     [Fact]
@@ -39,28 +73,26 @@ public sealed class ConfigureCertificateOptionsTest
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(CertificateName, "instance.p12").Build();
         configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath"].Should().NotBeNull();
-        var options = new ConfigureCertificateOptions(configurationRoot);
-        var opts = new CertificateOptions();
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot, NullLogger<ConfigureCertificateOptions>.Instance);
+        var options = new CertificateOptions();
 
-        options.Configure(CertificateName, opts);
+        configureOptions.Configure(CertificateName, options);
 
-        opts.Certificate.Should().NotBeNull();
-        opts.Certificate!.HasPrivateKey.Should().BeTrue();
+        options.Certificate.Should().NotBeNull();
+        options.Certificate!.HasPrivateKey.Should().BeTrue();
     }
 
     [Fact]
     public void ConfigureCertificateOptions_ReadsPemFiles_CreatesCertificate()
     {
-        const string certificateName = "test";
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(certificateName, "instance.crt", "instance.key").Build();
-        var pemConfig = new ConfigureCertificateOptions(configurationRoot);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(CertificateName, "instance.crt", "instance.key").Build();
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot, NullLogger<ConfigureCertificateOptions>.Instance);
+        var options = new CertificateOptions();
 
-        var opts = new CertificateOptions();
+        configureOptions.Configure(CertificateName, options);
 
-        pemConfig.Configure(certificateName, opts);
-
-        opts.Certificate.Should().NotBeNull();
-        opts.Certificate!.HasPrivateKey.Should().BeTrue();
+        options.Certificate.Should().NotBeNull();
+        options.Certificate!.HasPrivateKey.Should().BeTrue();
     }
 
     [Fact]
@@ -78,8 +110,8 @@ public sealed class ConfigureCertificateOptionsTest
 
         IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificate(CertificateName, certificateFilePath, privateKeyFilePath).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration)
-            .ConfigureCertificateOptions(configuration, Microsoft.Extensions.Options.Options.DefaultName, null).BuildServiceProvider();
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging().AddSingleton<IConfiguration>(configuration)
+            .ConfigureCertificateOptions(Microsoft.Extensions.Options.Options.DefaultName).BuildServiceProvider();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
 
@@ -109,8 +141,8 @@ public sealed class ConfigureCertificateOptionsTest
 
         IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificate(CertificateName, certificate1FilePath, privateKey1FilePath).Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IConfiguration>(configuration)
-            .ConfigureCertificateOptions(configuration, CertificateName, null).BuildServiceProvider();
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging().AddSingleton<IConfiguration>(configuration)
+            .ConfigureCertificateOptions(CertificateName).BuildServiceProvider();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);

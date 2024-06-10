@@ -16,23 +16,23 @@ public sealed class LocalCertificateWriterTest
     {
         var orgId = Guid.NewGuid();
         var spaceId = Guid.NewGuid();
-        var certWriter = new LocalCertificateWriter();
+        var certificateWriter = new LocalCertificateWriter();
         using var rsa = RSA.Create();
 
-        certWriter.Write(orgId, spaceId);
-        var rootCertificate = new X509Certificate2(certWriter.RootCaPfxPath);
-        var intermediateCert = new X509Certificate2(certWriter.IntermediatePfxPath);
+        certificateWriter.Write(orgId, spaceId);
+        var rootCertificate = new X509Certificate2(certificateWriter.RootCaPfxPath);
+        var intermediateCertificate = new X509Certificate2(certificateWriter.IntermediatePfxPath);
 
         rsa.ImportFromPem(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem")));
 
-        X509Certificate2 clientCert =
+        X509Certificate2 certificate =
             new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
                 .CopyWithPrivateKey(rsa);
 
         rootCertificate.Should().NotBeNull();
-        intermediateCert.Should().NotBeNull();
-        clientCert.Should().NotBeNull();
-        clientCert.Subject.Should().Contain($"OU=space:{spaceId}");
-        clientCert.Subject.Should().Contain($"OU=organization:{orgId}");
+        intermediateCertificate.Should().NotBeNull();
+        certificate.Should().NotBeNull();
+        certificate.Subject.Should().Contain($"OU=space:{spaceId}");
+        certificate.Subject.Should().Contain($"OU=organization:{orgId}");
     }
 }

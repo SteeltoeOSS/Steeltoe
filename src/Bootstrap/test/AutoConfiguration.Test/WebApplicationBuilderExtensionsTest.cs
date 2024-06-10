@@ -24,8 +24,8 @@ using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using StackExchange.Redis;
 using Steeltoe.Common;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Common.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
@@ -236,7 +236,7 @@ public sealed class WebApplicationBuilderExtensionsTest
         configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:ContainerIdentity:CertificateFilePath"].Should().NotBeNull();
         configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:ContainerIdentity:PrivateKeyFilePath"].Should().NotBeNull();
 
-        host.Services.GetService<IOptions<CertificateOptions>>().Should().NotBeNull();
+        host.Services.GetService<IOptionsMonitor<CertificateOptions>>()?.Get("ContainerIdentity").Certificate.Should().NotBeNull();
         host.Services.GetService<IOptionsChangeTokenSource<CertificateOptions>>().Should().NotBeNull();
         host.Services.GetService<IAuthorizationHandler>().Should().NotBeNull();
     }

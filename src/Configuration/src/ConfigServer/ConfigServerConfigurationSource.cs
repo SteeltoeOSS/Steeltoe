@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
-using Steeltoe.Common.Options;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Security;
 
 namespace Steeltoe.Configuration.ConfigServer;
@@ -124,7 +124,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 
         if (!string.IsNullOrEmpty(clientCertificatePath) && DefaultSettings.ClientCertificate == null)
         {
-            var certificateConfigurer = new ConfigureCertificateOptions(Configuration);
+            var certificateConfigurer = new ConfigureCertificateOptions(Configuration, LoggerFactory.CreateLogger<ConfigureCertificateOptions>());
 
             var options = new CertificateOptions();
             certificateConfigurer.Configure("ConfigServer", options);

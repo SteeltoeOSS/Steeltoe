@@ -4,7 +4,7 @@
 
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Options;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Common.Http;
 
