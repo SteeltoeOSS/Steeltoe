@@ -16,13 +16,13 @@ public static class ConfigurationExtensions
     /// Your <see cref="IConfigurationBuilder" />.
     /// </param>
     /// <param name="certificateName">
-    /// Name of the certificate.
+    /// Name of the certificate, or <see cref="string.Empty"/> for an unnamed certificate.
     /// </param>
     /// <param name="certificateFilePath">
     /// The path on disk to locate a valid certificate file.
     /// </param>
     /// <param name="privateKeyFilePath">
-    /// The path on disk to locate a valid pem-encoded RSA key.
+    /// The path on disk to locate a valid PEM-encoded RSA key file.
     /// </param>
     public static IConfigurationBuilder AddCertificate(this IConfigurationBuilder builder, string certificateName, string certificateFilePath,
         string? privateKeyFilePath = null)

@@ -23,7 +23,7 @@ public static class CertificateServiceCollectionExtensions
     /// The root <see cref="IConfiguration" /> to monitor for changes.
     /// </param>
     /// <param name="certificateName">
-    /// Name of the certificate used in configuration and IOptions.
+    /// Name of the certificate used in configuration and IOptions, or <see cref="string.Empty"/> for an unnamed certificate.
     /// </param>
     public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, IConfiguration configuration, string certificateName)
     {
@@ -40,7 +40,7 @@ public static class CertificateServiceCollectionExtensions
     /// The root <see cref="IConfiguration" /> to monitor for changes.
     /// </param>
     /// <param name="certificateName">
-    /// Name of the certificate used in configuration and IOptions.
+    /// Name of the certificate used in configuration and IOptions, or <see cref="string.Empty"/> for an unnamed certificate.
     /// </param>
     /// <param name="fileProvider">
     /// Provides access to the file system.
