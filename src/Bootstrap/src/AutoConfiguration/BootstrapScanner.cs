@@ -8,6 +8,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Common.Logging;
+using Steeltoe.Common.Security;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Placeholder;
@@ -35,7 +36,6 @@ using Steeltoe.Management.Prometheus;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Management.Wavefront;
 using Steeltoe.Management.Wavefront.Exporters;
-using Steeltoe.Security.Authentication.CloudFoundry;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration;
 
@@ -81,7 +81,7 @@ internal sealed class BootstrapScanner
         WireIfLoaded(WirePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
         WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
         WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
-        WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
+        WireIfLoaded(WireAppInstanceIdentity, SteeltoeAssemblyNames.CommonSecurity);
     }
 
     private void WireConfigServer()
@@ -256,12 +256,12 @@ internal sealed class BootstrapScanner
         _logger.LogInformation("Configured distributed tracing");
     }
 
-    private void WireCloudFoundryContainerIdentity()
+    private void WireAppInstanceIdentity()
     {
-        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCloudFoundryContainerIdentity());
-        _wrapper.ConfigureServices(services => services.AddCloudFoundryCertificateAuth());
+        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddAppInstanceIdentityCertificate());
+        _wrapper.ConfigureServices(services => services.ConfigureCertificateOptions("AppInstanceIdentity", null));
 
-        _logger.LogInformation("Configured Cloud Foundry mTLS security");
+        _logger.LogInformation("Configured application instance identity certificate");
     }
 
     private bool WireIfLoaded(Action wireAction, string assemblyName)

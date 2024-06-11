@@ -4,7 +4,6 @@
 
 using System.Reflection;
 using FluentAssertions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -227,9 +226,9 @@ public sealed class HostBuilderExtensionsTest
     }
 
     [Fact]
-    public void CloudFoundryContainerSecurity_IsAutowired()
+    public void ContainerIdentityCertificate_IsAutowired()
     {
-        using IHost host = GetHostForOnly(SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
+        using IHost host = GetHostForOnly(SteeltoeAssemblyNames.CommonSecurity);
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
         configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:CertificateFilePath"].Should().NotBeNull();
@@ -237,7 +236,6 @@ public sealed class HostBuilderExtensionsTest
 
         host.Services.GetService<IOptionsMonitor<CertificateOptions>>()?.Get("AppInstanceIdentity").Certificate.Should().NotBeNull();
         host.Services.GetService<IOptionsChangeTokenSource<CertificateOptions>>().Should().NotBeNull();
-        host.Services.GetService<IAuthorizationHandler>().Should().NotBeNull();
     }
 
     private static IHost GetHostForOnly(string assemblyNameToInclude)

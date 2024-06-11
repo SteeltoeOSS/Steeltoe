@@ -4,9 +4,7 @@
 
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Security.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.HttpClients.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundry")]
-[assembly: InternalsVisibleTo("Steeltoe.Security.Authentication.CloudFoundry.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Security.Authorization.Certificate.Test")]

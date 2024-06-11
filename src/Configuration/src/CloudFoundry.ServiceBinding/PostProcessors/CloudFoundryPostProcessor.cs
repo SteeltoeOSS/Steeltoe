@@ -12,15 +12,18 @@ internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
     private static readonly Regex TagsConfigurationKeyRegex =
         new("^vcap:services:[^:]+:[0-9]+:tags:[0-9]+", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
+    private static readonly Regex LabelConfigurationKeyRegex =
+        new("^vcap:services:[^:]+:[0-9]+:label+", RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+
     public abstract void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData);
 
-    protected IEnumerable<string> FilterKeys(IDictionary<string, string?> configurationData, string tagValueToFind)
+    protected IEnumerable<string> FilterKeys(IDictionary<string, string?> configurationData, string tagOrLabelValueToFind)
     {
         List<string> keys = [];
 
         foreach ((string key, string? value) in configurationData)
         {
-            if (TagsConfigurationKeyRegex.IsMatch(key) && string.Equals(value, tagValueToFind, StringComparison.OrdinalIgnoreCase))
+            if (TagsConfigurationKeyRegex.IsMatch(key) && string.Equals(value, tagOrLabelValueToFind, StringComparison.OrdinalIgnoreCase))
             {
                 string? parentKey = ConfigurationPath.GetParentPath(key);
 
@@ -32,6 +35,15 @@ internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
                     {
                         keys.Add(serviceBindingKey);
                     }
+                }
+            }
+            else if (LabelConfigurationKeyRegex.IsMatch(key) && string.Equals(value, tagOrLabelValueToFind, StringComparison.OrdinalIgnoreCase))
+            {
+                string? serviceBindingKey = ConfigurationPath.GetParentPath(key);
+
+                if (serviceBindingKey != null)
+                {
+                    keys.Add(serviceBindingKey);
                 }
             }
         }

@@ -1,0 +1,8 @@
+#nullable enable
+static Steeltoe.Common.Security.CertificateServiceCollectionExtensions.ConfigureCertificateOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! certificateName) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Common.Security.CertificateServiceCollectionExtensions.ConfigureCertificateOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! certificateName, Microsoft.Extensions.FileProviders.IFileProvider? fileProvider) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+Steeltoe.Common.Security.CertificateServiceCollectionExtensions
+Steeltoe.Common.Security.ConfigureCertificateOptions
+Steeltoe.Common.Security.ConfigureCertificateOptions.Configure(Steeltoe.Common.Configuration.CertificateOptions! options) -> void
+Steeltoe.Common.Security.ConfigureCertificateOptions.Configure(string? name, Steeltoe.Common.Configuration.CertificateOptions! options) -> void
+Steeltoe.Common.Security.ConfigureCertificateOptions.ConfigureCertificateOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration) -> void

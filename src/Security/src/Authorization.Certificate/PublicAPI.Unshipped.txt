@@ -1,0 +1,25 @@
+#nullable enable
+const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationDefaults.ClientCertificateHeader = "X-Client-Cert" -> string!
+const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationDefaults.HttpClientName = "IncludeClientCertificate" -> string!
+const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationDefaults.SameOrganizationAuthorizationPolicy = "sameorg" -> string!
+const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationDefaults.SameSpaceAuthorizationPolicy = "samespace" -> string!
+static Steeltoe.Security.Authorization.Certificate.CertificateApplicationBuilderExtensions.UseCertificateAuthorization(this Microsoft.AspNetCore.Builder.IApplicationBuilder! app) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
+static Steeltoe.Security.Authorization.Certificate.CertificateApplicationBuilderExtensions.UseCertificateAuthorization(this Microsoft.AspNetCore.Builder.IApplicationBuilder! app, Microsoft.AspNetCore.Builder.ForwardedHeadersOptions! forwardedHeaders) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
+static Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationPolicyBuilderExtensions.SameOrg(this Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder! builder) -> Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder!
+static Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationPolicyBuilderExtensions.SameSpace(this Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder! builder) -> Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder!
+static Steeltoe.Security.Authorization.Certificate.CertificateServiceCollectionExtensions.AddCertificateAuthorizationClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Security.Authorization.Certificate.CertificateServiceCollectionExtensions.AddCertificateAuthorizationServer(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+Steeltoe.Security.Authorization.Certificate.CertificateApplicationBuilderExtensions
+Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationDefaults
+Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationHandler
+Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationHandler.CertificateAuthorizationHandler(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Common.Configuration.CertificateOptions!>! certificateOptionsMonitor, Microsoft.Extensions.Logging.ILogger<Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationHandler!>! logger) -> void
+Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationHandler.HandleAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext! context) -> System.Threading.Tasks.Task!
+Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationPolicyBuilderExtensions
+Steeltoe.Security.Authorization.Certificate.CertificateServiceCollectionExtensions
+Steeltoe.Security.Authorization.Certificate.PostConfigureCertificateAuthenticationOptions
+Steeltoe.Security.Authorization.Certificate.PostConfigureCertificateAuthenticationOptions.PostConfigure(string? name, Microsoft.AspNetCore.Authentication.Certificate.CertificateAuthenticationOptions! options) -> void
+Steeltoe.Security.Authorization.Certificate.PostConfigureCertificateAuthenticationOptions.PostConfigureCertificateAuthenticationOptions(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Common.Configuration.CertificateOptions!>! certificateOptionsMonitor, Microsoft.Extensions.Logging.ILogger<Steeltoe.Security.Authorization.Certificate.PostConfigureCertificateAuthenticationOptions!>! logger) -> void
+Steeltoe.Security.Authorization.Certificate.SameOrgRequirement
+Steeltoe.Security.Authorization.Certificate.SameOrgRequirement.SameOrgRequirement() -> void
+Steeltoe.Security.Authorization.Certificate.SameSpaceRequirement
+Steeltoe.Security.Authorization.Certificate.SameSpaceRequirement.SameSpaceRequirement() -> void

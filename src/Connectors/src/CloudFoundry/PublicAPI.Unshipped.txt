@@ -1,4 +1,0 @@
-﻿Steeltoe.Connectors.CloudFoundry.ConnectorException
-Steeltoe.Connectors.CloudFoundry.ConnectorException.ConnectorException() -> void
-Steeltoe.Connectors.CloudFoundry.ConnectorException.ConnectorException(string message) -> void
-Steeltoe.Connectors.CloudFoundry.ConnectorException.ConnectorException(string message, System.Exception innerException) -> void

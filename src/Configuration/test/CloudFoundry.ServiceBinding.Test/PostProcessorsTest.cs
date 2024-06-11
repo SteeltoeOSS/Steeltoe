@@ -259,4 +259,35 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         configurationData[$"{keyPrefix}:AccessTokenUri"].Should().Be("test-access-token-uri");
         configurationData[$"{keyPrefix}:Enabled"].Should().Be("true");
     }
+
+    [Fact]
+    public void Processes_Identity_configuration()
+    {
+        var postProcessor = new IdentityCloudFoundryPostProcessor(NullLogger<IdentityCloudFoundryPostProcessor>.Instance);
+
+        var secrets = new[]
+        {
+            Tuple.Create("credentials:auth_domain", "test-domain"),
+            Tuple.Create("credentials:client_id", "test-id"),
+            Tuple.Create("credentials:client_secret", "test-secret"),
+
+            // these are included in bindings, but not currently mapped:
+            Tuple.Create("credentials:grant_types:0", "authorization_code"),
+            Tuple.Create("credentials:grant_types:1", "client_credentials")
+        };
+
+        Dictionary<string, string?> configurationData =
+            GetConfigurationData(IdentityCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+
+        PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
+
+        postProcessor.PostProcessConfiguration(provider, configurationData);
+
+        foreach (string scheme in IdentityCloudFoundryPostProcessor.AuthenticationSchemes)
+        {
+            configurationData[$"{IdentityCloudFoundryPostProcessor.AuthenticationConfigurationKeyPrefix}:{scheme}:Authority"].Should().Be("test-domain");
+            configurationData[$"{IdentityCloudFoundryPostProcessor.AuthenticationConfigurationKeyPrefix}:{scheme}:clientId"].Should().Be("test-id");
+            configurationData[$"{IdentityCloudFoundryPostProcessor.AuthenticationConfigurationKeyPrefix}:{scheme}:clientSecret"].Should().Be("test-secret");
+        }
+    }
 }

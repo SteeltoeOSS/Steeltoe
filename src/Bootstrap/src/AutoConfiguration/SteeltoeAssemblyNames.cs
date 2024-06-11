@@ -11,6 +11,7 @@ namespace Steeltoe.Bootstrap.AutoConfiguration;
 /// </summary>
 public static class SteeltoeAssemblyNames
 {
+    public const string CommonSecurity = "Steeltoe.Common.Security";
     public const string ConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry";
     public const string ConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer";
     public const string ConfigurationRandomValue = "Steeltoe.Configuration.RandomValue";
@@ -24,7 +25,6 @@ public static class SteeltoeAssemblyNames
     public const string ManagementPrometheus = "Steeltoe.Management.Prometheus";
     public const string ManagementTracing = "Steeltoe.Management.Tracing";
     public const string ManagementWavefront = "Steeltoe.Management.Wavefront";
-    public const string SecurityAuthenticationCloudFoundry = "Steeltoe.Security.Authentication.CloudFoundry";
 
     internal static readonly IReadOnlySet<string> All = typeof(SteeltoeAssemblyNames).GetFields().Where(field => field.FieldType == typeof(string))
         .Select(field => field.GetValue(null)).Cast<string>().ToHashSet();

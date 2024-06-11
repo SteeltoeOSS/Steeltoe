@@ -164,7 +164,9 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
         ArgumentGuard.NotNull(context);
 
         var sessionFeature = context.Features.Get<ISessionFeature>();
-        return sessionFeature?.Session.Id;
+
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        return sessionFeature?.Session?.Id;
     }
 
     internal string GetTimeTaken(TimeSpan duration)

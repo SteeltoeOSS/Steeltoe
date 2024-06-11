@@ -5,7 +5,6 @@
 using System.Net;
 using System.Reflection;
 using FluentAssertions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -228,9 +227,9 @@ public sealed class WebApplicationBuilderExtensionsTest
     }
 
     [Fact]
-    public void CloudFoundryContainerSecurity_IsAutowired()
+    public void ContainerIdentityCertificate_IsAutowired()
     {
-        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.CommonSecurity);
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
         configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:CertificateFilePath"].Should().NotBeNull();
@@ -238,7 +237,6 @@ public sealed class WebApplicationBuilderExtensionsTest
 
         host.Services.GetService<IOptionsMonitor<CertificateOptions>>()?.Get("AppInstanceIdentity").Certificate.Should().NotBeNull();
         host.Services.GetService<IOptionsChangeTokenSource<CertificateOptions>>().Should().NotBeNull();
-        host.Services.GetService<IAuthorizationHandler>().Should().NotBeNull();
     }
 
     private static WebApplication GetWebApplicationForOnly(string assemblyNameToInclude)

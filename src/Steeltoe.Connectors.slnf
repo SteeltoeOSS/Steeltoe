@@ -11,11 +11,8 @@
       "Configuration\\src\\CloudFoundry.ServiceBinding\\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj",
       "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
       "Configuration\\src\\Kubernetes.ServiceBinding\\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj",
-      "Connectors\\src\\Abstractions\\Steeltoe.Connectors.Abstractions.csproj",
-      "Connectors\\src\\CloudFoundry\\Steeltoe.Connectors.CloudFoundry.csproj",
       "Connectors\\src\\Connectors\\Steeltoe.Connectors.csproj",
       "Connectors\\src\\EntityFrameworkCore\\Steeltoe.Connectors.EntityFrameworkCore.csproj",
-      "Connectors\\test\\CloudFoundry.Test\\Steeltoe.Connectors.CloudFoundry.Test.csproj",
       "Connectors\\test\\Connectors.Test\\Steeltoe.Connectors.Test.csproj",
       "Connectors\\test\\EntityFrameworkCore.Test\\Steeltoe.Connectors.EntityFrameworkCore.Test.csproj"
     ]
