@@ -33,10 +33,12 @@ public sealed class ConfigureCertificateOptionsTest
     [Fact]
     public void ConfigureCertificateOptions_BadPath_NoCertificate()
     {
-        var configureOptions = new ConfigureCertificateOptions(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "doesnotexist.crt" }
-        }).Build());
+        }).Build();
+
+        var configureOptions = new ConfigureCertificateOptions(configuration);
 
         var options = new CertificateOptions();
 
