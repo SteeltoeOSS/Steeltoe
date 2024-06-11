@@ -30,7 +30,7 @@ internal sealed class LocalCertificateWriter
         // Non-compliant subject looks like this: "CN={instanceId}, OU=organization:{organizationId} + OU=space:{spaceId} + OU=app:{appId}"
         string subject = $"CN={instanceId}, OU=app:{appId} + OU=space:{spaceId} + OU=organization:{orgId}";
 
-        X509Certificate2 rootAuthorityCertificate;
+        X509Certificate2 caCertificate;
 
         // Create a directory a level above the running project to contain the root and intermediate certificates
         if (!Directory.Exists(Path.Combine(ParentPath, "GeneratedCertificates")))
@@ -41,12 +41,12 @@ internal sealed class LocalCertificateWriter
         // Create the root certificate if it doesn't already exist (can be shared by multiple applications)
         if (!File.Exists(RootCaPfxPath))
         {
-            rootAuthorityCertificate = CreateRootCertificate("CN=SteeltoeGeneratedCA");
-            File.WriteAllBytes(RootCaPfxPath, rootAuthorityCertificate.Export(X509ContentType.Pfx));
+            caCertificate = CreateRootCertificate("CN=SteeltoeGeneratedCA");
+            File.WriteAllBytes(RootCaPfxPath, caCertificate.Export(X509ContentType.Pfx));
         }
         else
         {
-            rootAuthorityCertificate = new X509Certificate2(RootCaPfxPath);
+            caCertificate = new X509Certificate2(RootCaPfxPath);
         }
 
         // Create the intermediate certificate if it doesn't already exist (can be shared by multiple applications)
@@ -54,7 +54,7 @@ internal sealed class LocalCertificateWriter
 
         if (!File.Exists(IntermediatePfxPath))
         {
-            intermediateCertificate = CreateIntermediateCertificate("CN=SteeltoeGeneratedIntermediate", rootAuthorityCertificate);
+            intermediateCertificate = CreateIntermediateCertificate("CN=SteeltoeGeneratedIntermediate", caCertificate);
             File.WriteAllBytes(IntermediatePfxPath, intermediateCertificate.Export(X509ContentType.Pfx));
         }
         else
@@ -73,16 +73,12 @@ internal sealed class LocalCertificateWriter
         }
 
 #if NET8_0_OR_GREATER
-        string chainedCertificateContents = clientCertificate.ExportCertificatePem() + "\r\n" + intermediateCertificate.ExportCertificatePem() + "\r\n" +
-            rootAuthorityCertificate.ExportCertificatePem();
-
+        string chainedCertificateContents = clientCertificate.ExportCertificatePem() + "\r\n" + intermediateCertificate.ExportCertificatePem();
         string keyContents = clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKeyPem();
-
 #else
-        string chainedCertificateContents = "-----BEGIN CERTIFICATE-----\r\n" + Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END CERTIFICATE-----\r\n" + "-----BEGIN CERTIFICATE-----\r\n" + Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END CERTIFICATE-----\r\n" + "-----BEGIN CERTIFICATE-----\r\n" + Convert.ToBase64String(rootAuthorityCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END CERTIFICATE-----\r\n";
+        string chainedCertificateContents = "-----BEGIN CERTIFICATE-----\r\n" + Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END CERTIFICATE-----\r\n" + "-----BEGIN CERTIFICATE-----\r\n" + Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END CERTIFICATE-----\r\n";
 
         string keyContents = "-----BEGIN RSA PRIVATE KEY-----\r\n" + Convert.ToBase64String(clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END RSA PRIVATE KEY-----";
-
 #endif
 
         File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", CertificateFilenamePrefix + "Cert.pem"), chainedCertificateContents);

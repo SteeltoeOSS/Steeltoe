@@ -38,6 +38,12 @@ public static class OpenIdConnectServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
+        if (services.Any(descriptor => descriptor.ServiceType.IsAssignableFrom(typeof(IPostConfigureOptions<OpenIdConnectOptions>))))
+        {
+            throw new InvalidOperationException(
+                $"{nameof(ConfigureOpenIdConnectForCloudFoundry)} must be called before {nameof(OpenIdConnectExtensions.AddOpenIdConnect)}.");
+        }
+
         services.AddSteeltoeSecurityHttpClient(configureHttpClient);
         services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, PostConfigureOpenIdConnectOptions>();
         return services;

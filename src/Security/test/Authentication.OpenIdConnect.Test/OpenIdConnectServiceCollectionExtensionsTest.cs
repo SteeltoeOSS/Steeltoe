@@ -18,6 +18,15 @@ public sealed class OpenIdConnectServiceCollectionExtensionsTest
     }
 
     [Fact]
+    public void ConfigureOpenIdConnectForCloudFoundry_RequiredBeforeAddJwtBearer()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddAuthentication().AddOpenIdConnect();
+        var exception = Assert.Throws<InvalidOperationException>(() => serviceCollection.ConfigureOpenIdConnectForCloudFoundry());
+        exception.Message.Should().Contain($"{nameof(OpenIdConnectServiceCollectionExtensions.ConfigureOpenIdConnectForCloudFoundry)} must be called before");
+    }
+
+    [Fact]
     public void ConfigureOpenIdConnectForCloudFoundry_ConfiguresHttpClient()
     {
         var serviceCollection = new ServiceCollection();

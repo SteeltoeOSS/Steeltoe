@@ -2,11 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Certificate;
-using Steeltoe.Common;
-using Steeltoe.Common.Configuration;
-
 namespace Steeltoe.Security.Authorization.Certificate;
 
 public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigureOptions<CertificateAuthenticationOptions>
@@ -27,9 +22,9 @@ public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigu
     {
         ArgumentGuard.NotNull(options);
 
-        CertificateOptions containerIdentityOptions = _certificateOptionsMonitor.Get("AppInstanceIdentity");
+        CertificateOptions appInstanceIdentityOptions = _certificateOptionsMonitor.Get("AppInstanceIdentity");
         options.ChainTrustValidationMode = X509ChainTrustMode.CustomRootTrust;
-        options.ClaimsIssuer = containerIdentityOptions.Certificate?.Issuer;
+        options.ClaimsIssuer = appInstanceIdentityOptions.Certificate?.Issuer;
         options.RevocationMode = X509RevocationMode.NoCheck;
 
         string? systemCertPath = Environment.GetEnvironmentVariable("CF_SYSTEM_CERT_PATH");
@@ -42,9 +37,9 @@ public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigu
             options.CustomTrustStore.AddRange(systemCertificates.ToArray());
         }
 
-        if (containerIdentityOptions.IssuerChain.Any())
+        if (appInstanceIdentityOptions.IssuerChain.Any())
         {
-            options.AdditionalChainCertificates.AddRange(containerIdentityOptions.IssuerChain.ToArray());
+            options.AdditionalChainCertificates.AddRange(appInstanceIdentityOptions.IssuerChain.ToArray());
         }
 
         options.Events = new CertificateAuthenticationEvents

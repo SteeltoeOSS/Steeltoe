@@ -36,6 +36,12 @@ public static class JwtBearerServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
+        if (services.Any(descriptor => descriptor.ServiceType.IsAssignableFrom(typeof(IPostConfigureOptions<JwtBearerOptions>))))
+        {
+            throw new InvalidOperationException(
+                $"{nameof(ConfigureJwtBearerForCloudFoundry)} must be called before {nameof(JwtBearerExtensions.AddJwtBearer)}.");
+        }
+
         services.AddSteeltoeSecurityHttpClient(configureHttpClient);
         services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, PostConfigureJwtBearerOptions>();
         return services;

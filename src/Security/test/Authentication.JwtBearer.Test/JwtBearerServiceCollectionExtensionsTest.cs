@@ -18,6 +18,15 @@ public sealed class JwtBearerServiceCollectionExtensionsTest
     }
 
     [Fact]
+    public void ConfigureJwtBearerForCloudFoundry_RequiredBeforeAddJwtBearer()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddAuthentication().AddJwtBearer();
+        var exception = Assert.Throws<InvalidOperationException>(() => serviceCollection.ConfigureJwtBearerForCloudFoundry());
+        exception.Message.Should().Contain($"{nameof(JwtBearerServiceCollectionExtensions.ConfigureJwtBearerForCloudFoundry)} must be called before");
+    }
+
+    [Fact]
     public void ConfigureJwtBearerForCloudFoundry_ConfiguresHttpClient()
     {
         var serviceCollection = new ServiceCollection();

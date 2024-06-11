@@ -227,7 +227,7 @@ public sealed class WebApplicationBuilderExtensionsTest
     }
 
     [Fact]
-    public void ContainerIdentityCertificate_IsAutowired()
+    public void AppInstanceIdentityCertificate_IsAutowired()
     {
         using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.CommonSecurity);
         var configuration = host.Services.GetRequiredService<IConfiguration>();

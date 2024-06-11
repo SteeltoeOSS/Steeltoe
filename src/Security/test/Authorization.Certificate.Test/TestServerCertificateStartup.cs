@@ -5,18 +5,14 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
-public sealed class TestServerCertificateStartup(IConfiguration configuration)
+public sealed class TestServerCertificateStartup
 {
-    internal IConfiguration Configuration { get; } = configuration;
-
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCertificateAuthorizationServer(Configuration);
+        services.AddCertificateAuthorizationServer();
 
         services.AddAuthentication().AddCertificate(options =>
         {
@@ -27,12 +23,12 @@ public sealed class TestServerCertificateStartup(IConfiguration configuration)
         {
             options.AddPolicy(CertificateAuthorizationDefaults.SameOrganizationAuthorizationPolicy, authorizationPolicyBuilder =>
             {
-                authorizationPolicyBuilder.SameOrg();
+                authorizationPolicyBuilder.RequireSameOrg();
             });
 
             options.AddPolicy(CertificateAuthorizationDefaults.SameSpaceAuthorizationPolicy, authorizationPolicyBuilder =>
             {
-                authorizationPolicyBuilder.SameSpace();
+                authorizationPolicyBuilder.RequireSameSpace();
             });
         });
     }

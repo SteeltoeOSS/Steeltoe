@@ -1,14 +1,13 @@
 #nullable enable
-const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationDefaults.ClientCertificateHeader = "X-Client-Cert" -> string!
 const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationDefaults.HttpClientName = "IncludeClientCertificate" -> string!
 const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationDefaults.SameOrganizationAuthorizationPolicy = "sameorg" -> string!
 const Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationDefaults.SameSpaceAuthorizationPolicy = "samespace" -> string!
 static Steeltoe.Security.Authorization.Certificate.CertificateApplicationBuilderExtensions.UseCertificateAuthorization(this Microsoft.AspNetCore.Builder.IApplicationBuilder! app) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
 static Steeltoe.Security.Authorization.Certificate.CertificateApplicationBuilderExtensions.UseCertificateAuthorization(this Microsoft.AspNetCore.Builder.IApplicationBuilder! app, Microsoft.AspNetCore.Builder.ForwardedHeadersOptions! forwardedHeaders) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
-static Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationPolicyBuilderExtensions.SameOrg(this Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder! builder) -> Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder!
-static Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationPolicyBuilderExtensions.SameSpace(this Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder! builder) -> Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder!
-static Steeltoe.Security.Authorization.Certificate.CertificateServiceCollectionExtensions.AddCertificateAuthorizationClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Security.Authorization.Certificate.CertificateServiceCollectionExtensions.AddCertificateAuthorizationServer(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationPolicyBuilderExtensions.RequireSameOrg(this Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder! builder) -> Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder!
+static Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationPolicyBuilderExtensions.RequireSameSpace(this Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder! builder) -> Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder!
+static Steeltoe.Security.Authorization.Certificate.CertificateServiceCollectionExtensions.AddCertificateAuthorizationClient(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Security.Authorization.Certificate.CertificateServiceCollectionExtensions.AddCertificateAuthorizationServer(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 Steeltoe.Security.Authorization.Certificate.CertificateApplicationBuilderExtensions
 Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationDefaults
 Steeltoe.Security.Authorization.Certificate.CertificateAuthorizationHandler

@@ -3,11 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Certificate;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Security;
 
 namespace Steeltoe.Security.Authorization.Certificate;
@@ -20,10 +17,7 @@ public static class CertificateServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    /// <param name="configuration">
-    /// The application configuration.
-    /// </param>
-    public static IServiceCollection AddCertificateAuthorizationServer(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCertificateAuthorizationServer(this IServiceCollection services)
     {
         services.ConfigureCertificateOptions("AppInstanceIdentity");
 
@@ -44,17 +38,15 @@ public static class CertificateServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add a named <see cref="HttpClient" />  and necessary components for finding client certificates and attaching to outbound requests.
+    /// Add a named <see cref="HttpClient" /> and necessary components for finding client certificates and attaching to outbound requests.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    /// <param name="configuration">
-    /// The application configuration.
-    /// </param>
-    public static IServiceCollection AddCertificateAuthorizationClient(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCertificateAuthorizationClient(this IServiceCollection services)
     {
         services.ConfigureCertificateOptions("AppInstanceIdentity");
+
         services.AddHttpClient(CertificateAuthorizationDefaults.HttpClientName, (serviceProvider, client) =>
         {
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();

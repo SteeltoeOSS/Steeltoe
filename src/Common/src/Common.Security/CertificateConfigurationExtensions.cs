@@ -7,7 +7,7 @@ using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Common.Security;
 
-internal static class CertificateConfigurationExtensions
+public static class CertificateConfigurationExtensions
 {
     /// <summary>
     /// Adds file path information for a certificate and (optional) private key to configuration, for use with <see cref="CertificateOptions" />.
@@ -24,7 +24,7 @@ internal static class CertificateConfigurationExtensions
     /// <param name="privateKeyFilePath">
     /// The path on disk to locate a valid PEM-encoded RSA key file.
     /// </param>
-    public static IConfigurationBuilder AddCertificate(this IConfigurationBuilder builder, string certificateName, string certificateFilePath,
+    internal static IConfigurationBuilder AddCertificate(this IConfigurationBuilder builder, string certificateName, string certificateFilePath,
         string? privateKeyFilePath = null)
     {
         ArgumentGuard.NotNull(builder);
