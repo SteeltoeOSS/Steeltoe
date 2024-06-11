@@ -2,6 +2,7 @@ parameters:
   component: ''
   runConfigServer: false
   runRabbitMQ: false
+  skipNET6: false
   skipFilter: ''
   OS: ubuntu
 
@@ -27,6 +28,7 @@ jobs:
   - checkout: self
     fetchDepth: 0
   - task: UseDotNet@2
+    condition: ne(${{parameters.skipNET6}}, 'true')
     displayName: Install .NET 6
     inputs:
       version: 6.0.x
@@ -68,6 +70,7 @@ jobs:
     condition: eq(${{parameters.runConfigServer}}, 'true')
     displayName: Start Config Server
   - task: DotNetCoreCLI@2
+    condition: ne(${{parameters.skipNET6}}, 'true')
     displayName: dotnet test 6.0
     inputs:
       command: test
