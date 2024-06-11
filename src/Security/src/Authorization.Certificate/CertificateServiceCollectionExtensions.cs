@@ -21,14 +21,7 @@ public static class CertificateServiceCollectionExtensions
     {
         services.ConfigureCertificateOptions("AppInstanceIdentity");
 
-        services.AddCertificateForwarding(opt =>
-        {
-            opt.HeaderConverter = certificateData =>
-            {
-                var certificate = new X509Certificate2(Encoding.ASCII.GetBytes(certificateData));
-                return certificate;
-            };
-        });
+        services.AddCertificateForwarding(_ => {});
 
         services.TryAddEnumerable(ServiceDescriptor
             .Singleton<IPostConfigureOptions<CertificateAuthenticationOptions>, PostConfigureCertificateAuthenticationOptions>());
