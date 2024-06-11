@@ -81,7 +81,7 @@ internal sealed class BootstrapScanner
         WireIfLoaded(WirePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
         WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
         WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
-        WireIfLoaded(WireCloudFoundryAppInstanceIdentity, SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
+        WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
     }
 
     private void WireConfigServer()
@@ -256,9 +256,9 @@ internal sealed class BootstrapScanner
         _logger.LogInformation("Configured distributed tracing");
     }
 
-    private void WireCloudFoundryAppInstanceIdentity()
+    private void WireCloudFoundryContainerIdentity()
     {
-        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCloudFoundryAppInstanceIdentity());
+        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCloudFoundryContainerIdentity());
         _wrapper.ConfigureServices(services => services.AddCloudFoundryCertificateAuth());
 
         _logger.LogInformation("Configured Cloud Foundry mTLS security");
