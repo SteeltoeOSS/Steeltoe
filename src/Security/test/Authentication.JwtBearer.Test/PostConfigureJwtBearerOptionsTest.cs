@@ -88,8 +88,8 @@ public sealed class PostConfigureJwtBearerOptionsTest
         IConfigurationRoot configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(configuration);
-        serviceCollection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
         serviceCollection.ConfigureJwtBearerForCloudFoundry();
+        serviceCollection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 
         JwtBearerOptions jwtBearerOptions = serviceCollection.BuildServiceProvider().GetRequiredService<IOptionsMonitor<JwtBearerOptions>>()
             .Get(JwtBearerDefaults.AuthenticationScheme);

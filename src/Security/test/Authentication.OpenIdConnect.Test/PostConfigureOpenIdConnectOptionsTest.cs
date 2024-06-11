@@ -90,8 +90,8 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(configuration);
         serviceCollection.AddHttpClient();
-        serviceCollection.AddAuthentication().AddOpenIdConnect();
         serviceCollection.ConfigureOpenIdConnectForCloudFoundry();
+        serviceCollection.AddAuthentication().AddOpenIdConnect();
 
         OpenIdConnectOptions openIdConnectOptions = serviceCollection.BuildServiceProvider().GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
             .Get(OpenIdConnectDefaults.AuthenticationScheme);
