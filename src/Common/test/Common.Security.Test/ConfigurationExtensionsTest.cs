@@ -2,116 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
-using Steeltoe.Common.Utils.IO;
 using Xunit;
 
 namespace Steeltoe.Common.Security.Test;
 
 public sealed class ConfigurationExtensionsTest
 {
-    [Fact]
-    public void AddPemFiles_ReadsFiles()
-    {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddPemFiles("instance.crt", "instance.key").Build();
-        Assert.NotNull(configurationRoot["certificate"]);
-        Assert.NotNull(configurationRoot["privateKey"]);
-    }
+    private const string CertificateName = "test";
 
     [Fact]
-    public async Task AddPemFiles_ReloadsOnChange()
+    public void AddCertificate_SetsPaths()
     {
-        using var sandbox = new Sandbox();
-        string tempFile1 = sandbox.CreateFile("cert", "cert");
-        string tempFile2 = sandbox.CreateFile("key", "key");
-
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddPemFiles(tempFile1, tempFile2).Build();
-
-        Assert.Equal("cert", configurationRoot["certificate"]);
-        Assert.Equal("key", configurationRoot["privateKey"]);
-
-        await File.WriteAllTextAsync(tempFile1, "cert2");
-        await Task.Delay(2000);
-
-        if (configurationRoot["certificate"] == null)
-        {
-            // wait a little longer
-            await Task.Delay(4000);
-        }
-
-        Assert.Equal("cert2", configurationRoot["certificate"]);
-        Assert.Equal("key", configurationRoot["privateKey"]);
-    }
-
-    [Fact]
-    public async Task AddPemFiles_NotifiesOnChange()
-    {
-        using var sandbox = new Sandbox();
-        string tempFile1 = sandbox.CreateFile("cert", "cert1");
-        string tempFile2 = sandbox.CreateFile("key", "key1");
-
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddPemFiles(tempFile1, tempFile2).Build();
-
-        bool changeCalled = false;
-        IChangeToken token = configurationRoot.GetReloadToken();
-        token.RegisterChangeCallback(_ => changeCalled = true, "state");
-        Assert.Equal("cert1", configurationRoot["certificate"]);
-        Assert.Equal("key1", configurationRoot["privateKey"]);
-
-        await File.WriteAllTextAsync(tempFile1, "barfoo");
-        await Task.Delay(4000);
-        Assert.Equal("barfoo", configurationRoot["certificate"]);
-        Assert.Equal("key1", configurationRoot["privateKey"]);
-        Assert.True(changeCalled, "Change wasn't called for tempFile1");
-
-        token = configurationRoot.GetReloadToken();
-        token.RegisterChangeCallback(_ => changeCalled = true, "state");
-
-        changeCalled = false;
-        await File.WriteAllTextAsync(tempFile2, "barbar");
-        await Task.Delay(4000);
-        Assert.Equal("barfoo", configurationRoot["certificate"]);
-        Assert.Equal("barbar", configurationRoot["privateKey"]);
-        Assert.True(changeCalled, "Change wasn't called for tempFile2");
-    }
-
-    [Fact]
-    public void AddCertificateFile_HoldsPath()
-    {
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificateFile("instance.p12").Build();
-        Assert.Equal(Path.GetFullPath("instance.p12"), configurationRoot["certificate"]);
-    }
-
-    [Fact]
-    public async Task AddCertificateFile_NotifiesOnChange()
-    {
-        const string filename = "fakeCertificate.p12";
-        await File.WriteAllTextAsync(filename, "cert1");
-
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificateFile(filename).Build();
-
-        bool changeCalled = false;
-        IChangeToken token = configurationRoot.GetReloadToken();
-        token.RegisterChangeCallback(_ => changeCalled = true, "state");
-        Assert.Equal("cert1", await File.ReadAllTextAsync(configurationRoot["certificate"]));
-
-        await File.WriteAllTextAsync(filename, "barfoo");
-        await Task.Delay(2000);
-
-        Assert.Equal("barfoo", await File.ReadAllTextAsync(configurationRoot["certificate"]));
-        Assert.True(changeCalled);
-
-        // cleanup
-        try
-        {
-            File.Delete(filename);
-        }
-        catch
-        {
-            // give it a second, try again
-            await Task.Delay(1000);
-            File.Delete(filename);
-        }
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(CertificateName, "instance.crt", "instance.key").Build();
+        configurationRoot[$"Certificates:{CertificateName}:certificateFilePath"].Should().Be("instance.crt");
+        configurationRoot[$"Certificates:{CertificateName}:privateKeyFilePath"].Should().Be("instance.key");
     }
 }

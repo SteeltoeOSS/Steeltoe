@@ -13,6 +13,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.Net;
+using Steeltoe.Common.Security;
 using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka;
@@ -97,6 +98,7 @@ public static class EurekaServiceCollectionExtensions
         services.TryAddSingleton<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
         services.TryAddSingleton<ClientCertificateHttpClientHandlerConfigurer>();
         services.TryAddSingleton<EurekaHttpClientHandlerConfigurer>();
+        services.ConfigureCertificateOptions("Eureka");
 
         IHttpClientBuilder eurekaHttpClientBuilder = services.AddHttpClient("Eureka");
         eurekaHttpClientBuilder.ConfigureAdditionalHttpMessageHandlers((defaultHandlers, _) => RemoveDiscoveryHttpDelegatingHandler(defaultHandlers));
@@ -110,6 +112,7 @@ public static class EurekaServiceCollectionExtensions
             validateCertificatesHandler.Configure(handler);
 
             var clientCertificateConfigurer = serviceProvider.GetRequiredService<ClientCertificateHttpClientHandlerConfigurer>();
+            clientCertificateConfigurer.SetCertificateName("Eureka");
             clientCertificateConfigurer.Configure(handler);
 
             var eurekaConfigurer = serviceProvider.GetRequiredService<EurekaHttpClientHandlerConfigurer>();

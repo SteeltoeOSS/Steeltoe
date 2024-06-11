@@ -24,9 +24,8 @@ using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using StackExchange.Redis;
 using Steeltoe.Common;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Common.Options;
-using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
 using Steeltoe.Configuration.CloudFoundry;
@@ -234,10 +233,11 @@ public sealed class WebHostBuilderExtensionsTest
         using IWebHost host = GetWebHostForOnly(SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        configuration.FindConfigurationProvider<PemCertificateProvider>().Should().NotBeNull();
+        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:CertificateFilePath"].Should().NotBeNull();
+        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:PrivateKeyFilePath"].Should().NotBeNull();
 
-        host.Services.GetService<IOptions<CertificateOptions>>().Should().NotBeNull();
-        host.Services.GetService<ICertificateRotationService>().Should().NotBeNull();
+        host.Services.GetService<IOptionsMonitor<CertificateOptions>>()?.Get("AppInstanceIdentity").Certificate.Should().NotBeNull();
+        host.Services.GetService<IOptionsChangeTokenSource<CertificateOptions>>().Should().NotBeNull();
         host.Services.GetService<IAuthorizationHandler>().Should().NotBeNull();
     }
 

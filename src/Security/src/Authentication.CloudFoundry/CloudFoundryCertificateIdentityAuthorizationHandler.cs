@@ -6,7 +6,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Options;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 
@@ -20,7 +20,7 @@ public class CloudFoundryCertificateIdentityAuthorizationHandler : IAuthorizatio
     {
         _logger = logger;
         identityCert.OnChange(OnCertRefresh);
-        OnCertRefresh(identityCert.CurrentValue);
+        OnCertRefresh(identityCert.Get("AppInstanceIdentity"));
     }
 
     public Task HandleAsync(AuthorizationHandlerContext context)

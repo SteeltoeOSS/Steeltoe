@@ -49,6 +49,6 @@ public static class ConfigurationBuilderExtensions
             return builder;
         }
 
-        return builder.AddPemFiles(certFile, keyFile);
+        return builder.AddCertificate("AppInstanceIdentity", certFile, keyFile);
     }
 }

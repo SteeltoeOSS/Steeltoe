@@ -2,16 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Options;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Common.Security;
 
-public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
+public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
+    private static readonly Regex CertificateRegex = new("-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Compiled | RegexOptions.Singleline,
+        TimeSpan.FromSeconds(1));
+
     private readonly IConfiguration _configuration;
 
     public ConfigureCertificateOptions(IConfiguration configuration)
@@ -21,26 +25,41 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
         _configuration = configuration;
     }
 
-    public void Configure(string name, CertificateOptions options)
+    public void Configure(CertificateOptions options)
+    {
+        Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
+    }
+
+    public void Configure(string? name, CertificateOptions options)
     {
         ArgumentGuard.NotNull(options);
 
-        options.Name = name;
+        string? certificateFilePath = _configuration.GetValue<string>(GetConfigurationKey(name, "CertificateFilePath"));
 
-        string certPath = _configuration["certificate"];
-
-        if (string.IsNullOrEmpty(certPath))
+        if (options.Certificate != null || certificateFilePath == null || !File.Exists(certificateFilePath))
         {
             return;
         }
 
-        options.Certificate = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
-            ? new X509Certificate2(certPath)
-            : new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
+        string? privateKeyFilePath = _configuration.GetValue<string>(GetConfigurationKey(name, "PrivateKeyFilePath"));
+
+        options.Certificate = privateKeyFilePath != null && File.Exists(privateKeyFilePath)
+            ? X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath)
+            : new X509Certificate2(certificateFilePath);
+
+        List<X509Certificate2> certChain = CertificateRegex.Matches(File.ReadAllText(certificateFilePath))
+            .Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value))).ToList();
+
+        foreach (X509Certificate2 issuer in certChain.Skip(1))
+        {
+            options.IssuerChain.Add(issuer);
+        }
     }
 
-    public void Configure(CertificateOptions options)
+    private static string GetConfigurationKey(string? optionName, string propertyName)
     {
-        Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
+        return string.IsNullOrEmpty(optionName)
+            ? string.Join(ConfigurationPath.KeyDelimiter, CertificateOptions.ConfigurationKeyPrefix, propertyName)
+            : string.Join(ConfigurationPath.KeyDelimiter, CertificateOptions.ConfigurationKeyPrefix, optionName, propertyName);
     }
 }

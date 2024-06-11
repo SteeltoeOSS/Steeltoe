@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
     <ProjectReference Include="..\..\..\Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj" PrivateAssets="All" />
   </ItemGroup>
 

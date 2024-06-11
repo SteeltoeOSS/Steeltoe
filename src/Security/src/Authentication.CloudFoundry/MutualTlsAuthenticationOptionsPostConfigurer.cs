@@ -6,26 +6,16 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Options;
 using Steeltoe.Security.Authentication.Mtls;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 
-public class MutualTlsAuthenticationOptionsPostConfigurer : IPostConfigureOptions<MutualTlsAuthenticationOptions>
+public sealed class MutualTlsAuthenticationOptionsPostConfigurer(ILoggerFactory loggerFactory) : IPostConfigureOptions<MutualTlsAuthenticationOptions>
 {
-    private readonly IOptionsMonitor<CertificateOptions> _containerIdentityOptions;
-    private readonly ILogger<CloudFoundryInstanceCertificate> _cloudFoundryLogger;
-
-    public MutualTlsAuthenticationOptionsPostConfigurer(IOptionsMonitor<CertificateOptions> containerIdentityOptions, ILoggerFactory loggerFactory)
-    {
-        _containerIdentityOptions = containerIdentityOptions;
-        _cloudFoundryLogger = loggerFactory?.CreateLogger<CloudFoundryInstanceCertificate>();
-    }
+    private readonly ILogger<CloudFoundryInstanceCertificate> _cloudFoundryLogger = loggerFactory?.CreateLogger<CloudFoundryInstanceCertificate>();
 
     public void PostConfigure(string name, MutualTlsAuthenticationOptions options)
     {
-        options.IssuerChain = _containerIdentityOptions.CurrentValue.IssuerChain;
-
         options.Events = new CertificateAuthenticationEvents
         {
             OnCertificateValidated = context =>

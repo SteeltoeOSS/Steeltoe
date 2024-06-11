@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
@@ -120,14 +119,20 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_WithPemFiles_AddsConfigServerSourceWithCertificate()
     {
-        var configurationBuilder = new ConfigurationBuilder();
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Certificates:ConfigServer:CertificateFilePath"] = "instance.crt",
+            ["Certificates:ConfigServer:PrivateKeyFilePath"] = "instance.key"
+        };
+
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
 
         var settings = new ConfigServerClientSettings
         {
             Timeout = 10
         };
 
-        configurationBuilder.AddPemFiles("instance.crt", "instance.key").AddConfigServer(settings);
+        configurationBuilder.AddConfigServer(settings);
         configurationBuilder.Build();
 
         var source = configurationBuilder.FindConfigurationSource<ConfigServerConfigurationSource>();

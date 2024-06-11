@@ -7,17 +7,18 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Security;
 
-public class LocalCertificateWriter
+public sealed class LocalCertificateWriter
 {
-    public static readonly string AppBasePath =
-        AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin", StringComparison.Ordinal));
+    internal static readonly string AppBasePath =
+        AppContext.BaseDirectory[..AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin", StringComparison.Ordinal)];
+
+    internal static readonly string ParentPath = Directory.GetParent(AppBasePath)!.ToString();
 
     internal string CertificateFilenamePrefix { get; set; } = "SteeltoeInstance";
 
-    public string RootCaPfxPath { get; set; } = Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeCA.pfx");
+    internal string RootCaPfxPath { get; set; } = Path.Combine(ParentPath, "GeneratedCertificates", "SteeltoeCA.pfx");
 
-    public string IntermediatePfxPath { get; set; } =
-        Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeIntermediate.pfx");
+    internal string IntermediatePfxPath { get; set; } = Path.Combine(ParentPath, "GeneratedCertificates", "SteeltoeIntermediate.pfx");
 
     public bool Write(Guid orgId, Guid spaceId)
     {
@@ -31,9 +32,9 @@ public class LocalCertificateWriter
         X509Certificate2 caCertificate;
 
         // Create Root CA and intermediate cert PFX with private key (if not already there)
-        if (!Directory.Exists(Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates")))
+        if (!Directory.Exists(Path.Combine(ParentPath, "GeneratedCertificates")))
         {
-            Directory.CreateDirectory(Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates"));
+            Directory.CreateDirectory(Path.Combine(ParentPath, "GeneratedCertificates"));
         }
 
         if (!File.Exists(RootCaPfxPath))
@@ -74,7 +75,7 @@ public class LocalCertificateWriter
             "\r\n-----END CERTIFICATE-----\r\n";
 
         string keyContents = "-----BEGIN RSA PRIVATE KEY-----\r\n" +
-            Convert.ToBase64String(clientCertificate.GetRSAPrivateKey().ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) +
+            Convert.ToBase64String(clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) +
             "\r\n-----END RSA PRIVATE KEY-----";
 
         File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", CertificateFilenamePrefix + "Cert.pem"), certContents);
@@ -114,16 +115,13 @@ public class LocalCertificateWriter
         request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
         request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, false));
 
-        request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection
-        {
-            new("1.3.6.1.5.5.7.3.1"), // serverAuth
-            new("1.3.6.1.5.5.7.3.2") // clientAuth
-        }, false));
+        request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension([
+            new Oid("1.3.6.1.5.5.7.3.1"), // serverAuth
 
-        if (altNames != null)
-        {
-            request.CertificateExtensions.Add(altNames.Build());
-        }
+            new Oid("1.3.6.1.5.5.7.3.2") // clientAuth
+        ], false));
+
+        request.CertificateExtensions.Add(altNames.Build());
 
         byte[] serialNumber = new byte[8];
 

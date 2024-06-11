@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using FluentAssertions;
 using Xunit;
 
 namespace Steeltoe.Common.Security.Test;
@@ -14,21 +16,23 @@ public sealed class LocalCertificateWriterTest
     {
         var orgId = Guid.NewGuid();
         var spaceId = Guid.NewGuid();
-        var certWriter = new LocalCertificateWriter();
+        var certificateWriter = new LocalCertificateWriter();
+        using var rsa = RSA.Create();
 
-        certWriter.Write(orgId, spaceId);
-        var rootCertificate = new X509Certificate2(certWriter.RootCaPfxPath);
-        var intermediateCert = new X509Certificate2(certWriter.IntermediatePfxPath);
+        certificateWriter.Write(orgId, spaceId);
+        var rootCertificate = new X509Certificate2(certificateWriter.RootCaPfxPath);
+        var intermediateCertificate = new X509Certificate2(certificateWriter.IntermediatePfxPath);
 
-        X509Certificate2 clientCert =
+        rsa.ImportFromPem(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem")));
+
+        X509Certificate2 certificate =
             new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
-                .CopyWithPrivateKey(PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath,
-                    "GeneratedCertificates", "SteeltoeInstanceKey.pem"))));
+                .CopyWithPrivateKey(rsa);
 
-        Assert.NotNull(rootCertificate);
-        Assert.NotNull(intermediateCert);
-        Assert.NotNull(clientCert);
-        Assert.Contains($"OU=space:{spaceId}", clientCert.Subject, StringComparison.Ordinal);
-        Assert.Contains($"OU=organization:{orgId}", clientCert.Subject, StringComparison.Ordinal);
+        rootCertificate.Should().NotBeNull();
+        intermediateCertificate.Should().NotBeNull();
+        certificate.Should().NotBeNull();
+        certificate.Subject.Should().Contain($"OU=space:{spaceId}");
+        certificate.Subject.Should().Contain($"OU=organization:{orgId}");
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Security.Authentication.Mtls;
 
@@ -21,6 +22,7 @@ namespace Steeltoe.Security.Authentication.Mtls;
 internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<MutualTlsAuthenticationOptions>
 {
     private static readonly Oid ClientCertificateOid = new("1.3.6.1.5.5.7.3.2");
+    private readonly IOptionsMonitor<CertificateOptions> _certificateOptionsMonitor;
 
     /// <summary>
     /// Gets the handler calls methods on the events which give the application control at certain points where processing is occurring. If it is not
@@ -29,13 +31,15 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
     private new CertificateAuthenticationEvents Events => (CertificateAuthenticationEvents)base.Events;
 
 #if NET6_0
-    public MutualTlsAuthenticationHandler(IOptionsMonitor<MutualTlsAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+    public MutualTlsAuthenticationHandler(IOptionsMonitor<MutualTlsAuthenticationOptions> options, IOptionsMonitor<CertificateOptions> certificateOptionsMonitor, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
 #else
-    public MutualTlsAuthenticationHandler(IOptionsMonitor<MutualTlsAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+    public MutualTlsAuthenticationHandler(IOptionsMonitor<MutualTlsAuthenticationOptions> options,
+        IOptionsMonitor<CertificateOptions> certificateOptionsMonitor, ILoggerFactory logger, UrlEncoder encoder)
         : base(options, logger, encoder)
 #endif
     {
+        _certificateOptionsMonitor = certificateOptionsMonitor;
     }
 
     /// <summary>
@@ -68,7 +72,7 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
                 return AuthenticateResult.NoResult();
             }
 
-            // If we have a self signed cert, and they're not allowed, exit early and not bother with
+            // If we have a self-signed cert, and they're not allowed, exit early and not bother with
             // any other validations.
             if (clientCertificate.IsSelfSigned() && !Options.AllowedCertificateTypes.HasFlag(CertificateTypes.SelfSigned))
             {
@@ -179,11 +183,13 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
 
         // allow root cert to be side loaded without installing into X509Store Root store
         if (!isValid && Array.TrueForAll(chain.ChainStatus,
-            x => x.Status == X509ChainStatusFlags.UntrustedRoot || x.Status == X509ChainStatusFlags.PartialChain ||
-                x.Status == X509ChainStatusFlags.OfflineRevocation || x.Status == X509ChainStatusFlags.RevocationStatusUnknown))
+            x => x.Status is X509ChainStatusFlags.UntrustedRoot or X509ChainStatusFlags.PartialChain or X509ChainStatusFlags.OfflineRevocation or
+                X509ChainStatusFlags.RevocationStatusUnknown))
         {
             Logger.LogInformation("Certificate not valid by standard rules, trying custom validation");
-            isValid = Options.IssuerChain.Intersect(ToGenericEnumerable(chain.ChainElements).Select(c => c.Certificate)).Any();
+
+            isValid = _certificateOptionsMonitor.Get("AppInstanceIdentity").IssuerChain
+                .Intersect(ToGenericEnumerable(chain.ChainElements).Select(c => c.Certificate)).Any();
         }
 
         return isValid;
@@ -214,7 +220,7 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
         };
 
         //// <variation>
-        foreach (X509Certificate2 chainCert in Options.IssuerChain)
+        foreach (X509Certificate2 chainCert in _certificateOptionsMonitor.Get("AppInstanceIdentity").IssuerChain)
         {
             chainPolicy.ExtraStore.Add(chainCert);
         }

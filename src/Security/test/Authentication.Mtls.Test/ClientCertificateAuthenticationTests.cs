@@ -288,12 +288,7 @@ public sealed class ClientCertificateAuthenticationTests
         TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
-            Events = _successfulValidationEvents,
-            IssuerChain = new List<X509Certificate2>
-            {
-                Certificates.SelfSignedPrimaryRoot,
-                Certificates.SignedSecondaryRoot
-            }
+            Events = _successfulValidationEvents
         }, Certificates.SignedClient);
 
         HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("https://example.com/"));
@@ -506,7 +501,7 @@ public sealed class ClientCertificateAuthenticationTests
         }
 
         Assert.NotNull(responseAsXml);
-        IEnumerable<XElement> actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Name);
+        IEnumerable<XElement> actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type")!.Value == ClaimTypes.Name);
         Assert.Single(actual);
         Assert.Equal(expected, actual.First().Value);
         Assert.Single(responseAsXml.Elements("claim"));
@@ -571,7 +566,6 @@ public sealed class ClientCertificateAuthenticationTests
                     options.RevocationFlag = configureOptions.RevocationFlag;
                     options.RevocationMode = configureOptions.RevocationMode;
                     options.ValidateValidityPeriod = configureOptions.ValidateValidityPeriod;
-                    options.IssuerChain = configureOptions.IssuerChain;
                 });
             }
             else
@@ -590,7 +584,7 @@ public sealed class ClientCertificateAuthenticationTests
 
         var server = new TestServer(builder)
         {
-            BaseAddress = baseAddress
+            BaseAddress = baseAddress!
         };
 
         return server;
