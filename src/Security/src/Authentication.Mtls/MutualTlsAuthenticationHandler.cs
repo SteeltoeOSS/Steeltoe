@@ -188,7 +188,7 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
         {
             Logger.LogInformation("Certificate not valid by standard rules, trying custom validation");
 
-            isValid = _certificateOptionsMonitor.Get("ContainerIdentity").IssuerChain
+            isValid = _certificateOptionsMonitor.Get("AppInstanceIdentity").IssuerChain
                 .Intersect(ToGenericEnumerable(chain.ChainElements).Select(c => c.Certificate)).Any();
         }
 
@@ -220,7 +220,7 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
         };
 
         //// <variation>
-        foreach (X509Certificate2 chainCert in _certificateOptionsMonitor.Get("ContainerIdentity").IssuerChain)
+        foreach (X509Certificate2 chainCert in _certificateOptionsMonitor.Get("AppInstanceIdentity").IssuerChain)
         {
             chainPolicy.ExtraStore.Add(chainCert);
         }

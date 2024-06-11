@@ -24,7 +24,7 @@ public static class ConfigurationBuilderExtensions
     /// <param name="spaceId">
     /// (Optional) A GUID representing a space, for use with <see cref="CloudFoundryDefaults.SameSpaceAuthorizationPolicy" /> authorization policy.
     /// </param>
-    public static IConfigurationBuilder AddCloudFoundryContainerIdentity(this IConfigurationBuilder builder, string orgId = null, string spaceId = null)
+    public static IConfigurationBuilder AddCloudFoundryAppInstanceIdentity(this IConfigurationBuilder builder, string orgId = null, string spaceId = null)
     {
         if (!Platform.IsCloudFoundry)
         {
@@ -49,6 +49,6 @@ public static class ConfigurationBuilderExtensions
             return builder;
         }
 
-        return builder.AddCertificate("ContainerIdentity", certFile, keyFile);
+        return builder.AddCertificate("AppInstanceIdentity", certFile, keyFile);
     }
 }

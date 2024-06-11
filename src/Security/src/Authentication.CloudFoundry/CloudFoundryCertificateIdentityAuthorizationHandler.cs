@@ -20,7 +20,7 @@ public class CloudFoundryCertificateIdentityAuthorizationHandler : IAuthorizatio
     {
         _logger = logger;
         identityCert.OnChange(OnCertRefresh);
-        OnCertRefresh(identityCert.Get("ContainerIdentity"));
+        OnCertRefresh(identityCert.Get("AppInstanceIdentity"));
     }
 
     public Task HandleAsync(AuthorizationHandlerContext context)

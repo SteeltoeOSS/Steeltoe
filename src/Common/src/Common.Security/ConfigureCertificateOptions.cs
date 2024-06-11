@@ -47,7 +47,7 @@ public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certifi
             ? X509Certificate2.CreateFromPemFile(certificateFilePath, privateKeyFilePath)
             : new X509Certificate2(certificateFilePath);
 
-        List<X509Certificate2> certChain = CertificateRegex.Matches(File.ReadAllText(certificateFilePath!))
+        List<X509Certificate2> certChain = CertificateRegex.Matches(File.ReadAllText(certificateFilePath))
             .Select(x => new X509Certificate2(Encoding.ASCII.GetBytes(x.Value))).ToList();
 
         foreach (X509Certificate2 issuer in certChain.Skip(1))

@@ -26,7 +26,7 @@ public sealed class ServiceCollectionExtensionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             {
-                $"{CertificateOptions.ConfigurationKeyPrefix}:ContainerIdentity:CertificateFilePath",
+                $"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:CertificateFilePath",
                 $"GeneratedCertificates{Path.DirectorySeparatorChar}SteeltoeInstanceCert.pem"
             }
         }).Build();
@@ -48,6 +48,6 @@ public sealed class ServiceCollectionExtensionsTest
 
         // confirm Events was set (in MutualTlsAuthenticationOptionsPostConfigurer.cs) vs being null by default
         mtlsOptions.Value.Events.Should().NotBeNull();
-        new CertificateAuthenticationOptions().Events.Should().BeNull();
+        new MutualTlsAuthenticationOptions().Events.Should().BeNull();
     }
 }

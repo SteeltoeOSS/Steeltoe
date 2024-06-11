@@ -74,7 +74,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task NonHttpsIsForbidden()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions(), Certificates.SelfSignedValidWithClientEku);
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions(), Certificates.SelfSignedValidWithClientEku);
 
         HttpResponseMessage response = await server.CreateClient().GetAsync(new Uri("http://example.com/"));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -83,7 +83,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyValidSelfSignedWithClientEkuAuthenticates()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             Events = _successfulValidationEvents
@@ -96,7 +96,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyValidSelfSignedWithNoEkuAuthenticates()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             Events = _successfulValidationEvents
@@ -109,7 +109,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyValidSelfSignedWithClientEkuFailsWhenSelfSignedCertsNotAllowed()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.Chained
         }, Certificates.SelfSignedValidWithClientEku);
@@ -121,7 +121,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyValidSelfSignedWithNoEkuFailsWhenSelfSignedCertsNotAllowed()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.Chained,
             Events = _successfulValidationEvents
@@ -134,7 +134,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyValidSelfSignedWithServerFailsEvenIfSelfSignedCertsAreAllowed()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             Events = _successfulValidationEvents
@@ -147,7 +147,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyValidSelfSignedWithServerPassesWhenSelfSignedCertsAreAllowedAndPurposeValidationIsOff()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             ValidateCertificateUse = false,
@@ -161,7 +161,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyValidSelfSignedWithServerFailsPurposeValidationIsOffButSelfSignedCertsAreNotAllowed()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.Chained,
             ValidateCertificateUse = false,
@@ -176,7 +176,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Trait("Category", "SkipOnLinux")]
     public async Task VerifyExpiredSelfSignedFails()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             ValidateCertificateUse = false,
@@ -190,7 +190,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyExpiredSelfSignedPassesIfDateRangeValidationIsDisabled()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             ValidateValidityPeriod = false,
@@ -206,7 +206,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Trait("Category", "SkipOnLinux")]
     public async Task VerifyNotYetValidSelfSignedFails()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             ValidateCertificateUse = false,
@@ -220,7 +220,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyNotYetValidSelfSignedPassesIfDateRangeValidationIsDisabled()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             ValidateValidityPeriod = false,
@@ -234,7 +234,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyFailingInTheValidationEventReturnsForbidden()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             ValidateCertificateUse = false,
             Events = _failedValidationEvents
@@ -247,7 +247,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task DoingNothingInTheValidationEventReturnsOk()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             ValidateCertificateUse = false,
@@ -261,7 +261,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyNotSendingACertificateEndsUpInForbidden()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             Events = _successfulValidationEvents
         });
@@ -273,7 +273,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyUntrustedClientCertEndsUpInForbidden()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             Events = _successfulValidationEvents
         }, Certificates.SignedClient);
@@ -285,7 +285,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifySideLoadedCaSignedCertReturnsOk()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             Events = _successfulValidationEvents
@@ -298,7 +298,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyHeaderIsUsedIfCertIsNotPresent()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             Events = _successfulValidationEvents
@@ -313,7 +313,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyHeaderEncodedCertFailsOnBadEncoding()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             Events = _successfulValidationEvents
         }, wireUpHeaderMiddleware: true);
@@ -327,7 +327,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifySettingTheAzureHeaderOnTheForwarderOptionsWorks()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             Events = _successfulValidationEvents
@@ -342,7 +342,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyACustomHeaderFailsIfTheHeaderIsNotPresent()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             Events = _successfulValidationEvents
         }, wireUpHeaderMiddleware: true, headerName: "X-ARR-ClientCert");
@@ -356,7 +356,7 @@ public sealed class ClientCertificateAuthenticationTests
     [Fact]
     public async Task VerifyNoEventWireUpWithAValidCertificateCreatesADefaultUser()
     {
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned
         }, Certificates.SelfSignedValidWithNoEku);
@@ -467,7 +467,7 @@ public sealed class ClientCertificateAuthenticationTests
     {
         const string expected = "John Doe";
 
-        TestServer server = CreateServer(new CertificateAuthenticationOptions
+        TestServer server = CreateServer(new MutualTlsAuthenticationOptions
         {
             AllowedCertificateTypes = CertificateTypes.SelfSigned,
             Events = new CertificateAuthenticationEvents
@@ -507,7 +507,7 @@ public sealed class ClientCertificateAuthenticationTests
         Assert.Single(responseAsXml.Elements("claim"));
     }
 
-    private static TestServer CreateServer(CertificateAuthenticationOptions configureOptions, X509Certificate2 clientCertificate = null, Uri baseAddress = null,
+    private static TestServer CreateServer(MutualTlsAuthenticationOptions configureOptions, X509Certificate2 clientCertificate = null, Uri baseAddress = null,
         bool wireUpHeaderMiddleware = false, string headerName = "")
     {
         IWebHostBuilder builder = new WebHostBuilder().Configure(app =>

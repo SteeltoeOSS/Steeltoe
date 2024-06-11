@@ -14,11 +14,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
-using Steeltoe.Common.Security;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
@@ -127,15 +125,15 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var appSettings = new Dictionary<string, string?>
         {
             ["Eureka:Client:ShouldFetchRegistry"] = "false",
-            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Certificates:Eureka:CertificateFilePath"] = "instance.crt",
+            ["Certificates:Eureka:PrivateKeyFilePath"] = "instance.key"
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Configuration.AddCertificate("Eureka", "instance.crt", "instance.key");
 
         builder.Services.AddOptions();
-        builder.Services.AddSingleton<IConfigureOptions<CertificateOptions>, ConfigureCertificateOptions>();
 
         var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");

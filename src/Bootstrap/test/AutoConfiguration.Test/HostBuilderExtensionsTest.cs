@@ -232,10 +232,10 @@ public sealed class HostBuilderExtensionsTest
         using IHost host = GetHostForOnly(SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:ContainerIdentity:CertificateFilePath"].Should().NotBeNull();
-        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:ContainerIdentity:PrivateKeyFilePath"].Should().NotBeNull();
+        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:CertificateFilePath"].Should().NotBeNull();
+        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:PrivateKeyFilePath"].Should().NotBeNull();
 
-        host.Services.GetService<IOptionsMonitor<CertificateOptions>>()?.Get("ContainerIdentity").Certificate.Should().NotBeNull();
+        host.Services.GetService<IOptionsMonitor<CertificateOptions>>()?.Get("AppInstanceIdentity").Certificate.Should().NotBeNull();
         host.Services.GetService<IOptionsChangeTokenSource<CertificateOptions>>().Should().NotBeNull();
         host.Services.GetService<IAuthorizationHandler>().Should().NotBeNull();
     }

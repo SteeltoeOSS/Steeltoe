@@ -31,6 +31,21 @@ public sealed class ConfigureCertificateOptionsTest
     }
 
     [Fact]
+    public void ConfigureCertificateOptions_BadPath_NoCertificate()
+    {
+        var configureOptions = new ConfigureCertificateOptions(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "doesnotexist.crt" }
+        }).Build());
+
+        var options = new CertificateOptions();
+
+        configureOptions.Configure(CertificateName, options);
+
+        options.Certificate.Should().BeNull();
+    }
+
+    [Fact]
     public void ConfigureCertificateOptions_EmptyFile_Crashes()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
@@ -41,18 +56,8 @@ public sealed class ConfigureCertificateOptionsTest
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);
         var options = new CertificateOptions();
 
-#if NET6_0
-        try
-        {
-            configureOptions.Configure(CertificateName, options);
-        }
-        catch (Exception ex)
-        {
-            ex.Message.Should().Contain("Unspecified");
-        }
-#else
-        Assert.Throws<CryptographicException>(() => configureOptions.Configure(CertificateName, options));
-#endif
+        Action action = () => configureOptions.Configure(CertificateName, options);
+        action.Should().Throw<CryptographicException>();
 
         options.Certificate.Should().BeNull();
     }
@@ -63,7 +68,7 @@ public sealed class ConfigureCertificateOptionsTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "instance.crt" },
-            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:privateKeyFilePath", "empty.key" }
+            { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:privateKeyFilePath", "invalid.key" }
         }).Build();
 
         var configureOptions = new ConfigureCertificateOptions(configurationRoot);

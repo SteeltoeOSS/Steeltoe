@@ -13,7 +13,7 @@ namespace Steeltoe.Common.Configuration;
 /// </summary>
 public sealed class CertificateOptions
 {
-    internal const string ConfigurationKeyPrefix = "ClientCertificates";
+    internal const string ConfigurationKeyPrefix = "Certificates";
 
     public X509Certificate2? Certificate { get; set; }
 

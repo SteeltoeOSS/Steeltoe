@@ -24,10 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="empty.key">
+    <None Update="*.crt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="empty.crt">
+    <None Update="*.key">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="*.p12">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

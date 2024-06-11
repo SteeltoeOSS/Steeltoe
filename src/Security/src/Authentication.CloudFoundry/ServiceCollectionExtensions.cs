@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.ConfigureCertificateOptions("ContainerIdentity", fileProvider);
+        services.ConfigureCertificateOptions("AppInstanceIdentity", fileProvider);
         services.AddSingleton<IPostConfigureOptions<MutualTlsAuthenticationOptions>, MutualTlsAuthenticationOptionsPostConfigurer>();
         services.AddSingleton<IAuthorizationHandler, CloudFoundryCertificateIdentityAuthorizationHandler>();
         services.AddCertificateForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");

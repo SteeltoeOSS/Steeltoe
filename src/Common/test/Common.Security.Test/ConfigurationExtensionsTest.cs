@@ -16,7 +16,7 @@ public sealed class ConfigurationExtensionsTest
     public void AddCertificate_SetsPaths()
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddCertificate(CertificateName, "instance.crt", "instance.key").Build();
-        configurationRoot[$"ClientCertificates:{CertificateName}:certificateFilePath"].Should().Be("instance.crt");
-        configurationRoot[$"ClientCertificates:{CertificateName}:privateKeyFilePath"].Should().Be("instance.key");
+        configurationRoot[$"Certificates:{CertificateName}:certificateFilePath"].Should().Be("instance.crt");
+        configurationRoot[$"Certificates:{CertificateName}:privateKeyFilePath"].Should().Be("instance.key");
     }
 }
