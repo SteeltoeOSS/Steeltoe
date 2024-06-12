@@ -5,6 +5,11 @@
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.Certificate;
+using Steeltoe.Common.TestResources;
+using Xunit;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 

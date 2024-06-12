@@ -5,10 +5,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.Certificate;
 using Steeltoe.Common.DynamicTypeAccess;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Common.Logging;
-using Steeltoe.Common.Certificate;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Placeholder;

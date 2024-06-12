@@ -73,15 +73,9 @@ internal sealed class LocalCertificateWriter
         }
 
 #if NET6_0
-        string chainedCertificateContents = "-----BEGIN CERTIFICATE-----" + Environment.NewLine +
-            Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + Environment.NewLine +
-            "-----END CERTIFICATE-----" + Environment.NewLine + "-----BEGIN CERTIFICATE-----" + Environment.NewLine +
-            Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + Environment.NewLine +
-            "-----END CERTIFICATE-----" + Environment.NewLine;
+        string chainedCertificateContents = "-----BEGIN CERTIFICATE-----" + Environment.NewLine + Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + Environment.NewLine + "-----END CERTIFICATE-----" + Environment.NewLine + "-----BEGIN CERTIFICATE-----" + Environment.NewLine + Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + Environment.NewLine + "-----END CERTIFICATE-----" + Environment.NewLine;
 
-        string keyContents = "-----BEGIN RSA PRIVATE KEY-----" + Environment.NewLine +
-            Convert.ToBase64String(clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) +
-            Environment.NewLine + "-----END RSA PRIVATE KEY-----";
+        string keyContents = "-----BEGIN RSA PRIVATE KEY-----" + Environment.NewLine + Convert.ToBase64String(clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) + Environment.NewLine + "-----END RSA PRIVATE KEY-----";
 #else
         string chainedCertificateContents = clientCertificate.ExportCertificatePem() + Environment.NewLine + intermediateCertificate.ExportCertificatePem();
         string keyContents = clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKeyPem();

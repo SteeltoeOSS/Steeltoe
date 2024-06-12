@@ -8,12 +8,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Certificate;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.Net;
-using Steeltoe.Common.Certificate;
 using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka;

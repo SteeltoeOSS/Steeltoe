@@ -5,18 +5,27 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Security.Authentication.Shared;
+using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.JwtBearer;
 
-internal sealed class PostConfigureJwtBearerOptions(IConfiguration configuration, IHttpClientFactory httpClientFactory)
-    : IPostConfigureOptions<JwtBearerOptions>
+internal sealed class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtBearerOptions>
 {
     private const string BearerConfigurationKeyPrefix = "Authentication:Schemes:Bearer";
+    private readonly IConfiguration _configuration;
+
+    public PostConfigureJwtBearerOptions(IConfiguration configuration)
+    {
+        ArgumentGuard.NotNull(configuration);
+
+        _configuration = configuration;
+    }
 
     public void PostConfigure(string? name, JwtBearerOptions options)
     {
-        string? clientId = configuration.GetValue<string>($"{BearerConfigurationKeyPrefix}:ClientId");
+        ArgumentGuard.NotNull(options);
+
+        string? clientId = _configuration.GetValue<string>($"{BearerConfigurationKeyPrefix}:ClientId");
 
         if (!string.IsNullOrEmpty(clientId) && options.TokenValidationParameters.ValidAudiences?.Contains(clientId) != true)
         {
@@ -28,21 +37,14 @@ internal sealed class PostConfigureJwtBearerOptions(IConfiguration configuration
             options.TokenValidationParameters.ValidAudiences = audiences;
         }
 
-        if (options.Authority?.Equals(SteeltoeSecurityDefaults.LocalUAAPath, StringComparison.InvariantCultureIgnoreCase) == true)
+        if (options.Authority == null)
         {
-            options.RequireHttpsMetadata = false;
-            options.TokenValidationParameters.ValidIssuer = $"{SteeltoeSecurityDefaults.LocalUAAPath}/uaa/oauth/token";
-        }
-        else if (options.Authority != null)
-        {
-            options.TokenValidationParameters.ValidIssuer = $"{options.Authority}/oauth/token";
+            return;
         }
 
-        if (options.Authority != null)
-        {
-            // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-            var keyResolver = new TokenKeyResolver(options.Authority, options.Backchannel ?? httpClientFactory.CreateClient("SteeltoeSecurity"));
-            options.TokenValidationParameters.IssuerSigningKeyResolver = keyResolver.ResolveSigningKey;
-        }
+        options.TokenValidationParameters.ValidIssuer = $"{options.Authority}/oauth/token";
+
+        var keyResolver = new TokenKeyResolver(options.Authority, options.Backchannel);
+        options.TokenValidationParameters.IssuerSigningKeyResolver = keyResolver.ResolveSigningKey;
     }
 }

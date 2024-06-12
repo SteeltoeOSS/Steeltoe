@@ -1,4 +1,3 @@
 #nullable enable
 static Steeltoe.Security.Authentication.JwtBearer.JwtBearerServiceCollectionExtensions.ConfigureJwtBearerForCloudFoundry(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Security.Authentication.JwtBearer.JwtBearerServiceCollectionExtensions.ConfigureJwtBearerForCloudFoundry(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<System.Net.Http.HttpClient!>? configureHttpClient) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 Steeltoe.Security.Authentication.JwtBearer.JwtBearerServiceCollectionExtensions

@@ -12,9 +12,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="$(MicrosoftIdentityModelVersion)" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="$(MicrosoftIdentityModelVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Authentication.Shared\Steeltoe.Security.Authentication.Shared.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
 </Project>

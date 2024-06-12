@@ -2,6 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
+using Steeltoe.Common.Configuration;
+
 namespace Steeltoe.Security.Authorization.Certificate;
 
 public sealed class CertificateAuthorizationHandler : IAuthorizationHandler
@@ -34,10 +41,14 @@ public sealed class CertificateAuthorizationHandler : IAuthorizationHandler
             return;
         }
 
-        if (ApplicationInstanceCertificate.TryParse(certificateOptions.Certificate, out ApplicationInstanceCertificate? applicationInstanceCertificate,
-            _logger))
+        if (ApplicationInstanceCertificate.TryParse(certificateOptions.Certificate, out ApplicationInstanceCertificate? applicationInstanceCertificate))
         {
             _applicationInstanceCertificate = applicationInstanceCertificate;
+        }
+        else
+        {
+            _logger.LogError("Identity certificate did not match an expected pattern. Subject was: {CertificateSubject}",
+                certificateOptions.Certificate.Subject);
         }
     }
 

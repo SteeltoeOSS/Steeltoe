@@ -12,7 +12,7 @@ using Steeltoe.Security.Authentication.Shared;
 
 namespace Steeltoe.Security.Authentication.OpenIdConnect;
 
-internal sealed class PostConfigureOpenIdConnectOptions(IHttpClientFactory httpClientFactory) : IPostConfigureOptions<OpenIdConnectOptions>
+internal sealed class PostConfigureOpenIdConnectOptions : IPostConfigureOptions<OpenIdConnectOptions>
 {
     // The ClaimsIdentity is built off the id_token, but scopes are returned in the access_token.
     // Identify scopes not already present as claims and add them to the ClaimsIdentity
@@ -36,7 +36,7 @@ internal sealed class PostConfigureOpenIdConnectOptions(IHttpClientFactory httpC
 
     public void PostConfigure(string? name, OpenIdConnectOptions options)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        ArgumentGuard.NotNull(name);
         ArgumentGuard.NotNull(options);
 
         options.Events.OnTokenValidated = MapScopesToClaims;
@@ -45,21 +45,14 @@ internal sealed class PostConfigureOpenIdConnectOptions(IHttpClientFactory httpC
         options.SignInScheme ??= CookieAuthenticationDefaults.AuthenticationScheme;
         options.TokenValidationParameters.NameClaimType = "user_name";
 
-        if (options.Authority?.Contains(SteeltoeSecurityDefaults.LocalUAAPath, StringComparison.InvariantCultureIgnoreCase) == true)
+        if (options.Authority == null)
         {
-            options.RequireHttpsMetadata = false;
-            options.TokenValidationParameters.ValidIssuer = $"{SteeltoeSecurityDefaults.LocalUAAPath}/uaa/oauth/token";
-        }
-        else if (options.Authority != null)
-        {
-            options.TokenValidationParameters.ValidIssuer = $"{options.Authority}/oauth/token";
+            return;
         }
 
-        if (options.Authority != null)
-        {
-            // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-            var keyResolver = new TokenKeyResolver(options.Authority, options.Backchannel ?? httpClientFactory.CreateClient("SteeltoeSecurity"));
-            options.TokenValidationParameters.IssuerSigningKeyResolver = keyResolver.ResolveSigningKey;
-        }
+        options.TokenValidationParameters.ValidIssuer = $"{options.Authority}/oauth/token";
+
+        var keyResolver = new TokenKeyResolver(options.Authority, options.Backchannel);
+        options.TokenValidationParameters.IssuerSigningKeyResolver = keyResolver.ResolveSigningKey;
     }
 }

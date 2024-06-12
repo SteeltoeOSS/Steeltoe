@@ -2,6 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
+using Steeltoe.Common.Configuration;
+
 namespace Steeltoe.Security.Authorization.Certificate;
 
 public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigureOptions<CertificateAuthenticationOptions>
@@ -20,6 +28,7 @@ public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigu
 
     public void PostConfigure(string? name, CertificateAuthenticationOptions options)
     {
+        ArgumentGuard.NotNull(name);
         ArgumentGuard.NotNull(options);
 
         CertificateOptions appInstanceIdentityOptions = _certificateOptionsMonitor.Get("AppInstanceIdentity");
@@ -53,7 +62,7 @@ public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigu
 
                 var claims = new List<Claim>(context.Principal.Claims);
 
-                if (ApplicationInstanceCertificate.TryParse(context.ClientCertificate, out ApplicationInstanceCertificate? clientCertificate, _logger))
+                if (ApplicationInstanceCertificate.TryParse(context.ClientCertificate, out ApplicationInstanceCertificate? clientCertificate))
                 {
                     claims.Add(new Claim(ApplicationClaimTypes.OrganizationId, clientCertificate.OrganizationId, ClaimValueTypes.String,
                         context.Options.ClaimsIssuer));
@@ -65,6 +74,11 @@ public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigu
 
                     claims.Add(new Claim(ApplicationClaimTypes.ApplicationInstanceId, clientCertificate.InstanceId, ClaimValueTypes.String,
                         context.Options.ClaimsIssuer));
+                }
+                else
+                {
+                    _logger.LogError("Identity certificate did not match an expected pattern. Subject was: {CertificateSubject}",
+                        context.ClientCertificate.Subject);
                 }
 
                 var identity = new ClaimsIdentity(claims, CertificateAuthenticationDefaults.AuthenticationScheme);

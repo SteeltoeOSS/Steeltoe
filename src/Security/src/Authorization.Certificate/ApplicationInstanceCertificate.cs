@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Security.Authorization.Certificate;
@@ -10,12 +11,14 @@ namespace Steeltoe.Security.Authorization.Certificate;
 internal sealed class ApplicationInstanceCertificate
 {
     // This pattern is found on certificates issued by Diego
-    private const string CloudFoundryInstanceCertificateSubjectRegex =
-        @"^CN=(?<instance>[0-9a-f-]+),\sOU=organization:(?<org>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=app:(?<app>[0-9a-f-]+)$";
+    private static readonly Regex CloudFoundryInstanceCertificateSubjectRegex =
+        new(@"^CN=(?<instance>[0-9a-f-]+),\sOU=organization:(?<org>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=app:(?<app>[0-9a-f-]+)$",
+            RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
 
-    // This pattern is found on certificates created in Steeltoe
-    private const string SteeltoeInstanceCertificateSubjectRegex =
-        @"^CN=(?<instance>[0-9a-f-]+),\sOU=app:(?<app>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=organization:(?<org>[0-9a-f-]+)$";
+    // This pattern is found on certificates created by Steeltoe
+    private static readonly Regex SteeltoeInstanceCertificateSubjectRegex =
+        new(@"^CN=(?<instance>[0-9a-f-]+),\sOU=app:(?<app>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=organization:(?<org>[0-9a-f-]+)$",
+            RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
 
     public string OrganizationId { get; private set; }
 
@@ -33,28 +36,21 @@ internal sealed class ApplicationInstanceCertificate
         InstanceId = instanceId;
     }
 
-    public static bool TryParse(X509Certificate2 certificate, [MaybeNullWhen(false)] out ApplicationInstanceCertificate outInstanceCertificate, ILogger logger)
+    public static bool TryParse(X509Certificate2 certificate, [NotNullWhen(true)] out ApplicationInstanceCertificate? outInstanceCertificate)
     {
         outInstanceCertificate = null;
 
-        Match instanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty, StringComparison.Ordinal),
-            CloudFoundryInstanceCertificateSubjectRegex);
+        Match instanceMatch = CloudFoundryInstanceCertificateSubjectRegex.Match(certificate.Subject);
 
         if (!instanceMatch.Success)
         {
-            instanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty, StringComparison.Ordinal), SteeltoeInstanceCertificateSubjectRegex);
+            instanceMatch = SteeltoeInstanceCertificateSubjectRegex.Match(certificate.Subject);
         }
 
         if (instanceMatch.Success)
         {
             outInstanceCertificate = new ApplicationInstanceCertificate(instanceMatch.Groups["org"].Value, instanceMatch.Groups["space"].Value,
                 instanceMatch.Groups["app"].Value, instanceMatch.Groups["instance"].Value);
-
-            logger.LogTrace("Successfully parsed an identity certificate with subject {CertificateSubject}", certificate.Subject);
-        }
-        else
-        {
-            logger.LogError("Identity certificate did not match an expected pattern. Subject was: {CertificateSubject}", certificate.Subject);
         }
 
         return instanceMatch.Success;

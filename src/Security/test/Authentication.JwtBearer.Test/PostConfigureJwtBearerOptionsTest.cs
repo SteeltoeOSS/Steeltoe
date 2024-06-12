@@ -2,11 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Xunit;
 
 namespace Steeltoe.Security.Authentication.JwtBearer.Test;
 
@@ -26,34 +29,11 @@ public sealed class PostConfigureJwtBearerOptionsTest
         };
 
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var postConfigurer = new PostConfigureJwtBearerOptions(configuration, null!);
+        var postConfigurer = new PostConfigureJwtBearerOptions(configuration);
 
         postConfigurer.PostConfigure(null, jwtBearerOptions);
 
         jwtBearerOptions.TokenValidationParameters.ValidAudiences.Should().Contain("testClient");
-    }
-
-    [Fact]
-    public void PostConfigure_ConfiguresForLocalUAA()
-    {
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-
-        var jwtBearerOptions = new JwtBearerOptions
-        {
-            Authority = SteeltoeSecurityDefaults.LocalUAAPath,
-            Backchannel = new HttpClient()
-        };
-
-        jwtBearerOptions.RequireHttpsMetadata.Should().BeTrue();
-        jwtBearerOptions.TokenValidationParameters.IssuerSigningKeyResolver.Should().BeNull();
-
-        var postConfigure = new PostConfigureJwtBearerOptions(configuration, null!);
-
-        postConfigure.PostConfigure(null, jwtBearerOptions);
-
-        jwtBearerOptions.RequireHttpsMetadata.Should().BeFalse();
-        jwtBearerOptions.TokenValidationParameters.ValidIssuer.Should().Be($"{SteeltoeSecurityDefaults.LocalUAAPath}/uaa/oauth/token");
-        jwtBearerOptions.TokenValidationParameters.IssuerSigningKeyResolver.Should().NotBeNull();
     }
 
     [Fact]
@@ -88,6 +68,7 @@ public sealed class PostConfigureJwtBearerOptionsTest
         IConfigurationRoot configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(configuration);
+        serviceCollection.AddAuthentication().AddJwtBearer();
         serviceCollection.ConfigureJwtBearerForCloudFoundry();
         serviceCollection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 

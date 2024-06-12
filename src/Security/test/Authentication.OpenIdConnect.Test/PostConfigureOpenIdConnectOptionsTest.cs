@@ -2,11 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
+using Xunit;
 
 namespace Steeltoe.Security.Authentication.OpenIdConnect.Test;
 
@@ -29,32 +32,11 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
         OpenIdConnectOptions openIdConnectOptions = serviceCollection.BuildServiceProvider().GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
             .Get(OpenIdConnectDefaults.AuthenticationScheme);
 
-        var postConfigurer = new PostConfigureOpenIdConnectOptions(null!);
+        var postConfigurer = new PostConfigureOpenIdConnectOptions();
 
         postConfigurer.PostConfigure(OpenIdConnectDefaults.AuthenticationScheme, openIdConnectOptions);
 
         openIdConnectOptions.TokenValidationParameters.ValidAudience.Should().Be("testClient");
-    }
-
-    [Fact]
-    public void PostConfigure_ConfiguresForLocalUAA()
-    {
-        var openIdConnectOptions = new OpenIdConnectOptions
-        {
-            Authority = SteeltoeSecurityDefaults.LocalUAAPath,
-            Backchannel = new HttpClient()
-        };
-
-        openIdConnectOptions.RequireHttpsMetadata.Should().BeTrue();
-        openIdConnectOptions.TokenValidationParameters.IssuerSigningKeyResolver.Should().BeNull();
-
-        var postConfigure = new PostConfigureOpenIdConnectOptions(null!);
-
-        postConfigure.PostConfigure(OpenIdConnectDefaults.AuthenticationScheme, openIdConnectOptions);
-
-        openIdConnectOptions.RequireHttpsMetadata.Should().BeFalse();
-        openIdConnectOptions.TokenValidationParameters.ValidIssuer.Should().Be($"{SteeltoeSecurityDefaults.LocalUAAPath}/uaa/oauth/token");
-        openIdConnectOptions.TokenValidationParameters.IssuerSigningKeyResolver.Should().NotBeNull();
     }
 
     [Fact]
@@ -89,9 +71,8 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
         IConfigurationRoot configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(configuration);
-        serviceCollection.AddHttpClient();
-        serviceCollection.ConfigureOpenIdConnectForCloudFoundry();
         serviceCollection.AddAuthentication().AddOpenIdConnect();
+        serviceCollection.ConfigureOpenIdConnectForCloudFoundry();
 
         OpenIdConnectOptions openIdConnectOptions = serviceCollection.BuildServiceProvider().GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
             .Get(OpenIdConnectDefaults.AuthenticationScheme);
