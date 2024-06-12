@@ -49,15 +49,15 @@ public static class CertificateConfigurationExtensions
     }
 
     /// <summary>
-    /// Adds PEM files representing application identity to application configuration. When running outside of Cloud Foundry based platforms, will create
-    /// certificates resembling those found on the platform.
+    /// Adds PEM certificate files representing application identity to the application configuration. When running outside of Cloud Foundry-based platforms,
+    /// this method will create certificates resembling those found on the platform.
     /// </summary>
     /// <param name="builder">
     /// Your <see cref="IConfigurationBuilder" />.
     /// </param>
     /// <remarks>
-    /// Outside of Cloud Foundry, CA and Intermediate certificates will be created a directory above the current project so that they can be shared between
-    /// different projects operating in the same solution context.
+    /// When running outside of Cloud Foundry, the CA and Intermediate certificates will be created in a directory above the current project, so that they
+    /// can be shared between different projects in the same solution.
     /// </remarks>
     public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder)
     {
@@ -65,8 +65,8 @@ public static class CertificateConfigurationExtensions
     }
 
     /// <summary>
-    /// Adds PEM files representing application identity to application configuration. When running outside of Cloud Foundry based platforms, will create
-    /// certificates resembling those found on the platform.
+    /// Adds PEM certificate files representing application identity to the application configuration. When running outside of Cloud Foundry-based platforms,
+    /// this method will create certificates resembling those found on the platform.
     /// </summary>
     /// <param name="builder">
     /// Your <see cref="IConfigurationBuilder" />.
@@ -78,8 +78,8 @@ public static class CertificateConfigurationExtensions
     /// (Optional) A GUID representing a space, for use with Cloud Foundry certificate-based authorization policy.
     /// </param>
     /// <remarks>
-    /// Outside of Cloud Foundry, CA and Intermediate certificates will be created a directory above the current project so that they can be shared between
-    /// different projects operating in the same solution context.
+    /// When running outside of Cloud Foundry, the CA and Intermediate certificates will be created in a directory above the current project, so that they
+    /// can be shared between different projects in the same solution.
     /// </remarks>
     public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder, Guid? organizationId, Guid? spaceId)
     {
@@ -88,8 +88,8 @@ public static class CertificateConfigurationExtensions
             organizationId ??= Guid.NewGuid();
             spaceId ??= Guid.NewGuid();
 
-            var task = new LocalCertificateWriter();
-            task.Write((Guid)organizationId, (Guid)spaceId);
+            var writer = new LocalCertificateWriter();
+            writer.Write(organizationId.Value, spaceId.Value);
 
             Environment.SetEnvironmentVariable("CF_SYSTEM_CERT_PATH",
                 Path.Combine(Directory.GetParent(LocalCertificateWriter.AppBasePath)!.ToString(), "GeneratedCertificates"));
@@ -104,6 +104,11 @@ public static class CertificateConfigurationExtensions
         string? certificateFile = Environment.GetEnvironmentVariable("CF_INSTANCE_CERT");
         string? keyFile = Environment.GetEnvironmentVariable("CF_INSTANCE_KEY");
 
-        return certificateFile == null || keyFile == null ? builder : builder.AddCertificate("AppInstanceIdentity", certificateFile, keyFile);
+        if (certificateFile != null && keyFile != null)
+        {
+            builder.AddCertificate("AppInstanceIdentity", certificateFile, keyFile);
+        }
+
+        return builder;
     }
 }

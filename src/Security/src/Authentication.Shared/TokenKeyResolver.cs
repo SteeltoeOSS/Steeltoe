@@ -29,10 +29,7 @@ internal sealed class TokenKeyResolver
     {
         if (Resolved.TryGetValue(kid, out SecurityKey? resolved))
         {
-            return new List<SecurityKey>
-            {
-                resolved
-            };
+            return [resolved];
         }
 
         JsonWebKeySet? keySet = FetchKeySetAsync().GetAwaiter().GetResult();
@@ -47,10 +44,7 @@ internal sealed class TokenKeyResolver
 
         if (Resolved.TryGetValue(kid, out resolved))
         {
-            return new List<SecurityKey>
-            {
-                resolved
-            };
+            return [resolved];
         }
 
         return [];
@@ -58,12 +52,12 @@ internal sealed class TokenKeyResolver
 
     internal async Task<JsonWebKeySet?> FetchKeySetAsync()
     {
-        if (!_authority.EndsWith("/", StringComparison.Ordinal))
+        if (!_authority.EndsWith('/'))
         {
             _authority += "/";
         }
 
-        var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_authority}token_keys"));
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{_authority}token_keys"));
         requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
         HttpResponseMessage response = await _httpClient.SendAsync(requestMessage);

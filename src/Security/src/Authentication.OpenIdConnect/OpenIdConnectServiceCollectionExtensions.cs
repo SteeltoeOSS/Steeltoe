@@ -32,7 +32,7 @@ public static class OpenIdConnectServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configureHttpClient">
-    /// Configure the HttpClient used to interact with the identity server.
+    /// Configures the <see cref="HttpClient"/> used to interact with the identity server.
     /// </param>
     public static IServiceCollection ConfigureOpenIdConnectForCloudFoundry(this IServiceCollection services, Action<HttpClient>? configureHttpClient)
     {
