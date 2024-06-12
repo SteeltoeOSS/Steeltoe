@@ -5,14 +5,14 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Common.Security;
+namespace Steeltoe.Common.Certificate;
 
 internal sealed class LocalCertificateWriter
 {
     internal static readonly string AppBasePath =
         AppContext.BaseDirectory[..AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin", StringComparison.Ordinal)];
 
-    internal static readonly string ParentPath = Directory.GetParent(AppBasePath)!.ToString();
+    private static readonly string ParentPath = Directory.GetParent(AppBasePath)!.ToString();
 
     internal string CertificateFilenamePrefix { get; set; } = "SteeltoeInstance";
 
@@ -72,13 +72,19 @@ internal sealed class LocalCertificateWriter
             Directory.CreateDirectory(Path.Combine(AppBasePath, "GeneratedCertificates"));
         }
 
-#if NET8_0_OR_GREATER
-        string chainedCertificateContents = clientCertificate.ExportCertificatePem() + "\r\n" + intermediateCertificate.ExportCertificatePem();
-        string keyContents = clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKeyPem();
-#else
-        string chainedCertificateContents = "-----BEGIN CERTIFICATE-----\r\n" + Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END CERTIFICATE-----\r\n" + "-----BEGIN CERTIFICATE-----\r\n" + Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END CERTIFICATE-----\r\n";
+#if NET6_0
+        string chainedCertificateContents = "-----BEGIN CERTIFICATE-----" + Environment.NewLine +
+            Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + Environment.NewLine +
+            "-----END CERTIFICATE-----" + Environment.NewLine + "-----BEGIN CERTIFICATE-----" + Environment.NewLine +
+            Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + Environment.NewLine +
+            "-----END CERTIFICATE-----" + Environment.NewLine;
 
-        string keyContents = "-----BEGIN RSA PRIVATE KEY-----\r\n" + Convert.ToBase64String(clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END RSA PRIVATE KEY-----";
+        string keyContents = "-----BEGIN RSA PRIVATE KEY-----" + Environment.NewLine +
+            Convert.ToBase64String(clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) +
+            Environment.NewLine + "-----END RSA PRIVATE KEY-----";
+#else
+        string chainedCertificateContents = clientCertificate.ExportCertificatePem() + Environment.NewLine + intermediateCertificate.ExportCertificatePem();
+        string keyContents = clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKeyPem();
 #endif
 
         File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", CertificateFilenamePrefix + "Cert.pem"), chainedCertificateContents);

@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common.Security;
+using Steeltoe.Common.Certificate;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 

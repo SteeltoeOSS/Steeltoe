@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http", "Com
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Net", "Common\src\Common.Net\Steeltoe.Common.Net.csproj", "{8F27A2D4-FEF2-4783-99C4-6B2ABA3D9431}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security", "Common\src\Common.Security\Steeltoe.Common.Security.csproj", "{DFE642E6-1CD0-4485-AC86-43CEBC451484}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Certificate", "Common\src\Common.Certificate\Steeltoe.Common.Certificate.csproj", "{DFE642E6-1CD0-4485-AC86-43CEBC451484}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{59874241-E276-4035-B31D-14924889A1C9}"
 	ProjectSection(SolutionItems) = preProject
@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Http.Test",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Net.Test", "Common\test\Common.Net.Test\Steeltoe.Common.Net.Test.csproj", "{1ACC6991-7D4C-48B2-A41C-4B179B19A85C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security.Test", "Common\test\Common.Security.Test\Steeltoe.Common.Security.Test.csproj", "{880208DF-05C6-4763-A447-744D6C8DBDEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Certificate.Test", "Common\test\Common.Certificate.Test\Steeltoe.Common.Certificate.Test.csproj", "{880208DF-05C6-4763-A447-744D6C8DBDEA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_shared", "_shared", "{DC1BC61A-E0FA-4CF9-9F24-D4C564A07836}"
 	ProjectSection(SolutionItems) = preProject

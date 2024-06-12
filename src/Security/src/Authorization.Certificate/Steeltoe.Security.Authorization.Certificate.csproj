@@ -14,6 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.Certificate\Steeltoe.Common.Certificate.csproj" />
   </ItemGroup>
 </Project>

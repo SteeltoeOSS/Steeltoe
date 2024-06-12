@@ -229,7 +229,7 @@ public sealed class WebApplicationBuilderExtensionsTest
     [Fact]
     public void AppInstanceIdentityCertificate_IsAutowired()
     {
-        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.CommonSecurity);
+        using WebApplication host = GetWebApplicationForOnly(SteeltoeAssemblyNames.CommonCertificate);
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
         configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:CertificateFilePath"].Should().NotBeNull();

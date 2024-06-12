@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
-    <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.Certificate\Steeltoe.Common.Certificate.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Configuration\Steeltoe.Discovery.Configuration.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Discovery\src\Consul\Steeltoe.Discovery.Consul.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" PrivateAssets="All" />

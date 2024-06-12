@@ -9,9 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Configuration;
 
-namespace Steeltoe.Common.Security;
+namespace Steeltoe.Common.Certificate;
 
-public sealed class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
+internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
     private static readonly Regex CertificateRegex = new("-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Compiled | RegexOptions.Singleline,
         TimeSpan.FromSeconds(1));

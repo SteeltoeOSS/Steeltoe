@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Xunit;
 
-namespace Steeltoe.Common.Security.Test;
+namespace Steeltoe.Common.Certificate.Test;
 
 public sealed class LocalCertificateWriterTest
 {

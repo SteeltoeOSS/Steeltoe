@@ -13,7 +13,7 @@ using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
-namespace Steeltoe.Common.Security.Test;
+namespace Steeltoe.Common.Certificate.Test;
 
 public sealed class ConfigureCertificateOptionsTest
 {

@@ -13,7 +13,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.Net;
-using Steeltoe.Common.Security;
+using Steeltoe.Common.Certificate;
 using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka;

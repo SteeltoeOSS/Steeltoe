@@ -9,7 +9,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Configuration;
 
-namespace Steeltoe.Common.Security;
+namespace Steeltoe.Common.Certificate;
 
 public static class CertificateServiceCollectionExtensions
 {

@@ -8,7 +8,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Common.Logging;
-using Steeltoe.Common.Security;
+using Steeltoe.Common.Certificate;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.ConfigServer;
 using Steeltoe.Configuration.Placeholder;
@@ -81,7 +81,7 @@ internal sealed class BootstrapScanner
         WireIfLoaded(WirePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
         WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
         WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
-        WireIfLoaded(WireAppInstanceIdentity, SteeltoeAssemblyNames.CommonSecurity);
+        WireIfLoaded(WireAppInstanceIdentity, SteeltoeAssemblyNames.CommonCertificate);
     }
 
     private void WireConfigServer()

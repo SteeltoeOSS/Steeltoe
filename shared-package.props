@@ -54,7 +54,7 @@
   </Target>
 
   <ItemGroup
-    Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Bootstrap')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Common.Security')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) Or
+    Condition="$(MSBuildProjectName.StartsWith('Steeltoe.Bootstrap')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Common.Certificates')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) Or
                 $(MSBuildProjectName.StartsWith('Steeltoe.Connectors')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Discovery')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Logging')) Or
                 $(MSBuildProjectName.StartsWith('Steeltoe.Management')) Or $(MSBuildProjectName.StartsWith('Steeltoe.Security'))">
 
@@ -63,9 +63,9 @@
   </ItemGroup>
 
   <PropertyGroup
-    Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Common.Security')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Management')) And
-                       !$(MSBuildProjectName.StartsWith('Steeltoe.Connectors')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Logging')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Bootstrap')) And
-                       !$(MSBuildProjectName.StartsWith('Steeltoe.Discovery')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Security'))">
+    Condition="!$(MSBuildProjectName.StartsWith('Steeltoe.Bootstrap')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Common.Certificates')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Configuration')) And
+                !$(MSBuildProjectName.StartsWith('Steeltoe.Connectors')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Discovery')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Logging')) And
+                !$(MSBuildProjectName.StartsWith('Steeltoe.Management')) And !$(MSBuildProjectName.StartsWith('Steeltoe.Security'))">
 
     <!-- Narrow the condition above as we're completing more public API reviews -->
     <NoWarn>$(NoWarn);SA1401;S1168;S2360;S3900;S3956;S4004;S4023</NoWarn>
