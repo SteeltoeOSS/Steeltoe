@@ -17,7 +17,7 @@ namespace Steeltoe.Security.Authorization.Certificate;
 public static class CertificateServiceCollectionExtensions
 {
     /// <summary>
-    /// Add necessary components for server-side authorization of client certificates.
+    /// Adds the necessary components for server-side authorization of client certificates.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -38,7 +38,7 @@ public static class CertificateServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add a named <see cref="HttpClient" /> and necessary components for finding client certificates and attaching to outbound requests.
+    /// Adds a named <see cref="HttpClient" /> and the necessary components for finding client certificates and attaching them to outbound requests.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.

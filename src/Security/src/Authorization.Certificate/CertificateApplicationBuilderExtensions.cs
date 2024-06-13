@@ -11,7 +11,7 @@ namespace Steeltoe.Security.Authorization.Certificate;
 public static class CertificateApplicationBuilderExtensions
 {
     /// <summary>
-    /// Enable certificate and header forwarding, along with ASP.NET Core authentication and authorization middlewares. Sets ForwardedHeaders to
+    /// Enables certificate and header forwarding, along with ASP.NET Core authentication and authorization middlewares. Sets ForwardedHeaders to
     /// <see cref="ForwardedHeaders.XForwardedProto" />.
     /// </summary>
     /// <param name="applicationBuilder">
@@ -23,7 +23,7 @@ public static class CertificateApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Enable certificate and header forwarding, along with ASP.NET Core authentication and authorization middlewares.
+    /// Enables certificate and header forwarding, along with ASP.NET Core authentication and authorization middlewares.
     /// </summary>
     /// <param name="applicationBuilder">
     /// The <see cref="IApplicationBuilder" />.

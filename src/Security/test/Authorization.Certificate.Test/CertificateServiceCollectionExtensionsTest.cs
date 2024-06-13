@@ -35,14 +35,16 @@ public sealed class CertificateServiceCollectionExtensionsTest
 
     private static IHostBuilder GetHostBuilder()
     {
-        return new HostBuilder().ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate())
-            .ConfigureServices(services => services.AddCertificateAuthorizationClient()).ConfigureWebHost(webBuilder =>
-            {
-                webBuilder.Configure(_ =>
-                {
-                });
+        var hostBuilder = new HostBuilder();
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate());
+        hostBuilder.ConfigureServices(services => services.AddCertificateAuthorizationClient());
 
-                webBuilder.UseTestServer();
-            });
+        hostBuilder.ConfigureWebHost(webBuilder =>
+        {
+            webBuilder.Configure(HostingHelpers.EmptyAction);
+            webBuilder.UseTestServer();
+        });
+
+        return hostBuilder;
     }
 }

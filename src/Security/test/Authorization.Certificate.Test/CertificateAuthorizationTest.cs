@@ -105,8 +105,14 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
 
     private IHostBuilder GetHostBuilder()
     {
-        return new HostBuilder().ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate(fixture.ServerOrgId, fixture.ServerSpaceId))
-            .ConfigureWebHostDefaults(webHost => webHost.UseStartup<TestServerCertificateStartup>()).ConfigureWebHost(webBuilder => webBuilder.UseTestServer());
+    private IHostBuilder GetHostBuilder()
+    {
+        var hostBuilder = new HostBuilder();
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate(fixture.ServerOrgId, fixture.ServerSpaceId));
+        hostBuilder.ConfigureWebHostDefaults(builder => builder.UseStartup<TestServerCertificateStartup>());
+        hostBuilder.ConfigureWebHost(builder => builder.UseTestServer());
+        return hostBuilder;
+    }
     }
 
     private static HttpClient ClientWithCertificate(HttpClient httpClient, X509Certificate certificate)

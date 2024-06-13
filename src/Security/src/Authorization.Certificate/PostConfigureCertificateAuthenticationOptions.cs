@@ -40,13 +40,13 @@ public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigu
 
         if (!string.IsNullOrEmpty(systemCertPath))
         {
-            IEnumerable<X509Certificate2> systemCertificates =
-                Directory.GetFiles(systemCertPath).Select(certificateFilename => new X509Certificate2(certificateFilename));
+            X509Certificate2[] systemCertificates =
+                Directory.GetFiles(systemCertPath).Select(certificateFilename => new X509Certificate2(certificateFilename)).ToArray();
 
-            options.CustomTrustStore.AddRange(systemCertificates.ToArray());
+            options.CustomTrustStore.AddRange(systemCertificates);
         }
 
-        if (appInstanceIdentityOptions.IssuerChain.Any())
+        if (appInstanceIdentityOptions.IssuerChain.Count > 0)
         {
             options.AdditionalChainCertificates.AddRange(appInstanceIdentityOptions.IssuerChain.ToArray());
         }

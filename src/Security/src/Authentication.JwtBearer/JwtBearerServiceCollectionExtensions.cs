@@ -12,7 +12,7 @@ namespace Steeltoe.Security.Authentication.JwtBearer;
 public static class JwtBearerServiceCollectionExtensions
 {
     /// <summary>
-    /// Configure <see cref="JwtBearerOptions" /> for compatibility with UAA-based systems, including Single Sign-On for VMware Tanzu Platform.
+    /// Configures <see cref="JwtBearerOptions" /> for compatibility with UAA-based systems, including Single Sign-On for VMware Tanzu Platform.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
