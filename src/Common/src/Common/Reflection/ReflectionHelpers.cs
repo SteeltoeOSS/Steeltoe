@@ -136,6 +136,8 @@ public static class ReflectionHelpers
     public static IEnumerable<Type> FindTypesWithAttribute<T>(Assembly assembly)
         where T : Attribute
     {
+        ArgumentGuard.NotNull(assembly);
+
         return assembly.GetTypes().Where(type => type.IsDefined(typeof(T)));
     }
 
@@ -209,6 +211,9 @@ public static class ReflectionHelpers
     /// </remarks>
     public static Type FindType(string[] assemblyNames, string[] typeNames)
     {
+        ArgumentGuard.NotNull(assemblyNames);
+        ArgumentGuard.NotNull(typeNames);
+
         foreach (string assemblyName in assemblyNames)
         {
             Assembly assembly = FindAssembly(assemblyName);
@@ -244,6 +249,8 @@ public static class ReflectionHelpers
     /// </returns>
     public static Type FindType(Assembly assembly, string typeName)
     {
+        ArgumentGuard.NotNull(assembly);
+
         try
         {
             return assembly.GetType(typeName);
@@ -306,6 +313,8 @@ public static class ReflectionHelpers
     /// </returns>
     public static PropertyInfo FindProperty(Type type, string propertyName)
     {
+        ArgumentGuard.NotNull(type);
+
         try
         {
             return type.GetProperty(propertyName);
@@ -335,6 +344,8 @@ public static class ReflectionHelpers
     /// </returns>
     public static MethodInfo FindMethod(Type type, string methodName, Type[] parameters = null)
     {
+        ArgumentGuard.NotNull(type);
+
         try
         {
             if (parameters != null)
@@ -369,6 +380,8 @@ public static class ReflectionHelpers
     /// </returns>
     public static object Invoke(MethodBase member, object instance, object[] args)
     {
+        ArgumentGuard.NotNull(member);
+
         try
         {
             return member.Invoke(instance, args);
@@ -426,6 +439,8 @@ public static class ReflectionHelpers
     /// </param>
     public static void TrySetProperty(object obj, string property, object value)
     {
+        ArgumentGuard.NotNull(obj);
+
         PropertyInfo prop = obj.GetType().GetProperty(property, BindingFlags.Public | BindingFlags.Instance);
 
         if (prop != null && prop.CanWrite)

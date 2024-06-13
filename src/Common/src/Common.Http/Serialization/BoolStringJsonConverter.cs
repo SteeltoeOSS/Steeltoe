@@ -17,6 +17,8 @@ public sealed class BoolStringJsonConverter : JsonConverter<bool>
 
     public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
     {
+        ArgumentGuard.NotNull(writer);
+
 #pragma warning disable S4040 // Strings should be normalized to uppercase
         writer.WriteStringValue(value.ToString(CultureInfo.InvariantCulture).ToLowerInvariant());
 #pragma warning restore S4040 // Strings should be normalized to uppercase

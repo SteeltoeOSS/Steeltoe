@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Steeltoe.Common;
-using Steeltoe.Security.Authentication.Shared;
 
 namespace Steeltoe.Security.Authentication.OpenIdConnect;
 
@@ -16,14 +15,19 @@ internal sealed class PostConfigureOpenIdConnectOptions : IPostConfigureOptions<
 {
     // The ClaimsIdentity is built off the id_token, but scopes are returned in the access_token.
     // Identify scopes not already present as claims and add them to the ClaimsIdentity
-    private static readonly Func<TokenValidatedContext, Task> MapScopesToClaims = tokenValidatedContext =>
+    private static Task MapScopesToClaimsAsync(TokenValidatedContext context)
     {
-        if (tokenValidatedContext.Principal?.Identity is not ClaimsIdentity claimsIdentity)
+        if (context.Principal?.Identity is not ClaimsIdentity claimsIdentity)
         {
-            return Task.FromResult(1);
+            return Task.CompletedTask;
         }
 
-        string scopes = tokenValidatedContext.TokenEndpointResponse?.Scope ?? string.Empty;
+        string? scopes = context.TokenEndpointResponse?.Scope;
+
+        if (scopes == null)
+        {
+            return Task.CompletedTask;
+        }
 
         IEnumerable<Claim> claimsFromScopes = scopes.Split(' ')
             .Where(scope => !claimsIdentity.Claims.Any(claim => claim.Type == "scope" && claim.Value == scope))
@@ -31,15 +35,14 @@ internal sealed class PostConfigureOpenIdConnectOptions : IPostConfigureOptions<
 
         claimsIdentity.AddClaims(claimsFromScopes);
 
-        return Task.FromResult(0);
-    };
+        return Task.CompletedTask;
+    }
 
     public void PostConfigure(string? name, OpenIdConnectOptions options)
     {
-        ArgumentGuard.NotNull(name);
         ArgumentGuard.NotNull(options);
 
-        options.Events.OnTokenValidated = MapScopesToClaims;
+        options.Events.OnTokenValidated = MapScopesToClaimsAsync;
 
         options.ResponseType = OpenIdConnectResponseType.Code;
         options.SignInScheme ??= CookieAuthenticationDefaults.AuthenticationScheme;

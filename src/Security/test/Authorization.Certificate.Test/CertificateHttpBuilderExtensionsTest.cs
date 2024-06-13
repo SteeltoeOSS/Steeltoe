@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common.Certificate;
+using Steeltoe.Common.Certificates;
 using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
-public sealed class CertificateServiceCollectionExtensionsTest
+public sealed class CertificateHttpBuilderExtensionsTest
 {
     [Fact]
     public async Task AddCertificateAuthorizationClient_AddsNamedHttpClientWithCertificate()
@@ -25,7 +25,7 @@ public sealed class CertificateServiceCollectionExtensionsTest
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         using IHost host = await GetHostBuilder().StartAsync();
         var factory = host.Services.GetRequiredService<IHttpClientFactory>();
-        HttpClient client = factory.CreateClient(CertificateAuthorizationDefaults.HttpClientName);
+        HttpClient client = factory.CreateClient("test");
 
         client.Should().NotBeNull();
         client.DefaultRequestHeaders.Contains("X-Client-Cert").Should().BeTrue();
@@ -37,7 +37,7 @@ public sealed class CertificateServiceCollectionExtensionsTest
     {
         var hostBuilder = new HostBuilder();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate());
-        hostBuilder.ConfigureServices(services => services.AddCertificateAuthorizationClient());
+        hostBuilder.ConfigureServices(services => services.AddHttpClient("test").AddClientCertificateForAppInstance());
 
         hostBuilder.ConfigureWebHost(webBuilder =>
         {

@@ -6,6 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
-public sealed class SameOrgRequirement : IAuthorizationRequirement
+internal sealed class SameOrgRequirement : IAuthorizationRequirement
 {
 }

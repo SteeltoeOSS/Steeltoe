@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Configuration;
 
-namespace Steeltoe.Common.Certificate;
+namespace Steeltoe.Common.Certificates;
 
 internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {

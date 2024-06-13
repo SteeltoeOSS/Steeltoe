@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>ASP.NET Core middleware that enables an application to support authorization via client certificates.</Description>
+    <Description>This package provides support for authorization with client certificates.</Description>
     <PackageTags>aspnetcore;authorization;security;x509;certificate;mutualtls</PackageTags>
     <IsPackable>true</IsPackable>
     <Nullable>enable</Nullable>
@@ -14,6 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common.Certificate\Steeltoe.Common.Certificate.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.Certificates\Steeltoe.Common.Certificates.csproj" />
   </ItemGroup>
 </Project>

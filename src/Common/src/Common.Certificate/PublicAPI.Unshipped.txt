@@ -1,7 +1,0 @@
-#nullable enable
-static Steeltoe.Common.Certificate.CertificateConfigurationExtensions.AddAppInstanceIdentityCertificate(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Common.Certificate.CertificateConfigurationExtensions.AddAppInstanceIdentityCertificate(this Microsoft.Extensions.Configuration.IConfigurationBuilder! builder, System.Guid? organizationId, System.Guid? spaceId) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
-static Steeltoe.Common.Certificate.CertificateServiceCollectionExtensions.ConfigureCertificateOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! certificateName) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Common.Certificate.CertificateServiceCollectionExtensions.ConfigureCertificateOptions(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! certificateName, Microsoft.Extensions.FileProviders.IFileProvider? fileProvider) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-Steeltoe.Common.Certificate.CertificateConfigurationExtensions
-Steeltoe.Common.Certificate.CertificateServiceCollectionExtensions

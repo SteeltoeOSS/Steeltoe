@@ -6,7 +6,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.Common.Certificate.Test;
+namespace Steeltoe.Common.Certificates.Test;
 
 public sealed class CertificateConfigurationExtensionsTest
 {

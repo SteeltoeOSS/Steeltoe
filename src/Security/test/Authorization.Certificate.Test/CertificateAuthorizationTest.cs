@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common.Certificate;
+using Steeltoe.Common.Certificates;
 using Steeltoe.Common.TestResources;
 using Xunit;
 
@@ -20,7 +20,7 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
     {
         using IHost host = await GetHostBuilder().StartAsync();
 
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationDefaults.SameSpaceAuthorizationPolicy}");
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
         HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -31,7 +31,7 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
     {
         using IHost host = await GetHostBuilder().StartAsync();
 
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationDefaults.SameOrganizationAuthorizationPolicy}");
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
         HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch);
         HttpResponseMessage response = await httpClient.GetAsync(requestUri);
 
@@ -43,7 +43,7 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
     {
         using IHost host = await GetHostBuilder().StartAsync();
 
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationDefaults.SameOrganizationAuthorizationPolicy}");
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
         HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch).GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -54,7 +54,7 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
     {
         using IHost host = await GetHostBuilder().StartAsync();
 
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationDefaults.SameSpaceAuthorizationPolicy}");
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
         HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch).GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -65,7 +65,7 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
     {
         using IHost host = await GetHostBuilder().StartAsync();
 
-        var requestUri = new Uri($"http://localhost/{CertificateAuthorizationDefaults.SameSpaceAuthorizationPolicy}");
+        var requestUri = new Uri($"http://localhost/{CertificateAuthorizationPolicies.SameSpace}");
         HttpResponseMessage response = await host.GetTestClient().GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -80,7 +80,7 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
         using var caScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", Path.Join(LocalCertificateWriter.AppBasePath, "root_certificates"));
         using IHost host = await GetHostBuilder().StartAsync();
 
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationDefaults.SameSpaceAuthorizationPolicy}");
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
         HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.FromDiego).GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -96,7 +96,7 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
 
         using IHost host = await GetHostBuilder().StartAsync();
 
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationDefaults.SameOrganizationAuthorizationPolicy}");
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
         HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.FromDiego);
         HttpResponseMessage response = await httpClient.GetAsync(requestUri);
 
@@ -105,14 +105,11 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
 
     private IHostBuilder GetHostBuilder()
     {
-    private IHostBuilder GetHostBuilder()
-    {
         var hostBuilder = new HostBuilder();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate(fixture.ServerOrgId, fixture.ServerSpaceId));
         hostBuilder.ConfigureWebHostDefaults(builder => builder.UseStartup<TestServerCertificateStartup>());
         hostBuilder.ConfigureWebHost(builder => builder.UseTestServer());
         return hostBuilder;
-    }
     }
 
     private static HttpClient ClientWithCertificate(HttpClient httpClient, X509Certificate certificate)

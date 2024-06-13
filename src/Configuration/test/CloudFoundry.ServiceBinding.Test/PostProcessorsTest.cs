@@ -269,11 +269,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         {
             Tuple.Create("credentials:auth_domain", "test-domain"),
             Tuple.Create("credentials:client_id", "test-id"),
-            Tuple.Create("credentials:client_secret", "test-secret"),
-
-            // these are included in bindings, but not currently mapped:
-            Tuple.Create("credentials:grant_types:0", "authorization_code"),
-            Tuple.Create("credentials:grant_types:1", "client_credentials")
+            Tuple.Create("credentials:client_secret", "test-secret")
         };
 
         Dictionary<string, string?> configurationData =
@@ -285,9 +281,10 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
         foreach (string scheme in IdentityCloudFoundryPostProcessor.AuthenticationSchemes)
         {
-            configurationData[$"{IdentityCloudFoundryPostProcessor.AuthenticationConfigurationKeyPrefix}:{scheme}:Authority"].Should().Be("test-domain");
-            configurationData[$"{IdentityCloudFoundryPostProcessor.AuthenticationConfigurationKeyPrefix}:{scheme}:clientId"].Should().Be("test-id");
-            configurationData[$"{IdentityCloudFoundryPostProcessor.AuthenticationConfigurationKeyPrefix}:{scheme}:clientSecret"].Should().Be("test-secret");
+            string keyPrefix = $"{IdentityCloudFoundryPostProcessor.AuthenticationConfigurationKeyPrefix}:{scheme}";
+            configurationData[$"{keyPrefix}:Authority"].Should().Be("test-domain");
+            configurationData[$"{keyPrefix}:ClientId"].Should().Be("test-id");
+            configurationData[$"{keyPrefix}:ClientSecret"].Should().Be("test-secret");
         }
     }
 }

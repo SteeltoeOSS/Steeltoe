@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
 
-namespace Steeltoe.Common.Certificate;
+namespace Steeltoe.Common.Certificates;
 
 public static class CertificateConfigurationExtensions
 {
@@ -92,13 +92,15 @@ public static class CertificateConfigurationExtensions
             writer.Write(organizationId.Value, spaceId.Value);
 
             Environment.SetEnvironmentVariable("CF_SYSTEM_CERT_PATH",
-                Path.Combine(Directory.GetParent(LocalCertificateWriter.AppBasePath)!.ToString(), "GeneratedCertificates"));
+                Path.Combine(Directory.GetParent(LocalCertificateWriter.AppBasePath)!.ToString(), LocalCertificateWriter.CertificateDirectoryName));
 
             Environment.SetEnvironmentVariable("CF_INSTANCE_CERT",
-                Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"));
+                Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
+                    $"{writer.CertificateFilenamePrefix}Cert.pem"));
 
             Environment.SetEnvironmentVariable("CF_INSTANCE_KEY",
-                Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"));
+                Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
+                    $"{writer.CertificateFilenamePrefix}Key.pem"));
         }
 
         string? certificateFile = Environment.GetEnvironmentVariable("CF_INSTANCE_CERT");

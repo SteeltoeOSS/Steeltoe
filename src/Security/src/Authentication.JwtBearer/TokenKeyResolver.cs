@@ -11,9 +11,9 @@ namespace Steeltoe.Security.Authentication.JwtBearer;
 
 internal sealed class TokenKeyResolver
 {
+    private static readonly MediaTypeWithQualityHeaderValue AcceptHeader = new("application/json");
     private readonly HttpClient _httpClient;
-    private readonly Uri _authority;
-    private readonly MediaTypeWithQualityHeaderValue _acceptHeader = new("application/json");
+    private readonly Uri _authorityUri;
 
     internal static ConcurrentDictionary<string, SecurityKey> ResolvedSecurityKeysById { get; } = new();
 
@@ -27,7 +27,7 @@ internal sealed class TokenKeyResolver
             authority += '/';
         }
 
-        _authority = new Uri($"{authority}token_keys");
+        _authorityUri = new Uri($"{authority}token_keys");
         _httpClient = httpClient;
     }
 
@@ -38,6 +38,8 @@ internal sealed class TokenKeyResolver
             return [resolved];
         }
 
+        // can't be async all the way until updates are complete in Microsoft libraries
+        // https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/468
         JsonWebKeySet? keySet = FetchKeySetAsync(default).GetAwaiter().GetResult();
 
         if (keySet != null)
@@ -58,8 +60,8 @@ internal sealed class TokenKeyResolver
 
     internal async Task<JsonWebKeySet?> FetchKeySetAsync(CancellationToken cancellationToken)
     {
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, _authority);
-        requestMessage.Headers.Accept.Add(_acceptHeader);
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, _authorityUri);
+        requestMessage.Headers.Accept.Add(AcceptHeader);
 
         HttpResponseMessage response = await _httpClient.SendAsync(requestMessage, cancellationToken);
 

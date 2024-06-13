@@ -85,6 +85,8 @@ public class WindowsNetworkFileShare : IDisposable
     /// </param>
     public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMultipleProviderRouter multipleProviderRouter = null)
     {
+        ArgumentGuard.NotNull(credentials);
+
         _multipleProviderRouter = multipleProviderRouter ?? new MultipleProviderRouter();
 
         _networkName = networkName;
@@ -135,6 +137,8 @@ public class WindowsNetworkFileShare : IDisposable
     /// </returns>
     public int GetLastError(out int error, out StringBuilder errorBuf, int errorBufSize, out StringBuilder nameBuf, int nameBufSize)
     {
+        ArgumentGuard.NotNull(_multipleProviderRouter);
+
         return _multipleProviderRouter.GetLastError(out error, out errorBuf, errorBufSize, out nameBuf, nameBufSize);
     }
 
@@ -172,6 +176,8 @@ public class WindowsNetworkFileShare : IDisposable
     /// </param>
     protected virtual void Dispose(bool disposing)
     {
+        ArgumentGuard.NotNull(_multipleProviderRouter);
+
         // With the current design, it's not possible to disconnect the network share from the finalizer,
         // because the _mpr instance may have already been garbage-collected.
         if (disposing)

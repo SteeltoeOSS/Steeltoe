@@ -29,14 +29,15 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
         serviceCollection.AddSingleton<IConfiguration>(configuration);
         serviceCollection.AddAuthentication().AddOpenIdConnect();
 
-        OpenIdConnectOptions openIdConnectOptions = serviceCollection.BuildServiceProvider().GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
-            .Get(OpenIdConnectDefaults.AuthenticationScheme);
+        using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>();
+        OpenIdConnectOptions options = optionsMonitor.Get(OpenIdConnectDefaults.AuthenticationScheme);
 
         var postConfigurer = new PostConfigureOpenIdConnectOptions();
 
-        postConfigurer.PostConfigure(OpenIdConnectDefaults.AuthenticationScheme, openIdConnectOptions);
+        postConfigurer.PostConfigure(OpenIdConnectDefaults.AuthenticationScheme, options);
 
-        openIdConnectOptions.TokenValidationParameters.ValidAudience.Should().Be("testClient");
+        options.TokenValidationParameters.ValidAudience.Should().Be("testClient");
     }
 
     [Fact]
@@ -74,14 +75,15 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
         serviceCollection.AddAuthentication().AddOpenIdConnect();
         serviceCollection.ConfigureOpenIdConnectForCloudFoundry();
 
-        OpenIdConnectOptions openIdConnectOptions = serviceCollection.BuildServiceProvider().GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>()
-            .Get(OpenIdConnectDefaults.AuthenticationScheme);
+        using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>();
+        OpenIdConnectOptions options = optionsMonitor.Get(OpenIdConnectDefaults.AuthenticationScheme);
 
-        openIdConnectOptions.Authority.Should().Be("https://steeltoe.login.sys.cf-app.com");
-        openIdConnectOptions.MetadataAddress.Should().Be("https://steeltoe.login.sys.cf-app.com/.well-known/openid-configuration");
-        openIdConnectOptions.RequireHttpsMetadata.Should().BeTrue();
-        openIdConnectOptions.TokenValidationParameters.ValidIssuer.Should().Be("https://steeltoe.login.sys.cf-app.com/oauth/token");
-        openIdConnectOptions.TokenValidationParameters.IssuerSigningKeyResolver.Should().NotBeNull();
-        openIdConnectOptions.TokenValidationParameters.ValidAudience.Should().Be("4e6f8e34-f42b-440e-a042-f2b13c1d5bed");
+        options.Authority.Should().Be("https://steeltoe.login.sys.cf-app.com");
+        options.MetadataAddress.Should().Be("https://steeltoe.login.sys.cf-app.com/.well-known/openid-configuration");
+        options.RequireHttpsMetadata.Should().BeTrue();
+        options.TokenValidationParameters.ValidIssuer.Should().Be("https://steeltoe.login.sys.cf-app.com/oauth/token");
+        options.TokenValidationParameters.IssuerSigningKeyResolver.Should().NotBeNull();
+        options.TokenValidationParameters.ValidAudience.Should().Be("4e6f8e34-f42b-440e-a042-f2b13c1d5bed");
     }
 }

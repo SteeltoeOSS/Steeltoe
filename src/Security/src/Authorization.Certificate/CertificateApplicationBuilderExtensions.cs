@@ -19,7 +19,7 @@ public static class CertificateApplicationBuilderExtensions
     /// </param>
     public static IApplicationBuilder UseCertificateAuthorization(this IApplicationBuilder applicationBuilder)
     {
-        return applicationBuilder.UseCertificateAuthorization(new ForwardedHeadersOptions());
+        return UseCertificateAuthorization(applicationBuilder, new ForwardedHeadersOptions());
     }
 
     /// <summary>
@@ -28,17 +28,17 @@ public static class CertificateApplicationBuilderExtensions
     /// <param name="applicationBuilder">
     /// The <see cref="IApplicationBuilder" />.
     /// </param>
-    /// <param name="forwardedHeaders">
+    /// <param name="options">
     /// Custom header forwarding policy. <see cref="ForwardedHeaders.XForwardedProto" /> is added to your <see cref="ForwardedHeadersOptions" />.
     /// </param>
-    public static IApplicationBuilder UseCertificateAuthorization(this IApplicationBuilder applicationBuilder, ForwardedHeadersOptions forwardedHeaders)
+    public static IApplicationBuilder UseCertificateAuthorization(this IApplicationBuilder applicationBuilder, ForwardedHeadersOptions options)
     {
         ArgumentGuard.NotNull(applicationBuilder);
-        ArgumentGuard.NotNull(forwardedHeaders);
+        ArgumentGuard.NotNull(options);
 
-        forwardedHeaders.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
+        options.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
 
-        applicationBuilder.UseForwardedHeaders(forwardedHeaders);
+        applicationBuilder.UseForwardedHeaders(options);
         applicationBuilder.UseCertificateForwarding();
         applicationBuilder.UseAuthentication();
         applicationBuilder.UseAuthorization();

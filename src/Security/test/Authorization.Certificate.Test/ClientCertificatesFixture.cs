@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Certificate;
+using Steeltoe.Common.Certificates;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
-public sealed class ClientCertificatesFixture : IDisposable
+public sealed class ClientCertificatesFixture
 {
     private LocalCertificateWriter CertificateWriter { get; } = new();
 
@@ -23,9 +23,5 @@ public sealed class ClientCertificatesFixture : IDisposable
 
         CertificateWriter.CertificateFilenamePrefix = "OrgMatch";
         CertificateWriter.Write(ServerOrgId, Guid.NewGuid());
-    }
-
-    public void Dispose()
-    {
     }
 }

@@ -6,8 +6,8 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Common.Certificate")]
-[assembly: InternalsVisibleTo("Steeltoe.Common.Certificate.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Common.Certificates")]
+[assembly: InternalsVisibleTo("Steeltoe.Common.Certificates.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.EntityFrameworkCore")]

@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <Nullable>enable</Nullable>
-    <RootNamespace>Steeltoe.Common.Certificate.Test</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -14,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Common.Certificate\Steeltoe.Common.Certificate.csproj" />
+    <ProjectReference Include="..\..\src\Common.Certificates\Steeltoe.Common.Certificates.csproj" />
     <ProjectReference Include="..\..\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
   </ItemGroup>
 

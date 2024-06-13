@@ -13,25 +13,12 @@ public sealed class TestServerCertificateStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCertificateAuthorizationServer();
-
         services.AddAuthentication().AddCertificate(options =>
         {
             options.ValidateValidityPeriod = false;
         });
 
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy(CertificateAuthorizationDefaults.SameOrganizationAuthorizationPolicy, authorizationPolicyBuilder =>
-            {
-                authorizationPolicyBuilder.RequireSameOrg();
-            });
-
-            options.AddPolicy(CertificateAuthorizationDefaults.SameSpaceAuthorizationPolicy, authorizationPolicyBuilder =>
-            {
-                authorizationPolicyBuilder.RequireSameSpace();
-            });
-        });
+        services.AddAuthorizationBuilder().AddAppInstanceIdentityCertificate();
     }
 
     public void Configure(IApplicationBuilder app, IAuthorizationService authorizationService)

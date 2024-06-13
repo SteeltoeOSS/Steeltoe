@@ -1,12 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
-    <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -15,5 +10,4 @@
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry.ServiceBinding\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj" />
     <ProjectReference Include="..\..\src\Authentication.OpenIdConnect\Steeltoe.Security.Authentication.OpenIdConnect.csproj" />
   </ItemGroup>
-
 </Project>

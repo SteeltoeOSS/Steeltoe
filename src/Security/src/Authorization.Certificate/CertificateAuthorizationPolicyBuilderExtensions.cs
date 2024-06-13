@@ -7,7 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
-public static class CertificateAuthorizationPolicyBuilderExtensions
+internal static class CertificateAuthorizationPolicyBuilderExtensions
 {
     public static AuthorizationPolicyBuilder RequireSameOrg(this AuthorizationPolicyBuilder builder)
     {

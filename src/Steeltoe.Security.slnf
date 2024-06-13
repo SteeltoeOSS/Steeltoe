@@ -3,7 +3,7 @@
     "path": "Steeltoe.All.sln",
     "projects": [
       "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
-      "Common\\src\\Common.Certificate\\Steeltoe.Common.Certificate.csproj",
+      "Common\\src\\Common.Certificates\\Steeltoe.Common.Certificates.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
       "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
       "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",

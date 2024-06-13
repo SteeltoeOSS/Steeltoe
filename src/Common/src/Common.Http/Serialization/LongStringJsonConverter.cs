@@ -17,6 +17,8 @@ public class LongStringJsonConverter : JsonConverter<long>
 
     public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
     {
+        ArgumentGuard.NotNull(writer);
+
         writer.WriteStringValue(value.ToString(CultureInfo.InvariantCulture));
     }
 }

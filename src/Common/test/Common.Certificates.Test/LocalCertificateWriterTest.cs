@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Xunit;
 
-namespace Steeltoe.Common.Certificate.Test;
+namespace Steeltoe.Common.Certificates.Test;
 
 public sealed class LocalCertificateWriterTest
 {
@@ -23,10 +23,10 @@ public sealed class LocalCertificateWriterTest
         var rootCertificate = new X509Certificate2(certificateWriter.RootCaPfxPath);
         var intermediateCertificate = new X509Certificate2(certificateWriter.IntermediatePfxPath);
 
-        rsa.ImportFromPem(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem")));
+        rsa.ImportFromPem(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeAppInstanceKey.pem")));
 
         X509Certificate2 certificate =
-            new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
+            new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeAppInstanceCert.pem")))
                 .CopyWithPrivateKey(rsa);
 
         rootCertificate.Should().NotBeNull();

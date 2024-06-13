@@ -36,9 +36,9 @@ internal sealed class ApplicationInstanceCertificate
         InstanceId = instanceId;
     }
 
-    public static bool TryParse(X509Certificate2 certificate, [NotNullWhen(true)] out ApplicationInstanceCertificate? outInstanceCertificate)
+    public static bool TryParse(X509Certificate2 certificate, [NotNullWhen(true)] out ApplicationInstanceCertificate? instanceCertificate)
     {
-        outInstanceCertificate = null;
+        instanceCertificate = null;
 
         Match instanceMatch = CloudFoundryInstanceCertificateSubjectRegex.Match(certificate.Subject);
 
@@ -49,7 +49,7 @@ internal sealed class ApplicationInstanceCertificate
 
         if (instanceMatch.Success)
         {
-            outInstanceCertificate = new ApplicationInstanceCertificate(instanceMatch.Groups["org"].Value, instanceMatch.Groups["space"].Value,
+            instanceCertificate = new ApplicationInstanceCertificate(instanceMatch.Groups["org"].Value, instanceMatch.Groups["space"].Value,
                 instanceMatch.Groups["app"].Value, instanceMatch.Groups["instance"].Value);
         }
 

@@ -72,14 +72,15 @@ public sealed class PostConfigureJwtBearerOptionsTest
         serviceCollection.ConfigureJwtBearerForCloudFoundry();
         serviceCollection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 
-        JwtBearerOptions jwtBearerOptions = serviceCollection.BuildServiceProvider().GetRequiredService<IOptionsMonitor<JwtBearerOptions>>()
-            .Get(JwtBearerDefaults.AuthenticationScheme);
+        using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>();
+        JwtBearerOptions options = optionsMonitor.Get(JwtBearerDefaults.AuthenticationScheme);
 
-        jwtBearerOptions.Authority.Should().Be("https://steeltoe.login.sys.cf-app.com");
-        jwtBearerOptions.MetadataAddress.Should().Be("https://steeltoe.login.sys.cf-app.com/.well-known/openid-configuration");
-        jwtBearerOptions.RequireHttpsMetadata.Should().BeTrue();
-        jwtBearerOptions.TokenValidationParameters.ValidIssuer.Should().Be("https://steeltoe.login.sys.cf-app.com/oauth/token");
-        jwtBearerOptions.TokenValidationParameters.IssuerSigningKeyResolver.Should().NotBeNull();
-        jwtBearerOptions.TokenValidationParameters.ValidAudiences.Should().Contain("4e6f8e34-f42b-440e-a042-f2b13c1d5bed");
+        options.Authority.Should().Be("https://steeltoe.login.sys.cf-app.com");
+        options.MetadataAddress.Should().Be("https://steeltoe.login.sys.cf-app.com/.well-known/openid-configuration");
+        options.RequireHttpsMetadata.Should().BeTrue();
+        options.TokenValidationParameters.ValidIssuer.Should().Be("https://steeltoe.login.sys.cf-app.com/oauth/token");
+        options.TokenValidationParameters.IssuerSigningKeyResolver.Should().NotBeNull();
+        options.TokenValidationParameters.ValidAudiences.Should().Contain("4e6f8e34-f42b-440e-a042-f2b13c1d5bed");
     }
 }

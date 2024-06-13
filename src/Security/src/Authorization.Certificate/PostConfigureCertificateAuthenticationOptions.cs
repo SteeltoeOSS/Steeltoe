@@ -12,7 +12,7 @@ using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
-public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigureOptions<CertificateAuthenticationOptions>
+internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigureOptions<CertificateAuthenticationOptions>
 {
     private readonly IOptionsMonitor<CertificateOptions> _certificateOptionsMonitor;
     private readonly ILogger<PostConfigureCertificateAuthenticationOptions> _logger;
@@ -21,6 +21,7 @@ public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigu
         ILogger<PostConfigureCertificateAuthenticationOptions> logger)
     {
         ArgumentGuard.NotNull(certificateOptionsMonitor);
+        ArgumentGuard.NotNull(logger);
 
         _certificateOptionsMonitor = certificateOptionsMonitor;
         _logger = logger;
@@ -28,7 +29,6 @@ public sealed class PostConfigureCertificateAuthenticationOptions : IPostConfigu
 
     public void PostConfigure(string? name, CertificateAuthenticationOptions options)
     {
-        ArgumentGuard.NotNull(name);
         ArgumentGuard.NotNull(options);
 
         CertificateOptions appInstanceIdentityOptions = _certificateOptionsMonitor.Get("AppInstanceIdentity");

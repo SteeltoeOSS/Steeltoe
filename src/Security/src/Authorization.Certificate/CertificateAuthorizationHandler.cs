@@ -11,7 +11,7 @@ using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
-public sealed class CertificateAuthorizationHandler : IAuthorizationHandler
+internal sealed class CertificateAuthorizationHandler : IAuthorizationHandler
 {
     private readonly ILogger<CertificateAuthorizationHandler> _logger;
     private ApplicationInstanceCertificate? _applicationInstanceCertificate;
@@ -19,6 +19,7 @@ public sealed class CertificateAuthorizationHandler : IAuthorizationHandler
     public CertificateAuthorizationHandler(IOptionsMonitor<CertificateOptions> certificateOptionsMonitor, ILogger<CertificateAuthorizationHandler> logger)
     {
         ArgumentGuard.NotNull(certificateOptionsMonitor);
+        ArgumentGuard.NotNull(logger);
 
         _logger = logger;
         certificateOptionsMonitor.OnChange(OnCertificateRefresh);
@@ -74,7 +75,7 @@ public sealed class CertificateAuthorizationHandler : IAuthorizationHandler
         }
         else
         {
-            _logger.LogDebug("User has the required claim, but the value doesn't match. Expected {ClaimValue} but got {ClaimType}", claimValue,
+            _logger.LogDebug("User has the required claim, but the value doesn't match. Expected {ExpectedClaimValue} but got {ActualClaimValue}", claimValue,
                 context.User.FindFirstValue(claimType));
         }
     }

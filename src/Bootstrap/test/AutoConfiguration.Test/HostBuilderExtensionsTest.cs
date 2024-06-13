@@ -228,7 +228,7 @@ public sealed class HostBuilderExtensionsTest
     [Fact]
     public void AppInstanceIdentityCertificate_IsAutowired()
     {
-        using IHost host = GetHostForOnly(SteeltoeAssemblyNames.CommonCertificate);
+        using IHost host = GetHostForOnly(SteeltoeAssemblyNames.CommonCertificates);
         var configuration = host.Services.GetRequiredService<IConfiguration>();
 
         configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:CertificateFilePath"].Should().NotBeNull();

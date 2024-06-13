@@ -8,7 +8,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
-namespace Steeltoe.Common.Certificate;
+namespace Steeltoe.Common.Certificates;
 
 internal static class ServiceCollectionExtensions
 {

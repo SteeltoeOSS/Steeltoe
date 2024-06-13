@@ -5,7 +5,7 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Common.Certificate;
+namespace Steeltoe.Common.Certificates;
 
 internal sealed class LocalCertificateWriter
 {
@@ -14,11 +14,13 @@ internal sealed class LocalCertificateWriter
 
     private static readonly string ParentPath = Directory.GetParent(AppBasePath)!.ToString();
 
-    internal string CertificateFilenamePrefix { get; set; } = "SteeltoeInstance";
+    internal static string CertificateDirectoryName => "GeneratedCertificates";
 
-    internal string RootCaPfxPath { get; set; } = Path.Combine(ParentPath, "GeneratedCertificates", "SteeltoeCA.pfx");
+    internal string CertificateFilenamePrefix { get; set; } = "SteeltoeAppInstance";
 
-    internal string IntermediatePfxPath { get; set; } = Path.Combine(ParentPath, "GeneratedCertificates", "SteeltoeIntermediate.pfx");
+    internal string RootCaPfxPath { get; } = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeCA.pfx");
+
+    internal string IntermediatePfxPath { get; } = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeIntermediate.pfx");
 
     public void Write(Guid orgId, Guid spaceId)
     {
@@ -33,9 +35,9 @@ internal sealed class LocalCertificateWriter
         X509Certificate2 caCertificate;
 
         // Create a directory a level above the running project to contain the root and intermediate certificates
-        if (!Directory.Exists(Path.Combine(ParentPath, "GeneratedCertificates")))
+        if (!Directory.Exists(Path.Combine(ParentPath, CertificateDirectoryName)))
         {
-            Directory.CreateDirectory(Path.Combine(ParentPath, "GeneratedCertificates"));
+            Directory.CreateDirectory(Path.Combine(ParentPath, CertificateDirectoryName));
         }
 
         // Create the root certificate if it doesn't already exist (can be shared by multiple applications)
@@ -67,22 +69,33 @@ internal sealed class LocalCertificateWriter
         X509Certificate2 clientCertificate = CreateClientCertificate(subject, intermediateCertificate, subjectAlternativeNameBuilder);
 
         // Create a folder inside the project to store generated certificate files
-        if (!Directory.Exists(Path.Combine(AppBasePath, "GeneratedCertificates")))
+        if (!Directory.Exists(Path.Combine(AppBasePath, CertificateDirectoryName)))
         {
-            Directory.CreateDirectory(Path.Combine(AppBasePath, "GeneratedCertificates"));
+            Directory.CreateDirectory(Path.Combine(AppBasePath, CertificateDirectoryName));
         }
 
 #if NET6_0
-        string chainedCertificateContents = "-----BEGIN CERTIFICATE-----" + Environment.NewLine + Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + Environment.NewLine + "-----END CERTIFICATE-----" + Environment.NewLine + "-----BEGIN CERTIFICATE-----" + Environment.NewLine + Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) + Environment.NewLine + "-----END CERTIFICATE-----" + Environment.NewLine;
+        string chainedCertificateContents = $"""
+            -----BEGIN CERTIFICATE-----
+            {Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks)}
+            -----END CERTIFICATE-----
+            -----BEGIN CERTIFICATE-----
+            {Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks)}
+            -----END CERTIFICATE-----
+            """;
 
-        string keyContents = "-----BEGIN RSA PRIVATE KEY-----" + Environment.NewLine + Convert.ToBase64String(clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) + Environment.NewLine + "-----END RSA PRIVATE KEY-----";
+        string keyContents = $"""
+            -----BEGIN RSA PRIVATE KEY-----
+            {Convert.ToBase64String(clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks)}
+            -----END RSA PRIVATE KEY-----
+            """;
 #else
         string chainedCertificateContents = clientCertificate.ExportCertificatePem() + Environment.NewLine + intermediateCertificate.ExportCertificatePem();
         string keyContents = clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKeyPem();
 #endif
 
-        File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", CertificateFilenamePrefix + "Cert.pem"), chainedCertificateContents);
-        File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", CertificateFilenamePrefix + "Key.pem"), keyContents);
+        File.WriteAllText(Path.Combine(AppBasePath, CertificateDirectoryName, $"{CertificateFilenamePrefix}Cert.pem"), chainedCertificateContents);
+        File.WriteAllText(Path.Combine(AppBasePath, CertificateDirectoryName, $"{CertificateFilenamePrefix}Key.pem"), keyContents);
     }
 
     private static X509Certificate2 CreateRootCertificate(string distinguishedName)

@@ -11,13 +11,6 @@ namespace Steeltoe.Security.Authentication.JwtBearer.Test;
 public sealed class TokenKeyResolverTest
 {
     [Fact]
-    public void Constructor_ThrowsIfOptionsNull()
-    {
-        Assert.Throws<ArgumentNullException>(() => new TokenKeyResolver(null!, new HttpClient()));
-        Assert.Throws<ArgumentNullException>(() => new TokenKeyResolver("someAuthority", null!));
-    }
-
-    [Fact]
     public void ResolveSigningKey_FindsExistingKey()
     {
         // ReSharper disable StringLiteralTypo

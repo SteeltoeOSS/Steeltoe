@@ -6,17 +6,10 @@ using System.Net;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
-namespace Steeltoe.Security.Authentication.Shared.Test;
+namespace Steeltoe.Security.Authentication.OpenIdConnect.Test;
 
 public sealed class TokenKeyResolverTest
 {
-    [Fact]
-    public void Constructor_ThrowsIfOptionsNull()
-    {
-        Assert.Throws<ArgumentNullException>(() => new TokenKeyResolver(null!, new HttpClient()));
-        Assert.Throws<ArgumentNullException>(() => new TokenKeyResolver("someAuthority", null!));
-    }
-
     [Fact]
     public void ResolveSigningKey_FindsExistingKey()
     {
