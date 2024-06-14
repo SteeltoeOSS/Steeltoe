@@ -12,7 +12,7 @@ namespace Steeltoe.Security.Authentication.OpenIdConnect;
 public static class OpenIdConnectServiceCollectionExtensions
 {
     /// <summary>
-    /// Configure <see cref="OpenIdConnectOptions" /> for compatibility with UAA-based systems, including Single Sign-On for VMware Tanzu Application
+    /// Configures <see cref="OpenIdConnectOptions" /> for compatibility with UAA-based systems, including those found in Cloud Foundry
     /// Service.
     /// </summary>
     /// <param name="services">

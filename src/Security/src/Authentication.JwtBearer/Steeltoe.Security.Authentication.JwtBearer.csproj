@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Description>Library for using JWT Bearer tokens with Tanzu</Description>
+    <Description>Library for using JWT Bearer tokens with UAA-based systems, including Cloud Foundry</Description>
     <PackageTags>CloudFoundry;uaa;security;jwt;bearer</PackageTags>
     <IsPackable>true</IsPackable>
     <Nullable>enable</Nullable>
