@@ -6,14 +6,17 @@ namespace Steeltoe.Security.Authorization.Certificate;
 
 /// <summary>
 /// Use this class to refer to authorization policies for use with Cloud Foundry style certificates.
-/// <code>
+/// <example>
+/// <code><![CDATA[
 /// [Authorize(Policy = CertificateAuthorizationPolicies.SameOrganization)]
 /// [HttpGet]
 /// public string AnyAppInTheOrgCanAccess()
 /// {
 ///    return "Certificate is valid, client and server are in the same org.";
 /// }
+/// ]]>
 /// </code>
+/// </example>
 /// </summary>
 public static class CertificateAuthorizationPolicies
 {

@@ -14,7 +14,7 @@ internal sealed class LocalCertificateWriter
 
     private static readonly string ParentPath = Directory.GetParent(AppBasePath)!.ToString();
 
-    internal static string CertificateDirectoryName => "GeneratedCertificates";
+    internal const string CertificateDirectoryName = "GeneratedCertificates";
 
     internal string CertificateFilenamePrefix { get; set; } = "SteeltoeAppInstance";
 

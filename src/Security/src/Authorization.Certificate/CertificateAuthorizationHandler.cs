@@ -28,6 +28,8 @@ internal sealed class CertificateAuthorizationHandler : IAuthorizationHandler
 
     public Task HandleAsync(AuthorizationHandlerContext context)
     {
+        ArgumentGuard.NotNull(context);
+
         HandleCertificateAuthorizationRequirement<SameOrgRequirement>(context, ApplicationClaimTypes.OrganizationId,
             _applicationInstanceCertificate?.OrganizationId);
 

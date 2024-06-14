@@ -15,13 +15,14 @@ namespace Steeltoe.Security.Authorization.Certificate;
 public static class CertificateAuthorizationBuilderExtensions
 {
     /// <summary>
-    /// Adds the necessary components and policies for server-side authorization of application instance identity certificates. <br /><br /> Components
-    /// include <see cref="CertificateOptions" /> named "AppInstanceIdentity" and certificate forwarding.<br /> Secure your endpoints with the included
-    /// authorization polices by referencing <see cref="CertificateAuthorizationPolicies" />.
+    /// Adds the necessary components and policies for server-side authorization of application instance identity certificates.
+    /// <para>
+    /// Components include <see cref="CertificateOptions" /> named "AppInstanceIdentity" and certificate forwarding.
+    /// </para>
+    /// <para>
+    /// Secure your endpoints with the included authorization policies by referencing <see cref="CertificateAuthorizationPolicies" />.
+    /// </para>
     /// </summary>
-    /// <param name="authorizationBuilder">
-    /// The <see cref="AuthorizationBuilder" /> to add services to.
-    /// </param>
     public static AuthorizationBuilder AddAppInstanceIdentityCertificate(this AuthorizationBuilder authorizationBuilder)
     {
         ArgumentGuard.NotNull(authorizationBuilder);
