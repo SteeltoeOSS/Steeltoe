@@ -61,7 +61,7 @@ public static class CertificateConfigurationExtensions
     /// </remarks>
     public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder)
     {
-        return builder.AddAppInstanceIdentityCertificate(null, null);
+        return AddAppInstanceIdentityCertificate(builder, null, null);
     }
 
     /// <summary>
@@ -83,6 +83,8 @@ public static class CertificateConfigurationExtensions
     /// </remarks>
     public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder, Guid? organizationId, Guid? spaceId)
     {
+        ArgumentGuard.NotNull(builder);
+
         if (!Platform.IsCloudFoundry)
         {
             organizationId ??= Guid.NewGuid();

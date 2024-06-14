@@ -10,7 +10,7 @@ internal sealed class MySqlCloudFoundryPostProcessor : CloudFoundryPostProcessor
 
     public override void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
-        foreach (string key in FilterKeys(configurationData, BindingType))
+        foreach (string key in FilterKeys(configurationData, BindingType, KeyFilterSources.Tag))
         {
             var mapper = ServiceBindingMapper.Create(configurationData, key, BindingType);
 

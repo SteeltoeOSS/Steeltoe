@@ -11,14 +11,23 @@ public abstract class BasePostProcessorsTest
     protected const string TestBindingName = "test-name";
     protected const string TestProviderName = "test-provider";
 
-    protected Dictionary<string, string?> GetConfigurationData(string bindingType, string bindingProvider, string bindingName,
+    protected Dictionary<string, string?> GetConfigurationData(string bindingProvider, string bindingName, string[] tags, string? label,
         params Tuple<string, string>[] secrets)
     {
         var dictionary = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
         {
-            [$"vcap:services:{bindingProvider}:0:tags:0"] = bindingType,
             [$"vcap:services:{bindingProvider}:0:name"] = bindingName
         };
+
+        for (int index = 0; index < tags.Length; index++)
+        {
+            dictionary[$"vcap:services:{bindingProvider}:0:tags:{index}"] = tags[index];
+        }
+
+        if (!string.IsNullOrEmpty(label))
+        {
+            dictionary[$"vcap:services:{bindingProvider}:0:label"] = label;
+        }
 
         foreach (Tuple<string, string> tuple in secrets)
         {

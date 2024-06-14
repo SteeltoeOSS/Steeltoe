@@ -12,7 +12,7 @@
       "Common\\test\\Common.Hosting.Test\\Steeltoe.Common.Hosting.Test.csproj",
       "Common\\test\\Common.Http.Test\\Steeltoe.Common.Http.Test.csproj",
       "Common\\test\\Common.Net.Test\\Steeltoe.Common.Net.Test.csproj",
-      "Common\\test\\Common.Certificate.Test\\Steeltoe.Common.Certificate.Test.csproj",
+      "Common\\test\\Common.Certificates.Test\\Steeltoe.Common.Certificates.Test.csproj",
       "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
       "Common\\test\\Common.Test\\Steeltoe.Common.Test.csproj",
       "Common\\test\\Common.Utils.Test\\Steeltoe.Common.Utils.Test.csproj"

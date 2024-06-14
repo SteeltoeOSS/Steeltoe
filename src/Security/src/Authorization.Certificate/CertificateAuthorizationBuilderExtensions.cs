@@ -23,6 +23,9 @@ public static class CertificateAuthorizationBuilderExtensions
     /// Secure your endpoints with the included authorization policies by referencing <see cref="CertificateAuthorizationPolicies" />.
     /// </para>
     /// </summary>
+    /// <param name="authorizationBuilder">
+    /// The <see cref="AuthorizationBuilder" />.
+    /// </param>
     public static AuthorizationBuilder AddAppInstanceIdentityCertificate(this AuthorizationBuilder authorizationBuilder)
     {
         ArgumentGuard.NotNull(authorizationBuilder);

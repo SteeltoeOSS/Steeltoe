@@ -26,7 +26,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string?> configurationData =
-            GetConfigurationData(MySqlCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+            GetConfigurationData(TestProviderName, TestBindingName, [MySqlCloudFoundryPostProcessor.BindingType], null, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
@@ -58,7 +58,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string?> configurationData =
-            GetConfigurationData(PostgreSqlCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+            GetConfigurationData(TestProviderName, TestBindingName, [PostgreSqlCloudFoundryPostProcessor.BindingType], null, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
@@ -91,7 +91,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string?> configurationData =
-            GetConfigurationData(RabbitMQCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+            GetConfigurationData(TestProviderName, TestBindingName, [RabbitMQCloudFoundryPostProcessor.BindingType], null, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
@@ -119,7 +119,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string?> configurationData =
-            GetConfigurationData(RedisCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+            GetConfigurationData(TestProviderName, TestBindingName, [RedisCloudFoundryPostProcessor.BindingType], null, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
@@ -144,7 +144,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string?> configurationData =
-            GetConfigurationData(RedisCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+            GetConfigurationData(TestProviderName, TestBindingName, [RedisCloudFoundryPostProcessor.BindingType], null, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
@@ -172,7 +172,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string?> configurationData =
-            GetConfigurationData(SqlServerCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+            GetConfigurationData(TestProviderName, TestBindingName, [SqlServerCloudFoundryPostProcessor.BindingType], null, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
@@ -196,7 +196,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string?> configurationData =
-            GetConfigurationData(MongoDbCloudFoundryPostProcessor.BindingType, "csb-azure-mongodb", TestBindingName, secrets);
+            GetConfigurationData("csb-azure-mongodb", TestBindingName, [MongoDbCloudFoundryPostProcessor.BindingType], null, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
@@ -220,7 +220,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string?> configurationData =
-            GetConfigurationData(CosmosDbCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+            GetConfigurationData(TestProviderName, TestBindingName, [CosmosDbCloudFoundryPostProcessor.BindingType], null, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
@@ -246,7 +246,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string?> configurationData =
-            GetConfigurationData(EurekaCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+            GetConfigurationData(TestProviderName, TestBindingName, [EurekaCloudFoundryPostProcessor.BindingType], null, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 
@@ -273,7 +273,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         };
 
         Dictionary<string, string?> configurationData =
-            GetConfigurationData(IdentityCloudFoundryPostProcessor.BindingType, TestProviderName, TestBindingName, secrets);
+            GetConfigurationData(TestProviderName, TestBindingName, [], IdentityCloudFoundryPostProcessor.BindingType, secrets);
 
         PostProcessorConfigurationProvider provider = GetConfigurationProvider(postProcessor);
 

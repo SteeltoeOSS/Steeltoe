@@ -9,18 +9,18 @@ namespace Steeltoe.Common.Certificates;
 
 internal sealed class LocalCertificateWriter
 {
+    internal const string CertificateDirectoryName = "GeneratedCertificates";
+
     internal static readonly string AppBasePath =
         AppContext.BaseDirectory[..AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin", StringComparison.Ordinal)];
 
     private static readonly string ParentPath = Directory.GetParent(AppBasePath)!.ToString();
 
-    internal const string CertificateDirectoryName = "GeneratedCertificates";
+    internal static readonly string RootCaPfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeCA.pfx");
+
+    internal static readonly string IntermediatePfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeIntermediate.pfx");
 
     internal string CertificateFilenamePrefix { get; set; } = "SteeltoeAppInstance";
-
-    internal string RootCaPfxPath { get; } = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeCA.pfx");
-
-    internal string IntermediatePfxPath { get; } = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeIntermediate.pfx");
 
     public void Write(Guid orgId, Guid spaceId)
     {

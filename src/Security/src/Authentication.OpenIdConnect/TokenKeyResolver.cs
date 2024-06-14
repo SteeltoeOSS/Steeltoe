@@ -31,7 +31,7 @@ internal sealed class TokenKeyResolver
         _httpClient = httpClient;
     }
 
-    internal IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string keyId, TokenValidationParameters validationParameters)
+    internal SecurityKey[] ResolveSigningKey(string token, SecurityToken securityToken, string keyId, TokenValidationParameters validationParameters)
     {
         if (ResolvedSecurityKeysById.TryGetValue(keyId, out SecurityKey? resolved))
         {

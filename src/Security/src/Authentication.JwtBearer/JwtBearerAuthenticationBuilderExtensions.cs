@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -9,19 +10,19 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.JwtBearer;
 
-public static class JwtBearerServiceCollectionExtensions
+public static class JwtBearerAuthenticationBuilderExtensions
 {
     /// <summary>
     /// Configures <see cref="JwtBearerOptions" /> for compatibility with UAA-based systems, including those found in Cloud Foundry.
     /// </summary>
-    /// <param name="services">
-    /// The <see cref="IServiceCollection" /> to add services to.
+    /// <param name="authenticationBuilder">
+    /// The <see cref="AuthenticationBuilder" /> to configure.
     /// </param>
-    public static IServiceCollection ConfigureJwtBearerForCloudFoundry(this IServiceCollection services)
+    public static AuthenticationBuilder ConfigureJwtBearerForCloudFoundry(this AuthenticationBuilder authenticationBuilder)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(authenticationBuilder);
 
-        services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, PostConfigureJwtBearerOptions>();
-        return services;
+        authenticationBuilder.Services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, PostConfigureJwtBearerOptions>();
+        return authenticationBuilder;
     }
 }

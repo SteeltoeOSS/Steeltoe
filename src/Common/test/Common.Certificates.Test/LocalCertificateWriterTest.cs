@@ -20,8 +20,8 @@ public sealed class LocalCertificateWriterTest
         using var rsa = RSA.Create();
 
         certificateWriter.Write(orgId, spaceId);
-        var rootCertificate = new X509Certificate2(certificateWriter.RootCaPfxPath);
-        var intermediateCertificate = new X509Certificate2(certificateWriter.IntermediatePfxPath);
+        var rootCertificate = new X509Certificate2(LocalCertificateWriter.RootCaPfxPath);
+        var intermediateCertificate = new X509Certificate2(LocalCertificateWriter.IntermediatePfxPath);
 
         rsa.ImportFromPem(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
             "SteeltoeAppInstanceKey.pem")));

@@ -17,13 +17,14 @@ internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
 
     public abstract void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData);
 
-    protected IEnumerable<string> FilterKeys(IDictionary<string, string?> configurationData, string tagOrLabelValueToFind)
+    protected IEnumerable<string> FilterKeys(IDictionary<string, string?> configurationData, string valueToFind, KeyFilterSources sources)
     {
         List<string> keys = [];
 
         foreach ((string key, string? value) in configurationData)
         {
-            if (TagsConfigurationKeyRegex.IsMatch(key) && string.Equals(value, tagOrLabelValueToFind, StringComparison.OrdinalIgnoreCase))
+            if ((sources & KeyFilterSources.Tag) != 0 && TagsConfigurationKeyRegex.IsMatch(key) &&
+                string.Equals(value, valueToFind, StringComparison.OrdinalIgnoreCase))
             {
                 string? parentKey = ConfigurationPath.GetParentPath(key);
 
@@ -37,7 +38,9 @@ internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
                     }
                 }
             }
-            else if (LabelConfigurationKeyRegex.IsMatch(key) && string.Equals(value, tagOrLabelValueToFind, StringComparison.OrdinalIgnoreCase))
+
+            if ((sources & KeyFilterSources.Label) != 0 && LabelConfigurationKeyRegex.IsMatch(key) &&
+                string.Equals(value, valueToFind, StringComparison.OrdinalIgnoreCase))
             {
                 string? serviceBindingKey = ConfigurationPath.GetParentPath(key);
 
@@ -49,5 +52,12 @@ internal abstract class CloudFoundryPostProcessor : IConfigurationPostProcessor
         }
 
         return keys;
+    }
+
+    [Flags]
+    internal enum KeyFilterSources
+    {
+        Tag = 1,
+        Label = 2
     }
 }

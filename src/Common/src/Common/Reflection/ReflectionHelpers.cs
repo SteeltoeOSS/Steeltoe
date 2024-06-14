@@ -250,6 +250,7 @@ public static class ReflectionHelpers
     public static Type FindType(Assembly assembly, string typeName)
     {
         ArgumentGuard.NotNull(assembly);
+        ArgumentGuard.NotNull(typeName);
 
         try
         {
@@ -314,6 +315,7 @@ public static class ReflectionHelpers
     public static PropertyInfo FindProperty(Type type, string propertyName)
     {
         ArgumentGuard.NotNull(type);
+        ArgumentGuard.NotNull(propertyName);
 
         try
         {
@@ -345,6 +347,7 @@ public static class ReflectionHelpers
     public static MethodInfo FindMethod(Type type, string methodName, Type[] parameters = null)
     {
         ArgumentGuard.NotNull(type);
+        ArgumentGuard.NotNull(methodName);
 
         try
         {
@@ -381,6 +384,7 @@ public static class ReflectionHelpers
     public static object Invoke(MethodBase member, object instance, object[] args)
     {
         ArgumentGuard.NotNull(member);
+        ArgumentGuard.NotNull(instance);
 
         try
         {
@@ -440,6 +444,7 @@ public static class ReflectionHelpers
     public static void TrySetProperty(object obj, string property, object value)
     {
         ArgumentGuard.NotNull(obj);
+        ArgumentGuard.NotNull(property);
 
         PropertyInfo prop = obj.GetType().GetProperty(property, BindingFlags.Public | BindingFlags.Instance);
 

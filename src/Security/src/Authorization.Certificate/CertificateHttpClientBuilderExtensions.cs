@@ -31,22 +31,22 @@ public static class CertificateHttpClientBuilderExtensions
     /// <param name="httpClientBuilder">
     /// The <see cref="IHttpClientBuilder" /> to add a client certificate to.
     /// </param>
-    /// <param name="certificateOptionsName">
-    /// The name of the <see cref="CertificateOptions" /> from which to add the client certificate.
+    /// <param name="certificateName">
+    /// The name of the certificate used in configuration.
     /// </param>
-    public static IHttpClientBuilder AddClientCertificate(this IHttpClientBuilder httpClientBuilder, string certificateOptionsName)
+    public static IHttpClientBuilder AddClientCertificate(this IHttpClientBuilder httpClientBuilder, string certificateName)
     {
         ArgumentGuard.NotNull(httpClientBuilder);
-        ArgumentGuard.NotNull(certificateOptionsName);
+        ArgumentGuard.NotNull(certificateName);
 
-        httpClientBuilder.Services.ConfigureCertificateOptions(certificateOptionsName);
+        httpClientBuilder.Services.ConfigureCertificateOptions(certificateName);
 
         httpClientBuilder.ConfigureHttpClient((serviceProvider, client) =>
         {
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             ILogger logger = loggerFactory.CreateLogger(nameof(CertificateAuthorizationBuilderExtensions));
             var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
-            CertificateOptions certificateOptions = optionsMonitor.Get(certificateOptionsName);
+            CertificateOptions certificateOptions = optionsMonitor.Get(certificateName);
             X509Certificate2? certificate = certificateOptions.Certificate;
 
             if (certificate != null)
@@ -58,7 +58,7 @@ public static class CertificateHttpClientBuilderExtensions
             }
             else
             {
-                logger.LogError("Failed to find a certificate under the name {CertificateOptionsName}", certificateOptionsName);
+                logger.LogError("Failed to find a certificate under the name {CertificateOptionsName}", certificateName);
             }
         });
 

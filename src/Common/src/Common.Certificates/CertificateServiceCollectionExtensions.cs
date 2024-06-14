@@ -41,6 +41,8 @@ public static class CertificateServiceCollectionExtensions
     /// </param>
     public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string certificateName, IFileProvider? fileProvider)
     {
+        ArgumentGuard.NotNull(services);
+
         fileProvider ??= new PhysicalFileProvider(Environment.CurrentDirectory);
 
         string configurationKey = string.IsNullOrEmpty(certificateName)

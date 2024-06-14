@@ -31,7 +31,7 @@ internal sealed class IdentityCloudFoundryPostProcessor : CloudFoundryPostProces
     {
         bool hasMapped = false;
 
-        foreach (string key in FilterKeys(configurationData, BindingType))
+        foreach (string key in FilterKeys(configurationData, BindingType, KeyFilterSources.Label))
         {
             if (hasMapped)
             {

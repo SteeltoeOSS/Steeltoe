@@ -6,34 +6,54 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Certificates;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Common.TestResources;
 using Xunit;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
-public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixture) : IClassFixture<ClientCertificatesFixture>
+public sealed class CertificateAuthorizationTest
 {
     [Fact]
-    public async Task CertificateAuth_AcceptsSameSpace()
+    public async Task CertificateAuth_ForbiddenWithoutCert()
     {
+        var requestUri = new Uri($"http://localhost/{CertificateAuthorizationPolicies.SameSpace}");
         using IHost host = await GetHostBuilder().StartAsync();
+        using HttpClient httpClient = host.GetTestClient();
 
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
-        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
     [Fact]
     public async Task CertificateAuth_AcceptsSameOrg()
     {
-        using IHost host = await GetHostBuilder().StartAsync();
-
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
-        HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch);
-        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using IHost host = await GetHostBuilder().StartAsync();
+        var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
+        X509Certificate2 certificate = optionsMonitor.Get("AppInstanceIdentity").Certificate!;
+        using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), certificate);
+
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CertificateAuth_AcceptsSameSpace()
+    {
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
+        using IHost host = await GetHostBuilder().StartAsync();
+        var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
+        X509Certificate2 certificate = optionsMonitor.Get("AppInstanceIdentity").Certificate!;
+        using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), certificate);
+
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -41,10 +61,11 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
     [Fact]
     public async Task CertificateAuth_RejectsOrgMismatch()
     {
-        using IHost host = await GetHostBuilder().StartAsync();
-
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
-        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch).GetAsync(requestUri);
+        using IHost host = await GetHostBuilder().StartAsync();
+        using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch);
+
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -52,21 +73,11 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
     [Fact]
     public async Task CertificateAuth_RejectsSpaceMismatch()
     {
-        using IHost host = await GetHostBuilder().StartAsync();
-
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
-        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch).GetAsync(requestUri);
-
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task CertificateAuth_ForbiddenWithoutCert()
-    {
         using IHost host = await GetHostBuilder().StartAsync();
+        using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch);
 
-        var requestUri = new Uri($"http://localhost/{CertificateAuthorizationPolicies.SameSpace}");
-        HttpResponseMessage response = await host.GetTestClient().GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -74,14 +85,15 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
     [Fact]
     public async Task CertificateAuth_AcceptsSameSpace_DiegoCert()
     {
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         using var caScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", Path.Join(LocalCertificateWriter.AppBasePath, "root_certificates"));
         using IHost host = await GetHostBuilder().StartAsync();
+        using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.FromDiego);
 
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
-        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.FromDiego).GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -89,24 +101,23 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
     [Fact]
     public async Task CertificateAuth_AcceptsSameOrg_DiegoCert()
     {
+        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
         using var appScope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         using var caScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", Path.Join(LocalCertificateWriter.AppBasePath, "root_certificates"));
-
         using IHost host = await GetHostBuilder().StartAsync();
+        using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.FromDiego);
 
-        var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
-        HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.FromDiego);
-        HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    private IHostBuilder GetHostBuilder()
+    private HostBuilder GetHostBuilder()
     {
         var hostBuilder = new HostBuilder();
-        hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate(fixture.ServerOrgId, fixture.ServerSpaceId));
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId));
         hostBuilder.ConfigureWebHostDefaults(builder => builder.UseStartup<TestServerCertificateStartup>());
         hostBuilder.ConfigureWebHost(builder => builder.UseTestServer());
         return hostBuilder;
@@ -118,21 +129,5 @@ public sealed class CertificateAuthorizationTest(ClientCertificatesFixture fixtu
         string b64 = Convert.ToBase64String(bytes);
         httpClient.DefaultRequestHeaders.Add("X-Client-Cert", b64);
         return httpClient;
-    }
-
-    private static class Certificates
-    {
-        private static readonly Func<string, string> GetFilePath = fileName =>
-            Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", fileName);
-
-        public static X509Certificate2 OrgAndSpaceMatch { get; } =
-            X509Certificate2.CreateFromPemFile(GetFilePath("OrgAndSpaceMatchCert.pem"), GetFilePath("OrgAndSpaceMatchKey.pem"));
-
-        public static X509Certificate2 OrgMatch { get; } = X509Certificate2.CreateFromPemFile(GetFilePath("OrgMatchCert.pem"), GetFilePath("OrgMatchKey.pem"));
-
-        public static X509Certificate2 SpaceMatch { get; } =
-            X509Certificate2.CreateFromPemFile(GetFilePath("SpaceMatchCert.pem"), GetFilePath("SpaceMatchKey.pem"));
-
-        public static X509Certificate2 FromDiego { get; } = X509Certificate2.CreateFromPemFile("instance.crt", "instance.key");
     }
 }

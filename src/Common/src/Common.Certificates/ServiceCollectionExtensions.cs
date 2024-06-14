@@ -39,6 +39,10 @@ internal static class ServiceCollectionExtensions
     public static IServiceCollection WatchFilePathInOptions<TOptions>(this IServiceCollection services, string key, string? optionName, string pathPropertyName,
         IFileProvider fileProvider)
     {
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(key);
+        ArgumentGuard.NotNull(pathPropertyName);
+
         services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(serviceProvider =>
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
