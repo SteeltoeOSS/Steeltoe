@@ -44,7 +44,7 @@ internal sealed class CertificateAuthorizationHandler : IAuthorizationHandler
             return;
         }
 
-        if (ApplicationInstanceCertificate.TryParse(certificateOptions.Certificate, out ApplicationInstanceCertificate? applicationInstanceCertificate))
+        if (ApplicationInstanceCertificate.TryParse(certificateOptions.Certificate.Subject, out ApplicationInstanceCertificate? applicationInstanceCertificate))
         {
             _applicationInstanceCertificate = applicationInstanceCertificate;
         }

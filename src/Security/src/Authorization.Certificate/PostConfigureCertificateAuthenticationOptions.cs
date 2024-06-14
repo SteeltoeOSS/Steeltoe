@@ -62,7 +62,7 @@ internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfi
 
                 var claims = new List<Claim>(context.Principal.Claims);
 
-                if (ApplicationInstanceCertificate.TryParse(context.ClientCertificate, out ApplicationInstanceCertificate? clientCertificate))
+                if (ApplicationInstanceCertificate.TryParse(context.ClientCertificate.Subject, out ApplicationInstanceCertificate? clientCertificate))
                 {
                     claims.Add(new Claim(ApplicationClaimTypes.OrganizationId, clientCertificate.OrganizationId, ClaimValueTypes.String,
                         context.Options.ClaimsIssuer));

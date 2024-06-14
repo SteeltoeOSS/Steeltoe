@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Security.Authorization.Certificate;
@@ -36,15 +35,16 @@ internal sealed class ApplicationInstanceCertificate
         InstanceId = instanceId;
     }
 
-    public static bool TryParse(X509Certificate2 certificate, [NotNullWhen(true)] out ApplicationInstanceCertificate? instanceCertificate)
+    public static bool TryParse(string certificateSubject, [NotNullWhen(true)] out ApplicationInstanceCertificate? instanceCertificate)
     {
         instanceCertificate = null;
+        certificateSubject = certificateSubject.Replace("\"", string.Empty, StringComparison.OrdinalIgnoreCase);
 
-        Match instanceMatch = CloudFoundryInstanceCertificateSubjectRegex.Match(certificate.Subject);
+        Match instanceMatch = CloudFoundryInstanceCertificateSubjectRegex.Match(certificateSubject);
 
         if (!instanceMatch.Success)
         {
-            instanceMatch = SteeltoeInstanceCertificateSubjectRegex.Match(certificate.Subject);
+            instanceMatch = SteeltoeInstanceCertificateSubjectRegex.Match(certificateSubject);
         }
 
         if (instanceMatch.Success)
