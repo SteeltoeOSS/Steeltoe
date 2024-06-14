@@ -23,11 +23,12 @@ public sealed class LocalCertificateWriterTest
         var rootCertificate = new X509Certificate2(certificateWriter.RootCaPfxPath);
         var intermediateCertificate = new X509Certificate2(certificateWriter.IntermediatePfxPath);
 
-        rsa.ImportFromPem(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeAppInstanceKey.pem")));
+        rsa.ImportFromPem(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
+            "SteeltoeAppInstanceKey.pem")));
 
         X509Certificate2 certificate =
-            new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeAppInstanceCert.pem")))
-                .CopyWithPrivateKey(rsa);
+            new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
+                "SteeltoeAppInstanceCert.pem"))).CopyWithPrivateKey(rsa);
 
         rootCertificate.Should().NotBeNull();
         intermediateCertificate.Should().NotBeNull();
