@@ -22,13 +22,4 @@
     <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
     <ProjectReference Include="..\..\..\Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj" PrivateAssets="All" />
   </ItemGroup>
-
-  <ItemDefinitionGroup>
-    <Reference>
-      <Private>False</Private>
-    </Reference>
-    <ProjectReference>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemDefinitionGroup>
 </Project>
