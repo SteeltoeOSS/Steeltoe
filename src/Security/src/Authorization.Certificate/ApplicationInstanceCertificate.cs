@@ -19,13 +19,10 @@ internal sealed class ApplicationInstanceCertificate
         new(@"^CN=(?<instance>[0-9a-f-]+),\sOU=app:(?<app>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=organization:(?<org>[0-9a-f-]+)$",
             RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
 
-    public string OrganizationId { get; private set; }
-
-    public string SpaceId { get; private set; }
-
-    public string ApplicationId { get; private set; }
-
-    public string InstanceId { get; private set; }
+    public string OrganizationId { get; }
+    public string SpaceId { get; }
+    public string ApplicationId { get; }
+    public string InstanceId { get; }
 
     private ApplicationInstanceCertificate(string organizationId, string spaceId, string applicationId, string instanceId)
     {
