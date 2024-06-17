@@ -12,15 +12,11 @@ public class LongStringJsonConverter : JsonConverter<long>
 {
     public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return reader.TokenType == JsonTokenType.Number
-            ? reader.GetInt64()
-            : long.Parse(reader.GetString() ?? throw new ArgumentNullException(nameof(reader)), CultureInfo.InvariantCulture);
+        return reader.TokenType == JsonTokenType.Number ? reader.GetInt64() : long.Parse(reader.GetString(), CultureInfo.InvariantCulture);
     }
 
     public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
     {
-        ArgumentGuard.NotNull(writer);
-
         writer.WriteStringValue(value.ToString(CultureInfo.InvariantCulture));
     }
 }
