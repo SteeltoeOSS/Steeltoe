@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Certificates;
 using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Security.Authorization.Certificate;
@@ -31,7 +32,7 @@ internal sealed class PostConfigureCertificateAuthenticationOptions : IPostConfi
     {
         ArgumentGuard.NotNull(options);
 
-        CertificateOptions appInstanceIdentityOptions = _certificateOptionsMonitor.Get("AppInstanceIdentity");
+        CertificateOptions appInstanceIdentityOptions = _certificateOptionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
         options.ChainTrustValidationMode = X509ChainTrustMode.CustomRootTrust;
         options.ClaimsIssuer = appInstanceIdentityOptions.Certificate?.Issuer;
         options.RevocationMode = X509RevocationMode.NoCheck;

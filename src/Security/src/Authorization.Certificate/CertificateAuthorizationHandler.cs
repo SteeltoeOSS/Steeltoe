@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Certificates;
 using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Security.Authorization.Certificate;
@@ -23,7 +24,7 @@ internal sealed class CertificateAuthorizationHandler : IAuthorizationHandler
 
         _logger = logger;
         certificateOptionsMonitor.OnChange(OnCertificateRefresh);
-        OnCertificateRefresh(certificateOptionsMonitor.Get("AppInstanceIdentity"));
+        OnCertificateRefresh(certificateOptionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName));
     }
 
     public Task HandleAsync(AuthorizationHandlerContext context)

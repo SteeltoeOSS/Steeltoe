@@ -1,5 +1,4 @@
 #nullable enable
-const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.CommonCertificates = "Steeltoe.Common.Certificates" -> string!
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry" -> string!
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer" -> string!
 const Steeltoe.Bootstrap.AutoConfiguration.SteeltoeAssemblyNames.ConfigurationPlaceholder = "Steeltoe.Configuration.Placeholder" -> string!

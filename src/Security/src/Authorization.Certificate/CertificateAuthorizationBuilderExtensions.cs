@@ -30,7 +30,7 @@ public static class CertificateAuthorizationBuilderExtensions
     {
         ArgumentGuard.NotNull(authorizationBuilder);
 
-        authorizationBuilder.Services.ConfigureCertificateOptions("AppInstanceIdentity");
+        authorizationBuilder.Services.ConfigureCertificateOptions(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
 
         authorizationBuilder.Services.AddCertificateForwarding(_ =>
         {

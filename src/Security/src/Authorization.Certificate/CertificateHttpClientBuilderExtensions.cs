@@ -22,7 +22,7 @@ public static class CertificateHttpClientBuilderExtensions
     /// </param>
     public static IHttpClientBuilder AddClientCertificateForAppInstance(this IHttpClientBuilder httpClientBuilder)
     {
-        return AddClientCertificate(httpClientBuilder, "AppInstanceIdentity");
+        return AddClientCertificate(httpClientBuilder, CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
     }
 
     /// <summary>

@@ -376,6 +376,7 @@ public sealed class TraceDiagnosticObserverTest : BaseTest
             TraceIdentifier = Guid.NewGuid().ToString()
         };
 
+        context.Features.Set<ISessionFeature>(new DefaultSessionFeature());
         context.Response.Body = new MemoryStream();
         context.Request.Method = "GET";
         context.Request.Path = "/myPath";

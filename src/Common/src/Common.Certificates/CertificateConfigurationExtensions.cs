@@ -9,6 +9,8 @@ namespace Steeltoe.Common.Certificates;
 
 public static class CertificateConfigurationExtensions
 {
+    internal const string AppInstanceIdentityCertificateName = "AppInstanceIdentity";
+
     /// <summary>
     /// Adds file path information for a certificate and (optional) private key to configuration, for use with <see cref="CertificateOptions" />.
     /// </summary>
@@ -110,7 +112,7 @@ public static class CertificateConfigurationExtensions
 
         if (certificateFile != null && keyFile != null)
         {
-            builder.AddCertificate("AppInstanceIdentity", certificateFile, keyFile);
+            builder.AddCertificate(AppInstanceIdentityCertificateName, certificateFile, keyFile);
         }
 
         return builder;

@@ -13,7 +13,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MySqlConnector;
 using Npgsql;
@@ -22,7 +21,6 @@ using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using StackExchange.Redis;
 using Steeltoe.Common;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
@@ -223,19 +221,6 @@ public sealed class HostBuilderExtensionsTest
         instrumentations.Should().HaveCount(2);
         instrumentations.Should().ContainSingle(instance => instance.GetType().Name == "HttpClientInstrumentation");
         instrumentations.Should().ContainSingle(instance => instance.GetType().Name == "AspNetCoreInstrumentation");
-    }
-
-    [Fact]
-    public void AppInstanceIdentityCertificate_IsAutowired()
-    {
-        using IHost host = GetHostForOnly(SteeltoeAssemblyNames.CommonCertificates);
-        var configuration = host.Services.GetRequiredService<IConfiguration>();
-
-        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:CertificateFilePath"].Should().NotBeNull();
-        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:AppInstanceIdentity:PrivateKeyFilePath"].Should().NotBeNull();
-
-        host.Services.GetService<IOptionsMonitor<CertificateOptions>>()?.Get("AppInstanceIdentity").Certificate.Should().NotBeNull();
-        host.Services.GetService<IOptionsChangeTokenSource<CertificateOptions>>().Should().NotBeNull();
     }
 
     private static IHost GetHostForOnly(string assemblyNameToInclude)

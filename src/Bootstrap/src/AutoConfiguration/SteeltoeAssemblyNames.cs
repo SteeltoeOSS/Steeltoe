@@ -11,7 +11,6 @@ namespace Steeltoe.Bootstrap.AutoConfiguration;
 /// </summary>
 public static class SteeltoeAssemblyNames
 {
-    public const string CommonCertificates = "Steeltoe.Common.Certificates";
     public const string ConfigurationCloudFoundry = "Steeltoe.Configuration.CloudFoundry";
     public const string ConfigurationConfigServer = "Steeltoe.Configuration.ConfigServer";
     public const string ConfigurationRandomValue = "Steeltoe.Configuration.RandomValue";

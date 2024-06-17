@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
-internal sealed class SameSpaceRequirement : IAuthorizationRequirement
+/// <summary>
+/// Client certificates must originate in the same space as the authorizing application.
+/// </summary>
+public sealed class SameSpaceRequirement : IAuthorizationRequirement
 {
 }

@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
-internal sealed class SameOrgRequirement : IAuthorizationRequirement
+/// <summary>
+/// Client certificates must originate in the same organization as the authorizing application.
+/// </summary>
+public sealed class SameOrgRequirement : IAuthorizationRequirement
 {
 }

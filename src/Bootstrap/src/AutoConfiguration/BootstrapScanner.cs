@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Common.Certificates;
 using Steeltoe.Common.DynamicTypeAccess;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Common.Logging;
@@ -81,7 +80,6 @@ internal sealed class BootstrapScanner
         WireIfLoaded(WirePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
         WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
         WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
-        WireIfLoaded(WireAppInstanceIdentity, SteeltoeAssemblyNames.CommonCertificates);
     }
 
     private void WireConfigServer()
@@ -254,14 +252,6 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureServices(services => services.AddDistributedTracingAspNetCore());
 
         _logger.LogInformation("Configured distributed tracing");
-    }
-
-    private void WireAppInstanceIdentity()
-    {
-        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddAppInstanceIdentityCertificate());
-        _wrapper.ConfigureServices(services => services.ConfigureCertificateOptions("AppInstanceIdentity", null));
-
-        _logger.LogInformation("Configured application instance identity certificate");
     }
 
     private bool WireIfLoaded(Action wireAction, string assemblyName)

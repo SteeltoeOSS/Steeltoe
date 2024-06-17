@@ -36,7 +36,7 @@ public sealed class CertificateAuthorizationTest
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrganization}");
         using IHost host = await GetHostBuilder().StartAsync();
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
-        X509Certificate2 certificate = optionsMonitor.Get("AppInstanceIdentity").Certificate!;
+        X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
         using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), certificate);
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
@@ -50,7 +50,7 @@ public sealed class CertificateAuthorizationTest
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
         using IHost host = await GetHostBuilder().StartAsync();
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
-        X509Certificate2 certificate = optionsMonitor.Get("AppInstanceIdentity").Certificate!;
+        X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
         using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), certificate);
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
