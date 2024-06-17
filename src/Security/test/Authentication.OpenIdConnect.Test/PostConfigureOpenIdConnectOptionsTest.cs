@@ -72,8 +72,8 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
         IConfigurationRoot configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(configuration);
-        serviceCollection.AddAuthentication().AddOpenIdConnect();
-        serviceCollection.ConfigureOpenIdConnectForCloudFoundry();
+
+        serviceCollection.AddAuthentication().AddOpenIdConnect().ConfigureOpenIdConnectForCloudFoundry();
 
         using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>();

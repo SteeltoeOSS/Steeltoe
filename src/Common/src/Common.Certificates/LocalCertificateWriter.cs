@@ -11,6 +11,8 @@ internal sealed class LocalCertificateWriter
 {
     internal const string CertificateDirectoryName = "GeneratedCertificates";
 
+    internal const string CertificateFilenamePrefix = "SteeltoeAppInstance";
+
     internal static readonly string AppBasePath =
         AppContext.BaseDirectory[..AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin", StringComparison.Ordinal)];
 
@@ -19,8 +21,6 @@ internal sealed class LocalCertificateWriter
     internal static readonly string RootCaPfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeCA.pfx");
 
     internal static readonly string IntermediatePfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeIntermediate.pfx");
-
-    internal string CertificateFilenamePrefix { get; set; } = "SteeltoeAppInstance";
 
     public void Write(Guid orgId, Guid spaceId)
     {

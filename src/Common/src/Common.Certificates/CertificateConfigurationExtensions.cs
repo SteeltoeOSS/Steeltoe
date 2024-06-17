@@ -98,11 +98,11 @@ public static class CertificateConfigurationExtensions
 
             Environment.SetEnvironmentVariable("CF_INSTANCE_CERT",
                 Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
-                    $"{writer.CertificateFilenamePrefix}Cert.pem"));
+                    $"{LocalCertificateWriter.CertificateFilenamePrefix}Cert.pem"));
 
             Environment.SetEnvironmentVariable("CF_INSTANCE_KEY",
                 Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
-                    $"{writer.CertificateFilenamePrefix}Key.pem"));
+                    $"{LocalCertificateWriter.CertificateFilenamePrefix}Key.pem"));
         }
 
         string? certificateFile = Environment.GetEnvironmentVariable("CF_INSTANCE_CERT");

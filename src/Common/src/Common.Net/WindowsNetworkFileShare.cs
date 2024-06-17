@@ -85,8 +85,6 @@ public class WindowsNetworkFileShare : IDisposable
     /// </param>
     public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMultipleProviderRouter multipleProviderRouter = null)
     {
-        ArgumentGuard.NotNull(credentials);
-
         _multipleProviderRouter = multipleProviderRouter ?? new MultipleProviderRouter();
 
         _networkName = networkName;

@@ -31,7 +31,9 @@ public static class FluentAssertionsExtensions
     [CustomAssertion]
     public static void BeJson(this StringAssertions source, string expected)
     {
+#pragma warning disable S3900 // Arguments of public methods should be validated against null
         using JsonDocument sourceJson = JsonDocument.Parse(source.Subject);
+#pragma warning restore S3900 // Arguments of public methods should be validated against null
         using JsonDocument expectedJson = JsonDocument.Parse(expected);
 
         string sourceText = ToJsonString(sourceJson);

@@ -3,20 +3,21 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.OpenIdConnect.Test;
 
-public sealed class OpenIdConnectServiceCollectionExtensionsTest
+public sealed class OpenIdConnectAuthenticationBuilderExtensionsTest
 {
     [Fact]
     public void ConfigureOpenIdConnectForCloudFoundry_AddsExpectedRegistrations()
     {
-        var serviceCollection = new ServiceCollection();
+        AuthenticationBuilder serviceCollection = new ServiceCollection().AddAuthentication().AddOpenIdConnect();
 
         serviceCollection.ConfigureOpenIdConnectForCloudFoundry();
 
-        serviceCollection.Should().Contain(service => service.ImplementationType == typeof(PostConfigureOpenIdConnectOptions));
+        serviceCollection.Services.Should().Contain(service => service.ImplementationType == typeof(PostConfigureOpenIdConnectOptions));
     }
 }

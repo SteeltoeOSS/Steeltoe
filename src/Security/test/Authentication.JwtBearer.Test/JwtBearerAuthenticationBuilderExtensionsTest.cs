@@ -3,20 +3,21 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.JwtBearer.Test;
 
-public sealed class JwtBearerServiceCollectionExtensionsTest
+public sealed class JwtBearerAuthenticationBuilderExtensionsTest
 {
     [Fact]
     public void ConfigureJwtBearerForCloudFoundry_AddsExpectedRegistrations()
     {
-        var serviceCollection = new ServiceCollection();
+        AuthenticationBuilder serviceCollection = new ServiceCollection().AddAuthentication().AddJwtBearer();
 
         serviceCollection.ConfigureJwtBearerForCloudFoundry();
 
-        serviceCollection.Should().Contain(service => service.ImplementationType == typeof(PostConfigureJwtBearerOptions));
+        serviceCollection.Services.Should().Contain(service => service.ImplementationType == typeof(PostConfigureJwtBearerOptions));
     }
 }
