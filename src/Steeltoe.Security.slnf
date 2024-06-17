@@ -12,12 +12,10 @@
       "Connectors\\src\\Connectors\\Steeltoe.Connectors.csproj",
       "Security\\src\\Authentication.JwtBearer\\Steeltoe.Security.Authentication.JwtBearer.csproj",
       "Security\\src\\Authentication.OpenIdConnect\\Steeltoe.Security.Authentication.OpenIdConnect.csproj",
-      "Security\\src\\Authentication.Shared\\Steeltoe.Security.Authentication.Shared.csproj",
       "Security\\src\\Authorization.Certificate\\Steeltoe.Security.Authorization.Certificate.csproj",
       "Security\\src\\DataProtection.Redis\\Steeltoe.Security.DataProtection.Redis.csproj",
       "Security\\test\\Authentication.JwtBearer.Test\\Steeltoe.Security.Authentication.JwtBearer.Test.csproj",
       "Security\\test\\Authentication.OpenIdConnect.Test\\Steeltoe.Security.Authentication.OpenIdConnect.Test.csproj",
-      "Security\\test\\Authentication.Shared.Test\\Steeltoe.Security.Authentication.Shared.Test.csproj",
       "Security\\test\\Authorization.Certificate.Test\\Steeltoe.Security.Authorization.Certificate.Test.csproj",
       "Security\\test\\DataProtection.Redis.Test\\Steeltoe.Security.DataProtection.Redis.Test.csproj"
     ]

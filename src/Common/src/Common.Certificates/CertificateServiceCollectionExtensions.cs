@@ -22,7 +22,7 @@ public static class CertificateServiceCollectionExtensions
     /// <param name="certificateName">
     /// Name of the certificate used in configuration and IOptions, or <see cref="string.Empty" /> for an unnamed certificate.
     /// </param>
-    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string certificateName)
+    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string? certificateName)
     {
         return ConfigureCertificateOptions(services, certificateName, null);
     }
@@ -39,7 +39,7 @@ public static class CertificateServiceCollectionExtensions
     /// <param name="fileProvider">
     /// Provides access to the file system.
     /// </param>
-    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string certificateName, IFileProvider? fileProvider)
+    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string? certificateName, IFileProvider? fileProvider)
     {
         ArgumentGuard.NotNull(services);
 
