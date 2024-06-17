@@ -12,15 +12,11 @@ public sealed class BoolStringJsonConverter : JsonConverter<bool>
 {
     public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return reader.TokenType is JsonTokenType.False or JsonTokenType.True
-            ? reader.GetBoolean()
-            : bool.Parse(reader.GetString() ?? throw new ArgumentNullException(nameof(reader)));
+        return reader.TokenType == JsonTokenType.False || reader.TokenType == JsonTokenType.True ? reader.GetBoolean() : bool.Parse(reader.GetString());
     }
 
     public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
     {
-        ArgumentGuard.NotNull(writer);
-
 #pragma warning disable S4040 // Strings should be normalized to uppercase
         writer.WriteStringValue(value.ToString(CultureInfo.InvariantCulture).ToLowerInvariant());
 #pragma warning restore S4040 // Strings should be normalized to uppercase

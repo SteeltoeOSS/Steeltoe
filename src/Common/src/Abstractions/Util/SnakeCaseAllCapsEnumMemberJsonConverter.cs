@@ -20,8 +20,6 @@ public sealed class SnakeCaseAllCapsEnumMemberJsonConverter : JsonConverterFacto
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
     {
-        ArgumentGuard.NotNull(typeToConvert);
-
         return typeToConvert.IsEnum;
     }
 

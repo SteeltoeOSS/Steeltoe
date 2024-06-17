@@ -50,10 +50,6 @@ public static class ConfigurationValuesHelper
     /// </returns>
     public static string GetSetting(string key, IConfiguration configuration, string defaultValue, params string[] sectionPrefixes)
     {
-        ArgumentGuard.NotNull(key);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(sectionPrefixes);
-
         foreach (string prefix in sectionPrefixes)
         {
             IConfigurationSection section = configuration.GetSection(prefix);
