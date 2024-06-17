@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
-public sealed class CertificateHttpBuilderExtensionsTest
+public sealed class CertificateHttpClientBuilderExtensionsTest
 {
     [Fact]
     public async Task AddCertificateAuthorizationClient_AddsNamedHttpClientWithCertificate()
