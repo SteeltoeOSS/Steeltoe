@@ -11,9 +11,9 @@ public static class CancellationTokenSourceExtensions
     // Workaround for Sonar S6966 bug: CancelAsync is suggested, which isn't available in .NET 6.
     public static Task CancelAsync(this CancellationTokenSource source)
     {
-#pragma warning disable S3900 // Arguments of public methods should be validated against null
+        ArgumentNullException.ThrowIfNull(source);
+        
         source.Cancel();
-#pragma warning restore S3900 // Arguments of public methods should be validated against null
         return Task.CompletedTask;
     }
 }

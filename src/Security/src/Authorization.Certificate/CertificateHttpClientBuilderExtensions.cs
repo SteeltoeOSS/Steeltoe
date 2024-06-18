@@ -29,7 +29,7 @@ public static class CertificateHttpClientBuilderExtensions
     /// Configures named <see cref="CertificateOptions" /> and attaches the certificate to outbound requests.
     /// </summary>
     /// <param name="httpClientBuilder">
-    /// The <see cref="IHttpClientBuilder" /> to add a client certificate to.
+    /// The <see cref="IHttpClientBuilder" /> to configure.
     /// </param>
     /// <param name="certificateName">
     /// The name of the certificate used in configuration.

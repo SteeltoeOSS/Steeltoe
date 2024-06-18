@@ -35,8 +35,6 @@ public sealed class IgnoreLineEndingsComparer : IEqualityComparer<string>
 
     public int GetHashCode(string obj)
     {
-#pragma warning disable S3900 // Arguments of public methods should be validated against null
-        return obj.GetHashCode();
-#pragma warning restore S3900 // Arguments of public methods should be validated against null
+        return HashCode.Combine(obj);
     }
 }
