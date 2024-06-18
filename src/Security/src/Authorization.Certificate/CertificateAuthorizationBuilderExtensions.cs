@@ -20,7 +20,7 @@ public static class CertificateAuthorizationBuilderExtensions
     /// Secure your endpoints with the included authorization policies by referencing <see cref="CertificateAuthorizationPolicies" />.
     /// </para>
     /// <para>
-    /// This method also certificate forwarding.
+    /// This method also configures certificate forwarding.
     /// </para>
     /// </summary>
     /// <param name="authorizationBuilder">
