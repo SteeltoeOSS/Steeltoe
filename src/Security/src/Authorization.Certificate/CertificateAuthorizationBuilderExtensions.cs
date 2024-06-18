@@ -8,19 +8,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
-using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
 public static class CertificateAuthorizationBuilderExtensions
 {
     /// <summary>
-    /// Adds the necessary components and policies for server-side authorization of application instance identity certificates.
-    /// <para>
-    /// Components include <see cref="CertificateOptions" /> named "AppInstanceIdentity" and certificate forwarding.
-    /// </para>
+    /// Defines policies that verify the space/org in the incoming client certificate matches the space/org of the local application instance identity
+    /// certificate in configuration.
     /// <para>
     /// Secure your endpoints with the included authorization policies by referencing <see cref="CertificateAuthorizationPolicies" />.
+    /// </para>
+    /// <para>
+    /// This method also certificate forwarding.
     /// </para>
     /// </summary>
     /// <param name="authorizationBuilder">
