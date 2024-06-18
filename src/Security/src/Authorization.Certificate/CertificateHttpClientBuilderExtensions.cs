@@ -15,7 +15,8 @@ namespace Steeltoe.Security.Authorization.Certificate;
 public static class CertificateHttpClientBuilderExtensions
 {
     /// <summary>
-    /// Binds certificate paths in configuration to <see cref="CertificateOptions" /> representing the application instance and attaches the certificate to outbound requests.
+    /// Binds certificate paths in configuration to <see cref="CertificateOptions" /> representing the application instance and attaches the certificate to
+    /// outbound requests.
     /// </summary>
     /// <param name="httpClientBuilder">
     /// The <see cref="IHttpClientBuilder" /> to add a client certificate to.
