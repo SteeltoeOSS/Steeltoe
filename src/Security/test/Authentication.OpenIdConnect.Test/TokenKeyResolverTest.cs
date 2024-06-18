@@ -48,7 +48,7 @@ public sealed class TokenKeyResolverTest
         SecurityKey[] result = resolver.ResolveSigningKey(Token, MockToken, "legacy-token-key", MockParameters);
 
         result.Should().NotBeEmpty();
-        result[0].Should().BeEquivalentTo(webKey);
+        result[0].Should().Be(webKey);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public sealed class TokenKeyResolverTest
         SecurityKey[] result = resolver.ResolveSigningKey(Token, MockToken, "legacy-token-key", MockParameters);
 
         handler.LastRequest.Should().NotBeNull();
-        TokenKeyResolver.ResolvedSecurityKeysById.Keys.Should().Contain("legacy-token-key");
+        TokenKeyResolver.ResolvedSecurityKeysById.Should().ContainKey("legacy-token-key");
         result.Should().NotBeEmpty();
     }
 
@@ -105,7 +105,7 @@ public sealed class TokenKeyResolverTest
         SecurityKey[] result = resolver.ResolveSigningKey(Token, MockToken, "legacy-token-key", MockParameters);
 
         handler.LastRequest.Should().NotBeNull();
-        TokenKeyResolver.ResolvedSecurityKeysById.Keys.Should().NotContain("legacy-token-key");
+        TokenKeyResolver.ResolvedSecurityKeysById.Should().NotContainKey("legacy-token-key");
         result.Should().BeEmpty();
     }
 

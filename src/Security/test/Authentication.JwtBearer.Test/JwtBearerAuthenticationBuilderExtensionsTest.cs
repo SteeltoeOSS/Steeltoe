@@ -14,10 +14,10 @@ public sealed class JwtBearerAuthenticationBuilderExtensionsTest
     [Fact]
     public void ConfigureJwtBearerForCloudFoundry_AddsExpectedRegistrations()
     {
-        AuthenticationBuilder serviceCollection = new ServiceCollection().AddAuthentication().AddJwtBearer();
+        AuthenticationBuilder authenticationBuilder = new ServiceCollection().AddAuthentication().AddJwtBearer();
 
-        serviceCollection.ConfigureJwtBearerForCloudFoundry();
+        authenticationBuilder.ConfigureJwtBearerForCloudFoundry();
 
-        serviceCollection.Services.Should().Contain(service => service.ImplementationType == typeof(PostConfigureJwtBearerOptions));
+        authenticationBuilder.Services.Should().Contain(service => service.ImplementationType == typeof(PostConfigureJwtBearerOptions));
     }
 }

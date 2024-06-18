@@ -18,7 +18,7 @@ public sealed class TestServerCertificateStartup
             options.ValidateValidityPeriod = false;
         });
 
-        services.AddAuthorizationBuilder().AddAppInstanceIdentityCertificate();
+        services.AddAuthorizationBuilder().AddOrgAndSpacePolicies();
     }
 
     public void Configure(IApplicationBuilder app, IAuthorizationService authorizationService)

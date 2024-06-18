@@ -37,7 +37,7 @@ public sealed class CertificateHttpClientBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate());
-        hostBuilder.ConfigureServices(services => services.AddHttpClient("test").AddClientCertificateForAppInstance());
+        hostBuilder.ConfigureServices(services => services.AddHttpClient("test").AddAppInstanceIdentityCertificate());
 
         hostBuilder.ConfigureWebHost(webBuilder =>
         {

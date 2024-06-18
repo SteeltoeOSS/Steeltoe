@@ -26,7 +26,7 @@ public static class CertificateAuthorizationBuilderExtensions
     /// <param name="authorizationBuilder">
     /// The <see cref="AuthorizationBuilder" />.
     /// </param>
-    public static AuthorizationBuilder AddAppInstanceIdentityCertificate(this AuthorizationBuilder authorizationBuilder)
+    public static AuthorizationBuilder AddOrgAndSpacePolicies(this AuthorizationBuilder authorizationBuilder)
     {
         ArgumentGuard.NotNull(authorizationBuilder);
 

@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -108,6 +109,57 @@ public sealed class CertificateAuthorizationTest
         using var caScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", Path.Join(LocalCertificateWriter.AppBasePath, "root_certificates"));
         using IHost host = await GetHostBuilder().StartAsync();
         using HttpClient httpClient = ClientWithCertificate(host.GetTestClient(), Certificates.FromDiego);
+
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CertificateAuth_SetDefaultPolicyWithRequirements()
+    {
+        var requestUri = new Uri("https://localhost/request");
+        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        builder.Configuration.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId);
+        builder.Services.AddAuthentication().AddCertificate();
+
+        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies().AddDefaultPolicy("sameOrgAndSpace",
+            policyBuilder => policyBuilder.AddRequirements([
+                new SameOrgRequirement(),
+                new SameSpaceRequirement()
+            ]));
+
+        await using WebApplication application = builder.Build();
+        application.UseCertificateAuthorization();
+        application.MapGet("/request", () => "response").RequireAuthorization();
+        await application.StartAsync();
+        var optionsMonitor = application.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
+        X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
+        using HttpClient httpClient = ClientWithCertificate(application.GetTestClient(), certificate);
+
+        using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CertificateAuth_SetDefaultPolicyWithPolicyBuilder()
+    {
+        var requestUri = new Uri("https://localhost/request");
+        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        builder.Configuration.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId);
+        builder.Services.AddAuthentication().AddCertificate();
+
+        builder.Services.AddAuthorizationBuilder().AddOrgAndSpacePolicies()
+            .AddDefaultPolicy("sameOrgAndSpace", policyBuilder => policyBuilder.RequireSameOrg().RequireSameSpace());
+
+        await using WebApplication application = builder.Build();
+        application.UseCertificateAuthorization();
+        application.MapGet("/request", () => "response").RequireAuthorization();
+        await application.StartAsync();
+        var optionsMonitor = application.Services.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
+        X509Certificate2 certificate = optionsMonitor.Get(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName).Certificate!;
+        using HttpClient httpClient = ClientWithCertificate(application.GetTestClient(), certificate);
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri);
 

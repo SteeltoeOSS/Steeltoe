@@ -14,10 +14,10 @@ public sealed class OpenIdConnectAuthenticationBuilderExtensionsTest
     [Fact]
     public void ConfigureOpenIdConnectForCloudFoundry_AddsExpectedRegistrations()
     {
-        AuthenticationBuilder serviceCollection = new ServiceCollection().AddAuthentication().AddOpenIdConnect();
+        AuthenticationBuilder authenticationBuilder = new ServiceCollection().AddAuthentication().AddOpenIdConnect();
 
-        serviceCollection.ConfigureOpenIdConnectForCloudFoundry();
+        authenticationBuilder.ConfigureOpenIdConnectForCloudFoundry();
 
-        serviceCollection.Services.Should().Contain(service => service.ImplementationType == typeof(PostConfigureOpenIdConnectOptions));
+        authenticationBuilder.Services.Should().Contain(service => service.ImplementationType == typeof(PostConfigureOpenIdConnectOptions));
     }
 }

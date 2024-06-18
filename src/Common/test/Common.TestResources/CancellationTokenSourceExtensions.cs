@@ -12,7 +12,7 @@ public static class CancellationTokenSourceExtensions
     public static Task CancelAsync(this CancellationTokenSource source)
     {
         ArgumentNullException.ThrowIfNull(source);
-        
+
         source.Cancel();
         return Task.CompletedTask;
     }

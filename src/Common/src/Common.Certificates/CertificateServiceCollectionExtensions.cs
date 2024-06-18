@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Certificates;
 public static class CertificateServiceCollectionExtensions
 {
     /// <summary>
-    /// Configure <see cref="CertificateOptions" /> for use with client certificates.
+    /// Binds certificate paths in configuration to <see cref="CertificateOptions" /> for use with client certificates.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
@@ -28,7 +28,7 @@ public static class CertificateServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Configure <see cref="CertificateOptions" /> for use with client certificates.
+    /// Binds certificate paths in configuration to <see cref="CertificateOptions" /> for use with client certificates.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
