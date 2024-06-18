@@ -1,6 +1,6 @@
 # Steeltoe Security
 
-Authentication and DataProtection libraries which simplify interacting with CredHub and using security services on CloudFoundry.
+Authentication and DataProtection libraries which simplify interacting with security services on Tanzu platforms.
 
 For more information on how to use these components see the [Steeltoe documentation](https://steeltoe.io/).
 

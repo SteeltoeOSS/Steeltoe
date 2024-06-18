@@ -24,7 +24,7 @@ internal sealed class EurekaCloudFoundryPostProcessor : CloudFoundryPostProcesso
     {
         bool hasMapped = false;
 
-        foreach (string key in FilterKeys(configurationData, BindingType))
+        foreach (string key in FilterKeys(configurationData, BindingType, KeyFilterSources.Tag))
         {
             if (hasMapped)
             {

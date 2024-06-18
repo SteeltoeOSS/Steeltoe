@@ -76,7 +76,30 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
                 ""uri"": ""mysql://gxXQb2pMbzFsZQW8:lvMkGf6oJQvKSOwn@192.168.0.97:3306/cf_b2d83697_5fa1_4a51_991b_975c9d7e5515?reconnect=true"",
                 ""jdbcUrl"": ""jdbc:mysql://192.168.0.97:3306/cf_b2d83697_5fa1_4a51_991b_975c9d7e5515?user=gxXQb2pMbzFsZQW8&password=lvMkGf6oJQvKSOwn""
             }
-        }]
+        }],
+        ""p-identity"": [{
+          ""label"": ""p-identity"",
+          ""provider"": null,
+          ""plan"": ""uaa"",
+          ""name"": ""mySSOService"",
+          ""tags"": [],
+          ""instance_guid"": ""f0fd571f-4aaf-4807-b34f-3777b053de2f"",
+          ""instance_name"": ""mySSOService"",
+          ""binding_guid"": ""c2d303a8-8d4f-48ce-916a-74c0305e30b2"",
+          ""binding_name"": null,
+          ""credentials"": {
+            ""auth_domain"": ""https://login.system.testcloud.com"",
+            ""grant_types"": [
+              ""authorization_code"",
+              ""client_credentials""
+            ],
+            ""client_secret"": ""81f92f37-a38f-4b5e-b769-4c933c5c5aca"",
+            ""client_id"": ""c2d303a8-8d4f-48ce-916a-74c0305e30b2""
+          },
+          ""syslog_drain_url"": null,
+          ""volume_mounts"": []
+        }
+      ]
     }";
 
     [Fact]
@@ -133,6 +156,8 @@ public sealed class CloudFoundryServiceBindingConfigurationProviderTest
         section.GetValue<string>("p-service-registry:0:name").Should().Be("myServiceRegistry");
         section.GetValue<string>("p-service-registry:0:credentials:uri").Should().Be("https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.testcloud.com");
         section.GetValue<string>("p-mysql:1:name").Should().Be("mySql2");
+        section.GetValue<string>("p-identity:0:name").Should().Be("mySSOService");
+        section.GetValue<string>("p-identity:0:credentials:auth_domain").Should().Be("https://login.system.testcloud.com");
 
         section.GetValue<string>("p-mysql:1:credentials:uri").Should()
             .Be("mysql://gxXQb2pMbzFsZQW8:lvMkGf6oJQvKSOwn@192.168.0.97:3306/cf_b2d83697_5fa1_4a51_991b_975c9d7e5515?reconnect=true");

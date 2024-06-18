@@ -35,7 +35,6 @@ using Steeltoe.Management.Prometheus;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Management.Wavefront;
 using Steeltoe.Management.Wavefront.Exporters;
-using Steeltoe.Security.Authentication.CloudFoundry;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration;
 
@@ -81,7 +80,6 @@ internal sealed class BootstrapScanner
         WireIfLoaded(WirePrometheus, SteeltoeAssemblyNames.ManagementPrometheus);
         WireIfLoaded(WireWavefrontMetrics, SteeltoeAssemblyNames.ManagementWavefront);
         WireIfLoaded(WireDistributedTracing, SteeltoeAssemblyNames.ManagementTracing);
-        WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblyNames.SecurityAuthenticationCloudFoundry);
     }
 
     private void WireConfigServer()
@@ -254,14 +252,6 @@ internal sealed class BootstrapScanner
         _wrapper.ConfigureServices(services => services.AddDistributedTracingAspNetCore());
 
         _logger.LogInformation("Configured distributed tracing");
-    }
-
-    private void WireCloudFoundryContainerIdentity()
-    {
-        _wrapper.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddCloudFoundryContainerIdentity());
-        _wrapper.ConfigureServices(services => services.AddCloudFoundryCertificateAuth());
-
-        _logger.LogInformation("Configured Cloud Foundry mTLS security");
     }
 
     private bool WireIfLoaded(Action wireAction, string assemblyName)

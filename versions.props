@@ -68,6 +68,7 @@
       -->
       8.0.*
     </FoundationalVersion>
+    <MicrosoftIdentityModelVersion>7.5.*</MicrosoftIdentityModelVersion>
     <OpenTelemetryExporterJaegerVersion>1.6.*-*</OpenTelemetryExporterJaegerVersion>
     <OpenTelemetryExporterPrometheusVersion>1.8.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.8.*</OpenTelemetryVersion>

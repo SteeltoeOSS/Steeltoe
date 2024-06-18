@@ -35,6 +35,6 @@ public sealed class IgnoreLineEndingsComparer : IEqualityComparer<string>
 
     public int GetHashCode(string obj)
     {
-        return obj.GetHashCode();
+        return HashCode.Combine(obj);
     }
 }

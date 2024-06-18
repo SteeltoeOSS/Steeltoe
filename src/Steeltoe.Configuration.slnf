@@ -5,7 +5,7 @@
       "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
       "Common\\src\\Common.Hosting\\Steeltoe.Common.Hosting.csproj",
       "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
-      "Common\\src\\Common.Security\\Steeltoe.Common.Security.csproj",
+      "Common\\src\\Common.Certificates\\Steeltoe.Common.Certificates.csproj",
       "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
       "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",

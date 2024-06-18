@@ -4,8 +4,8 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Common.Security")]
-[assembly: InternalsVisibleTo("Steeltoe.Common.Security.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Common.Certificates")]
+[assembly: InternalsVisibleTo("Steeltoe.Common.Certificates.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting.Test")]

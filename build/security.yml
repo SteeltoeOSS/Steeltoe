@@ -18,7 +18,9 @@ jobs:
     parameters:
       component: Security
       skipFilter: --filter "Category!=SkipOnLinux"
+      skipNET6: true
   - template: templates/component-build.yaml
     parameters:
       component: Security
       OS: windows
+      skipNET6: true
