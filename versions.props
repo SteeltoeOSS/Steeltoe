@@ -44,10 +44,6 @@
     <AspNetCoreHealthChecksVersion>7.0.*</AspNetCoreHealthChecksVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <AspNetCoreHealthChecksVersion>6.0.*</AspNetCoreHealthChecksVersion>
-  </PropertyGroup>
-
   <PropertyGroup>
     <!--
       Exposed dependencies, observable by Steeltoe consumers.
@@ -88,17 +84,6 @@
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
       8.0.*
-    </MatchTargetFrameworkVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <MatchTargetFrameworkVersion>
-      <!--
-        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
-        For example, v6 targets only .NET 6; v7 targets only .NET 7; v8 targets only .NET 8.
-        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
-      -->
-      6.0.*
     </MatchTargetFrameworkVersion>
   </PropertyGroup>
 </Project>
