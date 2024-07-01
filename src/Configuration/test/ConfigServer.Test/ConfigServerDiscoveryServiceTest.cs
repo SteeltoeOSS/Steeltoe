@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 

@@ -32,8 +32,7 @@
     <XunitVersion>2.8.*</XunitVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'"></PropertyGroup>
 
   <PropertyGroup>
     <!--

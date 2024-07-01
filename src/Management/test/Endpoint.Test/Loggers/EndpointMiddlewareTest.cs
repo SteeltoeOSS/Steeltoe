@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Options;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 

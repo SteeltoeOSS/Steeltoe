@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.ThreadDump;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 

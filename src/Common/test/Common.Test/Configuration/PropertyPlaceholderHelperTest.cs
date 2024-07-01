@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Utils.IO;
-using Xunit;
 
 namespace Steeltoe.Common.Test.Configuration;
 

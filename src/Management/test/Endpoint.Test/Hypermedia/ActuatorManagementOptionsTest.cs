@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Options;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 

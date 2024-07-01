@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.RouteMappings;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.RouteMappings;
 

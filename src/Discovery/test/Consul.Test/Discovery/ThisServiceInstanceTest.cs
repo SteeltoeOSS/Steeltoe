@@ -6,7 +6,6 @@ using Consul;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
-using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 

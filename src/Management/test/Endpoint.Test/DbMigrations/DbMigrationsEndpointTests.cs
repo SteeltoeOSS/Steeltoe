@@ -3,11 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;

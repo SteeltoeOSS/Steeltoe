@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using FluentAssertions;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +13,6 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Management.Endpoint;
-using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 

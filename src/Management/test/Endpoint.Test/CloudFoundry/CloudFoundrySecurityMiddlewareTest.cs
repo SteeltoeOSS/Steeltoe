@@ -13,7 +13,6 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Options;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 

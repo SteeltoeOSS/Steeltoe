@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.Trace;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 

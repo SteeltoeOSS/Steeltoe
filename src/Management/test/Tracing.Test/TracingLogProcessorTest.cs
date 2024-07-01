@@ -7,7 +7,6 @@ using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 

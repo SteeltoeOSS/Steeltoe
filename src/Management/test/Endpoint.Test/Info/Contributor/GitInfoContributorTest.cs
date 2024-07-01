@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Info;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info.Contributor;
 

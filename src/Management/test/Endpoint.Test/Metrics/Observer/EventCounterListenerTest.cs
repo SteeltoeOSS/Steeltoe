@@ -8,7 +8,6 @@ using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics.Observer;
 

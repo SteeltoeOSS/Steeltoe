@@ -32,7 +32,6 @@ using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 

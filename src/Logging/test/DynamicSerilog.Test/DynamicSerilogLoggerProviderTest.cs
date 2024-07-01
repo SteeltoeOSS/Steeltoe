@@ -4,13 +4,11 @@
 
 using System.Text.RegularExpressions;
 using A.B.C.D;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 

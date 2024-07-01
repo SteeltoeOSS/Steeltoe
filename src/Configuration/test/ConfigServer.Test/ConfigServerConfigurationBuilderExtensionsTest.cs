@@ -8,7 +8,6 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.Placeholder;
-using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 

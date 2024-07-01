@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
-using Xunit;
 
 namespace Steeltoe.Configuration.SpringBoot.Test;
 

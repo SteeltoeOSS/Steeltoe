@@ -5,7 +5,6 @@
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 

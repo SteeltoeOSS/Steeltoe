@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Refresh;

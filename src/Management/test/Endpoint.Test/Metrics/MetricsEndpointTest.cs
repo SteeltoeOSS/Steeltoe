@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;

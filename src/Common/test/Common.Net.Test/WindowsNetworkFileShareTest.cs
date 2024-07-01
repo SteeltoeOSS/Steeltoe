@@ -4,7 +4,6 @@
 
 using System.Net;
 using System.Runtime.InteropServices;
-using Xunit;
 
 namespace Steeltoe.Common.Net.Test;
 

@@ -7,7 +7,6 @@ using Moq;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
-using Xunit;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;

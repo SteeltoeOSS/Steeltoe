@@ -6,7 +6,6 @@ using System.Net;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Common.Test.Net;
 

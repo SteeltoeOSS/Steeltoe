@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
-using Xunit;
 
 namespace Steeltoe.Common.Test.Availability;
 

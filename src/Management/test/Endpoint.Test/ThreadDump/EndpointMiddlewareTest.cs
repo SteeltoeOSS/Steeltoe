@@ -14,7 +14,6 @@ using Steeltoe.Common;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 

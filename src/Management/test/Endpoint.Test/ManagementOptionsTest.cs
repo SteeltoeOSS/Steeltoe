@@ -4,7 +4,6 @@
 
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Options;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 

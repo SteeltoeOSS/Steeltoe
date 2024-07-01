@@ -5,7 +5,6 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -19,7 +18,6 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Management.Endpoint;
-using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 

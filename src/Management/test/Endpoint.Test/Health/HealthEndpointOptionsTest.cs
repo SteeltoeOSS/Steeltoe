@@ -4,7 +4,6 @@
 
 using System.Security.Claims;
 using Steeltoe.Management.Endpoint.Health;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 

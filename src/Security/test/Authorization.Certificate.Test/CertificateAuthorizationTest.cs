@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 

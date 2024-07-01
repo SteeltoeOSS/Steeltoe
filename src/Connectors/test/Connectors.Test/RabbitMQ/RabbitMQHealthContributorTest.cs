@@ -3,14 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
-using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using RabbitMQ.Client;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.RabbitMQ;
-using Xunit;
 
 namespace Steeltoe.Connectors.Test.RabbitMQ;
 

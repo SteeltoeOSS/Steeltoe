@@ -8,7 +8,6 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
 using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Environment;

@@ -4,7 +4,6 @@
 
 using System.Globalization;
 using System.Net.Http.Json;
-using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -14,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -10,7 +9,6 @@ using Moq;
 using Moq.Protected;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.CosmosDb;
-using Xunit;
 
 namespace Steeltoe.Connectors.Test.CosmosDb;
 

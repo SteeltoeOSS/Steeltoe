@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.HeapDump;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.HeapDump;
 

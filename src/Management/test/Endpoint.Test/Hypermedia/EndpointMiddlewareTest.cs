@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
 

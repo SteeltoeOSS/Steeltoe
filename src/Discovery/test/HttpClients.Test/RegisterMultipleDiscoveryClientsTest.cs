@@ -4,7 +4,6 @@
 
 using System.Net;
 using Consul;
-using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;
@@ -28,7 +27,6 @@ using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
-using Xunit;
 
 namespace Steeltoe.Discovery.HttpClients.Test;
 

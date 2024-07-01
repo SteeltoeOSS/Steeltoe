@@ -4,8 +4,6 @@
 
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using FluentAssertions;
-using Xunit;
 
 namespace Steeltoe.Common.Certificates.Test;
 

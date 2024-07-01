@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
-using Xunit;
 
 namespace Steeltoe.Discovery.HttpClients.Test.LoadBalancers;
 

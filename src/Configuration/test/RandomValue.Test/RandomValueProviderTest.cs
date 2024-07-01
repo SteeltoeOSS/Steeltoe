@@ -4,7 +4,6 @@
 
 using System.Globalization;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
 
 namespace Steeltoe.Configuration.RandomValue.Test;
 

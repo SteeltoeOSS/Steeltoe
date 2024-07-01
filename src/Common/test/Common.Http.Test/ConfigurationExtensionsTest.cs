@@ -3,13 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Common.Http.Test;
 

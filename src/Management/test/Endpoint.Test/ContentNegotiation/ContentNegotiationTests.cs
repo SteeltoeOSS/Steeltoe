@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 

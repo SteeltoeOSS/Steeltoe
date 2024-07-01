@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.ThreadDump;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.ThreadDump;
 

@@ -4,14 +4,12 @@
 
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Utils.IO;
-using Xunit;
 
 namespace Steeltoe.Common.Certificates.Test;
 

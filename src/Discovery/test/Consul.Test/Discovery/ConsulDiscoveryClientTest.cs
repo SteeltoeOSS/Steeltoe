@@ -8,7 +8,6 @@ using Moq;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
-using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 

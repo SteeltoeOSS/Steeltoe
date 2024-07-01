@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using FluentAssertions;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
-using Xunit;
 
 namespace Steeltoe.Security.Authentication.JwtBearer.Test;
 

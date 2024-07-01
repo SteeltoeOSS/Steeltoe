@@ -11,7 +11,6 @@ using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Consul.Util;
-using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Registry;
 

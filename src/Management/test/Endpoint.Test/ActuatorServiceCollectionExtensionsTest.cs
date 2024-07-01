@@ -10,7 +10,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
