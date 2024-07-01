@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
@@ -43,7 +44,7 @@ internal static class ManagementPortWebHostBuilderExtensions
             sslSetting = configuration?[ManagementSslKey];
         }
 
-        if (int.TryParse(portSetting, out int managementPort) && managementPort > 0)
+        if (int.TryParse(portSetting, CultureInfo.InvariantCulture, out int managementPort) && managementPort > 0)
         {
             if (bool.TryParse(sslSetting, out bool enableSsl) && enableSsl)
             {

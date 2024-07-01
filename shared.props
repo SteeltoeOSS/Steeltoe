@@ -19,15 +19,6 @@
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\Steeltoe.Release.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' != 'net6.0'">
-    <!--
-      https://github.com/SonarSource/sonar-dotnet/issues/6752#issuecomment-1768257155
-      As long as we're multi-targeting against .NET 6, its warnings are more useful.
-      This suppression should be reverted when the .NET 6 target is dropped.
-    -->
-    <NoWarn>$(NoWarn);S4056</NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)\stylecop.json" Visible="false" />
   </ItemGroup>

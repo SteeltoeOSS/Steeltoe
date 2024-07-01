@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using Steeltoe.Common;
@@ -66,7 +67,8 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
                 if (!activity.Tags.Any(pair => pair.Key == "http.url" && pair.Value != null && pair.Value.Contains(_options.Uri!, StringComparison.Ordinal)))
                 {
                     _wavefrontSender.SendSpan(activity.OperationName, DateTimeUtils.UnixTimeMilliseconds(activity.StartTimeUtc), activity.Duration.Milliseconds,
-                        _options.Source, Guid.Parse(activity.TraceId.ToString()), FromActivitySpanId(activity.SpanId), new List<Guid>
+                        _options.Source, Guid.Parse(activity.TraceId.ToString(), CultureInfo.InvariantCulture), FromActivitySpanId(activity.SpanId),
+                        new List<Guid>
                         {
                             FromActivitySpanId(activity.ParentSpanId)
                         }, null, GetTags(activity.Tags), null);
@@ -105,6 +107,6 @@ public sealed class WavefrontTraceExporter : BaseExporter<Activity>
 
     private Guid FromActivitySpanId(ActivitySpanId spanId)
     {
-        return Guid.Parse($"0000000000000000{spanId}");
+        return Guid.Parse($"0000000000000000{spanId}", CultureInfo.InvariantCulture);
     }
 }

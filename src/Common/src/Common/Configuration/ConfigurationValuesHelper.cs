@@ -98,7 +98,7 @@ public static class ConfigurationValuesHelper
     {
         string val = GetString(key, configuration, resolve, null);
 
-        if (!string.IsNullOrEmpty(val) && int.TryParse(val, out int result))
+        if (!string.IsNullOrEmpty(val) && int.TryParse(val, CultureInfo.InvariantCulture, out int result))
         {
             return result;
         }

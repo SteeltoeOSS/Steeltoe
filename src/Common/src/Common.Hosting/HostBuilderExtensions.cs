@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
@@ -143,7 +144,7 @@ public static class HostBuilderExtensions
 
     private static void AddPortAndAspNetCoreUrls(HashSet<string> urls, string portStr, string aspnetUrls)
     {
-        if (int.TryParse(portStr, out int port))
+        if (int.TryParse(portStr, CultureInfo.InvariantCulture, out int port))
         {
             urls.Add($"http://*:{port}");
         }

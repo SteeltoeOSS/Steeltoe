@@ -171,21 +171,21 @@ internal sealed class RandomValueProvider : ConfigurationProvider
     private int GetNextIntInRange(string range)
     {
         string[] tokens = range.Split(',');
-        int.TryParse(tokens[0], out int start);
+        int.TryParse(tokens[0], CultureInfo.InvariantCulture, out int start);
 
         if (tokens.Length == 1)
         {
             return Random.Shared.Next(start);
         }
 
-        int.TryParse(tokens[1], out int max);
+        int.TryParse(tokens[1], CultureInfo.InvariantCulture, out int max);
         return Random.Shared.Next(start, max);
     }
 
     private long GetNextLongInRange(string range)
     {
         string[] tokens = range.Split(',');
-        long.TryParse(tokens[0], out long start);
+        long.TryParse(tokens[0], CultureInfo.InvariantCulture, out long start);
 
         if (tokens.Length == 1)
         {
@@ -193,7 +193,7 @@ internal sealed class RandomValueProvider : ConfigurationProvider
         }
 
         long lowerBound = start;
-        long.TryParse(tokens[1], out long upperBound);
+        long.TryParse(tokens[1], CultureInfo.InvariantCulture, out long upperBound);
         upperBound -= lowerBound;
         return lowerBound + Math.Abs(GetLong() % upperBound);
     }

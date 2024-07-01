@@ -93,7 +93,7 @@ internal sealed class RabbitMQConnectionStringBuilder : IConnectionStringBuilder
             }
         }
 
-        if (_settings.TryGetValue(KnownKeywords.Port, out string? portText) && int.TryParse(portText, out int port))
+        if (_settings.TryGetValue(KnownKeywords.Port, out string? portText) && int.TryParse(portText, CultureInfo.InvariantCulture, out int port))
         {
             builder.Port = port;
         }
