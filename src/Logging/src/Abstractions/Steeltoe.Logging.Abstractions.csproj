@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Logging</RootNamespace>
     <Description>Abstractions for use with dynamic logging</Description>
     <PackageTags>abstractions;logging;dynamic-logging;log-management</PackageTags>

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Steeltoe common utility libraries</Description>
     <PackageTags>IO; File; Directory</PackageTags>
     <IsPackable>true</IsPackable>
