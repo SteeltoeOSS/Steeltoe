@@ -60,11 +60,7 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-#if NET6_0
-        _cancellationTokenSource.Cancel();
-#else
         await _cancellationTokenSource.CancelAsync();
-#endif
         await _task;
         _cancellationTokenSource.Dispose();
         _task.Dispose();

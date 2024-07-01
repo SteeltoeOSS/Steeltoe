@@ -14,13 +14,8 @@ public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationScheme
 {
     public const string AuthenticationScheme = "TestScheme";
 
-#if NET6_0
-    public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> optionsMonitor, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
-        : base(optionsMonitor, logger, encoder, clock)
-#else
     public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> optionsMonitor, ILoggerFactory logger, UrlEncoder encoder)
         : base(optionsMonitor, logger, encoder)
-#endif
     {
     }
 

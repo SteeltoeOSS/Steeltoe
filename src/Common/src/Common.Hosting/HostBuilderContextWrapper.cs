@@ -42,11 +42,7 @@ internal sealed class HostBuilderContextWrapper
         return new HostBuilderContextWrapper(context.Configuration, context.HostingEnvironment, context);
     }
 
-#if NET6_0
-    public static HostBuilderContextWrapper Wrap(WebApplicationBuilder context)
-#else
     public static HostBuilderContextWrapper Wrap(IHostApplicationBuilder context)
-#endif
     {
         ArgumentGuard.NotNull(context);
 

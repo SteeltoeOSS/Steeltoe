@@ -74,25 +74,8 @@ internal sealed class LocalCertificateWriter
             Directory.CreateDirectory(Path.Combine(AppBasePath, CertificateDirectoryName));
         }
 
-#if NET6_0
-        string chainedCertificateContents = $"""
-            -----BEGIN CERTIFICATE-----
-            {Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks)}
-            -----END CERTIFICATE-----
-            -----BEGIN CERTIFICATE-----
-            {Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks)}
-            -----END CERTIFICATE-----
-            """;
-
-        string keyContents = $"""
-            -----BEGIN RSA PRIVATE KEY-----
-            {Convert.ToBase64String(clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks)}
-            -----END RSA PRIVATE KEY-----
-            """;
-#else
         string chainedCertificateContents = clientCertificate.ExportCertificatePem() + Environment.NewLine + intermediateCertificate.ExportCertificatePem();
         string keyContents = clientCertificate.GetRSAPrivateKey()!.ExportRSAPrivateKeyPem();
-#endif
 
         File.WriteAllText(Path.Combine(AppBasePath, CertificateDirectoryName, $"{CertificateFilenamePrefix}Cert.pem"), chainedCertificateContents);
         File.WriteAllText(Path.Combine(AppBasePath, CertificateDirectoryName, $"{CertificateFilenamePrefix}Key.pem"), keyContents);
