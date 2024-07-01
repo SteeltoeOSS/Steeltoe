@@ -58,6 +58,38 @@ public sealed class TtlSchedulerTests
     }
 
     [Fact]
+    public async Task Can_Change_Timer_Interval()
+    {
+        var agentMoq = new Mock<IAgentEndpoint>();
+        var clientMoq = new Mock<IConsulClient>();
+        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
+
+        var options = new ConsulDiscoveryOptions
+        {
+            InstanceId = "foobar",
+            Heartbeat = new ConsulHeartbeatOptions
+            {
+                TtlValue = 5
+            }
+        };
+
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        scheduler.Add(options.InstanceId);
+
+        Assert.Contains(options.InstanceId, scheduler.ServiceHeartbeats);
+        PeriodicHeartbeat heartbeat = scheduler.ServiceHeartbeats[options.InstanceId];
+        TimeSpan beforeInterval = heartbeat.Interval;
+
+        options.Heartbeat.TtlValue = 10;
+        optionsMonitor.Change(options);
+
+        TimeSpan afterInterval = heartbeat.Interval;
+        Assert.NotEqual(beforeInterval, afterInterval);
+    }
+
+    [Fact]
     public async Task Remove_Throws_Invalid_InstanceId()
     {
         var clientMoq = new Mock<IConsulClient>();

@@ -23,6 +23,7 @@ public sealed class TtlScheduler : IAsyncDisposable
     private readonly IConsulClient _client;
     private readonly ILogger<TtlScheduler> _schedulerLogger;
     private readonly ILogger<PeriodicHeartbeat> _heartbeatLogger;
+    private readonly IDisposable? _optionsChangeToken;
     private bool _isDisposed;
 
     internal ConcurrentDictionary<string, PeriodicHeartbeat> ServiceHeartbeats { get; } = new(StringComparer.OrdinalIgnoreCase);
@@ -49,6 +50,15 @@ public sealed class TtlScheduler : IAsyncDisposable
         _client = client;
         _schedulerLogger = loggerFactory.CreateLogger<TtlScheduler>();
         _heartbeatLogger = loggerFactory.CreateLogger<PeriodicHeartbeat>();
+        _optionsChangeToken = optionsMonitor.OnChange(HandleOptionsChanged);
+    }
+
+    private void HandleOptionsChanged(ConsulDiscoveryOptions options)
+    {
+        if (options is { InstanceId: not null, Heartbeat: not null })
+        {
+            AddOrUpdate(options.InstanceId, options.Heartbeat);
+        }
     }
 
     /// <summary>
@@ -65,19 +75,27 @@ public sealed class TtlScheduler : IAsyncDisposable
 
         if (heartbeatOptions != null)
         {
-            _schedulerLogger.LogDebug("Adding instance '{InstanceId}'.", instanceId);
-
-            TimeSpan interval = heartbeatOptions.ComputeHeartbeatInterval();
-            string checkId = instanceId;
-
-            if (!checkId.StartsWith(InstancePrefix, StringComparison.Ordinal))
-            {
-                checkId = $"{InstancePrefix}{checkId}";
-            }
-
-            // Not using AddOrUpdate, because .NET 6 lacks support for changing PeriodicTimer.Period (added in .NET 8).
-            _ = ServiceHeartbeats.GetOrAdd(instanceId, _ => new PeriodicHeartbeat(checkId, interval, _client, _heartbeatLogger));
+            AddOrUpdate(instanceId, heartbeatOptions);
         }
+    }
+
+    private void AddOrUpdate(string instanceId, ConsulHeartbeatOptions heartbeatOptions)
+    {
+        _schedulerLogger.LogDebug("Adding/updating instance '{InstanceId}'.", instanceId);
+
+        TimeSpan interval = heartbeatOptions.ComputeHeartbeatInterval();
+        string checkId = instanceId;
+
+        if (!checkId.StartsWith(InstancePrefix, StringComparison.Ordinal))
+        {
+            checkId = $"{InstancePrefix}{checkId}";
+        }
+
+        ServiceHeartbeats.AddOrUpdate(instanceId, _ => new PeriodicHeartbeat(checkId, interval, _client, _heartbeatLogger), (_, periodicHeartbeat) =>
+        {
+            periodicHeartbeat.ChangeInterval(interval);
+            return periodicHeartbeat;
+        });
     }
 
     /// <summary>
@@ -109,6 +127,7 @@ public sealed class TtlScheduler : IAsyncDisposable
                 await RemoveAsync(instanceId);
             }
 
+            _optionsChangeToken?.Dispose();
             _isDisposed = true;
         }
     }

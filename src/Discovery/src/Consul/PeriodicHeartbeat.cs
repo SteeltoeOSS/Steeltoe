@@ -11,12 +11,13 @@ namespace Steeltoe.Discovery.Consul;
 internal sealed class PeriodicHeartbeat : IAsyncDisposable
 {
     private readonly string _serviceId;
-    private readonly TimeSpan _interval;
     private readonly PeriodicTimer _periodicTimer;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly IConsulClient _client;
     private readonly ILogger<PeriodicHeartbeat> _logger;
     private readonly Task _task;
+
+    internal TimeSpan Interval { get; private set; }
 
     public PeriodicHeartbeat(string serviceId, TimeSpan interval, IConsulClient client, ILogger<PeriodicHeartbeat> logger)
     {
@@ -25,7 +26,7 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
         ArgumentGuard.NotNull(logger);
 
         _serviceId = serviceId;
-        _interval = interval;
+        Interval = interval;
         _periodicTimer = new PeriodicTimer(interval);
         _client = client;
         _logger = logger;
@@ -36,7 +37,7 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
     {
         try
         {
-            _logger.LogDebug("Start sending periodic Consul heartbeats for '{ServiceId}' with interval {Interval}.", _serviceId, _interval);
+            _logger.LogDebug("Start sending periodic Consul heartbeats for '{ServiceId}' with interval {Interval}.", _serviceId, Interval);
 
             while (await _periodicTimer.WaitForNextTickAsync(_cancellationTokenSource.Token))
             {
@@ -55,6 +56,16 @@ internal sealed class PeriodicHeartbeat : IAsyncDisposable
         catch (OperationCanceledException exception)
         {
             _logger.LogDebug(exception, "Stop sending periodic Consul heartbeats for '{ServiceId}'.", _serviceId);
+        }
+    }
+
+    public void ChangeInterval(TimeSpan interval)
+    {
+        if (interval != Interval)
+        {
+            _periodicTimer.Period = interval;
+            Interval = interval;
+            _logger.LogDebug("Periodic Consul heartbeat interval for '{ServiceId}' changed to {Interval}.", _serviceId, interval);
         }
     }
 
