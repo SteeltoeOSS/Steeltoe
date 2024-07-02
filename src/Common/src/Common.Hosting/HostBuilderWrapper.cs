@@ -14,8 +14,8 @@ using Microsoft.Extensions.Logging;
 namespace Steeltoe.Common.Hosting;
 
 /// <summary>
-/// A host-agnostic wrapper for <see cref="IHostBuilder" />, <see cref="IWebHostBuilder" /> and <see cref="WebApplicationBuilder" />. Intended to reduce
-/// code duplication when targeting the various host builders.
+/// A host-agnostic wrapper for <see cref="IHostBuilder" />, <see cref="IWebHostBuilder" /> and <see cref="IHostApplicationBuilder" />. Intended to
+/// reduce code duplication when targeting the various host builders.
 /// </summary>
 internal sealed class HostBuilderWrapper
 {
@@ -83,15 +83,11 @@ internal sealed class HostBuilderWrapper
         return wrapper;
     }
 
-#if NET6_0
-    public static HostBuilderWrapper Wrap(WebApplicationBuilder builder)
-#else
     public static HostBuilderWrapper Wrap(IHostApplicationBuilder builder)
-#endif
     {
         ArgumentGuard.NotNull(builder);
 
-        // WebApplicationBuilder/IHostApplicationBuilder immediately execute callbacks, so don't capture them for deferred execution.
+        // IHostApplicationBuilder implementations immediately execute callbacks, so don't capture them for deferred execution.
 
         return new HostBuilderWrapper(builder);
     }
@@ -116,11 +112,7 @@ internal sealed class HostBuilderWrapper
     {
         ArgumentGuard.NotNull(configureAction);
 
-#if NET6_0
-        if (_innerBuilder is WebApplicationBuilder applicationBuilder)
-#else
         if (_innerBuilder is IHostApplicationBuilder applicationBuilder)
-#endif
         {
             HostBuilderContextWrapper contextWrapper = HostBuilderContextWrapper.Wrap(applicationBuilder);
             configureAction(contextWrapper, applicationBuilder.Services);
@@ -144,11 +136,7 @@ internal sealed class HostBuilderWrapper
     {
         ArgumentGuard.NotNull(configureAction);
 
-#if NET6_0
-        if (_innerBuilder is WebApplicationBuilder applicationBuilder)
-#else
         if (_innerBuilder is IHostApplicationBuilder applicationBuilder)
-#endif
         {
             HostBuilderContextWrapper contextWrapper = HostBuilderContextWrapper.Wrap(applicationBuilder);
             configureAction(contextWrapper, applicationBuilder.Configuration);
@@ -172,11 +160,7 @@ internal sealed class HostBuilderWrapper
     {
         ArgumentGuard.NotNull(configureAction);
 
-#if NET6_0
-        if (_innerBuilder is WebApplicationBuilder applicationBuilder)
-#else
         if (_innerBuilder is IHostApplicationBuilder applicationBuilder)
-#endif
         {
             HostBuilderContextWrapper contextWrapper = HostBuilderContextWrapper.Wrap(applicationBuilder);
             configureAction(contextWrapper, applicationBuilder.Logging);
@@ -205,12 +189,10 @@ internal sealed class HostBuilderWrapper
         {
             configureAction(webApplicationBuilder.WebHost);
         }
-#if !NET6_0
         else if (_innerBuilder is IHostApplicationBuilder)
         {
             // This is not a web application, so silently ignore.
         }
-#endif
         else
         {
             throw new NotSupportedException($"Unknown host builder type '{_innerBuilder.GetType()}'.");

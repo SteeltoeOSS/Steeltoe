@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -19,10 +18,10 @@ public static class ConfigServerHostBuilderExtensions
     /// Adds Config Server and Cloud Foundry as application configuration sources. Adds Config Server health check contributor to the service container.
     /// </summary>
     /// <param name="builder">
-    /// The host builder.
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// <see cref="IWebHostBuilder" /> with Config Server and Cloud Foundry Config Provider attached.
+    /// The <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddConfigServer(this IWebHostBuilder builder)
     {
@@ -33,14 +32,14 @@ public static class ConfigServerHostBuilderExtensions
     /// Adds Config Server and Cloud Foundry as application configuration sources. Adds Config Server health check contributor to the service container.
     /// </summary>
     /// <param name="builder">
-    /// The host builder.
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// <see cref="IWebHostBuilder" /> with Config Server and Cloud Foundry Config Provider attached.
+    /// The <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddConfigServer(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -57,10 +56,10 @@ public static class ConfigServerHostBuilderExtensions
     /// Adds Config Server and Cloud Foundry as application configuration sources. Adds Config Server health check contributor to the service container.
     /// </summary>
     /// <param name="builder">
-    /// The host builder.
+    /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// <see cref="IHostBuilder" /> with config server and Cloud Foundry Config Provider attached.
+    /// The <see cref="IHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddConfigServer(this IHostBuilder builder)
     {
@@ -71,14 +70,14 @@ public static class ConfigServerHostBuilderExtensions
     /// Adds Config Server and Cloud Foundry as application configuration sources. Adds Config Server health check contributor to the service container.
     /// </summary>
     /// <param name="builder">
-    /// The host builder.
+    /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// <see cref="IHostBuilder" /> with config server and Cloud Foundry Config Provider attached.
+    /// The <see cref="IHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddConfigServer(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -96,9 +95,12 @@ public static class ConfigServerHostBuilderExtensions
     /// the service container.
     /// </summary>
     /// <param name="builder">
-    /// The application builder.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
-    public static WebApplicationBuilder AddConfigServer(this WebApplicationBuilder builder)
+    /// <returns>
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IHostApplicationBuilder AddConfigServer(this IHostApplicationBuilder builder)
     {
         return AddConfigServer(builder, BootstrapLoggerFactory.Default);
     }
@@ -108,13 +110,16 @@ public static class ConfigServerHostBuilderExtensions
     /// the service container.
     /// </summary>
     /// <param name="builder">
-    /// The application builder.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
     /// write only to the console until logging is fully initialized.
     /// </param>
-    public static WebApplicationBuilder AddConfigServer(this WebApplicationBuilder builder, ILoggerFactory loggerFactory)
+    /// <returns>
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IHostApplicationBuilder AddConfigServer(this IHostApplicationBuilder builder, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(loggerFactory);

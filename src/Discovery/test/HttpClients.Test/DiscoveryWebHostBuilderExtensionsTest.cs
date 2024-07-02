@@ -11,7 +11,6 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
-using Xunit;
 
 namespace Steeltoe.Discovery.HttpClients.Test;
 

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
-using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Immutable;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
@@ -11,7 +10,6 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
-using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Discovery.Test;
 

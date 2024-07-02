@@ -3,14 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using A.B.C.D;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Logging.DynamicLogger.Test;
 

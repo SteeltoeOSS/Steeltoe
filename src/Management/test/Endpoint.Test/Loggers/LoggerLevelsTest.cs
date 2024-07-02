@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Loggers;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;
 

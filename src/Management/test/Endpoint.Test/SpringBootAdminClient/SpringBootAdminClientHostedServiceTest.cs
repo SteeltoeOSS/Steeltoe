@@ -9,7 +9,6 @@ using RichardSzalay.MockHttp;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 

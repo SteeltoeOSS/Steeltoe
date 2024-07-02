@@ -5,7 +5,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.Endpoint.Trace;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;

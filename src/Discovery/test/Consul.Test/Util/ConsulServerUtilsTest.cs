@@ -4,7 +4,6 @@
 
 using Consul;
 using Steeltoe.Discovery.Consul.Util;
-using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Util;
 

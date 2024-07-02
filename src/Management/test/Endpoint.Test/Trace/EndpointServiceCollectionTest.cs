@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Trace;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 

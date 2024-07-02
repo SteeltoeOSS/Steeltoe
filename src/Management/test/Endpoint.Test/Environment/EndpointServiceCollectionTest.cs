@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Environment;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Environment;
 

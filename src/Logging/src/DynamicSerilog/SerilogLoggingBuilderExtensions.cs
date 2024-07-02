@@ -20,7 +20,7 @@ public static class SerilogLoggingBuilderExtensions
     /// The <see cref="ILoggingBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="ILoggingBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="ILoggingBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder)
     {
@@ -37,7 +37,7 @@ public static class SerilogLoggingBuilderExtensions
     /// Enables to configure Serilog from code instead of configuration.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="ILoggingBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="ILoggingBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, LoggerConfiguration? serilogConfiguration)
     {
@@ -54,7 +54,7 @@ public static class SerilogLoggingBuilderExtensions
     /// When set to <c>true</c>, does not remove existing logger providers.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="ILoggingBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="ILoggingBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, bool preserveDefaultConsole)
     {
@@ -74,7 +74,7 @@ public static class SerilogLoggingBuilderExtensions
     /// When set to <c>true</c>, does not remove existing logger providers.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="ILoggingBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="ILoggingBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, LoggerConfiguration? serilogConfiguration, bool preserveDefaultConsole)
     {

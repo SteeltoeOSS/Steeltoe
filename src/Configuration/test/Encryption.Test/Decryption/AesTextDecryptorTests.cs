@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Configuration.Encryption.Decryption;
-using Xunit;
 
 namespace Steeltoe.Configuration.Encryption.Test.Decryption;
 

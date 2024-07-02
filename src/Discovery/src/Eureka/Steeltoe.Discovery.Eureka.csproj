@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Client for service discovery and registration with Neflix Eureka</Description>
     <PackageTags>service-discovery;service-registry;Netflix-Eureka;netflix;eureka</PackageTags>
     <IsPackable>true</IsPackable>

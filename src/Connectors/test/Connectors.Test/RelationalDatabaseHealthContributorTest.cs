@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.Common;
-using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -11,7 +10,6 @@ using Moq.Protected;
 using MySqlConnector;
 using Npgsql;
 using Steeltoe.Common.HealthChecks;
-using Xunit;
 
 namespace Steeltoe.Connectors.Test;
 

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
-using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
@@ -55,6 +54,38 @@ public sealed class TtlSchedulerTests
         Assert.True(scheduler.ServiceHeartbeats.TryRemove("foobar", out PeriodicHeartbeat? heartbeat));
         Assert.NotNull(heartbeat);
         await heartbeat.DisposeAsync();
+    }
+
+    [Fact]
+    public async Task Can_Change_Timer_Interval()
+    {
+        var agentMoq = new Mock<IAgentEndpoint>();
+        var clientMoq = new Mock<IConsulClient>();
+        clientMoq.Setup(client => client.Agent).Returns(agentMoq.Object);
+
+        var options = new ConsulDiscoveryOptions
+        {
+            InstanceId = "foobar",
+            Heartbeat = new ConsulHeartbeatOptions
+            {
+                TtlValue = 5
+            }
+        };
+
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+
+        await using var scheduler = new TtlScheduler(optionsMonitor, clientMoq.Object, NullLoggerFactory.Instance);
+        scheduler.Add(options.InstanceId);
+
+        Assert.Contains(options.InstanceId, scheduler.ServiceHeartbeats);
+        PeriodicHeartbeat heartbeat = scheduler.ServiceHeartbeats[options.InstanceId];
+        TimeSpan beforeInterval = heartbeat.Interval;
+
+        options.Heartbeat.TtlValue = 10;
+        optionsMonitor.Change(options);
+
+        TimeSpan afterInterval = heartbeat.Interval;
+        Assert.NotEqual(beforeInterval, afterInterval);
     }
 
     [Fact]

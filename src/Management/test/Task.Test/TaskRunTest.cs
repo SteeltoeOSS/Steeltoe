@@ -6,7 +6,6 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Management.Task.Test;
 

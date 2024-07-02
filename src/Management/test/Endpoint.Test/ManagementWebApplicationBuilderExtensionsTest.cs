@@ -31,7 +31,6 @@ using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -41,8 +40,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddDbMigrationsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.AddDbMigrationsActuator();
 
-        await using WebApplication host = hostBuilder.AddDbMigrationsActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
@@ -56,8 +56,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddEnvironmentActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.AddEnvironmentActuator();
 
-        await using WebApplication host = hostBuilder.AddEnvironmentActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
@@ -71,8 +72,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddHealthActuator_WebApplicationBuilder()
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        hostBuilder.AddHealthActuator();
 
-        await using WebApplication host = hostBuilder.AddHealthActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
 
         Assert.Single(scope.ServiceProvider.GetServices<IHealthEndpointHandler>());
@@ -83,8 +85,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddHealthActuator_WebApplicationBuilder_WithTypes()
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        hostBuilder.AddHealthActuator(typeof(DownContributor));
 
-        await using WebApplication host = hostBuilder.AddHealthActuator(typeof(DownContributor)).Build();
+        await using WebApplication host = hostBuilder.Build();
         await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
 
         Assert.Single(scope.ServiceProvider.GetServices<IHealthEndpointHandler>());
@@ -95,8 +98,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddHealthActuator_WebApplicationBuilder_WithAggregator()
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor));
 
-        await using WebApplication host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor)).Build();
+        await using WebApplication host = hostBuilder.Build();
         await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
 
         Assert.Single(scope.ServiceProvider.GetServices<IHealthEndpointHandler>());
@@ -107,9 +111,10 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddHealthActuator_WebApplicationBuilder_IStartupFilterFireRegistersAvailabilityEvents()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.AddHealthActuator();
 
         // start the server, get a client
-        await using WebApplication host = hostBuilder.AddHealthActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
         HttpClient client = host.GetTestClient();
@@ -136,8 +141,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         if (Platform.IsWindows)
         {
             WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+            hostBuilder.AddHeapDumpActuator();
 
-            await using WebApplication host = hostBuilder.AddHeapDumpActuator().Build();
+            await using WebApplication host = hostBuilder.Build();
             host.UseRouting();
             await host.StartAsync();
 
@@ -152,8 +158,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddHypermediaActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.AddHypermediaActuator();
 
-        await using WebApplication host = hostBuilder.AddHypermediaActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
@@ -167,8 +174,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddInfoActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.AddInfoActuator(new AppSettingsInfoContributor(hostBuilder.Configuration));
 
-        await using WebApplication host = hostBuilder.AddInfoActuator(new AppSettingsInfoContributor(hostBuilder.Configuration)).Build();
+        await using WebApplication host = hostBuilder.Build();
 
         host.UseRouting();
         await host.StartAsync();
@@ -183,8 +191,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddLoggersActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.AddLoggersActuator();
 
-        await using WebApplication host = hostBuilder.AddLoggersActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
@@ -201,8 +210,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
         hostBuilder.Logging.AddDynamicSerilog();
         hostBuilder.Logging.AddDynamicConsole();
+        hostBuilder.AddLoggersActuator();
 
-        await using WebApplication host = hostBuilder.AddLoggersActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
@@ -215,8 +225,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
         hostBuilder.Services.AddActionDescriptorCollectionProvider();
+        hostBuilder.AddMappingsActuator();
 
-        await using WebApplication host = hostBuilder.AddMappingsActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
@@ -230,8 +241,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddMetricsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.AddMetricsActuator();
 
-        await using WebApplication host = hostBuilder.AddMetricsActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
@@ -246,8 +258,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddRefreshActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.AddRefreshActuator();
 
-        await using WebApplication host = hostBuilder.AddRefreshActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
@@ -263,8 +276,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         if (Platform.IsWindows)
         {
             WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+            hostBuilder.AddThreadDumpActuator();
 
-            await using WebApplication host = hostBuilder.AddThreadDumpActuator().Build();
+            await using WebApplication host = hostBuilder.Build();
             host.UseRouting();
             await host.StartAsync();
 
@@ -279,8 +293,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddTraceActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.AddTraceActuator();
 
-        await using WebApplication host = hostBuilder.AddTraceActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
@@ -294,8 +309,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddServicesActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        hostBuilder.AddServicesActuator();
 
-        await using WebApplication host = hostBuilder.AddServicesActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 
@@ -309,8 +325,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddCloudFoundryActuator_WebApplicationBuilder()
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        hostBuilder.AddCloudFoundryActuator();
 
-        await using WebApplication host = hostBuilder.AddCloudFoundryActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
 
         Assert.NotNull(host.Services.GetService<ICloudFoundryEndpointHandler>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
@@ -321,8 +338,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
         hostBuilder.Services.AddActionDescriptorCollectionProvider();
+        hostBuilder.AddAllActuators();
 
-        await using WebApplication host = hostBuilder.AddAllActuators().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
         HttpClient client = host.GetTestClient();
@@ -365,8 +383,9 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         hostBuilder.WebHost.UseTestServer();
+        hostBuilder.AddCloudFoundryActuator();
 
-        await using WebApplication host = hostBuilder.AddCloudFoundryActuator().Build();
+        await using WebApplication host = hostBuilder.Build();
         host.UseRouting();
         await host.StartAsync();
 

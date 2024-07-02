@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 using Steeltoe.Connectors.MySql;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
-using Xunit;
 using SteeltoeExtensions = Steeltoe.Connectors.EntityFrameworkCore.MySql.MySqlDbContextOptionsBuilderExtensions;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.Test.MySql.Pomelo;

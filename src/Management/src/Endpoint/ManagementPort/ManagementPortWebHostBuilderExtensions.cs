@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
@@ -14,24 +15,24 @@ internal static class ManagementPortWebHostBuilderExtensions
     private const string ManagementPortKey = "management:endpoints:port";
     private const string ManagementSslKey = "management:endpoints:sslenabled";
 
-    public static IWebHostBuilder AddManagementPort(this IWebHostBuilder webHostBuilder)
+    public static IWebHostBuilder AddManagementPort(this IWebHostBuilder builder)
     {
-        (int? httpPort, int? httpsPort) = GetManagementPorts(webHostBuilder);
+        (int? httpPort, int? httpsPort) = GetManagementPorts(builder);
 
         if (httpPort.HasValue || httpsPort.HasValue)
         {
-            webHostBuilder.UseCloudHosting(httpPort, httpsPort);
+            builder.UseCloudHosting(httpPort, httpsPort);
         }
 
-        return webHostBuilder;
+        return builder;
     }
 
-    private static (int? HttpPort, int? HttpsPort) GetManagementPorts(this IWebHostBuilder webHostBuilder)
+    private static (int? HttpPort, int? HttpsPort) GetManagementPorts(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(webHostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        string? portSetting = webHostBuilder.GetSetting(ManagementPortKey);
-        string? sslSetting = webHostBuilder.GetSetting(ManagementSslKey);
+        string? portSetting = builder.GetSetting(ManagementPortKey);
+        string? sslSetting = builder.GetSetting(ManagementSslKey);
 
         int? httpPort = null;
         int? httpsPort = null;
@@ -43,7 +44,7 @@ internal static class ManagementPortWebHostBuilderExtensions
             sslSetting = configuration?[ManagementSslKey];
         }
 
-        if (int.TryParse(portSetting, out int managementPort) && managementPort > 0)
+        if (int.TryParse(portSetting, CultureInfo.InvariantCulture, out int managementPort) && managementPort > 0)
         {
             if (bool.TryParse(sslSetting, out bool enableSsl) && enableSsl)
             {

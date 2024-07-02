@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Trace;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 

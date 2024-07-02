@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 

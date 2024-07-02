@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.Redis;
 
-public static class RedisWebApplicationBuilderExtensions
+public static class RedisHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RedisOptions" /> and
@@ -17,12 +17,12 @@ public static class RedisWebApplicationBuilderExtensions
     /// <see cref="IDistributedCache" />.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to add services to.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="WebApplicationBuilder" /> so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddRedis(this IHostApplicationBuilder builder)
     {
         return AddRedis(builder, null, null);
     }
@@ -34,7 +34,7 @@ public static class RedisWebApplicationBuilderExtensions
     /// <see cref="IDistributedCache" />.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to add services to.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="configureAction">
     /// An optional delegate to configure configuration of this connector.
@@ -43,9 +43,9 @@ public static class RedisWebApplicationBuilderExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="WebApplicationBuilder" /> so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddRedis(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+    public static IHostApplicationBuilder AddRedis(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(builder);

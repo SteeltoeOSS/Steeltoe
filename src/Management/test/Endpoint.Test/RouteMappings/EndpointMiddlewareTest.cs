@@ -4,7 +4,6 @@
 
 using System.Net;
 using System.Text;
-using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -20,7 +19,6 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.RouteMappings;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.RouteMappings;
 

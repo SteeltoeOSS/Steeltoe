@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data;
-using FluentAssertions;
 using Steeltoe.Common;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
-using Xunit;
 
 namespace Steeltoe.Discovery.HttpClients.Test.LoadBalancers;
 

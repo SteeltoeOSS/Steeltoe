@@ -60,12 +60,7 @@ internal static class HttpClientExtensions
         using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-#if NET6_0
-        var responseDocument = await response.Content.ReadFromJsonAsync<AccessTokenResponse>(cancellationToken: cancellationToken);
-#else
         var responseDocument = await response.Content.ReadFromJsonAsync<AccessTokenResponse>(cancellationToken);
-#endif
-
         string? accessToken = responseDocument?.AccessToken;
 
         if (string.IsNullOrEmpty(accessToken))

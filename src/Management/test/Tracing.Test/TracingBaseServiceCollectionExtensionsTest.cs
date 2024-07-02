@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
-using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
 

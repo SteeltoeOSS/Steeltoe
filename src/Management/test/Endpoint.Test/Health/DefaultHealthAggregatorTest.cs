@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using FluentAssertions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 

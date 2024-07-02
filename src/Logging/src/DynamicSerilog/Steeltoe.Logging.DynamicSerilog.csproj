@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Steeltoe library for enabling dynamic management of Serilog.</Description>
     <PackageTags>logging;dynamic-logging;serilog;log-management;monitoring</PackageTags>
     <IsPackable>true</IsPackable>
@@ -15,8 +15,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(FoundationalVersion)" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="$(SerilogExtensionsLoggingVersion)" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="$(SerilogSettingsConfigurationVersion)" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="$(SerilogVersion)" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="$(SerilogVersion)" />
     <PackageReference Include="Serilog.Sinks.Console" Version="$(SerilogSinksConsoleVersion)" />
   </ItemGroup>
 

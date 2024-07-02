@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Extensions;
-using Xunit;
 
 namespace Steeltoe.Common.Test.Extensions;
 

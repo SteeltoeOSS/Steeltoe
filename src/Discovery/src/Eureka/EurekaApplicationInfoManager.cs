@@ -50,7 +50,7 @@ public sealed class EurekaApplicationInfoManager : IDisposable
         else
         {
             _instance = InstanceInfo.FromConfiguration(instanceOptionsMonitor.CurrentValue);
-            _instanceOptionsChangeToken = instanceOptionsMonitor.OnChange((instanceOptions, _) => HandleInstanceOptionsChanged(instanceOptions));
+            _instanceOptionsChangeToken = instanceOptionsMonitor.OnChange(HandleInstanceOptionsChanged);
         }
 
         _clientOptionsMonitor = clientOptionsMonitor;

@@ -6,7 +6,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 

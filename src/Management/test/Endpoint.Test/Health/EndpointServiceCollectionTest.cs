@@ -10,7 +10,6 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
 

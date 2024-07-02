@@ -4,9 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-#if NET6_0
-using System.Reflection;
-#endif
 
 namespace Steeltoe.Configuration;
 
@@ -57,7 +54,7 @@ internal static class ConfigurationExtensions
 
             if (provider is ChainedConfigurationProvider chained)
             {
-                var nextProvider = FindConfigurationProvider<TProvider>(chained);
+                var nextProvider = FindConfigurationProvider<TProvider>(chained.Configuration);
 
                 if (nextProvider != null)
                 {
@@ -67,27 +64,5 @@ internal static class ConfigurationExtensions
         }
 
         return null;
-    }
-
-    private static TProvider? FindConfigurationProvider<TProvider>(ChainedConfigurationProvider provider)
-        where TProvider : class, IConfigurationProvider
-    {
-#if NET6_0
-        FieldInfo? field = typeof(ChainedConfigurationProvider).GetField("_config", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        if (field != null)
-        {
-            var configuration = (IConfiguration?)field.GetValue(provider);
-
-            if (configuration != null)
-            {
-                return FindConfigurationProvider<TProvider>(configuration);
-            }
-        }
-
-        return null;
-#else
-        return FindConfigurationProvider<TProvider>(provider.Configuration);
-#endif
     }
 }

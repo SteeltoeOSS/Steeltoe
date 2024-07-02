@@ -4,7 +4,6 @@
 
 using System.Net;
 using System.Text;
-using FluentAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +15,6 @@ using Microsoft.Net.Http.Headers;
 using Moq;
 using StackExchange.Redis;
 using Steeltoe.Connectors.Redis;
-using Xunit;
 
 namespace Steeltoe.Security.DataProtection.Redis.Test;
 

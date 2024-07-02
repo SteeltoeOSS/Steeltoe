@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Common.Utils.IO;
-using Xunit;
 
 namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 

@@ -4,7 +4,6 @@
 
 using System.Text.Json;
 using Steeltoe.Discovery.Eureka.Transport;
-using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.Transport;
 

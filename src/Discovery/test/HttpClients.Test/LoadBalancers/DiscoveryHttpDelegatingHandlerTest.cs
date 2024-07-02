@@ -4,11 +4,9 @@
 
 using System.Data;
 using System.Net;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
-using Xunit;
 
 namespace Steeltoe.Discovery.HttpClients.Test.LoadBalancers;
 

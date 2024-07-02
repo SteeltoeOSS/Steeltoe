@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Common.Hosting.Test;
 

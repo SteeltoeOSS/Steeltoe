@@ -4,7 +4,6 @@
 
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Trace;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Trace;
 

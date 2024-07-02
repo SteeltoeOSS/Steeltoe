@@ -3,8 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -18,7 +18,6 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Management.Endpoint;
-using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
@@ -326,7 +325,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         string[] parts = instanceOptions.InstanceId!.Split(':');
         parts.Should().HaveCount(3);
 
-        int.TryParse(parts[2], out int number).Should().BeTrue();
+        int.TryParse(parts[2], CultureInfo.InvariantCulture, out int number).Should().BeTrue();
         number.Should().BeInRange(90_000, 99_999);
     }
 

@@ -12,7 +12,6 @@ using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
-using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 

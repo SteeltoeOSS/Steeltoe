@@ -4,7 +4,6 @@
 
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Info;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Info.Contributor;
 

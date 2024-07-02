@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
-using FluentAssertions;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,7 +46,6 @@ using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 using Steeltoe.Management.Wavefront.Exporters;
-using Xunit;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
 

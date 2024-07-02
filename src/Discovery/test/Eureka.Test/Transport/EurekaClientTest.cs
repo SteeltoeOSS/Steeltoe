@@ -5,7 +5,6 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RichardSzalay.MockHttp;
@@ -13,7 +12,6 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
-using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test.Transport;
 

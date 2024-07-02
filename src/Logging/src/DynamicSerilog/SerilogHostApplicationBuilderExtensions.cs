@@ -9,18 +9,18 @@ using Steeltoe.Common.Hosting;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
-public static class SerilogHostBuilderExtensions
+public static class SerilogHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="IHostBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder)
+    public static IHostApplicationBuilder AddDynamicSerilog(this IHostApplicationBuilder builder)
     {
         return AddDynamicSerilog(builder, null, false);
     }
@@ -29,15 +29,16 @@ public static class SerilogHostBuilderExtensions
     /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="IHostBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="configureLogger">
     /// Enables to configure Serilog from code instead of configuration.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder, Action<HostBuilderContext, LoggerConfiguration>? configureLogger)
+    public static IHostApplicationBuilder AddDynamicSerilog(this IHostApplicationBuilder builder,
+        Action<IHostApplicationBuilder, LoggerConfiguration>? configureLogger)
     {
         return AddDynamicSerilog(builder, configureLogger, false);
     }
@@ -46,15 +47,15 @@ public static class SerilogHostBuilderExtensions
     /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="IHostBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="preserveDefaultConsole">
     /// When set to <c>true</c>, does not remove existing logger providers.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder, bool preserveDefaultConsole)
+    public static IHostApplicationBuilder AddDynamicSerilog(this IHostApplicationBuilder builder, bool preserveDefaultConsole)
     {
         return AddDynamicSerilog(builder, null, preserveDefaultConsole);
     }
@@ -63,7 +64,7 @@ public static class SerilogHostBuilderExtensions
     /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="IHostBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="configureLogger">
     /// Enables to configure Serilog from code instead of configuration.
@@ -72,10 +73,10 @@ public static class SerilogHostBuilderExtensions
     /// When set to <c>true</c>, does not remove existing logger providers.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder, Action<HostBuilderContext, LoggerConfiguration>? configureLogger,
-        bool preserveDefaultConsole)
+    public static IHostApplicationBuilder AddDynamicSerilog(this IHostApplicationBuilder builder,
+        Action<IHostApplicationBuilder, LoggerConfiguration>? configureLogger, bool preserveDefaultConsole)
     {
         ArgumentGuard.NotNull(builder);
 

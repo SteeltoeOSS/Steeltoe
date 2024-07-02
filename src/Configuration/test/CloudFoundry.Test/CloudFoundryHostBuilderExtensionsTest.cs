@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.TestResources;
-using Xunit;
 
 namespace Steeltoe.Configuration.CloudFoundry.Test;
 

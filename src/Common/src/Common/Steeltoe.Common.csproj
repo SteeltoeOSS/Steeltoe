@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Steeltoe common library</Description>
     <PackageTags>availability;health;health-checks;loadbalancer;logging;reflection;utilities</PackageTags>
     <IsPackable>true</IsPackable>

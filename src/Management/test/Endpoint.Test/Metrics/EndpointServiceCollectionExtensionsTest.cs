@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
-using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics;
 

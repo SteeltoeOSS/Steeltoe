@@ -4,7 +4,6 @@
 
 #nullable enable
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -42,11 +41,7 @@ internal sealed class HostBuilderContextWrapper
         return new HostBuilderContextWrapper(context.Configuration, context.HostingEnvironment, context);
     }
 
-#if NET6_0
-    public static HostBuilderContextWrapper Wrap(WebApplicationBuilder context)
-#else
     public static HostBuilderContextWrapper Wrap(IHostApplicationBuilder context)
-#endif
     {
         ArgumentGuard.NotNull(context);
 
@@ -63,7 +58,7 @@ internal sealed class HostBuilderContextWrapper
         return WrapGenericAction(action);
     }
 
-    public static Action<HostBuilderContextWrapper, TArgument>? WrapAction<TArgument>(Action<WebApplicationBuilder, TArgument>? action)
+    public static Action<HostBuilderContextWrapper, TArgument>? WrapAction<TArgument>(Action<IHostApplicationBuilder, TArgument>? action)
     {
         return WrapGenericAction(action);
     }
