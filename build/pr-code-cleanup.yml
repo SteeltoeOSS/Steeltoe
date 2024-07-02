@@ -18,6 +18,7 @@ jobs:
           throw 'This pipeline can only be run from pull requests. Use "/azp run cleanup-code" in a GitHub PR comment.'
         }
   - task: UseDotNet@2
+    # Workaround for https://github.com/sethreno/ReGitLint/issues/46.
     displayName: Install .NET 6
     inputs:
       version: 6.0.x
