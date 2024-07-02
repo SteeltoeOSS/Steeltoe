@@ -21,7 +21,7 @@ public static class ConfigServerHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddConfigServer(this IWebHostBuilder builder)
     {
@@ -39,7 +39,7 @@ public static class ConfigServerHostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddConfigServer(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -59,7 +59,7 @@ public static class ConfigServerHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddConfigServer(this IHostBuilder builder)
     {
@@ -77,7 +77,7 @@ public static class ConfigServerHostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddConfigServer(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -98,7 +98,7 @@ public static class ConfigServerHostBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddConfigServer(this IHostApplicationBuilder builder)
     {
@@ -117,7 +117,7 @@ public static class ConfigServerHostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddConfigServer(this IHostApplicationBuilder builder, ILoggerFactory loggerFactory)
     {

@@ -20,7 +20,7 @@ public static class HostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder UseCloudHosting(this IWebHostBuilder builder)
     {
@@ -40,7 +40,7 @@ public static class HostBuilderExtensions
     /// runLocalPort parameter will not be used if an environment variable PORT is found<br /><br /> THIS EXTENSION IS NOT COMPATIBLE WITH IIS EXPRESS.
     /// </remarks>
     /// <returns>
-    /// The <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The <see cref="WebApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder builder)
     {

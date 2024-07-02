@@ -21,7 +21,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddDbMigrationsActuator(this IWebHostBuilder builder)
     {
@@ -40,7 +40,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddEnvironmentActuator(this IWebHostBuilder builder)
     {
@@ -59,7 +59,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder builder)
     {
@@ -81,7 +81,7 @@ public static class ManagementWebHostBuilderExtensions
     /// Types that contribute to the overall health of the app.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder builder, params Type[] contributorTypes)
     {
@@ -107,7 +107,7 @@ public static class ManagementWebHostBuilderExtensions
     /// Types that contribute to the overall health of the app.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder builder, IHealthAggregator aggregator, params Type[] contributorTypes)
     {
@@ -128,7 +128,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddHeapDumpActuator(this IWebHostBuilder builder)
     {
@@ -147,7 +147,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddHypermediaActuator(this IWebHostBuilder builder)
     {
@@ -166,7 +166,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder builder)
     {
@@ -188,7 +188,7 @@ public static class ManagementWebHostBuilderExtensions
     /// Contributors to application information.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder builder, params IInfoContributor[] contributors)
     {
@@ -208,7 +208,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddLoggersActuator(this IWebHostBuilder builder)
     {
@@ -227,7 +227,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddMappingsActuator(this IWebHostBuilder builder)
     {
@@ -246,7 +246,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddMetricsActuator(this IWebHostBuilder builder)
     {
@@ -265,7 +265,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddRefreshActuator(this IWebHostBuilder builder)
     {
@@ -284,7 +284,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder builder)
     {
@@ -301,7 +301,7 @@ public static class ManagementWebHostBuilderExtensions
     /// Specify the media type version to use in the response.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
@@ -320,7 +320,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder builder)
     {
@@ -337,7 +337,7 @@ public static class ManagementWebHostBuilderExtensions
     /// Specify the media type version to use in the response.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
@@ -356,7 +356,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddServicesActuator(this IWebHostBuilder builder)
     {
@@ -375,7 +375,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddCloudFoundryActuator(this IWebHostBuilder builder)
     {
@@ -394,7 +394,7 @@ public static class ManagementWebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder builder)
     {
@@ -411,7 +411,7 @@ public static class ManagementWebHostBuilderExtensions
     /// <see cref="IEndpointConventionBuilder" />.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints)
     {
@@ -434,7 +434,7 @@ public static class ManagementWebHostBuilderExtensions
     /// Customize the CORS policy.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints,
         MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)

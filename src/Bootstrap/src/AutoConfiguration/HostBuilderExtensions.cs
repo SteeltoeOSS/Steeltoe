@@ -23,7 +23,7 @@ public static class HostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddSteeltoe(this IHostBuilder builder)
     {
@@ -40,7 +40,7 @@ public static class HostBuilderExtensions
     /// The set of assembly names to exclude from auto-configuration. For ease of use, select from the constants in <see cref="SteeltoeAssemblyNames" />.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddSteeltoe(this IHostBuilder builder, IReadOnlySet<string> assemblyNamesToExclude)
     {
@@ -58,7 +58,7 @@ public static class HostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddSteeltoe(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -79,7 +79,7 @@ public static class HostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddSteeltoe(this IHostBuilder builder, IReadOnlySet<string> assemblyNamesToExclude, ILoggerFactory loggerFactory)
     {

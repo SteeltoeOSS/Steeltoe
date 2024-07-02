@@ -34,7 +34,7 @@ internal static class ServiceCollectionExtensions
     /// Provides access to the file system.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="services" />, so that additional calls can be chained.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection WatchFilePathInOptions<TOptions>(this IServiceCollection services, string key, string? optionName, string pathPropertyName,
         IFileProvider fileProvider)

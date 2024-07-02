@@ -25,7 +25,7 @@ public static class EncryptionHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddEncryptionResolver(this IWebHostBuilder builder)
     {
@@ -46,7 +46,7 @@ public static class EncryptionHostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The <see cref="IWebHostBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IWebHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddEncryptionResolver(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -69,7 +69,7 @@ public static class EncryptionHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddEncryptionResolver(this IHostBuilder builder)
     {
@@ -90,7 +90,7 @@ public static class EncryptionHostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IHostBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddEncryptionResolver(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -113,7 +113,7 @@ public static class EncryptionHostBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddEncryptionResolver(this IHostApplicationBuilder builder)
     {
@@ -134,7 +134,7 @@ public static class EncryptionHostBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddEncryptionResolver(this IHostApplicationBuilder builder, ILoggerFactory loggerFactory)
     {
