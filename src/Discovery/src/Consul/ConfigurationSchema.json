@@ -1,0 +1,232 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Discovery": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Discovery.Consul": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Consul": {
+      "type": "object",
+      "properties": {
+        "Datacenter": {
+          "type": "string",
+          "description": "Gets or sets the datacenter name passed in each request to the server."
+        },
+        "Discovery": {
+          "type": "object",
+          "properties": {
+            "DefaultQueryTag": {
+              "type": "string",
+              "description": "Gets or sets the tag to filter on when querying for service instances."
+            },
+            "DefaultZoneMetadataName": {
+              "type": "string",
+              "description": "Gets or sets the metadata key name for 'Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.InstanceZone'."
+            },
+            "Deregister": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to de-register the running app on shutdown. Default value: true."
+            },
+            "Enabled": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to enable the Consul client. Default value: true."
+            },
+            "FailFast": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to throw an exception (instead of logging an error) if registration fails. Default value: true."
+            },
+            "HealthCheckCriticalTimeout": {
+              "type": "string",
+              "description": "Gets or sets the duration after which Consul deregisters the running app when in state critical. Default value: 30m."
+            },
+            "HealthCheckInterval": {
+              "type": "string",
+              "description": "Gets or sets how often Consul should perform an HTTP health check. Default value: 10s."
+            },
+            "HealthCheckPath": {
+              "type": "string",
+              "description": "Gets or sets the relative URL to the health endpoint of the running app. Default value: /actuator/health."
+            },
+            "HealthCheckTimeout": {
+              "type": "string",
+              "description": "Gets or sets the timeout Consul should use for an HTTP health check. Default value: 10s."
+            },
+            "HealthCheckTlsSkipVerify": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether Consul should skip TLS verification for HTTP health checks. Default value: false."
+            },
+            "HealthCheckUrl": {
+              "type": "string",
+              "description": "Gets or sets the absolute URL to the health endpoint of the running app (overrides 'Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.HealthCheckPath')."
+            },
+            "Heartbeat": {
+              "type": "object",
+              "properties": {
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether the running app periodically sends TTL (time-to-live) heartbeats. Default value: true."
+                },
+                "IntervalRatio": {
+                  "type": [
+                    "number",
+                    "string"
+                  ],
+                  "description": "Gets or sets the rate at which the running app sends TTL heartbeats, relative to 'Steeltoe.Discovery.Consul.Configuration.ConsulHeartbeatOptions.TtlValue' and 'Steeltoe.Discovery.Consul.Configuration.ConsulHeartbeatOptions.TtlUnit'. Default value: 0.66."
+                },
+                "TtlUnit": {
+                  "type": "string",
+                  "description": "Gets or sets the unit for 'Steeltoe.Discovery.Consul.Configuration.ConsulHeartbeatOptions.TtlValue' (\"ms\", \"s\", \"m\" or \"h\"). Default value: s."
+                },
+                "TtlValue": {
+                  "type": "integer",
+                  "description": "Gets or sets how often a TTL heartbeat must be sent to be considered healthy. Default value: 30."
+                }
+              },
+              "description": "Gets or sets settings related to heartbeats."
+            },
+            "HostName": {
+              "type": "string",
+              "description": "Gets or sets the hostname to register the running app with (if 'Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.PreferIPAddress' is false)."
+            },
+            "IPAddress": {
+              "type": "string",
+              "description": "Gets or sets the IP address to register the running app with (if 'Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.PreferIPAddress' is true)."
+            },
+            "InstanceGroup": {
+              "type": "string",
+              "description": "Gets or sets the metadata \"group\" value to use when registering the running app."
+            },
+            "InstanceId": {
+              "type": "string",
+              "description": "Gets or sets the unique ID to register the running app under."
+            },
+            "InstanceZone": {
+              "type": "string",
+              "description": "Gets or sets the metadata zone value to use when registering the running app."
+            },
+            "Metadata": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Gets metadata key/value pairs used when registering the running app."
+            },
+            "Port": {
+              "type": "integer",
+              "description": "Gets or sets the port number to register the running app with."
+            },
+            "PreferIPAddress": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to register the running app with IP address instead of hostname. Default: false."
+            },
+            "QueryPassing": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to filter on health status 'passing' when querying for service instances. Default value: true."
+            },
+            "Register": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to register the running app as a service instance. Default value: true."
+            },
+            "RegisterHealthCheck": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to enable periodic health checking for the running app. Default value: true."
+            },
+            "Retry": {
+              "type": "object",
+              "properties": {
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to try again When registering the running app fails. Default value: false."
+                },
+                "InitialInterval": {
+                  "type": "integer",
+                  "description": "Gets or sets the time to wait (in milliseconds) after the first registration failure. Default value: 1000."
+                },
+                "MaxAttempts": {
+                  "type": "integer",
+                  "description": "Gets or sets the maximum number of registration attempts (if retries are enabled). Default value: 6."
+                },
+                "MaxInterval": {
+                  "type": "integer",
+                  "description": "Gets or sets the upper bound (in milliseconds) for intervals. Default value: 2000."
+                },
+                "Multiplier": {
+                  "type": [
+                    "number",
+                    "string"
+                  ],
+                  "description": "Gets or sets the factor to increment the next interval with. Default value: 1.1."
+                }
+              },
+              "description": "Gets settings related to retrying requests."
+            },
+            "Scheme": {
+              "type": "string",
+              "description": "Gets or sets the scheme to register the running app with (\"http\" or \"https\"). Default value: http."
+            },
+            "ServiceName": {
+              "type": "string",
+              "description": "Gets or sets the friendly name to register the running app with."
+            },
+            "Tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Gets the tags used when registering the running app."
+            },
+            "UseAspNetCoreUrls": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to register with the port number ASP.NET Core is listening on. Default value: true."
+            },
+            "UseNetworkInterfaces": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether 'System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces' is used to determine 'Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.IPAddress' and 'Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions.HostName'. Default value: false."
+            }
+          },
+          "description": "Configuration options for 'Steeltoe.Discovery.Consul.ConsulDiscoveryClient'."
+        },
+        "Host": {
+          "type": "string",
+          "description": "Gets or sets the hostname or IP address of the Consul server. Default value: localhost."
+        },
+        "Password": {
+          "type": "string",
+          "description": "Gets or sets password for HTTP authentication."
+        },
+        "Port": {
+          "type": "integer",
+          "description": "Gets or sets the port number the Consul server is listening on. Default value: 8500."
+        },
+        "Scheme": {
+          "type": "string",
+          "description": "Gets or sets the scheme to connect with the Consul server (\"http\" or \"https\"). Default value: http."
+        },
+        "Token": {
+          "type": "string",
+          "description": "Gets or sets the authentication token passed in each request to the server."
+        },
+        "Username": {
+          "type": "string",
+          "description": "Gets or sets the username for HTTP authentication."
+        },
+        "WaitTime": {
+          "type": "string",
+          "description": "Gets or sets the maximum duration for a blocking request."
+        }
+      },
+      "description": "Configuration options to use in creating a Consul client. See the documentation of the Consul client for more details."
+    }
+  }
+}

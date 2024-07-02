@@ -1,0 +1,58 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management.Prometheus": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Management": {
+      "type": "object",
+      "properties": {
+        "Endpoints": {
+          "type": "object",
+          "properties": {
+            "Prometheus": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

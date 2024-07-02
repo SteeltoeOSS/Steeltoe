@@ -3,6 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
+using Aspire;
+using Steeltoe.Discovery.Eureka.Configuration;
+
+[assembly: ConfigurationSchema("Eureka:Client", typeof(EurekaClientOptions))]
+[assembly: ConfigurationSchema("Eureka:Instance", typeof(EurekaInstanceOptions))]
+[assembly: LoggingCategories("Steeltoe", "Steeltoe.Discovery", "Steeltoe.Discovery.Eureka")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.HttpClients.Test")]

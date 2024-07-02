@@ -160,7 +160,6 @@ public static class ReflectionHelpers
 
     /// <summary>
     /// Finds a list of types with the attributed identified by <typeparamref name="T" />.
-    /// <para></para>
     /// </summary>
     /// <typeparam name="T">
     /// The assembly attribute that defines the desired type.
@@ -177,7 +176,6 @@ public static class ReflectionHelpers
 
     /// <summary>
     /// Finds a list of types implementing the interface identified by <typeparamref name="TAttribute" />.
-    /// <para></para>
     /// </summary>
     /// <typeparam name="TAttribute">
     /// The assembly attribute that defines the desired interface type.
