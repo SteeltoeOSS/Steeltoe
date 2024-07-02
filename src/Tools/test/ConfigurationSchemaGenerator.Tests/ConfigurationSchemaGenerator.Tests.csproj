@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>annotations</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <CopyDocumentationFilesFromPackages>true</CopyDocumentationFilesFromPackages>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Common\src\Abstractions\ConfigurationSchemaAttributes.cs" Link="ConfigurationSchemaAttributes.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Baselines\**\*;">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="$(CoverletVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(FoundationalVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdkVersion)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
+    <PackageReference Include="xunit" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ConfigurationSchemaGenerator\ConfigurationSchemaGenerator.csproj" />
+  </ItemGroup>
+</Project>

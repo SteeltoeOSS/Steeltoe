@@ -1,0 +1,761 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management.Endpoint": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Management": {
+      "type": "object",
+      "properties": {
+        "Endpoints": {
+          "type": "object",
+          "properties": {
+            "Actuator": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "CloudFoundry": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "ApplicationId": {
+                  "type": "string"
+                },
+                "CloudFoundryApi": {
+                  "type": "string"
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                },
+                "ValidateCertificates": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "CustomJsonConverters": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Gets or sets a list of assembly-qualified custom JsonConverters."
+            },
+            "DbMigrations": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "Dump": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Duration": {
+                  "type": "integer"
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "Enabled": {
+              "type": "boolean"
+            },
+            "Env": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "KeysToSanitize": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "Exposure": {
+              "type": "object",
+              "properties": {
+                "Exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "Health": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Claim": {
+                  "type": "object",
+                  "properties": {
+                    "Type": {
+                      "type": "string"
+                    },
+                    "Value": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "DiskSpace": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean"
+                    },
+                    "Path": {
+                      "type": "string"
+                    },
+                    "Threshold": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Groups": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "Include": {
+                        "type": "string",
+                        "description": "Gets or sets a comma-separated list of contributors or tags to include in this group."
+                      }
+                    }
+                  }
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                },
+                "Role": {
+                  "type": "string"
+                },
+                "ShowDetails": {
+                  "enum": [
+                    "Always",
+                    "Never",
+                    "WhenAuthorized"
+                  ]
+                }
+              }
+            },
+            "HeapDump": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "HeapDumpType": {
+                  "type": "string"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "HttpTrace": {
+              "type": "object",
+              "properties": {
+                "AddAuthType": {
+                  "type": "boolean"
+                },
+                "AddParameters": {
+                  "type": "boolean"
+                },
+                "AddPathInfo": {
+                  "type": "boolean"
+                },
+                "AddQueryString": {
+                  "type": "boolean"
+                },
+                "AddRemoteAddress": {
+                  "type": "boolean"
+                },
+                "AddRequestHeaders": {
+                  "type": "boolean"
+                },
+                "AddResponseHeaders": {
+                  "type": "boolean"
+                },
+                "AddSessionId": {
+                  "type": "boolean"
+                },
+                "AddTimeTaken": {
+                  "type": "boolean"
+                },
+                "AddUserPrincipal": {
+                  "type": "boolean"
+                },
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Capacity": {
+                  "type": "integer"
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "Info": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "Loggers": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "Mappings": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "Metrics": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "CacheDurationMilliseconds": {
+                  "type": "integer"
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "IncludedMetrics": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "MaxHistograms": {
+                  "type": "integer"
+                },
+                "MaxTimeSeries": {
+                  "type": "integer"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "Path": {
+              "type": "string"
+            },
+            "Port": {
+              "type": "string"
+            },
+            "Refresh": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                },
+                "ReturnConfiguration": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "SerializerOptions": {
+              "type": "object",
+              "properties": {
+                "AllowTrailingCommas": {
+                  "type": "boolean",
+                  "description": "Get or sets a value that indicates whether an extra comma at the end of a list of JSON values in an object or array is allowed (and ignored) within the JSON payload being deserialized."
+                },
+                "DefaultBufferSize": {
+                  "type": "integer",
+                  "description": "Gets or sets the default buffer size, in bytes, to use when creating temporary buffers."
+                },
+                "DefaultIgnoreCondition": {
+                  "enum": [
+                    "Never",
+                    "Always",
+                    "WhenWritingDefault",
+                    "WhenWritingNull"
+                  ],
+                  "description": "Gets or sets a value that determines when properties with default values are ignored during serialization or deserialization. The default value is 'System.Text.Json.Serialization.JsonIgnoreCondition.Never'."
+                },
+                "IgnoreReadOnlyFields": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether read-only fields are ignored during serialization. A field is read-only if it is marked with the readonly keyword. The default value is false."
+                },
+                "IgnoreReadOnlyProperties": {
+                  "type": "boolean",
+                  "description": "Gets a value that indicates whether read-only properties are ignored during serialization. The default value is false."
+                },
+                "IncludeFields": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether fields are handled during serialization and deserialization. The default value is false."
+                },
+                "MaxDepth": {
+                  "type": "integer",
+                  "description": "Gets or sets the maximum depth allowed when serializing or deserializing JSON, with the default value of 0 indicating a maximum depth of 64."
+                },
+                "NumberHandling": {
+                  "enum": [
+                    "Strict",
+                    "AllowReadingFromString",
+                    "WriteAsString",
+                    "AllowNamedFloatingPointLiterals"
+                  ],
+                  "description": "Gets or sets an object that specifies how number types should be handled when serializing or deserializing."
+                },
+                "PreferredObjectCreationHandling": {
+                  "enum": [
+                    "Replace",
+                    "Populate"
+                  ],
+                  "description": "Gets or sets the preferred object creation handling for properties when deserializing JSON."
+                },
+                "PropertyNameCaseInsensitive": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether a property's name uses a case-insensitive comparison during deserialization. The default value is false."
+                },
+                "ReadCommentHandling": {
+                  "enum": [
+                    "Disallow",
+                    "Skip",
+                    "Allow"
+                  ],
+                  "description": "Gets or sets a value that defines how comments are handled during deserialization."
+                },
+                "UnknownTypeHandling": {
+                  "enum": [
+                    "JsonElement",
+                    "JsonNode"
+                  ],
+                  "description": "Gets or sets an object that specifies how deserializing a type declared as an 'System.Object' is handled during deserialization."
+                },
+                "UnmappedMemberHandling": {
+                  "enum": [
+                    "Skip",
+                    "Disallow"
+                  ],
+                  "description": "Gets or sets an object that specifies how 'System.Text.Json.JsonSerializer' handles JSON properties that cannot be mapped to a specific .NET member when deserializing object types."
+                },
+                "WriteIndented": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value that indicates whether JSON should use pretty printing. By default, JSON is serialized without any extra white space."
+                }
+              },
+              "description": "Provides options to be used with 'System.Text.Json.JsonSerializer'."
+            },
+            "Services": {
+              "type": "object",
+              "properties": {
+                "AllowedVerbs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Id": {
+                  "type": "string"
+                },
+                "Path": {
+                  "type": "string"
+                },
+                "RequiredPermissions": {
+                  "enum": [
+                    "Undefined",
+                    "None",
+                    "Restricted",
+                    "Full"
+                  ]
+                }
+              }
+            },
+            "UseStatusCodeFromResponse": {
+              "type": "boolean"
+            }
+          }
+        },
+        "Metrics": {
+          "type": "object",
+          "properties": {
+            "Observer": {
+              "type": "object",
+              "properties": {
+                "AspNetCoreHosting": {
+                  "type": "boolean"
+                },
+                "EgressIgnorePattern": {
+                  "type": "string",
+                  "description": "Gets or sets a regex pattern for requests leaving this application where metrics should not be captured."
+                },
+                "EventCounterEvents": {
+                  "type": "boolean"
+                },
+                "EventCounterIntervalSec": {
+                  "type": "integer"
+                },
+                "ExcludedMetrics": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets or sets a list of metrics that should not be captured. Entries in 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.IncludedMetrics' take precedence in case of conflict."
+                },
+                "GCEvents": {
+                  "type": "boolean"
+                },
+                "HttpClientCore": {
+                  "type": "boolean"
+                },
+                "HttpClientDesktop": {
+                  "type": "boolean"
+                },
+                "IncludedMetrics": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Gets or sets a list of metrics that should be captured. This takes precedence over 'Steeltoe.Management.Diagnostics.MetricsObserverOptions.ExcludedMetrics' in case of conflict."
+                },
+                "IngressIgnorePattern": {
+                  "type": "string",
+                  "description": "Gets or sets a regex pattern for requests coming into this application where metrics should not be captured."
+                },
+                "ThreadPoolEvents": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Spring": {
+      "type": "object",
+      "properties": {
+        "Boot": {
+          "type": "object",
+          "properties": {
+            "Admin": {
+              "type": "object",
+              "properties": {
+                "Client": {
+                  "type": "object",
+                  "properties": {
+                    "ApplicationName": {
+                      "type": "string",
+                      "description": "Gets or sets the name to use for this application when registering with SBA."
+                    },
+                    "BasePath": {
+                      "type": "string",
+                      "description": "Gets or sets the base path SBA should use for interacting with your application."
+                    },
+                    "ConnectionTimeoutMs": {
+                      "type": "integer",
+                      "description": "Gets or sets the connection timeout (in milliseconds) for interactions with SBA."
+                    },
+                    "Metadata": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object"
+                      },
+                      "description": "Gets or sets metadata to use when registering with SBA."
+                    },
+                    "Url": {
+                      "type": "string"
+                    },
+                    "ValidateCertificates": {
+                      "type": "boolean",
+                      "description": "Gets or sets a value indicating whether SBA certificates should be validated."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

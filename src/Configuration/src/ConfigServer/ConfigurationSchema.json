@@ -1,0 +1,122 @@
+{
+  "type": "object",
+  "properties": {
+    "Spring": {
+      "type": "object",
+      "properties": {
+        "Cloud": {
+          "type": "object",
+          "properties": {
+            "Config": {
+              "type": "object",
+              "properties": {
+                "Access_Token_Uri": {
+                  "type": "string"
+                },
+                "Client_Id": {
+                  "type": "string"
+                },
+                "Client_Secret": {
+                  "type": "string"
+                },
+                "DisableTokenRenewal": {
+                  "type": "boolean"
+                },
+                "Discovery": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean"
+                    },
+                    "ServiceId": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "Enabled": {
+                  "type": "boolean"
+                },
+                "Env": {
+                  "type": "string"
+                },
+                "FailFast": {
+                  "type": "boolean"
+                },
+                "Headers": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "Health": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean"
+                    },
+                    "TimeToLive": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "Label": {
+                  "type": "string"
+                },
+                "Name": {
+                  "type": "string"
+                },
+                "Password": {
+                  "type": "string"
+                },
+                "Retry": {
+                  "type": "object",
+                  "properties": {
+                    "Enabled": {
+                      "type": "boolean"
+                    },
+                    "InitialInterval": {
+                      "type": "integer"
+                    },
+                    "MaxAttempts": {
+                      "type": "integer"
+                    },
+                    "MaxInterval": {
+                      "type": "integer"
+                    },
+                    "Multiplier": {
+                      "type": [
+                        "number",
+                        "string"
+                      ]
+                    }
+                  }
+                },
+                "Timeout": {
+                  "type": "integer"
+                },
+                "Token": {
+                  "type": "string"
+                },
+                "TokenRenewRate": {
+                  "type": "integer"
+                },
+                "TokenTtl": {
+                  "type": "integer"
+                },
+                "Uri": {
+                  "type": "string"
+                },
+                "Username": {
+                  "type": "string"
+                },
+                "Validate_Certificates": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

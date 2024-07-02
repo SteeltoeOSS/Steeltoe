@@ -1,0 +1,255 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Discovery": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Discovery.Eureka": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Eureka": {
+      "type": "object",
+      "properties": {
+        "Client": {
+          "type": "object",
+          "properties": {
+            "AccessTokenUri": {
+              "type": "string",
+              "description": "Gets or sets the URL to obtain OAuth2 access token from, before connecting to the Eureka server."
+            },
+            "ClientId": {
+              "type": "string",
+              "description": "Gets or sets the client ID for obtaining access token."
+            },
+            "ClientSecret": {
+              "type": "string",
+              "description": "Gets or sets the secret for obtaining access token."
+            },
+            "Enabled": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to enable the Eureka client. Default value: true."
+            },
+            "EurekaServer": {
+              "type": "object",
+              "properties": {
+                "ConnectTimeoutSeconds": {
+                  "type": "integer",
+                  "description": "Gets or sets how long to wait (in seconds) before a connection to the Eureka server times out. Note that the connections in the client are pooled and this setting affects the actual connection creation and also the wait time to get the connection from the pool. Default value: 5."
+                },
+                "ProxyHost": {
+                  "type": "string",
+                  "description": "Gets or sets the proxy hostname used in contacting the Eureka server."
+                },
+                "ProxyPassword": {
+                  "type": "string",
+                  "description": "Gets or sets the proxy password used in contacting the Eureka server."
+                },
+                "ProxyPort": {
+                  "type": "integer",
+                  "description": "Gets or sets the proxy port number used in contacting the Eureka server."
+                },
+                "ProxyUserName": {
+                  "type": "string",
+                  "description": "Gets or sets the proxy username used in contacting the Eureka server."
+                },
+                "RetryCount": {
+                  "type": "integer",
+                  "description": "Gets or sets the number of times to retry Eureka server requests. Default value: 2."
+                },
+                "ShouldGZipContent": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to auto-decompress responses from Eureka server. The registry information from the Eureka server is compressed for optimum network traffic. Default value: true."
+                }
+              },
+              "description": "Gets Eureka server settings."
+            },
+            "Health": {
+              "type": "object",
+              "properties": {
+                "CheckEnabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to query ASP.NET health checks and 'Steeltoe.Common.HealthChecks.IHealthContributor's during registration and renewals, in order to determine the status of the running app to report back to Eureka. Default value: true."
+                },
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to activate an 'Steeltoe.Common.HealthChecks.IHealthContributor' that verifies connectivity to the Eureka server. Default value: true."
+                },
+                "MonitoredApps": {
+                  "type": "string",
+                  "description": "Gets or sets a comma-delimited list of applications in Eureka this app depends on. Leave empty for all apps. Their status is taken into account by 'Steeltoe.Discovery.Eureka.EurekaApplicationsHealthContributor', which requires manual addition to the IoC container."
+                }
+              },
+              "description": "Gets Eureka health settings."
+            },
+            "RegistryFetchIntervalSeconds": {
+              "type": "integer",
+              "description": "Gets or sets how often (in seconds) to fetch registry information from the Eureka server. Default value: 30."
+            },
+            "RegistryRefreshSingleVipAddress": {
+              "type": "string",
+              "description": "Gets or sets whether to only fetch registry information for the specified VIP address. Default value: false."
+            },
+            "ServiceUrl": {
+              "type": "string",
+              "description": "Gets or sets a comma-delimited list of Eureka server endpoints. Default value: http://localhost:8761/eureka/."
+            },
+            "ShouldDisableDelta": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to fetch the full registry each time or fetch only deltas. Note that the delta fetches can reduce the traffic tremendously, because the rate of change in the Eureka server is normally much lower than the rate of fetches. Default value: false."
+            },
+            "ShouldFetchRegistry": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to periodically fetch registry information from the Eureka server. Default value: true."
+            },
+            "ShouldFilterOnlyUpInstances": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to include only instances with UP status after fetching the list of applications. Default value: true."
+            },
+            "ShouldRegisterWithEureka": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to register the running app as a service instance. Default value: true."
+            },
+            "Validate_Certificates": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether the client validates server certificates. Default value: true."
+            }
+          }
+        },
+        "Instance": {
+          "type": "object",
+          "properties": {
+            "AppGroup": {
+              "type": "string",
+              "description": "Gets or sets the name of the application group to be registered with Eureka."
+            },
+            "AppName": {
+              "type": "string",
+              "description": "Gets or sets the name of the application to be registered with Eureka."
+            },
+            "AsgName": {
+              "type": "string",
+              "description": "Gets or sets the AWS auto-scaling group name associated with the instance. This information is specifically used in an AWS environment to automatically put an instance out of service after the instance is launched, and it has been disabled for traffic."
+            },
+            "DataCenterInfo": {
+              "type": "object",
+              "properties": {
+                "Name": {
+                  "enum": [
+                    "Netflix",
+                    "Amazon",
+                    "MyOwn"
+                  ]
+                }
+              },
+              "description": "Gets the data center the instance is deployed to. This information is used to get some AWS-specific instance information if the instance is deployed in AWS."
+            },
+            "HealthCheckUrl": {
+              "type": "string",
+              "description": "Gets or sets the absolute URL for health checks of the instance. Users can provide the 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HealthCheckUrlPath' if the health check endpoint resides in the same instance talking to Eureka. Otherwise, in case the instance is a proxy for some other server, users can provide the full URL. If the full URL is provided, it takes precedence. It is normally used for making educated decisions based on the health of the instance. For example, it can be used to determine whether to proceed deployments to an entire farm or stop the deployments without causing further damage. The full URL should follow the format: http://${eureka.hostname}:7001/ where the value ${eureka.hostname} is replaced at runtime."
+            },
+            "HealthCheckUrlPath": {
+              "type": "string",
+              "description": "Gets or sets the relative path to the health check endpoint of the instance. The health check URL is then constructed out of the 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HostName' and the type of communication - secure or non-secure, as specified in 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.SecurePort' and 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.NonSecurePort'. It is normally used for making educated decisions based on the health of the instance. For example, it can be used to determine whether to proceed deployments to an entire farm or stop the deployments without causing further damage. Default value: /health."
+            },
+            "HomePageUrl": {
+              "type": "string",
+              "description": "Gets or sets the absolute URL to the home page for the instance. Users can provide the 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HomePageUrlPath' if the home page resides in the same instance talking to Eureka. Otherwise, in case the instance is a proxy for some other server, users can provide the full URL. If the full URL is provided, it takes precedence. It is normally used for informational purposes for other services to find out about the status of the instance. Users can provide a simple HTML page indicating what the current status of the instance is. The full URL should follow the format: http://${eureka.hostname}:7001/ where the value ${eureka.hostname} is replaced at runtime."
+            },
+            "HomePageUrlPath": {
+              "type": "string",
+              "description": "Gets or sets the relative path to the home page URL for the instance. The home page URL is then constructed out of the 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HostName' and the type of communication - secure or non-secure, as specified in 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.SecurePort' and 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.NonSecurePort'. It is normally used for informational purposes for other services to use it as a landing page. Default value: /."
+            },
+            "HostName": {
+              "type": "string",
+              "description": "Gets or sets the hostname on which the instance is registered."
+            },
+            "IPAddress": {
+              "type": "string",
+              "description": "Gets or sets the IP address on which the instance is registered."
+            },
+            "InstanceEnabledOnInit": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether the instance should take traffic as soon as it is registered. Default value: true."
+            },
+            "InstanceId": {
+              "type": "string",
+              "description": "Gets or sets the unique ID (within the scope of the app name) of the instance to be registered with Eureka."
+            },
+            "LeaseExpirationDurationInSeconds": {
+              "type": "integer",
+              "description": "Gets or sets the time (in seconds) that the Eureka server waits since it received the last heartbeat before it marks the instance as down and thereby disallowing traffic to the instance. Setting this value too high could mean that traffic is routed to the instance even when the instance is not alive anymore. Setting this value too low could mean the instance may be taken out of traffic because of temporary network glitches. This value must be higher than 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.LeaseRenewalIntervalInSeconds'. Default value: 90."
+            },
+            "LeaseRenewalIntervalInSeconds": {
+              "type": "integer",
+              "description": "Gets or sets how often (in seconds) the client sends heartbeats to Eureka to indicate that it is still alive. If the heartbeats are not received for the period specified in 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.LeaseExpirationDurationInSeconds', Eureka server will remove the instance from its view, thereby disallowing traffic to the instance. Note that the instance could still not take traffic if 'Steeltoe.Discovery.Eureka.Configuration.EurekaHealthOptions.CheckEnabled' is true, which decides to make itself unavailable. Default value: 30."
+            },
+            "MetadataMap": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Gets the name/value pairs associated with the instance. This information is sent to Eureka server and can be used by other instances."
+            },
+            "NonSecurePortEnabled": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether the non-secure port should be enabled."
+            },
+            "Port": {
+              "type": "integer",
+              "description": "Gets or sets the non-secure port number on which the instance should receive traffic."
+            },
+            "PreferIPAddress": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether to register with 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.IPAddress' instead of 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HostName'. Default value: false."
+            },
+            "RegistrationMethod": {
+              "type": "string",
+              "description": "Gets or sets how to register on Cloud Foundry. Can be \"route\", \"direct\", or \"hostname\"."
+            },
+            "SecureHealthCheckUrl": {
+              "type": "string",
+              "description": "Gets or sets the secure absolute URL for health checks of the instance. Users can provide the 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HealthCheckUrlPath' if the health check endpoint resides in the same instance talking to Eureka. Otherwise, in case the instance is a proxy for some other server, users can provide the full URL. If the full URL is provided, it takes precedence. It is normally used for making educated decisions based on the health of the instance. For example, it can be used to determine whether to proceed deployments to an entire farm or stop the deployments without causing further damage. The full URL should follow the format: https://${eureka.hostname}:7001/ where the value ${eureka.hostname} is replaced at runtime."
+            },
+            "SecurePort": {
+              "type": "integer",
+              "description": "Gets or sets the secure port on which the instance should receive traffic."
+            },
+            "SecurePortEnabled": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether the secure port should be enabled."
+            },
+            "SecureVipAddress": {
+              "type": "string",
+              "description": "Gets or sets the comma-delimited list of secure VIP (Virtual Internet Protocol) addresses for the instance."
+            },
+            "StatusPageUrl": {
+              "type": "string",
+              "description": "Gets or sets the absolute URL to the status page for the instance. Users can provide the 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.StatusPageUrlPath' if the status page resides in the same instance talking to Eureka. Otherwise, in case the instance is a proxy for some other server, users can provide the full URL. If the full URL is provided, it takes precedence. It is normally used for informational purposes for other services to find out about the status of the instance. Users can provide a simple HTML page indicating what the current status of the instance is. The full URL should follow the format: http://${eureka.hostname}:7001/ where the value ${eureka.hostname} is replaced at runtime."
+            },
+            "StatusPageUrlPath": {
+              "type": "string",
+              "description": "Gets or sets the relative path to the status page for the instance. The status page URL is then constructed out of the 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HostName' and the type of communication - secure or non-secure, as specified in 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.SecurePort' and 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.NonSecurePort'. It is normally used for informational purposes for other services to find out about the status of the instance. Users can provide a simple HTML page indicating what the current status of the instance is. Default value: /info."
+            },
+            "UseNetworkInterfaces": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether 'System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces' is used to determine 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.IPAddress' and 'Steeltoe.Discovery.Eureka.Configuration.EurekaInstanceOptions.HostName' ."
+            },
+            "VipAddress": {
+              "type": "string",
+              "description": "Gets or sets the comma-delimited list of VIP (Virtual Internet Protocol) addresses for the instance."
+            }
+          }
+        }
+      }
+    }
+  }
+}

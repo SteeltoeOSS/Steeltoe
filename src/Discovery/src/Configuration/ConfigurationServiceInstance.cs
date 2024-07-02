@@ -16,19 +16,26 @@ namespace Steeltoe.Discovery.Configuration;
 /// </summary>
 public sealed class ConfigurationServiceInstance : IServiceInstance
 {
+    /// <inheritdoc />
     IReadOnlyDictionary<string, string?> IServiceInstance.Metadata => new ReadOnlyDictionary<string, string?>(Metadata);
 
+    /// <inheritdoc />
     [Required]
     public string? ServiceId { get; set; }
 
+    /// <inheritdoc />
     [Required]
     public string? Host { get; set; }
 
+    /// <inheritdoc />
     public int Port { get; set; }
 
+    /// <inheritdoc />
     public bool IsSecure { get; set; }
 
+    /// <inheritdoc />
     public Uri Uri => new($"{(IsSecure ? Uri.UriSchemeHttps : Uri.UriSchemeHttp)}{Uri.SchemeDelimiter}{Host}:{Port}");
 
+    /// <inheritdoc cref="IServiceInstance.Metadata" />
     public IDictionary<string, string?> Metadata { get; } = new Dictionary<string, string?>();
 }

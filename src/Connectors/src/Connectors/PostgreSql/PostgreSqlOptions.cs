@@ -4,6 +4,7 @@
 
 namespace Steeltoe.Connectors.PostgreSql;
 
+/// <inheritdoc />
 public sealed class PostgreSqlOptions : ConnectionStringOptions
 {
 }
