@@ -4,7 +4,11 @@
 
 namespace Steeltoe.Connectors.CosmosDb;
 
+/// <inheritdoc />
 public sealed class CosmosDbOptions : ConnectionStringOptions
 {
+    /// <summary>
+    /// Gets or sets the name of the CosmosDB database.
+    /// </summary>
     public string? Database { get; set; }
 }

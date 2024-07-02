@@ -54,7 +54,7 @@ public interface IMultipleProviderRouter
     /// A null-terminated string that specifies a password to be used in making the network connection.
     /// </param>
     /// <param name="username">
-    /// A null-terminated string that specifies a user name for making the connection.
+    /// A null-terminated string that specifies a username for making the connection.
     /// </param>
     /// <param name="flags">
     /// Set of bit flags describing the connection.

@@ -19,7 +19,6 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using StackExchange.Redis;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
@@ -44,6 +43,7 @@ using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
+using Steeltoe.Management.Tracing;
 using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
@@ -208,7 +208,7 @@ public sealed class HostBuilderExtensionsTest
         var tracerProvider = host.Services.GetRequiredService<TracerProvider>();
 
         host.Services.GetService<IHostedService>().Should().NotBeNull();
-        host.Services.GetService<ITracingOptions>().Should().NotBeNull();
+        host.Services.GetService<TracingOptions>().Should().NotBeNull();
         host.Services.GetService<IDynamicMessageProcessor>().Should().NotBeNull();
 
         FieldInfo? instrumentationsField = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance);

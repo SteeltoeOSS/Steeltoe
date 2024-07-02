@@ -94,16 +94,18 @@ public sealed class ConfigServerClientSettingsOptions : AbstractOptions
                 Enabled = Enabled,
                 FailFast = FailFast,
                 ValidateCertificates = Validate_Certificates,
-                RetryAttempts = RetryAttempts,
-                RetryEnabled = RetryEnabled,
-                RetryInitialInterval = RetryInitialInterval,
-                RetryMaxInterval = RetryMaxInterval,
-                RetryMultiplier = RetryMultiplier,
+                Retry =
+                {
+                    Attempts = RetryAttempts,
+                    Enabled = RetryEnabled,
+                    InitialInterval = RetryInitialInterval,
+                    MaxInterval = RetryMaxInterval,
+                    Multiplier = RetryMultiplier
+                },
                 Timeout = Timeout,
                 TokenTtl = TokenTtl,
                 TokenRenewRate = TokenRenewRate,
                 DisableTokenRenewal = DisableTokenRenewal,
-
                 Environment = Env,
                 Label = Label,
                 Name = Name,
@@ -114,12 +116,16 @@ public sealed class ConfigServerClientSettingsOptions : AbstractOptions
                 AccessTokenUri = Access_Token_Uri,
                 ClientSecret = Client_Secret,
                 ClientId = Client_Id,
-
-                DiscoveryEnabled = DiscoveryEnabled,
-                DiscoveryServiceId = DiscoveryServiceId,
-
-                HealthEnabled = HealthEnabled,
-                HealthTimeToLive = HealthTimeToLive
+                Discovery =
+                {
+                    Enabled = DiscoveryEnabled,
+                    ServiceId = DiscoveryServiceId
+                },
+                Health =
+                {
+                    Enabled = HealthEnabled,
+                    TimeToLive = HealthTimeToLive
+                }
             };
 
             foreach ((string key, string value) in Headers)

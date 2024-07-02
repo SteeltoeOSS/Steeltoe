@@ -70,7 +70,7 @@ public static class CosmosDbServiceCollectionExtensions
                 (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
             {
                 // From https://learn.microsoft.com/en-us/dotnet/api/microsoft.azure.cosmos.cosmosclient:
-                //   "Its recommended to maintain a single instance of CosmosClient per lifetime of the application
+                //   "It's recommended to maintain a single instance of CosmosClient per lifetime of the application
                 //   which enables efficient connection management and performance."
                 CacheConnection = true,
                 EnableHealthChecks = services.All(descriptor => descriptor.ServiceType != typeof(HealthCheckService))

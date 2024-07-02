@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
@@ -39,15 +42,24 @@ internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptionsW
 
     private string? GetBasePath()
     {
-        string? urlString = _configuration.GetValue<string?>("URLS");
+        ICollection<string> listenAddresses = _configuration.GetListenAddresses();
 
-        if (urlString != null)
+        if (listenAddresses.Count == 1 && listenAddresses.ElementAt(0) == "http://localhost:5000")
         {
-            string[] urls = urlString.Split(';');
+            // Nothing was configured, so we got the implicit default.
+            return null;
+        }
 
-            if (urls.Length > 0)
+        BindingAddress[] addresses = listenAddresses.Select(BindingAddress.Parse).ToArray();
+
+        foreach (BindingAddress address in addresses)
+        {
+            if (!string.IsNullOrEmpty(address.Host) && !address.Host.Contains('+') && !address.Host.Contains('*'))
             {
-                return urls[0];
+#pragma warning disable S4040 // Strings should be normalized to uppercase
+                return
+                    $"{address.Scheme.ToLowerInvariant()}{Uri.SchemeDelimiter}{address.Host.ToLowerInvariant()}:{address.Port.ToString(CultureInfo.InvariantCulture)}";
+#pragma warning restore S4040 // Strings should be normalized to uppercase
             }
         }
 

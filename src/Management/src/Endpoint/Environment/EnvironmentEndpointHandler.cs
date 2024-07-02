@@ -57,11 +57,11 @@ internal sealed class EnvironmentEndpointHandler : IEnvironmentEndpointHandler
         if (_configuration is IConfigurationRoot root)
         {
             List<IConfigurationProvider> providers = root.Providers.ToList();
+            IPlaceholderResolverProvider? placeholderProvider = providers.OfType<IPlaceholderResolverProvider>().FirstOrDefault();
 
-            if (providers.Exists(provider => provider is IPlaceholderResolverProvider))
+            if (placeholderProvider != null)
             {
-                IConfigurationProvider placeholderProvider = providers.First(provider => provider is IPlaceholderResolverProvider);
-                providers.InsertRange(0, ((IPlaceholderResolverProvider)placeholderProvider).Providers);
+                providers.InsertRange(0, placeholderProvider.Providers);
             }
 
             foreach (IConfigurationProvider provider in providers)

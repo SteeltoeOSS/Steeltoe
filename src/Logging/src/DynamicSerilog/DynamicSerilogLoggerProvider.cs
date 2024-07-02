@@ -25,7 +25,7 @@ public sealed class DynamicSerilogLoggerProvider : DynamicLoggerProvider
     }
 
     /// <summary>
-    /// Because of how Serilog is implemented, there is a single logger instance for a given application, which gets wrapped by ILoggers. However while
+    /// Because of how Serilog is implemented, there is a single logger instance for a given application, which gets wrapped by ILoggers. However, while
     /// testing, we need to clear this instance between tests. Should not be required under normal usage.
     /// </summary>
     internal static void ClearLogger()

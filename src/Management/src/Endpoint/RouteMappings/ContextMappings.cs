@@ -19,7 +19,7 @@ public sealed class ContextMappings
     {
         ArgumentGuard.NotNull(mappingDictionary);
 
-        // At this point, .NET will only ever have one context and it must be named "dispatcherServlets"
+        // At this point, .NET will only ever have one context, and it must be named "dispatcherServlets"
         // For .NET, the mappingDictionary contains keys that represent the type name of the controller and then a
         // list of MappingDescriptions for that controller.
 

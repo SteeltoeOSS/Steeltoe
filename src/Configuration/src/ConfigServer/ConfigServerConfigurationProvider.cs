@@ -203,13 +203,13 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             await DiscoverServerInstancesAsync(_configServerDiscoveryService, cancellationToken);
         }
 
-        // Adds client settings (e.g spring:cloud:config:uri, etc) to the Data dictionary
+        // Adds client settings (e.g. spring:cloud:config:uri, etc.) to the Data dictionary
         AddConfigServerClientSettings();
 
-        if (Settings is { RetryEnabled: true, FailFast: true })
+        if (Settings is { Retry.Enabled: true, FailFast: true })
         {
             int attempts = 0;
-            int backOff = Settings.RetryInitialInterval;
+            int backOff = Settings.Retry.InitialInterval;
 
             do
             {
@@ -224,11 +224,11 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                     Logger.LogInformation(exception, "Failed fetching configuration from server at: {Uri}.", Settings.Uri);
                     attempts++;
 
-                    if (attempts < Settings.RetryAttempts)
+                    if (attempts < Settings.Retry.Attempts)
                     {
                         Thread.CurrentThread.Join(backOff);
-                        int nextBackOff = (int)(backOff * Settings.RetryMultiplier);
-                        backOff = Math.Min(nextBackOff, Settings.RetryMaxInterval);
+                        int nextBackOff = (int)(backOff * Settings.Retry.Multiplier);
+                        backOff = Math.Min(nextBackOff, Settings.Retry.MaxInterval);
                     }
                     else
                     {
@@ -479,11 +479,11 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         data["spring:cloud:config:token"] = Settings.Token;
         data["spring:cloud:config:timeout"] = Settings.Timeout.ToString(CultureInfo.InvariantCulture);
         data["spring:cloud:config:validate_certificates"] = Settings.ValidateCertificates.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:retry:enabled"] = Settings.RetryEnabled.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:retry:maxAttempts"] = Settings.RetryAttempts.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:retry:initialInterval"] = Settings.RetryInitialInterval.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:retry:maxInterval"] = Settings.RetryMaxInterval.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:retry:multiplier"] = Settings.RetryMultiplier.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:retry:enabled"] = Settings.Retry.Enabled.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:retry:maxAttempts"] = Settings.Retry.Attempts.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:retry:initialInterval"] = Settings.Retry.InitialInterval.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:retry:maxInterval"] = Settings.Retry.MaxInterval.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:retry:multiplier"] = Settings.Retry.Multiplier.ToString(CultureInfo.InvariantCulture);
 
         data["spring:cloud:config:access_token_uri"] = Settings.AccessTokenUri;
         data["spring:cloud:config:client_secret"] = Settings.ClientSecret;
@@ -492,11 +492,11 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         data["spring:cloud:config:tokenRenewRate"] = Settings.TokenRenewRate.ToString(CultureInfo.InvariantCulture);
         data["spring:cloud:config:disableTokenRenewal"] = Settings.DisableTokenRenewal.ToString(CultureInfo.InvariantCulture);
 
-        data["spring:cloud:config:discovery:enabled"] = Settings.DiscoveryEnabled.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:discovery:serviceId"] = Settings.DiscoveryServiceId?.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:discovery:enabled"] = Settings.Discovery.Enabled.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:discovery:serviceId"] = Settings.Discovery.ServiceId?.ToString(CultureInfo.InvariantCulture);
 
-        data["spring:cloud:config:health:enabled"] = Settings.HealthEnabled.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:health:timeToLive"] = Settings.HealthTimeToLive.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:health:enabled"] = Settings.Health.Enabled.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:health:timeToLive"] = Settings.Health.TimeToLive.ToString(CultureInfo.InvariantCulture);
     }
 
     internal async Task<ConfigEnvironment?> RemoteLoadAsync(IEnumerable<string> requestUris, string? label, CancellationToken cancellationToken)
@@ -748,7 +748,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     internal bool IsDiscoveryFirstEnabled()
     {
         IConfigurationSection clientConfigSection = _configuration.GetSection(ConfigurationPrefix);
-        return clientConfigSection.GetValue("discovery:enabled", Settings.DiscoveryEnabled);
+        return clientConfigSection.GetValue("discovery:enabled", Settings.Discovery.Enabled);
     }
 
     /// <summary>

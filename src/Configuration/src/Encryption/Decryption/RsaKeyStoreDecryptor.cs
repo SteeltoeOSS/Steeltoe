@@ -18,7 +18,7 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
     private readonly string _defaultKeyAlias;
 
     public RsaKeyStoreDecryptor(IKeyProvider keyProvider, string alias)
-        : this(keyProvider, alias, ConfigServerEncryptionSettings.DefaultEncryptionRsaSalt, false, ConfigServerEncryptionSettings.DefaultEncryptionRsaAlgorithm)
+        : this(keyProvider, alias, RsaEncryptionSettings.DefaultSalt, false, RsaEncryptionSettings.DefaultAlgorithm)
     {
     }
 

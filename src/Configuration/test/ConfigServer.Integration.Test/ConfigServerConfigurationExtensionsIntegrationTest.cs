@@ -16,9 +16,9 @@ namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 //
 //       The easiest way to get that to happen is clone the spring-cloud-config
 //       repo and run the config-server.
-//          eg. git clone https://github.com/spring-cloud/spring-cloud-config.git
-//              cd spring-cloud-config\spring-cloud-config-server
-//              mvn spring-boot:run
+//          e.g. git clone https://github.com/spring-cloud/spring-cloud-config.git
+//               cd spring-cloud-config\spring-cloud-config-server
+//               mvn spring-boot:run
 public sealed class ConfigServerConfigurationExtensionsIntegrationTest
 {
     [Fact]

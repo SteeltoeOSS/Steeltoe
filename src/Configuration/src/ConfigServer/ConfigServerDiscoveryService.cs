@@ -106,20 +106,20 @@ internal sealed class ConfigServerDiscoveryService
     internal async Task<IEnumerable<IServiceInstance>> GetConfigServerInstancesAsync(CancellationToken cancellationToken)
     {
         int attempts = 0;
-        int backOff = _settings.RetryInitialInterval;
+        int backOff = _settings.Retry.InitialInterval;
         List<IServiceInstance> instances = [];
 
         do
         {
-            _logger.LogDebug("Locating ConfigServer {ServiceId} via discovery", _settings.DiscoveryServiceId);
+            _logger.LogDebug("Locating ConfigServer {ServiceId} via discovery", _settings.Discovery.ServiceId);
 
-            if (_settings.DiscoveryServiceId != null)
+            if (_settings.Discovery.ServiceId != null)
             {
                 foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
                 {
                     try
                     {
-                        IList<IServiceInstance> serviceInstances = await discoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
+                        IList<IServiceInstance> serviceInstances = await discoveryClient.GetInstancesAsync(_settings.Discovery.ServiceId, cancellationToken);
                         instances.AddRange(serviceInstances);
                     }
                     catch (Exception exception) when (!exception.IsCancellation())
@@ -129,18 +129,18 @@ internal sealed class ConfigServerDiscoveryService
                 }
             }
 
-            if (!_settings.RetryEnabled || instances.Any())
+            if (!_settings.Retry.Enabled || instances.Any())
             {
                 break;
             }
 
             attempts++;
 
-            if (attempts <= _settings.RetryAttempts)
+            if (attempts <= _settings.Retry.Attempts)
             {
                 Thread.CurrentThread.Join(backOff);
-                int nextBackOff = (int)(backOff * _settings.RetryMultiplier);
-                backOff = Math.Min(nextBackOff, _settings.RetryMaxInterval);
+                int nextBackOff = (int)(backOff * _settings.Retry.Multiplier);
+                backOff = Math.Min(nextBackOff, _settings.Retry.MaxInterval);
             }
             else
             {

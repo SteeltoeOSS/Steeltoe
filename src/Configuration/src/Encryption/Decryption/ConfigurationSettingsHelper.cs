@@ -19,12 +19,12 @@ internal static class ConfigurationSettingsHelper
         IConfigurationSection configurationSection = configuration.GetSection(ConfigurationPrefix);
 
         settings.EncryptionEnabled = configurationSection.GetValue("enabled", settings.EncryptionEnabled);
-        settings.EncryptionRsaStrong = configurationSection.GetValue("rsa:strong", settings.EncryptionRsaStrong);
-        settings.EncryptionRsaSalt = configurationSection.GetValue("rsa:salt", settings.EncryptionRsaSalt)!;
-        settings.EncryptionRsaAlgorithm = configurationSection.GetValue("rsa:algorithm", settings.EncryptionRsaAlgorithm)!;
-        settings.EncryptionKeyStoreLocation = configurationSection.GetValue("keyStore:location", settings.EncryptionKeyStoreLocation);
-        settings.EncryptionKeyStorePassword = configurationSection.GetValue("keyStore:password", settings.EncryptionKeyStorePassword);
-        settings.EncryptionKeyStoreAlias = configurationSection.GetValue("keyStore:alias", settings.EncryptionKeyStoreAlias);
+        settings.Rsa.Strong = configurationSection.GetValue("rsa:strong", settings.Rsa.Strong);
+        settings.Rsa.Salt = configurationSection.GetValue("rsa:salt", settings.Rsa.Salt);
+        settings.Rsa.Algorithm = configurationSection.GetValue("rsa:algorithm", settings.Rsa.Algorithm);
+        settings.KeyStore.Location = configurationSection.GetValue("keyStore:location", settings.KeyStore.Location);
+        settings.KeyStore.Password = configurationSection.GetValue("keyStore:password", settings.KeyStore.Password);
+        settings.KeyStore.Alias = configurationSection.GetValue("keyStore:alias", settings.KeyStore.Alias);
         settings.EncryptionKey = configurationSection.GetValue("key", settings.EncryptionKey);
     }
 }

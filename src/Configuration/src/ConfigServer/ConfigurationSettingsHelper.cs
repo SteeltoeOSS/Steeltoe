@@ -33,11 +33,11 @@ internal static class ConfigurationSettingsHelper
         settings.Enabled = configurationSection.GetValue("enabled", settings.Enabled);
         settings.FailFast = configurationSection.GetValue("failFast", settings.FailFast);
         settings.ValidateCertificates = GetCertificateValidation(configurationSection, settings.ValidateCertificates);
-        settings.RetryEnabled = configurationSection.GetValue("retry:enabled", settings.RetryEnabled);
-        settings.RetryInitialInterval = configurationSection.GetValue("retry:initialInterval", settings.RetryInitialInterval);
-        settings.RetryMaxInterval = configurationSection.GetValue("retry:maxInterval", settings.RetryMaxInterval);
-        settings.RetryMultiplier = configurationSection.GetValue("retry:multiplier", settings.RetryMultiplier);
-        settings.RetryAttempts = configurationSection.GetValue("retry:maxAttempts", settings.RetryAttempts);
+        settings.Retry.Enabled = configurationSection.GetValue("retry:enabled", settings.Retry.Enabled);
+        settings.Retry.InitialInterval = configurationSection.GetValue("retry:initialInterval", settings.Retry.InitialInterval);
+        settings.Retry.MaxInterval = configurationSection.GetValue("retry:maxInterval", settings.Retry.MaxInterval);
+        settings.Retry.Multiplier = configurationSection.GetValue("retry:multiplier", settings.Retry.Multiplier);
+        settings.Retry.Attempts = configurationSection.GetValue("retry:maxAttempts", settings.Retry.Attempts);
         settings.Token = configurationSection.GetValue("token", settings.Token);
         settings.Timeout = configurationSection.GetValue("timeout", settings.Timeout);
         settings.AccessTokenUri = GetAccessTokenUri(sectionPrefix, configuration);
@@ -46,10 +46,10 @@ internal static class ConfigurationSettingsHelper
         settings.TokenRenewRate = configurationSection.GetValue("tokenRenewRate", 60_000);
         settings.DisableTokenRenewal = configurationSection.GetValue("disableTokenRenewal", false);
         settings.TokenTtl = configurationSection.GetValue("tokenTtl", 300_000);
-        settings.DiscoveryEnabled = configurationSection.GetValue("discovery:enabled", settings.DiscoveryEnabled);
-        settings.DiscoveryServiceId = configurationSection.GetValue("discovery:serviceId", settings.DiscoveryServiceId);
-        settings.HealthEnabled = configurationSection.GetValue("health:enabled", settings.HealthEnabled);
-        settings.HealthTimeToLive = configurationSection.GetValue("health:timeToLive", settings.HealthTimeToLive);
+        settings.Discovery.Enabled = configurationSection.GetValue("discovery:enabled", settings.Discovery.Enabled);
+        settings.Discovery.ServiceId = configurationSection.GetValue("discovery:serviceId", settings.Discovery.ServiceId);
+        settings.Health.Enabled = configurationSection.GetValue("health:enabled", settings.Health.Enabled);
+        settings.Health.TimeToLive = configurationSection.GetValue("health:timeToLive", settings.Health.TimeToLive);
         settings.PollingInterval = configurationSection.GetValue("pollingInterval", settings.PollingInterval);
 
         // Override Config Server URI

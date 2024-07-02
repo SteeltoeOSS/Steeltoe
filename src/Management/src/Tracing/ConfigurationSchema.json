@@ -1,0 +1,80 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management.Tracing": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Management": {
+      "type": "object",
+      "properties": {
+        "Tracing": {
+          "type": "object",
+          "properties": {
+            "AlwaysSample": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether traces should ALWAYS be captured. Default value: false."
+            },
+            "EgressIgnorePattern": {
+              "type": "string",
+              "description": "Gets or sets a regular expression for requests leaving this application that should not be traced. Default value: \"/api/v2/spans|/v2/apps/.*/permissions|/eureka/*\""
+            },
+            "ExporterEndpoint": {
+              "type": "string",
+              "format": "uri",
+              "description": "Gets or sets the endpoint used for exporting traces."
+            },
+            "IngressIgnorePattern": {
+              "type": "string",
+              "description": "Gets or sets a regular expression for requests coming into this application that should not be traced. Default value: \"/actuator/.*|/cloudfoundryapplication/.*|.*\\\\.png|.*\\\\.css|.*\\\\.js|.*\\\\.html|/favicon.ico|.*\\\\.gif\""
+            },
+            "MaxPayloadSizeInBytes": {
+              "type": "integer",
+              "description": "Gets or sets the maximum payload size in bytes. Default value: 4096."
+            },
+            "NeverSample": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether traces should NEVER be captured. Default value: false."
+            },
+            "PropagationType": {
+              "type": "string",
+              "description": "Gets or sets the propagation format that should be used. Default value: B3."
+            },
+            "SingleB3Header": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether one or multiple B3 headers should be used. Default value: true."
+            },
+            "UseShortTraceIds": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether trace IDs should be truncated from 16 to 8 bytes in logs. Default value: false."
+            }
+          }
+        }
+      }
+    },
+    "Spring": {
+      "type": "object",
+      "properties": {
+        "Application": {
+          "type": "object",
+          "properties": {
+            "Name": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

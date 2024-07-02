@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
-using Steeltoe.Common;
 using Steeltoe.Logging;
 using B3Propagator = OpenTelemetry.Extensions.Propagators.B3Propagator;
 
@@ -37,7 +36,7 @@ public class TestBase
     protected void ValidateServiceCollectionCommon(ServiceProvider serviceProvider)
     {
         // confirm Steeltoe types were registered
-        Assert.NotNull(serviceProvider.GetService<ITracingOptions>());
+        Assert.NotNull(serviceProvider.GetService<TracingOptions>());
         Assert.IsType<TracingLogProcessor>(serviceProvider.GetRequiredService<IDynamicMessageProcessor>());
 
         // confirm OpenTelemetry types were registered

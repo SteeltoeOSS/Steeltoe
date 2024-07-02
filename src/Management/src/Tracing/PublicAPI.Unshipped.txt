@@ -7,4 +7,25 @@ Steeltoe.Management.Tracing.TracingBaseServiceCollectionExtensions
 Steeltoe.Management.Tracing.TracingCoreServiceCollectionExtensions
 Steeltoe.Management.Tracing.TracingLogProcessor
 Steeltoe.Management.Tracing.TracingLogProcessor.Process(string! message) -> string!
-Steeltoe.Management.Tracing.TracingLogProcessor.TracingLogProcessor(Steeltoe.Common.ITracingOptions! options) -> void
+Steeltoe.Management.Tracing.TracingLogProcessor.TracingLogProcessor(Steeltoe.Management.Tracing.TracingOptions! options) -> void
+Steeltoe.Management.Tracing.TracingOptions
+Steeltoe.Management.Tracing.TracingOptions.AlwaysSample.get -> bool
+Steeltoe.Management.Tracing.TracingOptions.AlwaysSample.set -> void
+Steeltoe.Management.Tracing.TracingOptions.EgressIgnorePattern.get -> string?
+Steeltoe.Management.Tracing.TracingOptions.EgressIgnorePattern.set -> void
+Steeltoe.Management.Tracing.TracingOptions.ExporterEndpoint.get -> System.Uri?
+Steeltoe.Management.Tracing.TracingOptions.ExporterEndpoint.set -> void
+Steeltoe.Management.Tracing.TracingOptions.IngressIgnorePattern.get -> string?
+Steeltoe.Management.Tracing.TracingOptions.IngressIgnorePattern.set -> void
+Steeltoe.Management.Tracing.TracingOptions.MaxPayloadSizeInBytes.get -> int
+Steeltoe.Management.Tracing.TracingOptions.MaxPayloadSizeInBytes.set -> void
+Steeltoe.Management.Tracing.TracingOptions.Name.get -> string?
+Steeltoe.Management.Tracing.TracingOptions.NeverSample.get -> bool
+Steeltoe.Management.Tracing.TracingOptions.NeverSample.set -> void
+Steeltoe.Management.Tracing.TracingOptions.PropagationType.get -> string?
+Steeltoe.Management.Tracing.TracingOptions.PropagationType.set -> void
+Steeltoe.Management.Tracing.TracingOptions.SingleB3Header.get -> bool
+Steeltoe.Management.Tracing.TracingOptions.SingleB3Header.set -> void
+Steeltoe.Management.Tracing.TracingOptions.TracingOptions(Steeltoe.Common.IApplicationInstanceInfo? appInfo, Microsoft.Extensions.Configuration.IConfiguration! configuration) -> void
+Steeltoe.Management.Tracing.TracingOptions.UseShortTraceIds.get -> bool
+Steeltoe.Management.Tracing.TracingOptions.UseShortTraceIds.set -> void

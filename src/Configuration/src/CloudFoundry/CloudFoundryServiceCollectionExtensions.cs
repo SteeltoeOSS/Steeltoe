@@ -77,7 +77,7 @@ public static class CloudFoundryServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Finds all of the Cloud Foundry services with the <paramref name="serviceLabel" /> in VCAP_SERVICES and binds the configuration data from the provided
+    /// Finds all Cloud Foundry services with the <paramref name="serviceLabel" /> in VCAP_SERVICES and binds the configuration data from the provided
     /// <paramref name="configuration" /> into the options type and adds them all to the provided service container as a configured named TOptions. The name
     /// of each TOption will be the name of the Cloud Foundry service binding. You can then inject all the options using the normal Options pattern.
     /// </summary>

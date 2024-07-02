@@ -7,7 +7,7 @@
 namespace Steeltoe.Bootstrap.AutoConfiguration;
 
 /// <summary>
-/// Lists the names of Steeltoe assemblies that are used in auto-configuration.
+/// Lists the names of Steeltoe assemblies that are used in autoconfiguration.
 /// </summary>
 public static class SteeltoeAssemblyNames
 {

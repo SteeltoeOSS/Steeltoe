@@ -69,7 +69,7 @@ public static class RabbitMQServiceCollectionExtensions
                 (serviceProvider, serviceBindingName) => CreateHealthContributor(serviceProvider, serviceBindingName, packageResolver))
             {
                 // From https://www.rabbitmq.com/dotnet-api-guide.html#connection-and-channel-lifespan:
-                //   "Connections are meant to be long-lived. The underlying protocol is designed and optimized for long running connections.
+                //   "Connections are meant to be long-lived. The underlying protocol is designed and optimized for long-running connections.
                 //   That means that opening a new connection per operation, e.g. a message published, is unnecessary and strongly discouraged
                 //   as it will introduce a lot of network round-trips and overhead."
                 CacheConnection = true,

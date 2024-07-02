@@ -44,10 +44,7 @@ Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ClientSecret.set 
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.ConfigServerClientSettings() -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DisableTokenRenewal.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DisableTokenRenewal.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryEnabled.get -> bool
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryEnabled.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryServiceId.get -> string?
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.DiscoveryServiceId.set -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Discovery.get -> Steeltoe.Configuration.ConfigServer.ConfigServerDiscoverySettings!
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Enabled.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Enabled.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Environment.get -> string?
@@ -55,10 +52,7 @@ Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Environment.set -
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.FailFast.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.FailFast.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Headers.get -> System.Collections.Generic.IDictionary<string!, string!>!
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.HealthEnabled.get -> bool
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.HealthEnabled.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.HealthTimeToLive.get -> long
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.HealthTimeToLive.set -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Health.get -> Steeltoe.Configuration.ConfigServer.ConfigServerHealthSettings!
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Label.get -> string?
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Label.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Name.get -> string?
@@ -68,16 +62,7 @@ Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Password.set -> v
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.PollingInterval.get -> System.TimeSpan
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.PollingInterval.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RawUris.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryAttempts.get -> int
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryAttempts.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryEnabled.get -> bool
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryEnabled.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryInitialInterval.get -> int
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryInitialInterval.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryMaxInterval.get -> int
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryMaxInterval.set -> void
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryMultiplier.get -> double
-Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.RetryMultiplier.set -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Retry.get -> Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings!
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Timeout.get -> int
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Timeout.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettings.Token.get -> string?
@@ -153,10 +138,34 @@ Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.ValidateCe
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Validate_Certificates.get -> bool
 Steeltoe.Configuration.ConfigServer.ConfigServerClientSettingsOptions.Validate_Certificates.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerConfigurationBuilderExtensions
+Steeltoe.Configuration.ConfigServer.ConfigServerDiscoverySettings
+Steeltoe.Configuration.ConfigServer.ConfigServerDiscoverySettings.ConfigServerDiscoverySettings() -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerDiscoverySettings.Enabled.get -> bool
+Steeltoe.Configuration.ConfigServer.ConfigServerDiscoverySettings.Enabled.set -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerDiscoverySettings.ServiceId.get -> string?
+Steeltoe.Configuration.ConfigServer.ConfigServerDiscoverySettings.ServiceId.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerException
 Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(string? message) -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerException.ConfigServerException(string? message, System.Exception? innerException) -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerHealthSettings
+Steeltoe.Configuration.ConfigServer.ConfigServerHealthSettings.ConfigServerHealthSettings() -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerHealthSettings.Enabled.get -> bool
+Steeltoe.Configuration.ConfigServer.ConfigServerHealthSettings.Enabled.set -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerHealthSettings.TimeToLive.get -> long
+Steeltoe.Configuration.ConfigServer.ConfigServerHealthSettings.TimeToLive.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerHostBuilderExtensions
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.Attempts.get -> int
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.Attempts.set -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.ConfigServerRetrySettings() -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.Enabled.get -> bool
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.Enabled.set -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.InitialInterval.get -> int
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.InitialInterval.set -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.MaxInterval.get -> int
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.MaxInterval.set -> void
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.Multiplier.get -> double
+Steeltoe.Configuration.ConfigServer.ConfigServerRetrySettings.Multiplier.set -> void
 Steeltoe.Configuration.ConfigServer.ConfigServerServiceCollectionExtensions
 Steeltoe.Configuration.ConfigServer.PropertySource
 Steeltoe.Configuration.ConfigServer.PropertySource.Name.get -> string?

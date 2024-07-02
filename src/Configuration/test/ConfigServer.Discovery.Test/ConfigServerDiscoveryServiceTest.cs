@@ -61,9 +61,12 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         var settings = new ConfigServerClientSettings
         {
-            RetryEnabled = true,
-            Timeout = 10,
-            RetryAttempts = 1
+            Retry =
+            {
+                Enabled = true,
+                Attempts = 1
+            },
+            Timeout = 10
         };
 
         var service = new ConfigServerDiscoveryService(configurationRoot, settings, NullLoggerFactory.Instance);
@@ -85,7 +88,10 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         var settings = new ConfigServerClientSettings
         {
-            RetryEnabled = false,
+            Retry =
+            {
+                Enabled = false
+            },
             Timeout = 10
         };
 

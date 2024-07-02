@@ -1,0 +1,23 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Management.Task": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "RunTask": {
+      "type": "string"
+    }
+  }
+}

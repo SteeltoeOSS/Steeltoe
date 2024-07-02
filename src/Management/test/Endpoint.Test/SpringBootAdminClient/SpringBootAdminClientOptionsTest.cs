@@ -39,7 +39,7 @@ public sealed class SpringBootAdminClientOptionsTest : BaseTest
         {
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:health:path"] = "myhealth",
-            ["URLS"] = "http://localhost:8080;https://localhost:8082",
+            ["URLS"] = "http://*:9999;http://+:7777;http://localhost:8080;https://localhost:8082",
             ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
             ["spring:boot:admin:client:metadata:user.name"] = "userName",
             ["spring:boot:admin:client:metadata:user.password"] = "userPassword",

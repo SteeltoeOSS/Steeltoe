@@ -1,0 +1,58 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Discovery": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Discovery.Configuration": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Discovery": {
+      "type": "object",
+      "properties": {
+        "Services": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Host": {
+                "type": "string",
+                "description": "Gets the hostname of the registered service instance."
+              },
+              "IsSecure": {
+                "type": "boolean",
+                "description": "Gets a value indicating whether the scheme of the registered service instance is https."
+              },
+              "Metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Gets the key/value metadata associated with this service instance."
+              },
+              "Port": {
+                "type": "integer",
+                "description": "Gets the port of the registered service instance."
+              },
+              "ServiceId": {
+                "type": "string",
+                "description": "Gets the service ID as registered by the discovery client."
+              }
+            },
+            "description": "Represents an 'Steeltoe.Common.Discovery.IServiceInstance' inside 'Steeltoe.Discovery.Configuration.ConfigurationDiscoveryOptions' that was loaded from app configuration."
+          }
+        }
+      },
+      "description": "Provides access to 'Steeltoe.Common.Discovery.IServiceInstance's stored in app configuration. Used by 'Steeltoe.Discovery.Configuration.ConfigurationDiscoveryClient'."
+    }
+  }
+}

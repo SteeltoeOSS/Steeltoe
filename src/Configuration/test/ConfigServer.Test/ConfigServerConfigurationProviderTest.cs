@@ -747,8 +747,11 @@ public sealed class ConfigServerConfigurationProviderTest
         {
             Name = "myName",
             FailFast = true,
-            RetryEnabled = true,
-            RetryInitialInterval = 10,
+            Retry =
+            {
+                Enabled = true,
+                InitialInterval = 10
+            },
             Timeout = 10
         };
 
@@ -892,7 +895,10 @@ public sealed class ConfigServerConfigurationProviderTest
             Token = "vaulttoken",
             TokenRenewRate = 1,
             TokenTtl = 2,
-            RetryMultiplier = 1.1
+            Retry =
+            {
+                Multiplier = 1.1
+            }
         };
 
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
@@ -1100,7 +1106,10 @@ public sealed class ConfigServerConfigurationProviderTest
         {
             Name = "foo",
             Environment = "development",
-            DiscoveryEnabled = true
+            Discovery =
+            {
+                Enabled = true
+            }
         };
 
         var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);

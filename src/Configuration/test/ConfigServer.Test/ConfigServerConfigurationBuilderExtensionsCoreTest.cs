@@ -105,11 +105,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
         Assert.Equal("myPassword", settings.Password);
-        Assert.False(settings.RetryEnabled);
-        Assert.Equal(55555, settings.RetryAttempts);
-        Assert.Equal(55555, settings.RetryInitialInterval);
-        Assert.Equal(55555, settings.RetryMaxInterval);
-        Assert.Equal(5.5, settings.RetryMultiplier);
+        Assert.False(settings.Retry.Enabled);
+        Assert.Equal(55555, settings.Retry.Attempts);
+        Assert.Equal(55555, settings.Retry.InitialInterval);
+        Assert.Equal(55555, settings.Retry.MaxInterval);
+        Assert.Equal(5.5, settings.Retry.Multiplier);
         Assert.Equal(10000, settings.Timeout);
         Assert.Equal("vaulttoken", settings.Token);
         Assert.Null(settings.AccessTokenUri);

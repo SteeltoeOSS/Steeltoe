@@ -54,7 +54,7 @@ public interface IApplicationInstanceInfo
     int FileDescriptorLimit { get; }
 
     /// <summary>
-    /// Gets the internal IP address of the container running the app instance instance.
+    /// Gets the internal IP address of the container running the app instance.
     /// </summary>
     string InternalIP { get; }
 

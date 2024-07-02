@@ -37,7 +37,7 @@ public static class WebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="assemblyNamesToExclude">
-    /// The set of assembly names to exclude from auto-configuration. For ease of use, select from the constants in <see cref="SteeltoeAssemblyNames" />.
+    /// The set of assembly names to exclude from autoconfiguration. For ease of use, select from the constants in <see cref="SteeltoeAssemblyNames" />.
     /// </param>
     /// <returns>
     /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
@@ -72,7 +72,7 @@ public static class WebHostBuilderExtensions
     /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="assemblyNamesToExclude">
-    /// The set of assembly names to exclude from auto-configuration. For ease of use, select from the constants in <see cref="SteeltoeAssemblyNames" />.
+    /// The set of assembly names to exclude from autoconfiguration. For ease of use, select from the constants in <see cref="SteeltoeAssemblyNames" />.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to

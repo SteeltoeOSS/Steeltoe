@@ -7,7 +7,40 @@ using System.Security.Cryptography.X509Certificates;
 namespace Steeltoe.Configuration.ConfigServer;
 
 /// <summary>
-/// Holds the settings used to configure the Spring Cloud Config Server provider <see cref="ConfigServerConfigurationProvider" />.
+/// Holds the settings used to configure service discovery with the Spring Cloud Config Server provider.
+/// </summary>
+public sealed class ConfigServerDiscoverySettings
+{
+    /// <summary>
+    /// Gets or sets a value indicating whether discovery first behavior is enabled. Default value: false.
+    /// </summary>
+    public bool Enabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value of the service ID used during discovery first behavior. Default value: "configserver".
+    /// </summary>
+    public string? ServiceId { get; set; } = "configserver";
+
+}
+/// <summary>
+/// Holds the settings used to configure health checks with the Spring Cloud Config Server provider.
+/// </summary>
+public sealed class ConfigServerHealthSettings
+{
+    /// <summary>
+    /// Gets or sets a value indicating whether health check is enabled. Default value: true.
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value for the health check cache time-to-live. Default value: 300_000 (5 minutes).
+    /// </summary>
+    public long TimeToLive { get; set; } = 300_000;
+
+}
+
+/// <summary>
+/// Holds the settings used to configure the Spring Cloud Config Server provider.
 /// </summary>
 public sealed class ConfigServerClientSettings
 {
@@ -58,49 +91,20 @@ public sealed class ConfigServerClientSettings
     public bool ValidateCertificates { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether retries are enabled on failures. Default value: false.
+    /// Gets retry settings.
     /// </summary>
-    public bool RetryEnabled { get; set; }
+    public ConfigServerRetrySettings Retry { get; } = new();
 
     /// <summary>
-    /// Gets or sets initial retry interval in milliseconds. Default value: 1000.
+    /// Gets service discovery settings.
     /// </summary>
-    public int RetryInitialInterval { get; set; } = 1000;
+    public ConfigServerDiscoverySettings Discovery { get; } = new();
 
     /// <summary>
-    /// Gets or sets max retry interval in milliseconds. Default value: 2000.
+    /// Gets health check settings.
     /// </summary>
-    public int RetryMaxInterval { get; set; } = 2000;
+    public ConfigServerHealthSettings Health { get; } = new();
 
-    /// <summary>
-    /// Gets or sets the multiplier for next retry interval. Default value: 1.1.
-    /// </summary>
-    public double RetryMultiplier { get; set; } = 1.1;
-
-    /// <summary>
-    /// Gets or sets the max number of retries the client will attempt. Default value: 6.
-    /// </summary>
-    public int RetryAttempts { get; set; } = 6;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether discovery first behavior is enabled. Default value: false.
-    /// </summary>
-    public bool DiscoveryEnabled { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value of the service ID used during discovery first behavior. Default value: "configserver".
-    /// </summary>
-    public string? DiscoveryServiceId { get; set; } = "configserver";
-
-    /// <summary>
-    /// Gets or sets a value indicating whether health check is enabled. Default value: true.
-    /// </summary>
-    public bool HealthEnabled { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets a value for the health check cache time-to-live. Default value: 300_000 (5 minutes).
-    /// </summary>
-    public long HealthTimeToLive { get; set; } = 300_000;
 
     /// <summary>
     /// Gets unescaped <see cref="UriComponents.HttpRequestUrl" />s.
