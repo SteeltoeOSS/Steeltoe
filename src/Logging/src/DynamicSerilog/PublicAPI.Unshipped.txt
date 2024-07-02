@@ -1,21 +1,21 @@
 #nullable enable
 override Steeltoe.Logging.DynamicSerilog.SerilogMessageProcessingLogger.Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, System.Exception? exception, System.Func<TState, System.Exception?, string!>! formatter) -> void
-static Steeltoe.Logging.DynamicSerilog.SerilogHostBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostBuilder! hostBuilder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogHostBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostBuilder! hostBuilder, bool preserveDefaultConsole) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogHostBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostBuilder! hostBuilder, System.Action<Microsoft.Extensions.Hosting.HostBuilderContext!, Serilog.LoggerConfiguration!>? configureLogger) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogHostBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostBuilder! hostBuilder, System.Action<Microsoft.Extensions.Hosting.HostBuilderContext!, Serilog.LoggerConfiguration!>? configureLogger, bool preserveDefaultConsole) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogHostApplicationBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogHostApplicationBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, bool preserveDefaultConsole) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogHostApplicationBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, System.Action<Microsoft.Extensions.Hosting.IHostApplicationBuilder!, Serilog.LoggerConfiguration!>? configureLogger) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogHostApplicationBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, System.Action<Microsoft.Extensions.Hosting.IHostApplicationBuilder!, Serilog.LoggerConfiguration!>? configureLogger, bool preserveDefaultConsole) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogHostBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogHostBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostBuilder! builder, bool preserveDefaultConsole) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogHostBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostBuilder! builder, System.Action<Microsoft.Extensions.Hosting.HostBuilderContext!, Serilog.LoggerConfiguration!>? configureLogger) -> Microsoft.Extensions.Hosting.IHostBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogHostBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Hosting.IHostBuilder! builder, System.Action<Microsoft.Extensions.Hosting.HostBuilderContext!, Serilog.LoggerConfiguration!>? configureLogger, bool preserveDefaultConsole) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Logging.DynamicSerilog.SerilogLoggingBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Logging.ILoggingBuilder! builder) -> Microsoft.Extensions.Logging.ILoggingBuilder!
 static Steeltoe.Logging.DynamicSerilog.SerilogLoggingBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Logging.ILoggingBuilder! builder, bool preserveDefaultConsole) -> Microsoft.Extensions.Logging.ILoggingBuilder!
 static Steeltoe.Logging.DynamicSerilog.SerilogLoggingBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Logging.ILoggingBuilder! builder, Serilog.LoggerConfiguration? serilogConfiguration) -> Microsoft.Extensions.Logging.ILoggingBuilder!
 static Steeltoe.Logging.DynamicSerilog.SerilogLoggingBuilderExtensions.AddDynamicSerilog(this Microsoft.Extensions.Logging.ILoggingBuilder! builder, Serilog.LoggerConfiguration? serilogConfiguration, bool preserveDefaultConsole) -> Microsoft.Extensions.Logging.ILoggingBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogWebApplicationBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! hostBuilder) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogWebApplicationBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! hostBuilder, bool preserveDefaultConsole) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogWebApplicationBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! hostBuilder, System.Action<Microsoft.AspNetCore.Builder.WebApplicationBuilder!, Serilog.LoggerConfiguration!>? configureLogger) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogWebApplicationBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Builder.WebApplicationBuilder! hostBuilder, System.Action<Microsoft.AspNetCore.Builder.WebApplicationBuilder!, Serilog.LoggerConfiguration!>? configureLogger, bool preserveDefaultConsole) -> Microsoft.AspNetCore.Builder.WebApplicationBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogWebHostBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! hostBuilder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogWebHostBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! hostBuilder, bool preserveDefaultConsole) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogWebHostBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! hostBuilder, System.Action<Microsoft.AspNetCore.Hosting.WebHostBuilderContext!, Serilog.LoggerConfiguration!>? configureLogger) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Logging.DynamicSerilog.SerilogWebHostBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! hostBuilder, System.Action<Microsoft.AspNetCore.Hosting.WebHostBuilderContext!, Serilog.LoggerConfiguration!>? configureLogger, bool preserveDefaultConsole) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogWebHostBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogWebHostBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, bool preserveDefaultConsole) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogWebHostBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, System.Action<Microsoft.AspNetCore.Hosting.WebHostBuilderContext!, Serilog.LoggerConfiguration!>? configureLogger) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
+static Steeltoe.Logging.DynamicSerilog.SerilogWebHostBuilderExtensions.AddDynamicSerilog(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, System.Action<Microsoft.AspNetCore.Hosting.WebHostBuilderContext!, Serilog.LoggerConfiguration!>? configureLogger, bool preserveDefaultConsole) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 Steeltoe.Logging.DynamicSerilog.DynamicSerilogLoggerProvider
 Steeltoe.Logging.DynamicSerilog.DynamicSerilogLoggerProvider.DynamicSerilogLoggerProvider(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Logging.DynamicSerilog.SerilogOptions!>! serilogOptionsMonitor, System.Collections.Generic.IEnumerable<Steeltoe.Logging.IDynamicMessageProcessor!>! messageProcessors) -> void
 Steeltoe.Logging.DynamicSerilog.MinimumLevel
@@ -23,6 +23,7 @@ Steeltoe.Logging.DynamicSerilog.MinimumLevel.Default.get -> Serilog.Events.LogEv
 Steeltoe.Logging.DynamicSerilog.MinimumLevel.Default.set -> void
 Steeltoe.Logging.DynamicSerilog.MinimumLevel.MinimumLevel() -> void
 Steeltoe.Logging.DynamicSerilog.MinimumLevel.Override.get -> System.Collections.Generic.IDictionary<string!, Serilog.Events.LogEventLevel>!
+Steeltoe.Logging.DynamicSerilog.SerilogHostApplicationBuilderExtensions
 Steeltoe.Logging.DynamicSerilog.SerilogHostBuilderExtensions
 Steeltoe.Logging.DynamicSerilog.SerilogLoggingBuilderExtensions
 Steeltoe.Logging.DynamicSerilog.SerilogMessageProcessingLogger
@@ -31,5 +32,4 @@ Steeltoe.Logging.DynamicSerilog.SerilogOptions
 Steeltoe.Logging.DynamicSerilog.SerilogOptions.MinimumLevel.get -> Steeltoe.Logging.DynamicSerilog.MinimumLevel?
 Steeltoe.Logging.DynamicSerilog.SerilogOptions.MinimumLevel.set -> void
 Steeltoe.Logging.DynamicSerilog.SerilogOptions.SerilogOptions() -> void
-Steeltoe.Logging.DynamicSerilog.SerilogWebApplicationBuilderExtensions
 Steeltoe.Logging.DynamicSerilog.SerilogWebHostBuilderExtensions

@@ -2,24 +2,24 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.MongoDb;
 
-public static class MongoDbWebApplicationBuilderExtensions
+public static class MongoDbHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="MongoDbOptions" /> and
     /// MongoDB.Driver.IMongoClient) to connect to a MongoDB database.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to add services to.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="WebApplicationBuilder" /> so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddMongoDb(this IHostApplicationBuilder builder)
     {
         return AddMongoDb(builder, null, null);
     }
@@ -29,7 +29,7 @@ public static class MongoDbWebApplicationBuilderExtensions
     /// MongoDB.Driver.IMongoClient) to connect to a MongoDB database.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to add services to.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="configureAction">
     /// An optional delegate to configure configuration of this connector.
@@ -38,9 +38,9 @@ public static class MongoDbWebApplicationBuilderExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="WebApplicationBuilder" /> so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+    public static IHostApplicationBuilder AddMongoDb(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(builder);

@@ -2,25 +2,25 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MySql;
 
-public static class MySqlWebApplicationBuilderExtensions
+public static class MySqlHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="MySqlOptions" /> and
     /// MySqlConnector.MySqlConnection or MySql.Data.MySqlClient.MySqlConnection) to connect to a MySQL compatible database.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to add services to.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="WebApplicationBuilder" /> so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddMySql(this IHostApplicationBuilder builder)
     {
         return AddMySql(builder, MySqlPackageResolver.Default);
     }
@@ -30,7 +30,7 @@ public static class MySqlWebApplicationBuilderExtensions
     /// MySqlConnector.MySqlConnection or MySql.Data.MySqlClient.MySqlConnection) to connect to a MySQL compatible database.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to add services to.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="configureAction">
     /// An optional delegate to configure configuration of this connector.
@@ -39,15 +39,15 @@ public static class MySqlWebApplicationBuilderExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="WebApplicationBuilder" /> so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+    public static IHostApplicationBuilder AddMySql(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
         return AddMySql(builder, MySqlPackageResolver.Default, configureAction, addAction);
     }
 
-    internal static WebApplicationBuilder AddMySql(this WebApplicationBuilder builder, MySqlPackageResolver packageResolver,
+    internal static IHostApplicationBuilder AddMySql(this IHostApplicationBuilder builder, MySqlPackageResolver packageResolver,
         Action<ConnectorConfigureOptionsBuilder>? configureAction = null, Action<ConnectorAddOptionsBuilder>? addAction = null)
     {
         ArgumentGuard.NotNull(builder);

@@ -16,50 +16,51 @@ public static class HostBuilderExtensions
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
     /// </summary>
-    /// <param name="webHostBuilder">
-    /// Your <see cref="IWebHostBuilder" />.
+    /// <param name="builder">
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// Your <see cref="IWebHostBuilder" />, now listening on port(s) found in the environment.
+    /// The <see cref="IWebHostBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static IWebHostBuilder UseCloudHosting(this IWebHostBuilder webHostBuilder)
+    public static IWebHostBuilder UseCloudHosting(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(webHostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        return webHostBuilder.BindToPorts();
+        builder.BindToPorts();
+        return builder;
     }
 
     /// <summary>
     /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
     /// </summary>
-    /// <param name="webApplicationBuilder">
-    /// Your <see cref="WebApplicationBuilder" />.
+    /// <param name="builder">
+    /// The <see cref="WebApplicationBuilder" /> to configure.
     /// </param>
-    /// <returns>
-    /// Your <see cref="WebApplicationBuilder" />, now listening on port(s) found in the environment.
-    /// </returns>
     /// <remarks>
     /// runLocalPort parameter will not be used if an environment variable PORT is found<br /><br /> THIS EXTENSION IS NOT COMPATIBLE WITH IIS EXPRESS.
     /// </remarks>
-    public static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder)
+    /// <returns>
+    /// The <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// </returns>
+    public static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(webApplicationBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        webApplicationBuilder.WebHost.BindToPorts();
-        return webApplicationBuilder;
+        builder.WebHost.BindToPorts();
+        return builder;
     }
 
-    internal static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder webApplicationBuilder, int? managementtHttpPort, int? managementHttpsPort)
+    internal static WebApplicationBuilder UseCloudHosting(this WebApplicationBuilder builder, int? managementHttpPort, int? managementHttpsPort)
     {
-        ArgumentGuard.NotNull(webApplicationBuilder);
-        webApplicationBuilder.WebHost.BindToPorts(managementtHttpPort, managementHttpsPort);
-        return webApplicationBuilder;
+        ArgumentGuard.NotNull(builder);
+        builder.WebHost.BindToPorts(managementHttpPort, managementHttpsPort);
+        return builder;
     }
 
-    internal static IWebHostBuilder UseCloudHosting(this IWebHostBuilder webhostBuilder, int? managementHttpPort, int? managementHttpsPort)
+    internal static IWebHostBuilder UseCloudHosting(this IWebHostBuilder builder, int? managementHttpPort, int? managementHttpsPort)
     {
-        ArgumentGuard.NotNull(webhostBuilder);
-        return webhostBuilder.BindToPorts(managementHttpPort, managementHttpsPort);
+        ArgumentGuard.NotNull(builder);
+        return builder.BindToPorts(managementHttpPort, managementHttpsPort);
     }
 
     private static List<string> GetUrlsFromPorts(int? httpPort, int? httpsPort)
@@ -79,14 +80,14 @@ public static class HostBuilderExtensions
         return urls;
     }
 
-    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? managementHttpPort = null, int? managementHttpsPort = null)
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder builder, int? managementHttpPort = null, int? managementHttpsPort = null)
     {
         var urls = new HashSet<string>();
 
         string portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
         string aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
-        string serverUrlSetting = webHostBuilder.GetSetting(DeprecatedServerUrlsKey); // check for deprecated setting
-        string urlSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+        string serverUrlSetting = builder.GetSetting(DeprecatedServerUrlsKey); // check for deprecated setting
+        string urlSetting = builder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
         if (!string.IsNullOrEmpty(serverUrlSetting))
         {
@@ -117,12 +118,12 @@ public static class HostBuilderExtensions
             urls.Add(url);
         }
 
-        return webHostBuilder.BindToPorts(urls);
+        return builder.BindToPorts(urls);
     }
 
-    private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, HashSet<string> urls)
+    private static IWebHostBuilder BindToPorts(this IWebHostBuilder builder, HashSet<string> urls)
     {
-        string currentSetting = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+        string currentSetting = builder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
         if (!string.IsNullOrEmpty(currentSetting))
         {
@@ -132,7 +133,7 @@ public static class HostBuilderExtensions
             }
         }
 
-        return webHostBuilder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", urls));
+        return builder.UseSetting(WebHostDefaults.ServerUrlsKey, string.Join(";", urls));
     }
 
     private static string GetCanonical(string serverUrlSetting)

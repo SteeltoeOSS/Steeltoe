@@ -2,24 +2,24 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
-public static class RabbitMQWebApplicationBuilderExtensions
+public static class RabbitMQHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Registers a <see cref="ConnectorFactory{TOptions,TConnection}" /> (with type parameters <see cref="RabbitMQOptions" /> and
     /// RabbitMQ.Client.IConnection) to connect to a RabbitMQ server.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to add services to.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="WebApplicationBuilder" /> so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddRabbitMQ(this IHostApplicationBuilder builder)
     {
         return AddRabbitMQ(builder, null, null);
     }
@@ -29,7 +29,7 @@ public static class RabbitMQWebApplicationBuilderExtensions
     /// RabbitMQ.Client.IConnection) to connect to a RabbitMQ server.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to add services to.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="configureAction">
     /// An optional delegate to configure configuration of this connector.
@@ -38,9 +38,9 @@ public static class RabbitMQWebApplicationBuilderExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="WebApplicationBuilder" /> so that additional calls can be chained.
+    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddRabbitMQ(this WebApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
+    public static IHostApplicationBuilder AddRabbitMQ(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
         ArgumentGuard.NotNull(builder);

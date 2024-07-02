@@ -17,7 +17,7 @@ public static class PostgreSqlConfigurationBuilderExtensions
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// The <see cref="IConfigurationBuilder" />, so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder)
     {
@@ -34,7 +34,7 @@ public static class PostgreSqlConfigurationBuilderExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// The <see cref="IConfigurationBuilder" />, so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder ConfigurePostgreSql(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {

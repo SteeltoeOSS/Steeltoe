@@ -14,21 +14,21 @@ public static class SerilogHostBuilderExtensions
     /// <summary>
     /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
     /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static IHostBuilder AddDynamicSerilog(this IHostBuilder hostBuilder)
+    public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder)
     {
-        return AddDynamicSerilog(hostBuilder, null, false);
+        return AddDynamicSerilog(builder, null, false);
     }
 
     /// <summary>
     /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <param name="configureLogger">
@@ -37,15 +37,15 @@ public static class SerilogHostBuilderExtensions
     /// <returns>
     /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static IHostBuilder AddDynamicSerilog(this IHostBuilder hostBuilder, Action<HostBuilderContext, LoggerConfiguration>? configureLogger)
+    public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder, Action<HostBuilderContext, LoggerConfiguration>? configureLogger)
     {
-        return AddDynamicSerilog(hostBuilder, configureLogger, false);
+        return AddDynamicSerilog(builder, configureLogger, false);
     }
 
     /// <summary>
     /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <param name="preserveDefaultConsole">
@@ -54,15 +54,15 @@ public static class SerilogHostBuilderExtensions
     /// <returns>
     /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static IHostBuilder AddDynamicSerilog(this IHostBuilder hostBuilder, bool preserveDefaultConsole)
+    public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder, bool preserveDefaultConsole)
     {
-        return AddDynamicSerilog(hostBuilder, null, preserveDefaultConsole);
+        return AddDynamicSerilog(builder, null, preserveDefaultConsole);
     }
 
     /// <summary>
     /// Adds Serilog with Console sink, wrapped in a <see cref="DynamicSerilogLoggerProvider" />.
     /// </summary>
-    /// <param name="hostBuilder">
+    /// <param name="builder">
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <param name="configureLogger">
@@ -74,14 +74,14 @@ public static class SerilogHostBuilderExtensions
     /// <returns>
     /// The incoming <see cref="IHostBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static IHostBuilder AddDynamicSerilog(this IHostBuilder hostBuilder, Action<HostBuilderContext, LoggerConfiguration>? configureLogger,
+    public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder, Action<HostBuilderContext, LoggerConfiguration>? configureLogger,
         bool preserveDefaultConsole)
     {
-        ArgumentGuard.NotNull(hostBuilder);
+        ArgumentGuard.NotNull(builder);
 
-        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(hostBuilder);
+        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddDynamicSerilog(HostBuilderContextWrapper.WrapAction(configureLogger), preserveDefaultConsole);
 
-        return hostBuilder;
+        return builder;
     }
 }

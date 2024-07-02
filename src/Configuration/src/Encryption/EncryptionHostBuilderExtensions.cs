@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -23,10 +22,10 @@ public static class EncryptionHostBuilderExtensions
     /// all of the applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
-    /// The host builder.
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The provided host builder.
+    /// The <see cref="IWebHostBuilder" />, so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddEncryptionResolver(this IWebHostBuilder builder)
     {
@@ -40,14 +39,14 @@ public static class EncryptionHostBuilderExtensions
     /// all of the applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
-    /// The host builder.
+    /// The <see cref="IWebHostBuilder" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The provided host builder.
+    /// The <see cref="IWebHostBuilder" />, so that additional calls can be chained.
     /// </returns>
     public static IWebHostBuilder AddEncryptionResolver(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -67,10 +66,10 @@ public static class EncryptionHostBuilderExtensions
     /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
-    /// The host builder.
+    /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The provided host builder.
+    /// The <see cref="IHostBuilder" />, so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddEncryptionResolver(this IHostBuilder builder)
     {
@@ -84,14 +83,14 @@ public static class EncryptionHostBuilderExtensions
     /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
-    /// The host builder.
+    /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The provided host builder.
+    /// The <see cref="IHostBuilder" />, so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddEncryptionResolver(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -111,12 +110,12 @@ public static class EncryptionHostBuilderExtensions
     /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
-    /// The application builder.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The provided application builder.
+    /// The <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddEncryptionResolver(this IHostApplicationBuilder builder)
     {
         return AddEncryptionResolver(builder, BootstrapLoggerFactory.Default);
     }
@@ -128,16 +127,16 @@ public static class EncryptionHostBuilderExtensions
     /// all of the applications configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
-    /// The application builder.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The provided application builder.
+    /// The <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddEncryptionResolver(this WebApplicationBuilder builder, ILoggerFactory loggerFactory)
+    public static IHostApplicationBuilder AddEncryptionResolver(this IHostApplicationBuilder builder, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(loggerFactory);

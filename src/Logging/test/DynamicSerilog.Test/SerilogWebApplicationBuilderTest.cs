@@ -25,9 +25,12 @@ public sealed class SerilogWebApplicationBuilderTest
     {
         var testSink = new TestSink();
 
-        WebApplication host = TestHelpers.GetTestWebApplicationBuilder().AddDynamicSerilog((_, loggerConfiguration) =>
-            loggerConfiguration.MinimumLevel.Error().Enrich.WithExceptionDetails().MinimumLevel.Override("Microsoft", LogEventLevel.Warning).WriteTo
-                .Sink(testSink)).Build();
+        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+
+        builder.AddDynamicSerilog((_, loggerConfiguration) => loggerConfiguration.MinimumLevel.Error().Enrich.WithExceptionDetails().MinimumLevel
+            .Override("Microsoft", LogEventLevel.Warning).WriteTo.Sink(testSink));
+
+        WebApplication host = builder.Build();
 
         var startup = new Startup(host.Services.GetRequiredService<ILogger<Startup>>());
         startup.ConfigureServices(null);

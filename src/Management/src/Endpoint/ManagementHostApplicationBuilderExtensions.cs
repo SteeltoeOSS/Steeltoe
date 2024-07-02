@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
@@ -11,18 +12,18 @@ using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
 
-public static class ManagementWebApplicationBuilderExtensions
+public static class ManagementHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Adds the Database Migrations actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddDbMigrationsActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddDbMigrationsActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -36,12 +37,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Environment actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddEnvironmentActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddEnvironmentActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -55,12 +56,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Health actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddHealthActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -74,15 +75,15 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Health actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="contributorTypes">
     /// Types that contribute to the overall health of the app.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder builder, params Type[] contributorTypes)
+    public static IHostApplicationBuilder AddHealthActuator(this IHostApplicationBuilder builder, params Type[] contributorTypes)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(contributorTypes);
@@ -97,7 +98,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Health actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="aggregator">
     /// Custom health aggregator.
@@ -106,9 +107,9 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Types that contribute to the overall health of the app.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder builder, IHealthAggregator aggregator, params Type[] contributorTypes)
+    public static IHostApplicationBuilder AddHealthActuator(this IHostApplicationBuilder builder, IHealthAggregator aggregator, params Type[] contributorTypes)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(aggregator);
@@ -124,12 +125,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the HeapDump actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddHeapDumpActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddHeapDumpActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -143,12 +144,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Hypermedia actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddHypermediaActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddHypermediaActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -162,12 +163,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Info actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddInfoActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -181,15 +182,15 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Info actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="contributors">
     /// Contributors to application information.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder builder, params IInfoContributor[] contributors)
+    public static IHostApplicationBuilder AddInfoActuator(this IHostApplicationBuilder builder, params IInfoContributor[] contributors)
     {
         ArgumentGuard.NotNull(builder);
         ArgumentGuard.NotNull(contributors);
@@ -204,12 +205,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Loggers actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddLoggersActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddLoggersActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -223,12 +224,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Mappings actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddMappingsActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddMappingsActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -242,12 +243,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Metrics actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddMetricsActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddMetricsActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -261,12 +262,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Refresh actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddRefreshActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddRefreshActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -280,12 +281,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the ThreadDump actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddThreadDumpActuator(this IHostApplicationBuilder builder)
     {
         return AddThreadDumpActuator(builder, MediaTypeVersion.V2);
     }
@@ -294,15 +295,15 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the ThreadDump actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder builder, MediaTypeVersion mediaTypeVersion)
+    public static IHostApplicationBuilder AddThreadDumpActuator(this IHostApplicationBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -316,12 +317,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Trace actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddTraceActuator(this IHostApplicationBuilder builder)
     {
         return AddTraceActuator(builder, MediaTypeVersion.V2);
     }
@@ -330,15 +331,15 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Trace actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="mediaTypeVersion">
     /// Specify the media type version to use in the response.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder builder, MediaTypeVersion mediaTypeVersion)
+    public static IHostApplicationBuilder AddTraceActuator(this IHostApplicationBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -352,12 +353,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds an actuator endpoint that lists all injectable services that are registered in the IoC container.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddServicesActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddServicesActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -371,12 +372,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds the Cloud Foundry actuator to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddCloudFoundryActuator(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddCloudFoundryActuator(this IHostApplicationBuilder builder)
     {
         ArgumentGuard.NotNull(builder);
 
@@ -390,12 +391,12 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds all Steeltoe Actuators to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder builder)
+    public static IHostApplicationBuilder AddAllActuators(this IHostApplicationBuilder builder)
     {
         return AddAllActuators(builder, null);
     }
@@ -404,15 +405,15 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds all Steeltoe Actuators to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="configureEndpoints">
     /// <see cref="IEndpointConventionBuilder" />.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints)
+    public static IHostApplicationBuilder AddAllActuators(this IHostApplicationBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints)
     {
         return AddAllActuators(builder, configureEndpoints, MediaTypeVersion.V2, null);
     }
@@ -421,7 +422,7 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Adds all Steeltoe Actuators to the application.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <param name="configureEndpoints">
     /// <see cref="IEndpointConventionBuilder" />.
@@ -433,9 +434,9 @@ public static class ManagementWebApplicationBuilderExtensions
     /// Customize the CORS policy.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="WebApplicationBuilder" />, so that additional calls can be chained.
+    /// The incoming <see cref="IHostApplicationBuilder" />, so that additional calls can be chained.
     /// </returns>
-    public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints,
+    public static IHostApplicationBuilder AddAllActuators(this IHostApplicationBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints,
         MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
         ArgumentGuard.NotNull(builder);

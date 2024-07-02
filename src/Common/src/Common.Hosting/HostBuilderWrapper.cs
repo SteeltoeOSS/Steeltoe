@@ -14,8 +14,8 @@ using Microsoft.Extensions.Logging;
 namespace Steeltoe.Common.Hosting;
 
 /// <summary>
-/// A host-agnostic wrapper for <see cref="IHostBuilder" />, <see cref="IWebHostBuilder" /> and <see cref="WebApplicationBuilder" />. Intended to reduce
-/// code duplication when targeting the various host builders.
+/// A host-agnostic wrapper for <see cref="IHostBuilder" />, <see cref="IWebHostBuilder" /> and <see cref="IHostApplicationBuilder" />. Intended to
+/// reduce code duplication when targeting the various host builders.
 /// </summary>
 internal sealed class HostBuilderWrapper
 {
@@ -87,7 +87,7 @@ internal sealed class HostBuilderWrapper
     {
         ArgumentGuard.NotNull(builder);
 
-        // WebApplicationBuilder/IHostApplicationBuilder immediately execute callbacks, so don't capture them for deferred execution.
+        // IHostApplicationBuilder implementations immediately execute callbacks, so don't capture them for deferred execution.
 
         return new HostBuilderWrapper(builder);
     }

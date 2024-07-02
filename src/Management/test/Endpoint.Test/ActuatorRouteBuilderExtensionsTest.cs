@@ -78,9 +78,9 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         }).ConfigureAppConfiguration(configure => configure.AddInMemoryCollection(appSettings));
     }
 
-    private async Task ActAndAssertAsync(IHostBuilder hostBuilder, EndpointOptions options, bool expectedSuccess)
+    private async Task ActAndAssertAsync(IHostBuilder builder, EndpointOptions options, bool expectedSuccess)
     {
-        using IHost host = await hostBuilder.StartAsync();
+        using IHost host = await builder.StartAsync();
         using TestServer server = host.GetTestServer();
 
         ManagementOptions managementOptions = host.Services.GetRequiredService<IOptionsMonitor<ManagementOptions>>().CurrentValue;
