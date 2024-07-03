@@ -16,9 +16,9 @@ public sealed class ConfigServerDiscoveryServiceTest
         var appSettings = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration);
 
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var clientSettings = new ConfigServerClientSettings();
+        var options = new ConfigServerClientOptions();
 
-        var service = new ConfigServerDiscoveryService(configuration, clientSettings, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configuration, options, NullLoggerFactory.Instance);
 
         Assert.Empty(service.DiscoveryClients);
     }

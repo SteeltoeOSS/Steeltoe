@@ -19,11 +19,11 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <summary>
     /// Gets the default settings the Config Server client uses to contact the Config Server.
     /// </summary>
-    internal ConfigServerClientSettings DefaultSettings { get; }
+    internal ConfigServerClientOptions DefaultOptions { get; }
 
     /// <summary>
     /// Gets the configuration the Config Server client uses to contact the Config Server. Values returned override the default values provided in
-    /// <see cref="DefaultSettings" />.
+    /// <see cref="DefaultOptions" />.
     /// </summary>
     internal IConfiguration? Configuration { get; private set; }
 
@@ -35,7 +35,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
     /// </summary>
-    /// <param name="defaultSettings">
+    /// <param name="defaultOptions">
     /// the default settings used by the Config Server client.
     /// </param>
     /// <param name="configuration">
@@ -44,26 +44,26 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IConfiguration configuration, ILoggerFactory loggerFactory)
+    public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IConfiguration configuration, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(defaultSettings);
+        ArgumentGuard.NotNull(defaultOptions);
         ArgumentGuard.NotNull(loggerFactory);
 
         Configuration = configuration;
-        DefaultSettings = defaultSettings;
+        DefaultOptions = defaultOptions;
         LoggerFactory = loggerFactory;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationSource" /> class.
     /// </summary>
-    /// <param name="defaultSettings">
+    /// <param name="defaultOptions">
     /// the default settings used by the Config Server client.
     /// </param>
     /// <param name="sources">
     /// configuration sources used by the Config Server client. The <see cref="Configuration" /> will be built from these sources and the values will
-    /// override those found in <see cref="DefaultSettings" />.
+    /// override those found in <see cref="DefaultOptions" />.
     /// </param>
     /// <param name="properties">
     /// properties to be used when sources are built.
@@ -71,10 +71,10 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public ConfigServerConfigurationSource(ConfigServerClientSettings defaultSettings, IList<IConfigurationSource> sources,
+    public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IList<IConfigurationSource> sources,
         IDictionary<string, object>? properties, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(defaultSettings);
+        ArgumentGuard.NotNull(defaultOptions);
         ArgumentGuard.NotNull(sources);
         ArgumentGuard.NotNull(loggerFactory);
 
@@ -85,7 +85,7 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
             Properties = new Dictionary<string, object>(properties);
         }
 
-        DefaultSettings = defaultSettings;
+        DefaultOptions = defaultOptions;
         LoggerFactory = loggerFactory;
     }
 
@@ -122,13 +122,13 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 
         string? clientCertificatePath = Configuration.GetValue<string>($"{CertificateOptions.ConfigurationKeyPrefix}:ConfigServer:CertificateFilePath");
 
-        if (!string.IsNullOrEmpty(clientCertificatePath) && DefaultSettings.ClientCertificate == null)
+        if (!string.IsNullOrEmpty(clientCertificatePath) && DefaultOptions.ClientCertificate == null)
         {
             var certificateConfigurer = new ConfigureCertificateOptions(Configuration);
 
             var options = new CertificateOptions();
             certificateConfigurer.Configure("ConfigServer", options);
-            DefaultSettings.ClientCertificate = options.Certificate;
+            DefaultOptions.ClientCertificate = options.Certificate;
         }
 
         return new ConfigServerConfigurationProvider(this, LoggerFactory);

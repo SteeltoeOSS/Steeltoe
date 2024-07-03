@@ -64,7 +64,7 @@
           "description": "Gets the settings related to RSA encryption."
         }
       },
-      "description": "Holds the settings used to configure the Spring Cloud Config Server provider."
+      "description": "Holds settings used to configure encryption for the Spring Cloud Config Server provider."
     }
   }
 }

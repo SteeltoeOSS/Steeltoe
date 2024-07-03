@@ -48,18 +48,18 @@ public static class ConfigServerConfigurationBuilderExtensions
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string? environment, string? applicationName,
         ILoggerFactory loggerFactory)
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = applicationName ?? Assembly.GetEntryAssembly()?.GetName().Name,
             Environment = environment ?? "Production"
         };
 
-        return AddConfigServer(configurationBuilder, settings, loggerFactory);
+        return AddConfigServer(configurationBuilder, options, loggerFactory);
     }
 
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientSettings clientSettings)
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientOptions options)
     {
-        return AddConfigServer(configurationBuilder, clientSettings, NullLoggerFactory.Instance);
+        return AddConfigServer(configurationBuilder, options, NullLoggerFactory.Instance);
     }
 
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment)
@@ -72,20 +72,20 @@ public static class ConfigServerConfigurationBuilderExtensions
     {
         ArgumentGuard.NotNull(environment);
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = environment.ApplicationName,
             Environment = environment.EnvironmentName
         };
 
-        return AddConfigServer(configurationBuilder, settings, loggerFactory);
+        return AddConfigServer(configurationBuilder, options, loggerFactory);
     }
 
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientSettings clientSettings,
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientOptions options,
         ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configurationBuilder);
-        ArgumentGuard.NotNull(clientSettings);
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(loggerFactory);
 
         if (configurationBuilder.Sources.All(source => source is not CloudFoundryConfigurationSource))
@@ -105,12 +105,12 @@ public static class ConfigServerConfigurationBuilderExtensions
 
         if (configurationBuilder is IConfiguration configuration)
         {
-            var source = new ConfigServerConfigurationSource(clientSettings, configuration, loggerFactory);
+            var source = new ConfigServerConfigurationSource(options, configuration, loggerFactory);
             configurationBuilder.Add(source);
         }
         else
         {
-            var source = new ConfigServerConfigurationSource(clientSettings, configurationBuilder.Sources, configurationBuilder.Properties, loggerFactory);
+            var source = new ConfigServerConfigurationSource(options, configurationBuilder.Sources, configurationBuilder.Properties, loggerFactory);
             configurationBuilder.Add(source);
         }
 

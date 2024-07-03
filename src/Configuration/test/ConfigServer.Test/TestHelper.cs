@@ -8,38 +8,38 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 internal static class TestHelper
 {
-    public static void VerifyDefaults(ConfigServerClientSettings settings)
+    public static void VerifyDefaults(ConfigServerClientOptions options)
     {
-        Assert.True(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("http://localhost:8888", settings.Uri);
-        Assert.Equal("Production", settings.Environment);
-        Assert.Null(settings.AccessTokenUri);
-        Assert.Null(settings.ClientId);
-        Assert.Null(settings.ClientSecret);
-        Assert.True(settings.ValidateCertificates);
-        Assert.Equal(1000, settings.Retry.InitialInterval);
-        Assert.Equal(6, settings.Retry.Attempts);
-        Assert.False(settings.Retry.Enabled);
-        Assert.Equal(1.1, settings.Retry.Multiplier);
-        Assert.Equal(2000, settings.Retry.MaxInterval);
-        Assert.Equal(60_000, settings.Timeout);
-        Assert.Equal(60_000, settings.TokenRenewRate);
-        Assert.Equal(300_000, settings.TokenTtl);
-        Assert.False(settings.Discovery.Enabled);
-        Assert.Equal("configserver", settings.Discovery.ServiceId);
-        Assert.True(settings.Health.Enabled);
-        Assert.Equal(300_000, settings.Health.TimeToLive);
+        Assert.True(options.Enabled);
+        Assert.False(options.FailFast);
+        Assert.Equal("http://localhost:8888", options.Uri);
+        Assert.Equal("Production", options.Environment);
+        Assert.Null(options.AccessTokenUri);
+        Assert.Null(options.ClientId);
+        Assert.Null(options.ClientSecret);
+        Assert.True(options.ValidateCertificates);
+        Assert.Equal(1000, options.Retry.InitialInterval);
+        Assert.Equal(6, options.Retry.MaxAttempts);
+        Assert.False(options.Retry.Enabled);
+        Assert.Equal(1.1, options.Retry.Multiplier);
+        Assert.Equal(2000, options.Retry.MaxInterval);
+        Assert.Equal(60_000, options.Timeout);
+        Assert.Equal(60_000, options.TokenRenewRate);
+        Assert.Equal(300_000, options.TokenTtl);
+        Assert.False(options.Discovery.Enabled);
+        Assert.Equal("configserver", options.Discovery.ServiceId);
+        Assert.True(options.Health.Enabled);
+        Assert.Equal(300_000, options.Health.TimeToLive);
 
-        if (settings.Name != null)
+        if (options.Name != null)
         {
-            Assert.Equal(HostingHelpers.TestAppName, settings.Name);
+            Assert.Equal(HostingHelpers.TestAppName, options.Name);
         }
 
-        Assert.Null(settings.Label);
-        Assert.Null(settings.Username);
-        Assert.Null(settings.Password);
-        Assert.Null(settings.Token);
-        Assert.Empty(settings.Headers);
+        Assert.Null(options.Label);
+        Assert.Null(options.Username);
+        Assert.Null(options.Password);
+        Assert.Null(options.Token);
+        Assert.Empty(options.Headers);
     }
 }

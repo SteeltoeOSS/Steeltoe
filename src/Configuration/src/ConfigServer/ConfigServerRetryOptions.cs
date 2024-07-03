@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
+
 namespace Steeltoe.Configuration.ConfigServer;
 
 /// <summary>
-/// Holds the settings used to configure retries with the Spring Cloud Config Server provider.
+/// Holds settings used to configure retries with the Spring Cloud Config Server provider.
 /// </summary>
-public sealed class ConfigServerRetrySettings
+public sealed class ConfigServerRetryOptions
 {
     /// <summary>
     /// Gets or sets a value indicating whether retries are enabled on failures. Default value: false.
@@ -32,5 +34,6 @@ public sealed class ConfigServerRetrySettings
     /// <summary>
     /// Gets or sets the max number of retries the client will attempt. Default value: 6.
     /// </summary>
-    public int Attempts { get; set; } = 6;
+    [ConfigurationKeyName("Attempts")]
+    public int MaxAttempts { get; set; } = 6;
 }

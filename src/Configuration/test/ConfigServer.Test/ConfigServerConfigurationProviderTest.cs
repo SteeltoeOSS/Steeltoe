@@ -18,7 +18,7 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerConfigurationProviderTest
 {
-    private readonly ConfigServerClientSettings _commonSettings = new()
+    private readonly ConfigServerClientOptions _commonOptions = new()
     {
         Name = "myName"
     };
@@ -27,30 +27,30 @@ public sealed class ConfigServerConfigurationProviderTest
     public void SettingsConstructor_WithLoggerFactorySucceeds()
     {
         var loggerFactory = new LoggerFactory();
-        var settings = new ConfigServerClientSettings();
+        var options = new ConfigServerClientOptions();
 
-        var provider = new ConfigServerConfigurationProvider(settings, loggerFactory);
+        var provider = new ConfigServerConfigurationProvider(options, loggerFactory);
         Assert.NotNull(provider.Logger);
     }
 
     [Fact]
     public void DefaultConstructor_InitializedWithDefaultSettings()
     {
-        var settings = new ConfigServerClientSettings();
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var options = new ConfigServerClientOptions();
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
-        TestHelper.VerifyDefaults(provider.Settings);
+        TestHelper.VerifyDefaults(provider.Options);
     }
 
     [Fact]
     public void SourceConstructor_WithDefaults_InitializesWithDefaultSettings()
     {
         IConfiguration configuration = new ConfigurationBuilder().Build();
-        var settings = new ConfigServerClientSettings();
-        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        var options = new ConfigServerClientOptions();
+        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
-        TestHelper.VerifyDefaults(provider.Settings);
+        TestHelper.VerifyDefaults(provider.Options);
     }
 
     [Fact]
@@ -61,8 +61,8 @@ public sealed class ConfigServerConfigurationProviderTest
             { "spring:cloud:config:timeout", "30000" }
         }).Build();
 
-        var settings = new ConfigServerClientSettings();
-        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        var options = new ConfigServerClientOptions();
+        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         Assert.NotNull(provider.HttpClient);
@@ -72,13 +72,13 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void GetConfigServerUri_NoBaseUri_Throws()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "myName",
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
         Assert.Throws<ArgumentNullException>(() => provider.GetConfigServerUri(null!, null));
     }
@@ -86,112 +86,112 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void GetConfigServerUri_NoLabel()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "myName",
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
-        string path = provider.GetConfigServerUri(settings.RawUris[0], null);
-        Assert.Equal($"{settings.RawUris[0]}{settings.Name}/{settings.Environment}", path);
+        string path = provider.GetConfigServerUri(options.GetRawUris()[0], null);
+        Assert.Equal($"{options.GetRawUris()[0]}{options.Name}/{options.Environment}", path);
     }
 
     [Fact]
     public void GetConfigServerUri_WithLabel()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "myName",
             Environment = "Production",
             Label = "myLabel"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
-        string path = provider.GetConfigServerUri(settings.RawUris[0], settings.Label);
-        Assert.Equal($"{settings.RawUris[0]}{settings.Name}/{settings.Environment}/{settings.Label}", path);
+        string path = provider.GetConfigServerUri(options.GetRawUris()[0], options.Label);
+        Assert.Equal($"{options.GetRawUris()[0]}{options.Name}/{options.Environment}/{options.Label}", path);
     }
 
     [Fact]
     public void GetConfigServerUri_WithLabelContainingSlash()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "myName",
             Environment = "Production",
             Label = "myLabel/version"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
-        string path = provider.GetConfigServerUri(settings.RawUris[0], settings.Label);
-        Assert.Equal($"{settings.RawUris[0]}{settings.Name}/{settings.Environment}/myLabel(_)version", path);
+        string path = provider.GetConfigServerUri(options.GetRawUris()[0], options.Label);
+        Assert.Equal($"{options.GetRawUris()[0]}{options.Name}/{options.Environment}/myLabel(_)version", path);
     }
 
     [Fact]
     public void GetConfigServerUri_WithExtraPathInfo()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Uri = "http://localhost:9999/myPath/path/",
             Name = "myName",
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
-        string path = provider.GetConfigServerUri(settings.RawUris[0], null);
-        Assert.Equal($"http://localhost:9999/myPath/path/{settings.Name}/{settings.Environment}", path);
+        string path = provider.GetConfigServerUri(options.GetRawUris()[0], null);
+        Assert.Equal($"http://localhost:9999/myPath/path/{options.Name}/{options.Environment}", path);
     }
 
     [Fact]
     public void GetConfigServerUri_WithExtraPathInfo_NoEndingSlash()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Uri = "http://localhost:9999/myPath/path",
             Name = "myName",
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
-        string path = provider.GetConfigServerUri(settings.RawUris[0], null);
-        Assert.Equal($"http://localhost:9999/myPath/path/{settings.Name}/{settings.Environment}", path);
+        string path = provider.GetConfigServerUri(options.GetRawUris()[0], null);
+        Assert.Equal($"http://localhost:9999/myPath/path/{options.Name}/{options.Environment}", path);
     }
 
     [Fact]
     public void GetConfigServerUri_NoEndingSlash()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Uri = "http://localhost:9999",
             Name = "myName",
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
-        string path = provider.GetConfigServerUri(settings.RawUris[0], null);
-        Assert.Equal($"http://localhost:9999/{settings.Name}/{settings.Environment}", path);
+        string path = provider.GetConfigServerUri(options.GetRawUris()[0], null);
+        Assert.Equal($"http://localhost:9999/{options.Name}/{options.Environment}", path);
     }
 
     [Fact]
     public void GetConfigServerUri_WithEndingSlash()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Uri = "http://localhost:9999/",
             Name = "myName",
             Environment = "Production"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
-        string path = provider.GetConfigServerUri(settings.RawUris[0], null);
-        Assert.Equal($"http://localhost:9999/{settings.Name}/{settings.Environment}", path);
+        string path = provider.GetConfigServerUri(options.GetRawUris()[0], null);
+        Assert.Equal($"http://localhost:9999/{options.Name}/{options.Environment}", path);
     }
 
     [Fact]
@@ -243,8 +243,8 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_InvalidUri()
     {
-        var settings = new ConfigServerClientSettings();
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var options = new ConfigServerClientOptions();
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
         await Assert.ThrowsAsync<UriFormatException>(async () => await provider.RemoteLoadAsync(new[]
         {
@@ -262,8 +262,8 @@ public sealed class ConfigServerConfigurationProviderTest
             Timeout = 100.Milliseconds()
         };
 
-        var settings = new ConfigServerClientSettings();
-        var provider = new ConfigServerConfigurationProvider(settings, httpClient, NullLoggerFactory.Instance);
+        var options = new ConfigServerClientOptions();
+        var provider = new ConfigServerConfigurationProvider(options, httpClient, NullLoggerFactory.Instance);
 
         Func<Task> action = async () => await provider.RemoteLoadAsync(new[]
         {
@@ -285,14 +285,14 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
+        ConfigServerClientOptions options = _commonOptions;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
-        await Assert.ThrowsAsync<HttpRequestException>(async () => await provider.RemoteLoadAsync(settings.GetUris(), null, CancellationToken.None));
+        await Assert.ThrowsAsync<HttpRequestException>(async () => await provider.RemoteLoadAsync(options.GetUris(), null, CancellationToken.None));
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
+        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
     }
 
     [Fact]
@@ -308,14 +308,14 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
+        ConfigServerClientOptions options = _commonOptions;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
-        ConfigEnvironment? result = await provider.RemoteLoadAsync(settings.RawUris, null, CancellationToken.None);
+        ConfigEnvironment? result = await provider.RemoteLoadAsync(options.GetRawUris(), null, CancellationToken.None);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
+        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Null(result);
     }
 
@@ -344,7 +344,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "myName",
             PollingInterval = TimeSpan.FromMilliseconds(300),
@@ -352,7 +352,7 @@ public sealed class ConfigServerConfigurationProviderTest
         };
 
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
         Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
         Assert.True(TestConfigServerStartup.RequestCount >= 1);
         await Task.Delay(1000);
@@ -387,7 +387,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "myName",
             PollingInterval = TimeSpan.FromMilliseconds(300),
@@ -398,7 +398,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using HttpClient client = server.CreateClient();
 
         // Act
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         // Assert
         Assert.True(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(60)));
@@ -432,7 +432,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "myName",
             Enabled = false,
@@ -443,7 +443,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using HttpClient client = server.CreateClient();
 
         // Act
-        _ = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        _ = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         // Assert
         Assert.False(TestConfigServerStartup.InitialRequestLatch.Wait(TimeSpan.FromSeconds(2)));
@@ -485,16 +485,16 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
-        settings.Label = "label,testlabel";
+        ConfigServerClientOptions options = _commonOptions;
+        options.Label = "label,testlabel";
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         await provider.DoLoadAsync(true, CancellationToken.None);
 
         Assert.NotNull(TestConfigServerStartup.LastRequest);
         Assert.Equal(2, TestConfigServerStartup.RequestCount);
-        Assert.Equal($"/{settings.Name}/{settings.Environment}/testlabel", TestConfigServerStartup.LastRequest.Path.Value);
+        Assert.Equal($"/{options.Name}/{options.Environment}/testlabel", TestConfigServerStartup.LastRequest.Path.Value);
     }
 
     [Fact]
@@ -525,13 +525,13 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
+        ConfigServerClientOptions options = _commonOptions;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
-        ConfigEnvironment? env = await provider.RemoteLoadAsync(settings.GetUris(), null, CancellationToken.None);
+        ConfigEnvironment? env = await provider.RemoteLoadAsync(options.GetUris(), null, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
+        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.NotNull(env);
         Assert.Equal("testname", env.Name);
         Assert.NotNull(env.Profiles);
@@ -564,14 +564,14 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
-        settings.Uri = "http://localhost:8888, http://localhost:8888";
+        ConfigServerClientOptions options = _commonOptions;
+        options.Uri = "http://localhost:8888, http://localhost:8888";
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(true, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
+        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
     }
 
@@ -592,14 +592,14 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
-        settings.Uri = "http://localhost:8888, http://localhost:8888";
+        ConfigServerClientOptions options = _commonOptions;
+        options.Uri = "http://localhost:8888, http://localhost:8888";
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(true, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
+        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
     }
 
@@ -616,13 +616,13 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
+        ConfigServerClientOptions options = _commonOptions;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(true, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
+        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
         Assert.Equal(26, provider.Properties.Count);
     }
 
@@ -639,10 +639,10 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
-        settings.FailFast = true;
+        ConfigServerClientOptions options = _commonOptions;
+        options.FailFast = true;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
     }
@@ -650,9 +650,9 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
     {
-        ConfigServerClientSettings settings = _commonSettings;
-        settings.FailFast = true;
-        settings.Uri = "http://localhost:8888,http://localhost:8888";
+        ConfigServerClientOptions options = _commonOptions;
+        options.FailFast = true;
+        options.Uri = "http://localhost:8888,http://localhost:8888";
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
@@ -660,7 +660,7 @@ public sealed class ConfigServerConfigurationProviderTest
         server.BaseAddress = new Uri("http://localhost:8888");
 
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus =
@@ -686,10 +686,10 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
-        settings.FailFast = true;
+        ConfigServerClientOptions options = _commonOptions;
+        options.FailFast = true;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
     }
@@ -712,11 +712,11 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
-        settings.FailFast = true;
-        settings.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
+        ConfigServerClientOptions options = _commonOptions;
+        options.FailFast = true;
+        options.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
         Assert.Equal(1, TestConfigServerStartup.RequestCount);
@@ -743,7 +743,7 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "myName",
             FailFast = true,
@@ -756,7 +756,7 @@ public sealed class ConfigServerConfigurationProviderTest
         };
 
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
         Assert.Equal(6, TestConfigServerStartup.RequestCount);
@@ -790,13 +790,13 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
+        ConfigServerClientOptions options = _commonOptions;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         await provider.LoadInternalAsync(true, CancellationToken.None);
         Assert.NotNull(TestConfigServerStartup.LastRequest);
-        Assert.Equal($"/{settings.Name}/{settings.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
+        Assert.Equal($"/{options.Name}/{options.Environment}", TestConfigServerStartup.LastRequest.Path.Value);
 
         Assert.True(provider.TryGet("key1", out string? value));
         Assert.Equal("value1", value);
@@ -834,9 +834,9 @@ public sealed class ConfigServerConfigurationProviderTest
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
 
-        ConfigServerClientSettings settings = _commonSettings;
+        ConfigServerClientOptions options = _commonOptions;
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, client, NullLoggerFactory.Instance);
 
         provider.Load();
         Assert.NotNull(TestConfigServerStartup.LastRequest);
@@ -878,7 +878,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void AddConfigServerClientSettings_ChangesDataDictionary()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             AccessTokenUri = "https://foo.bar/",
             ClientId = "client_id",
@@ -901,12 +901,12 @@ public sealed class ConfigServerConfigurationProviderTest
             }
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
         CultureInfo? initialCulture = GetAndSetCurrentCulture(new CultureInfo("ru-RU"));
 
         try
         {
-            provider.AddConfigServerClientSettings();
+            provider.AddConfigServerClientOptions();
 
             Assert.True(provider.TryGet("spring:cloud:config:access_token_uri", out string? value));
             Assert.Equal("https://foo.bar/", value);
@@ -957,8 +957,8 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void GetLabels_Null()
     {
-        var settings = new ConfigServerClientSettings();
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var options = new ConfigServerClientOptions();
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
         Assert.NotNull(result);
@@ -969,12 +969,12 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void GetLabels_Empty()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Label = string.Empty
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
         Assert.NotNull(result);
@@ -985,12 +985,12 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void GetLabels_SingleString()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Label = "foobar"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
         Assert.NotNull(result);
@@ -1001,12 +1001,12 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void GetLabels_MultiString()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Label = "1,2,3,"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
         Assert.NotNull(result);
@@ -1019,12 +1019,12 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void GetLabels_MultiStringHoles()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Label = "1,,2,3,"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
         string[] result = provider.GetLabels();
         Assert.NotNull(result);
@@ -1037,16 +1037,16 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task GetRequestMessage_AddsBasicAuthIfPassword()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Uri = "http://user:password@localhost:8888/",
             Name = "foo",
             Environment = "development"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
-        var requestUri = new Uri(provider.GetConfigServerUri(settings.RawUris[0], null));
+        var requestUri = new Uri(provider.GetConfigServerUri(options.GetRawUris()[0], null));
         HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, "user", "password", CancellationToken.None);
 
         Assert.Equal(HttpMethod.Get, request.Method);
@@ -1059,16 +1059,16 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task GetRequestMessage_AddsVaultToken_IfNeeded()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "foo",
             Environment = "development",
             Token = "MyVaultToken"
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
-        var requestUri = new Uri(provider.GetConfigServerUri(settings.RawUris[0], null));
+        var requestUri = new Uri(provider.GetConfigServerUri(options.GetRawUris()[0], null));
         HttpRequestMessage request = await provider.GetRequestMessageAsync(requestUri, null, null, CancellationToken.None);
 
         Assert.Equal(HttpMethod.Get, request.Method);
@@ -1081,7 +1081,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void GetHttpClient_AddsHeaders_IfConfigured()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "foo",
             Environment = "development",
@@ -1092,7 +1092,7 @@ public sealed class ConfigServerConfigurationProviderTest
             }
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
 
         Assert.NotNull(provider.HttpClient);
         Assert.Equal("bar", provider.HttpClient.DefaultRequestHeaders.GetValues("foo").SingleOrDefault());
@@ -1102,7 +1102,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void IsDiscoveryFirstEnabled_ReturnsExpected()
     {
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "foo",
             Environment = "development",
@@ -1112,7 +1112,7 @@ public sealed class ConfigServerConfigurationProviderTest
             }
         };
 
-        var provider = new ConfigServerConfigurationProvider(settings, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(options, NullLoggerFactory.Instance);
         Assert.True(provider.IsDiscoveryFirstEnabled());
 
         var values = new Dictionary<string, string?>
@@ -1122,13 +1122,13 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
 
-        settings = new ConfigServerClientSettings
+        options = new ConfigServerClientOptions
         {
             Name = "foo",
             Environment = "development"
         };
 
-        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         Assert.True(provider.IsDiscoveryFirstEnabled());
@@ -1144,20 +1144,20 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Uri = "http://localhost:8888/",
             Name = "foo",
             Environment = "development"
         };
 
-        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
-        provider.UpdateSettingsFromDiscovery(new List<IServiceInstance>(), settings);
-        Assert.Null(settings.Username);
-        Assert.Null(settings.Password);
-        Assert.Equal("http://localhost:8888/", settings.Uri);
+        provider.UpdateSettingsFromDiscovery(new List<IServiceInstance>(), options);
+        Assert.Null(options.Username);
+        Assert.Null(options.Password);
+        Assert.Equal("http://localhost:8888/", options.Uri);
 
         var metadata1 = new Dictionary<string, string?>
         {
@@ -1177,10 +1177,10 @@ public sealed class ConfigServerConfigurationProviderTest
             new TestServiceInstance("i2", new Uri("https://foo.bar.baz:9999/"), metadata2)
         };
 
-        provider.UpdateSettingsFromDiscovery(instances, settings);
-        Assert.Equal("secondUser", settings.Username);
-        Assert.Equal("secondPassword", settings.Password);
-        Assert.Equal("https://foo.bar:8888/,https://foo.bar.baz:9999/configPath", settings.Uri);
+        provider.UpdateSettingsFromDiscovery(instances, options);
+        Assert.Equal("secondUser", options.Username);
+        Assert.Equal("secondPassword", options.Password);
+        Assert.Equal("https://foo.bar:8888/,https://foo.bar.baz:9999/configPath", options.Uri);
     }
 
     [Fact]
@@ -1195,14 +1195,14 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "foo",
             Environment = "development",
             Timeout = 10
         };
 
-        var source = new ConfigServerConfigurationSource(settings, configuration, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
         var exception = await Assert.ThrowsAsync<ConfigServerException>(async () => await provider.LoadInternalAsync(true, CancellationToken.None));
@@ -1234,13 +1234,13 @@ public sealed class ConfigServerConfigurationProviderTest
         IHostEnvironment hostingEnvironment = HostingHelpers.GetHostingEnvironment();
         IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostingEnvironment.EnvironmentName);
 
-        ConfigServerClientSettings settings = _commonSettings;
+        ConfigServerClientOptions clientOptions = _commonOptions;
 
         using var server = new TestServer(hostBuilder);
-        server.BaseAddress = new Uri(settings.Uri!);
+        server.BaseAddress = new Uri(clientOptions.Uri!);
 
         using HttpClient client = server.CreateClient();
-        var provider = new ConfigServerConfigurationProvider(settings, client, NullLoggerFactory.Instance);
+        var provider = new ConfigServerConfigurationProvider(clientOptions, client, NullLoggerFactory.Instance);
 
         var configurationBuilder = new ConfigurationBuilder();
 
@@ -1248,7 +1248,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         IConfigurationRoot configuration = configurationBuilder.Build();
 
-        TestOptions? options = null;
+        TestOptions? testOptions = null;
 
         using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
 
@@ -1264,12 +1264,12 @@ public sealed class ConfigServerConfigurationProviderTest
 
         while (!cts.IsCancellationRequested)
         {
-            options = configuration.Get<TestOptions>();
+            testOptions = configuration.Get<TestOptions>();
         }
 
-        Assert.NotNull(options);
-        Assert.Equal("my-app", options.Name);
-        Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
+        Assert.NotNull(testOptions);
+        Assert.Equal("my-app", testOptions.Name);
+        Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", testOptions.Version);
     }
 
     private static CultureInfo? GetAndSetCurrentCulture(CultureInfo? newCulture)

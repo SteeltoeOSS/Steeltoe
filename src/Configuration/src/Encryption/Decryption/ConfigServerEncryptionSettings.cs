@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
 /// <summary>
-/// Holds the settings used to configure the Spring Cloud Config Server provider.
+/// Holds settings used to configure encryption for the Spring Cloud Config Server provider.
 /// </summary>
 internal sealed class ConfigServerEncryptionSettings
 {

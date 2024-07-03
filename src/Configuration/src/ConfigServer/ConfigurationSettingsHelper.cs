@@ -16,44 +16,44 @@ internal static class ConfigurationSettingsHelper
     private const string VcapServicesConfigserver30Prefix = "vcap:services:p.config-server:0";
     private const string VcapServicesConfigserverAltPrefix = "vcap:services:config-server:0";
 
-    public static void Initialize(string sectionPrefix, ConfigServerClientSettings settings, IConfiguration configuration)
+    public static void Initialize(string sectionPrefix, ConfigServerClientOptions options, IConfiguration configuration)
     {
         ArgumentGuard.NotNull(sectionPrefix);
-        ArgumentGuard.NotNull(settings);
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(configuration);
 
         IConfigurationSection configurationSection = configuration.GetSection(sectionPrefix);
 
-        settings.Name = GetApplicationName(sectionPrefix, configuration, settings.Name);
-        settings.Environment = GetEnvironment(configurationSection, settings.Environment);
-        settings.Label = configurationSection.GetValue("label", settings.Label);
-        settings.Username = configurationSection.GetValue("username", settings.Username);
-        settings.Password = configurationSection.GetValue("password", settings.Password);
-        settings.Uri = configurationSection.GetValue("uri", settings.Uri);
-        settings.Enabled = configurationSection.GetValue("enabled", settings.Enabled);
-        settings.FailFast = configurationSection.GetValue("failFast", settings.FailFast);
-        settings.ValidateCertificates = GetCertificateValidation(configurationSection, settings.ValidateCertificates);
-        settings.Retry.Enabled = configurationSection.GetValue("retry:enabled", settings.Retry.Enabled);
-        settings.Retry.InitialInterval = configurationSection.GetValue("retry:initialInterval", settings.Retry.InitialInterval);
-        settings.Retry.MaxInterval = configurationSection.GetValue("retry:maxInterval", settings.Retry.MaxInterval);
-        settings.Retry.Multiplier = configurationSection.GetValue("retry:multiplier", settings.Retry.Multiplier);
-        settings.Retry.Attempts = configurationSection.GetValue("retry:maxAttempts", settings.Retry.Attempts);
-        settings.Token = configurationSection.GetValue("token", settings.Token);
-        settings.Timeout = configurationSection.GetValue("timeout", settings.Timeout);
-        settings.AccessTokenUri = GetAccessTokenUri(sectionPrefix, configuration);
-        settings.ClientId = GetClientId(sectionPrefix, configuration);
-        settings.ClientSecret = GetClientSecret(sectionPrefix, configuration);
-        settings.TokenRenewRate = configurationSection.GetValue("tokenRenewRate", 60_000);
-        settings.DisableTokenRenewal = configurationSection.GetValue("disableTokenRenewal", false);
-        settings.TokenTtl = configurationSection.GetValue("tokenTtl", 300_000);
-        settings.Discovery.Enabled = configurationSection.GetValue("discovery:enabled", settings.Discovery.Enabled);
-        settings.Discovery.ServiceId = configurationSection.GetValue("discovery:serviceId", settings.Discovery.ServiceId);
-        settings.Health.Enabled = configurationSection.GetValue("health:enabled", settings.Health.Enabled);
-        settings.Health.TimeToLive = configurationSection.GetValue("health:timeToLive", settings.Health.TimeToLive);
-        settings.PollingInterval = configurationSection.GetValue("pollingInterval", settings.PollingInterval);
+        options.Name = GetApplicationName(sectionPrefix, configuration, options.Name);
+        options.Environment = GetEnvironment(configurationSection, options.Environment);
+        options.Label = configurationSection.GetValue("label", options.Label);
+        options.Username = configurationSection.GetValue("username", options.Username);
+        options.Password = configurationSection.GetValue("password", options.Password);
+        options.Uri = configurationSection.GetValue("uri", options.Uri);
+        options.Enabled = configurationSection.GetValue("enabled", options.Enabled);
+        options.FailFast = configurationSection.GetValue("failFast", options.FailFast);
+        options.ValidateCertificates = GetCertificateValidation(configurationSection, options.ValidateCertificates);
+        options.Retry.Enabled = configurationSection.GetValue("retry:enabled", options.Retry.Enabled);
+        options.Retry.InitialInterval = configurationSection.GetValue("retry:initialInterval", options.Retry.InitialInterval);
+        options.Retry.MaxInterval = configurationSection.GetValue("retry:maxInterval", options.Retry.MaxInterval);
+        options.Retry.Multiplier = configurationSection.GetValue("retry:multiplier", options.Retry.Multiplier);
+        options.Retry.MaxAttempts = configurationSection.GetValue("retry:maxAttempts", options.Retry.MaxAttempts);
+        options.Token = configurationSection.GetValue("token", options.Token);
+        options.Timeout = configurationSection.GetValue("timeout", options.Timeout);
+        options.AccessTokenUri = GetAccessTokenUri(sectionPrefix, configuration);
+        options.ClientId = GetClientId(sectionPrefix, configuration);
+        options.ClientSecret = GetClientSecret(sectionPrefix, configuration);
+        options.TokenRenewRate = configurationSection.GetValue("tokenRenewRate", 60_000);
+        options.DisableTokenRenewal = configurationSection.GetValue("disableTokenRenewal", false);
+        options.TokenTtl = configurationSection.GetValue("tokenTtl", 300_000);
+        options.Discovery.Enabled = configurationSection.GetValue("discovery:enabled", options.Discovery.Enabled);
+        options.Discovery.ServiceId = configurationSection.GetValue("discovery:serviceId", options.Discovery.ServiceId);
+        options.Health.Enabled = configurationSection.GetValue("health:enabled", options.Health.Enabled);
+        options.Health.TimeToLive = configurationSection.GetValue("health:timeToLive", options.Health.TimeToLive);
+        options.PollingInterval = configurationSection.GetValue("pollingInterval", options.PollingInterval);
 
         // Override Config Server URI
-        settings.Uri = GetCloudFoundryUri(sectionPrefix, configuration, settings.Uri);
+        options.Uri = GetCloudFoundryUri(sectionPrefix, configuration, options.Uri);
     }
 
     private static string? GetEnvironment(IConfigurationSection section, string? defaultValue)

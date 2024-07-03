@@ -14,7 +14,7 @@ public sealed class ConfigServerConfigurationSourceTest
     [Fact]
     public void Constructors_InitializesProperties()
     {
-        var settings = new ConfigServerClientSettings();
+        var options = new ConfigServerClientOptions();
         var memSource = new MemoryConfigurationSource();
 
         IList<IConfigurationSource> sources = new List<IConfigurationSource>
@@ -24,12 +24,12 @@ public sealed class ConfigServerConfigurationSourceTest
 
         ILoggerFactory factory = new LoggerFactory();
 
-        var source = new ConfigServerConfigurationSource(settings, sources, new Dictionary<string, object>
+        var source = new ConfigServerConfigurationSource(options, sources, new Dictionary<string, object>
         {
             { "foo", "bar" }
         }, factory);
 
-        Assert.Equal(settings, source.DefaultSettings);
+        Assert.Equal(options, source.DefaultOptions);
         Assert.Equal(factory, source.LoggerFactory);
         Assert.Null(source.Configuration);
         Assert.NotSame(sources, source.Sources);
@@ -39,8 +39,8 @@ public sealed class ConfigServerConfigurationSourceTest
         Assert.Equal("bar", source.Properties["foo"]);
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        source = new ConfigServerConfigurationSource(settings, configurationRoot, factory);
-        Assert.Equal(settings, source.DefaultSettings);
+        source = new ConfigServerConfigurationSource(options, configurationRoot, factory);
+        Assert.Equal(options, source.DefaultOptions);
         Assert.Equal(factory, source.LoggerFactory);
         Assert.NotNull(source.Configuration);
         var root = source.Configuration as IConfigurationRoot;
@@ -51,7 +51,7 @@ public sealed class ConfigServerConfigurationSourceTest
     [Fact]
     public void Build_ReturnsProvider()
     {
-        var settings = new ConfigServerClientSettings();
+        var options = new ConfigServerClientOptions();
         var memSource = new MemoryConfigurationSource();
 
         IList<IConfigurationSource> sources = new List<IConfigurationSource>
@@ -59,7 +59,7 @@ public sealed class ConfigServerConfigurationSourceTest
             memSource
         };
 
-        var source = new ConfigServerConfigurationSource(settings, sources, null, NullLoggerFactory.Instance);
+        var source = new ConfigServerConfigurationSource(options, sources, null, NullLoggerFactory.Instance);
         IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<ConfigServerConfigurationProvider>(provider);
     }
