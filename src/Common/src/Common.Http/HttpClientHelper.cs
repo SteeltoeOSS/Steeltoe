@@ -21,20 +21,6 @@ public static class HttpClientHelper
     /// <param name="validateCertificates">
     /// Whether or not remote certificates should be validated.
     /// </param>
-    /// <param name="timeoutMillis">
-    /// Timeout in milliseconds.
-    /// </param>
-    public static HttpClient GetHttpClient(bool validateCertificates, int timeoutMillis)
-    {
-        return GetHttpClient(validateCertificates, null, timeoutMillis);
-    }
-
-    /// <summary>
-    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent" />.
-    /// </summary>
-    /// <param name="validateCertificates">
-    /// Whether or not remote certificates should be validated.
-    /// </param>
     /// <param name="handler">
     /// A pre-defined <see cref="HttpClientHandler" />.
     /// </param>
@@ -64,23 +50,6 @@ public static class HttpClientHelper
             client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
         }
 
-        client.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
-        return client;
-    }
-
-    /// <summary>
-    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent" />.
-    /// </summary>
-    /// <param name="handler">
-    /// A pre-defined <see cref="HttpMessageHandler" />.
-    /// </param>
-    /// <param name="timeoutMillis">
-    /// Timeout in milliseconds.
-    /// </param>
-    public static HttpClient GetHttpClient(HttpMessageHandler handler, int timeoutMillis = 1500)
-    {
-        HttpClient client = handler == null ? new HttpClient() : new HttpClient(handler);
-        client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
         client.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
         return client;
     }
@@ -180,7 +149,7 @@ public static class HttpClientHelper
     {
         var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
         logger?.LogInformation("HttpClient not provided, a new instance will be created and disposed after retrieving a token");
-        HttpClient client = httpClient ?? GetHttpClient(validateCertificates, timeout);
+        HttpClient client = httpClient ?? GetHttpClient(validateCertificates, null, timeout);
 
         var auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
         request.Headers.Authorization = auth;

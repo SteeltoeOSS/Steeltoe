@@ -9,13 +9,6 @@ namespace Steeltoe.Common.Http.Test;
 public sealed class HttpClientHelperTest
 {
     [Fact]
-    public void GetHttpClient_SetsTimeout()
-    {
-        HttpClient client = HttpClientHelper.GetHttpClient(false, 100);
-        Assert.Equal(100, client.Timeout.TotalMilliseconds);
-    }
-
-    [Fact]
     public void GetEncodedUserPassword_Nulls()
     {
         string result = HttpClientHelper.GetEncodedUserPassword(null, null);

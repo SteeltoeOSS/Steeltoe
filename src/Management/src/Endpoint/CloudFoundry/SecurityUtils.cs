@@ -8,37 +8,39 @@ using System.Security;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 internal sealed class SecurityUtils
 {
-    private const int DefaultGetPermissionsTimeout = 5000; // Milliseconds
     private const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
     private const string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
     private const string ReadSensitiveData = "read_sensitive_data";
+    public const string HttpClientName = "CloudFoundrySecurity";
     public const string ApplicationIdMissingMessage = "Application id is not available";
     public const string EndpointNotConfiguredMessage = "Endpoint is not available";
     public const string CloudfoundryApiMissingMessage = "Cloud controller URL is not available";
     public const string AccessDeniedMessage = "Access denied";
     public const string AuthorizationHeader = "Authorization";
     public const string Bearer = "bearer";
-    private readonly CloudFoundryEndpointOptions _options;
+    private static readonly TimeSpan GetPermissionsTimeout = TimeSpan.FromMilliseconds(5000);
 
-    private readonly ILogger _logger;
-    private HttpClient? _httpClient;
+    private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _optionsMonitor;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<SecurityUtils> _logger;
 
-    public SecurityUtils(CloudFoundryEndpointOptions options, ILogger logger, HttpClient? httpClient = null)
+    public SecurityUtils(IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor, IHttpClientFactory httpClientFactory, ILogger<SecurityUtils> logger)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentGuard.NotNull(httpClientFactory);
         ArgumentGuard.NotNull(logger);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
+        _httpClientFactory = httpClientFactory;
         _logger = logger;
-        _httpClient = httpClient;
     }
 
     public static bool IsCloudFoundryRequest(PathString requestPath)
@@ -55,7 +57,8 @@ internal sealed class SecurityUtils
             return new SecurityResult(HttpStatusCode.Unauthorized, AuthorizationHeaderInvalid);
         }
 
-        string checkPermissionsUri = $"{_options.CloudFoundryApi}/v2/apps/{_options.ApplicationId}/permissions";
+        CloudFoundryEndpointOptions options = _optionsMonitor.CurrentValue;
+        string checkPermissionsUri = $"{options.CloudFoundryApi}/v2/apps/{options.ApplicationId}/permissions";
         var request = new HttpRequestMessage(HttpMethod.Get, new Uri(checkPermissionsUri, UriKind.RelativeOrAbsolute));
         var auth = new AuthenticationHeaderValue("bearer", accessToken);
         request.Headers.Authorization = auth;
@@ -63,8 +66,8 @@ internal sealed class SecurityUtils
         try
         {
             _logger.LogDebug("GetPermissionsAsync({Uri}, {AccessToken})", checkPermissionsUri, SecurityUtilities.SanitizeInput(accessToken));
-            _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
-            using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
+            using HttpClient httpClient = CreateHttpClient();
+            using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -115,5 +118,17 @@ internal sealed class SecurityUtils
 
         _logger.LogDebug("GetPermissionsAsync returning: {Permissions}", permissions);
         return permissions;
+    }
+
+    private HttpClient CreateHttpClient()
+    {
+        HttpClient httpClient = _httpClientFactory.CreateClient(HttpClientName);
+
+        if (GetPermissionsTimeout > TimeSpan.Zero)
+        {
+            httpClient.Timeout = GetPermissionsTimeout;
+        }
+
+        return httpClient;
     }
 }

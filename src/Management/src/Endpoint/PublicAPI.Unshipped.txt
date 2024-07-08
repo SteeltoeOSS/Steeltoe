@@ -21,6 +21,7 @@ static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllAc
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> void
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddCommonActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+static Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityServiceCollectionExtensions.AddCloudFoundrySecurity(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.CloudFoundry.EndpointApplicationBuilderExtensions.UseCloudFoundrySecurity(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> void
 static Steeltoe.Management.Endpoint.CloudFoundry.EndpointServiceCollectionExtensions.AddCloudFoundryActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
 static Steeltoe.Management.Endpoint.CloudFoundry.ServiceCollectionExtensions.AddCloudFoundryActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -144,9 +145,7 @@ Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.CloudFound
 Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.CloudFoundryEndpointOptions() -> void
 Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.ValidateCertificates.set -> void
-Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware
-Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware.CloudFoundrySecurityMiddleware(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions!>! endpointOptionsMonitor, System.Collections.Generic.IEnumerable<Steeltoe.Management.EndpointOptions!>! endpointOptionsCollection, Microsoft.AspNetCore.Http.RequestDelegate? next, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
-Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext! context) -> System.Threading.Tasks.Task!
+Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityServiceCollectionExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.EndpointApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.ICloudFoundryEndpointHandler

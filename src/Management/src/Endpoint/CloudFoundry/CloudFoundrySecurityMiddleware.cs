@@ -14,7 +14,7 @@ using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-public sealed class CloudFoundrySecurityMiddleware
+internal sealed class CloudFoundrySecurityMiddleware
 {
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
@@ -24,22 +24,21 @@ public sealed class CloudFoundrySecurityMiddleware
     private readonly SecurityUtils _securityUtils;
 
     public CloudFoundrySecurityMiddleware(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection, RequestDelegate? next,
-        ILoggerFactory loggerFactory)
+        IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection,
+        SecurityUtils securityUtils, ILogger<CloudFoundrySecurityMiddleware> logger, RequestDelegate? next)
     {
         ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(endpointOptionsMonitor);
         ArgumentGuard.NotNull(endpointOptionsCollection);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentGuard.NotNull(securityUtils);
+        ArgumentGuard.NotNull(logger);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
-
         _endpointOptionsCollection = endpointOptionsCollection.Where(options => options is not HypermediaEndpointOptions).ToList();
-
+        _securityUtils = securityUtils;
+        _logger = logger;
         _next = next;
-        _logger = loggerFactory.CreateLogger<CloudFoundrySecurityMiddleware>();
-        _securityUtils = new SecurityUtils(endpointOptionsMonitor.CurrentValue, loggerFactory.CreateLogger<SecurityUtils>());
     }
 
     public async Task InvokeAsync(HttpContext context)

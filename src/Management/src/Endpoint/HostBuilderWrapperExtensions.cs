@@ -135,7 +135,12 @@ internal static class HostBuilderWrapperExtensions
 
     public static void AddCloudFoundryActuator(this HostBuilderWrapper wrapper)
     {
-        wrapper.ConfigureServices(services => services.AddCloudFoundryActuator());
+        wrapper.ConfigureServices(services =>
+        {
+            services.AddCloudFoundryActuator();
+            services.AddCloudFoundrySecurity();
+        });
+
         RegisterActuatorEndpoints(wrapper, null);
     }
 

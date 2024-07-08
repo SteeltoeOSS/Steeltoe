@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -326,8 +328,13 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, Enumerable.Empty<EndpointOptions>(), null,
-            NullLoggerFactory.Instance);
+        var services = new ServiceCollection();
+        services.AddCloudFoundrySecurity();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        var securityUtils = serviceProvider.GetRequiredService<SecurityUtils>();
+
+        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], securityUtils,
+            NullLogger<CloudFoundrySecurityMiddleware>.Instance, null);
 
         HttpContext context1 = CreateRequest("GET", "/");
         string token = middleware.GetAccessToken(context1.Request);
@@ -345,14 +352,29 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor = GetOptionsMonitorFromSettings<ManagementOptions>();
 
-        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, Enumerable.Empty<EndpointOptions>(), null,
-            NullLoggerFactory.Instance);
+        var services = new ServiceCollection();
+        services.AddCloudFoundrySecurity();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        var securityUtils = serviceProvider.GetRequiredService<SecurityUtils>();
+
+        var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], securityUtils,
+            NullLogger<CloudFoundrySecurityMiddleware>.Instance, null);
 
         HttpContext context = CreateRequest("GET", "/");
         SecurityResult result = await middleware.GetPermissionsAsync(context);
         Assert.NotNull(result);
         Assert.Equal(Permissions.None, result.Permissions);
         Assert.Equal(HttpStatusCode.Unauthorized, result.Code);
+    }
+
+    [Fact]
+    public void Throws_when_Add_method_not_called()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        WebApplication app = builder.Build();
+
+        Action action = () => app.UseCloudFoundrySecurity();
+        action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Please call IServiceCollection.AddCloudFoundrySecurity first.");
     }
 
     protected override void Dispose(bool disposing)
