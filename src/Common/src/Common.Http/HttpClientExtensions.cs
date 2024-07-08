@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json.Serialization;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Common.Http;
 
@@ -65,7 +66,7 @@ internal static class HttpClientExtensions
 
         if (string.IsNullOrEmpty(accessToken))
         {
-            throw new HttpRequestException($"No access token was returned from '{accessTokenUri}'.", null, response.StatusCode);
+            throw new HttpRequestException($"No access token was returned from '{accessTokenUri.ToMaskedString()}'.", null, response.StatusCode);
         }
 
         return accessToken;

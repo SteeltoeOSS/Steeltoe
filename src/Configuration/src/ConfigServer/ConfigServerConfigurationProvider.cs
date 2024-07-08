@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 
 namespace Steeltoe.Configuration.ConfigServer;
@@ -206,6 +207,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         // Adds client settings (e.g. spring:cloud:config:uri, etc.) to the Data dictionary
         AddConfigServerClientOptions();
 
+        string logUri = string.Join(',', Options.GetUris().Select(uri => new Uri(uri).ToMaskedString()));
+
         if (Options is { Retry.Enabled: true, FailFast: true })
         {
             int attempts = 0;
@@ -213,7 +216,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
             do
             {
-                Logger.LogInformation("Fetching configuration from server at: {Uri}", Options.Uri);
+                Logger.LogInformation("Fetching configuration from server at: {Uri}", logUri);
 
                 try
                 {
@@ -221,7 +224,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 }
                 catch (ConfigServerException exception)
                 {
-                    Logger.LogInformation(exception, "Failed fetching configuration from server at: {Uri}.", Options.Uri);
+                    Logger.LogInformation(exception, "Failed fetching configuration from server at: {Uri}.", logUri);
                     attempts++;
 
                     if (attempts < Options.Retry.MaxAttempts)
@@ -239,7 +242,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             while (true);
         }
 
-        Logger.LogInformation("Fetching configuration from server at: {Uri}", Options.Uri);
+        Logger.LogInformation("Fetching configuration from server at: {Uri}", logUri);
         return await DoLoadAsync(updateDictionary, cancellationToken);
     }
 
@@ -525,8 +528,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             {
                 using HttpResponseMessage response = await HttpClient.SendAsync(request, cancellationToken);
 
-                Logger.LogInformation("Config Server returned status: {StatusCode} invoking path: {RequestUri}", response.StatusCode,
-                    WebUtility.UrlEncode(requestUri));
+                Logger.LogInformation("Config Server returned status: {StatusCode} invoking path: {RequestUri}", response.StatusCode, uri.ToMaskedString());
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -538,9 +540,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                     // Throw if status >= 400
                     if (response.StatusCode >= HttpStatusCode.BadRequest)
                     {
-                        // HttpClientErrorException
-                        throw new HttpRequestException(
-                            $"Config Server returned status: {response.StatusCode} invoking path: {WebUtility.UrlEncode(requestUri)}");
+                        throw new HttpRequestException($"Config Server returned status: {response.StatusCode} invoking path: {uri.ToMaskedString()}");
                     }
 
                     return null;
@@ -701,7 +701,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             Uri uri = GetVaultRenewUri();
             HttpRequestMessage message = await GetVaultRenewMessageAsync(uri, cancellationToken);
 
-            Logger.LogInformation("Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}", obscuredToken, Options.TokenTtl, uri);
+            Logger.LogInformation("Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}", obscuredToken, Options.TokenTtl, uri.ToMaskedString());
 
             using HttpResponseMessage response = await HttpClient.SendAsync(message, cancellationToken);
 

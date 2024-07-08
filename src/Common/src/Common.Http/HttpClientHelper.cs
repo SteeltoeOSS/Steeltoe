@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Common.Http;
 
@@ -204,7 +204,7 @@ public static class HttpClientHelper
             if (!response.IsSuccessStatusCode)
             {
                 logger?.LogInformation("GetAccessTokenAsync returned status: {StatusCode} while obtaining access token from: {Uri}", response.StatusCode,
-                    WebUtility.UrlEncode(accessTokenUri.OriginalString));
+                    accessTokenUri.ToMaskedString());
 
                 return null;
             }
@@ -216,8 +216,7 @@ public static class HttpClientHelper
         }
         catch (Exception exception) when (!exception.IsCancellation())
         {
-            logger?.LogError(exception, "GetAccessTokenAsync exception obtaining access token from: {Uri}",
-                WebUtility.UrlEncode(accessTokenUri.OriginalString));
+            logger?.LogError(exception, "GetAccessTokenAsync exception obtaining access token from: {Uri}", accessTokenUri.ToMaskedString());
         }
         finally
         {

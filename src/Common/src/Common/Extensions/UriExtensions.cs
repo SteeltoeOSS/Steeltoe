@@ -15,13 +15,19 @@ internal static class UriExtensions
     {
         ArgumentGuard.NotNull(source);
 
-        return source.ToMaskedUri().ToString();
+        string uris = source.ToString();
+
+        if (uris.Contains(','))
+        {
+            return string.Join(',',
+                uris.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(uri => ToMaskedUri(new Uri(uri)).ToString()));
+        }
+
+        return ToMaskedUri(source).ToString();
     }
 
-    public static Uri ToMaskedUri(this Uri source)
+    private static Uri ToMaskedUri(Uri source)
     {
-        ArgumentGuard.NotNull(source);
-
         if (string.IsNullOrEmpty(source.UserInfo))
         {
             return source;
