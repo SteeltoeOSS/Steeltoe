@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using RichardSzalay.MockHttp;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Common.Http.HttpClientPooling;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
 namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
@@ -17,41 +19,34 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
     [Fact]
     public async Task SpringBootAdminClient_RegistersAndDeletes()
     {
-        try
+        var appSettings = new Dictionary<string, string?>
         {
-            var appSettings = new Dictionary<string, string?>
-            {
-                ["management:endpoints:path"] = "/management",
-                ["management:endpoints:health:path"] = "myhealth",
-                ["URLS"] = "http://localhost:8080;https://localhost:8082",
-                ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
-                ["spring:application:name"] = "MySteeltoeApplication"
-            };
+            ["management:endpoints:path"] = "/management",
+            ["management:endpoints:health:path"] = "myhealth",
+            ["URLS"] = "http://localhost:8080;https://localhost:8082",
+            ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
+            ["spring:application:name"] = "MySteeltoeApplication"
+        };
 
-            var clientOptions = new OptionsWrapper<SpringBootAdminClientOptions>(GetOptionsFromSettings<SpringBootAdminClientOptions>(appSettings));
-            IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings);
-            IOptionsMonitor<HealthEndpointOptions> healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
-            var httpMessageHandler = new MockHttpMessageHandler();
-            httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", "{\"Id\":\"1234567\"}");
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSpringBootAdminClient();
 
-            httpMessageHandler.Expect(HttpMethod.Delete, "http://springbootadmin:9090/instances/1234567")
-                .Respond(_ => new HttpResponseMessage(HttpStatusCode.NoContent));
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances").Respond("application/json", "{\"Id\":\"1234567\"}");
+        handler.Mock.Expect(HttpMethod.Delete, "http://springbootadmin:9090/instances/1234567").Respond(_ => new HttpResponseMessage(HttpStatusCode.NoContent));
 
-            Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
+        await using WebApplication app = builder.Build();
+        app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
-            var service = new SpringBootAdminClientHostedService(clientOptions, managementOptions, healthOptions,
-                NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
+        SpringBootAdminClientHostedService hostedService = app.Services.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>().Single();
+        Assert.Null(hostedService.RegistrationResult);
 
-            await service.StartAsync(default);
-            await service.StopAsync(default);
+        await hostedService.StartAsync(default);
+        await hostedService.StopAsync(default);
 
-            httpMessageHandler.VerifyNoOutstandingExpectation();
-            Assert.Equal("1234567", SpringBootAdminClientHostedService.RegistrationResult?.Id);
-        }
-        finally
-        {
-            SpringBootAdminClientHostedService.RegistrationResult = null;
-        }
+        handler.Mock.VerifyNoOutstandingExpectation();
+        Assert.Equal("1234567", hostedService.RegistrationResult?.Id);
     }
 
     [Fact]
@@ -66,21 +61,23 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
             ["spring:application:name"] = "MySteeltoeApplication"
         };
 
-        var clientOptions = new OptionsWrapper<SpringBootAdminClientOptions>(GetOptionsFromSettings<SpringBootAdminClientOptions>(appSettings));
-        IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(appSettings);
-        IOptionsMonitor<HealthEndpointOptions> healthOptions = GetOptionsMonitorFromSettings<HealthEndpointOptions>(appSettings);
-        var httpMessageHandler = new MockHttpMessageHandler();
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSpringBootAdminClient();
 
-        httpMessageHandler.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances")
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.Expect(HttpMethod.Post, "http://springbootadmin:9090/instances")
             .Throw(new HttpRequestException("No connection could be made because the target machine actively refused it."));
 
-        Assert.Null(SpringBootAdminClientHostedService.RegistrationResult);
+        await using WebApplication app = builder.Build();
+        app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
-        var service = new SpringBootAdminClientHostedService(clientOptions, managementOptions, healthOptions,
-            NullLogger<SpringBootAdminClientHostedService>.Instance, httpMessageHandler.ToHttpClient());
+        SpringBootAdminClientHostedService hostedService = app.Services.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>().Single();
+        Assert.Null(hostedService.RegistrationResult);
 
-        await service.StartAsync(default);
+        await hostedService.StartAsync(default);
 
-        httpMessageHandler.VerifyNoOutstandingExpectation();
+        handler.Mock.VerifyNoOutstandingExpectation();
     }
 }
