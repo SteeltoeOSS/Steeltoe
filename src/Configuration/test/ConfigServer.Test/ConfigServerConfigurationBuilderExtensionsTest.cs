@@ -126,26 +126,26 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Timeout = 10
         };
 
-        configurationBuilder.AddConfigServer(settings);
+        configurationBuilder.AddConfigServer(options);
         configurationBuilder.Build();
 
         var source = configurationBuilder.FindConfigurationSource<ConfigServerConfigurationSource>();
         Assert.NotNull(source);
-        Assert.NotNull(source.DefaultSettings.ClientCertificate);
+        Assert.NotNull(source.DefaultOptions.ClientCertificate);
     }
 
     [Fact]
     public void AddConfigServer_AddsConfigServerSourceToList()
     {
         var configurationBuilder = new ConfigurationBuilder();
-        var settings = new ConfigServerClientSettings();
+        var options = new ConfigServerClientOptions();
 
-        configurationBuilder.AddConfigServer(settings);
+        configurationBuilder.AddConfigServer(options);
 
         ConfigServerConfigurationSource? configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
         Assert.NotNull(configServerSource);
@@ -156,9 +156,9 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
     {
         var configurationBuilder = new ConfigurationBuilder();
         var loggerFactory = new LoggerFactory();
-        var settings = new ConfigServerClientSettings();
+        var options = new ConfigServerClientOptions();
 
-        configurationBuilder.AddConfigServer(settings, loggerFactory);
+        configurationBuilder.AddConfigServer(options, loggerFactory);
 
         ConfigServerConfigurationSource? configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
 
@@ -205,32 +205,32 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var clientSettings = new ConfigServerClientSettings();
+        var clientOptions = new ConfigServerClientOptions();
         configurationBuilder.AddJsonFile(fileName);
 
-        configurationBuilder.AddConfigServer(clientSettings);
+        configurationBuilder.AddConfigServer(clientOptions);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
-        ConfigServerClientSettings settings = configServerProvider.Settings;
+        ConfigServerClientOptions options = configServerProvider.Options;
 
-        Assert.False(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal("Production", settings.Environment);
-        Assert.Equal("myName", settings.Name);
-        Assert.Equal("myLabel", settings.Label);
-        Assert.Equal("myUsername", settings.Username);
-        Assert.Equal("myPassword", settings.Password);
-        Assert.False(settings.RetryEnabled);
-        Assert.Equal(55555, settings.RetryAttempts);
-        Assert.Equal(55555, settings.RetryInitialInterval);
-        Assert.Equal(55555, settings.RetryMaxInterval);
-        Assert.Equal(5.5, settings.RetryMultiplier);
-        Assert.Equal(10000, settings.Timeout);
-        Assert.Equal("vaulttoken", settings.Token);
+        Assert.False(options.Enabled);
+        Assert.False(options.FailFast);
+        Assert.Equal("https://user:password@foo.com:9999", options.Uri);
+        Assert.Equal("Production", options.Environment);
+        Assert.Equal("myName", options.Name);
+        Assert.Equal("myLabel", options.Label);
+        Assert.Equal("myUsername", options.Username);
+        Assert.Equal("myPassword", options.Password);
+        Assert.False(options.Retry.Enabled);
+        Assert.Equal(55555, options.Retry.MaxAttempts);
+        Assert.Equal(55555, options.Retry.InitialInterval);
+        Assert.Equal(55555, options.Retry.MaxInterval);
+        Assert.Equal(5.5, options.Retry.Multiplier);
+        Assert.Equal(10000, options.Timeout);
+        Assert.Equal("vaulttoken", options.Token);
     }
 
     [Fact]
@@ -261,25 +261,25 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var clientSettings = new ConfigServerClientSettings();
+        var clientOptions = new ConfigServerClientOptions();
         configurationBuilder.AddXmlFile(fileName);
 
-        configurationBuilder.AddConfigServer(clientSettings);
+        configurationBuilder.AddConfigServer(clientOptions);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientSettings settings = configServerProvider.Settings;
+        ConfigServerClientOptions options = configServerProvider.Options;
 
-        Assert.False(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal("Production", settings.Environment);
-        Assert.Equal("myName", settings.Name);
-        Assert.Equal("myLabel", settings.Label);
-        Assert.Equal("myUsername", settings.Username);
-        Assert.Equal("myPassword", settings.Password);
+        Assert.False(options.Enabled);
+        Assert.False(options.FailFast);
+        Assert.Equal("https://foo.com:9999", options.Uri);
+        Assert.Equal("Production", options.Environment);
+        Assert.Equal("myName", options.Name);
+        Assert.Equal("myLabel", options.Label);
+        Assert.Equal("myUsername", options.Username);
+        Assert.Equal("myPassword", options.Password);
     }
 
     [Fact]
@@ -303,25 +303,25 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var clientSettings = new ConfigServerClientSettings();
+        var clientOptions = new ConfigServerClientOptions();
         configurationBuilder.AddIniFile(fileName);
 
-        configurationBuilder.AddConfigServer(clientSettings);
+        configurationBuilder.AddConfigServer(clientOptions);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientSettings settings = configServerProvider.Settings;
+        ConfigServerClientOptions options = configServerProvider.Options;
 
-        Assert.False(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal("Production", settings.Environment);
-        Assert.Equal("myName", settings.Name);
-        Assert.Equal("myLabel", settings.Label);
-        Assert.Equal("myUsername", settings.Username);
-        Assert.Equal("myPassword", settings.Password);
+        Assert.False(options.Enabled);
+        Assert.False(options.FailFast);
+        Assert.Equal("https://foo.com:9999", options.Uri);
+        Assert.Equal("Production", options.Environment);
+        Assert.Equal("myName", options.Name);
+        Assert.Equal("myLabel", options.Label);
+        Assert.Equal("myUsername", options.Username);
+        Assert.Equal("myPassword", options.Password);
     }
 
     [Fact]
@@ -343,24 +343,24 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         ];
 
         var configurationBuilder = new ConfigurationBuilder();
-        var clientSettings = new ConfigServerClientSettings();
+        var clientOptions = new ConfigServerClientOptions();
         configurationBuilder.AddCommandLine(appsettings);
 
-        configurationBuilder.AddConfigServer(clientSettings);
+        configurationBuilder.AddConfigServer(clientOptions);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientSettings settings = configServerProvider.Settings;
+        ConfigServerClientOptions options = configServerProvider.Options;
 
-        Assert.False(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal("Production", settings.Environment);
-        Assert.Equal("myName", settings.Name);
-        Assert.Equal("myLabel", settings.Label);
-        Assert.Equal("myUsername", settings.Username);
-        Assert.Equal("myPassword", settings.Password);
+        Assert.False(options.Enabled);
+        Assert.False(options.FailFast);
+        Assert.Equal("https://foo.com:9999", options.Uri);
+        Assert.Equal("Production", options.Environment);
+        Assert.Equal("myName", options.Name);
+        Assert.Equal("myLabel", options.Label);
+        Assert.Equal("myUsername", options.Username);
+        Assert.Equal("myPassword", options.Password);
     }
 
     [Fact]
@@ -400,25 +400,25 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var clientSettings = new ConfigServerClientSettings();
+        var clientOptions = new ConfigServerClientOptions();
         configurationBuilder.AddJsonFile(fileName);
 
-        configurationBuilder.AddConfigServer(clientSettings);
+        configurationBuilder.AddConfigServer(clientOptions);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientSettings settings = configServerProvider.Settings;
+        ConfigServerClientOptions options = configServerProvider.Options;
 
-        Assert.False(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal("Production", settings.Environment);
-        Assert.Equal("testName", settings.Name);
-        Assert.Equal("myLabel", settings.Label);
-        Assert.Equal("myUsername", settings.Username);
-        Assert.Equal("myPassword", settings.Password);
+        Assert.False(options.Enabled);
+        Assert.False(options.FailFast);
+        Assert.Equal("https://user:password@foo.com:9999", options.Uri);
+        Assert.Equal("Production", options.Environment);
+        Assert.Equal("testName", options.Name);
+        Assert.Equal("myLabel", options.Label);
+        Assert.Equal("myUsername", options.Username);
+        Assert.Equal("myPassword", options.Password);
     }
 
     [Theory]
@@ -432,29 +432,32 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Uri = "https://uri-from-settings",
-            RetryEnabled = false,
+            Retry =
+            {
+                Enabled = false
+            },
             Timeout = 10,
             Enabled = false
         };
 
-        configurationBuilder.AddEnvironmentVariables().AddConfigServer(settings);
+        configurationBuilder.AddEnvironmentVariables().AddConfigServer(options);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(configServerProvider);
         Assert.IsType<ConfigServerConfigurationProvider>(configServerProvider);
 
-        Assert.NotEqual("https://uri-from-settings", configServerProvider.Settings.Uri);
-        Assert.Equal("https://uri-from-vcap-services", configServerProvider.Settings.Uri);
+        Assert.NotEqual("https://uri-from-settings", configServerProvider.Options.Uri);
+        Assert.Equal("https://uri-from-vcap-services", configServerProvider.Options.Uri);
     }
 
     [Fact]
     public void AddConfigServer_PaysAttentionToSettings()
     {
-        var configServerClientSettings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
             Name = "testConfigName",
             Label = "testConfigLabel",
@@ -462,20 +465,23 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             Username = "testUser",
             Password = "testPassword",
             Timeout = 10,
-            RetryEnabled = false
+            Retry =
+            {
+                Enabled = false
+            }
         };
 
-        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(configServerClientSettings);
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(options);
 
         IConfigurationRoot configurationRoot = builder.Build();
         ConfigServerConfigurationProvider? provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(provider);
-        Assert.Equal("testConfigLabel", provider.Settings.Label);
-        Assert.Equal("testConfigName", provider.Settings.Name);
-        Assert.Equal("testEnv", provider.Settings.Environment);
-        Assert.Equal("testUser", provider.Settings.Username);
-        Assert.Equal("testPassword", provider.Settings.Password);
+        Assert.Equal("testConfigLabel", provider.Options.Label);
+        Assert.Equal("testConfigName", provider.Options.Name);
+        Assert.Equal("testEnv", provider.Options.Environment);
+        Assert.Equal("testUser", provider.Options.Username);
+        Assert.Equal("testPassword", provider.Options.Password);
     }
 
     [Fact]

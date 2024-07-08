@@ -16,7 +16,7 @@ public sealed class ConfigServerHostedServiceTest
     {
         var configurationRoot = new ConfigurationRoot(new List<IConfigurationProvider>
         {
-            new ConfigServerConfigurationProvider(new ConfigServerClientSettings
+            new ConfigServerConfigurationProvider(new ConfigServerClientOptions
             {
                 Enabled = false
             }, NullLoggerFactory.Instance)
@@ -38,7 +38,7 @@ public sealed class ConfigServerHostedServiceTest
     {
         var placeholder = new PlaceholderResolverProvider(new List<IConfigurationProvider>
         {
-            new ConfigServerConfigurationProvider(new ConfigServerClientSettings
+            new ConfigServerConfigurationProvider(new ConfigServerClientOptions
             {
                 Enabled = false
             }, NullLoggerFactory.Instance)

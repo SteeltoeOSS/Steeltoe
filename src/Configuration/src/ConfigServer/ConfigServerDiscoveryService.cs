@@ -18,20 +18,20 @@ namespace Steeltoe.Configuration.ConfigServer;
 internal sealed class ConfigServerDiscoveryService
 {
     private readonly IConfiguration _configuration;
-    private readonly ConfigServerClientSettings _settings;
+    private readonly ConfigServerClientOptions _options;
     private readonly ILogger _logger;
     private ServiceProvider? _temporaryServiceProviderForDiscoveryClients;
 
     internal ICollection<IDiscoveryClient> DiscoveryClients { get; private set; }
 
-    public ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientSettings settings, ILoggerFactory loggerFactory)
+    public ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientOptions options, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(settings);
+        ArgumentGuard.NotNull(options);
         ArgumentGuard.NotNull(loggerFactory);
 
         _configuration = configuration;
-        _settings = settings;
+        _options = options;
         _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
         DiscoveryClients = SetupDiscoveryClients(loggerFactory);
     }
@@ -106,20 +106,20 @@ internal sealed class ConfigServerDiscoveryService
     internal async Task<IEnumerable<IServiceInstance>> GetConfigServerInstancesAsync(CancellationToken cancellationToken)
     {
         int attempts = 0;
-        int backOff = _settings.RetryInitialInterval;
+        int backOff = _options.Retry.InitialInterval;
         List<IServiceInstance> instances = [];
 
         do
         {
-            _logger.LogDebug("Locating ConfigServer {ServiceId} via discovery", _settings.DiscoveryServiceId);
+            _logger.LogDebug("Locating ConfigServer {ServiceId} via discovery", _options.Discovery.ServiceId);
 
-            if (_settings.DiscoveryServiceId != null)
+            if (_options.Discovery.ServiceId != null)
             {
                 foreach (IDiscoveryClient discoveryClient in DiscoveryClients)
                 {
                     try
                     {
-                        IList<IServiceInstance> serviceInstances = await discoveryClient.GetInstancesAsync(_settings.DiscoveryServiceId, cancellationToken);
+                        IList<IServiceInstance> serviceInstances = await discoveryClient.GetInstancesAsync(_options.Discovery.ServiceId, cancellationToken);
                         instances.AddRange(serviceInstances);
                     }
                     catch (Exception exception) when (!exception.IsCancellation())
@@ -129,18 +129,18 @@ internal sealed class ConfigServerDiscoveryService
                 }
             }
 
-            if (!_settings.RetryEnabled || instances.Any())
+            if (!_options.Retry.Enabled || instances.Any())
             {
                 break;
             }
 
             attempts++;
 
-            if (attempts <= _settings.RetryAttempts)
+            if (attempts <= _options.Retry.MaxAttempts)
             {
                 Thread.CurrentThread.Join(backOff);
-                int nextBackOff = (int)(backOff * _settings.RetryMultiplier);
-                backOff = Math.Min(nextBackOff, _settings.RetryMaxInterval);
+                int nextBackOff = (int)(backOff * _options.Retry.Multiplier);
+                backOff = Math.Min(nextBackOff, _options.Retry.MaxInterval);
             }
             else
             {

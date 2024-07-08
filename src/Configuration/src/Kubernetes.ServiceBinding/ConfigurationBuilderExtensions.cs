@@ -99,7 +99,7 @@ public static class ConfigurationBuilderExtensions
 
             // All post-processors must be registered *before* the configuration source is added to the builder. When adding the source,
             // WebApplicationBuilder immediately builds the configuration provider and loads it, which executes the post-processors.
-            // Therefore adding post-processors afterwards is a no-op.
+            // Therefore, adding post-processors afterward is a no-op.
 
             RegisterPostProcessors(source);
             builder.Add(source);

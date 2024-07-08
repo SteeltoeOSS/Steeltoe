@@ -7,71 +7,30 @@ using Microsoft.Extensions.Configuration;
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
 /// <summary>
-/// Holds the settings used to configure the Spring Cloud Config Server provider. />.
+/// Holds settings used to configure encryption for the Spring Cloud Config Server provider.
 /// </summary>
 internal sealed class ConfigServerEncryptionSettings
 {
     /// <summary>
-    /// Default Encryption method.
-    /// </summary>
-    public const string DefaultEncryptionRsaAlgorithm = "DEFAULT";
-
-    /// <summary>
-    /// Default salt.
-    /// </summary>
-    public const string DefaultEncryptionRsaSalt = "deadbeef";
-
-    /// <summary>
-    /// Gets or sets a value indicating whether decryption is enabled.
+    /// Gets or sets a value indicating whether encryption is enabled.
     /// </summary>
     public bool EncryptionEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether strong encryption flag is enabled.
+    /// Gets the settings related to RSA encryption.
     /// </summary>
-    public bool EncryptionRsaStrong { get; set; }
+    [ConfigurationKeyName("RSA")]
+    public RsaEncryptionSettings Rsa { get; } = new();
 
     /// <summary>
-    /// Gets or sets the salt value.
+    /// Gets the settings related to the key store.
     /// </summary>
-    public string EncryptionRsaSalt { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Rsa Algorithm (DEFAULT or OAEP).
-    /// </summary>
-    public string EncryptionRsaAlgorithm { get; set; }
-
-    /// <summary>
-    /// Gets or sets the location of the keystore.
-    /// </summary>
-    public string? EncryptionKeyStoreLocation { get; set; }
-
-    /// <summary>
-    /// Gets or sets the keystore password.
-    /// </summary>
-    public string? EncryptionKeyStorePassword { get; set; }
-
-    /// <summary>
-    /// Gets or sets the alias of the key in the keystore.
-    /// </summary>
-    public string? EncryptionKeyStoreAlias { get; set; }
+    public EncryptionKeyStoreSettings KeyStore { get; } = new();
 
     /// <summary>
     /// Gets or sets the key of the simple encryption.
     /// </summary>
     public string? EncryptionKey { get; set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerEncryptionSettings" /> class.
-    /// </summary>
-    /// <remarks>
-    /// Initializes the Config Server client settings with defaults.
-    /// </remarks>
-    public ConfigServerEncryptionSettings()
-    {
-        EncryptionRsaAlgorithm = DefaultEncryptionRsaAlgorithm;
-        EncryptionRsaSalt = DefaultEncryptionRsaSalt;
-    }
 
     internal static ITextDecryptor CreateTextDecryptor(IConfiguration configuration)
     {

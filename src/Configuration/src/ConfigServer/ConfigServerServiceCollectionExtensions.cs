@@ -20,8 +20,8 @@ public static class ConfigServerServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddOptions<ConfigServerClientSettingsOptions>().Configure<IConfiguration>((options, configuration) =>
-            configuration.GetSection(ConfigServerClientSettingsOptions.ConfigurationPrefix).Bind(options));
+        services.AddOptions<ConfigServerClientOptions>().Configure<IConfiguration>((options, configuration) =>
+            configuration.GetSection(ConfigServerClientOptions.ConfigurationPrefix).Bind(options));
 
         return services;
     }
@@ -45,8 +45,8 @@ public static class ConfigServerServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Configures ConfigServerClientSettingsOptions, ConfigServerHostedService, Config Server Health Contributor and ensures
-    /// <see cref="IConfigurationRoot" /> is available.
+    /// Configures <see cref="ConfigServerClientOptions" />, hosted service and health contributor, and ensures <see cref="IConfigurationRoot" /> is
+    /// available.
     /// </summary>
     /// <param name="services">
     /// The service container.

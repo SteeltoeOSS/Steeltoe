@@ -41,7 +41,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
-        // Application Id Missing
+        // Application ID missing
         using (var server = new TestServer(builder))
         {
             HttpClient client = server.CreateClient();

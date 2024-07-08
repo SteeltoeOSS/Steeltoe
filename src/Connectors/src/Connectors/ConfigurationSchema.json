@@ -1,0 +1,140 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Connectors": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Steeltoe": {
+      "type": "object",
+      "properties": {
+        "Client": {
+          "type": "object",
+          "properties": {
+            "CosmosDb": {
+              "type": "object",
+              "properties": {
+                "Default": {
+                  "type": "object",
+                  "properties": {
+                    "ConnectionString": {
+                      "type": "string",
+                      "description": "Gets or sets the connection string for this data source."
+                    },
+                    "Database": {
+                      "type": "string",
+                      "description": "Gets or sets the name of the CosmosDB database."
+                    }
+                  },
+                  "description": "Provides configuration settings to connect to a data source."
+                }
+              }
+            },
+            "MongoDb": {
+              "type": "object",
+              "properties": {
+                "Default": {
+                  "type": "object",
+                  "properties": {
+                    "ConnectionString": {
+                      "type": "string",
+                      "description": "Gets or sets the connection string for this data source."
+                    },
+                    "Database": {
+                      "type": "string",
+                      "description": "Gets or sets the name of the MongoDB database."
+                    }
+                  },
+                  "description": "Provides configuration settings to connect to a data source."
+                }
+              }
+            },
+            "MySql": {
+              "type": "object",
+              "properties": {
+                "Default": {
+                  "type": "object",
+                  "properties": {
+                    "ConnectionString": {
+                      "type": "string",
+                      "description": "Gets or sets the connection string for this data source."
+                    }
+                  },
+                  "description": "Provides configuration settings to connect to a data source."
+                }
+              }
+            },
+            "PostgreSql": {
+              "type": "object",
+              "properties": {
+                "Default": {
+                  "type": "object",
+                  "properties": {
+                    "ConnectionString": {
+                      "type": "string",
+                      "description": "Gets or sets the connection string for this data source."
+                    }
+                  },
+                  "description": "Provides configuration settings to connect to a data source."
+                }
+              }
+            },
+            "RabbitMQ": {
+              "type": "object",
+              "properties": {
+                "Default": {
+                  "type": "object",
+                  "properties": {
+                    "ConnectionString": {
+                      "type": "string",
+                      "description": "Gets or sets the connection string for this data source."
+                    }
+                  },
+                  "description": "Provides configuration settings to connect to a data source."
+                }
+              }
+            },
+            "Redis": {
+              "type": "object",
+              "properties": {
+                "Default": {
+                  "type": "object",
+                  "properties": {
+                    "ConnectionString": {
+                      "type": "string",
+                      "description": "Gets or sets the connection string for this data source."
+                    }
+                  },
+                  "description": "Provides configuration settings to connect to a data source."
+                }
+              }
+            },
+            "SqlServer": {
+              "type": "object",
+              "properties": {
+                "Default": {
+                  "type": "object",
+                  "properties": {
+                    "ConnectionString": {
+                      "type": "string",
+                      "description": "Gets or sets the connection string for this data source."
+                    }
+                  },
+                  "description": "Provides configuration settings to connect to a data source."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -15,7 +15,7 @@ public static class PlaceholderConfigurationExtensions
     /// Adds a placeholder resolver configuration source to the <see cref="ConfigurationBuilder" />. The placeholder resolver source will capture and wrap
     /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
     /// sources and provide placeholder resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with placeholder resolution.
+    /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -32,7 +32,7 @@ public static class PlaceholderConfigurationExtensions
     /// Adds a placeholder resolver configuration source to the <see cref="ConfigurationBuilder" />. The placeholder resolver source will capture and wrap
     /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
     /// sources and provide placeholder resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with placeholder resolution.
+    /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -120,7 +120,7 @@ public static class PlaceholderConfigurationExtensions
     /// Adds a placeholder resolver configuration source to the <see cref="ConfigurationBuilder" />. The placeholder resolver source will capture and wrap
     /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
     /// sources and provide placeholder resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with placeholder resolution.
+    /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="configurationManager">
     /// The configuration manager.
@@ -137,7 +137,7 @@ public static class PlaceholderConfigurationExtensions
     /// Adds a placeholder resolver configuration source to the <see cref="ConfigurationBuilder" />. The placeholder resolver source will capture and wrap
     /// all the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing
     /// sources and provide placeholder resolution for the configuration. Typically, you will want to add this configuration source as the last one so that
-    /// you wrap all of the applications configuration sources with placeholder resolution.
+    /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="configurationManager">
     /// The configuration manager.

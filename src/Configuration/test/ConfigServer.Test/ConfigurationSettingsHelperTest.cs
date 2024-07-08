@@ -12,10 +12,10 @@ public sealed class ConfigurationSettingsHelperTest
     public void Initialize_WithDefaultSettings()
     {
         const string prefix = "spring:cloud:config";
-        var settings = new ConfigServerClientSettings();
+        var options = new ConfigServerClientOptions();
         IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
 
-        ConfigurationSettingsHelper.Initialize(prefix, settings, configuration);
-        TestHelper.VerifyDefaults(settings);
+        ConfigurationSettingsHelper.Initialize(prefix, options, configuration);
+        TestHelper.VerifyDefaults(options);
     }
 }

@@ -145,7 +145,7 @@ public sealed class ConsulRegistrationTest
         result = ConsulRegistration.Create(optionsMonitor, appInstanceInfo);
         Assert.Equal("ConsulServiceName", result.ServiceId);
 
-        // Consul-discovery is highest priority
+        // Consul-discovery is the highest priority
         appsettings.Add("consul:discovery:serviceName", "ConsulDiscoveryServiceName");
         configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         appInstanceInfo = new ApplicationInstanceInfo(configuration);

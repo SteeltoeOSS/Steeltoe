@@ -4,7 +4,11 @@
 
 namespace Steeltoe.Connectors.MongoDb;
 
+/// <inheritdoc />
 public sealed class MongoDbOptions : ConnectionStringOptions
 {
+    /// <summary>
+    /// Gets or sets the name of the MongoDB database.
+    /// </summary>
     public string? Database { get; set; }
 }

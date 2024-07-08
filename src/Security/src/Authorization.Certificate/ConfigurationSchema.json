@@ -1,0 +1,42 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Security": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Security.Authorization": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Security.Authorization.Certificate": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Certificates": {
+      "type": "object",
+      "properties": {
+        "AppInstanceIdentity": {
+          "type": "object",
+          "properties": {
+            "CertificateFilePath": {
+              "type": "string",
+              "description": "Gets or sets the local path to a certificate file on disk. Use 'Steeltoe.Common.Certificates.CertificateSettings.PrivateKeyFilePath' if the private key is stored in another file."
+            },
+            "PrivateKeyFilePath": {
+              "type": "string",
+              "description": "Gets or sets the local path to a private key file on disk (optional)."
+            }
+          },
+          "description": "Indicates where to load a 'System.Security.Cryptography.X509Certificates.X509Certificate2' from."
+        }
+      }
+    }
+  }
+}

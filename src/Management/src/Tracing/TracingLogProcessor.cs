@@ -11,9 +11,9 @@ namespace Steeltoe.Management.Tracing;
 
 public sealed class TracingLogProcessor : IDynamicMessageProcessor
 {
-    private readonly ITracingOptions _options;
+    private readonly TracingOptions _options;
 
-    public TracingLogProcessor(ITracingOptions options)
+    public TracingLogProcessor(TracingOptions options)
     {
         ArgumentGuard.NotNull(options);
 
@@ -61,15 +61,9 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
         return message;
     }
 
-    private TelemetrySpan? GetCurrentSpan()
+    private static TelemetrySpan? GetCurrentSpan()
     {
         TelemetrySpan span = Tracer.CurrentSpan;
-
-        if (span == null || !span.Context.IsValid)
-        {
-            return null;
-        }
-
-        return span;
+        return span.Context.IsValid ? span : null;
     }
 }

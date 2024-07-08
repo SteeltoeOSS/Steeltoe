@@ -142,7 +142,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
                 else
                 {
                     // Never merge separately-defined secrets from appsettings.json into the connection string.
-                    // Earlier Steeltoe versions used to do that, which raised the question what takes precedence.
+                    // Earlier Steeltoe versions used to do that, which raised the question of what takes precedence.
                     if (!IsPartOfConnectionString(secretName))
                     {
                         separateSecrets[secretName] = secretValue;

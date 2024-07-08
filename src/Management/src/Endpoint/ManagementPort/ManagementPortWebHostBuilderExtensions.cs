@@ -12,8 +12,8 @@ namespace Steeltoe.Management.Endpoint.ManagementPort;
 
 internal static class ManagementPortWebHostBuilderExtensions
 {
-    private const string ManagementPortKey = "management:endpoints:port";
-    private const string ManagementSslKey = "management:endpoints:sslenabled";
+    private const string ManagementPortKey = "Management:Endpoints:Port";
+    private const string ManagementSslKey = "Management:Endpoints:SslEnabled";
 
     public static IWebHostBuilder AddManagementPort(this IWebHostBuilder builder)
     {

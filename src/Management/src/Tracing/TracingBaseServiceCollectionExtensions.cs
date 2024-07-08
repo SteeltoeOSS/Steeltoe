@@ -58,7 +58,7 @@ public static class TracingBaseServiceCollectionExtensions
         services.AddOptions();
         services.RegisterDefaultApplicationInstanceInfo();
 
-        services.TryAddSingleton<ITracingOptions>(serviceProvider =>
+        services.TryAddSingleton(serviceProvider =>
             new TracingOptions(serviceProvider.GetRequiredService<IApplicationInstanceInfo>(), serviceProvider.GetRequiredService<IConfiguration>()));
 
         services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
@@ -108,10 +108,13 @@ public static class TracingBaseServiceCollectionExtensions
 
         services.AddOptions<HttpClientTraceInstrumentationOptions>().Configure<IServiceProvider>((options, serviceProvider) =>
         {
-            var tracingOptions = serviceProvider.GetRequiredService<ITracingOptions>();
+            var tracingOptions = serviceProvider.GetRequiredService<TracingOptions>();
 
-            var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1));
-            options.FilterHttpRequestMessage += requestMessage => !pathMatcher.IsMatch(requestMessage.RequestUri?.PathAndQuery ?? string.Empty);
+            if (tracingOptions.EgressIgnorePattern != null)
+            {
+                var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1));
+                options.FilterHttpRequestMessage += requestMessage => !pathMatcher.IsMatch(requestMessage.RequestUri?.PathAndQuery ?? string.Empty);
+            }
         });
 
         services.ConfigureOpenTelemetryTracerProvider((serviceProvider, tracerProviderBuilder) =>
@@ -119,7 +122,7 @@ public static class TracingBaseServiceCollectionExtensions
             string appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>()
                 .GetApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
 
-            var tracingOptions = serviceProvider.GetRequiredService<ITracingOptions>();
+            var tracingOptions = serviceProvider.GetRequiredService<TracingOptions>();
 
             ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>()
                 .CreateLogger($"{typeof(TracingBaseServiceCollectionExtensions).Namespace}.Setup");
@@ -129,7 +132,7 @@ public static class TracingBaseServiceCollectionExtensions
 
             tracerProviderBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(appName));
 
-            if (tracingOptions.PropagationType.Equals("B3", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(tracingOptions.PropagationType, "B3", StringComparison.OrdinalIgnoreCase))
             {
                 var propagators = new List<TextMapPropagator>
                 {
@@ -157,7 +160,7 @@ public static class TracingBaseServiceCollectionExtensions
 
     private static void ConfigureZipkinOptions(IServiceCollection services)
     {
-        services.AddOptions<ZipkinExporterOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
+        services.AddOptions<ZipkinExporterOptions>().PostConfigure<TracingOptions>((options, traceOpts) =>
         {
             options.UseShortTraceIds = traceOpts.UseShortTraceIds;
             options.MaxPayloadSizeInBytes = traceOpts.MaxPayloadSizeInBytes;
@@ -176,7 +179,7 @@ public static class TracingBaseServiceCollectionExtensions
 
     private static void ConfigureJaegerOptions(IServiceCollection services)
     {
-        services.AddOptions<JaegerExporterOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
+        services.AddOptions<JaegerExporterOptions>().PostConfigure<TracingOptions>((options, traceOpts) =>
         {
             options.MaxPayloadSizeInBytes = traceOpts.MaxPayloadSizeInBytes;
 
@@ -195,7 +198,7 @@ public static class TracingBaseServiceCollectionExtensions
 
     private static void ConfigureOpenTelemetryProtocolOptions(IServiceCollection services)
     {
-        services.AddOptions<OtlpExporterOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
+        services.AddOptions<OtlpExporterOptions>().PostConfigure<TracingOptions>((options, traceOpts) =>
         {
             if (traceOpts.ExporterEndpoint != null)
             {

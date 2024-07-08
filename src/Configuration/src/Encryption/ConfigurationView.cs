@@ -50,7 +50,7 @@ internal sealed class ConfigurationView : IConfigurationRoot
     }
 
     /// <summary>
-    /// Gets the immediate child sub-sections.
+    /// Gets the immediate child subsections.
     /// </summary>
     /// <returns>
     /// The children.
@@ -73,10 +73,10 @@ internal sealed class ConfigurationView : IConfigurationRoot
     }
 
     /// <summary>
-    /// Gets a configuration sub-section with the specified key.
+    /// Gets a configuration subsection with the specified key.
     /// </summary>
     /// <remarks>
-    /// This method will never return <c>null</c>. If no matching sub-section is found with the specified key, an empty <see cref="IConfigurationSection" />
+    /// This method will never return <c>null</c>. If no matching subsection is found with the specified key, an empty <see cref="IConfigurationSection" />
     /// will be returned.
     /// </remarks>
     /// <param name="key">

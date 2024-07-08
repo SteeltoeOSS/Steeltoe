@@ -21,7 +21,7 @@ internal sealed class AssemblyLoader
         ArgumentGuard.NotNull(assemblyNamesToExclude);
         ArgumentGuard.ElementsNotNullOrEmpty(assemblyNamesToExclude);
 
-        // Take a copy to ensure comparisons are case insensitive.
+        // Take a copy to ensure comparisons are case-insensitive.
         AssemblyNamesToExclude = assemblyNamesToExclude.ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
 

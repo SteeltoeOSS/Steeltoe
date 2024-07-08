@@ -8,3 +8,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Consul")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]

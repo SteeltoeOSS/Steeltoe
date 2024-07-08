@@ -3,6 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
+using Aspire;
+using Steeltoe.Common.Certificates;
+using Steeltoe.Configuration.ConfigServer;
+
+[assembly: ConfigurationSchema("Spring:Cloud:Config", typeof(ConfigServerClientOptions))]
+[assembly: ConfigurationSchema("Certificates:ConfigServer", typeof(CertificateSettings))]
+[assembly: LoggingCategories("Steeltoe", "Steeltoe.Configuration", "Steeltoe.Configuration.ConfigServer")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]

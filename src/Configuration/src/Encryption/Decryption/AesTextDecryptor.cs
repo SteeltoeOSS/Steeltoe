@@ -19,7 +19,7 @@ internal sealed class AesTextDecryptor : ITextDecryptor
     private readonly IBufferedCipher _cipher;
 
     public AesTextDecryptor(string key)
-        : this(key, ConfigServerEncryptionSettings.DefaultEncryptionRsaSalt, false)
+        : this(key, RsaEncryptionSettings.DefaultSalt, false)
     {
     }
 

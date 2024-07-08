@@ -33,9 +33,12 @@ public sealed class EncryptionFactoryTest
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
             EncryptionEnabled = true,
-            EncryptionKeyStoreLocation = "./Decryption/server.jks",
-            EncryptionKeyStorePassword = "letmein",
-            EncryptionKeyStoreAlias = "mytestkey"
+            KeyStore =
+            {
+                Location = "./Decryption/server.jks",
+                Password = "letmein",
+                Alias = "mytestkey"
+            }
         };
 
         Assert.IsType<RsaKeyStoreDecryptor>(EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
@@ -47,8 +50,11 @@ public sealed class EncryptionFactoryTest
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
             EncryptionEnabled = true,
-            EncryptionKeyStorePassword = "letmein",
-            EncryptionKeyStoreAlias = "mytestkey"
+            KeyStore =
+            {
+                Password = "letmein",
+                Alias = "mytestkey"
+            }
         };
 
         Assert.Throws<DecryptionException>(() => EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
@@ -60,8 +66,11 @@ public sealed class EncryptionFactoryTest
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
             EncryptionEnabled = true,
-            EncryptionKeyStoreLocation = "./Decryption/server.jks",
-            EncryptionKeyStoreAlias = "mytestkey"
+            KeyStore =
+            {
+                Location = "./Decryption/server.jks",
+                Alias = "mytestkey"
+            }
         };
 
         Assert.Throws<DecryptionException>(() => EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
@@ -73,8 +82,11 @@ public sealed class EncryptionFactoryTest
         var configServerEncryptionSettings = new ConfigServerEncryptionSettings
         {
             EncryptionEnabled = true,
-            EncryptionKeyStoreLocation = "./Decryption/server.jks",
-            EncryptionKeyStorePassword = "letmein"
+            KeyStore =
+            {
+                Location = "./Decryption/server.jks",
+                Password = "letmein"
+            }
         };
 
         Assert.Throws<DecryptionException>(() => EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));
@@ -87,9 +99,12 @@ public sealed class EncryptionFactoryTest
         {
             EncryptionEnabled = true,
             EncryptionKey = "something",
-            EncryptionKeyStoreLocation = "./Decryption/server.jks",
-            EncryptionKeyStorePassword = "letmein",
-            EncryptionKeyStoreAlias = "mytestkey"
+            KeyStore =
+            {
+                Location = "./Decryption/server.jks",
+                Password = "letmein",
+                Alias = "mytestkey"
+            }
         };
 
         Assert.Throws<DecryptionException>(() => EncryptionFactory.CreateEncryptor(configServerEncryptionSettings));

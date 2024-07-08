@@ -15,7 +15,7 @@ public static class EncryptionConfigurationExtensions
     /// Adds an encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
     /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
     /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
-    /// all of the applications configuration sources with encryption resolution.
+    /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -35,7 +35,7 @@ public static class EncryptionConfigurationExtensions
     /// Adds an encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
     /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
     /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
-    /// all of the applications configuration sources with encryption resolution.
+    /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
     /// The configuration builder.
@@ -134,7 +134,7 @@ public static class EncryptionConfigurationExtensions
     /// Adds an encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
     /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
     /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
-    /// all of the applications configuration sources with encryption resolution.
+    /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="configurationManager">
     /// The configuration manager.
@@ -154,7 +154,7 @@ public static class EncryptionConfigurationExtensions
     /// Adds an encryption resolver configuration source to the <see cref="ConfigurationBuilder" />. The encryption resolver source will capture and wrap all
     /// the existing sources <see cref="IConfigurationSource" /> contained in the builder.  The newly created source will then replace the existing sources
     /// and provide encryption resolution for the configuration. Typically, you will want to add this configuration source as the last one so that you wrap
-    /// all of the applications configuration sources with encryption resolution.
+    /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="configurationManager">
     /// The configuration manager.

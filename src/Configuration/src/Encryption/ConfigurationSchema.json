@@ -1,0 +1,70 @@
+{
+  "definitions": {
+    "logLevel": {
+      "properties": {
+        "Steeltoe": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Configuration": {
+          "$ref": "#/definitions/logLevelThreshold"
+        },
+        "Steeltoe.Configuration.Encryption": {
+          "$ref": "#/definitions/logLevelThreshold"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "Encrypt": {
+      "type": "object",
+      "properties": {
+        "EncryptionEnabled": {
+          "type": "boolean",
+          "description": "Gets or sets a value indicating whether encryption is enabled."
+        },
+        "EncryptionKey": {
+          "type": "string",
+          "description": "Gets or sets the key of the simple encryption."
+        },
+        "KeyStore": {
+          "type": "object",
+          "properties": {
+            "Alias": {
+              "type": "string",
+              "description": "Gets or sets the alias of the key in the keystore."
+            },
+            "Location": {
+              "type": "string",
+              "description": "Gets or sets the location of the keystore."
+            },
+            "Password": {
+              "type": "string",
+              "description": "Gets or sets the keystore password."
+            }
+          },
+          "description": "Gets the settings related to the key store."
+        },
+        "RSA": {
+          "type": "object",
+          "properties": {
+            "Algorithm": {
+              "type": "string",
+              "description": "Gets or sets the RSA algorithm (DEFAULT or OAEP). Default value: DEFAULT."
+            },
+            "Salt": {
+              "type": "string",
+              "description": "Gets or sets the salt value. Default value: deadbeef."
+            },
+            "Strong": {
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether the strong encryption flag is enabled."
+            }
+          },
+          "description": "Gets the settings related to RSA encryption."
+        }
+      },
+      "description": "Holds settings used to configure encryption for the Spring Cloud Config Server provider."
+    }
+  }
+}

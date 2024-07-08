@@ -38,7 +38,7 @@ internal sealed class InstanceAccessor : ReflectionAccessor
     public InstanceAccessor AsRuntimeType()
     {
         // Interface members that are defined in a base interface aren't found by reflection.
-        // To workaround that, reflect against the actual implementation.
+        // To work around that, reflect against the actual implementation.
 
         Type runtimeType = Instance.GetType();
         var typeAccessor = new TypeAccessor(runtimeType);

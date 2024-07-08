@@ -14,7 +14,7 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed class ConfigServerServiceCollectionExtensionsTest
 {
     [Fact]
-    public void ConfigureConfigServerClientOptions_ConfiguresConfigServerClientSettingsOptions_WithDefaults()
+    public void ConfigureConfigServerClientOptions_ConfiguresConfigServerClientOptions_WithDefaults()
     {
         var services = new ServiceCollection();
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
@@ -24,11 +24,11 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.ConfigureConfigServerClientOptions();
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var service = serviceProvider.GetService<IOptions<ConfigServerClientSettingsOptions>>();
+        var service = serviceProvider.GetService<IOptions<ConfigServerClientOptions>>();
         Assert.NotNull(service);
-        ConfigServerClientSettingsOptions options = service.Value;
+        ConfigServerClientOptions options = service.Value;
         Assert.NotNull(options);
-        TestHelper.VerifyDefaults(options.Settings);
+        TestHelper.VerifyDefaults(options);
     }
 
     [Fact]

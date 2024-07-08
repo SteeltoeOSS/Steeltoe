@@ -19,13 +19,12 @@ internal static class EncryptionFactory
                 return new AesTextDecryptor(settings.EncryptionKey);
             }
 
-            if (settings is { EncryptionKeyStoreLocation: not null, EncryptionKeyStorePassword: not null, EncryptionKeyStoreAlias: not null })
+            if (settings is { KeyStore: { Location: not null, Password: not null, Alias: not null }, Rsa: { Salt: not null, Algorithm: not null } })
             {
-                var keystoreStream = new FileStream(settings.EncryptionKeyStoreLocation, FileMode.Open, FileAccess.Read);
-                var keyProvider = new KeyProvider(keystoreStream, settings.EncryptionKeyStorePassword);
+                var keystoreStream = new FileStream(settings.KeyStore.Location, FileMode.Open, FileAccess.Read);
+                var keyProvider = new KeyProvider(keystoreStream, settings.KeyStore.Password);
 
-                return new RsaKeyStoreDecryptor(keyProvider, settings.EncryptionKeyStoreAlias, settings.EncryptionRsaSalt, settings.EncryptionRsaStrong,
-                    settings.EncryptionRsaAlgorithm);
+                return new RsaKeyStoreDecryptor(keyProvider, settings.KeyStore.Alias, settings.Rsa.Salt, settings.Rsa.Strong, settings.Rsa.Algorithm);
             }
         }
 
@@ -34,12 +33,12 @@ internal static class EncryptionFactory
 
     private static void EnsureValidEncryptionSettings(ConfigServerEncryptionSettings settings)
     {
-        bool validEncryptionKeySettings = !string.IsNullOrEmpty(settings.EncryptionKey);
+        bool hasKeySettings = !string.IsNullOrEmpty(settings.EncryptionKey);
 
-        bool validKeystoreSettings = !string.IsNullOrEmpty(settings.EncryptionKeyStoreLocation) && !string.IsNullOrEmpty(settings.EncryptionKeyStorePassword) &&
-            !string.IsNullOrEmpty(settings.EncryptionKeyStoreAlias);
+        bool hasKeyStoreSettings = !string.IsNullOrEmpty(settings.KeyStore.Location) && !string.IsNullOrEmpty(settings.KeyStore.Password) &&
+            !string.IsNullOrEmpty(settings.KeyStore.Alias);
 
-        if ((validEncryptionKeySettings && validKeystoreSettings) || (!validEncryptionKeySettings && !validKeystoreSettings))
+        if ((hasKeySettings && hasKeyStoreSettings) || (!hasKeySettings && !hasKeyStoreSettings))
         {
             throw new DecryptionException(
                 "No valid configuration for encryption key or key store. Either 'encrypt.key' or the 'encrypt.keyStore' properties (location, password, alias) must be set. Not both.");

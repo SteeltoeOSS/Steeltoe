@@ -137,7 +137,7 @@ public abstract class DynamicLoggerProvider : IDynamicLoggerProvider
 
     private static bool IsCategoryOrDescendant(string fullCategoryName, string baseCategoryName)
     {
-        // Category names are case sensitive.
+        // Category names are case-sensitive.
 
         if (fullCategoryName.Length == baseCategoryName.Length)
         {

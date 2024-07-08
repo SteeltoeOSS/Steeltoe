@@ -21,9 +21,9 @@ public sealed class ConfigServerDiscoveryServiceTest
         var appSettings = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration);
 
         IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var clientSettings = new ConfigServerClientSettings();
+        var options = new ConfigServerClientOptions();
 
-        var service = new ConfigServerDiscoveryService(configuration, clientSettings, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configuration, options, NullLoggerFactory.Instance);
 
         Assert.Equal(3, service.DiscoveryClients.Count);
         Assert.Contains(service.DiscoveryClients, discoveryClient => discoveryClient is ConfigurationDiscoveryClient);
@@ -42,9 +42,9 @@ public sealed class ConfigServerDiscoveryServiceTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = builder.Build();
-        var settings = new ConfigServerClientSettings();
+        var options = new ConfigServerClientOptions();
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, settings, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
         IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(CancellationToken.None);
         Assert.Empty(result);
     }
@@ -59,14 +59,17 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
-            RetryEnabled = true,
-            Timeout = 10,
-            RetryAttempts = 1
+            Retry =
+            {
+                Enabled = true,
+                MaxAttempts = 1
+            },
+            Timeout = 10
         };
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, settings, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
         IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(CancellationToken.None);
         Assert.Empty(result);
     }
@@ -83,13 +86,16 @@ public sealed class ConfigServerDiscoveryServiceTest
         builder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = builder.Build();
 
-        var settings = new ConfigServerClientSettings
+        var options = new ConfigServerClientOptions
         {
-            RetryEnabled = false,
+            Retry =
+            {
+                Enabled = false
+            },
             Timeout = 10
         };
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, settings, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, options, NullLoggerFactory.Instance);
         IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(CancellationToken.None);
         Assert.Empty(result);
     }
@@ -101,7 +107,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var testDiscoveryClient = new TestDiscoveryClient();
-        var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientSettings(), NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientOptions(), NullLoggerFactory.Instance);
 
         await service.ProvideRuntimeReplacementsAsync([testDiscoveryClient], CancellationToken.None);
 
