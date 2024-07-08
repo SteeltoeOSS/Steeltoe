@@ -11,10 +11,10 @@ namespace Steeltoe.Common.Test.Extensions;
 public class UriExtensionsTest
 {
     [Fact]
-    public void MaskExistingBasicAuthenticationToString()
+    public void MaskExistingBasicAuthentication()
     {
-        var uri = new Uri("http://username:password@www.example.com/");
-        var expected = "http://****:****@www.example.com/";
+        var uri = new Uri("http://username:password@www.example.com/,http://user2:pass2@www.other.com/");
+        var expected = "http://****:****@www.example.com/,http://****:****@www.other.com/";
 
         var masked = uri.ToMaskedString();
 
@@ -22,34 +22,12 @@ public class UriExtensionsTest
     }
 
     [Fact]
-    public void MaskExistingBasicAuthentication()
-    {
-        var uri = new Uri("http://username:password@www.example.com/");
-        var expected = new Uri("http://****:****@www.example.com/");
-
-        var masked = uri.ToMaskedUri();
-
-        Assert.Equal(expected, masked);
-    }
-
-    [Fact]
-    public void DontMaskStringIfNotBasicAuthenticationExists()
+    public void DontMaskIfNotBasicAuthenticationExists()
     {
         var uri = new Uri("http://www.example.com/");
         var expected = uri.ToString();
 
         var masked = uri.ToMaskedString();
-
-        Assert.Equal(expected, masked);
-    }
-
-    [Fact]
-    public void DontMaskUriIfNotBasicAuthenticationExists()
-    {
-        var uri = new Uri("http://www.example.com/");
-        var expected = new Uri(uri.ToString());
-
-        var masked = uri.ToMaskedUri();
 
         Assert.Equal(expected, masked);
     }

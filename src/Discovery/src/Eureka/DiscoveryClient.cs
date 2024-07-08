@@ -322,7 +322,8 @@ public class DiscoveryClient : IEurekaClient
         catch (Exception e)
         {
             // Log
-            _logger.LogError(e, "FetchRegistry Failed for Eureka service urls: {EurekaServerServiceUrls}", new Uri(ClientConfig.EurekaServerServiceUrls).ToMaskedString());
+            var masked = new Uri(ClientConfig.EurekaServerServiceUrls).ToMaskedString();
+            _logger.LogError(e, "FetchRegistry Failed for Eureka service urls: {EurekaServerServiceUrls}", masked);
             return false;
         }
 

@@ -4,44 +4,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace Steeltoe.Common.Extensions;
 
 public static class UriExtensions
 {
-    public static string ToMaskedString(this Uri source)
-    {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        return source.ToMaskedUri().ToString();
-    }
-
-    public static Uri ToMaskedUri(this Uri source)
-    {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        if (string.IsNullOrEmpty(source.UserInfo))
-        {
-            return source;
-        }
-
-        var builder = new UriBuilder(source)
-        {
-            UserName = "****",
-#pragma warning disable S2068 // Credentials should not be hard-coded
-            Password = "****"
-#pragma warning restore S2068 // Credentials should not be hard-coded
-        };
-
-        return builder.Uri;
-    }
+    private static readonly char[] _uriSeparatorChar = { ',' };
 
     /// <summary>
     /// Parse a querystring into a dictionary of key value pairs
@@ -61,5 +31,34 @@ public static class UriExtensions
         }
 
         return result;
+    }
+
+    public static string ToMaskedString(this Uri source)
+    {
+        if (source == null)
+        {
+            throw new ArgumentNullException(nameof(source));
+        }
+
+        var uris = source.ToString();
+        return string.Join(",", uris.Split(_uriSeparatorChar, StringSplitOptions.RemoveEmptyEntries).Select(uri => new Uri(uri).ToMaskedUri().ToString()));
+    }
+
+    private static Uri ToMaskedUri(this Uri source)
+    {
+        if (string.IsNullOrEmpty(source.UserInfo))
+        {
+            return source;
+        }
+
+        var builder = new UriBuilder(source)
+        {
+            UserName = "****",
+#pragma warning disable S2068 // Credentials should not be hard-coded
+            Password = "****"
+#pragma warning restore S2068 // Credentials should not be hard-coded
+        };
+
+        return builder.Uri;
     }
 }

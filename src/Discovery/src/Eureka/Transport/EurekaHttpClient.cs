@@ -132,7 +132,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "RegisterAsync Failed, request was made to {requestUri}, retry: {retry}", requestUri.ToMaskedUri(), retry);
+                _logger?.LogError(e, "RegisterAsync Failed, request was made to {requestUri}, retry: {retry}", requestUri.ToMaskedString(), retry);
             }
             finally
             {
@@ -250,7 +250,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "SendHeartBeatAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                _logger?.LogError(e, "SendHeartBeatAsync Failed, request was made to {requestUri}", requestUri.ToMaskedString());
             }
             finally
             {
@@ -363,7 +363,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "GetApplicationAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                _logger?.LogError(e, "GetApplicationAsync Failed, request was made to {requestUri}", requestUri.ToMaskedString());
             }
             finally
             {
@@ -460,7 +460,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "CancelAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                _logger?.LogError(e, "CancelAsync Failed, request was made to {requestUri}", requestUri.ToMaskedString());
             }
             finally
             {
@@ -536,7 +536,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "DeleteStatusOverrideAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                _logger?.LogError(e, "DeleteStatusOverrideAsync Failed, request was made to {requestUri}", requestUri.ToMaskedString());
             }
             finally
             {
@@ -613,7 +613,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "StatusUpdateAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                _logger?.LogError(e, "StatusUpdateAsync Failed, request was made to {requestUri}", requestUri.ToMaskedString());
             }
             finally
             {
@@ -865,7 +865,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "DoGetInstanceAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                _logger?.LogError(e, "DoGetInstanceAsync Failed, request was made to {requestUri}", requestUri.ToMaskedString());
             }
             finally
             {
@@ -945,7 +945,7 @@ public class EurekaHttpClient : IEurekaHttpClient
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "DoGetApplicationsAsync Failed, request was made to {requestUri}", requestUri.ToMaskedUri());
+                _logger?.LogError(e, "DoGetApplicationsAsync Failed, request was made to {requestUri}", requestUri.ToMaskedString());
             }
             finally
             {
