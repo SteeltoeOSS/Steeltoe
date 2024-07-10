@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -135,15 +136,10 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
     }
 
-    private HttpClient CreateHttpClient(TimeSpan connectTimeout)
+    private HttpClient CreateHttpClient(TimeSpan timeout)
     {
         HttpClient httpClient = _httpClientFactory.CreateClient(HttpClientName);
-
-        if (connectTimeout > TimeSpan.Zero)
-        {
-            httpClient.Timeout = connectTimeout;
-        }
-
+        httpClient.ConfigureForSteeltoe(timeout);
         return httpClient;
     }
 }

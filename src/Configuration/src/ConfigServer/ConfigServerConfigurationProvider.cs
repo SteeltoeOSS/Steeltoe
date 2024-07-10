@@ -4,6 +4,7 @@
 
 using System.Globalization;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Text;
@@ -17,6 +18,7 @@ using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
+using Steeltoe.Common.Http.HttpClientPooling;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -42,6 +44,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     private readonly ILoggerFactory _loggerFactory;
     private readonly IConfiguration _configuration;
     private readonly bool _hasConfiguration;
+    private readonly bool _ownsHttpClientHandler;
+    private HttpClientHandler? _httpClientHandler;
 
     private ConfigServerDiscoveryService? _configServerDiscoveryService;
     private Timer? _refreshTimer;
@@ -55,43 +59,10 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     internal IDictionary<string, string?> Properties => Data;
     internal ILogger Logger { get; }
 
-    internal HttpClient? HttpClient { get; private set; }
-
     /// <summary>
     /// Gets the configuration settings the provider uses when accessing the server.
     /// </summary>
     public ConfigServerClientOptions Options { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider" /> class.
-    /// </summary>
-    /// <param name="options">
-    /// The configuration settings the provider uses when accessing the server.
-    /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    public ConfigServerConfigurationProvider(ConfigServerClientOptions options, ILoggerFactory loggerFactory)
-        : this(options, null, null, loggerFactory)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider" /> class.
-    /// </summary>
-    /// <param name="options">
-    /// The configuration settings the provider uses when accessing the server.
-    /// </param>
-    /// <param name="httpClient">
-    /// A HttpClient the provider uses to make requests of the server.
-    /// </param>
-    /// <param name="loggerFactory">
-    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
-    /// </param>
-    public ConfigServerConfigurationProvider(ConfigServerClientOptions options, HttpClient httpClient, ILoggerFactory loggerFactory)
-        : this(options, null, httpClient, loggerFactory)
-    {
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider" /> class from a <see cref="ConfigServerConfigurationSource" />.
@@ -107,7 +78,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     {
     }
 
-    private ConfigServerConfigurationProvider(ConfigServerClientOptions options, IConfiguration? configuration, HttpClient? httpClient,
+    internal ConfigServerConfigurationProvider(ConfigServerClientOptions options, IConfiguration? configuration, HttpClientHandler? httpClientHandler,
         ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(options);
@@ -129,14 +100,17 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         Options = options;
 
-        if (httpClient != null)
+        if (httpClientHandler == null)
         {
-            HttpClient = httpClient;
+            _httpClientHandler = new HttpClientHandler();
+            _ownsHttpClientHandler = true;
+        }
+        else
+        {
+            _httpClientHandler = httpClientHandler;
         }
 
         OnSettingsChanged();
-
-        HttpClient ??= GetConfiguredHttpClient(Options);
     }
 
     private void OnSettingsChanged()
@@ -418,35 +392,49 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// <param name="requestUri">
     /// The Uri used when accessing the server.
     /// </param>
-    /// <param name="username">
-    /// Username to use if required.
-    /// </param>
-    /// <param name="password">
-    /// Password to use if required.
-    /// </param>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
     /// <returns>
     /// The HttpRequestMessage built from the path.
     /// </returns>
-    internal async Task<HttpRequestMessage> GetRequestMessageAsync(Uri requestUri, string? username, string? password, CancellationToken cancellationToken)
+    internal async Task<HttpRequestMessage> GetRequestMessageAsync(Uri requestUri, CancellationToken cancellationToken)
     {
-        HttpRequestMessage request = string.IsNullOrEmpty(Options.AccessTokenUri)
-            ? HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, username, password)
-            : await HttpClientHelper.GetRequestMessageAsync(HttpMethod.Get, requestUri, FetchAccessTokenAsync, cancellationToken);
+        var uriWithoutUserInfo = new Uri(requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.UriEscaped));
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, uriWithoutUserInfo);
 
-        if (!string.IsNullOrEmpty(Options.Token) && Options.Uri != null && !ConfigServerClientOptions.IsMultiServerConfiguration(Options.Uri))
+        if (requestUri.TryGetUsernamePassword(out string? username, out string? password) && password.Length > 0)
+        {
+            Logger.LogDebug("Adding credentials from '{RequestUri}' to Authorization header.", requestUri.ToMaskedString());
+
+            requestMessage.Headers.Authorization =
+                new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(Options.AccessTokenUri))
+            {
+                using HttpClient httpClient = CreateHttpClient(Options);
+                var accessTokenUri = new Uri(Options.AccessTokenUri);
+
+                string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, Options.ClientId, Options.ClientSecret, cancellationToken);
+
+                Logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri.ToMaskedString());
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Options.Token) && Options.Uri != null && !Options.IsMultiServerConfiguration)
         {
             if (!Options.DisableTokenRenewal)
             {
                 RenewToken();
             }
 
-            request.Headers.Add(TokenHeader, Options.Token);
+            requestMessage.Headers.Add(TokenHeader, Options.Token);
         }
 
-        return request;
+        return requestMessage;
     }
 
     /// <summary>
@@ -505,28 +493,22 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     internal async Task<ConfigEnvironment?> RemoteLoadAsync(IEnumerable<string> requestUris, string? label, CancellationToken cancellationToken)
     {
         // Get client if not already set
-        HttpClient ??= GetConfiguredHttpClient(Options);
+        using HttpClient httpClient = CreateHttpClient(Options);
 
         Exception? error = null;
 
         foreach (string requestUri in requestUris)
         {
-            // Get a Config Server uri and username/password to use
-            string trimUri = requestUri.Trim();
-            string? serverUri = ConfigServerClientOptions.GetRawUri(trimUri);
-            string? username = Options.GetUserName(trimUri);
-            string? password = Options.GetPassword(trimUri);
-
             // Make Config Server URI from settings
-            var uri = new Uri(GetConfigServerUri(serverUri!, label), UriKind.RelativeOrAbsolute);
+            Uri uri = BuildConfigServerUri(requestUri, label);
 
             // Get the request message
-            HttpRequestMessage request = await GetRequestMessageAsync(uri, username, password, cancellationToken);
+            HttpRequestMessage request = await GetRequestMessageAsync(uri, cancellationToken);
 
             // Invoke Config Server
             try
             {
-                using HttpResponseMessage response = await HttpClient.SendAsync(request, cancellationToken);
+                using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
                 Logger.LogInformation("Config Server returned status: {StatusCode} invoking path: {RequestUri}", response.StatusCode, uri.ToMaskedString());
 
@@ -572,7 +554,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// <summary>
     /// Creates the Uri that will be used in accessing the Configuration Server.
     /// </summary>
-    /// <param name="baseRawUri">
+    /// <param name="serverUri">
     /// Base server uri to use.
     /// </param>
     /// <param name="label">
@@ -581,11 +563,23 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// <returns>
     /// The request URI for the Configuration Server.
     /// </returns>
-    internal string GetConfigServerUri(string baseRawUri, string? label)
+    internal Uri BuildConfigServerUri(string serverUri, string? label)
     {
-        ArgumentGuard.NotNullOrEmpty(baseRawUri);
+        ArgumentGuard.NotNullOrEmpty(serverUri);
 
-        string path = $"{Options.Name}/{Options.Environment}";
+        var uriBuilder = new UriBuilder(new Uri(serverUri));
+
+        if (!string.IsNullOrEmpty(Options.Username))
+        {
+            uriBuilder.UserName = Options.Username;
+        }
+
+        if (!string.IsNullOrEmpty(Options.Password))
+        {
+            uriBuilder.Password = Options.Password;
+        }
+
+        string pathSuffix = $"{Options.Name}/{Options.Environment}";
 
         if (!string.IsNullOrWhiteSpace(label))
         {
@@ -595,15 +589,17 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 label = label.Replace("/", "(_)", StringComparison.Ordinal);
             }
 
-            path = $"{path}/{label.Trim()}";
+            pathSuffix = $"{pathSuffix}/{label.Trim()}";
         }
 
-        if (!baseRawUri.EndsWith('/'))
+        if (!uriBuilder.Path.EndsWith('/'))
         {
-            path = $"/{path}";
+            pathSuffix = $"/{pathSuffix}";
         }
 
-        return baseRawUri + path;
+        uriBuilder.Path += pathSuffix;
+
+        return uriBuilder.Uri;
     }
 
     /// <summary>
@@ -644,48 +640,14 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         return Convert.ToString(value, CultureInfo.InvariantCulture);
     }
 
-    /// <summary>
-    /// Encodes the username and password for a http request.
-    /// </summary>
-    /// <param name="user">
-    /// The username.
-    /// </param>
-    /// <param name="password">
-    /// The password.
-    /// </param>
-    /// <returns>
-    /// Encoded username with password.
-    /// </returns>
-    internal string GetEncoded(string user, string password)
-    {
-        return HttpClientHelper.GetEncodedUserPassword(user, password);
-    }
-
     private void RenewToken()
     {
         _ = new Timer(_ => RefreshVaultTokenAsync(CancellationToken.None).GetAwaiter().GetResult(), null, TimeSpan.FromMilliseconds(Options.TokenRenewRate),
             TimeSpan.FromMilliseconds(Options.TokenRenewRate));
     }
 
-    /// <summary>
-    /// Conduct the OAuth2 client_credentials grant flow returning a task that can be used to obtain the results.
-    /// </summary>
-    /// <returns>
-    /// The task object representing asynchronous operation.
-    /// </returns>
-    private async Task<string?> FetchAccessTokenAsync(CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrEmpty(Options.AccessTokenUri))
-        {
-            return null;
-        }
-
-        return await HttpClientHelper.GetAccessTokenAsync(Options.AccessTokenUri, Options.ClientId, Options.ClientSecret, Options.Timeout,
-            Options.ValidateCertificates, HttpClient, Logger, cancellationToken);
-    }
-
     // fire and forget
-    private async Task RefreshVaultTokenAsync(CancellationToken cancellationToken)
+    internal async Task RefreshVaultTokenAsync(CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(Options.Token))
         {
@@ -696,14 +658,14 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         try
         {
-            HttpClient ??= GetConfiguredHttpClient(Options);
+            using HttpClient httpClient = CreateHttpClient(Options);
 
             Uri uri = GetVaultRenewUri();
-            HttpRequestMessage message = await GetVaultRenewMessageAsync(uri, cancellationToken);
+            HttpRequestMessage message = await GetVaultRenewRequestMessageAsync(uri, cancellationToken);
 
             Logger.LogInformation("Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}", obscuredToken, Options.TokenTtl, uri.ToMaskedString());
 
-            using HttpResponseMessage response = await HttpClient.SendAsync(message, cancellationToken);
+            using HttpResponseMessage response = await httpClient.SendAsync(message, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -718,31 +680,42 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     private Uri GetVaultRenewUri()
     {
-        string rawUri = Options.GetRawUris()[0];
+        string baseUri = Options.Uri!.Split(',')[0].Trim();
 
-        if (!rawUri.EndsWith('/'))
+        if (!baseUri.EndsWith('/'))
         {
-            rawUri += '/';
+            baseUri += '/';
         }
 
-        return new Uri(rawUri + VaultRenewPath, UriKind.RelativeOrAbsolute);
+        return new Uri(baseUri + VaultRenewPath, UriKind.RelativeOrAbsolute);
     }
 
-    private async Task<HttpRequestMessage> GetVaultRenewMessageAsync(Uri requestUri, CancellationToken cancellationToken)
+    private async Task<HttpRequestMessage> GetVaultRenewRequestMessageAsync(Uri requestUri, CancellationToken cancellationToken)
     {
-        HttpRequestMessage request = await HttpClientHelper.GetRequestMessageAsync(HttpMethod.Post, requestUri, FetchAccessTokenAsync, cancellationToken);
+        var uriWithoutUserInfo = new Uri(requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.UriEscaped));
+        var requestMessage = new HttpRequestMessage(HttpMethod.Post, uriWithoutUserInfo);
+
+        if (!string.IsNullOrEmpty(Options.AccessTokenUri))
+        {
+            using HttpClient httpClient = CreateHttpClient(Options);
+            var accessTokenUri = new Uri(Options.AccessTokenUri);
+
+            string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, Options.ClientId, Options.ClientSecret, cancellationToken);
+
+            Logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri.ToMaskedString());
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        }
 
         if (!string.IsNullOrEmpty(Options.Token))
         {
-            request.Headers.Add(VaultTokenHeader, Options.Token);
+            requestMessage.Headers.Add(VaultTokenHeader, Options.Token);
         }
 
         int renewTtlInSeconds = Options.TokenTtl / 1000;
         string json = $"{{\"increment\":{renewTtlInSeconds}}}";
+        requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        request.Content = content;
-        return request;
+        return requestMessage;
     }
 
     internal bool IsDiscoveryFirstEnabled()
@@ -752,33 +725,34 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     }
 
     /// <summary>
-    /// Creates an appropriately configured HttpClient that will be used in communicating with the Spring Cloud Configuration Server.
+    /// Creates an appropriately configured HttpClient that can be used in communicating with the Spring Cloud Configuration Server.
     /// </summary>
     /// <param name="options">
-    /// The settings used in configuring the HttpClient.
+    /// The settings used to configure the HttpClient.
     /// </param>
     /// <returns>
     /// The HttpClient used by the provider.
     /// </returns>
-    private HttpClient GetConfiguredHttpClient(ConfigServerClientOptions options)
+    internal HttpClient CreateHttpClient(ConfigServerClientOptions options)
     {
         ArgumentGuard.NotNull(options);
+        ObjectDisposedException.ThrowIf(_httpClientHandler == null, this);
 
-        var clientHandler = new HttpClientHandler();
+        var clientCertificateConfigurer = new ClientCertificateHttpClientHandlerConfigurer(OptionsMonitorWrapper.Create(options.ClientCertificate));
+        clientCertificateConfigurer.Configure(_httpClientHandler);
 
-        if (options.ClientCertificate != null)
+        var validateCertificatesHandler = new ValidateCertificatesHttpClientHandlerConfigurer<ConfigServerClientOptions>(OptionsMonitorWrapper.Create(options));
+        validateCertificatesHandler.Configure(_httpClientHandler);
+
+        var httpClient = new HttpClient(_httpClientHandler, false);
+        httpClient.ConfigureForSteeltoe(options.HttpTimeout);
+
+        foreach ((string headerName, string headerValue) in options.Headers)
         {
-            clientHandler.ClientCertificates.Add(options.ClientCertificate);
+            httpClient.DefaultRequestHeaders.Add(headerName, headerValue);
         }
 
-        HttpClient client = HttpClientHelper.GetHttpClient(options.ValidateCertificates, clientHandler, options.Timeout);
-
-        foreach (KeyValuePair<string, string> header in options.Headers)
-        {
-            client.DefaultRequestHeaders.Add(header.Key, header.Value);
-        }
-
-        return client;
+        return httpClient;
     }
 
     private static bool IsSocketError(Exception exception)
@@ -790,5 +764,12 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     {
         _refreshTimer?.Dispose();
         _refreshTimer = null;
+
+        if (_ownsHttpClientHandler)
+        {
+            _httpClientHandler?.Dispose();
+        }
+
+        _httpClientHandler = null;
     }
 }

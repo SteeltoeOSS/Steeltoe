@@ -19,7 +19,7 @@ public sealed class ConfigServerHostedServiceTest
             new ConfigServerConfigurationProvider(new ConfigServerClientOptions
             {
                 Enabled = false
-            }, NullLoggerFactory.Instance)
+            }, null, null, NullLoggerFactory.Instance)
         });
 
         var service = new ConfigServerHostedService(configurationRoot, []);
@@ -41,7 +41,7 @@ public sealed class ConfigServerHostedServiceTest
             new ConfigServerConfigurationProvider(new ConfigServerClientOptions
             {
                 Enabled = false
-            }, NullLoggerFactory.Instance)
+            }, null, null, NullLoggerFactory.Instance)
         }, NullLoggerFactory.Instance);
 
         var configurationRoot = new ConfigurationRoot(new List<IConfigurationProvider>

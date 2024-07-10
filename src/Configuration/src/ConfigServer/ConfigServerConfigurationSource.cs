@@ -122,13 +122,13 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
 
         string? clientCertificatePath = Configuration.GetValue<string>($"{CertificateOptions.ConfigurationKeyPrefix}:ConfigServer:CertificateFilePath");
 
-        if (!string.IsNullOrEmpty(clientCertificatePath) && DefaultOptions.ClientCertificate == null)
+        if (!string.IsNullOrEmpty(clientCertificatePath) && DefaultOptions.ClientCertificate.Certificate == null)
         {
             var certificateConfigurer = new ConfigureCertificateOptions(Configuration);
 
             var options = new CertificateOptions();
             certificateConfigurer.Configure("ConfigServer", options);
-            DefaultOptions.ClientCertificate = options.Certificate;
+            DefaultOptions.ClientCertificate.Certificate = options.Certificate;
         }
 
         return new ConfigServerConfigurationProvider(this, LoggerFactory);

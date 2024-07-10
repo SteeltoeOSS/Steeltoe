@@ -306,12 +306,7 @@ public sealed class EurekaClient
     private HttpClient CreateHttpClient(string name, TimeSpan connectTimeout)
     {
         HttpClient httpClient = _httpClientFactory.CreateClient(name);
-
-        if (connectTimeout > TimeSpan.Zero)
-        {
-            httpClient.Timeout = connectTimeout;
-        }
-
+        httpClient.ConfigureForSteeltoe(connectTimeout);
         return httpClient;
     }
 
@@ -354,7 +349,7 @@ public sealed class EurekaClient
                 string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, clientOptions.ClientId,
                     clientOptions.ClientSecret, cancellationToken);
 
-                _logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri);
+                _logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri.ToMaskedString());
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
         }

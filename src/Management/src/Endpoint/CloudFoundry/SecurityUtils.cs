@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
@@ -123,12 +124,7 @@ internal sealed class SecurityUtils
     private HttpClient CreateHttpClient()
     {
         HttpClient httpClient = _httpClientFactory.CreateClient(HttpClientName);
-
-        if (GetPermissionsTimeout > TimeSpan.Zero)
-        {
-            httpClient.Timeout = GetPermissionsTimeout;
-        }
-
+        httpClient.ConfigureForSteeltoe(GetPermissionsTimeout);
         return httpClient;
     }
 }

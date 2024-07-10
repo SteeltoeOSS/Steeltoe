@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Http;
 
 internal static class HttpClientExtensions
 {
-    private static readonly string SteeltoeUserAgent = $"Steeltoe/{typeof(HttpClientExtensions).Assembly.GetName().Version}";
+    internal static readonly string SteeltoeUserAgent = $"Steeltoe/{typeof(HttpClientExtensions).Assembly.GetName().Version}";
 
     /// <summary>
     /// Sends an HTTP GET request to obtain an access token.
@@ -56,7 +56,7 @@ internal static class HttpClientExtensions
             })
         };
 
-        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
+        httpClient.ConfigureForSteeltoe(null);
 
         using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
@@ -70,6 +70,16 @@ internal static class HttpClientExtensions
         }
 
         return accessToken;
+    }
+
+    public static void ConfigureForSteeltoe(this HttpClient httpClient, TimeSpan? timeout)
+    {
+        if (timeout > TimeSpan.Zero)
+        {
+            httpClient.Timeout = timeout.Value;
+        }
+
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
     }
 
     internal sealed class AccessTokenResponse
