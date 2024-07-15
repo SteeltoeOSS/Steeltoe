@@ -88,7 +88,7 @@ public static class EurekaServiceCollectionExtensions
         AddEurekaClient(services);
 
         services.TryAddSingleton<IHealthCheckHandler, EurekaHealthCheckHandler>();
-        services.TryAddSingleton<IHealthAggregator, HealthRegistrationsAggregator>();
+        services.TryAddSingleton<IHealthAggregator, HealthAggregator>();
     }
 
     private static void AddEurekaClient(IServiceCollection services)

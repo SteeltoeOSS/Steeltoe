@@ -8,7 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Steeltoe.Common.HealthChecks;
 
-public interface IHealthRegistrationsAggregator : IHealthAggregator
+public interface IHealthAggregator
 {
     Task<HealthCheckResult> AggregateAsync(ICollection<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations,
         IServiceProvider serviceProvider, CancellationToken cancellationToken);

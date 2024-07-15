@@ -18,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.Test.Health;
 
 public sealed class HealthEndpointTest : BaseTest
 {
-    private readonly IHealthAggregator _aggregator = new DefaultHealthAggregator();
+    private readonly IHealthAggregator _aggregator = new HealthAggregator();
     private readonly ServiceProvider _provider = new ServiceCollection().BuildServiceProvider(true);
     private readonly ITestOutputHelper _output;
 
@@ -35,7 +35,7 @@ public sealed class HealthEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton(new List<IHealthContributor>());
-            services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuatorServices();
         };
 
@@ -63,7 +63,7 @@ public sealed class HealthEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuatorServices();
         };
 
@@ -90,7 +90,7 @@ public sealed class HealthEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuatorServices();
         };
 
@@ -120,7 +120,7 @@ public sealed class HealthEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuatorServices();
         };
 
@@ -157,7 +157,7 @@ public sealed class HealthEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuatorServices();
         };
 
@@ -199,7 +199,7 @@ public sealed class HealthEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuatorServices();
         };
 
@@ -232,7 +232,7 @@ public sealed class HealthEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuatorServices();
         };
 
@@ -294,7 +294,7 @@ public sealed class HealthEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-            services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+            services.AddSingleton<IHealthAggregator>(new HealthAggregator());
             services.AddHealthActuatorServices();
         };
 
@@ -326,7 +326,7 @@ public sealed class HealthEndpointTest : BaseTest
             new UpContributor()
         };
 
-        var handler = new HealthEndpointHandler(options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
+        var handler = new HealthEndpointHandler(options, new HealthAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider,
             NullLoggerFactory.Instance);
 
         var healthRequest = new HealthEndpointRequest("msft", true);

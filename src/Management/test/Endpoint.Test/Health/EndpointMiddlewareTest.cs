@@ -152,7 +152,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings)
         {
-            ["HealthCheckType"] = "microsoftHealthAggregator"
+            ["HealthCheckType"] = "defaultAggregator"
         };
 
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
@@ -361,7 +361,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
             configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
             {
-                ["HealthCheckType"] = "microsoftHealthAggregator"
+                ["HealthCheckType"] = "defaultAggregator"
             }));
 
         using var server = new TestServer(builder);

@@ -143,7 +143,7 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     {
         IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
 
-        using IWebHost host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor)).Build();
+        using IWebHost host = hostBuilder.AddHealthActuator(new HealthAggregator(), typeof(DownContributor)).Build();
 
         IEnumerable<IHealthEndpointHandler> handlers = host.Services.GetServices<IHealthEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();

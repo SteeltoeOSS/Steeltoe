@@ -98,7 +98,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddHealthActuator_WebApplicationBuilder_WithAggregator()
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
-        hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor));
+        hostBuilder.AddHealthActuator(new HealthAggregator(), typeof(DownContributor));
 
         await using WebApplication host = hostBuilder.Build();
         await using AsyncServiceScope scope = host.Services.CreateAsyncScope();

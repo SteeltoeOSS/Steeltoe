@@ -144,7 +144,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder();
 
-        IHost host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor)).Build();
+        IHost host = hostBuilder.AddHealthActuator(new HealthAggregator(), typeof(DownContributor)).Build();
 
         IEnumerable<IHealthEndpointHandler> handlers = host.Services.GetServices<IHealthEndpointHandler>();
         IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();

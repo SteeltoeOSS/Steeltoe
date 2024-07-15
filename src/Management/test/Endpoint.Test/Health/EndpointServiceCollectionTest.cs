@@ -32,7 +32,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         services.AddLogging();
-        services.AddHealthActuator(new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
+        services.AddHealthActuator(new HealthAggregator(), typeof(DiskSpaceContributor));
 
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
         services.AddSingleton<IConfiguration>(configurationRoot);

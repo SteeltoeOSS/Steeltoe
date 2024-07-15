@@ -57,9 +57,7 @@ internal sealed class EurekaHealthCheckHandler : IHealthCheckHandler
             healthContributors.RemoveAll(contributor => contributor is EurekaServerHealthContributor);
         }
 
-        HealthCheckResult result = _healthAggregator is IHealthRegistrationsAggregator registrationAggregator
-            ? await registrationAggregator.AggregateAsync(healthContributors, registrations, serviceScope.ServiceProvider, cancellationToken)
-            : await _healthAggregator.AggregateAsync(healthContributors, cancellationToken);
+        HealthCheckResult result = await _healthAggregator.AggregateAsync(healthContributors, registrations, serviceScope.ServiceProvider, cancellationToken);
 
         return AggregateStatus(result);
     }

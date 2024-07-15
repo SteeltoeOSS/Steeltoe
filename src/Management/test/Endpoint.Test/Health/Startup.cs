@@ -42,11 +42,8 @@ public sealed class Startup
                 services.AddHealthActuator(typeof(DisabledContributor));
                 break;
             case "defaultAggregator":
-                services.AddHealthActuator(new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
-                break;
-            case "microsoftHealthAggregator":
                 services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestHealthCheckServiceOptions());
-                services.AddHealthActuator(new HealthRegistrationsAggregator(), typeof(DiskSpaceContributor));
+                services.AddHealthActuator(new HealthAggregator(), typeof(DiskSpaceContributor));
                 break;
             default:
                 services.AddHealthActuator();
