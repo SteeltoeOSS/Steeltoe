@@ -15,7 +15,7 @@ public sealed class IgnoreLineEndingsComparer : IEqualityComparer<string>
 
     public static readonly IgnoreLineEndingsComparer Instance = new();
 
-    public bool Equals(string x, string y)
+    public bool Equals(string? x, string? y)
     {
         if (x == y)
         {
