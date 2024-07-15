@@ -17,7 +17,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.Utils.IO;
+using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding.PostProcessors;

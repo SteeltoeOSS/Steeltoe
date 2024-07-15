@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Configuration;
-using Steeltoe.Common.Utils.IO;
+using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Common.Certificates.Test;
 

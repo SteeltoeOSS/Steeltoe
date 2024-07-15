@@ -2,20 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Utils.IO;
+#nullable enable
+
+namespace Steeltoe.Common.TestResources.IO;
 
 /// <summary>
-/// An abstraction of a temporary path, such as a file.
+/// The base type for a temporary path, such as a file or directory.
 /// </summary>
 public abstract class TempPath : IDisposable
 {
     /// <summary>
-    /// Gets the absolute path of the TempPath.
+    /// Gets the absolute path.
     /// </summary>
     public string FullPath { get; }
 
     /// <summary>
-    /// Gets the name of the TempPath.
+    /// Gets the name.
     /// </summary>
     public string Name { get; }
 
@@ -23,14 +25,21 @@ public abstract class TempPath : IDisposable
     /// Initializes a new instance of the <see cref="TempPath" /> class.
     /// </summary>
     /// <param name="prefix">
-    /// Temporary path prefix.
+    /// Name prefix.
     /// </param>
-    protected TempPath(string prefix = null)
+    protected TempPath(string prefix)
     {
-        Name = $"{prefix ?? string.Empty}{Guid.NewGuid()}";
+        Name = $"{prefix}{Guid.NewGuid()}";
         FullPath = Path.Combine(Path.GetTempPath(), Name);
-        Initialize();
+
+        // ReSharper disable once VirtualMemberCallInConstructor
+        Create();
     }
+
+    /// <summary>
+    /// Creates the temporary path.
+    /// </summary>
+    protected abstract void Create();
 
     /// <summary>
     /// Ensures the temporary path is deleted.
@@ -48,16 +57,4 @@ public abstract class TempPath : IDisposable
     /// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.
     /// </param>
     protected abstract void Dispose(bool disposing);
-
-    /// <summary>
-    /// Subclasses should override and perform any path initialization here.
-    /// </summary>
-    protected virtual void InitializePath()
-    {
-    }
-
-    private void Initialize()
-    {
-        InitializePath();
-    }
 }

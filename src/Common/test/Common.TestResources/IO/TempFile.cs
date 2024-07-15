@@ -2,20 +2,30 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Utils.IO;
+#nullable enable
+
+namespace Steeltoe.Common.TestResources.IO;
 
 /// <summary>
-/// A temporary directory.
+/// A temporary file.
 /// </summary>
-public class TempFile : TempPath
+public sealed class TempFile : TempPath
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="TempFile" /> class.
     /// </summary>
+    public TempFile()
+        : base(string.Empty)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TempFile" /> class.
+    /// </summary>
     /// <param name="prefix">
-    /// Temporary file prefix.
+    /// File name prefix.
     /// </param>
-    public TempFile(string prefix = null)
+    public TempFile(string prefix)
         : base(prefix)
     {
     }
@@ -23,7 +33,7 @@ public class TempFile : TempPath
     /// <summary>
     /// Creates the temporary file.
     /// </summary>
-    protected override void InitializePath()
+    protected override void Create()
     {
         File.Create(FullPath).Dispose();
     }
@@ -44,7 +54,7 @@ public class TempFile : TempPath
             }
             catch
             {
-                // ignore
+                // Intentionally left empty.
             }
         }
     }

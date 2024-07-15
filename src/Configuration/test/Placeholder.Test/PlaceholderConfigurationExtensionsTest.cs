@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Utils.IO;
+using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Configuration.Placeholder.Test;
 
