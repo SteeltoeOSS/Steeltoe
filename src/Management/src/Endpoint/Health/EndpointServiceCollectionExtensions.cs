@@ -5,8 +5,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
-using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.Health.Availability;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 
 namespace Steeltoe.Management.Endpoint.Health;

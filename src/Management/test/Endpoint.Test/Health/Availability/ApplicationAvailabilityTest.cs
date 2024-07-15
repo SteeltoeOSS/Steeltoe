@@ -2,26 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common.Availability;
+using Steeltoe.Management.Endpoint.Health.Availability;
 
-namespace Steeltoe.Common.Test.Availability;
+namespace Steeltoe.Management.Endpoint.Test.Health.Availability;
 
 public sealed class ApplicationAvailabilityTest
 {
-    private readonly ILogger<ApplicationAvailability> _logger = NullLogger<ApplicationAvailability>.Instance;
-
     private int _livenessChanges;
-    private LivenessState _lastLivenessState;
+    private LivenessState? _lastLivenessState;
 
     private int _readinessChanges;
-    private ReadinessState _lastReadinessState;
+    private ReadinessState? _lastReadinessState;
 
     [Fact]
     public void TracksAndReturnsState()
     {
-        var availability = new ApplicationAvailability(_logger);
+        var availability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
 
         availability.SetAvailabilityState("Test", LivenessState.Broken, GetType().Name);
         availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, GetType().Name);
@@ -35,10 +32,10 @@ public sealed class ApplicationAvailabilityTest
     [Fact]
     public void ReturnsNullOnInit()
     {
-        var availability = new ApplicationAvailability(_logger);
+        var availability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
 
-        IAvailabilityState liveness = availability.GetLivenessState();
-        IAvailabilityState readiness = availability.GetReadinessState();
+        AvailabilityState? liveness = availability.GetLivenessState();
+        AvailabilityState? readiness = availability.GetReadinessState();
 
         Assert.Null(liveness);
         Assert.Null(readiness);
@@ -47,7 +44,7 @@ public sealed class ApplicationAvailabilityTest
     [Fact]
     public void KnownTypesRequireMatchingType()
     {
-        var availability = new ApplicationAvailability(_logger);
+        var availability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
 
         Assert.Throws<InvalidOperationException>(() =>
             availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, ReadinessState.AcceptingTraffic, null));
@@ -58,7 +55,7 @@ public sealed class ApplicationAvailabilityTest
     [Fact]
     public void FiresEventsOnKnownTypeStateChange()
     {
-        var availability = new ApplicationAvailability(_logger);
+        var availability = new ApplicationAvailability(NullLogger<ApplicationAvailability>.Instance);
         availability.LivenessChanged += Availability_LivenessChanged;
         availability.ReadinessChanged += Availability_ReadinessChanged;
 
@@ -75,13 +72,13 @@ public sealed class ApplicationAvailabilityTest
         Assert.Equal(ReadinessState.AcceptingTraffic, _lastReadinessState);
     }
 
-    private void Availability_ReadinessChanged(object sender, EventArgs args)
+    private void Availability_ReadinessChanged(object? sender, EventArgs args)
     {
         _readinessChanges++;
         _lastReadinessState = (ReadinessState)((AvailabilityEventArgs)args).NewState;
     }
 
-    private void Availability_LivenessChanged(object sender, EventArgs args)
+    private void Availability_LivenessChanged(object? sender, EventArgs args)
     {
         _livenessChanges++;
         _lastLivenessState = (LivenessState)((AvailabilityEventArgs)args).NewState;

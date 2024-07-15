@@ -1,5 +1,12 @@
 #nullable enable
+abstract Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.GetState() -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState?
+abstract Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.Id.get -> string!
 abstract Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.InvokeEndpointHandlerAsync(Microsoft.AspNetCore.Http.HttpContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
+const Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.LivenessKey = "Liveness" -> string!
+const Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.ReadinessKey = "Readiness" -> string!
+override Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState.ToString() -> string!
+override Steeltoe.Management.Endpoint.Health.Availability.LivenessHealthContributor.Id.get -> string!
+override Steeltoe.Management.Endpoint.Health.Availability.ReadinessHealthContributor.Id.get -> string!
 override Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> System.DateTime
 override Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter.Write(System.Text.Json.Utf8JsonWriter! writer, System.DateTime value, System.Text.Json.JsonSerializerOptions! options) -> void
@@ -12,6 +19,10 @@ override Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions.RequiresExa
 override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
 override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.set -> void
 override Steeltoe.Management.Endpoint.Services.ServiceRegistration.ToString() -> string!
+static readonly Steeltoe.Management.Endpoint.Health.Availability.LivenessState.Broken -> Steeltoe.Management.Endpoint.Health.Availability.LivenessState!
+static readonly Steeltoe.Management.Endpoint.Health.Availability.LivenessState.Correct -> Steeltoe.Management.Endpoint.Health.Availability.LivenessState!
+static readonly Steeltoe.Management.Endpoint.Health.Availability.ReadinessState.AcceptingTraffic -> Steeltoe.Management.Endpoint.Health.Availability.ReadinessState!
+static readonly Steeltoe.Management.Endpoint.Health.Availability.ReadinessState.RefusingTraffic -> Steeltoe.Management.Endpoint.Health.Availability.ReadinessState!
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! builder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! routeBuilder, Steeltoe.Management.Endpoint.ActuatorConventionBuilder? conventionBuilder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IRouteBuilder! builder) -> Microsoft.AspNetCore.Routing.IRouteBuilder!
@@ -185,6 +196,28 @@ Steeltoe.Management.Endpoint.Exposure.Exclude.set -> void
 Steeltoe.Management.Endpoint.Exposure.Exposure() -> void
 Steeltoe.Management.Endpoint.Exposure.Include.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Exposure.Include.set -> void
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.ApplicationAvailability(Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability!>! logger) -> void
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.GetAvailabilityState(string! availabilityType) -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState?
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.GetLivenessState() -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState?
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.GetReadinessState() -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState?
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.LivenessChanged -> System.EventHandler?
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.ReadinessChanged -> System.EventHandler?
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.SetAvailabilityState(string! availabilityType, Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState! newState, string? caller) -> void
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityEventArgs
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityEventArgs.AvailabilityEventArgs(Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState! availabilityState) -> void
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityEventArgs.NewState.get -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState!
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.AvailabilityHealthContributor(System.Collections.Generic.Dictionary<Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState!, Steeltoe.Common.HealthChecks.HealthStatus>! stateMappings, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.CheckHealthAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Common.HealthChecks.HealthCheckResult?>!
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState.AvailabilityState(string! value) -> void
+Steeltoe.Management.Endpoint.Health.Availability.LivenessHealthContributor
+Steeltoe.Management.Endpoint.Health.Availability.LivenessHealthContributor.LivenessHealthContributor(Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability! availability, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Health.Availability.LivenessState
+Steeltoe.Management.Endpoint.Health.Availability.ReadinessHealthContributor
+Steeltoe.Management.Endpoint.Health.Availability.ReadinessHealthContributor.ReadinessHealthContributor(Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability! availability, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Health.Availability.ReadinessState
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.DiskSpaceContributorOptions() -> void
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.Enabled.get -> bool

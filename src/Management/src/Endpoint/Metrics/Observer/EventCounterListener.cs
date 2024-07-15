@@ -121,7 +121,7 @@ internal sealed class EventCounterListener : EventListener
                 throw new InvalidOperationException("Should not call enable events before initialization");
             }
 
-            if (_optionsMonitor.CurrentValue?.EventCounterEvents != true)
+            if (!_optionsMonitor.CurrentValue.EventCounterEvents)
             {
                 return;
             }

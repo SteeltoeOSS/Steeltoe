@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Availability;
+namespace Steeltoe.Management.Endpoint.Health.Availability;
 
 /// <summary>
 /// The Readiness state of the application.
@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Availability;
 /// An application is considered ready when it's <see cref="LivenessState.Correct" /> and willing to accept traffic. "Readiness" failure means that the
 /// application is not able to accept traffic and that the infrastructure should not route requests to it.
 /// </summary>
-public class ReadinessState : IAvailabilityState
+public sealed class ReadinessState : AvailabilityState
 {
     /// <summary>
     /// The application is ready to receive traffic.
@@ -22,15 +22,8 @@ public class ReadinessState : IAvailabilityState
     /// </summary>
     public static readonly ReadinessState RefusingTraffic = new("REFUSING_TRAFFIC");
 
-    private readonly string _value;
-
     private ReadinessState(string value)
+        : base(value)
     {
-        _value = value;
-    }
-
-    public override string ToString()
-    {
-        return _value;
     }
 }

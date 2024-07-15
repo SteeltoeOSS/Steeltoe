@@ -3,39 +3,41 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Common.Availability;
+namespace Steeltoe.Management.Endpoint.Health.Availability;
 
 public abstract class AvailabilityHealthContributor : IHealthContributor
 {
-    private readonly Dictionary<IAvailabilityState, HealthStatus> _stateMappings;
+    private readonly Dictionary<AvailabilityState, HealthStatus> _stateMappings;
     private readonly ILogger _logger;
 
-    public virtual string Id => throw new NotImplementedException();
+    public abstract string Id { get; }
 
-    protected AvailabilityHealthContributor(Dictionary<IAvailabilityState, HealthStatus> stateMappings, ILogger logger = null)
+    protected AvailabilityHealthContributor(Dictionary<AvailabilityState, HealthStatus> stateMappings, ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(stateMappings);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _stateMappings = stateMappings;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<AvailabilityHealthContributor>();
     }
 
-    public Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken)
+    public Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
         HealthCheckResult result = Health();
-        return Task.FromResult(result);
+        return Task.FromResult<HealthCheckResult?>(result);
     }
 
     private HealthCheckResult Health()
     {
         var health = new HealthCheckResult();
-        IAvailabilityState currentHealth = GetState();
+        AvailabilityState? currentHealth = GetState();
 
         if (currentHealth == null)
         {
-            _logger?.LogCritical("Failed to get current availability state");
+            _logger.LogError("Failed to get current availability state");
             health.Description = "Failed to get current availability state";
         }
         else
@@ -47,7 +49,7 @@ public abstract class AvailabilityHealthContributor : IHealthContributor
             }
             catch (Exception exception)
             {
-                _logger?.LogCritical(exception, "Failed to map current availability state");
+                _logger.LogError(exception, "Failed to map current availability state");
                 health.Description = "Failed to map current availability state";
             }
         }
@@ -55,8 +57,5 @@ public abstract class AvailabilityHealthContributor : IHealthContributor
         return health;
     }
 
-    protected virtual IAvailabilityState GetState()
-    {
-        throw new NotImplementedException();
-    }
+    protected abstract AvailabilityState? GetState();
 }
