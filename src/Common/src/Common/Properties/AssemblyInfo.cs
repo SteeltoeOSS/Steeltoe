@@ -4,6 +4,7 @@
 
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Certificates")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Certificates.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting")]

@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
-using Steeltoe.Common.Reflection;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Info;
@@ -23,6 +22,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 {
     private const string SpringCloudDiscoveryRegistrationMethodKey = "spring:cloud:discovery:registrationMethod";
 
+    private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IServiceProvider _serviceProvider;
     private readonly IConfiguration _configuration;
     private readonly IApplicationInstanceInfo _appInfo;
@@ -54,7 +54,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
         SetInstanceId(options);
         SetMetadata(options);
 
-        if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Management.Endpoint"))
+        if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Management.Endpoint"))
         {
             SetPathsFromEndpointOptions(options);
         }

@@ -2,18 +2,26 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
-using Steeltoe.Common;
+#nullable enable
 
-namespace Steeltoe.Bootstrap.AutoConfiguration;
+using System.Reflection;
+
+namespace Steeltoe.Common;
 
 internal sealed class AssemblyLoader
 {
+    private static readonly IReadOnlySet<string> EmptySet = new HashSet<string>();
+
     public IReadOnlySet<string> AssemblyNamesToExclude { get; }
 
     static AssemblyLoader()
     {
         AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolver.LoadAnyVersion;
+    }
+
+    public AssemblyLoader()
+        : this(EmptySet)
+    {
     }
 
     public AssemblyLoader(IReadOnlySet<string> assemblyNamesToExclude)

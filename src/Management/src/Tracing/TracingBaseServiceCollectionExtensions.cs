@@ -14,7 +14,6 @@ using OpenTelemetry.Instrumentation.Http;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
-using Steeltoe.Common.Reflection;
 using Steeltoe.Logging;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Wavefront.Exporters;
@@ -25,6 +24,8 @@ namespace Steeltoe.Management.Tracing;
 
 public static class TracingBaseServiceCollectionExtensions
 {
+    private static readonly AssemblyLoader AssemblyLoader = new();
+
     /// <summary>
     /// Configure distributed tracing via OpenTelemetry with HttpClient Instrumentation.
     /// </summary>
@@ -65,9 +66,9 @@ public static class TracingBaseServiceCollectionExtensions
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDynamicMessageProcessor, TracingLogProcessor>());
 
-        bool exportToZipkin = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin");
-        bool exportToJaeger = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Jaeger");
-        bool exportToOpenTelemetryProtocol = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.OpenTelemetryProtocol");
+        bool exportToZipkin = AssemblyLoader.IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin");
+        bool exportToJaeger = AssemblyLoader.IsAssemblyLoaded("OpenTelemetry.Exporter.Jaeger");
+        bool exportToOpenTelemetryProtocol = AssemblyLoader.IsAssemblyLoaded("OpenTelemetry.Exporter.OpenTelemetryProtocol");
 
         if (exportToZipkin)
         {

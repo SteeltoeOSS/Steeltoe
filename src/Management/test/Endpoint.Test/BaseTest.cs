@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Common.Reflection;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
@@ -85,20 +84,15 @@ public abstract class BaseTest : IDisposable
     {
         Type optionsType = typeof(TOptions);
 
-        Type type = ReflectionHelpers.FindType(new[]
-        {
-            optionsType.Assembly.FullName
-        }, new[]
-        {
-            $"{optionsType.Namespace}.Configure{optionsType.Name}"
-        });
+        string configureTypeName = $"{optionsType.Namespace}.Configure{optionsType.Name}";
+        Type? configureType = optionsType.Assembly.GetType(configureTypeName);
 
-        if (type == null)
+        if (configureType == null)
         {
-            throw new InvalidOperationException($"Could not find Type Configure{typeof(TOptions).Name} in assembly {optionsType.Assembly.FullName}");
+            throw new InvalidOperationException($"Could not find type {configureTypeName} in assembly {optionsType.Assembly.FullName}.");
         }
 
-        return GetOptionsMonitorFromSettings<TOptions>(type, settings);
+        return GetOptionsMonitorFromSettings<TOptions>(configureType, settings);
     }
 
     private static IOptionsMonitor<TOptions> GetOptionsMonitorFromSettings<TOptions>(Type configureOptionsType, Dictionary<string, string?> settings)
