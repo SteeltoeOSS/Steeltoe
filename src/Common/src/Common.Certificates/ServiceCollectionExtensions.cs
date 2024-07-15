@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
@@ -28,16 +27,12 @@ internal static class ServiceCollectionExtensions
     /// The named option, which gets added to <paramref name="key" />.
     /// </param>
     /// <param name="pathPropertyName">
-    /// The name of the property that contains a file path, whose value is relative to the root of <paramref name="fileProvider" />.
-    /// </param>
-    /// <param name="fileProvider">
-    /// Provides access to the file system.
+    /// The name of the property that contains a file path.
     /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
-    public static IServiceCollection WatchFilePathInOptions<TOptions>(this IServiceCollection services, string key, string? optionName, string pathPropertyName,
-        IFileProvider fileProvider)
+    public static IServiceCollection WatchFilePathInOptions<TOptions>(this IServiceCollection services, string key, string? optionName, string pathPropertyName)
     {
         ArgumentGuard.NotNull(services);
         ArgumentGuard.NotNull(key);
@@ -47,7 +42,7 @@ internal static class ServiceCollectionExtensions
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             string filePath = GetFilePath(configuration, key, optionName, pathPropertyName);
-            var watcher = new FilePathInOptionsChangeTokenSource<TOptions>(optionName, filePath, fileProvider);
+            var watcher = new FilePathInOptionsChangeTokenSource<TOptions>(optionName, filePath);
 
             _ = ChangeToken.OnChange(configuration.GetReloadToken, () =>
             {

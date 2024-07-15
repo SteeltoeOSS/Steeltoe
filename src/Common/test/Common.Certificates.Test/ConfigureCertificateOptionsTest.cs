@@ -119,10 +119,16 @@ public sealed class ConfigureCertificateOptionsTest
         string certificateFilePath = sandbox.CreateFile("cert", firstCertificateContent);
         string privateKeyFilePath = sandbox.CreateFile("key", firstPrivateKeyContent);
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificate(CertificateName, certificateFilePath, privateKeyFilePath).Build();
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddCertificate(CertificateName, certificateFilePath, privateKeyFilePath);
+        IConfiguration configuration = configurationBuilder.Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging().AddSingleton<IConfiguration>(configuration)
-            .ConfigureCertificateOptions(Microsoft.Extensions.Options.Options.DefaultName).BuildServiceProvider();
+        IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton(configuration);
+        services.ConfigureCertificateOptions(Microsoft.Extensions.Options.Options.DefaultName);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
 
@@ -150,10 +156,16 @@ public sealed class ConfigureCertificateOptionsTest
         string certificate2FilePath = sandbox.CreateFile("cert2", instance2Certificate);
         string privateKey2FilePath = sandbox.CreateFile("key2", instance2PrivateKey);
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddCertificate(CertificateName, certificate1FilePath, privateKey1FilePath).Build();
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddCertificate(CertificateName, certificate1FilePath, privateKey1FilePath);
+        IConfigurationRoot configuration = configurationBuilder.Build();
 
-        ServiceProvider serviceProvider = new ServiceCollection().AddLogging().AddSingleton<IConfiguration>(configuration)
-            .ConfigureCertificateOptions(CertificateName).BuildServiceProvider();
+        IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.ConfigureCertificateOptions(CertificateName);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
