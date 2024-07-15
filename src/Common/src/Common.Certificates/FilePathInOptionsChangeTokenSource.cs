@@ -22,7 +22,7 @@ internal sealed class FilePathInOptionsChangeTokenSource<T> : IOptionsChangeToke
     {
         ArgumentGuard.NotNull(filePath);
 
-        Name = optionName ?? Microsoft.Extensions.Options.Options.DefaultName;
+        Name = optionName ?? Options.DefaultName;
         _filePath = filePath;
     }
 

@@ -27,7 +27,7 @@ internal sealed class ConfigureCertificateOptions : IConfigureNamedOptions<Certi
 
     public void Configure(CertificateOptions options)
     {
-        Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
+        Configure(Options.DefaultName, options);
     }
 
     public void Configure(string? name, CertificateOptions options)

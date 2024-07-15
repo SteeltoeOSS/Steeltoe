@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
-public class CloudFoundryServicesOptions : ServicesOptions
+public sealed class CloudFoundryServicesOptions : BaseServiceOptions
 {
     internal const string ServicesConfigurationRoot = "vcap";
 
@@ -18,7 +18,7 @@ public class CloudFoundryServicesOptions : ServicesOptions
     }
 
     public CloudFoundryServicesOptions(IConfiguration configuration)
-        : base(configuration, ServicesConfigurationRoot)
     {
+        configuration.GetSection(ServicesConfigurationRoot).Bind(this);
     }
 }

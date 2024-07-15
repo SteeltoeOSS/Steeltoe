@@ -126,7 +126,7 @@ public sealed class ConfigureCertificateOptionsTest
         IServiceCollection services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton(configuration);
-        services.ConfigureCertificateOptions(Microsoft.Extensions.Options.Options.DefaultName);
+        services.ConfigureCertificateOptions(Options.DefaultName);
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider();
 

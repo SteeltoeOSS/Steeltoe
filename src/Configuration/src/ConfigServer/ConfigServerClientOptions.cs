@@ -5,14 +5,13 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Http.HttpClientPooling;
-using Steeltoe.Common.Options;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
 /// <summary>
 /// Holds settings used to configure the Spring Cloud Config Server provider.
 /// </summary>
-public sealed class ConfigServerClientOptions : AbstractOptions, IValidateCertificatesOptions
+public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
 {
     private const char CommaDelimiter = ',';
     internal const string ConfigurationPrefix = "spring:cloud:config";

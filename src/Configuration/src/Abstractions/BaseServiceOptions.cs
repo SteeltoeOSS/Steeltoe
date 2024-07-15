@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Common.Options;
 
 namespace Steeltoe.Configuration;
 
@@ -14,7 +13,7 @@ namespace Steeltoe.Configuration;
 /// <remarks>
 /// Binds with an <see cref="IConfiguration" /> when instantiated.
 /// </remarks>
-public abstract class BaseServiceOptions : AbstractOptions
+public abstract class BaseServiceOptions
 {
     protected virtual string ConfigurationPrefix => "services";
 
@@ -39,21 +38,6 @@ public abstract class BaseServiceOptions : AbstractOptions
     public string? Plan { get; set; }
 
     public IDictionary<string, IList<Service>> Services { get; } = new Dictionary<string, IList<Service>>();
-
-    // This constructor is for use with IOptions.
-    protected BaseServiceOptions()
-    {
-    }
-
-    protected BaseServiceOptions(IConfiguration configuration)
-        : this(configuration, null)
-    {
-    }
-
-    protected BaseServiceOptions(IConfiguration configuration, string? sectionPrefix)
-        : base(configuration, sectionPrefix)
-    {
-    }
 
     /// <summary>
     /// Retrieves a flattened list of all services for all types.
