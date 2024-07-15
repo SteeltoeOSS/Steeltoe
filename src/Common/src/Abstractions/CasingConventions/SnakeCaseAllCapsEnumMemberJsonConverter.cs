@@ -5,7 +5,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Common.Util;
+namespace Steeltoe.Common.CasingConventions;
 
 /// <summary>
 /// Converts between pascal-cased enum members and their snake-case-all-caps string representation.

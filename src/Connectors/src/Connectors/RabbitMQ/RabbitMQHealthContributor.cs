@@ -6,8 +6,8 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Util;
 using Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.RabbitMQ;

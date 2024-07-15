@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
-using Steeltoe.Common.Util;
+using Steeltoe.Common.CasingConventions;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 

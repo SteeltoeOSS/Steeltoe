@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 #pragma warning disable S4040 // Strings should be normalized to uppercase
 
-namespace Steeltoe.Common.Util;
+namespace Steeltoe.Common.CasingConventions;
 
 /// <summary>
 /// Converts between pascal-cased enum members and their snake-case string representation.

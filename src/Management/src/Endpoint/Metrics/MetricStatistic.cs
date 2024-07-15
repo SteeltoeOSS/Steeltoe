@@ -5,7 +5,7 @@
 // ReSharper disable IdentifierTypo
 
 using System.Text.Json.Serialization;
-using Steeltoe.Common.Util;
+using Steeltoe.Common.CasingConventions;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 

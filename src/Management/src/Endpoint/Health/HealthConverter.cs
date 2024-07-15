@@ -5,8 +5,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Steeltoe.Common;
+using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health;
 

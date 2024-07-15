@@ -6,7 +6,7 @@
 
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Steeltoe.Common.Util;
+using Steeltoe.Common.CasingConventions;
 using MicrosoftHealthCheckResult = Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult;
 using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 using SteeltoeHealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
