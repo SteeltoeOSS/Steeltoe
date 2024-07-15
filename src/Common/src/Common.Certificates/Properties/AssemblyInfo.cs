@@ -7,6 +7,7 @@ using Aspire;
 using Steeltoe.Common.Certificates;
 
 [assembly: ConfigurationSchema("Certificates", typeof(CertificateSettings))]
+[assembly: ConfigurationSchema("Certificates:*", typeof(CertificateSettings))]
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Common", "Steeltoe.Common.Certificates")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Common.Certificates.Test")]

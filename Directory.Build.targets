@@ -121,7 +121,9 @@
       <GeneratedConfigurationSchemaFileContent>$([System.IO.File]::ReadAllText('$(GeneratedConfigurationSchemaOutputPath)'))</GeneratedConfigurationSchemaFileContent>
     </PropertyGroup>
 
-    <Error Condition="'$(CurrentConfigurationSchemaFileContent)' != '$(GeneratedConfigurationSchemaFileContent)'"
+    <Warning Condition="'$(CurrentConfigurationSchemaFileContent)' != '$(GeneratedConfigurationSchemaFileContent)' And '$(Configuration)' == 'Debug'"
+           Text="ConfigurationSchema.json is out of date. Run 'dotnet build --no-incremental /p:UpdateConfigurationSchema=true' to update it." />
+    <Error Condition="'$(CurrentConfigurationSchemaFileContent)' != '$(GeneratedConfigurationSchemaFileContent)' And '$(Configuration)' != 'Debug'"
            Text="ConfigurationSchema.json is out of date. Run 'dotnet build --no-incremental /p:UpdateConfigurationSchema=true' to update it." />
   </Target>
 

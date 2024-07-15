@@ -36,6 +36,20 @@
                   },
                   "description": "Provides configuration settings to connect to a data source."
                 }
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "ConnectionString": {
+                    "type": "string",
+                    "description": "Gets or sets the connection string for this data source."
+                  },
+                  "Database": {
+                    "type": "string",
+                    "description": "Gets or sets the name of the CosmosDB database."
+                  }
+                },
+                "description": "Provides configuration settings to connect to a data source."
               }
             },
             "MongoDb": {
@@ -55,6 +69,20 @@
                   },
                   "description": "Provides configuration settings to connect to a data source."
                 }
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "ConnectionString": {
+                    "type": "string",
+                    "description": "Gets or sets the connection string for this data source."
+                  },
+                  "Database": {
+                    "type": "string",
+                    "description": "Gets or sets the name of the MongoDB database."
+                  }
+                },
+                "description": "Provides configuration settings to connect to a data source."
               }
             },
             "MySql": {
@@ -70,6 +98,16 @@
                   },
                   "description": "Provides configuration settings to connect to a data source."
                 }
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "ConnectionString": {
+                    "type": "string",
+                    "description": "Gets or sets the connection string for this data source."
+                  }
+                },
+                "description": "Provides configuration settings to connect to a data source."
               }
             },
             "PostgreSql": {
@@ -85,6 +123,16 @@
                   },
                   "description": "Provides configuration settings to connect to a data source."
                 }
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "ConnectionString": {
+                    "type": "string",
+                    "description": "Gets or sets the connection string for this data source."
+                  }
+                },
+                "description": "Provides configuration settings to connect to a data source."
               }
             },
             "RabbitMQ": {
@@ -100,6 +148,16 @@
                   },
                   "description": "Provides configuration settings to connect to a data source."
                 }
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "ConnectionString": {
+                    "type": "string",
+                    "description": "Gets or sets the connection string for this data source."
+                  }
+                },
+                "description": "Provides configuration settings to connect to a data source."
               }
             },
             "Redis": {
@@ -115,6 +173,16 @@
                   },
                   "description": "Provides configuration settings to connect to a data source."
                 }
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "ConnectionString": {
+                    "type": "string",
+                    "description": "Gets or sets the connection string for this data source."
+                  }
+                },
+                "description": "Provides configuration settings to connect to a data source."
               }
             },
             "SqlServer": {
@@ -130,6 +198,16 @@
                   },
                   "description": "Provides configuration settings to connect to a data source."
                 }
+              },
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "ConnectionString": {
+                    "type": "string",
+                    "description": "Gets or sets the connection string for this data source."
+                  }
+                },
+                "description": "Provides configuration settings to connect to a data source."
               }
             }
           }

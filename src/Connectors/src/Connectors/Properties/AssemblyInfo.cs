@@ -13,12 +13,19 @@ using Steeltoe.Connectors.Redis;
 using Steeltoe.Connectors.SqlServer;
 
 [assembly: ConfigurationSchema("Steeltoe:Client:CosmosDb:Default", typeof(CosmosDbOptions))]
+[assembly: ConfigurationSchema("Steeltoe:Client:CosmosDb:*", typeof(CosmosDbOptions))]
 [assembly: ConfigurationSchema("Steeltoe:Client:MongoDb:Default", typeof(MongoDbOptions))]
+[assembly: ConfigurationSchema("Steeltoe:Client:MongoDb:*", typeof(MongoDbOptions))]
 [assembly: ConfigurationSchema("Steeltoe:Client:MySql:Default", typeof(MySqlOptions))]
+[assembly: ConfigurationSchema("Steeltoe:Client:MySql:*", typeof(MySqlOptions))]
 [assembly: ConfigurationSchema("Steeltoe:Client:PostgreSql:Default", typeof(PostgreSqlOptions))]
+[assembly: ConfigurationSchema("Steeltoe:Client:PostgreSql:*", typeof(PostgreSqlOptions))]
 [assembly: ConfigurationSchema("Steeltoe:Client:RabbitMQ:Default", typeof(RabbitMQOptions))]
+[assembly: ConfigurationSchema("Steeltoe:Client:RabbitMQ:*", typeof(RabbitMQOptions))]
 [assembly: ConfigurationSchema("Steeltoe:Client:Redis:Default", typeof(RedisOptions))]
+[assembly: ConfigurationSchema("Steeltoe:Client:Redis:*", typeof(RedisOptions))]
 [assembly: ConfigurationSchema("Steeltoe:Client:SqlServer:Default", typeof(SqlServerOptions))]
+[assembly: ConfigurationSchema("Steeltoe:Client:SqlServer:*", typeof(SqlServerOptions))]
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Connectors")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
