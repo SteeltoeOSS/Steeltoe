@@ -41,6 +41,12 @@ public static class UriExtensions
         }
 
         var uris = source.ToString();
+
+        if (!uris.Contains(','))
+        {
+            return source.ToMaskedUri().ToString();
+        }
+
         return string.Join(",", uris.Split(_uriSeparatorChar, StringSplitOptions.RemoveEmptyEntries).Select(uri => new Uri(uri).ToMaskedUri().ToString()));
     }
 
