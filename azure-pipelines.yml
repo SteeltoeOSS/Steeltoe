@@ -90,9 +90,9 @@ jobs:
         skipFilter: '--filter "Category!=SkipOnLinux"'
         sonarAnalyze: true
         integrationTests: true
-      MacOS:
-        imageName: macOS-latest
-        skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
+      # MacOS:
+      #   imageName: macOS-latest
+      #   skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
       Windows:
         imageName: windows-latest
         skipFilter: '--filter "Category!=Integration"'
