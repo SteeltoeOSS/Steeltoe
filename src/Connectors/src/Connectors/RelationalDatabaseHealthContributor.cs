@@ -20,14 +20,13 @@ internal sealed class RelationalDatabaseHealthContributor : IHealthContributor, 
     public string Host { get; }
     public string? ServiceName { get; set; }
 
-    public RelationalDatabaseHealthContributor(DbConnection connection, string host, ILogger<RelationalDatabaseHealthContributor> logger)
+    public RelationalDatabaseHealthContributor(DbConnection connection, string? host, ILogger<RelationalDatabaseHealthContributor> logger)
     {
         ArgumentGuard.NotNull(connection);
-        ArgumentGuard.NotNullOrEmpty(host);
         ArgumentGuard.NotNull(logger);
 
         _connection = connection;
-        Host = host;
+        Host = host ?? string.Empty;
         _logger = logger;
         Id = GetDatabaseType(connection);
     }

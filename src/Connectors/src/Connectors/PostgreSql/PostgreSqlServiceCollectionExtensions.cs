@@ -95,7 +95,7 @@ public static class PostgreSqlServiceCollectionExtensions
         ConnectorShim<PostgreSqlOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
         var connection = (DbConnection)connectorShim.GetConnection();
-        string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
+        string? hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<RelationalDatabaseHealthContributor>>();
 
         return new RelationalDatabaseHealthContributor(connection, hostName, logger)
@@ -104,11 +104,11 @@ public static class PostgreSqlServiceCollectionExtensions
         };
     }
 
-    private static string GetHostNameFromConnectionString(PostgreSqlPackageResolver packageResolver, string? connectionString)
+    private static string? GetHostNameFromConnectionString(PostgreSqlPackageResolver packageResolver, string? connectionString)
     {
         var connectionStringBuilderShim = NpgsqlConnectionStringBuilderShim.CreateInstance(packageResolver);
         connectionStringBuilderShim.Instance.ConnectionString = connectionString;
-        return (string)connectionStringBuilderShim.Instance["host"];
+        return (string?)connectionStringBuilderShim.Instance["host"];
     }
 
     private static DbConnection CreateConnection(IServiceProvider serviceProvider, string serviceBindingName, PostgreSqlPackageResolver packageResolver)

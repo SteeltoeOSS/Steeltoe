@@ -24,9 +24,9 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
 
     public RabbitMQHealthContributor(object connectionFactory, string host, ILogger<RabbitMQHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(logger);
-        ArgumentGuard.NotNullOrEmpty(host);
         ArgumentGuard.NotNull(connectionFactory);
+        ArgumentGuard.NotNullOrEmpty(host);
+        ArgumentGuard.NotNull(logger);
 
         _connectionFactoryInterfaceShim = new ConnectionFactoryInterfaceShim(RabbitMQPackageResolver.Default, connectionFactory);
         Host = host;

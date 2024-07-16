@@ -93,7 +93,7 @@ public static class MySqlServiceCollectionExtensions
         ConnectorShim<MySqlOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
         var connection = (DbConnection)connectorShim.GetConnection();
-        string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
+        string? hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<RelationalDatabaseHealthContributor>>();
 
         return new RelationalDatabaseHealthContributor(connection, hostName, logger)
@@ -102,11 +102,11 @@ public static class MySqlServiceCollectionExtensions
         };
     }
 
-    private static string GetHostNameFromConnectionString(MySqlPackageResolver packageResolver, string? connectionString)
+    private static string? GetHostNameFromConnectionString(MySqlPackageResolver packageResolver, string? connectionString)
     {
         var connectionStringBuilderShim = MySqlConnectionStringBuilderShim.CreateInstance(packageResolver);
         connectionStringBuilderShim.Instance.ConnectionString = connectionString;
-        return (string)connectionStringBuilderShim.Instance["host"];
+        return (string?)connectionStringBuilderShim.Instance["host"];
     }
 
     private static DbConnection CreateConnection(IServiceProvider serviceProvider, string serviceBindingName, MySqlPackageResolver packageResolver)
