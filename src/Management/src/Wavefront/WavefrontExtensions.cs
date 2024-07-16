@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
@@ -33,7 +32,7 @@ public static class WavefrontExtensions
         ArgumentGuard.NotNull(services);
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticsService>());
+        services.AddHostedService<DiagnosticsService>();
 
         services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
         services.AddMetricsObservers();

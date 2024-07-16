@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
@@ -91,7 +90,7 @@ public static class ConsulServiceCollectionExtensions
 
         services.AddSingleton<ConsulServiceRegistrar>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IDiscoveryClient), typeof(ConsulDiscoveryClient)));
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IHostedService), typeof(DiscoveryClientHostedService)));
+        services.AddHostedService<DiscoveryClientHostedService>();
         services.AddSingleton<IHealthContributor, ConsulHealthContributor>();
     }
 }

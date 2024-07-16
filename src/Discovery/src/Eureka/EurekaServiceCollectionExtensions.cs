@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
@@ -84,7 +83,7 @@ public static class EurekaServiceCollectionExtensions
 
         services.TryAddSingleton<EurekaDiscoveryClient>();
         services.AddSingleton<IDiscoveryClient>(serviceProvider => serviceProvider.GetRequiredService<EurekaDiscoveryClient>());
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IHostedService), typeof(DiscoveryClientHostedService)));
+        services.AddHostedService<DiscoveryClientHostedService>();
 
         AddEurekaClient(services);
 
