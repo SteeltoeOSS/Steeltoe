@@ -7,27 +7,31 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
+using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MongoDb;
 
 internal sealed class MongoDbHealthContributor : IHealthContributor
 {
-    private readonly MongoClientInterfaceShim _mongoClientShim;
+    private readonly MongoClientInterfaceShimFactory _clientFactory;
     private readonly ILogger<MongoDbHealthContributor> _logger;
+    private MongoClientInterfaceShim? _mongoClientShim;
 
     public string Id { get; } = "MongoDB";
-    public string Host { get; }
-    public string? ServiceName { get; set; }
+    public string Host => _clientFactory.HostName;
+    public string ServiceName { get; }
 
-    public MongoDbHealthContributor(object mongoClient, string host, ILogger<MongoDbHealthContributor> logger)
+    public MongoDbHealthContributor(string serviceName, IServiceProvider serviceProvider, MongoDbPackageResolver packageResolver,
+        ILogger<MongoDbHealthContributor> logger)
     {
+        ArgumentGuard.NotNull(serviceName);
+        ArgumentGuard.NotNull(serviceProvider);
+        ArgumentGuard.NotNull(packageResolver);
         ArgumentGuard.NotNull(logger);
-        ArgumentGuard.NotNullOrEmpty(host);
-        ArgumentGuard.NotNull(mongoClient);
 
-        _mongoClientShim = new MongoClientInterfaceShim(MongoDbPackageResolver.Default, mongoClient);
-        Host = host;
+        ServiceName = serviceName;
+        _clientFactory = new MongoClientInterfaceShimFactory(serviceName, serviceProvider, packageResolver);
         _logger = logger;
     }
 
@@ -50,6 +54,8 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
 
         try
         {
+            _mongoClientShim ??= _clientFactory.Create();
+
             using IDisposable cursor = await _mongoClientShim.ListDatabaseNamesAsync(cancellationToken);
 
             result.Status = HealthStatus.Up;
@@ -75,5 +81,46 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
         }
 
         return result;
+    }
+
+    private sealed class MongoClientInterfaceShimFactory
+    {
+        private readonly ConnectorShim<MongoDbOptions> _connectorShim;
+
+        public string HostName { get; }
+
+        public MongoClientInterfaceShimFactory(string serviceName, IServiceProvider serviceProvider, MongoDbPackageResolver packageResolver)
+        {
+            ArgumentGuard.NotNull(serviceName);
+            ArgumentGuard.NotNull(serviceProvider);
+            ArgumentGuard.NotNull(packageResolver);
+
+            ConnectorFactoryShim<MongoDbOptions> connectorFactoryShim =
+                ConnectorFactoryShim<MongoDbOptions>.FromServiceProvider(serviceProvider, packageResolver.MongoClientInterface.Type);
+
+            _connectorShim = connectorFactoryShim.Get(serviceName);
+            HostName = GetHostNameFromConnectionString(_connectorShim.Options.ConnectionString);
+        }
+
+        public MongoClientInterfaceShim Create()
+        {
+            object mongoClient = _connectorShim.GetConnection();
+            return new MongoClientInterfaceShim(MongoDbPackageResolver.Default, mongoClient);
+        }
+
+        private static string GetHostNameFromConnectionString(string? connectionString)
+        {
+            if (connectionString == null)
+            {
+                return string.Empty;
+            }
+
+            var builder = new MongoDbConnectionStringBuilder
+            {
+                ConnectionString = connectionString
+            };
+
+            return (string)builder["server"]!;
+        }
     }
 }

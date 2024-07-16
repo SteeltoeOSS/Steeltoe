@@ -14,11 +14,14 @@ internal sealed class MongoClientShim : Shim
     {
     }
 
-    public static MongoClientShim CreateInstance(MongoDbPackageResolver packageResolver, string connectionString)
+    public static MongoClientShim CreateInstance(MongoDbPackageResolver packageResolver, string? connectionString)
     {
         ArgumentGuard.NotNull(packageResolver);
 
-        InstanceAccessor instanceAccessor = packageResolver.MongoClientClass.CreateInstance(connectionString);
+        // Ensure the argument is never null, so the proper ctor overload is selected (prevents AmbiguousMatchException).
+        string constructorArgument = connectionString ?? string.Empty;
+
+        InstanceAccessor instanceAccessor = packageResolver.MongoClientClass.CreateInstance(constructorArgument);
         return new MongoClientShim(instanceAccessor);
     }
 }

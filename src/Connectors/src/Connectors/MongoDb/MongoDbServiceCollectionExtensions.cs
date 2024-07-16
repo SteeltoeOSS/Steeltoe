@@ -87,34 +87,9 @@ public static class MongoDbServiceCollectionExtensions
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
         MongoDbPackageResolver packageResolver)
     {
-        ConnectorFactoryShim<MongoDbOptions> connectorFactoryShim =
-            ConnectorFactoryShim<MongoDbOptions>.FromServiceProvider(serviceProvider, packageResolver.MongoClientInterface.Type);
-
-        ConnectorShim<MongoDbOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
-
-        object mongoClient = connectorShim.GetConnection();
-        string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<MongoDbHealthContributor>>();
 
-        return new MongoDbHealthContributor(mongoClient, hostName, logger)
-        {
-            ServiceName = serviceBindingName
-        };
-    }
-
-    private static string GetHostNameFromConnectionString(string? connectionString)
-    {
-        if (connectionString == null)
-        {
-            return string.Empty;
-        }
-
-        var builder = new MongoDbConnectionStringBuilder
-        {
-            ConnectionString = connectionString
-        };
-
-        return (string)builder["server"]!;
+        return new MongoDbHealthContributor(serviceBindingName, serviceProvider, packageResolver, logger);
     }
 
     private static object CreateMongoClient(IServiceProvider serviceProvider, string serviceBindingName, MongoDbPackageResolver packageResolver)
@@ -122,7 +97,7 @@ public static class MongoDbServiceCollectionExtensions
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<MongoDbOptions>>();
         MongoDbOptions options = optionsMonitor.Get(serviceBindingName);
 
-        var mongoClientShim = MongoClientShim.CreateInstance(packageResolver, options.ConnectionString!);
+        var mongoClientShim = MongoClientShim.CreateInstance(packageResolver, options.ConnectionString);
         return mongoClientShim.Instance;
     }
 }
