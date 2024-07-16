@@ -21,7 +21,7 @@ internal sealed class CosmosClientShim : Shim, IDisposable
     {
     }
 
-    public static CosmosClientShim CreateInstance(CosmosDbPackageResolver packageResolver, string connectionString)
+    public static CosmosClientShim CreateInstance(CosmosDbPackageResolver packageResolver, string? connectionString)
     {
         ArgumentGuard.NotNull(packageResolver);
 

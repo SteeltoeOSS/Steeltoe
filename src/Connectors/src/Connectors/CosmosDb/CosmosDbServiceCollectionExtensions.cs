@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -91,36 +90,12 @@ public static class CosmosDbServiceCollectionExtensions
     private static IHealthContributor CreateHealthContributor(IServiceProvider serviceProvider, string serviceBindingName,
         CosmosDbPackageResolver packageResolver)
     {
-        ConnectorFactoryShim<CosmosDbOptions> connectorFactoryShim =
-            ConnectorFactoryShim<CosmosDbOptions>.FromServiceProvider(serviceProvider, packageResolver.CosmosClientClass.Type);
-
-        ConnectorShim<CosmosDbOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
-
-        object cosmosClient = connectorShim.GetConnection();
-        string hostName = GetHostNameFromConnectionString(connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<CosmosDbHealthContributor>>();
 
-        return new CosmosDbHealthContributor(cosmosClient, hostName, logger)
+        return new CosmosDbHealthContributor(serviceBindingName, serviceProvider, packageResolver, logger)
         {
-            ServiceName = serviceBindingName,
             Timeout = TimeSpan.FromSeconds(5)
         };
-    }
-
-    private static string GetHostNameFromConnectionString(string? connectionString)
-    {
-        if (connectionString == null)
-        {
-            return string.Empty;
-        }
-
-        var builder = new DbConnectionStringBuilder
-        {
-            ConnectionString = connectionString
-        };
-
-        var uri = new Uri((string)builder["AccountEndpoint"]);
-        return uri.Host;
     }
 
     private static IDisposable CreateCosmosClient(IServiceProvider serviceProvider, string serviceBindingName, CosmosDbPackageResolver packageResolver)
@@ -128,7 +103,7 @@ public static class CosmosDbServiceCollectionExtensions
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CosmosDbOptions>>();
         CosmosDbOptions options = optionsMonitor.Get(serviceBindingName);
 
-        var cosmosClientShim = CosmosClientShim.CreateInstance(packageResolver, options.ConnectionString!);
+        var cosmosClientShim = CosmosClientShim.CreateInstance(packageResolver, options.ConnectionString);
         return cosmosClientShim.Instance;
     }
 }

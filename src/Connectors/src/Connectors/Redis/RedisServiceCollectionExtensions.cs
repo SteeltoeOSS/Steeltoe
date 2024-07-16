@@ -112,7 +112,7 @@ public static class RedisServiceCollectionExtensions
 
         var logger = serviceProvider.GetRequiredService<ILogger<RedisHealthContributor>>();
 
-        return new RedisHealthContributor(connectionString!, logger)
+        return new RedisHealthContributor(connectionString, logger)
         {
             ServiceName = serviceBindingName
         };
@@ -124,7 +124,7 @@ public static class RedisServiceCollectionExtensions
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
         RedisOptions options = optionsMonitor.Get(serviceBindingName);
 
-        ConnectionMultiplexerInterfaceShim connectionMultiplexerInterfaceShim = ConnectionMultiplexerShim.Connect(packageResolver, options.ConnectionString!);
+        ConnectionMultiplexerInterfaceShim connectionMultiplexerInterfaceShim = ConnectionMultiplexerShim.Connect(packageResolver, options.ConnectionString);
         return connectionMultiplexerInterfaceShim.Instance;
     }
 

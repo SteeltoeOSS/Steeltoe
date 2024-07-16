@@ -122,7 +122,7 @@ public sealed class EurekaApplicationsHealthContributorTest
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         EurekaApplicationsHealthContributor contributor =
-            serviceProvider.GetRequiredService<IEnumerable<IHealthContributor>>().OfType<EurekaApplicationsHealthContributor>().Single();
+            serviceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Single();
 
         var clientOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
 

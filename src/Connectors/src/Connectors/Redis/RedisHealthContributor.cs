@@ -14,7 +14,7 @@ namespace Steeltoe.Connectors.Redis;
 internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
 {
     private readonly ILogger<RedisHealthContributor> _logger;
-    private readonly string _connectionString;
+    private readonly string? _connectionString;
 
     private ConnectionMultiplexerInterfaceShim? _connectionMultiplexerInterfaceShim;
     private DatabaseInterfaceShim? _databaseInterfaceShim;
@@ -23,9 +23,8 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
     public string Host { get; }
     public string? ServiceName { get; set; }
 
-    public RedisHealthContributor(string connectionString, ILogger<RedisHealthContributor> logger)
+    public RedisHealthContributor(string? connectionString, ILogger<RedisHealthContributor> logger)
     {
-        ArgumentGuard.NotNullOrEmpty(connectionString);
         ArgumentGuard.NotNull(logger);
 
         _connectionString = connectionString;
@@ -33,8 +32,13 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
         _logger = logger;
     }
 
-    private static string GetHostNameFromConnectionString(string connectionString)
+    private static string GetHostNameFromConnectionString(string? connectionString)
     {
+        if (connectionString == null)
+        {
+            return string.Empty;
+        }
+
         var builder = new RedisConnectionStringBuilder
         {
             ConnectionString = connectionString

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
@@ -40,7 +39,7 @@ public static class EndpointServiceCollectionExtensions
         ArgumentGuard.NotNull(services);
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticsService>());
+        services.AddHostedService<DiagnosticsService>();
         services.AddCommonActuatorServices();
         services.AddTraceActuatorServices(version);
 

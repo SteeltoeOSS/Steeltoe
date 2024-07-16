@@ -94,7 +94,7 @@ public static class SqlServerServiceCollectionExtensions
         ConnectorShim<SqlServerOptions> connectorShim = connectorFactoryShim.Get(serviceBindingName);
 
         var connection = (DbConnection)connectorShim.GetConnection();
-        string hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
+        string? hostName = GetHostNameFromConnectionString(packageResolver, connectorShim.Options.ConnectionString);
         var logger = serviceProvider.GetRequiredService<ILogger<RelationalDatabaseHealthContributor>>();
 
         return new RelationalDatabaseHealthContributor(connection, hostName, logger)
@@ -103,11 +103,11 @@ public static class SqlServerServiceCollectionExtensions
         };
     }
 
-    private static string GetHostNameFromConnectionString(SqlServerPackageResolver packageResolver, string? connectionString)
+    private static string? GetHostNameFromConnectionString(SqlServerPackageResolver packageResolver, string? connectionString)
     {
         var connectionStringBuilderShim = SqlConnectionStringBuilderShim.CreateInstance(packageResolver);
         connectionStringBuilderShim.Instance.ConnectionString = connectionString;
-        return (string)connectionStringBuilderShim.Instance["server"];
+        return (string?)connectionStringBuilderShim.Instance["server"];
     }
 
     private static DbConnection CreateConnection(IServiceProvider serviceProvider, string serviceBindingName, SqlServerPackageResolver packageResolver)

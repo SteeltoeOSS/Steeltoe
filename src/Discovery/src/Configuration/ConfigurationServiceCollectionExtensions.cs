@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
@@ -52,7 +51,7 @@ public static class ConfigurationServiceCollectionExtensions
         services.ConfigureReloadableOptions<ConfigurationDiscoveryOptions>(ConfigurationDiscoveryOptions.ConfigurationPrefix);
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IDiscoveryClient), typeof(ConfigurationDiscoveryClient)));
-        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IHostedService), typeof(DiscoveryClientHostedService)));
+        services.AddHostedService<DiscoveryClientHostedService>();
 
         return services;
     }

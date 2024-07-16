@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
@@ -39,7 +38,7 @@ public static class ConfigServerServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddSingleton<IHealthContributor, ConfigServerHealthContributor>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IHealthContributor), typeof(ConfigServerHealthContributor)));
 
         return services;
     }
@@ -57,7 +56,7 @@ public static class ConfigServerServiceCollectionExtensions
 
         services.ConfigureConfigServerClientOptions();
         services.TryAddSingleton(serviceProvider => (IConfigurationRoot)serviceProvider.GetRequiredService<IConfiguration>());
-        services.TryAddSingleton<IHostedService, ConfigServerHostedService>();
+        services.AddHostedService<ConfigServerHostedService>();
         services.AddConfigServerHealthContributor();
     }
 }

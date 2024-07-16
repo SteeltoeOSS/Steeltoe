@@ -16,7 +16,7 @@ internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
     {
     }
 
-    public static ConnectionMultiplexerInterfaceShim Connect(StackExchangeRedisPackageResolver packageResolver, string configuration)
+    public static ConnectionMultiplexerInterfaceShim Connect(StackExchangeRedisPackageResolver packageResolver, string? configuration)
     {
         ArgumentGuard.NotNull(packageResolver);
 
@@ -29,7 +29,7 @@ internal sealed class ConnectionMultiplexerShim : Shim, IDisposable
         return new ConnectionMultiplexerInterfaceShim(packageResolver, instance);
     }
 
-    public static async Task<ConnectionMultiplexerInterfaceShim> ConnectAsync(StackExchangeRedisPackageResolver packageResolver, string configuration)
+    public static async Task<ConnectionMultiplexerInterfaceShim> ConnectAsync(StackExchangeRedisPackageResolver packageResolver, string? configuration)
     {
         ArgumentGuard.NotNull(packageResolver);
 

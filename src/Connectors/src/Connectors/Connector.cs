@@ -37,15 +37,22 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
     {
         get
         {
-            ConnectionWithOptionsSnapshot? singletonSnapshot = GetOrCreateSingleton();
-
-            if (singletonSnapshot != null)
+            try
             {
-                // Return the options snapshot that was taken at singleton creation time, for consistency.
-                // When a singleton connection is used, we don't expose or respond to option changes. We can't dispose
-                // the previous singleton, because it may still be in use. And replacing the singleton could result
-                // in a single request observing two difference instances, leading to hard-to-reproduce bugs.
-                return singletonSnapshot.Options;
+                ConnectionWithOptionsSnapshot? singletonSnapshot = GetOrCreateSingleton();
+
+                if (singletonSnapshot != null)
+                {
+                    // Return the options snapshot that was taken at singleton creation time, for consistency.
+                    // When a singleton connection is used, we don't expose or respond to option changes. We can't dispose
+                    // the previous singleton, because it may still be in use. And replacing the singleton could result
+                    // in a single request observing two difference instances, leading to hard-to-reproduce bugs.
+                    return singletonSnapshot.Options;
+                }
+            }
+            catch (Exception)
+            {
+                // Don't prevent access to the connection string when the singleton connection fails to create.
             }
 
             return _optionsMonitor.Get(_serviceBindingName);

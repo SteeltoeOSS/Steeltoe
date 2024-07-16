@@ -28,15 +28,15 @@ public sealed class RedisHealthContributorTest
 
         healthContributor.SetConnectionMultiplexer(connectionMultiplexerMock.Object);
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Down);
-        status.Description.Should().Be("Redis health check failed");
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("RedisConnectionException: It was not possible to connect ");
-        status.Details.Should().Contain("status", "DOWN");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Down);
+        result.Description.Should().Be("Redis health check failed");
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("RedisConnectionException: It was not possible to connect ");
+        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
@@ -57,15 +57,15 @@ public sealed class RedisHealthContributorTest
 
         healthContributor.SetConnectionMultiplexer(connectionMultiplexerMock.Object);
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Up);
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().NotContainKey("error");
-        status.Details.Should().Contain("status", "UP");
-        status.Details.Should().Contain("ping", 50D);
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().NotContainKey("error");
+        result.Details.Should().Contain("status", "UP");
+        result.Details.Should().Contain("ping", 50D);
     }
 
     [Fact]
@@ -91,14 +91,14 @@ public sealed class RedisHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Up);
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().NotContainKey("error");
-        status.Details.Should().Contain("status", "UP");
-        status.Details.Should().ContainKey("ping");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().NotContainKey("error");
+        result.Details.Should().Contain("status", "UP");
+        result.Details.Should().ContainKey("ping");
     }
 }

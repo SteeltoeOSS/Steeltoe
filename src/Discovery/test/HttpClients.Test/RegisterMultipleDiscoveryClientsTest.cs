@@ -77,7 +77,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
@@ -107,7 +107,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
@@ -221,7 +221,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
@@ -320,7 +320,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
@@ -658,7 +658,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
@@ -693,7 +693,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
@@ -729,7 +729,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
@@ -832,7 +832,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddConfigurationDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
         Assert.IsType<ConfigurationDiscoveryClient>(discoveryClients[0]);
@@ -859,7 +859,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Equal(3, discoveryClients.Length);
     }

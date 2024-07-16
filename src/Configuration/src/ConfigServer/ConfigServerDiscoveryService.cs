@@ -93,7 +93,7 @@ internal sealed class ConfigServerDiscoveryService
     {
         _temporaryServiceProviderForDiscoveryClients = services.BuildServiceProvider();
 
-        IDiscoveryClient[] discoveryClients = _temporaryServiceProviderForDiscoveryClients.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = _temporaryServiceProviderForDiscoveryClients.GetServices<IDiscoveryClient>().ToArray();
 
         foreach (IDiscoveryClient discoveryClient in discoveryClients)
         {
