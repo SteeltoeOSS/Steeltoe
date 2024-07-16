@@ -91,6 +91,6 @@ public static class ConsulServiceCollectionExtensions
         services.AddSingleton<ConsulServiceRegistrar>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IDiscoveryClient), typeof(ConsulDiscoveryClient)));
         services.AddHostedService<DiscoveryClientHostedService>();
-        services.AddSingleton<IHealthContributor, ConsulHealthContributor>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IHealthContributor), typeof(ConsulHealthContributor)));
     }
 }

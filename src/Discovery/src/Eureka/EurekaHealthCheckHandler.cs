@@ -47,7 +47,7 @@ internal sealed class EurekaHealthCheckHandler : IHealthCheckHandler
     {
         await using AsyncServiceScope serviceScope = _serviceProvider.CreateAsyncScope();
 
-        List<IHealthContributor> healthContributors = serviceScope.ServiceProvider.GetRequiredService<IEnumerable<IHealthContributor>>().ToList();
+        List<IHealthContributor> healthContributors = serviceScope.ServiceProvider.GetServices<IHealthContributor>().ToList();
         ICollection<HealthCheckRegistration> registrations = _healthOptionsMonitor.CurrentValue.Registrations;
 
         if (!hasFirstHeartbeatCompleted)

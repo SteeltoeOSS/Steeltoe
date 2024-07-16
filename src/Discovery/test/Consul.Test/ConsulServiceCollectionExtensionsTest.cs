@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 
@@ -36,7 +37,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         services.AddConsulDiscoveryClient();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
 
         Assert.Single(discoveryClients);
         Assert.NotNull(discoveryClients[0]);
@@ -119,11 +120,9 @@ public sealed class ConsulServiceCollectionExtensionsTest
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
-        discoveryClients.OfType<ConsulDiscoveryClient>().Should().HaveCount(1);
-
-        ConsulDiscoveryClient[] consulDiscoveryClients = serviceProvider.GetRequiredService<IEnumerable<ConsulDiscoveryClient>>().ToArray();
-        consulDiscoveryClients.Should().BeEmpty();
+        serviceProvider.GetServices<IDiscoveryClient>().OfType<ConsulDiscoveryClient>().Should().HaveCount(1);
+        serviceProvider.GetServices<ConsulDiscoveryClient>().Should().BeEmpty();
+        serviceProvider.GetServices<IHealthContributor>().OfType<ConsulHealthContributor>().Should().HaveCount(1);
     }
 
     [Fact]
@@ -143,7 +142,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IHostedService[] hostedServices = serviceProvider.GetRequiredService<IEnumerable<IHostedService>>().ToArray();
+        IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
         hostedServices.OfType<DiscoveryClientHostedService>().Should().HaveCount(1);
     }
 

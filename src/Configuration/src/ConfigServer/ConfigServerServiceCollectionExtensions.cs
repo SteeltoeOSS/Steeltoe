@@ -38,7 +38,7 @@ public static class ConfigServerServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddSingleton<IHealthContributor, ConfigServerHealthContributor>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IHealthContributor), typeof(ConfigServerHealthContributor)));
 
         return services;
     }

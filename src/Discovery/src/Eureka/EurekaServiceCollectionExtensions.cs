@@ -78,7 +78,7 @@ public static class EurekaServiceCollectionExtensions
     private static void AddEurekaServices(IServiceCollection services)
     {
         services.AddSingleton<HealthCheckHandlerProvider>();
-        services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IHealthContributor), typeof(EurekaServerHealthContributor)));
         services.AddSingleton<EurekaApplicationInfoManager>();
 
         services.TryAddSingleton<EurekaDiscoveryClient>();

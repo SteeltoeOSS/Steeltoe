@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Management.Endpoint;
@@ -80,7 +81,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         var timer = new Stopwatch();
         timer.Start();
 
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
+        IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
         Assert.Single(discoveryClients);
 
         timer.Stop();
@@ -181,11 +182,9 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IDiscoveryClient[] discoveryClients = serviceProvider.GetRequiredService<IEnumerable<IDiscoveryClient>>().ToArray();
-        discoveryClients.OfType<EurekaDiscoveryClient>().Should().HaveCount(1);
-
-        EurekaDiscoveryClient[] eurekaDiscoveryClients = serviceProvider.GetRequiredService<IEnumerable<EurekaDiscoveryClient>>().ToArray();
-        eurekaDiscoveryClients.Should().HaveCount(1);
+        serviceProvider.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Should().HaveCount(1);
+        serviceProvider.GetServices<EurekaDiscoveryClient>().Should().HaveCount(1);
+        serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().HaveCount(1);
     }
 
     [Fact]
@@ -205,7 +204,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        IHostedService[] hostedServices = serviceProvider.GetRequiredService<IEnumerable<IHostedService>>().ToArray();
+        IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
         hostedServices.OfType<DiscoveryClientHostedService>().Should().HaveCount(1);
     }
 }

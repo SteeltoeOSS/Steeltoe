@@ -45,8 +45,8 @@ public static class PrometheusExtensions
 
         ManagementOptions? managementOptions = builder.ApplicationServices.GetService<IOptionsMonitor<ManagementOptions>>()?.CurrentValue;
 
-        PrometheusEndpointOptions? prometheusOptions = builder.ApplicationServices.GetService<IEnumerable<EndpointOptions>>()
-            ?.OfType<PrometheusEndpointOptions>().FirstOrDefault();
+        PrometheusEndpointOptions? prometheusOptions = builder.ApplicationServices.GetServices<EndpointOptions>()
+            .OfType<PrometheusEndpointOptions>().FirstOrDefault();
 
         string root = managementOptions?.Path ?? "/actuator";
         string id = prometheusOptions?.Id ?? "prometheus";

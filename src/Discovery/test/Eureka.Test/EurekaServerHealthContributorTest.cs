@@ -192,10 +192,7 @@ public sealed class EurekaServerHealthContributorTest
         services.AddEurekaDiscoveryClient();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-
-        EurekaServerHealthContributor contributor =
-            serviceProvider.GetRequiredService<IEnumerable<IHealthContributor>>().OfType<EurekaServerHealthContributor>().Single();
-
+        EurekaServerHealthContributor contributor = serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Single();
         var clientOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
 
         return (contributor, clientOptionsMonitor.CurrentValue);
