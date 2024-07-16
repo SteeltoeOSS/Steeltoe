@@ -25,15 +25,15 @@ public sealed class RelationalDatabaseHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Down);
-        status.Description.Should().Be("PostgreSQL health check failed");
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().Match("NpgsqlException: Failed to connect to *:9999");
-        status.Details.Should().Contain("status", "DOWN");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Down);
+        result.Description.Should().Be("PostgreSQL health check failed");
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().Match("NpgsqlException: Failed to connect to *:9999");
+        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact(Skip = "Integration test - Requires local PostgreSQL server")]
@@ -46,14 +46,14 @@ public sealed class RelationalDatabaseHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Up);
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().NotContainKey("error");
-        status.Details.Should().Contain("status", "UP");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().NotContainKey("error");
+        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]
@@ -66,15 +66,15 @@ public sealed class RelationalDatabaseHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Down);
-        status.Description.Should().Be("MySQL health check failed");
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("MySqlException: ");
-        status.Details.Should().Contain("status", "DOWN");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Down);
+        result.Description.Should().Be("MySQL health check failed");
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("MySqlException: ");
+        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact(Skip = "Integration test - Requires local MySQL server")]
@@ -87,14 +87,14 @@ public sealed class RelationalDatabaseHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Up);
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().NotContainKey("error");
-        status.Details.Should().Contain("status", "UP");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().NotContainKey("error");
+        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]
@@ -108,15 +108,15 @@ public sealed class RelationalDatabaseHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Down);
-        status.Description.Should().Be("SQL Server health check failed");
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("SqlException: Connection Timeout Expired.");
-        status.Details.Should().Contain("status", "DOWN");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Down);
+        result.Description.Should().Be("SQL Server health check failed");
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("SqlException: Connection Timeout Expired.");
+        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact(Skip = "Integration test - Requires local SQL Server instance")]
@@ -129,14 +129,14 @@ public sealed class RelationalDatabaseHealthContributorTest
             ServiceName = "Example"
         };
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Up);
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().NotContainKey("error");
-        status.Details.Should().Contain("status", "UP");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().NotContainKey("error");
+        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]
@@ -155,14 +155,14 @@ public sealed class RelationalDatabaseHealthContributorTest
                 ServiceName = "Example"
             };
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Up);
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().NotContainKey("error");
-        status.Details.Should().Contain("status", "UP");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().NotContainKey("error");
+        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]

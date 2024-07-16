@@ -63,15 +63,15 @@ public sealed class CosmosDbHealthContributorTest
 
         healthContributor.Timeout = 1.Milliseconds();
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Down);
-        status.Description.Should().Be("CosmosDB health check failed");
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", serviceName);
-        status.Details.Should().Contain("error", "TimeoutException: The operation has timed out.");
-        status.Details.Should().Contain("status", "DOWN");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Down);
+        result.Description.Should().Be("CosmosDB health check failed");
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", serviceName);
+        result.Details.Should().Contain("error", "TimeoutException: The operation has timed out.");
+        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
@@ -87,14 +87,14 @@ public sealed class CosmosDbHealthContributorTest
         using var healthContributor = new CosmosDbHealthContributor(serviceName, serviceProvider, CosmosDbPackageResolver.Default,
             NullLogger<CosmosDbHealthContributor>.Instance);
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Up);
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().NotContainKey("error");
-        status.Details.Should().Contain("status", "UP");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().NotContainKey("error");
+        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]
@@ -139,14 +139,14 @@ public sealed class CosmosDbHealthContributorTest
         using var healthContributor = new CosmosDbHealthContributor(serviceName, serviceProvider, CosmosDbPackageResolver.Default,
             NullLogger<CosmosDbHealthContributor>.Instance);
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Up);
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().NotContainKey("error");
-        status.Details.Should().Contain("status", "UP");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().NotContainKey("error");
+        result.Details.Should().Contain("status", "UP");
     }
 
     private static ServiceProvider CreateServiceProvider(string serviceName, string connectionString, CosmosClient cosmosClient)

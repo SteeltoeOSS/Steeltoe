@@ -31,15 +31,15 @@ public sealed class MongoDbHealthContributorTest
         var healthContributor = new MongoDbHealthContributor(serviceName, serviceProvider, MongoDbPackageResolver.Default,
             NullLogger<MongoDbHealthContributor>.Instance);
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Down);
-        status.Description.Should().Be("MongoDB health check failed");
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("TimeoutException: A timeout occurred after 1ms selecting ");
-        status.Details.Should().Contain("status", "DOWN");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Down);
+        result.Description.Should().Be("MongoDB health check failed");
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().StartWith("TimeoutException: A timeout occurred after 1ms selecting ");
+        result.Details.Should().Contain("status", "DOWN");
     }
 
     [Fact]
@@ -55,14 +55,14 @@ public sealed class MongoDbHealthContributorTest
         var healthContributor = new MongoDbHealthContributor(serviceName, serviceProvider, MongoDbPackageResolver.Default,
             NullLogger<MongoDbHealthContributor>.Instance);
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Up);
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().NotContainKey("error");
-        status.Details.Should().Contain("status", "UP");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().NotContainKey("error");
+        result.Details.Should().Contain("status", "UP");
     }
 
     [Fact]
@@ -109,14 +109,14 @@ public sealed class MongoDbHealthContributorTest
         var healthContributor = new MongoDbHealthContributor(serviceName, serviceProvider, MongoDbPackageResolver.Default,
             NullLogger<MongoDbHealthContributor>.Instance);
 
-        HealthCheckResult? status = await healthContributor.CheckHealthAsync(CancellationToken.None);
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(CancellationToken.None);
 
-        status.Should().NotBeNull();
-        status!.Status.Should().Be(HealthStatus.Up);
-        status.Details.Should().Contain("host", "localhost");
-        status.Details.Should().Contain("service", "Example");
-        status.Details.Should().NotContainKey("error");
-        status.Details.Should().Contain("status", "UP");
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(HealthStatus.Up);
+        result.Details.Should().Contain("host", "localhost");
+        result.Details.Should().Contain("service", "Example");
+        result.Details.Should().NotContainKey("error");
+        result.Details.Should().Contain("status", "UP");
     }
 
     private ServiceProvider CreateServiceProvider(string serviceName, string connectionString, IMongoClient mongoClient)
