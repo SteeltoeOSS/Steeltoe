@@ -1,6 +1,6 @@
 # Configuration SpringBoot Env .NET Configuration Provider
 
-This project contains configuration providers for environments friendly to Spring Boot applications like SCDF. The configuration may be provided as a json string inside a single environment variable that looks like 
+This project contains configuration providers for environments friendly to Spring Boot applications like SCDF. The configuration may be provided as a json string inside a single environment variable that looks like
 `{"spring.cloud.stream.input.binding":"barfoo"}` or as a command-line parameter that looks like `spring.cloud.stream.input.binding=barfoo`.
 For more information on how to use this component see the online [Steeltoe documentation](https://steeltoe.io/).
 
@@ -9,7 +9,7 @@ For more information on how to use this component see the online [Steeltoe docum
 
 using Steeltoe.Configuration.SpringBoot;
 
-... 
+...
 internal static class Program
 {
     private static void Main(string[] args)
@@ -32,7 +32,7 @@ internal static class Program
 }
 ```
 
-# Windows command 
+# Windows command
 ## Using SPRING_APPLICATION_JSON environment variable
 
 ```

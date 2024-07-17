@@ -11,7 +11,7 @@ assignees: ''
 _Enter your question or feedback here_
 
 ## Environment (please complete the following information):
- - .NET Version [e.g. .NET Core 3.1.4, .NET Framework 4.7.1, etc.] 
+ - .NET Version [e.g. .NET Core 3.1.4, .NET Framework 4.7.1, etc.]
  - Steeltoe Version [e.g. 3.0.1]
 
 ## Additional context or links
