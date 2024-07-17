@@ -5,6 +5,7 @@
 using System.Net;
 using Consul;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -129,6 +130,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddInMemoryCollection(appSettings);
 
         builder.Services.AddOptions();
@@ -516,6 +518,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundry();
         builder.Configuration.AddCloudFoundryServiceBindings();
 
@@ -590,6 +593,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         string password = WebUtility.UrlEncode(":p@ssw0rd=");
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -860,8 +864,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         IDiscoveryClient[] discoveryClients = serviceProvider.GetServices<IDiscoveryClient>().ToArray();
+        discoveryClients.Should().HaveCount(3);
 
-        Assert.Equal(3, discoveryClients.Length);
+        serviceProvider.GetServices<IHealthContributor>().OfType<ConsulHealthContributor>().Should().HaveCount(1);
+        serviceProvider.GetServices<IHealthContributor>().OfType<EurekaServerHealthContributor>().Should().HaveCount(1);
+        serviceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Should().BeEmpty();
     }
 
     private sealed class TestApplicationLifetime : IHostApplicationLifetime

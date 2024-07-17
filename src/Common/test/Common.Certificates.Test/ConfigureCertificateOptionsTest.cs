@@ -128,7 +128,7 @@ public sealed class ConfigureCertificateOptionsTest
         services.AddSingleton(configuration);
         services.ConfigureCertificateOptions(Options.DefaultName);
 
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
 
@@ -165,7 +165,7 @@ public sealed class ConfigureCertificateOptionsTest
         services.AddSingleton<IConfiguration>(configuration);
         services.ConfigureCertificateOptions(CertificateName);
 
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);

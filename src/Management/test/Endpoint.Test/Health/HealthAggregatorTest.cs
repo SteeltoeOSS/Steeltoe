@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Test.Health;
 public sealed class HealthAggregatorTest : BaseTest
 {
     private static readonly ICollection<HealthCheckRegistration> EmptyHealthCheckRegistrations = Array.Empty<HealthCheckRegistration>();
-    private static readonly IServiceProvider EmptyServiceProvider = new ServiceCollection().BuildServiceProvider();
+    private static readonly IServiceProvider EmptyServiceProvider = new ServiceCollection().BuildServiceProvider(true);
 
     [Fact]
     public async Task Aggregate_EmptyContributorList_ReturnsExpectedHealth()

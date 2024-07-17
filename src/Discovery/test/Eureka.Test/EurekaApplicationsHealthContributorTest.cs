@@ -116,13 +116,14 @@ public sealed class EurekaApplicationsHealthContributorTest
             options.ShouldRegisterWithEureka = false;
         });
 
-        services.AddHealthContributors([typeof(EurekaApplicationsHealthContributor)]);
+        services.AddHealthContributor<EurekaApplicationsHealthContributor>();
         services.AddEurekaDiscoveryClient();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        using IServiceScope scope = serviceProvider.CreateScope();
 
         EurekaApplicationsHealthContributor contributor =
-            serviceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Single();
+            scope.ServiceProvider.GetServices<IHealthContributor>().OfType<EurekaApplicationsHealthContributor>().Single();
 
         var clientOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
 

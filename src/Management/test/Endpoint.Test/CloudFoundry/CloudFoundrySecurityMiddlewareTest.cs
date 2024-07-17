@@ -330,7 +330,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         var services = new ServiceCollection();
         services.AddCloudFoundrySecurity();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var securityUtils = serviceProvider.GetRequiredService<SecurityUtils>();
 
         var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], securityUtils,
@@ -354,7 +354,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
 
         var services = new ServiceCollection();
         services.AddCloudFoundrySecurity();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var securityUtils = serviceProvider.GetRequiredService<SecurityUtils>();
 
         var middleware = new CloudFoundrySecurityMiddleware(managementOptionsMonitor, endpointOptionsMonitor, [], securityUtils,
@@ -371,6 +371,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     public void Throws_when_Add_method_not_called()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         WebApplication app = builder.Build();
 
         Action action = () => app.UseCloudFoundrySecurity();

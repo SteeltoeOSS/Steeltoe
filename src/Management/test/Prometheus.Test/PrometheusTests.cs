@@ -15,7 +15,7 @@ public sealed class PrometheusTests
         var services = new ServiceCollection();
         services.AddPrometheusActuator();
 
-        using ServiceProvider provider = services.BuildServiceProvider();
+        using ServiceProvider provider = services.BuildServiceProvider(true);
         var optionsMonitor = provider.GetRequiredService<IOptionsMonitor<PrometheusEndpointOptions>>();
 
         optionsMonitor.CurrentValue.Path.Should().Be("prometheus");

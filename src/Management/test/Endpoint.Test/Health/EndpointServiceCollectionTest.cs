@@ -8,7 +8,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Health.Availability;
-using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
@@ -18,8 +17,6 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     [Fact]
     public void AddHealthActuator_AddsCorrectServicesWithDefaultHealthAggregator()
     {
-        var services = new ServiceCollection();
-
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
@@ -31,9 +28,9 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         configurationBuilder.AddInMemoryCollection(appSettings);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
+        var services = new ServiceCollection();
         services.AddLogging();
-        services.AddHealthActuator(new HealthAggregator(), typeof(DiskSpaceContributor));
-
+        services.AddHealthActuator();
         services.Configure<HealthCheckServiceOptions>(configurationRoot);
         services.AddSingleton<IConfiguration>(configurationRoot);
 
@@ -47,7 +44,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         Assert.NotNull(aggregator);
 
         IEnumerable<IHealthContributor> contributors = scope.ServiceProvider.GetServices<IHealthContributor>();
-        Assert.Single(contributors);
+        Assert.NotEmpty(contributors);
     }
 
     [Fact]
@@ -88,10 +85,11 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     }
 
     [Fact]
-    public void AddHealthContributors_AddsServices()
+    public void AddHealthContributors_AddsNoDuplicates()
     {
         var services = new ServiceCollection();
-        services.AddHealthContributors(typeof(HealthTestContributor));
+        services.AddHealthContributor<HealthTestContributor>();
+        services.AddHealthContributor<HealthTestContributor>();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         using IServiceScope scope = serviceProvider.CreateScope();

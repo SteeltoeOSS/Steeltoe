@@ -15,3 +15,4 @@ using Steeltoe.Discovery.Consul.Configuration;
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Discovery", "Steeltoe.Discovery.Consul")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.Consul.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.HttpClients.Test")]

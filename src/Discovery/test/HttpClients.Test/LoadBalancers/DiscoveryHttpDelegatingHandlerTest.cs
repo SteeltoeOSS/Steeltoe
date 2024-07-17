@@ -21,7 +21,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
         var services = new ServiceCollection();
         services.AddSingleton(loadBalancer);
 
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var handler = new DiscoveryHttpDelegatingHandler<FakeLoadBalancer>(serviceProvider)
         {
@@ -45,7 +45,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
         var services = new ServiceCollection();
         services.AddSingleton(loadBalancer);
 
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var handler = new DiscoveryHttpDelegatingHandler<FakeLoadBalancer>(serviceProvider)
         {
@@ -72,7 +72,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
         var services = new ServiceCollection();
         services.AddSingleton(loadBalancer);
 
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var handler = new DiscoveryHttpDelegatingHandler<BrokenLoadBalancer>(serviceProvider)
         {
@@ -96,7 +96,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
         var services = new ServiceCollection();
         services.AddSingleton(loadBalancer);
 
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var handler = new DiscoveryHttpDelegatingHandler<FakeLoadBalancer>(serviceProvider)
         {

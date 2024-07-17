@@ -50,7 +50,7 @@ public sealed class SecurityUtilsTest : BaseTest
 
         var services = new ServiceCollection();
         services.AddCloudFoundrySecurity();
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 
         return new SecurityUtils(optionsMonitor, httpClientFactory, NullLogger<SecurityUtils>.Instance);

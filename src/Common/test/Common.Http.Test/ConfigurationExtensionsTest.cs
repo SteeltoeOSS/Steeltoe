@@ -17,6 +17,7 @@ public sealed class ConfigurationExtensionsTest
     public void Detects_addresses_from_UseUrls()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.WebHost.UseUrls("http://localhost:8888", "https://localhost:9999");
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
@@ -36,6 +37,7 @@ public sealed class ConfigurationExtensionsTest
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddInMemoryCollection(appSettings);
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
@@ -56,6 +58,7 @@ public sealed class ConfigurationExtensionsTest
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddInMemoryCollection(appSettings);
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
@@ -77,6 +80,7 @@ public sealed class ConfigurationExtensionsTest
         };
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddInMemoryCollection(appSettings);
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
@@ -110,6 +114,7 @@ public sealed class ConfigurationExtensionsTest
 
         using Stream stream = TestHelpers.StringToStream(appSettings);
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddJsonStream(stream);
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
@@ -139,6 +144,7 @@ public sealed class ConfigurationExtensionsTest
 
         using Stream stream = TestHelpers.StringToStream(appSettings);
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddJsonStream(stream);
 
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
@@ -152,6 +158,7 @@ public sealed class ConfigurationExtensionsTest
         using var scope = new EnvironmentVariableScope("DOTNET_URLS", "http://+:8888;https://some.domain.org:9999");
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo([
@@ -167,6 +174,7 @@ public sealed class ConfigurationExtensionsTest
         using var httpsScope = new EnvironmentVariableScope("ASPNETCORE_HTTPS_PORTS", "7777");
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo([
@@ -218,6 +226,7 @@ public sealed class ConfigurationExtensionsTest
     public void Detects_nothing_configured()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         ICollection<string> addresses = builder.Configuration.GetListenAddresses();
 
         addresses.Should().BeEquivalentTo(["http://localhost:5000"]);
@@ -227,6 +236,7 @@ public sealed class ConfigurationExtensionsTest
     public void Does_not_detect_addresses_from_WebApplication_Urls()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
         using WebApplication app = builder.Build();
@@ -241,6 +251,7 @@ public sealed class ConfigurationExtensionsTest
     public void Does_not_detect_address_in_Kestrel_action()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.WebHost.ConfigureKestrel(options =>
         {

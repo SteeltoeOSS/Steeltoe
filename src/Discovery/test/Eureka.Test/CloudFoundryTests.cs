@@ -1,8 +1,9 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -73,6 +74,7 @@ public sealed class CloudFoundryTests
 
         using Stream stream = TestHelpers.StringToStream(appSettings);
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings();
@@ -267,6 +269,7 @@ public sealed class CloudFoundryTests
 
         using Stream stream = TestHelpers.StringToStream(appSettings);
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings();
@@ -462,6 +465,7 @@ public sealed class CloudFoundryTests
 
         using Stream stream = TestHelpers.StringToStream(appSettings);
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings();
@@ -659,6 +663,7 @@ public sealed class CloudFoundryTests
 
         using Stream stream = TestHelpers.StringToStream(appSettings);
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings();
@@ -759,6 +764,7 @@ public sealed class CloudFoundryTests
         using var guidScope = new EnvironmentVariableScope("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings();
         builder.Services.AddEurekaDiscoveryClient();

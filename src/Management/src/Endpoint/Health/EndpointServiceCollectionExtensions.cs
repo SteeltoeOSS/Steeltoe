@@ -13,81 +13,78 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 public static class EndpointServiceCollectionExtensions
 {
-    private static Type[] DefaultHealthContributorTypes =>
-        new[]
-        {
-            typeof(DiskSpaceContributor),
-            typeof(LivenessHealthContributor),
-            typeof(ReadinessHealthContributor)
-        };
-
     /// <summary>
     /// Adds components of the Health actuator to the D/I container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add health to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddHealthActuator(this IServiceCollection services)
-    {
-        AddHealthActuator(services, DefaultHealthContributorTypes);
-    }
-
-    /// <summary>
-    /// Adds components of the Health actuator to the D/I container.
-    /// </summary>
-    /// <param name="services">
-    /// Service collection to add health to.
-    /// </param>
-    /// <param name="contributorTypes">
-    /// Contributors to application health.
-    /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, params Type[] contributorTypes)
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddHealthActuator(this IServiceCollection services)
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(contributorTypes);
-
-        AddHealthActuator(services, new HealthAggregator(), contributorTypes);
-    }
-
-    /// <summary>
-    /// Adds components of the Health actuator to the D/I container.
-    /// </summary>
-    /// <param name="services">
-    /// Service collection to add health to.
-    /// </param>
-    /// <param name="aggregator">
-    /// Custom health aggregator.
-    /// </param>
-    /// <param name="contributorTypes">
-    /// Contributors to application health.
-    /// </param>
-    public static void AddHealthActuator(this IServiceCollection services, IHealthAggregator aggregator, params Type[] contributorTypes)
-    {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(aggregator);
-        ArgumentGuard.NotNull(contributorTypes);
 
         services.AddCommonActuatorServices();
         services.AddHealthActuatorServices();
 
-        AddHealthContributors(services, contributorTypes);
-
-        services.TryAddSingleton(aggregator);
+        services.TryAddSingleton<IHealthAggregator, HealthAggregator>();
         services.TryAddSingleton<ApplicationAvailability>();
+
+        RegisterDefaultHealthContributors(services);
+
+        return services;
     }
 
-    public static void AddHealthContributors(this IServiceCollection services, params Type[] contributorTypes)
+    private static void RegisterDefaultHealthContributors(IServiceCollection services)
+    {
+        AddHealthContributor<DiskSpaceContributor>(services);
+        AddHealthContributor<LivenessHealthContributor>(services);
+        AddHealthContributor<ReadinessHealthContributor>(services);
+    }
+
+    /// <summary>
+    /// Adds the specified <see cref="IHealthContributor" /> to the D/I container as a scoped service.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of health contributor to add.
+    /// </typeparam>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddHealthContributor<T>(this IServiceCollection services)
+        where T : class, IHealthContributor
     {
         ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(contributorTypes);
 
-        var descriptors = new List<ServiceDescriptor>();
+        services.TryAddEnumerable(ServiceDescriptor.Scoped<IHealthContributor, T>());
 
-        foreach (Type contributorType in contributorTypes)
-        {
-            descriptors.Add(new ServiceDescriptor(typeof(IHealthContributor), contributorType, ServiceLifetime.Scoped));
-        }
+        return services;
+    }
 
-        services.TryAddEnumerable(descriptors);
+    /// <summary>
+    /// Adds the specified <see cref="IHealthContributor" /> to the D/I container as a scoped service.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="healthContributorType">
+    /// The type of the health contributor to add.
+    /// </param>
+    /// <returns>
+    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddHealthContributor(this IServiceCollection services, Type healthContributorType)
+    {
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(healthContributorType);
+
+        services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IHealthContributor), healthContributorType));
+
+        return services;
     }
 }

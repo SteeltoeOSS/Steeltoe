@@ -127,6 +127,6 @@ public sealed class MongoDbHealthContributorTest
         services.AddOptions<MongoDbOptions>(serviceName).Configure(dbOptions => dbOptions.ConnectionString = connectionString);
         services.AddSingleton(provider => new ConnectorFactory<MongoDbOptions, IMongoClient>(provider, serviceNames, (_, _) => mongoClient, true));
 
-        return services.BuildServiceProvider();
+        return services.BuildServiceProvider(true);
     }
 }
