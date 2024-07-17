@@ -10,14 +10,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Net.Http.Json" Version="$(FoundationalVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Certificates\Steeltoe.Common.Certificates.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Configuration\Steeltoe.Discovery.Configuration.csproj" PrivateAssets="All" />

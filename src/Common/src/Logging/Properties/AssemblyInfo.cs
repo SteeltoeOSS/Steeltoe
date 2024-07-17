@@ -5,10 +5,7 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
-[assembly: InternalsVisibleTo("Steeltoe.Common.Hosting.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Common.Logging")]
+[assembly: InternalsVisibleTo("Steeltoe.Common.Logging.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Encryption")]
-[assembly: InternalsVisibleTo("Steeltoe.Logging.DynamicSerilog")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]

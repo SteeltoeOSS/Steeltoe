@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Logging;
+using Steeltoe.Common.Hosting;
 
-namespace Steeltoe.Common.Hosting;
+namespace Steeltoe.Common.Logging;
 
-public sealed class BootstrapLoggerHostedService : IHostedService
+internal sealed class BootstrapLoggerHostedService : IHostedService
 {
     private readonly BootstrapLoggerContext _context;
     private readonly ILoggerFactory _loggerFactory;
@@ -36,7 +36,7 @@ public sealed class BootstrapLoggerHostedService : IHostedService
         return Task.CompletedTask;
     }
 
-    internal static void Register(ILoggerFactory loggerFactory, HostBuilderWrapper wrapper)
+    public static void Register(ILoggerFactory loggerFactory, HostBuilderWrapper wrapper)
     {
         ArgumentGuard.NotNull(loggerFactory);
         ArgumentGuard.NotNull(wrapper);

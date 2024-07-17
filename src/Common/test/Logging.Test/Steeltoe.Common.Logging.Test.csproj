@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" />
+    <ProjectReference Include="..\..\src\Logging\Steeltoe.Common.Logging.csproj" />
   </ItemGroup>
 </Project>

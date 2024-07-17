@@ -10,12 +10,10 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="$(MatchTargetFrameworkVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(MatchTargetFrameworkVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\Connectors\Steeltoe.Connectors.csproj" />
   </ItemGroup>
 </Project>

@@ -10,10 +10,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryVersion)" />
     <PackageReference Include="OpenTelemetry.Extensions.Propagators" Version="$(OpenTelemetryVersion)" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="$(OpenTelemetryVersion)" />
@@ -24,10 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
-    <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Logging\src\Abstractions\Steeltoe.Logging.Abstractions.csproj" />
-    <ProjectReference Include="..\Prometheus\Steeltoe.Management.Prometheus.csproj" />
     <ProjectReference Include="..\Wavefront\Steeltoe.Management.Wavefront.csproj" />
   </ItemGroup>
 </Project>

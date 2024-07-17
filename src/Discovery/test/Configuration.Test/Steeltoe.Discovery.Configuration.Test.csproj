@@ -7,7 +7,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\HttpClients\Steeltoe.Discovery.HttpClients.csproj" />
     <ProjectReference Include="..\..\src\Configuration\Steeltoe.Discovery.Configuration.csproj" />
   </ItemGroup>
 </Project>

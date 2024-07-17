@@ -10,13 +10,6 @@
     <None Update="instance*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Certificates\Steeltoe.Common.Certificates.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="*.crt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -26,5 +19,9 @@
     <None Update="*.p12">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Certificates\Steeltoe.Common.Certificates.csproj" />
   </ItemGroup>
 </Project>

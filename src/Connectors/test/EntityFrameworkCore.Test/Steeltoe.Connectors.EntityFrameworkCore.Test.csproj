@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Configuration\src\Kubernetes.ServiceBinding\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj" />
     <ProjectReference Include="..\..\src\EntityFrameworkCore\Steeltoe.Connectors.EntityFrameworkCore.csproj" />
   </ItemGroup>
 </Project>

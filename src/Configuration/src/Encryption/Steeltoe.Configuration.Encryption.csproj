@@ -10,17 +10,11 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BouncyCastle.NetCore" Version="$(BouncyCastleVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="$(MatchTargetFrameworkVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Hosting\Steeltoe.Common.Hosting.csproj" />
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Logging\Steeltoe.Common.Logging.csproj" />
   </ItemGroup>
 </Project>

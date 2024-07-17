@@ -6,9 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Steeltoe.Common.Logging;
 
-namespace Steeltoe.Common.Hosting.Test;
+namespace Steeltoe.Common.Logging.Test;
 
 public sealed class BootstrapperLoggerFactoryTests
 {

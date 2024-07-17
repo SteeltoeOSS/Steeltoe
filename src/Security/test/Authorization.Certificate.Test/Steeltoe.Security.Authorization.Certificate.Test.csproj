@@ -7,10 +7,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Authorization.Certificate\Steeltoe.Security.Authorization.Certificate.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="instance.crt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -20,5 +16,9 @@
     <None Update="root_certificates\ca1.crt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Authorization.Certificate\Steeltoe.Security.Authorization.Certificate.csproj" />
   </ItemGroup>
 </Project>

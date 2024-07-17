@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Logging;
-
-namespace Steeltoe.Common.Hosting;
+namespace Steeltoe.Common.Logging;
 
 /// <summary>
 /// Provides a context to distinguish multiple <see cref="IBootstrapLoggerFactory" /> instances, which enables running from integration tests. Register
