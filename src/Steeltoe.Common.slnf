@@ -2,19 +2,20 @@
   "solution": {
     "path": "Steeltoe.All.sln",
     "projects": [
-      "Common\\src\\Common.Hosting\\Steeltoe.Common.Hosting.csproj",
-      "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
-      "Common\\src\\Common.Net\\Steeltoe.Common.Net.csproj",
       "Common\\src\\Certificates\\Steeltoe.Common.Certificates.csproj",
-      "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
-      "Common\\test\\Common.Hosting.Test\\Steeltoe.Common.Hosting.Test.csproj",
-      "Common\\test\\Common.Http.Test\\Steeltoe.Common.Http.Test.csproj",
-      "Common\\test\\Common.Net.Test\\Steeltoe.Common.Net.Test.csproj",
+      "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
+      "Common\\src\\Http\\Steeltoe.Common.Http.csproj",
+      "Common\\src\\Logging\\Steeltoe.Common.Logging.csproj",
+      "Common\\src\\Net\\Steeltoe.Common.Net.csproj",
       "Common\\test\\Certificates.Test\\Steeltoe.Common.Certificates.Test.csproj",
-      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
       "Common\\test\\Common.Test\\Steeltoe.Common.Test.csproj",
-      "Common\\test\\Common.Utils.Test\\Steeltoe.Common.Utils.Test.csproj"
+      "Common\\test\\Hosting.Test\\Steeltoe.Common.Hosting.Test.csproj",
+      "Common\\test\\Http.Test\\Steeltoe.Common.Http.Test.csproj",
+      "Common\\test\\Logging.Test\\Steeltoe.Common.Logging.Test.csproj",
+      "Common\\test\\Net.Test\\Steeltoe.Common.Net.Test.csproj",
+      "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Tools\\src\\ConfigurationSchemaGenerator\\ConfigurationSchemaGenerator.csproj"
     ]
   }
 }

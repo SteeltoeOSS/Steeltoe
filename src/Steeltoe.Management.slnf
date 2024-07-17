@@ -2,11 +2,11 @@
   "solution": {
     "path": "Steeltoe.All.sln",
     "projects": [
-      "Common\\src\\Common.Hosting\\Steeltoe.Common.Hosting.csproj",
-      "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
-      "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
-      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
+      "Common\\src\\Http\\Steeltoe.Common.Http.csproj",
+      "Common\\src\\Logging\\Steeltoe.Common.Logging.csproj",
+      "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
       "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
       "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
       "Configuration\\src\\Placeholder\\Steeltoe.Configuration.Placeholder.csproj",
@@ -23,7 +23,8 @@
       "Management\\test\\Prometheus.Test\\Steeltoe.Management.Prometheus.Test.csproj",
       "Management\\test\\Task.Test\\Steeltoe.Management.Task.Test.csproj",
       "Management\\test\\Tracing.Test\\Steeltoe.Management.Tracing.Test.csproj",
-      "Management\\test\\Wavefront.Test\\Steeltoe.Management.Wavefront.Test.csproj"
+      "Management\\test\\Wavefront.Test\\Steeltoe.Management.Wavefront.Test.csproj",
+      "Tools\\src\\ConfigurationSchemaGenerator\\ConfigurationSchemaGenerator.csproj"
     ]
   }
 }

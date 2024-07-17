@@ -2,12 +2,12 @@
   "solution": {
     "path": "Steeltoe.All.sln",
     "projects": [
-      "Common\\src\\Common.Hosting\\Steeltoe.Common.Hosting.csproj",
-      "Common\\src\\Common.Http\\Steeltoe.Common.Http.csproj",
-      "Common\\src\\Common.Certificates\\Steeltoe.Common.Certificates.csproj",
-      "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
+      "Common\\src\\Certificates\\Steeltoe.Common.Certificates.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
-      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Common\\src\\Hosting\\Steeltoe.Common.Hosting.csproj",
+      "Common\\src\\Http\\Steeltoe.Common.Http.csproj",
+      "Common\\src\\Logging\\Steeltoe.Common.Logging.csproj",
+      "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
       "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
       "Configuration\\src\\CloudFoundry.ServiceBinding\\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj",
       "Configuration\\src\\CloudFoundry\\Steeltoe.Configuration.CloudFoundry.csproj",
@@ -22,7 +22,8 @@
       "Logging\\src\\Abstractions\\Steeltoe.Logging.Abstractions.csproj",
       "Logging\\src\\DynamicLogger\\Steeltoe.Logging.DynamicLogger.csproj",
       "Management\\src\\Abstractions\\Steeltoe.Management.Abstractions.csproj",
-      "Management\\src\\Endpoint\\Steeltoe.Management.Endpoint.csproj"
+      "Management\\src\\Endpoint\\Steeltoe.Management.Endpoint.csproj",
+      "Tools\\src\\ConfigurationSchemaGenerator\\ConfigurationSchemaGenerator.csproj"
     ]
   }
 }
