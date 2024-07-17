@@ -2,7 +2,6 @@
   "solution": {
     "path": "Steeltoe.All.sln",
     "projects": [
-      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
       "Common\\src\\Common.Hosting\\Steeltoe.Common.Hosting.csproj",
       "Common\\src\\Common.Utils\\Steeltoe.Common.Utils.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",

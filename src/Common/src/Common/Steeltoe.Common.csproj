@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <Description>Steeltoe common library</Description>
-    <PackageTags>availability;health;health-checks;loadbalancer;logging;reflection;utilities</PackageTags>
+    <PackageTags>health;health-checks;service-discovery;network</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -21,9 +21,5 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(FoundationalVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(FoundationalVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Abstractions\Steeltoe.Common.Abstractions.csproj" />
   </ItemGroup>
 </Project>
