@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Common.Certificates\Steeltoe.Common.Certificates.csproj" />
+    <ProjectReference Include="..\..\src\Certificates\Steeltoe.Common.Certificates.csproj" />
   </ItemGroup>
 
   <ItemGroup>

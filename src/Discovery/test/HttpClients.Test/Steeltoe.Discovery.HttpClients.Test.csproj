@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common.Certificates\Steeltoe.Common.Certificates.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Certificates\Steeltoe.Common.Certificates.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry.ServiceBinding\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\HttpClients\Steeltoe.Discovery.HttpClients.csproj" />

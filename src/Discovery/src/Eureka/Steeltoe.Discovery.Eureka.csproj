@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
-    <ProjectReference Include="..\..\..\Common\src\Common.Certificates\Steeltoe.Common.Certificates.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Http\Steeltoe.Common.Http.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Certificates\Steeltoe.Common.Certificates.csproj" />
     <ProjectReference Include="..\..\..\Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj" PrivateAssets="All" />
   </ItemGroup>
 
