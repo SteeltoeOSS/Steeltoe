@@ -10,6 +10,7 @@ using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,6 +26,8 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
 
     private Watcher<V1ConfigMap> ConfigMapWatcher { get; set; }
 
+    private ActivitySource _kubernetesActivity = new ActivitySource("Steeltoe.Extensions.Configuration.Kubernetes.KubernetesConfigMapProvider");
+
     internal KubernetesConfigMapProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
         : base(kubernetes, settings, cancellationToken)
     {
@@ -33,25 +36,28 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
 
     public override void Load()
     {
-        try
+        using (var activity = _kubernetesActivity.StartActivity(nameof(Load)))
         {
-            var configMapResponse = K8sClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
-            ProcessData(configMapResponse.Body);
-            EnableReloading();
-        }
-        catch (HttpOperationException e)
-        {
-            if (e.Response.StatusCode == HttpStatusCode.Forbidden)
+            try
             {
-                Logger?.LogCritical(e, "Failed to retrieve config map '{configmapName}' in namespace '{configmapNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
-            }
-            else if (e.Response.StatusCode == HttpStatusCode.NotFound)
-            {
+                var configMapResponse = K8sClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+                ProcessData(configMapResponse.Body);
                 EnableReloading();
-                return;
             }
+            catch (HttpOperationException e)
+            {
+                if (e.Response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    Logger?.LogCritical(e, "Failed to retrieve config map '{configmapName}' in namespace '{configmapNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
+                }
+                else if (e.Response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    EnableReloading();
+                    return;
+                }
 
-            throw;
+                throw;
+            }
         }
     }
 
@@ -89,7 +95,9 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
             switch (Settings.ReloadSettings.Mode)
             {
                 case ReloadMethods.Event:
-                    ConfigMapWatcher = K8sClient.WatchNamespacedConfigMapAsync(
+                    using (var activity = _kubernetesActivity.StartActivity(nameof(EnableReloading)))
+                    {
+                        ConfigMapWatcher = K8sClient.WatchNamespacedConfigMapAsync(
                         Settings.Name,
                         Settings.Namespace,
                         onEvent: (eventType, item) =>
@@ -112,6 +120,8 @@ internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
                             Logger?.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name);
                         },
                         onClosed: () => { Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); }).GetAwaiter().GetResult();
+                    }
+
                     break;
                 case ReloadMethods.Polling:
                     StartPolling(Settings.ReloadSettings.Period);

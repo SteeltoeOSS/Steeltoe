@@ -10,6 +10,7 @@ using Steeltoe.Discovery.Eureka.Task;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using T = System.Threading.Tasks;
@@ -57,6 +58,8 @@ public class DiscoveryClient : IEurekaClient
 
     public IHealthCheckHandler HealthCheckHandler { get; set; }
 
+    private ActivitySource _eurekaActivity = new ActivitySource("Steeltoe.Discovery.Eureka.DiscoveryClient");
+
     public DiscoveryClient(IEurekaClientConfig clientConfig, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null)
         : this(ApplicationInfoManager.Instance, logFactory)
     {
@@ -100,157 +103,172 @@ public class DiscoveryClient : IEurekaClient
 
     public IList<InstanceInfo> GetInstanceById(string id)
     {
-        if (string.IsNullOrEmpty(id))
+        using (var activity = _eurekaActivity.StartActivity(nameof(GetInstanceById)))
         {
-            throw new ArgumentException(nameof(id));
-        }
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentException(nameof(id));
+            }
 
-        var results = new List<InstanceInfo>();
+            var results = new List<InstanceInfo>();
 
-        var apps = Applications;
-        if (apps == null)
-        {
+            var apps = Applications;
+            if (apps == null)
+            {
+                return results;
+            }
+
+            var regApps = apps.GetRegisteredApplications();
+            foreach (var app in regApps)
+            {
+                var instance = app.GetInstance(id);
+                if (instance != null)
+                {
+                    results.Add(instance);
+                }
+            }
+
             return results;
         }
-
-        var regApps = apps.GetRegisteredApplications();
-        foreach (var app in regApps)
-        {
-            var instance = app.GetInstance(id);
-            if (instance != null)
-            {
-                results.Add(instance);
-            }
-        }
-
-        return results;
     }
 
     public IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure)
     {
-        if (string.IsNullOrEmpty(vipAddress))
+        using (var activity = _eurekaActivity.StartActivity(nameof(GetInstancesByVipAddressAndAppName)))
         {
-            throw new ArgumentException(nameof(vipAddress));
-        }
+            if (string.IsNullOrEmpty(vipAddress))
+            {
+                throw new ArgumentException(nameof(vipAddress));
+            }
 
-        var results = new List<InstanceInfo>();
+            var results = new List<InstanceInfo>();
 
-        var apps = Applications;
-        if (apps == null)
-        {
-            return results;
-        }
+            var apps = Applications;
+            if (apps == null)
+            {
+                return results;
+            }
 
-        if (secure)
-        {
-            return apps.GetInstancesBySecureVirtualHostName(vipAddress);
-        }
-        else
-        {
-            return apps.GetInstancesByVirtualHostName(vipAddress);
+            if (secure)
+            {
+                return apps.GetInstancesBySecureVirtualHostName(vipAddress);
+            }
+            else
+            {
+                return apps.GetInstancesByVirtualHostName(vipAddress);
+            }
         }
     }
 
     public IList<InstanceInfo> GetInstancesByVipAddressAndAppName(string vipAddress, string appName, bool secure)
     {
-        IList<InstanceInfo> result = new List<InstanceInfo>();
-        if (vipAddress == null && appName == null)
+        using (var activity = _eurekaActivity.StartActivity(nameof(GetInstancesByVipAddressAndAppName)))
         {
-            throw new ArgumentNullException("vipAddress and appName both null");
-        }
-        else if (vipAddress != null && appName == null)
-        {
-            return GetInstancesByVipAddress(vipAddress, secure);
-        }
-        else if (vipAddress == null)
-        {
-            // note: if appName were null, we would not get into this block
-            var application = GetApplication(appName);
-            if (application != null)
+            IList<InstanceInfo> result = new List<InstanceInfo>();
+            if (vipAddress == null && appName == null)
             {
-                result = application.Instances;
+                throw new ArgumentNullException("vipAddress and appName both null");
+            }
+            else if (vipAddress != null && appName == null)
+            {
+                return GetInstancesByVipAddress(vipAddress, secure);
+            }
+            else if (vipAddress == null)
+            {
+                // note: if appName were null, we would not get into this block
+                var application = GetApplication(appName);
+                if (application != null)
+                {
+                    result = application.Instances;
+                }
+
+                return result;
+            }
+
+            foreach (var app in _localRegionApps.GetRegisteredApplications())
+            {
+                foreach (var instance in app.Instances)
+                {
+                    string instanceVipAddress;
+                    if (secure)
+                    {
+                        instanceVipAddress = instance.SecureVipAddress;
+                    }
+                    else
+                    {
+                        instanceVipAddress = instance.VipAddress;
+                    }
+
+                    if (vipAddress.Equals(instanceVipAddress, StringComparison.OrdinalIgnoreCase) &&
+                        appName.Equals(instance.AppName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Add(instance);
+                    }
+                }
             }
 
             return result;
         }
-
-        foreach (var app in _localRegionApps.GetRegisteredApplications())
-        {
-            foreach (var instance in app.Instances)
-            {
-                string instanceVipAddress;
-                if (secure)
-                {
-                    instanceVipAddress = instance.SecureVipAddress;
-                }
-                else
-                {
-                    instanceVipAddress = instance.VipAddress;
-                }
-
-                if (vipAddress.Equals(instanceVipAddress, StringComparison.OrdinalIgnoreCase) &&
-                    appName.Equals(instance.AppName, StringComparison.OrdinalIgnoreCase))
-                {
-                    result.Add(instance);
-                }
-            }
-        }
-
-        return result;
     }
 
     public InstanceInfo GetNextServerFromEureka(string vipAddress, bool secure)
     {
-        if (string.IsNullOrEmpty(vipAddress))
+        using (var activity = _eurekaActivity.StartActivity(nameof(GetNextServerFromEureka)))
         {
-            throw new ArgumentException(nameof(vipAddress));
-        }
+            if (string.IsNullOrEmpty(vipAddress))
+            {
+                throw new ArgumentException(nameof(vipAddress));
+            }
 
-        var results = GetInstancesByVipAddress(vipAddress, secure);
-        if (results.Count == 0)
-        {
-            return null;
-        }
+            var results = GetInstancesByVipAddress(vipAddress, secure);
+            if (results.Count == 0)
+            {
+                return null;
+            }
 
-        var index = _random.Next() % results.Count;
-        return results[index];
+            var index = _random.Next() % results.Count;
+            return results[index];
+        }
     }
 
     public virtual async T.Task ShutdownAsync()
     {
-        var shutdown = Interlocked.Exchange(ref _shutdown, 1);
-        if (shutdown > 0)
+        using (var activity = _eurekaActivity.StartActivity(nameof(ShutdownAsync)))
         {
-            return;
-        }
-
-        if (_cacheRefreshTimer != null)
-        {
-            _cacheRefreshTimer.Dispose();
-            _cacheRefreshTimer = null;
-        }
-
-        if (_heartBeatTimer != null)
-        {
-            _heartBeatTimer.Dispose();
-            _heartBeatTimer = null;
-        }
-
-        if (ClientConfig.ShouldOnDemandUpdateStatusChange)
-        {
-            _appInfoManager.StatusChangedEvent -= Instance_StatusChangedEvent;
-        }
-
-        if (ClientConfig.ShouldRegisterWithEureka)
-        {
-            var info = _appInfoManager.InstanceInfo;
-            if (info != null)
+            var shutdown = Interlocked.Exchange(ref _shutdown, 1);
+            if (shutdown > 0)
             {
-                info.Status = InstanceStatus.DOWN;
-                var result = await UnregisterAsync().ConfigureAwait(false);
-                if (!result)
+                return;
+            }
+
+            if (_cacheRefreshTimer != null)
+            {
+                _cacheRefreshTimer.Dispose();
+                _cacheRefreshTimer = null;
+            }
+
+            if (_heartBeatTimer != null)
+            {
+                _heartBeatTimer.Dispose();
+                _heartBeatTimer = null;
+            }
+
+            if (ClientConfig.ShouldOnDemandUpdateStatusChange)
+            {
+                _appInfoManager.StatusChangedEvent -= Instance_StatusChangedEvent;
+            }
+
+            if (ClientConfig.ShouldRegisterWithEureka)
+            {
+                var info = _appInfoManager.InstanceInfo;
+                if (info != null)
                 {
-                    _logger.LogWarning("Unregister failed during Shutdown");
+                    info.Status = InstanceStatus.DOWN;
+                    var result = await UnregisterAsync().ConfigureAwait(false);
+                    if (!result)
+                    {
+                        _logger.LogWarning("Unregister failed during Shutdown");
+                    }
                 }
             }
         }
@@ -264,30 +282,33 @@ public class DiscoveryClient : IEurekaClient
 
     internal async void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
     {
-        var info = _appInfoManager.InstanceInfo;
-        if (info != null)
+        using (var activity = _eurekaActivity.StartActivity(nameof(Instance_StatusChangedEvent)))
         {
-            _logger.LogDebug(
-                "Instance_StatusChangedEvent {previousStatus}, {currentStatus}, {instanceId}, {dirty}",
-                args.Previous,
-                args.Current,
-                args.InstanceId,
-                info.IsDirty);
-
-            if (info.IsDirty)
+            var info = _appInfoManager.InstanceInfo;
+            if (info != null)
             {
-                try
+                _logger.LogDebug(
+                    "Instance_StatusChangedEvent {previousStatus}, {currentStatus}, {instanceId}, {dirty}",
+                    args.Previous,
+                    args.Current,
+                    args.InstanceId,
+                    info.IsDirty);
+
+                if (info.IsDirty)
                 {
-                    var result = await RegisterAsync().ConfigureAwait(false);
-                    if (result)
+                    try
                     {
-                        info.IsDirty = false;
-                        _logger.LogInformation("Instance_StatusChangedEvent RegisterAsync Succeed");
+                        var result = await RegisterAsync().ConfigureAwait(false);
+                        if (result)
+                        {
+                            info.IsDirty = false;
+                            _logger.LogInformation("Instance_StatusChangedEvent RegisterAsync Succeed");
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Instance_StatusChangedEvent RegisterAsync Failed");
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Instance_StatusChangedEvent RegisterAsync Failed");
+                    }
                 }
             }
         }
@@ -572,43 +593,46 @@ public class DiscoveryClient : IEurekaClient
 
     protected async T.Task InitializeAsync()
     {
-        Interlocked.Exchange(ref _logger, _startupLogger);
-        _localRegionApps = new Applications
+        using (var activity = _eurekaActivity.StartActivity(nameof(InitializeAsync)))
         {
-            ReturnUpInstancesOnly = ClientConfig.ShouldFilterOnlyUpInstances
-        };
-
-        // TODO: add Enabled to IEurekaClientConfig
-        var eurekaClientConfig = ClientConfig as EurekaClientConfig;
-        if (!eurekaClientConfig.Enabled || (!ClientConfig.ShouldRegisterWithEureka && !ClientConfig.ShouldFetchRegistry))
-        {
-            return;
-        }
-
-        if (ClientConfig.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo != null)
-        {
-            if (!await RegisterAsync().ConfigureAwait(false))
+            Interlocked.Exchange(ref _logger, _startupLogger);
+            _localRegionApps = new Applications
             {
-                _logger.LogInformation("Initial Registration failed.");
+                ReturnUpInstancesOnly = ClientConfig.ShouldFilterOnlyUpInstances
+            };
+
+            // TODO: add Enabled to IEurekaClientConfig
+            var eurekaClientConfig = ClientConfig as EurekaClientConfig;
+            if (!eurekaClientConfig.Enabled || (!ClientConfig.ShouldRegisterWithEureka && !ClientConfig.ShouldFetchRegistry))
+            {
+                return;
             }
 
-            _logger.LogInformation("Starting HeartBeat");
-            var intervalInMilli = _appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-            _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, HeartBeatTaskAsync);
-            if (ClientConfig.ShouldOnDemandUpdateStatusChange)
+            if (ClientConfig.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo != null)
             {
-                _appInfoManager.StatusChangedEvent += Instance_StatusChangedEvent;
+                if (!await RegisterAsync().ConfigureAwait(false))
+                {
+                    _logger.LogInformation("Initial Registration failed.");
+                }
+
+                _logger.LogInformation("Starting HeartBeat");
+                var intervalInMilli = _appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
+                _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, HeartBeatTaskAsync);
+                if (ClientConfig.ShouldOnDemandUpdateStatusChange)
+                {
+                    _appInfoManager.StatusChangedEvent += Instance_StatusChangedEvent;
+                }
             }
-        }
 
-        if (ClientConfig.ShouldFetchRegistry)
-        {
-            await FetchRegistryAsync(true).ConfigureAwait(false);
-            var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
-            _cacheRefreshTimer = StartTimer("Query", intervalInMilli, CacheRefreshTaskAsync);
-        }
+            if (ClientConfig.ShouldFetchRegistry)
+            {
+                await FetchRegistryAsync(true).ConfigureAwait(false);
+                var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
+                _cacheRefreshTimer = StartTimer("Query", intervalInMilli, CacheRefreshTaskAsync);
+            }
 
-        Interlocked.Exchange(ref _logger, _regularLogger);
+            Interlocked.Exchange(ref _logger, _regularLogger);
+        }
     }
 
     private bool IsHealthCheckHandlerEnabled()
@@ -647,29 +671,35 @@ public class DiscoveryClient : IEurekaClient
 #pragma warning disable S3168 // "async" methods should not return "void"
     private async void HeartBeatTaskAsync()
     {
-        if (_shutdown > 0)
+        using (var activity = _eurekaActivity.StartActivity(nameof(HeartBeatTaskAsync)))
         {
-            return;
-        }
+            if (_shutdown > 0)
+            {
+                return;
+            }
 
-        var result = await RenewAsync().ConfigureAwait(false);
-        if (!result)
-        {
-            _logger.LogError("HeartBeat failed");
+            var result = await RenewAsync().ConfigureAwait(false);
+            if (!result)
+            {
+                _logger.LogError("HeartBeat failed");
+            }
         }
     }
 
     private async void CacheRefreshTaskAsync()
     {
-        if (_shutdown > 0)
+        using (var activity = _eurekaActivity.StartActivity(nameof(CacheRefreshTaskAsync)))
         {
-            return;
-        }
+            if (_shutdown > 0)
+            {
+                return;
+            }
 
-        var result = await FetchRegistryAsync(false).ConfigureAwait(false);
-        if (!result)
-        {
-            _logger.LogError("CacheRefresh failed");
+            var result = await FetchRegistryAsync(false).ConfigureAwait(false);
+            if (!result)
+            {
+                _logger.LogError("CacheRefresh failed");
+            }
         }
     }
 #pragma warning restore S3168 // "async" methods should not return "void"

@@ -11,6 +11,7 @@ using Steeltoe.Discovery;
 using Steeltoe.Extensions.Configuration.Placeholder;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -59,6 +60,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
     private static readonly string[] EMPTY_LABELS = new string[] { string.Empty };
+
+    private ActivitySource _configActivity = new ActivitySource("Steeltoe.Extensions.Configuration.ConfigServer.ConfigServerConfigurationProvider");
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class with default
@@ -182,13 +185,16 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// </remarks>
     private void DoPolledLoad()
     {
-        try
+        using (var activity = _configActivity.StartActivity(nameof(DoPolledLoad)))
         {
-            DoLoad();
-        }
-        catch (Exception e)
-        {
-            _logger.LogWarning(e, "Could not reload configuration during polling");
+            try
+            {
+                DoLoad();
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Could not reload configuration during polling");
+            }
         }
     }
 
@@ -309,77 +315,80 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         {
             foreach (var label in GetLabels())
             {
-                Task<ConfigEnvironment> task = null;
-
-                if (uris.Length > 1)
+                using (var activity = _configActivity.StartActivity(nameof(DoLoad)))
                 {
-                    _logger.LogInformation("Multiple Config Server Uris listed.");
+                    Task<ConfigEnvironment> task = null;
 
-                    // Invoke config servers
-                    task = RemoteLoadAsync(uris, label);
-                }
-                else
-                {
-                    // Single, server make Config Server URI from settings
-#pragma warning disable CS0618 // Type or member is obsolete
-                    var path = GetConfigServerUri(label);
-
-                    // Invoke config server
-                    task = RemoteLoadAsync(path);
-#pragma warning restore CS0618 // Type or member is obsolete
-                }
-
-                // Wait for results from server
-                var env = task.GetAwaiter().GetResult();
-
-                // Update config Data dictionary with any results
-                if (env != null)
-                {
-                    _logger.LogInformation(
-                        "Located environment name: {name}, profiles: {profiles}, labels: {label}, version: {version}, state: {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
-                    if (updateDictionary)
+                    if (uris.Length > 1)
                     {
-                        var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                        _logger.LogInformation("Multiple Config Server Uris listed.");
 
-                        if (!string.IsNullOrEmpty(env.State))
-                        {
-                            data["spring:cloud:config:client:state"] = env.State;
-                        }
+                        // Invoke config servers
+                        task = RemoteLoadAsync(uris, label);
+                    }
+                    else
+                    {
+                        // Single, server make Config Server URI from settings
+#pragma warning disable CS0618 // Type or member is obsolete
+                        var path = GetConfigServerUri(label);
 
-                        if (!string.IsNullOrEmpty(env.Version))
-                        {
-                            data["spring:cloud:config:client:version"] = env.Version;
-                        }
+                        // Invoke config server
+                        task = RemoteLoadAsync(path);
+#pragma warning restore CS0618 // Type or member is obsolete
+                    }
 
-                        var sources = env.PropertySources;
-                        if (sources != null)
+                    // Wait for results from server
+                    var env = task.GetAwaiter().GetResult();
+
+                    // Update config Data dictionary with any results
+                    if (env != null)
+                    {
+                        _logger.LogInformation(
+                            "Located environment name: {name}, profiles: {profiles}, labels: {label}, version: {version}, state: {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
+                        if (updateDictionary)
                         {
-                            var index = sources.Count - 1;
-                            for (; index >= 0; index--)
+                            var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+                            if (!string.IsNullOrEmpty(env.State))
                             {
-                                AddPropertySource(sources[index], data);
+                                data["spring:cloud:config:client:state"] = env.State;
+                            }
+
+                            if (!string.IsNullOrEmpty(env.Version))
+                            {
+                                data["spring:cloud:config:client:version"] = env.Version;
+                            }
+
+                            var sources = env.PropertySources;
+                            if (sources != null)
+                            {
+                                var index = sources.Count - 1;
+                                for (; index >= 0; index--)
+                                {
+                                    AddPropertySource(sources[index], data);
+                                }
+                            }
+
+                            // Adds client settings (e.g spring:cloud:config:uri, etc) back to the (new) Data dictionary
+                            AddConfigServerClientSettings(data);
+
+                            static bool AreEqual<TKey, TValue>(IDictionary<TKey, TValue> dict1, IDictionary<TKey, TValue> dict2)
+                            {
+                                IEqualityComparer<TValue> valueComparer = EqualityComparer<TValue>.Default;
+
+                                return dict1.Count == dict2.Count &&
+                                       dict1.Keys.All(key => dict2.ContainsKey(key) && valueComparer.Equals(dict1[key], dict2[key]));
+                            }
+
+                            if (!AreEqual(Data, data))
+                            {
+                                Data = data;
+                                OnReload();
                             }
                         }
 
-                        // Adds client settings (e.g spring:cloud:config:uri, etc) back to the (new) Data dictionary
-                        AddConfigServerClientSettings(data);
-
-                        static bool AreEqual<TKey, TValue>(IDictionary<TKey, TValue> dict1, IDictionary<TKey, TValue> dict2)
-                        {
-                            IEqualityComparer<TValue> valueComparer = EqualityComparer<TValue>.Default;
-
-                            return dict1.Count == dict2.Count &&
-                                   dict1.Keys.All(key => dict2.ContainsKey(key) && valueComparer.Equals(dict1[key], dict2[key]));
-                        }
-
-                        if (!AreEqual(Data, data))
-                        {
-                            Data = data;
-                            OnReload();
-                        }
+                        return env;
                     }
-
-                    return env;
                 }
             }
         }
@@ -585,65 +594,68 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         Exception error = null;
         foreach (var requestUri in requestUris)
         {
-            error = null;
-
-            // Get a config server uri and username passwords to use
-            var trimUri = requestUri.Trim();
-            var serverUri = _settings.GetRawUri(trimUri);
-            var username = _settings.GetUserName(trimUri);
-            var password = _settings.GetPassword(trimUri);
-
-            // Make Config Server URI from settings
-            var path = GetConfigServerUri(serverUri, label);
-
-            // Get the request message
-            var request = GetRequestMessage(path, username, password);
-
-            // If certificate validation is disabled, inject a callback to handle properly
-            var prevProtocols = (SecurityProtocolType)0;
-            HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out prevProtocols, out var prevValidator);
-
-            // Invoke config server
-            try
+            using (var activity = _configActivity.StartActivity(nameof(RemoteLoadAsync)))
             {
-                using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                error = null;
 
-                _logger.LogInformation("Config Server returned status: {statusCode} invoking path: {requestUri}", response.StatusCode, WebUtility.UrlEncode(requestUri));
-                if (response.StatusCode != HttpStatusCode.OK)
+                // Get a config server uri and username passwords to use
+                var trimUri = requestUri.Trim();
+                var serverUri = _settings.GetRawUri(trimUri);
+                var username = _settings.GetUserName(trimUri);
+                var password = _settings.GetPassword(trimUri);
+
+                // Make Config Server URI from settings
+                var path = GetConfigServerUri(serverUri, label);
+
+                // Get the request message
+                var request = GetRequestMessage(path, username, password);
+
+                // If certificate validation is disabled, inject a callback to handle properly
+                var prevProtocols = (SecurityProtocolType)0;
+                HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out prevProtocols, out var prevValidator);
+
+                // Invoke config server
+                try
                 {
-                    if (response.StatusCode == HttpStatusCode.NotFound)
+                    using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+
+                    _logger.LogInformation("Config Server returned status: {statusCode} invoking path: {requestUri}", response.StatusCode, WebUtility.UrlEncode(requestUri));
+                    if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return null;
+                        if (response.StatusCode == HttpStatusCode.NotFound)
+                        {
+                            return null;
+                        }
+
+                        // Throw if status >= 400
+                        if (response.StatusCode >= HttpStatusCode.BadRequest)
+                        {
+                            // HttpClientErrorException
+                            throw new HttpRequestException($"Config Server returned status: {response.StatusCode} invoking path: {WebUtility.UrlEncode(requestUri)}");
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
 
-                    // Throw if status >= 400
-                    if (response.StatusCode >= HttpStatusCode.BadRequest)
-                    {
-                        // HttpClientErrorException
-                        throw new HttpRequestException($"Config Server returned status: {response.StatusCode} invoking path: {WebUtility.UrlEncode(requestUri)}");
-                    }
-                    else
-                    {
-                        return null;
-                    }
+                    return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions).ConfigureAwait(false);
                 }
-
-                return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                error = e;
-                _logger.LogError(e, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
-                if (IsContinueExceptionType(e))
+                catch (Exception e)
                 {
-                    continue;
-                }
+                    error = e;
+                    _logger.LogError(e, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
+                    if (IsContinueExceptionType(e))
+                    {
+                        continue;
+                    }
 
-                throw;
-            }
-            finally
-            {
-                HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
+                    throw;
+                }
+                finally
+                {
+                    HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
+                }
             }
         }
 

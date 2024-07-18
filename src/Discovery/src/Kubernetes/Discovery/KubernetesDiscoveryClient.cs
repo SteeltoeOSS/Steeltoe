@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -35,6 +36,8 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
     public IKubernetes KubernetesClient { get; set; }
 
+    private ActivitySource _kubernetesActivity = new ActivitySource("Steeltoe.Discovery.Kubernetes.Discovery.KubernetesDiscoveryClient");
+
     public KubernetesDiscoveryClient(
         DefaultIsServicePortSecureResolver isServicePortSecureResolver,
         IKubernetes kubernetesClient,
@@ -49,57 +52,63 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
     public IList<string> GetServices(IDictionary<string, string> labels)
     {
-        if (!_discoveryOptions.CurrentValue.Enabled)
+        using (var activity = _kubernetesActivity.StartActivity(nameof(GetServices)))
         {
-            return Array.Empty<string>();
-        }
-        else
-        {
-            var labelSelectorValue =
-                labels != null ?
-                    string.Join(",", labels.Keys.Select(k => k + "=" + labels[k])) :
-                    null;
-            if (_discoveryOptions.CurrentValue.AllNamespaces)
+            if (!_discoveryOptions.CurrentValue.Enabled)
             {
-                return KubernetesClient.ListServiceForAllNamespaces(
-                        labelSelector: labelSelectorValue).Items
-                    .Select(service => service.Metadata.Name).ToList();
+                return Array.Empty<string>();
             }
             else
             {
-                return KubernetesClient.ListNamespacedService(
-                        namespaceParameter: _discoveryOptions.CurrentValue.Namespace,
-                        labelSelector: labelSelectorValue).Items
-                    .Select(service => service.Metadata.Name).ToList();
+                var labelSelectorValue =
+                    labels != null ?
+                        string.Join(",", labels.Keys.Select(k => k + "=" + labels[k])) :
+                        null;
+                if (_discoveryOptions.CurrentValue.AllNamespaces)
+                {
+                    return KubernetesClient.ListServiceForAllNamespaces(
+                            labelSelector: labelSelectorValue).Items
+                        .Select(service => service.Metadata.Name).ToList();
+                }
+                else
+                {
+                    return KubernetesClient.ListNamespacedService(
+                            namespaceParameter: _discoveryOptions.CurrentValue.Namespace,
+                            labelSelector: labelSelectorValue).Items
+                        .Select(service => service.Metadata.Name).ToList();
+                }
             }
         }
     }
 
     public IList<IServiceInstance> GetInstances(string serviceId)
     {
-        if (serviceId == null)
+        using (var activity = _kubernetesActivity.StartActivity(nameof(GetInstances)))
         {
-            throw new ArgumentNullException(nameof(serviceId));
-        }
-
-        var endpoints = _discoveryOptions.CurrentValue.AllNamespaces
-            ? KubernetesClient.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
-            : KubernetesClient.ListNamespacedEndpoints(
-                _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace,
-                fieldSelector: $"metadata.name={serviceId}").Items;
-
-        var subsetsNs = endpoints.Select(GetSubsetsFromEndpoints);
-
-        var serviceInstances = new List<IServiceInstance>();
-        if (subsetsNs.Any())
-        {
-            foreach (var es in subsetsNs)
+            if (serviceId == null)
             {
-                serviceInstances.AddRange(GetNamespacedServiceInstances(es, serviceId));
+                throw new ArgumentNullException(nameof(serviceId));
             }
-        }
 
-        return serviceInstances;
+            var endpoints = _discoveryOptions.CurrentValue.AllNamespaces
+                ? KubernetesClient.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
+                : KubernetesClient.ListNamespacedEndpoints(
+                    _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace,
+                    fieldSelector: $"metadata.name={serviceId}").Items;
+
+            var subsetsNs = endpoints.Select(GetSubsetsFromEndpoints);
+
+            var serviceInstances = new List<IServiceInstance>();
+            if (subsetsNs.Any())
+            {
+                foreach (var es in subsetsNs)
+                {
+                    serviceInstances.AddRange(GetNamespacedServiceInstances(es, serviceId));
+                }
+            }
+
+            return serviceInstances;
+        }
     }
 
     public IServiceInstance GetLocalServiceInstance()
