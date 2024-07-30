@@ -13,7 +13,6 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
-using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.RouteMappings;
@@ -138,7 +137,5 @@ internal static class HostBuilderWrapperExtensions
             IEndpointConventionBuilder conventionBuilder = services.ActivateActuatorEndpoints();
             configureEndpoints?.Invoke(conventionBuilder);
         });
-
-        wrapper.ConfigureWebHost(webHostBuilder => webHostBuilder.AddManagementPort());
     }
 }

@@ -14,12 +14,12 @@ internal static class EndpointOptionsExtensions
         ArgumentGuard.NotNull(endpointOptions);
         ArgumentGuard.NotNull(managementOptions);
 
-        if (endpointOptions.Enabled.HasValue)
+        if (endpointOptions.Enabled != null)
         {
             return endpointOptions.Enabled.Value;
         }
 
-        if (managementOptions.Enabled.HasValue)
+        if (managementOptions.Enabled != null)
         {
             return managementOptions.Enabled.Value;
         }
