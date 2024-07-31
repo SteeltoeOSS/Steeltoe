@@ -17,6 +17,7 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Refresh;
@@ -141,26 +142,21 @@ public static class ActuatorServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers an <see cref="IStartupFilter" /> that will map all configured actuators, initialize health.
+    /// Registers <see cref="IStartupFilter" />s that will map all configured actuators, initialize health, etc.
     /// </summary>
-    /// <param name="collection">
-    /// <see cref="IServiceCollection" /> that has actuators to activate.
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection collection)
+    public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(collection);
-
-        // check for existing AllActuatorsStartupFilter
-        IEnumerable<ServiceDescriptor> existingStartupFilters = collection.Where(descriptor =>
-            descriptor.ImplementationType == typeof(AllActuatorsStartupFilter) ||
-            descriptor.ImplementationFactory?.Method.ReturnType == typeof(AllActuatorsStartupFilter));
+        ArgumentGuard.NotNull(services);
 
         var actuatorConventionBuilder = new ActuatorConventionBuilder();
 
-        if (!existingStartupFilters.Any())
-        {
-            collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(_ => new AllActuatorsStartupFilter(actuatorConventionBuilder));
-        }
+        services.TryAddEnumerable(
+            ServiceDescriptor.Transient<IStartupFilter, AllActuatorsStartupFilter>(_ => new AllActuatorsStartupFilter(actuatorConventionBuilder)));
+
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, ManagementPortStartupFilter>());
 
         return actuatorConventionBuilder;
     }

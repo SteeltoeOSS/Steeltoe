@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -32,13 +33,9 @@ internal sealed class ManagementPortMiddleware
         ArgumentGuard.NotNull(context);
 
         ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
-        _logger.LogDebug("InvokeAsync({RequestPath}), optionsPath: {OptionsPath}", context.Request.Path.Value, managementOptions.Path);
+        _logger.LogDebug("InvokeAsync({RequestPath}), OptionsPath: {OptionsPath}", context.Request.Path.Value, managementOptions.Path);
 
-        bool isManagementPath = context.Request.Path.StartsWithSegments(managementOptions.Path);
-
-        bool allowRequest = string.IsNullOrEmpty(managementOptions.Port);
-        allowRequest = allowRequest || (context.Request.Host.Port.ToString() == managementOptions.Port && isManagementPath);
-        allowRequest = allowRequest || (context.Request.Host.Port.ToString() != managementOptions.Port && !isManagementPath);
+        bool allowRequest = IsRequestAllowed(context.Request, managementOptions);
 
         if (!allowRequest)
         {
@@ -51,6 +48,20 @@ internal sealed class ManagementPortMiddleware
                 await _next(context);
             }
         }
+    }
+
+    private static bool IsRequestAllowed(HttpRequest request, ManagementOptions managementOptions)
+    {
+        if (int.TryParse(managementOptions.Port, CultureInfo.InvariantCulture, out int managementPort) && managementPort > 0)
+        {
+            bool isManagementPath = request.Path.StartsWithSegments(managementOptions.Path);
+            bool isManagementScheme = managementOptions.SslEnabled ? request.Scheme == Uri.UriSchemeHttps : request.Scheme == Uri.UriSchemeHttp;
+            bool isManagementPort = request.Host.Port == managementPort;
+
+            return isManagementPath ? isManagementScheme && isManagementPort : !isManagementScheme || !isManagementPort;
+        }
+
+        return true;
     }
 
     private void SetResponseError(HttpContext context, string? managementPort)

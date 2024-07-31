@@ -26,7 +26,7 @@ static readonly Steeltoe.Management.Endpoint.Health.Availability.ReadinessState.
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! builder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! routeBuilder, Steeltoe.Management.Endpoint.ActuatorConventionBuilder? conventionBuilder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IRouteBuilder! builder) -> Microsoft.AspNetCore.Routing.IRouteBuilder!
-static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.ActivateActuatorEndpoints(this Microsoft.Extensions.DependencyInjection.IServiceCollection! collection) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
+static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.ActivateActuatorEndpoints(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -360,6 +360,8 @@ Steeltoe.Management.Endpoint.Options.ManagementOptions.Port.get -> string?
 Steeltoe.Management.Endpoint.Options.ManagementOptions.Port.set -> void
 Steeltoe.Management.Endpoint.Options.ManagementOptions.SerializerOptions.get -> System.Text.Json.JsonSerializerOptions!
 Steeltoe.Management.Endpoint.Options.ManagementOptions.SerializerOptions.set -> void
+Steeltoe.Management.Endpoint.Options.ManagementOptions.SslEnabled.get -> bool
+Steeltoe.Management.Endpoint.Options.ManagementOptions.SslEnabled.set -> void
 Steeltoe.Management.Endpoint.Options.ManagementOptions.UseStatusCodeFromResponse.get -> bool
 Steeltoe.Management.Endpoint.Options.ManagementOptions.UseStatusCodeFromResponse.set -> void
 Steeltoe.Management.Endpoint.Refresh.EndpointServiceCollectionExtensions

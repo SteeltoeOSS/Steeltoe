@@ -25,6 +25,7 @@ using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
+using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.RouteMappings;
@@ -558,7 +559,11 @@ public sealed class ManagementHostBuilderExtensionsTest
         using IHost host = await hostBuilder.StartAsync();
         HttpClient client = host.GetTestServer().CreateClient();
 
-        Assert.Single(host.Services.GetServices<IStartupFilter>());
+        IStartupFilter[] startupFilters = host.Services.GetServices<IStartupFilter>().ToArray();
+        startupFilters.Should().HaveCount(2);
+        startupFilters.Should().ContainSingle(filter => filter is AllActuatorsStartupFilter);
+        startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
+
         HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));
@@ -579,8 +584,12 @@ public sealed class ManagementHostBuilderExtensionsTest
         using IHost host = await hostBuilder.StartAsync();
         HttpClient client = host.GetTestServer().CreateClient();
 
+        IStartupFilter[] startupFilters = host.Services.GetServices<IStartupFilter>().ToArray();
+        startupFilters.Should().HaveCount(2);
+        startupFilters.Should().ContainSingle(filter => filter is AllActuatorsStartupFilter);
+        startupFilters.Should().ContainSingle(filter => filter is ManagementPortStartupFilter);
+
         // these requests hit the "RequireAuthorization" policy and will only pass if _testServerWithSecureRouting is used
-        Assert.Single(host.Services.GetServices<IStartupFilter>());
         HttpResponseMessage response = await client.GetAsync(new Uri("/actuator", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await client.GetAsync(new Uri("/actuator/info", UriKind.Relative));

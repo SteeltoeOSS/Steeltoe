@@ -10,6 +10,9 @@ namespace Steeltoe.Common.Http;
 
 internal static class ConfigurationExtensions
 {
+    // Found at https://github.com/dotnet/aspnetcore/blob/27f2a011a4211118552dfb8f38d36e8629267d2b/src/Hosting/Hosting/src/Internal/WebHost.cs#L24.
+    private const string DeprecatedServerUrlsConfigurationKey = "server.urls";
+
     /// <summary>
     /// Best-effort attempt to discover the addresses this ASP.NET application binds to at startup.
     /// </summary>
@@ -33,7 +36,7 @@ internal static class ConfigurationExtensions
             return addresses;
         }
 
-        string? urls = configuration["urls"];
+        string? urls = configuration["urls"] ?? configuration[DeprecatedServerUrlsConfigurationKey];
 
         if (string.IsNullOrEmpty(urls))
         {

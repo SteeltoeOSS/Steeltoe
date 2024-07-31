@@ -117,7 +117,7 @@
               "items": {
                 "type": "string"
               },
-              "description": "Gets or sets a list of assembly-qualified custom JsonConverters."
+              "description": "Gets or sets a list of assembly-qualified custom JSON converters."
             },
             "DbMigrations": {
               "type": "object",
@@ -179,7 +179,8 @@
               }
             },
             "Enabled": {
-              "type": "boolean"
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether management endpoints are enabled. Default value: true."
             },
             "Env": {
               "type": "object",
@@ -230,7 +231,8 @@
                     "type": "string"
                   }
                 }
-              }
+              },
+              "description": "Gets or sets which management endpoints are included and/or excluded."
             },
             "Health": {
               "type": "object",
@@ -527,10 +529,12 @@
               }
             },
             "Path": {
-              "type": "string"
+              "type": "string",
+              "description": "Gets or sets the HTTP request path at which management endpoints are exposed. Default value: /actuator."
             },
             "Port": {
-              "type": "string"
+              "type": "string",
+              "description": "Gets or sets the alternate HTTP port at which management endpoints are exposed."
             },
             "Refresh": {
               "type": "object",
@@ -646,7 +650,7 @@
                   "description": "Gets or sets a value that indicates whether JSON should use pretty printing. By default, JSON is serialized without any extra white space."
                 }
               },
-              "description": "Provides options to be used with 'System.Text.Json.JsonSerializer'."
+              "description": "Gets or sets the JSON serialization options."
             },
             "Services": {
               "type": "object",
@@ -677,7 +681,8 @@
               }
             },
             "SslEnabled": {
-              "type": "boolean"
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether 'Steeltoe.Management.Endpoint.Options.ManagementOptions.Port' applies to HTTP or HTTPS requests."
             },
             "Trace": {
               "type": "object",
@@ -741,7 +746,8 @@
               }
             },
             "UseStatusCodeFromResponse": {
-              "type": "boolean"
+              "type": "boolean",
+              "description": "Gets or sets a value indicating whether the HTTP response status code is based on the health status. This setting can be overruled by sending an X-Use-Status-Code-From-Response HTTP header. Default value: true."
             },
             "Web": {
               "type": "object",
@@ -765,7 +771,8 @@
                 }
               }
             }
-          }
+          },
+          "description": "Provides configuration settings for management endpoints (actuators)."
         },
         "Metrics": {
           "type": "object",
