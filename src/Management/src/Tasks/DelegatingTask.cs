@@ -8,21 +8,20 @@ namespace Steeltoe.Management.Tasks;
 
 internal sealed class DelegatingTask : IApplicationTask
 {
-    private readonly Action _run;
+    private readonly Func<CancellationToken, Task> _asyncAction;
 
-    public string Name { get; }
-
-    public DelegatingTask(string name, Action run)
+    public DelegatingTask(Func<CancellationToken, Task> asyncAction)
     {
-        ArgumentGuard.NotNull(name);
-        ArgumentGuard.NotNull(run);
+        ArgumentGuard.NotNull(asyncAction);
 
-        _run = run;
-        Name = name;
+        _asyncAction = asyncAction;
     }
 
-    public void Run()
+    /// <inheritdoc />
+    public async Task RunAsync(CancellationToken cancellationToken)
     {
-        _run();
+        cancellationToken.ThrowIfCancellationRequested();
+
+        await _asyncAction(cancellationToken);
     }
 }

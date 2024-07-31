@@ -3,136 +3,118 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 
 namespace Steeltoe.Management.Tasks;
 
+/// <summary>
+/// Provides extension methods to register an <see cref="IApplicationTask" /> in the service container.
+/// </summary>
 public static class TaskServiceCollectionExtensions
 {
     /// <summary>
-    /// Register a one-off task that can be executed from command line.
+    /// Registers an application task that can be executed from the command line.
     /// </summary>
     /// <param name="services">
-    /// Service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="taskName">
+    /// The case-sensitive name of the task.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the task to execute.
+    /// </typeparam>
+    public static void AddTask<T>(this IServiceCollection services, string taskName)
+        where T : class, IApplicationTask
+    {
+        AddTask<T>(services, taskName, ServiceLifetime.Scoped);
+    }
+
+    /// <summary>
+    /// Registers an application task that can be executed from the command line.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="taskName">
+    /// The case-sensitive name of the task.
     /// </param>
     /// <param name="lifetime">
-    /// Task lifetime.
+    /// The <see cref="ServiceLifetime" /> of the task.
     /// </param>
     /// <typeparam name="T">
-    /// Task implementation.
+    /// The type of the task to execute.
     /// </typeparam>
-    public static void AddTask<T>(this IServiceCollection services, ServiceLifetime lifetime)
-        where T : class, IApplicationTask
+    public static void AddTask<T>(this IServiceCollection services, string taskName, ServiceLifetime lifetime)
     {
         ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNullOrEmpty(taskName);
 
-        services.Add(new ServiceDescriptor(typeof(IApplicationTask), typeof(T), lifetime));
+        services.TryAdd(new ServiceDescriptor(typeof(IApplicationTask), taskName, typeof(T), lifetime));
     }
 
     /// <summary>
-    /// Register a one-off task that can be executed from command line.
+    /// Registers an application task instance that can be executed from the command line.
     /// </summary>
     /// <param name="services">
-    /// Service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    /// <typeparam name="T">
-    /// Task implementation.
-    /// </typeparam>
-    public static void AddTask<T>(this IServiceCollection services)
-        where T : class, IApplicationTask
-    {
-        services.AddTask<T>(ServiceLifetime.Singleton);
-    }
-
-    /// <summary>
-    /// Register a one-off task that can be executed from command line.
-    /// </summary>
-    /// <param name="services">
-    /// Service container.
+    /// <param name="taskName">
+    /// The case-sensitive name of the task.
     /// </param>
     /// <param name="task">
-    /// Task instance.
+    /// The task instance to execute.
     /// </param>
-    public static void AddTask(this IServiceCollection services, IApplicationTask task)
+    public static void AddTask(this IServiceCollection services, string taskName, IApplicationTask task)
     {
         ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNullOrEmpty(taskName);
         ArgumentGuard.NotNull(task);
 
-        services.Add(new ServiceDescriptor(typeof(IApplicationTask), task));
+        services.TryAddKeyedSingleton(taskName, task);
     }
 
     /// <summary>
-    /// Register a one-off task that can be executed from command line.
+    /// Registers an inline application task that can be executed from the command line.
     /// </summary>
     /// <param name="services">
-    /// Service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    /// <param name="factory">
-    /// A factory method to create an application task.
+    /// <param name="taskName">
+    /// The case-sensitive name of the task.
     /// </param>
-    /// <param name="lifetime">
-    /// Task lifetime.
+    /// <param name="asyncAction">
+    /// The asynchronous action to execute.
     /// </param>
-    public static void AddTask(this IServiceCollection services, Func<IServiceProvider, IApplicationTask> factory, ServiceLifetime lifetime)
+    public static void AddTask(this IServiceCollection services, string taskName, Func<IServiceProvider, CancellationToken, Task> asyncAction)
     {
         ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNull(taskName);
+        ArgumentGuard.NotNull(asyncAction);
+
+        services.TryAddKeyedScoped<IApplicationTask>(taskName,
+            (serviceProvider, _) => new DelegatingTask(cancellationToken => asyncAction(serviceProvider, cancellationToken)));
+    }
+
+    /// <summary>
+    /// Registers a factory for an application task that can be executed from the command line.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <param name="taskName">
+    /// The case-sensitive name of the task.
+    /// </param>
+    /// <param name="factory">
+    /// The factory method that creates an <see cref="IApplicationTask" /> instance from an <see cref="IServiceProvider" /> and task name.
+    /// </param>
+    public static void AddTask(this IServiceCollection services, string taskName, Func<IServiceProvider, string, IApplicationTask> factory)
+    {
+        ArgumentGuard.NotNull(services);
+        ArgumentGuard.NotNullOrEmpty(taskName);
         ArgumentGuard.NotNull(factory);
 
-        services.Add(new ServiceDescriptor(typeof(IApplicationTask), factory, lifetime));
-    }
-
-    /// <summary>
-    /// Register a one-off task that can be executed from command line.
-    /// </summary>
-    /// <param name="services">
-    /// Service container.
-    /// </param>
-    /// <param name="factory">
-    /// A factory method to create an application task.
-    /// </param>
-    public static void AddTask(this IServiceCollection services, Func<IServiceProvider, IApplicationTask> factory)
-    {
-        services.AddTask(factory, ServiceLifetime.Singleton);
-    }
-
-    /// <summary>
-    /// Register a one-off task that can be executed from command line.
-    /// </summary>
-    /// <param name="services">
-    /// Service container.
-    /// </param>
-    /// <param name="name">
-    /// Well known name of the task. This is how it's identified when called.
-    /// </param>
-    /// <param name="runAction">
-    /// Task method body.
-    /// </param>
-    /// <param name="lifetime">
-    /// Task lifetime.
-    /// </param>
-    public static void AddTask(this IServiceCollection services, string name, Action<IServiceProvider> runAction, ServiceLifetime lifetime)
-    {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(name);
-        ArgumentGuard.NotNull(runAction);
-
-        services.Add(new ServiceDescriptor(typeof(IApplicationTask), svc => new DelegatingTask(name, () => runAction(svc)), lifetime));
-    }
-
-    /// <summary>
-    /// Register a one-off task that can be executed from command line.
-    /// </summary>
-    /// <param name="services">
-    /// Service container.
-    /// </param>
-    /// <param name="name">
-    /// Well known name of the task. This is how it's identified when called.
-    /// </param>
-    /// <param name="runAction">
-    /// Task method body.
-    /// </param>
-    public static void AddTask(this IServiceCollection services, string name, Action<IServiceProvider> runAction)
-    {
-        services.AddTask(name, runAction, ServiceLifetime.Singleton);
+        services.TryAddKeyedScoped(taskName, (serviceProvider, _) => factory(serviceProvider, taskName));
     }
 }

@@ -10,12 +10,10 @@ namespace Steeltoe.Common;
 public interface IApplicationTask
 {
     /// <summary>
-    /// Gets globally unique name for the task.
+    /// Executes this task.
     /// </summary>
-    string Name { get; }
-
-    /// <summary>
-    /// Action which to run.
-    /// </summary>
-    void Run();
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    Task RunAsync(CancellationToken cancellationToken);
 }

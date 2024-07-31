@@ -1,12 +1,10 @@
 #nullable enable
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Common.IApplicationTask! task) -> void
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! name, System.Action<System.IServiceProvider!>! runAction) -> void
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! name, System.Action<System.IServiceProvider!>! runAction, Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime) -> void
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Func<System.IServiceProvider!, Steeltoe.Common.IApplicationTask!>! factory) -> void
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Func<System.IServiceProvider!, Steeltoe.Common.IApplicationTask!>! factory, Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime) -> void
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
-static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime) -> void
-static Steeltoe.Management.Tasks.TaskWebHostExtensions.RunWithTasks(this Microsoft.AspNetCore.Hosting.IWebHost! webHost) -> void
-static Steeltoe.Management.Tasks.TaskWebHostExtensions.RunWithTasks(this Microsoft.Extensions.Hosting.IHost! host) -> void
+static Steeltoe.Management.Tasks.TaskHostExtensions.RunWithTasksAsync(this Microsoft.AspNetCore.Hosting.IWebHost! host, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static Steeltoe.Management.Tasks.TaskHostExtensions.RunWithTasksAsync(this Microsoft.Extensions.Hosting.IHost! host, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName, Steeltoe.Common.IApplicationTask! task) -> void
+static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName, System.Func<System.IServiceProvider!, string!, Steeltoe.Common.IApplicationTask!>! factory) -> void
+static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName, System.Func<System.IServiceProvider!, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! asyncAction) -> void
+static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName) -> void
+static Steeltoe.Management.Tasks.TaskServiceCollectionExtensions.AddTask<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, string! taskName, Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime) -> void
+Steeltoe.Management.Tasks.TaskHostExtensions
 Steeltoe.Management.Tasks.TaskServiceCollectionExtensions
-Steeltoe.Management.Tasks.TaskWebHostExtensions
