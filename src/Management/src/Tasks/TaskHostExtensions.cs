@@ -33,7 +33,11 @@ public static class TaskHostExtensions
     {
         ArgumentGuard.NotNull(host);
 
-        if (!await FindAndRunTaskAsync(host.Services, cancellationToken))
+        if (await FindAndRunTaskAsync(host.Services, cancellationToken))
+        {
+            await DisposeHostAsync(host);
+        }
+        else
         {
             await host.RunAsync(cancellationToken);
         }
@@ -59,7 +63,11 @@ public static class TaskHostExtensions
     {
         ArgumentGuard.NotNull(host);
 
-        if (!await FindAndRunTaskAsync(host.Services, cancellationToken))
+        if (await FindAndRunTaskAsync(host.Services, cancellationToken))
+        {
+            await DisposeHostAsync(host);
+        }
+        else
         {
             await host.RunAsync(cancellationToken);
         }
@@ -94,6 +102,18 @@ public static class TaskHostExtensions
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             ILogger logger = loggerFactory.CreateLogger($"{typeof(TaskHostExtensions).Namespace}.CloudFoundryTasks");
             logger.LogError("No task with name '{TaskName}' is registered in the service container.", taskName);
+        }
+    }
+
+    private static async Task DisposeHostAsync(IDisposable host)
+    {
+        if (host is IAsyncDisposable asyncDisposable)
+        {
+            await asyncDisposable.DisposeAsync();
+        }
+        else
+        {
+            host.Dispose();
         }
     }
 }

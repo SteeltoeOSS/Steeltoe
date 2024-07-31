@@ -28,10 +28,10 @@ public sealed class TaskHostExtensionsTest
         builder.Services.AddTask<TestApplicationTask>(taskName, ServiceLifetime.Singleton);
 
         WebApplication app = builder.Build();
+        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         await app.RunWithTasksAsync(CancellationToken.None);
 
-        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
         sharedState.HasExecuted.Should().BeTrue();
     }
 
@@ -48,10 +48,10 @@ public sealed class TaskHostExtensionsTest
         builder.Services.AddTask<TestApplicationTask>(taskName);
 
         WebApplication app = builder.Build();
+        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         await app.RunWithTasksAsync(CancellationToken.None);
 
-        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
         sharedState.HasExecuted.Should().BeTrue();
     }
 
@@ -68,10 +68,10 @@ public sealed class TaskHostExtensionsTest
         builder.Services.AddTask<TestApplicationTask>(taskName, ServiceLifetime.Transient);
 
         WebApplication app = builder.Build();
+        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         await app.RunWithTasksAsync(CancellationToken.None);
 
-        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
         sharedState.HasExecuted.Should().BeTrue();
     }
 
@@ -90,6 +90,7 @@ public sealed class TaskHostExtensionsTest
         builder.Services.AddTask(taskName, applicationTask);
 
         WebApplication app = builder.Build();
+
         await app.RunWithTasksAsync(CancellationToken.None);
 
         sharedState.HasExecuted.Should().BeTrue();
@@ -118,6 +119,7 @@ public sealed class TaskHostExtensionsTest
         });
 
         WebApplication app = builder.Build();
+
         await app.RunWithTasksAsync(CancellationToken.None);
 
         hasExecuted.Should().BeTrue();
@@ -146,9 +148,10 @@ public sealed class TaskHostExtensionsTest
         });
 
         WebApplication app = builder.Build();
+        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
+
         await app.RunWithTasksAsync(CancellationToken.None);
 
-        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
         sharedState.HasExecuted.Should().BeTrue();
     }
 
@@ -194,6 +197,29 @@ public sealed class TaskHostExtensionsTest
     }
 
     [Fact]
+    public async Task WebApplication_DisposesHost()
+    {
+        const string taskName = "DisposeTest";
+        string[] args = [$"RunTask={taskName}"];
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+
+        builder.Services.AddTask(taskName, async (_, _) =>
+        {
+            await Task.Yield();
+        });
+
+        WebApplication app = builder.Build();
+
+        await app.RunWithTasksAsync(CancellationToken.None);
+
+        Action action = () => _ = app.Services.GetRequiredService<ILoggerFactory>();
+
+        action.Should().ThrowExactly<ObjectDisposedException>();
+    }
+
+    [Fact]
     public async Task WebHost_ExecutesScopedTask()
     {
         const string taskName = "ScopedTest";
@@ -210,10 +236,10 @@ public sealed class TaskHostExtensionsTest
         });
 
         IWebHost app = builder.Build();
+        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         await app.RunWithTasksAsync(CancellationToken.None);
 
-        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
         sharedState.HasExecuted.Should().BeTrue();
     }
 
@@ -233,10 +259,10 @@ public sealed class TaskHostExtensionsTest
         });
 
         IHost app = builder.Build();
+        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
 
         await app.RunWithTasksAsync(CancellationToken.None);
 
-        var sharedState = app.Services.GetRequiredService<TaskApplicationState>();
         sharedState.HasExecuted.Should().BeTrue();
     }
 
