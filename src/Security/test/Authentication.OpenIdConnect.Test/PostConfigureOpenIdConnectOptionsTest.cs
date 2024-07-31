@@ -27,7 +27,7 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
         serviceCollection.AddSingleton<IConfiguration>(configuration);
         serviceCollection.AddAuthentication().AddOpenIdConnect();
 
-        using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+        using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>();
         OpenIdConnectOptions options = optionsMonitor.Get(OpenIdConnectDefaults.AuthenticationScheme);
 
@@ -73,7 +73,7 @@ public sealed class PostConfigureOpenIdConnectOptionsTest
 
         serviceCollection.AddAuthentication().AddOpenIdConnect().ConfigureOpenIdConnectForCloudFoundry();
 
-        using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+        using ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<OpenIdConnectOptions>>();
         OpenIdConnectOptions options = optionsMonitor.Get(OpenIdConnectDefaults.AuthenticationScheme);
 

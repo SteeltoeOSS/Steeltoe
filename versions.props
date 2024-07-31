@@ -26,7 +26,6 @@
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>9.25.*</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>8.0.*</SourceLinkGitHubVersion>
-    <StackExchangeVersion>2.8.*</StackExchangeVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>2.0.0-beta4.24209.3</SystemCommandLineVersion>
     <SystemSqlClientVersion>4.8.*</SystemSqlClientVersion>
@@ -63,8 +62,6 @@
     <OpenTelemetryVersion>1.9.*</OpenTelemetryVersion>
     <SerilogVersion>8.0.*</SerilogVersion>
     <SerilogSinksConsoleVersion>6.0.*</SerilogSinksConsoleVersion>
-    <SymReaderPortableVersion>1.6.*</SymReaderPortableVersion>
-    <SymReaderVersion>2.0.*</SymReaderVersion>
     <WavefrontSdkVersion>1.8.*-*</WavefrontSdkVersion>
   </PropertyGroup>
 

@@ -1,5 +1,12 @@
 #nullable enable
+abstract Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.GetState() -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState?
+abstract Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.Id.get -> string!
 abstract Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.InvokeEndpointHandlerAsync(Microsoft.AspNetCore.Http.HttpContext! context, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
+const Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.LivenessKey = "Liveness" -> string!
+const Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.ReadinessKey = "Readiness" -> string!
+override Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState.ToString() -> string!
+override Steeltoe.Management.Endpoint.Health.Availability.LivenessHealthContributor.Id.get -> string!
+override Steeltoe.Management.Endpoint.Health.Availability.ReadinessHealthContributor.Id.get -> string!
 override Steeltoe.Management.Endpoint.Health.HealthEndpointOptions.RequiresExactMatch() -> bool
 override Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter.Read(ref System.Text.Json.Utf8JsonReader reader, System.Type! typeToConvert, System.Text.Json.JsonSerializerOptions! options) -> System.DateTime
 override Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter.Write(System.Text.Json.Utf8JsonWriter! writer, System.DateTime value, System.Text.Json.JsonSerializerOptions! options) -> void
@@ -12,6 +19,10 @@ override Steeltoe.Management.Endpoint.Metrics.MetricsEndpointOptions.RequiresExa
 override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
 override Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions.AllowedVerbs.set -> void
 override Steeltoe.Management.Endpoint.Services.ServiceRegistration.ToString() -> string!
+static readonly Steeltoe.Management.Endpoint.Health.Availability.LivenessState.Broken -> Steeltoe.Management.Endpoint.Health.Availability.LivenessState!
+static readonly Steeltoe.Management.Endpoint.Health.Availability.LivenessState.Correct -> Steeltoe.Management.Endpoint.Health.Availability.LivenessState!
+static readonly Steeltoe.Management.Endpoint.Health.Availability.ReadinessState.AcceptingTraffic -> Steeltoe.Management.Endpoint.Health.Availability.ReadinessState!
+static readonly Steeltoe.Management.Endpoint.Health.Availability.ReadinessState.RefusingTraffic -> Steeltoe.Management.Endpoint.Health.Availability.ReadinessState!
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! builder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder! routeBuilder, Steeltoe.Management.Endpoint.ActuatorConventionBuilder? conventionBuilder) -> Microsoft.AspNetCore.Builder.IEndpointConventionBuilder!
 static Steeltoe.Management.Endpoint.ActuatorRouteBuilderExtensions.MapAllActuators(this Microsoft.AspNetCore.Routing.IRouteBuilder! builder) -> Microsoft.AspNetCore.Routing.IRouteBuilder!
@@ -21,6 +32,7 @@ static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllAc
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Management.Endpoint.MediaTypeVersion version, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddAllActuators(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder!>? buildCorsPolicy) -> void
 static Steeltoe.Management.Endpoint.ActuatorServiceCollectionExtensions.AddCommonActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
+static Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityServiceCollectionExtensions.AddCloudFoundrySecurity(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.CloudFoundry.EndpointApplicationBuilderExtensions.UseCloudFoundrySecurity(this Microsoft.AspNetCore.Builder.IApplicationBuilder! builder) -> void
 static Steeltoe.Management.Endpoint.CloudFoundry.EndpointServiceCollectionExtensions.AddCloudFoundryActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
 static Steeltoe.Management.Endpoint.CloudFoundry.ServiceCollectionExtensions.AddCloudFoundryActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
@@ -28,10 +40,9 @@ static Steeltoe.Management.Endpoint.DbMigrations.EndpointServiceCollectionExtens
 static Steeltoe.Management.Endpoint.DbMigrations.ServiceCollectionExtensions.AddDbMigrationsActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Environment.EndpointServiceCollectionExtensions.AddEnvironmentActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Environment.ServiceCollectionExtensions.AddEnvironmentActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
-static Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, params System.Type![]! contributorTypes) -> void
-static Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, Steeltoe.Common.HealthChecks.IHealthAggregator! aggregator, params System.Type![]! contributorTypes) -> void
-static Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthContributors(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, params System.Type![]! contributorTypes) -> void
+static Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthContributor(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Type! healthContributorType) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Health.EndpointServiceCollectionExtensions.AddHealthContributor<T>(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Health.ServiceCollectionExtensions.AddHealthActuatorServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 static Steeltoe.Management.Endpoint.Health.ServiceProviderExtensions.InitializeAvailability(this System.IServiceProvider! serviceProvider) -> System.IServiceProvider!
 static Steeltoe.Management.Endpoint.HeapDump.EndpointServiceCollectionExtensions.AddHeapDumpActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
@@ -48,8 +59,6 @@ static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.A
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddDbMigrationsActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddEnvironmentActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, params System.Type![]! contributorTypes) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder, Steeltoe.Common.HealthChecks.IHealthAggregator! aggregator, params System.Type![]! contributorTypes) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHeapDumpActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddHypermediaActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostApplicationBuilderExtensions.AddInfoActuator(this Microsoft.Extensions.Hosting.IHostApplicationBuilder! builder) -> Microsoft.Extensions.Hosting.IHostApplicationBuilder!
@@ -70,8 +79,6 @@ static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddCloudFoun
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddDbMigrationsActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddEnvironmentActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder, params System.Type![]! contributorTypes) -> Microsoft.Extensions.Hosting.IHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHealthActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder, Steeltoe.Common.HealthChecks.IHealthAggregator! aggregator, params System.Type![]! contributorTypes) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHeapDumpActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddHypermediaActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementHostBuilderExtensions.AddInfoActuator(this Microsoft.Extensions.Hosting.IHostBuilder! builder) -> Microsoft.Extensions.Hosting.IHostBuilder!
@@ -92,8 +99,6 @@ static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddCloudF
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddDbMigrationsActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddEnvironmentActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, params System.Type![]! contributorTypes) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
-static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHealthActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder, Steeltoe.Common.HealthChecks.IHealthAggregator! aggregator, params System.Type![]! contributorTypes) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHeapDumpActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddHypermediaActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
 static Steeltoe.Management.Endpoint.ManagementWebHostBuilderExtensions.AddInfoActuator(this Microsoft.AspNetCore.Hosting.IWebHostBuilder! builder) -> Microsoft.AspNetCore.Hosting.IWebHostBuilder!
@@ -144,9 +149,7 @@ Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.CloudFound
 Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.CloudFoundryEndpointOptions() -> void
 Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions.ValidateCertificates.set -> void
-Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware
-Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware.CloudFoundrySecurityMiddleware(Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundryEndpointOptions!>! endpointOptionsMonitor, System.Collections.Generic.IEnumerable<Steeltoe.Management.EndpointOptions!>! endpointOptionsCollection, Microsoft.AspNetCore.Http.RequestDelegate? next, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
-Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext! context) -> System.Threading.Tasks.Task!
+Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityServiceCollectionExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.EndpointApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.ICloudFoundryEndpointHandler
@@ -186,6 +189,28 @@ Steeltoe.Management.Endpoint.Exposure.Exclude.set -> void
 Steeltoe.Management.Endpoint.Exposure.Exposure() -> void
 Steeltoe.Management.Endpoint.Exposure.Include.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.Exposure.Include.set -> void
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.ApplicationAvailability(Microsoft.Extensions.Logging.ILogger<Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability!>! logger) -> void
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.GetAvailabilityState(string! availabilityType) -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState?
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.GetLivenessState() -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState?
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.GetReadinessState() -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState?
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.LivenessChanged -> System.EventHandler?
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.ReadinessChanged -> System.EventHandler?
+Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability.SetAvailabilityState(string! availabilityType, Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState! newState, string? caller) -> void
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityEventArgs
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityEventArgs.AvailabilityEventArgs(Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState! availabilityState) -> void
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityEventArgs.NewState.get -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState!
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.AvailabilityHealthContributor(System.Collections.Generic.Dictionary<Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState!, Steeltoe.Common.HealthChecks.HealthStatus>! stateMappings, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.CheckHealthAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Common.HealthChecks.HealthCheckResult?>!
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState.AvailabilityState(string! value) -> void
+Steeltoe.Management.Endpoint.Health.Availability.LivenessHealthContributor
+Steeltoe.Management.Endpoint.Health.Availability.LivenessHealthContributor.LivenessHealthContributor(Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability! availability, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Health.Availability.LivenessState
+Steeltoe.Management.Endpoint.Health.Availability.ReadinessHealthContributor
+Steeltoe.Management.Endpoint.Health.Availability.ReadinessHealthContributor.ReadinessHealthContributor(Steeltoe.Management.Endpoint.Health.Availability.ApplicationAvailability! availability, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Health.Availability.ReadinessState
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.DiskSpaceContributorOptions() -> void
 Steeltoe.Management.Endpoint.Health.Contributor.DiskSpaceContributorOptions.Enabled.get -> bool
@@ -417,7 +442,6 @@ Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ConnectionTimeoutMs.get -> int
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ConnectionTimeoutMs.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Metadata.get -> System.Collections.Generic.IDictionary<string!, object!>!
-Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Metadata.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.SpringBootAdminClientOptions() -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Url.get -> string?
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.Url.set -> void

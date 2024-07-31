@@ -6,8 +6,8 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Configuration.ConfigServer.Integration.Test;
 

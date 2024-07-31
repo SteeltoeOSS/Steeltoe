@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common.Utils.IO;
+using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Configuration.Placeholder.Test;
 

@@ -11,7 +11,7 @@
   <Import Project="..\..\..\..\versions.props" />
 
   <ItemGroup>
-    <Compile Include="..\..\..\Common\src\Abstractions\ConfigurationSchemaAttributes.cs" Link="ConfigurationSchemaAttributes.cs">
+    <Compile Include="..\..\..\Common\src\Common\ConfigurationSchemaAttributes.cs" Link="ConfigurationSchemaAttributes.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>

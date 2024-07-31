@@ -254,12 +254,12 @@ public sealed class EurekaClient
 
             if (!string.IsNullOrEmpty(requestBody))
             {
-                _logger.LogDebug("Sending {RequestMethod} request to '{RequestUri}' with body: {RequestBody}.", request.Method, requestUri.ToMaskedUri(),
+                _logger.LogDebug("Sending {RequestMethod} request to '{RequestUri}' with body: {RequestBody}.", request.Method, requestUri.ToMaskedString(),
                     requestBody);
             }
             else
             {
-                _logger.LogDebug("Sending {RequestMethod} request to '{RequestUri}' without request body.", request.Method, requestUri.ToMaskedUri());
+                _logger.LogDebug("Sending {RequestMethod} request to '{RequestUri}' without request body.", request.Method, requestUri.ToMaskedString());
             }
 
             try
@@ -267,7 +267,7 @@ public sealed class EurekaClient
                 using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
                 _logger.LogDebug("HTTP {RequestMethod} request to '{RequestUri}' returned status {StatusCode} in attempt {Attempt}.", request.Method,
-                    requestUri.ToMaskedUri(), (int)response.StatusCode, attempt);
+                    requestUri.ToMaskedString(), (int)response.StatusCode, attempt);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -280,7 +280,7 @@ public sealed class EurekaClient
                     catch (JsonException exception) when (!exception.IsCancellation())
                     {
                         _logger.LogDebug(exception, "Failed to deserialize HTTP response from {RequestMethod} '{RequestUri}'.", request.Method,
-                            requestUri.ToMaskedUri());
+                            requestUri.ToMaskedString());
                     }
                 }
                 else
@@ -288,13 +288,13 @@ public sealed class EurekaClient
                     string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
                     _logger.LogInformation("HTTP {RequestMethod} request to '{RequestUri}' failed with status {StatusCode}: {ResponseBody}", request.Method,
-                        requestUri.ToMaskedUri(), (int)response.StatusCode, responseBody);
+                        requestUri.ToMaskedString(), (int)response.StatusCode, responseBody);
                 }
             }
             catch (Exception exception) when (!exception.IsCancellation())
             {
                 _logger.LogWarning(exception, "Failed to execute HTTP {RequestMethod} request to '{RequestUri}' in attempt {Attempt}.", request.Method,
-                    requestUri.ToMaskedUri(), attempt);
+                    requestUri.ToMaskedString(), attempt);
             }
 
             _eurekaServiceUriStateManager.MarkFailingServiceUri(serviceUri);
@@ -306,12 +306,7 @@ public sealed class EurekaClient
     private HttpClient CreateHttpClient(string name, TimeSpan connectTimeout)
     {
         HttpClient httpClient = _httpClientFactory.CreateClient(name);
-
-        if (connectTimeout > TimeSpan.Zero)
-        {
-            httpClient.Timeout = connectTimeout;
-        }
-
+        httpClient.ConfigureForSteeltoe(connectTimeout);
         return httpClient;
     }
 
@@ -337,7 +332,7 @@ public sealed class EurekaClient
 
         if (requestUri.TryGetUsernamePassword(out string? username, out string? password) && password.Length > 0)
         {
-            _logger.LogDebug("Adding credentials from '{RequestUri}' to Authorization header.", requestUri.ToMaskedUri());
+            _logger.LogDebug("Adding credentials from '{RequestUri}' to Authorization header.", requestUri.ToMaskedString());
 
             requestMessage.Headers.Authorization =
                 new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
@@ -354,7 +349,7 @@ public sealed class EurekaClient
                 string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, clientOptions.ClientId,
                     clientOptions.ClientSecret, cancellationToken);
 
-                _logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri);
+                _logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri.ToMaskedString());
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
         }

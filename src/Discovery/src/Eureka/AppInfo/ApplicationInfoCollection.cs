@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
 using Steeltoe.Common;
-using Steeltoe.Common.Util;
+using Steeltoe.Common.CasingConventions;
 using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;

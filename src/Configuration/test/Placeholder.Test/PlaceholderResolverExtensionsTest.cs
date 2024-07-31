@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common.Utils.IO;
+using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Configuration.Placeholder.Test;
 

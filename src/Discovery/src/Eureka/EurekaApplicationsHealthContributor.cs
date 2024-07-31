@@ -4,8 +4,8 @@
 
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 

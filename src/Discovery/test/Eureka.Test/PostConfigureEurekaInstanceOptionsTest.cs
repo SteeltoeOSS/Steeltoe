@@ -361,6 +361,6 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         services.ConfigureReloadableOptions<EurekaInstanceOptions>(EurekaInstanceOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<EurekaInstanceOptions>, PostConfigureEurekaInstanceOptions>();
 
-        return services.BuildServiceProvider();
+        return services.BuildServiceProvider(true);
     }
 }

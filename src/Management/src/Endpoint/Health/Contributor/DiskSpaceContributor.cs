@@ -4,8 +4,8 @@
 
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health.Contributor;
 

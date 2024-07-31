@@ -5,11 +5,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
 
 namespace Steeltoe.Management.Endpoint.Test.Health;
@@ -26,30 +26,28 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
+        services.AddHealthActuator();
 
         switch (_configuration.GetValue<string?>("HealthCheckType"))
         {
             case "down":
-                services.AddHealthActuator(typeof(DownContributor));
+                services.RemoveAll(typeof(IHealthContributor));
+                services.AddHealthContributor<DownContributor>();
                 break;
             case "out":
-                services.AddHealthActuator(typeof(OutOfServiceContributor));
+                services.RemoveAll(typeof(IHealthContributor));
+                services.AddHealthContributor<OutOfServiceContributor>();
                 break;
             case "unknown":
-                services.AddHealthActuator(typeof(UnknownContributor));
+                services.RemoveAll(typeof(IHealthContributor));
+                services.AddHealthContributor<UnknownContributor>();
                 break;
             case "disabled":
-                services.AddHealthActuator(typeof(DisabledContributor));
+                services.RemoveAll(typeof(IHealthContributor));
+                services.AddHealthContributor<DisabledContributor>();
                 break;
-            case "defaultAggregator":
-                services.AddHealthActuator(new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
-                break;
-            case "microsoftHealthAggregator":
+            case "default":
                 services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestHealthCheckServiceOptions());
-                services.AddHealthActuator(new HealthRegistrationsAggregator(), typeof(DiskSpaceContributor));
-                break;
-            default:
-                services.AddHealthActuator();
                 break;
         }
     }

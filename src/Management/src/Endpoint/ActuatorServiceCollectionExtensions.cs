@@ -93,6 +93,7 @@ public static class ActuatorServiceCollectionExtensions
         if (Platform.IsCloudFoundry)
         {
             services.AddCloudFoundryActuator();
+            services.AddCloudFoundrySecurity();
         }
 
         services.AddHypermediaActuator();

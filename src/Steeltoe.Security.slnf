@@ -2,10 +2,9 @@
   "solution": {
     "path": "Steeltoe.All.sln",
     "projects": [
-      "Common\\src\\Abstractions\\Steeltoe.Common.Abstractions.csproj",
-      "Common\\src\\Common.Certificates\\Steeltoe.Common.Certificates.csproj",
+      "Common\\src\\Certificates\\Steeltoe.Common.Certificates.csproj",
       "Common\\src\\Common\\Steeltoe.Common.csproj",
-      "Common\\test\\Common.TestResources\\Steeltoe.Common.TestResources.csproj",
+      "Common\\test\\TestResources\\Steeltoe.Common.TestResources.csproj",
       "Configuration\\src\\Abstractions\\Steeltoe.Configuration.Abstractions.csproj",
       "Configuration\\src\\CloudFoundry.ServiceBinding\\Steeltoe.Configuration.CloudFoundry.ServiceBinding.csproj",
       "Configuration\\src\\Kubernetes.ServiceBinding\\Steeltoe.Configuration.Kubernetes.ServiceBinding.csproj",
@@ -17,7 +16,8 @@
       "Security\\test\\Authentication.JwtBearer.Test\\Steeltoe.Security.Authentication.JwtBearer.Test.csproj",
       "Security\\test\\Authentication.OpenIdConnect.Test\\Steeltoe.Security.Authentication.OpenIdConnect.Test.csproj",
       "Security\\test\\Authorization.Certificate.Test\\Steeltoe.Security.Authorization.Certificate.Test.csproj",
-      "Security\\test\\DataProtection.Redis.Test\\Steeltoe.Security.DataProtection.Redis.Test.csproj"
+      "Security\\test\\DataProtection.Redis.Test\\Steeltoe.Security.DataProtection.Redis.Test.csproj",
+      "Tools\\src\\ConfigurationSchemaGenerator\\ConfigurationSchemaGenerator.csproj"
     ]
   }
 }

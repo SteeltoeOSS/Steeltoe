@@ -5,11 +5,10 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
-using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common;
 
-public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
+public class ApplicationInstanceInfo : IApplicationInstanceInfo
 {
     public const string ApplicationRoot = "application";
     public const string SpringApplicationRoot = "spring:application";
@@ -94,22 +93,26 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
     }
 
     public ApplicationInstanceInfo(IConfiguration configuration)
-        : base(configuration)
     {
+        configuration.Bind(this);
+
         Configuration = configuration;
         SecondChanceSetIdProperties(Configuration);
     }
 
     public ApplicationInstanceInfo(IConfiguration configuration, bool noPrefix)
-        : base(configuration, ApplicationRoot)
     {
+        configuration.GetSection(ApplicationRoot).Bind(this);
+
         Configuration = configuration;
         SecondChanceSetIdProperties(Configuration);
     }
 
     public ApplicationInstanceInfo(IConfiguration configuration, string sectionPrefix)
-        : base(configuration, BuildConfigString(sectionPrefix, ApplicationRoot))
     {
+        string prefix = BuildConfigString(sectionPrefix, ApplicationRoot);
+        configuration.GetSection(prefix).Bind(this);
+
         Configuration = configuration;
         SecondChanceSetIdProperties(Configuration);
     }

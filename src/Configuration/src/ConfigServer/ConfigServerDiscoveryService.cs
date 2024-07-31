@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Common.Reflection;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
@@ -17,6 +16,7 @@ namespace Steeltoe.Configuration.ConfigServer;
 
 internal sealed class ConfigServerDiscoveryService
 {
+    private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IConfiguration _configuration;
     private readonly ConfigServerClientOptions _options;
     private readonly ILogger _logger;
@@ -53,17 +53,17 @@ internal sealed class ConfigServerDiscoveryService
 
         tempServices.AddSingleton<IConfiguration>(tempConfiguration);
 
-        if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Discovery.Configuration"))
+        if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Discovery.Configuration"))
         {
             WireConfigurationDiscoveryClient(tempServices);
         }
 
-        if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Discovery.Consul"))
+        if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Discovery.Consul"))
         {
             WireConsulDiscoveryClient(tempServices);
         }
 
-        if (ReflectionHelpers.IsAssemblyLoaded("Steeltoe.Discovery.Eureka"))
+        if (AssemblyLoader.IsAssemblyLoaded("Steeltoe.Discovery.Eureka"))
         {
             WireEurekaDiscoveryClient(tempServices);
         }

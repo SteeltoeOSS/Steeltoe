@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
-using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
@@ -20,6 +19,8 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Health.Availability;
+using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
@@ -114,44 +115,33 @@ public sealed class ManagementHostBuilderExtensionsTest
     public void AddHealthActuator_IHostBuilder()
     {
         var hostBuilder = new HostBuilder();
+        hostBuilder.AddHealthActuator();
+        IHost host = hostBuilder.Build();
 
-        IHost host = hostBuilder.AddHealthActuator().Build();
-        IEnumerable<IHealthEndpointHandler> handlers = host.Services.GetServices<IHealthEndpointHandler>();
-        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        host.Services.GetService<IHealthEndpointHandler>().Should().NotBeNull();
+        host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().HaveCount(1);
+        host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
 
-        Assert.Single(handlers);
-        Assert.NotNull(filter);
-        Assert.IsType<AllActuatorsStartupFilter>(filter);
+        IHealthContributor[] healthContributors = host.Services.GetServices<IHealthContributor>().ToArray();
+        healthContributors.Should().HaveCount(3);
+        healthContributors.Should().ContainSingle(contributor => contributor is DiskSpaceContributor);
+        healthContributors.Should().ContainSingle(contributor => contributor is LivenessHealthContributor);
+        healthContributors.Should().ContainSingle(contributor => contributor is ReadinessHealthContributor);
     }
 
     [Fact]
-    public void AddHealthActuator_IHostBuilder_WithTypes()
+    public void AddHealthActuator_IHostBuilder_WithContributor()
     {
         var hostBuilder = new HostBuilder();
+        hostBuilder.AddHealthActuator();
+        hostBuilder.ConfigureServices(services => services.AddHealthContributor<DownContributor>());
+        IHost host = hostBuilder.Build();
 
-        IHost host = hostBuilder.AddHealthActuator(typeof(DownContributor)).Build();
+        host.Services.GetService<IHealthEndpointHandler>().Should().NotBeNull();
+        host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().HaveCount(1);
+        host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
 
-        IEnumerable<IHealthEndpointHandler> handlers = host.Services.GetServices<IHealthEndpointHandler>();
-        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
-
-        Assert.Single(handlers);
-        Assert.NotNull(filter);
-        Assert.IsType<AllActuatorsStartupFilter>(filter);
-    }
-
-    [Fact]
-    public void AddHealthActuator_IHostBuilder_WithAggregator()
-    {
-        var hostBuilder = new HostBuilder();
-
-        IHost host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor)).Build();
-
-        IEnumerable<IHealthEndpointHandler> handlers = host.Services.GetServices<IHealthEndpointHandler>();
-        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
-
-        Assert.Single(handlers);
-        Assert.NotNull(filter);
-        Assert.IsType<AllActuatorsStartupFilter>(filter);
+        host.Services.GetServices<IHealthContributor>().OfType<DownContributor>().Should().HaveCount(1);
     }
 
     [Fact]

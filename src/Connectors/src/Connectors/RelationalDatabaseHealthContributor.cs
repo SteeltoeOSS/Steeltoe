@@ -6,8 +6,8 @@ using System.Data.Common;
 using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Connectors;
 

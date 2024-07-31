@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -35,7 +36,31 @@ public static class ServiceCollectionExtensions
 
         services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
         services.ConfigureOptionsWithChangeTokenSource<SpringBootAdminClientOptions, ConfigureSpringBootAdminClientOptions>();
+
+        ConfigureHttpClient(services);
+
         services.AddHostedService<SpringBootAdminClientHostedService>();
         return services;
+    }
+
+    private static void ConfigureHttpClient(IServiceCollection services)
+    {
+        services.TryAddSingleton<HttpClientHandlerFactory>();
+        services.TryAddSingleton<ValidateCertificatesHttpClientHandlerConfigurer<SpringBootAdminClientOptions>>();
+
+        IHttpClientBuilder httpClientBuilder = services.AddHttpClient(SpringBootAdminClientHostedService.HttpClientName);
+
+        httpClientBuilder.ConfigurePrimaryHttpMessageHandler(serviceProvider =>
+        {
+            var handlerFactory = serviceProvider.GetRequiredService<HttpClientHandlerFactory>();
+            HttpClientHandler handler = handlerFactory.Create();
+
+            var validateCertificatesHandler =
+                serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<SpringBootAdminClientOptions>>();
+
+            validateCertificatesHandler.Configure(handler);
+
+            return handler;
+        });
     }
 }

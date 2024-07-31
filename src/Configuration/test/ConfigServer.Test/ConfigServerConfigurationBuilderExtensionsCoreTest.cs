@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.Utils.IO;
+using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 

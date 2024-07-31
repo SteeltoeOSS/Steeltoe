@@ -171,7 +171,7 @@
                 },
                 "Uri": {
                   "type": "string",
-                  "description": "Gets or sets the Config Server address. Default value: \"http://localhost:8888\"."
+                  "description": "Gets or sets a comma-delimited list of Config Server addresses. Default value: \"http://localhost:8888\"."
                 },
                 "Username": {
                   "type": "string",

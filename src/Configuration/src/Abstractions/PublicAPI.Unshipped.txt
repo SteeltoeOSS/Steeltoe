@@ -3,8 +3,6 @@ override Steeltoe.Configuration.CredentialConverter.CanConvertFrom(System.Compon
 override Steeltoe.Configuration.CredentialConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture, object! value) -> object?
 Steeltoe.Configuration.BaseServiceOptions
 Steeltoe.Configuration.BaseServiceOptions.BaseServiceOptions() -> void
-Steeltoe.Configuration.BaseServiceOptions.BaseServiceOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration) -> void
-Steeltoe.Configuration.BaseServiceOptions.BaseServiceOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration, string? sectionPrefix) -> void
 Steeltoe.Configuration.BaseServiceOptions.Bind(Microsoft.Extensions.Configuration.IConfiguration! configuration, string! serviceName) -> void
 Steeltoe.Configuration.BaseServiceOptions.GetAllServices() -> System.Collections.Generic.IList<Steeltoe.Configuration.Service!>!
 Steeltoe.Configuration.BaseServiceOptions.GetServicesOfType(string! serviceType) -> System.Collections.Generic.IList<Steeltoe.Configuration.Service!>!
@@ -28,8 +26,4 @@ Steeltoe.Configuration.IPlaceholderResolverProvider.ResolvedKeys.get -> System.C
 Steeltoe.Configuration.Service
 Steeltoe.Configuration.Service.Credentials.get -> System.Collections.Generic.IDictionary<string!, Steeltoe.Configuration.Credential!>!
 Steeltoe.Configuration.Service.Service() -> void
-Steeltoe.Configuration.ServicesOptions
-Steeltoe.Configuration.ServicesOptions.ServicesOptions() -> void
-Steeltoe.Configuration.ServicesOptions.ServicesOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration) -> void
-Steeltoe.Configuration.ServicesOptions.ServicesOptions(Microsoft.Extensions.Configuration.IConfiguration! configuration, string? sectionPrefix) -> void
 virtual Steeltoe.Configuration.BaseServiceOptions.ConfigurationPrefix.get -> string!

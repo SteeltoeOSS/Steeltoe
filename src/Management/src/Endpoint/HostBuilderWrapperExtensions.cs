@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -51,18 +50,6 @@ internal static class HostBuilderWrapperExtensions
     public static void AddHealthActuator(this HostBuilderWrapper wrapper)
     {
         wrapper.ConfigureServices(services => services.AddHealthActuator());
-        RegisterActuatorEndpoints(wrapper, null);
-    }
-
-    public static void AddHealthActuator(this HostBuilderWrapper wrapper, Type[] contributorTypes)
-    {
-        wrapper.ConfigureServices(services => services.AddHealthActuator(contributorTypes));
-        RegisterActuatorEndpoints(wrapper, null);
-    }
-
-    public static void AddHealthActuator(this HostBuilderWrapper wrapper, IHealthAggregator aggregator, Type[] contributorTypes)
-    {
-        wrapper.ConfigureServices(services => services.AddHealthActuator(aggregator, contributorTypes));
         RegisterActuatorEndpoints(wrapper, null);
     }
 
@@ -135,7 +122,12 @@ internal static class HostBuilderWrapperExtensions
 
     public static void AddCloudFoundryActuator(this HostBuilderWrapper wrapper)
     {
-        wrapper.ConfigureServices(services => services.AddCloudFoundryActuator());
+        wrapper.ConfigureServices(services =>
+        {
+            services.AddCloudFoundryActuator();
+            services.AddCloudFoundrySecurity();
+        });
+
         RegisterActuatorEndpoints(wrapper, null);
     }
 

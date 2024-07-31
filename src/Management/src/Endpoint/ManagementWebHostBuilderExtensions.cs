@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Steeltoe.Common;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Management.Info;
 
@@ -67,56 +66,6 @@ public static class ManagementWebHostBuilderExtensions
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddHealthActuator();
-
-        return builder;
-    }
-
-    /// <summary>
-    /// Adds the Health actuator to the application.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IWebHostBuilder" /> to configure.
-    /// </param>
-    /// <param name="contributorTypes">
-    /// Types that contribute to the overall health of the app.
-    /// </param>
-    /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
-    /// </returns>
-    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder builder, params Type[] contributorTypes)
-    {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(contributorTypes);
-
-        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddHealthActuator(contributorTypes);
-
-        return builder;
-    }
-
-    /// <summary>
-    /// Adds the Health actuator to the application.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IWebHostBuilder" /> to configure.
-    /// </param>
-    /// <param name="aggregator">
-    /// Custom health aggregator.
-    /// </param>
-    /// <param name="contributorTypes">
-    /// Types that contribute to the overall health of the app.
-    /// </param>
-    /// <returns>
-    /// The incoming <see cref="IWebHostBuilder" /> so that additional calls can be chained.
-    /// </returns>
-    public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder builder, IHealthAggregator aggregator, params Type[] contributorTypes)
-    {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(aggregator);
-        ArgumentGuard.NotNull(contributorTypes);
-
-        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddHealthActuator(aggregator, contributorTypes);
 
         return builder;
     }

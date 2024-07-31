@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
-using Steeltoe.Common.Utils.IO;
+using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Common.Test.Configuration;
 

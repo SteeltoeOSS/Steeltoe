@@ -4,7 +4,9 @@
 
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
@@ -44,7 +46,13 @@ public sealed class SecurityUtilsTest : BaseTest
 
     private static SecurityUtils GetSecurityUtils()
     {
-        var options = GetOptionsFromSettings<CloudFoundryEndpointOptions>();
-        return new SecurityUtils(options, NullLogger.Instance);
+        IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
+
+        var services = new ServiceCollection();
+        services.AddCloudFoundrySecurity();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+
+        return new SecurityUtils(optionsMonitor, httpClientFactory, NullLogger<SecurityUtils>.Instance);
     }
 }

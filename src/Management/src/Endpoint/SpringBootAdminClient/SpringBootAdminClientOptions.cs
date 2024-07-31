@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#pragma warning disable S4004 // Collection properties should be readonly
+using Steeltoe.Common.Http.HttpClientPooling;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
-public sealed class SpringBootAdminClientOptions
+public sealed class SpringBootAdminClientOptions : IValidateCertificatesOptions
 {
+    internal TimeSpan ConnectionTimeout => TimeSpan.FromMilliseconds(ConnectionTimeoutMs);
+
     public string? Url { get; set; }
 
     /// <summary>
@@ -31,7 +33,7 @@ public sealed class SpringBootAdminClientOptions
     public int ConnectionTimeoutMs { get; set; } = 100000;
 
     /// <summary>
-    /// Gets or sets metadata to use when registering with SBA.
+    /// Gets metadata to use when registering with SBA.
     /// </summary>
-    public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
+    public IDictionary<string, object> Metadata { get; } = new Dictionary<string, object>();
 }

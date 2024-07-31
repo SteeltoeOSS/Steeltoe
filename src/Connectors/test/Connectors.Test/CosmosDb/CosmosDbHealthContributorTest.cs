@@ -157,6 +157,6 @@ public sealed class CosmosDbHealthContributorTest
         services.AddOptions<CosmosDbOptions>(serviceName).Configure(dbOptions => dbOptions.ConnectionString = connectionString);
         services.AddSingleton(provider => new ConnectorFactory<CosmosDbOptions, CosmosClient>(provider, serviceNames, (_, _) => cosmosClient, true));
 
-        return services.BuildServiceProvider();
+        return services.BuildServiceProvider(true);
     }
 }

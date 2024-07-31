@@ -20,8 +20,8 @@ public sealed class EmptyAutoConfigurationTest
         {
             "Steeltoe.Bootstrap.AutoConfiguration.dll",
             "Steeltoe.Common.dll",
-            "Steeltoe.Common.Abstractions.dll",
             "Steeltoe.Common.Hosting.dll",
+            "Steeltoe.Common.Logging.dll",
 
             "Steeltoe.Bootstrap.EmptyAutoConfiguration.Test.dll",
             "Steeltoe.Common.TestResources.dll"

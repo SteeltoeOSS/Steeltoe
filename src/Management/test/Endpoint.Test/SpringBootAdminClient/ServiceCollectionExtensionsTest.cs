@@ -25,6 +25,6 @@ public sealed class ServiceCollectionExtensionsTest
         services.AddSpringBootAdminClient();
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Assert.IsType<SpringBootAdminClientHostedService>(serviceProvider.GetRequiredService<IHostedService>());
+        Assert.NotEmpty(serviceProvider.GetServices<IHostedService>().OfType<SpringBootAdminClientHostedService>());
     }
 }

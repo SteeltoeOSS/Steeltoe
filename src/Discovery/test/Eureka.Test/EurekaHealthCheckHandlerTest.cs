@@ -4,6 +4,7 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -33,10 +34,10 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var services = new ServiceCollection();
         services.AddSingleton<IHealthContributor>(contributor);
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
-        var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
+        var handler = new EurekaHealthCheckHandler(new HealthAggregator(), optionsMonitor, serviceProvider);
         InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
 
         result.Should().Be(expectedStatus);
@@ -46,10 +47,10 @@ public sealed class EurekaHealthCheckHandlerTest
     public async Task Instance_status_is_up_when_no_health_contributors()
     {
         var services = new ServiceCollection();
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
-        var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
+        var handler = new EurekaHealthCheckHandler(new HealthAggregator(), optionsMonitor, serviceProvider);
         InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
 
         result.Should().Be(InstanceStatus.Up);
@@ -62,10 +63,10 @@ public sealed class EurekaHealthCheckHandlerTest
 
         var services = new ServiceCollection();
         services.AddSingleton<IHealthContributor>(contributor);
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
-        var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
+        var handler = new EurekaHealthCheckHandler(new HealthAggregator(), optionsMonitor, serviceProvider);
         InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
 
         result.Should().Be(InstanceStatus.Unknown);
@@ -109,10 +110,10 @@ public sealed class EurekaHealthCheckHandlerTest
         var services = new ServiceCollection();
         services.AddSingleton(contributors[0]);
         services.AddSingleton(contributors[1]);
-        await using ServiceProvider serviceProvider = services.BuildServiceProvider();
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = new TestOptionsMonitor<HealthCheckServiceOptions>();
-        var handler = new EurekaHealthCheckHandler(new DefaultHealthAggregator(), optionsMonitor, serviceProvider);
+        var handler = new EurekaHealthCheckHandler(new HealthAggregator(), optionsMonitor, serviceProvider);
         InstanceStatus result = await handler.GetStatusAsync(false, CancellationToken.None);
 
         result.Should().Be(expectedStatus);
@@ -122,6 +123,7 @@ public sealed class EurekaHealthCheckHandlerTest
     public async Task AddEurekaDiscoveryClient_uses_health_check_handler()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         var contributor = new TestHealthContributor(HealthStatus.Up);
         builder.Services.AddSingleton<IHealthContributor>(contributor);

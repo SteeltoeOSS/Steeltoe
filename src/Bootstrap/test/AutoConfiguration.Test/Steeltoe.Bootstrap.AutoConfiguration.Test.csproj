@@ -7,19 +7,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Configuration.ConfigServer.csproj" />
-    <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Configuration.RandomValue.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\src\Connectors\Steeltoe.Connectors.csproj" />
-    <ProjectReference Include="..\..\..\Discovery\src\Configuration\Steeltoe.Discovery.Configuration.csproj" />
-    <ProjectReference Include="..\..\..\Discovery\src\Consul\Steeltoe.Discovery.Consul.csproj" />
-    <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
-    <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Logging.DynamicSerilog.csproj" />
-    <ProjectReference Include="..\..\..\Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj" />
-    <ProjectReference Include="..\..\..\Management\src\Tracing\Steeltoe.Management.Tracing.csproj" />
-    <ProjectReference Include="..\..\src\AutoConfiguration\Steeltoe.Bootstrap.AutoConfiguration.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="$(MicrosoftAzureCosmosVersion)" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftSqlClientVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MatchTargetFrameworkVersion)" />
@@ -27,6 +14,18 @@
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
     <PackageReference Include="Npgsql" Version="$(EntityFrameworkCoreTestVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
-    <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Configuration.ConfigServer.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\RandomValue\Steeltoe.Configuration.RandomValue.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connectors\Steeltoe.Connectors.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\Configuration\Steeltoe.Discovery.Configuration.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\Consul\Steeltoe.Discovery.Consul.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicSerilog\Steeltoe.Logging.DynamicSerilog.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\Prometheus\Steeltoe.Management.Prometheus.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\Tracing\Steeltoe.Management.Tracing.csproj" />
+    <ProjectReference Include="..\..\src\AutoConfiguration\Steeltoe.Bootstrap.AutoConfiguration.csproj" />
   </ItemGroup>
 </Project>

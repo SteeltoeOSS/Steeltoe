@@ -1,0 +1,193 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+#nullable enable
+
+using System.Collections.Concurrent;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Steeltoe.Common.CasingConventions;
+using MicrosoftHealthCheckResult = Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult;
+using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
+using SteeltoeHealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
+using SteeltoeHealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
+
+namespace Steeltoe.Common.HealthChecks;
+
+internal sealed class HealthAggregator : IHealthAggregator
+{
+    public async Task<SteeltoeHealthCheckResult> AggregateAsync(ICollection<IHealthContributor> contributors,
+        ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    {
+        ArgumentGuard.NotNull(contributors);
+        ArgumentGuard.NotNull(healthCheckRegistrations);
+        ArgumentGuard.NotNull(serviceProvider);
+
+        SteeltoeHealthCheckResult contributorsResult = await AggregateHealthContributorsAsync(contributors, cancellationToken);
+
+        IDictionary<string, SteeltoeHealthCheckResult> healthCheckResults =
+            await AggregateMicrosoftHealthChecksAsync(contributors, healthCheckRegistrations, serviceProvider, cancellationToken);
+
+        return AddChecksSetStatus(contributorsResult, healthCheckResults);
+    }
+
+    private async Task<SteeltoeHealthCheckResult> AggregateHealthContributorsAsync(ICollection<IHealthContributor> contributors,
+        CancellationToken cancellationToken)
+    {
+        ArgumentGuard.NotNull(contributors);
+
+        if (contributors.Count == 0)
+        {
+            return new SteeltoeHealthCheckResult();
+        }
+
+        var aggregatorResult = new SteeltoeHealthCheckResult();
+        var healthChecks = new ConcurrentDictionary<string, SteeltoeHealthCheckResult>();
+        var keyList = new ConcurrentBag<string>();
+
+        await Parallel.ForEachAsync(contributors, cancellationToken, async (contributor, _) =>
+        {
+            string contributorId = GetKey(keyList, contributor.Id);
+            SteeltoeHealthCheckResult? healthCheckResult;
+
+            try
+            {
+                healthCheckResult = await contributor.CheckHealthAsync(cancellationToken);
+            }
+            catch (Exception exception) when (!exception.IsCancellation())
+            {
+                healthCheckResult = new SteeltoeHealthCheckResult();
+            }
+
+            if (healthCheckResult != null)
+            {
+                healthChecks.TryAdd(contributorId, healthCheckResult);
+            }
+        });
+
+        return AddChecksSetStatus(aggregatorResult, healthChecks);
+    }
+
+    private static async Task<IDictionary<string, SteeltoeHealthCheckResult>> AggregateMicrosoftHealthChecksAsync(ICollection<IHealthContributor> contributors,
+        ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    {
+        if (healthCheckRegistrations.Count == 0)
+        {
+            return new Dictionary<string, SteeltoeHealthCheckResult>();
+        }
+
+        var healthChecks = new ConcurrentDictionary<string, SteeltoeHealthCheckResult>();
+        var keys = new ConcurrentBag<string>(contributors.Select(contributor => contributor.Id));
+
+        // run all HealthCheckRegistration checks in parallel
+        await Parallel.ForEachAsync(healthCheckRegistrations, cancellationToken, async (registration, _) =>
+        {
+            string contributorName = GetKey(keys, registration.Name);
+            SteeltoeHealthCheckResult healthCheckResult;
+
+            try
+            {
+                healthCheckResult = await RunMicrosoftHealthCheckAsync(serviceProvider, registration, cancellationToken);
+            }
+            catch (Exception exception) when (!exception.IsCancellation())
+            {
+                healthCheckResult = new SteeltoeHealthCheckResult();
+            }
+
+            healthChecks.TryAdd(contributorName, healthCheckResult);
+        });
+
+        return healthChecks;
+    }
+
+    private static async Task<SteeltoeHealthCheckResult> RunMicrosoftHealthCheckAsync(IServiceProvider serviceProvider, HealthCheckRegistration registration,
+        CancellationToken cancellationToken)
+    {
+        var context = new HealthCheckContext
+        {
+            Registration = registration
+        };
+
+        var healthCheckResult = new SteeltoeHealthCheckResult();
+
+        try
+        {
+            IHealthCheck check = registration.Factory(serviceProvider);
+            MicrosoftHealthCheckResult result = await check.CheckHealthAsync(context, cancellationToken);
+
+            SteeltoeHealthStatus status = ToHealthStatus(result.Status);
+            healthCheckResult.Status = status; // Only used for aggregate, doesn't get reported
+            healthCheckResult.Description = result.Description;
+
+            healthCheckResult.Details = new Dictionary<string, object>(result.Data)
+            {
+                { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) }
+            };
+
+            if (result.Description != null)
+            {
+                healthCheckResult.Details.Add("description", result.Description);
+            }
+
+            if (result.Exception != null && !string.IsNullOrEmpty(result.Exception.Message))
+            {
+                healthCheckResult.Details.Add("error", result.Exception.Message);
+            }
+        }
+        catch (Exception exception) when (!exception.IsCancellation())
+        {
+            // Catch all exceptions so that a status can always be returned
+            healthCheckResult.Details.Add("exception", exception.Message);
+        }
+
+        return healthCheckResult;
+    }
+
+    private static SteeltoeHealthStatus ToHealthStatus(MicrosoftHealthStatus status)
+    {
+        return status switch
+        {
+            MicrosoftHealthStatus.Healthy => SteeltoeHealthStatus.Up,
+            MicrosoftHealthStatus.Degraded => SteeltoeHealthStatus.Warning,
+            MicrosoftHealthStatus.Unhealthy => SteeltoeHealthStatus.Down,
+            _ => SteeltoeHealthStatus.Unknown
+        };
+    }
+
+    private static string GetKey(ConcurrentBag<string> keys, string key)
+    {
+        ArgumentGuard.NotNull(keys);
+
+        lock (keys)
+        {
+            // add the contributor with a -n appended to the id
+            if (keys.Any(value => value == key))
+            {
+                string newKey = $"{key}-{keys.Count(value => value.StartsWith(key, StringComparison.Ordinal))}";
+                keys.Add(newKey);
+                return newKey;
+            }
+
+            keys.Add(key);
+            return key;
+        }
+    }
+
+    private static SteeltoeHealthCheckResult AddChecksSetStatus(SteeltoeHealthCheckResult result, IDictionary<string, SteeltoeHealthCheckResult> healthChecks)
+    {
+        ArgumentGuard.NotNull(result);
+        ArgumentGuard.NotNull(healthChecks);
+
+        foreach (KeyValuePair<string, SteeltoeHealthCheckResult> healthCheck in healthChecks)
+        {
+            if (healthCheck.Value.Status > result.Status)
+            {
+                result.Status = healthCheck.Value.Status;
+            }
+
+            result.Details.Add(healthCheck.Key, healthCheck.Value);
+        }
+
+        return result;
+    }
+}

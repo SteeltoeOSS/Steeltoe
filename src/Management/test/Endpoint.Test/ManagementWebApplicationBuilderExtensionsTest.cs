@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
-using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
@@ -19,6 +18,8 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Environment;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Health.Availability;
+using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Info.Contributor;
@@ -73,38 +74,36 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
         hostBuilder.AddHealthActuator();
-
         await using WebApplication host = hostBuilder.Build();
+
         await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
 
-        Assert.Single(scope.ServiceProvider.GetServices<IHealthEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
+        scope.ServiceProvider.GetService<IHealthEndpointHandler>().Should().NotBeNull();
+        host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().HaveCount(1);
+        host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
+
+        IHealthContributor[] healthContributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToArray();
+        healthContributors.Should().HaveCount(3);
+        healthContributors.Should().ContainSingle(contributor => contributor is DiskSpaceContributor);
+        healthContributors.Should().ContainSingle(contributor => contributor is LivenessHealthContributor);
+        healthContributors.Should().ContainSingle(contributor => contributor is ReadinessHealthContributor);
     }
 
     [Fact]
-    public async Task AddHealthActuator_WebApplicationBuilder_WithTypes()
+    public async Task AddHealthActuator_WebApplicationBuilder_WithContributor()
     {
         WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
-        hostBuilder.AddHealthActuator(typeof(DownContributor));
-
+        hostBuilder.AddHealthActuator();
+        hostBuilder.Services.AddHealthContributor<DownContributor>();
         await using WebApplication host = hostBuilder.Build();
+
         await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
 
-        Assert.Single(scope.ServiceProvider.GetServices<IHealthEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-    }
+        scope.ServiceProvider.GetService<IHealthEndpointHandler>().Should().NotBeNull();
+        host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().Should().HaveCount(1);
+        host.Services.GetService<IHealthAggregator>().Should().NotBeNull();
 
-    [Fact]
-    public async Task AddHealthActuator_WebApplicationBuilder_WithAggregator()
-    {
-        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
-        hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), typeof(DownContributor));
-
-        await using WebApplication host = hostBuilder.Build();
-        await using AsyncServiceScope scope = host.Services.CreateAsyncScope();
-
-        Assert.Single(scope.ServiceProvider.GetServices<IHealthEndpointHandler>());
-        Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
+        scope.ServiceProvider.GetServices<IHealthContributor>().OfType<DownContributor>().Should().HaveCount(1);
     }
 
     [Fact]

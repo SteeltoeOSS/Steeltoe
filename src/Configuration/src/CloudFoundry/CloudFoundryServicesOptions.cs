@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
-public class CloudFoundryServicesOptions : ServicesOptions
+public sealed class CloudFoundryServicesOptions : BaseServiceOptions
 {
     internal const string ServicesConfigurationRoot = "vcap";
 
@@ -18,7 +19,9 @@ public class CloudFoundryServicesOptions : ServicesOptions
     }
 
     public CloudFoundryServicesOptions(IConfiguration configuration)
-        : base(configuration, ServicesConfigurationRoot)
     {
+        ArgumentGuard.NotNull(configuration);
+
+        configuration.GetSection(ServicesConfigurationRoot).Bind(this);
     }
 }

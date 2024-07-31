@@ -859,7 +859,7 @@
                       "additionalProperties": {
                         "type": "object"
                       },
-                      "description": "Gets or sets metadata to use when registering with SBA."
+                      "description": "Gets metadata to use when registering with SBA."
                     },
                     "Url": {
                       "type": "string"

@@ -2,25 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Options;
+using Steeltoe.Common.Configuration;
+using Steeltoe.Common.Http.HttpClientPooling;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
 /// <summary>
 /// Holds settings used to configure the Spring Cloud Config Server provider.
 /// </summary>
-public sealed class ConfigServerClientOptions : AbstractOptions
+public sealed class ConfigServerClientOptions : IValidateCertificatesOptions
 {
-    private const char ColonDelimiter = ':';
     private const char CommaDelimiter = ',';
     internal const string ConfigurationPrefix = "spring:cloud:config";
 
-    private string? _username;
-    private string? _password;
-
-    internal X509Certificate2? ClientCertificate { get; set; }
+    internal CertificateOptions ClientCertificate { get; } = new();
+    internal TimeSpan HttpTimeout => TimeSpan.FromMilliseconds(Timeout);
+    internal bool IsMultiServerConfiguration => Uri != null && Uri.Contains(CommaDelimiter);
 
     /// <summary>
     /// Gets or sets a value indicating whether the Config Server provider is enabled. Default value: true.
@@ -49,27 +47,19 @@ public sealed class ConfigServerClientOptions : AbstractOptions
     public string? Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the Config Server address. Default value: "http://localhost:8888".
+    /// Gets or sets a comma-delimited list of Config Server addresses. Default value: "http://localhost:8888".
     /// </summary>
     public string? Uri { get; set; } = "http://localhost:8888";
 
     /// <summary>
     /// Gets or sets the username used when accessing the Config Server.
     /// </summary>
-    public string? Username
-    {
-        get => GetUserName(Uri);
-        set => _username = value;
-    }
+    public string? Username { get; set; }
 
     /// <summary>
     /// Gets or sets the password used when accessing the Config Server.
     /// </summary>
-    public string? Password
-    {
-        get => GetPassword(Uri);
-        set => _password = value;
-    }
+    public string? Password { get; set; }
 
     /// <summary>
     /// Gets or sets the token used for Vault.
@@ -144,78 +134,6 @@ public sealed class ConfigServerClientOptions : AbstractOptions
     /// Gets headers that will be added to the Config Server request.
     /// </summary>
     public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
-
-    internal string? GetPassword(string? uri)
-    {
-        if (!string.IsNullOrEmpty(_password))
-        {
-            return _password;
-        }
-
-        return GetUserPassElement(uri, 1);
-    }
-
-    internal string? GetUserName(string? uri)
-    {
-        if (!string.IsNullOrEmpty(_username))
-        {
-            return _username;
-        }
-
-        return GetUserPassElement(uri, 0);
-    }
-
-    private static string? GetUserPassElement(string? uri, int index)
-    {
-        if (!string.IsNullOrEmpty(uri) && !IsMultiServerConfiguration(uri))
-        {
-            string userInfo = new Uri(uri).UserInfo;
-
-            if (!string.IsNullOrEmpty(userInfo))
-            {
-                string[] segments = userInfo.Split(ColonDelimiter);
-
-                if (segments.Length > index)
-                {
-                    return segments[index];
-                }
-            }
-        }
-
-        return null;
-    }
-
-    internal static bool IsMultiServerConfiguration(string uris)
-    {
-        return uris.Contains(CommaDelimiter);
-    }
-
-    internal static string? GetRawUri(string uri)
-    {
-        try
-        {
-            var tempUri = new Uri(uri);
-            return tempUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
-        }
-        catch (UriFormatException)
-        {
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Gets unescaped <see cref="UriComponents.HttpRequestUrl" />s.
-    /// </summary>
-    internal IList<string> GetRawUris()
-    {
-        if (!string.IsNullOrEmpty(Uri))
-        {
-            string[] uris = Uri.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            return uris.Select(GetRawUri).Where(uri => !string.IsNullOrEmpty(uri)).Cast<string>().ToList();
-        }
-
-        return [];
-    }
 
     internal IList<string> GetUris()
     {
