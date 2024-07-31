@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Management.Task.Test;
+namespace Steeltoe.Management.Tasks.Test;
 
 public sealed class TestServerStartup
 {

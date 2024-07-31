@@ -7,6 +7,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Task\Steeltoe.Management.Task.csproj" />
+    <ProjectReference Include="..\..\src\Tasks\Steeltoe.Management.Tasks.csproj" />
   </ItemGroup>
 </Project>

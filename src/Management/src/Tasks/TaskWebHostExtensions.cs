@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.Task;
+namespace Steeltoe.Management.Tasks;
 
 public static class TaskWebHostExtensions
 {

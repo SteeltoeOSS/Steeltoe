@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
 
-namespace Steeltoe.Management.Task.Test;
+namespace Steeltoe.Management.Tasks.Test;
 
 public sealed class TaskRunTest
 {

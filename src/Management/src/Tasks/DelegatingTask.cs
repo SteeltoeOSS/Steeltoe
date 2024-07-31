@@ -4,7 +4,7 @@
 
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.Task;
+namespace Steeltoe.Management.Tasks;
 
 internal sealed class DelegatingTask : IApplicationTask
 {

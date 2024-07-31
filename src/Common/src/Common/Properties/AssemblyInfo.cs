@@ -28,7 +28,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Prometheus")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Task")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.Tasks")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Tracing.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Wavefront")]
