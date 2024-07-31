@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 namespace Steeltoe.Discovery.HttpClients;

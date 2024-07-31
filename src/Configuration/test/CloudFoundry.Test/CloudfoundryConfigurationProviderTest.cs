@@ -39,11 +39,11 @@ public sealed class CloudFoundryConfigurationProviderTest
         var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
         provider.Load();
-        IDictionary<string, string?> dict = provider.Properties;
-        Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", dict["vcap:application:application_id"]);
-        Assert.Equal("1024", dict["vcap:application:limits:disk"]);
-        Assert.Equal("my-app.10.244.0.34.xip.io", dict["vcap:application:uris:0"]);
-        Assert.Equal("my-app2.10.244.0.34.xip.io", dict["vcap:application:uris:1"]);
+        IDictionary<string, string?> properties = provider.Properties;
+        Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", properties["vcap:application:application_id"]);
+        Assert.Equal("1024", properties["vcap:application:limits:disk"]);
+        Assert.Equal("my-app.10.244.0.34.xip.io", properties["vcap:application:uris:0"]);
+        Assert.Equal("my-app2.10.244.0.34.xip.io", properties["vcap:application:uris:1"]);
     }
 
     [Fact]
@@ -80,9 +80,9 @@ public sealed class CloudFoundryConfigurationProviderTest
         var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
         provider.Load();
-        IDictionary<string, string?> dict = provider.Properties;
-        Assert.Equal("elephantsql-c6c60", dict["vcap:services:elephantsql:0:name"]);
-        Assert.Equal("mysendgrid", dict["vcap:services:sendgrid:0:name"]);
+        IDictionary<string, string?> properties = provider.Properties;
+        Assert.Equal("elephantsql-c6c60", properties["vcap:services:elephantsql:0:name"]);
+        Assert.Equal("mysendgrid", properties["vcap:services:sendgrid:0:name"]);
     }
 
     [Fact]
@@ -156,20 +156,23 @@ public sealed class CloudFoundryConfigurationProviderTest
         var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
         provider.Load();
-        IDictionary<string, string?> dict = provider.Properties;
-        Assert.Equal("myConfigServer", dict["vcap:services:p-config-server:0:name"]);
-        Assert.Equal("https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.testcloud.com", dict["vcap:services:p-config-server:0:credentials:uri"]);
-        Assert.Equal("myServiceRegistry", dict["vcap:services:p-service-registry:0:name"]);
-        Assert.Equal("https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.testcloud.com", dict["vcap:services:p-service-registry:0:credentials:uri"]);
-        Assert.Equal("mySql1", dict["vcap:services:p-mysql:0:name"]);
+        IDictionary<string, string?> properties = provider.Properties;
+        Assert.Equal("myConfigServer", properties["vcap:services:p-config-server:0:name"]);
+        Assert.Equal("https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.testcloud.com", properties["vcap:services:p-config-server:0:credentials:uri"]);
+        Assert.Equal("myServiceRegistry", properties["vcap:services:p-service-registry:0:name"]);
+
+        Assert.Equal("https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.testcloud.com",
+            properties["vcap:services:p-service-registry:0:credentials:uri"]);
+
+        Assert.Equal("mySql1", properties["vcap:services:p-mysql:0:name"]);
 
         Assert.Equal("mysql://9vD0Mtk3wFFuaaaY:Cjn4HsAiKV8sImst@192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?reconnect=true",
-            dict["vcap:services:p-mysql:0:credentials:uri"]);
+            properties["vcap:services:p-mysql:0:credentials:uri"]);
 
-        Assert.Equal("mySql2", dict["vcap:services:p-mysql:1:name"]);
+        Assert.Equal("mySql2", properties["vcap:services:p-mysql:1:name"]);
 
         Assert.Equal("mysql://gxXQb2pMbzFsZQW8:lvMkGf6oJQvKSOwn@192.168.0.97:3306/cf_b2d83697_5fa1_4a51_991b_975c9d7e5515?reconnect=true",
-            dict["vcap:services:p-mysql:1:credentials:uri"]);
+            properties["vcap:services:p-mysql:1:credentials:uri"]);
     }
 
     [Fact]

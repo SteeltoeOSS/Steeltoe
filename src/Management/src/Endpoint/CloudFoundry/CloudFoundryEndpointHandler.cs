@@ -19,30 +19,30 @@ internal sealed class CloudFoundryEndpointHandler : ICloudFoundryEndpointHandler
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _endpointOptionsMonitor;
     private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
-    private readonly ILogger<CloudFoundryEndpointHandler> _logger;
+    private readonly ILogger<HypermediaService> _hypermediaServiceLogger;
 
     public EndpointOptions Options => _endpointOptionsMonitor.CurrentValue;
 
     public CloudFoundryEndpointHandler(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection,
-        ILogger<CloudFoundryEndpointHandler> logger)
+        ILoggerFactory loggerFactory)
     {
         ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(endpointOptionsMonitor);
         ArgumentGuard.NotNull(endpointOptionsCollection);
-        ArgumentGuard.NotNull(logger);
+        ArgumentGuard.NotNull(loggerFactory);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
         _endpointOptionsCollection = endpointOptionsCollection.ToList();
-        _logger = logger;
+        _hypermediaServiceLogger = loggerFactory.CreateLogger<HypermediaService>();
     }
 
     public async Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(baseUrl);
 
-        var hypermediaService = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsCollection, _logger);
+        var hypermediaService = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsCollection, _hypermediaServiceLogger);
         Links result = hypermediaService.Invoke(baseUrl);
         return await Task.FromResult(result);
     }

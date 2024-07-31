@@ -163,22 +163,22 @@ public sealed class HealthEndpointTest : BaseTest
 
         var handler = (HealthEndpointHandler)testContext.GetRequiredScopedService<IHealthEndpointHandler>();
 
-        Assert.Equal(503, handler.GetStatusCode(new HealthCheckResult
+        Assert.Equal(503, handler.GetStatusCode(new HealthEndpointResponse
         {
             Status = HealthStatus.Down
         }));
 
-        Assert.Equal(503, handler.GetStatusCode(new HealthCheckResult
+        Assert.Equal(503, handler.GetStatusCode(new HealthEndpointResponse
         {
             Status = HealthStatus.OutOfService
         }));
 
-        Assert.Equal(200, handler.GetStatusCode(new HealthCheckResult
+        Assert.Equal(200, handler.GetStatusCode(new HealthEndpointResponse
         {
             Status = HealthStatus.Up
         }));
 
-        Assert.Equal(200, handler.GetStatusCode(new HealthCheckResult
+        Assert.Equal(200, handler.GetStatusCode(new HealthEndpointResponse
         {
             Status = HealthStatus.Unknown
         }));

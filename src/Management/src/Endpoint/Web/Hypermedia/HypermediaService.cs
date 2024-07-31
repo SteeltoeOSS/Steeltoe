@@ -15,10 +15,11 @@ internal sealed class HypermediaService
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly EndpointOptions _endpointOptions;
     private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
-    private readonly ILogger _logger;
+    private readonly ILogger<HypermediaService> _logger;
 
     public HypermediaService(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<HypermediaEndpointOptions> hypermediaEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection, ILogger logger)
+        IOptionsMonitor<HypermediaEndpointOptions> hypermediaEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection,
+        ILogger<HypermediaService> logger)
     {
         ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(hypermediaEndpointOptionsMonitor);
@@ -32,7 +33,8 @@ internal sealed class HypermediaService
     }
 
     public HypermediaService(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
-        IOptionsMonitor<CloudFoundryEndpointOptions> cloudFoundryEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection, ILogger logger)
+        IOptionsMonitor<CloudFoundryEndpointOptions> cloudFoundryEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection,
+        ILogger<HypermediaService> logger)
     {
         ArgumentGuard.NotNull(managementOptionsMonitor);
         ArgumentGuard.NotNull(cloudFoundryEndpointOptionsMonitor);

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Configuration.CloudFoundry.Test;

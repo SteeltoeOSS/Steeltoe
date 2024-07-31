@@ -15,7 +15,7 @@ public static class CloudFoundrySecurityServiceCollectionExtensions
     {
         ArgumentGuard.NotNull(services);
 
-        services.AddSingleton<SecurityUtils>();
+        services.AddSingleton<PermissionsProvider>();
         ConfigureHttpClient(services);
 
         return services;
@@ -26,7 +26,7 @@ public static class CloudFoundrySecurityServiceCollectionExtensions
         services.TryAddSingleton<HttpClientHandlerFactory>();
         services.TryAddSingleton<ValidateCertificatesHttpClientHandlerConfigurer<CloudFoundryEndpointOptions>>();
 
-        IHttpClientBuilder httpClientBuilder = services.AddHttpClient(SecurityUtils.HttpClientName);
+        IHttpClientBuilder httpClientBuilder = services.AddHttpClient(PermissionsProvider.HttpClientName);
 
         httpClientBuilder.ConfigurePrimaryHttpMessageHandler(serviceProvider =>
         {

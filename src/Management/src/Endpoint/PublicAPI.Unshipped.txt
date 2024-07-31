@@ -235,11 +235,16 @@ Steeltoe.Management.Endpoint.Health.HealthEndpointRequest.GroupName.get -> strin
 Steeltoe.Management.Endpoint.Health.HealthEndpointRequest.HasClaim.get -> bool
 Steeltoe.Management.Endpoint.Health.HealthEndpointRequest.HealthEndpointRequest(string! groupName, bool hasClaim) -> void
 Steeltoe.Management.Endpoint.Health.HealthEndpointResponse
+Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Description.get -> string?
+Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Description.init -> void
+Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Details.get -> System.Collections.Generic.IDictionary<string!, object!>!
 Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Exists.get -> bool
-Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Exists.set -> void
+Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Exists.init -> void
 Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Groups.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Groups.set -> void
-Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.HealthEndpointResponse(Steeltoe.Common.HealthChecks.HealthCheckResult? result) -> void
+Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.HealthEndpointResponse() -> void
+Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.HealthEndpointResponse(Steeltoe.Common.HealthChecks.HealthCheckResult! result) -> void
+Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Status.get -> Steeltoe.Common.HealthChecks.HealthStatus
+Steeltoe.Management.Endpoint.Health.HealthEndpointResponse.Status.init -> void
 Steeltoe.Management.Endpoint.Health.HealthGroupOptions
 Steeltoe.Management.Endpoint.Health.HealthGroupOptions.HealthGroupOptions() -> void
 Steeltoe.Management.Endpoint.Health.HealthGroupOptions.Include.get -> string?

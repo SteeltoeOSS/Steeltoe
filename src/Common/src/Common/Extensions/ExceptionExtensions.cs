@@ -6,7 +6,7 @@
 
 using System.Reflection;
 
-namespace Steeltoe.Common;
+namespace Steeltoe.Common.Extensions;
 
 public static class ExceptionExtensions
 {
@@ -35,7 +35,7 @@ public static class ExceptionExtensions
                 exception = exception.InnerException;
                 hasChanges = true;
             }
-            else if (exception is AggregateException aggregateException && aggregateException.InnerExceptions.Count == 1)
+            else if (exception is AggregateException { InnerExceptions.Count: 1 } aggregateException)
             {
                 exception = aggregateException.InnerExceptions[0];
                 hasChanges = true;

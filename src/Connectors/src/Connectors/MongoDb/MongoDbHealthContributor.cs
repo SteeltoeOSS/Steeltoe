@@ -6,6 +6,7 @@ using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.MongoDb.DynamicTypeAccess;

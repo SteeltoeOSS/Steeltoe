@@ -10,12 +10,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-internal sealed class SecurityUtils
+internal sealed class PermissionsProvider
 {
     private const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
     private const string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
@@ -31,9 +32,9 @@ internal sealed class SecurityUtils
 
     private readonly IOptionsMonitor<CloudFoundryEndpointOptions> _optionsMonitor;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger<SecurityUtils> _logger;
+    private readonly ILogger<PermissionsProvider> _logger;
 
-    public SecurityUtils(IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor, IHttpClientFactory httpClientFactory, ILogger<SecurityUtils> logger)
+    public PermissionsProvider(IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor, IHttpClientFactory httpClientFactory, ILogger<PermissionsProvider> logger)
     {
         ArgumentGuard.NotNull(optionsMonitor);
         ArgumentGuard.NotNull(httpClientFactory);

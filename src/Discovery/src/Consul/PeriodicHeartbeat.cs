@@ -5,6 +5,7 @@
 using Consul;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Discovery.Consul;
 

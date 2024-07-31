@@ -11,27 +11,27 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
 
-public sealed class SecurityUtilsTest : BaseTest
+public sealed class PermissionsProviderTest : BaseTest
 {
     [Fact]
     public void IsCloudFoundryRequest_ReturnsExpected()
     {
-        Assert.True(SecurityUtils.IsCloudFoundryRequest("/cloudfoundryapplication"));
-        Assert.True(SecurityUtils.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
+        Assert.True(PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication"));
+        Assert.True(PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
     }
 
     [Fact]
     public async Task GetPermissionsAsyncTest()
     {
-        SecurityUtils securityUtils = GetSecurityUtils();
-        SecurityResult result = await securityUtils.GetPermissionsAsync("testToken", CancellationToken.None);
+        PermissionsProvider permissionsProvider = GetPermissionsProvider();
+        SecurityResult result = await permissionsProvider.GetPermissionsAsync("testToken", CancellationToken.None);
         Assert.NotNull(result);
     }
 
     [Fact]
     public async Task GetPermissionsTest()
     {
-        SecurityUtils securityUtils = GetSecurityUtils();
+        PermissionsProvider permissionsProvider = GetPermissionsProvider();
         var response = new HttpResponseMessage(HttpStatusCode.OK);
 
         var permissions = new Dictionary<string, object>
@@ -40,11 +40,11 @@ public sealed class SecurityUtilsTest : BaseTest
         };
 
         response.Content = JsonContent.Create(permissions);
-        Permissions result = await securityUtils.GetPermissionsAsync(response, CancellationToken.None);
+        Permissions result = await permissionsProvider.GetPermissionsAsync(response, CancellationToken.None);
         Assert.Equal(Permissions.Full, result);
     }
 
-    private static SecurityUtils GetSecurityUtils()
+    private static PermissionsProvider GetPermissionsProvider()
     {
         IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor = GetOptionsMonitorFromSettings<CloudFoundryEndpointOptions>();
 
@@ -53,6 +53,6 @@ public sealed class SecurityUtilsTest : BaseTest
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 
-        return new SecurityUtils(optionsMonitor, httpClientFactory, NullLogger<SecurityUtils>.Instance);
+        return new PermissionsProvider(optionsMonitor, httpClientFactory, NullLogger<PermissionsProvider>.Instance);
     }
 }

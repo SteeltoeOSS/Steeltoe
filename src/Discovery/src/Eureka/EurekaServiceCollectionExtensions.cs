@@ -10,6 +10,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.Net;

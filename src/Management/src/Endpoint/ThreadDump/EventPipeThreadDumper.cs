@@ -14,6 +14,7 @@ using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 

@@ -2,17 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Steeltoe.Common.Configuration;
 
-public static class ConfigurationValuesHelper
+internal static class ConfigurationValuesHelper
 {
-    public static string GetSetting(string key, IConfiguration primary, IConfiguration secondary, IConfiguration resolve, string def)
+    public static string? GetSetting(string key, IConfiguration primary, IConfiguration secondary, IConfiguration? resolve, string? defaultValue)
     {
         // First check for key in primary
-        string setting = GetString(key, primary, resolve, null);
+        string? setting = GetString(key, primary, resolve, null);
 
         if (!string.IsNullOrEmpty(setting))
         {
@@ -27,37 +30,41 @@ public static class ConfigurationValuesHelper
             return setting;
         }
 
-        return def;
+        return defaultValue;
     }
 
     /// <summary>
-    /// Get setting from configuration searching the given sectionPrefix keys in order. Returns the first element with key.
+    /// Gets a setting from configuration by searching the given section prefix keys in order. Returns the first match.
     /// </summary>
     /// <param name="key">
     /// The key of the element to return.
     /// </param>
     /// <param name="configuration">
-    /// IConfiguration to search through.
+    /// The <see cref="IConfiguration" /> to search through.
     /// </param>
     /// <param name="defaultValue">
-    /// The default Value if no configuration is found.
+    /// The default value to return if no configuration is found.
     /// </param>
     /// <param name="sectionPrefixes">
     /// The prefixes to search for in given order.
     /// </param>
     /// <returns>
-    /// Configuration value.
+    /// The value from configuration, or the default value if not found.
     /// </returns>
-    public static string GetSetting(string key, IConfiguration configuration, string defaultValue, params string[] sectionPrefixes)
+    public static string? GetSetting(string key, IConfiguration configuration, string? defaultValue, params string[] sectionPrefixes)
     {
+        ArgumentGuard.NotNull(key);
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(sectionPrefixes);
+
         foreach (string prefix in sectionPrefixes)
         {
             IConfigurationSection section = configuration.GetSection(prefix);
-            string result = section.GetValue<string>(key);
+            string? value = section.GetValue<string>(key);
 
-            if (!string.IsNullOrEmpty(result))
+            if (!string.IsNullOrEmpty(value))
             {
-                return result;
+                return value;
             }
         }
 
@@ -65,84 +72,96 @@ public static class ConfigurationValuesHelper
     }
 
     /// <summary>
-    /// Get a setting from configuration by searching the given keys in order. Returns the first match.
+    /// Gets a setting from configuration by searching the given keys in order. Returns the first match.
     /// </summary>
     /// <param name="configuration">
-    /// IConfiguration to search through.
+    /// The <see cref="IConfiguration" /> to search through.
     /// </param>
     /// <param name="defaultValue">
-    /// The default Value if no configuration is found.
+    /// The default value to return if no configuration is found.
     /// </param>
-    /// <param name="configKeys">
+    /// <param name="configurationKeys">
     /// The fully-qualified keys to search for in given order.
     /// </param>
     /// <returns>
-    /// Value from configuration or default (if not found).
+    /// The value from configuration, or the default value if not found.
     /// </returns>
-    public static string GetPreferredSetting(IConfiguration configuration, string defaultValue, params string[] configKeys)
+    public static string? GetPreferredSetting(IConfiguration configuration, string? defaultValue, params string?[] configurationKeys)
     {
-        foreach (string key in configKeys.Where(c => !string.IsNullOrEmpty(c)))
-        {
-            string result = configuration.GetValue<string>(key);
+        ArgumentGuard.NotNull(configuration);
+        ArgumentGuard.NotNull(configurationKeys);
 
-            if (!string.IsNullOrEmpty(result))
+        foreach (string key in configurationKeys.Where(key => !string.IsNullOrEmpty(key)).Cast<string>())
+        {
+            string? value = configuration.GetValue<string>(key);
+
+            if (!string.IsNullOrEmpty(value))
             {
-                return result;
+                return value;
             }
         }
 
         return defaultValue;
     }
 
-    public static int GetInt(string key, IConfiguration configuration, IConfiguration resolve, int def)
-    {
-        string val = GetString(key, configuration, resolve, null);
-
-        if (!string.IsNullOrEmpty(val) && int.TryParse(val, CultureInfo.InvariantCulture, out int result))
-        {
-            return result;
-        }
-
-        return def;
-    }
-
-    public static double GetDouble(string key, IConfiguration configuration, IConfiguration resolve, double def)
-    {
-        string val = GetString(key, configuration, resolve, null);
-
-        if (!string.IsNullOrEmpty(val) &&
-            double.TryParse(val, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out double result))
-        {
-            return result;
-        }
-
-        return def;
-    }
-
-    public static bool GetBoolean(string key, IConfiguration configuration, IConfiguration resolve, bool def)
-    {
-        string val = GetString(key, configuration, resolve, null);
-
-        if (!string.IsNullOrEmpty(val) && bool.TryParse(val, out bool result))
-        {
-            return result;
-        }
-
-        return def;
-    }
-
-    public static string GetString(string key, IConfiguration configuration, IConfiguration resolve, string def)
+    public static int GetInt32(string key, IConfiguration configuration, IConfiguration? resolve, int defaultValue)
     {
         ArgumentGuard.NotNullOrEmpty(key);
         ArgumentGuard.NotNull(configuration);
 
-        string val = configuration[key];
+        string? value = GetString(key, configuration, resolve, null);
 
-        if (!string.IsNullOrEmpty(val))
+        if (!string.IsNullOrEmpty(value) && int.TryParse(value, CultureInfo.InvariantCulture, out int result))
         {
-            return PropertyPlaceholderHelper.ResolvePlaceholders(val, resolve);
+            return result;
         }
 
-        return def;
+        return defaultValue;
+    }
+
+    public static double GetDouble(string key, IConfiguration configuration, IConfiguration? resolve, double defaultValue)
+    {
+        ArgumentGuard.NotNullOrEmpty(key);
+        ArgumentGuard.NotNull(configuration);
+
+        string? value = GetString(key, configuration, resolve, null);
+
+        if (!string.IsNullOrEmpty(value) &&
+            double.TryParse(value, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out double result))
+        {
+            return result;
+        }
+
+        return defaultValue;
+    }
+
+    public static bool GetBoolean(string key, IConfiguration configuration, IConfiguration? resolve, bool defaultValue)
+    {
+        ArgumentGuard.NotNullOrEmpty(key);
+        ArgumentGuard.NotNull(configuration);
+
+        string? value = GetString(key, configuration, resolve, null);
+
+        if (!string.IsNullOrEmpty(value) && bool.TryParse(value, out bool result))
+        {
+            return result;
+        }
+
+        return defaultValue;
+    }
+
+    public static string? GetString(string key, IConfiguration configuration, IConfiguration? resolve, string? defaultValue)
+    {
+        ArgumentGuard.NotNullOrEmpty(key);
+        ArgumentGuard.NotNull(configuration);
+
+        string? value = configuration[key];
+
+        if (!string.IsNullOrEmpty(value))
+        {
+            return PropertyPlaceholderHelper.ResolvePlaceholders(value, resolve, NullLogger.Instance);
+        }
+
+        return defaultValue;
     }
 }

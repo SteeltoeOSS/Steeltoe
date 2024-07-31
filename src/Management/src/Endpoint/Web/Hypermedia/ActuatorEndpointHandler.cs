@@ -17,7 +17,7 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
     private readonly IOptionsMonitor<ManagementOptions> _managementOptionsMonitor;
     private readonly IOptionsMonitor<HypermediaEndpointOptions> _endpointOptionsMonitor;
     private readonly ICollection<EndpointOptions> _endpointOptionsCollection;
-    private readonly ILogger<ActuatorEndpointHandler> _logger;
+    private readonly ILogger<HypermediaService> _hypermediaServiceLogger;
 
     public EndpointOptions Options => _endpointOptionsMonitor.CurrentValue;
 
@@ -32,14 +32,14 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
         _endpointOptionsCollection = endpointOptionsCollection.ToList();
-        _logger = loggerFactory.CreateLogger<ActuatorEndpointHandler>();
+        _hypermediaServiceLogger = loggerFactory.CreateLogger<HypermediaService>();
     }
 
     public Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)
     {
         ArgumentGuard.NotNull(baseUrl);
 
-        var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsCollection, _logger);
+        var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsCollection, _hypermediaServiceLogger);
         Links result = service.Invoke(baseUrl);
         return Task.FromResult(result);
     }

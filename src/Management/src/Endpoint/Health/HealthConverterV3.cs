@@ -27,7 +27,7 @@ internal sealed class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
             writer.WriteString("description", value.Description);
         }
 
-        if (value.Details != null && value.Details.Count > 0)
+        if (value.Details.Count > 0)
         {
             writer.WritePropertyName("components");
             writer.WriteStartObject();

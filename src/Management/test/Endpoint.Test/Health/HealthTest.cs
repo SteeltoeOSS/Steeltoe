@@ -24,7 +24,7 @@ public sealed class HealthTest : BaseTest
     [Fact]
     public void Serialize_Default_ReturnsExpected()
     {
-        var health = new HealthEndpointResponse(null);
+        var health = new HealthEndpointResponse();
         string json = Serialize(health);
         Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
     }
@@ -32,11 +32,11 @@ public sealed class HealthTest : BaseTest
     [Fact]
     public void Serialize_WithDetails_ReturnsExpected()
     {
-        var health = new HealthEndpointResponse(null)
+        var health = new HealthEndpointResponse
         {
             Status = HealthStatus.OutOfService,
             Description = "Test",
-            Details = new Dictionary<string, object>
+            Details =
             {
                 { "item1", new HealthData() },
                 { "item2", "String" },

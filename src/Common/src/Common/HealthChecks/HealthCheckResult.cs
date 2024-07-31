@@ -2,18 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 namespace Steeltoe.Common.HealthChecks;
 
 /// <summary>
 /// The result of a health check.
 /// </summary>
-public class HealthCheckResult
+public sealed class HealthCheckResult
 {
     /// <summary>
-    /// Gets or sets the status of the check.
+    /// Gets or sets the status of the health check.
     /// </summary>
     /// <remarks>
-    /// Used by HealthMiddleware to determine HTTP Status code.
+    /// Used by the health middleware to determine the HTTP Status code.
     /// </remarks>
     public HealthStatus Status { get; set; } = HealthStatus.Unknown;
 
@@ -23,13 +25,13 @@ public class HealthCheckResult
     /// <remarks>
     /// Currently only used on check failures.
     /// </remarks>
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets details of the checked item.
+    /// Gets details of the health check.
     /// </summary>
     /// <remarks>
-    /// For parity with Spring Boot, repeat status [with a call to .ToString()] here.
+    /// For parity with Spring Boot, repeat the status (in all-caps snake case) here.
     /// </remarks>
-    public Dictionary<string, object> Details { get; set; } = new();
+    public IDictionary<string, object> Details { get; } = new Dictionary<string, object>();
 }

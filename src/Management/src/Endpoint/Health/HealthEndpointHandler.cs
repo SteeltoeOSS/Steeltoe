@@ -42,11 +42,11 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         _logger = loggerFactory.CreateLogger<HealthEndpointHandler>();
     }
 
-    public int GetStatusCode(HealthCheckResult health)
+    public int GetStatusCode(HealthEndpointResponse response)
     {
-        ArgumentGuard.NotNull(health);
+        ArgumentGuard.NotNull(response);
 
-        return health.Status is HealthStatus.Down or HealthStatus.OutOfService ? 503 : 200;
+        return response.Status is HealthStatus.Down or HealthStatus.OutOfService ? 503 : 200;
     }
 
     public async Task<HealthEndpointResponse> InvokeAsync(HealthEndpointRequest healthRequest, CancellationToken cancellationToken)
@@ -74,13 +74,12 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
         ShowDetails showDetails = endpointOptions.ShowDetails;
 
-        if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !healthRequest.HasClaim))
+        if (showDetails != ShowDetails.Never && (showDetails != ShowDetails.WhenAuthorized || healthRequest.HasClaim))
         {
-            response.Details = new Dictionary<string, object>();
-        }
-        else
-        {
-            response.Groups = endpointOptions.Groups.Select(group => group.Key).ToList();
+            foreach (string group in endpointOptions.Groups.Select(group => group.Key).ToList())
+            {
+                response.Groups.Add(group);
+            }
         }
 
         return response;

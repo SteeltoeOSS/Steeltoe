@@ -5,9 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Common;
+namespace Steeltoe.Common.Extensions;
 
-public static class ServiceProviderExtensions
+internal static class ServiceProviderExtensions
 {
     /// <summary>
     /// If an instance of <see cref="IApplicationInstanceInfo" /> is found, it is returned. Otherwise, a default instance is returned.

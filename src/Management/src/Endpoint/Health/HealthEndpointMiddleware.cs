@@ -35,7 +35,7 @@ internal sealed class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpoi
 
         if (!IsValidGroup(groupName))
         {
-            return new HealthEndpointResponse(null)
+            return new HealthEndpointResponse
             {
                 Exists = false
             };

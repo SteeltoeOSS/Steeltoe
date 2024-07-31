@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Discovery;
 /// <summary>
 /// Calls <see cref="IDiscoveryClient.ShutdownAsync" /> when the app is being stopped.
 /// </summary>
-public sealed class DiscoveryClientHostedService : IHostedService
+internal sealed class DiscoveryClientHostedService : IHostedService
 {
     private readonly ICollection<IDiscoveryClient> _discoveryClients;
 

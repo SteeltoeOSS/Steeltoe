@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Net;
 
+// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 // Non-sealed because this type is mocked by tests.
 internal class InetUtils
 {

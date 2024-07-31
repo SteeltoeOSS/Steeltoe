@@ -20,7 +20,7 @@ public static class EndpointApplicationBuilderExtensions
     {
         ArgumentGuard.NotNull(builder);
 
-        if (builder.ApplicationServices.GetService<SecurityUtils>() == null)
+        if (builder.ApplicationServices.GetService<PermissionsProvider>() == null)
         {
             throw new InvalidOperationException(
                 $"Please call IServiceCollection.{nameof(CloudFoundrySecurityServiceCollectionExtensions.AddCloudFoundrySecurity)} first.");

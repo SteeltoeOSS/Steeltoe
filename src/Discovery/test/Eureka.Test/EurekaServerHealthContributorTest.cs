@@ -77,7 +77,7 @@ public sealed class EurekaServerHealthContributorTest
         var result = new HealthCheckResult();
         contributor.AddApplications(apps, result);
 
-        Dictionary<string, object>? details = result.Details;
+        IDictionary<string, object> details = result.Details;
         Assert.Contains("applications", details.Keys);
         var appsDict = (Dictionary<string, int>)details["applications"];
         Assert.Contains("app1", appsDict.Keys);

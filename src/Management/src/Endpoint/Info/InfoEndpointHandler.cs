@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info;

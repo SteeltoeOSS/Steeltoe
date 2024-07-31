@@ -7,6 +7,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.CasingConventions;
+using Steeltoe.Common.Extensions;
 using MicrosoftHealthCheckResult = Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult;
 using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 using SteeltoeHealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
@@ -119,10 +120,12 @@ internal sealed class HealthAggregator : IHealthAggregator
             healthCheckResult.Status = status; // Only used for aggregate, doesn't get reported
             healthCheckResult.Description = result.Description;
 
-            healthCheckResult.Details = new Dictionary<string, object>(result.Data)
+            foreach ((string key, object value) in result.Data)
             {
-                { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) }
-            };
+                healthCheckResult.Details[key] = value;
+            }
+
+            healthCheckResult.Details["status"] = status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
 
             if (result.Description != null)
             {

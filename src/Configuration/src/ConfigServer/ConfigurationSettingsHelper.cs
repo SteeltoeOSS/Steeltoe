@@ -66,19 +66,19 @@ internal static class ConfigurationSettingsHelper
         return section.GetValue("validateCertificates", defaultValue) && section.GetValue("validate_certificates", defaultValue);
     }
 
-    private static string GetClientSecret(string sectionPrefix, IConfiguration configuration)
+    private static string? GetClientSecret(string sectionPrefix, IConfiguration configuration)
     {
         return ConfigurationValuesHelper.GetSetting("credentials:client_secret", configuration, null, VcapServicesConfigserverPrefix,
             VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
-    private static string GetClientId(string sectionPrefix, IConfiguration configuration)
+    private static string? GetClientId(string sectionPrefix, IConfiguration configuration)
     {
         return ConfigurationValuesHelper.GetSetting("credentials:client_id", configuration, null, VcapServicesConfigserverPrefix,
             VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);
     }
 
-    private static string GetAccessTokenUri(string sectionPrefix, IConfiguration configuration)
+    private static string? GetAccessTokenUri(string sectionPrefix, IConfiguration configuration)
     {
         return ConfigurationValuesHelper.GetSetting("credentials:access_token_uri", configuration, null, VcapServicesConfigserverPrefix,
             VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, sectionPrefix);

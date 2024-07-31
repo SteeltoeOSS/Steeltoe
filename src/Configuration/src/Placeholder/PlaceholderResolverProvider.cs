@@ -77,13 +77,13 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// <returns>
     /// <c>true</c> if a value for the specified key was found, otherwise <c>false</c>.
     /// </returns>
-    public bool TryGet(string key, out string value)
+    public bool TryGet(string key, out string? value)
     {
         ArgumentGuard.NotNull(key);
         EnsureInitialized();
 
         string? originalValue = Configuration![key];
-        value = PropertyPlaceholderHelper.ResolvePlaceholders(originalValue, Configuration);
+        value = PropertyPlaceholderHelper.ResolvePlaceholders(originalValue, Configuration, NullLogger.Instance);
 
         if (value != originalValue && !ResolvedKeys.Contains(key))
         {

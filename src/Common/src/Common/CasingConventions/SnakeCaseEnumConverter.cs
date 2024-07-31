@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#nullable enable
+
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -16,15 +18,10 @@ namespace Steeltoe.Common.CasingConventions;
 /// <typeparam name="TEnum">
 /// The enumeration type.
 /// </typeparam>
-internal sealed class SnakeCaseEnumConverter<TEnum> : JsonConverter<TEnum>
+internal sealed class SnakeCaseEnumConverter<TEnum>(SnakeCaseStyle style) : JsonConverter<TEnum>
     where TEnum : struct, Enum
 {
-    private readonly SnakeCaseStyle _style;
-
-    public SnakeCaseEnumConverter(SnakeCaseStyle style)
-    {
-        _style = style;
-    }
+    private readonly SnakeCaseStyle _style = style;
 
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
@@ -39,7 +36,7 @@ internal sealed class SnakeCaseEnumConverter<TEnum> : JsonConverter<TEnum>
 
         if (token == JsonTokenType.String)
         {
-            string enumText = reader.GetString();
+            string enumText = reader.GetString()!;
             string pascalCaseText = ToPascalCase(enumText);
 
             if (Enum.TryParse(pascalCaseText, out TEnum value) || Enum.TryParse(pascalCaseText, true, out value))
@@ -51,7 +48,7 @@ internal sealed class SnakeCaseEnumConverter<TEnum> : JsonConverter<TEnum>
         throw new JsonException();
     }
 
-    public string ToPascalCase(string snakeCaseText)
+    private string ToPascalCase(string snakeCaseText)
     {
         var builder = new StringBuilder();
         bool nextCharToUpper = true;
