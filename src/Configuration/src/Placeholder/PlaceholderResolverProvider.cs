@@ -159,10 +159,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
 
     private void EnsureInitialized()
     {
-        if (_isDisposed)
-        {
-            throw new ObjectDisposedException(nameof(PlaceholderResolverProvider));
-        }
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
 
         Configuration ??= new ConfigurationRoot(Providers);
     }

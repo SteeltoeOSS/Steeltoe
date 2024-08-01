@@ -179,10 +179,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
 
     private void EnsureInitialized()
     {
-        if (_isDisposed)
-        {
-            throw new ObjectDisposedException(nameof(EncryptionResolverProvider));
-        }
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
 
         Configuration ??= new ConfigurationRoot(Providers);
     }

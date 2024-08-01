@@ -104,12 +104,9 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
 
             lock (_singletonLock)
             {
-                if (_singletonIsDisposed)
-                {
-                    // The connection itself is responsible for throwing when used after its disposal.
-                    // However, there's no point in allocating the connection if we're already disposed.
-                    throw new ObjectDisposedException(GetType().FullName);
-                }
+                // The connection itself is responsible for throwing when used after its disposal.
+                // However, there's no point in allocating the connection if we're already disposed.
+                ObjectDisposedException.ThrowIf(_singletonIsDisposed, this);
 
                 if (_singletonSnapshot == null)
                 {

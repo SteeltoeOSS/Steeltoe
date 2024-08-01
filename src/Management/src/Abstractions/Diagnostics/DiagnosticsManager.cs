@@ -70,10 +70,7 @@ internal sealed class DiagnosticsManager : IObserver<DiagnosticListener>, IDispo
 
     public void Start()
     {
-        if (_isDisposed)
-        {
-            throw new ObjectDisposedException(GetType().Name);
-        }
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
 
         if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
         {
