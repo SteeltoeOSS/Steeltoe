@@ -8,7 +8,7 @@
         "Steeltoe.Management": {
           "$ref": "#/definitions/logLevelThreshold"
         },
-        "Steeltoe.Management.Task": {
+        "Steeltoe.Management.Tasks": {
           "$ref": "#/definitions/logLevelThreshold"
         }
       }

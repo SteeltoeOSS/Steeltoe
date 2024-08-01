@@ -106,7 +106,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.DynamicLog
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Logging.DynamicLogger.Test", "Logging\test\DynamicLogger.Test\Steeltoe.Logging.DynamicLogger.Test.csproj", "{04BC571A-0055-4B9B-805E-D2B0823C9D8D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Task", "Management\src\Task\Steeltoe.Management.Task.csproj", "{990DCEE9-D88F-4B9F-8298-678B524AC4D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Tasks", "Management\src\Tasks\Steeltoe.Management.Tasks.csproj", "{990DCEE9-D88F-4B9F-8298-678B524AC4D6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoint", "Management\src\Endpoint\Steeltoe.Management.Endpoint.csproj", "{557AFE26-B89D-497D-92B6-8268D04396E5}"
 EndProject
@@ -116,7 +116,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Endpoin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Tracing.Test", "Management\test\Tracing.Test\Steeltoe.Management.Tracing.Test.csproj", "{C437628B-43EE-4AAD-83ED-DDE7499E705B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Task.Test", "Management\test\Task.Test\Steeltoe.Management.Task.Test.csproj", "{A4D6D08A-BC0C-4CAD-97E6-F4BAAA03928C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Tasks.Test", "Management\test\Tasks.Test\Steeltoe.Management.Tasks.Test.csproj", "{A4D6D08A-BC0C-4CAD-97E6-F4BAAA03928C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.Redis", "Security\src\DataProtection.Redis\Steeltoe.Security.DataProtection.Redis.csproj", "{31E52250-3422-49E9-9605-EBE786CC1BE3}"
 EndProject

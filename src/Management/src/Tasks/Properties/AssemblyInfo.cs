@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using Aspire;
 
 [assembly: ConfigurationSchema("RunTask", typeof(string))]
-[assembly: LoggingCategories("Steeltoe", "Steeltoe.Management", "Steeltoe.Management.Task")]
+[assembly: LoggingCategories("Steeltoe", "Steeltoe.Management", "Steeltoe.Management.Tasks")]
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
