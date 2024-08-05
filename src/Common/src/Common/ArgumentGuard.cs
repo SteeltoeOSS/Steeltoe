@@ -5,56 +5,12 @@
 #nullable enable
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Steeltoe.Common;
 
-public static class ArgumentGuard
+internal static class ArgumentGuard
 {
-    public static void NotNull<T>([ValidatedNotNull] [NotNull] T? value, [CallerArgumentExpression("value")] string? parameterName = null)
-    {
-        AssertNoDotInParameterName(parameterName);
-
-        ArgumentNullException.ThrowIfNull(value, parameterName);
-    }
-
-    public static void NotNullOrEmpty<T>([ValidatedNotNull] [NotNull] IEnumerable<T>? value, [CallerArgumentExpression("value")] string? parameterName = null)
-    {
-        AssertNoDotInParameterName(parameterName);
-
-        ArgumentNullException.ThrowIfNull(value, parameterName);
-
-        if (!value.Any())
-        {
-            throw new ArgumentException("Collection cannot be empty.", parameterName);
-        }
-    }
-
-    public static void NotNullOrEmpty([ValidatedNotNull] [NotNull] string? value, [CallerArgumentExpression("value")] string? parameterName = null)
-    {
-        AssertNoDotInParameterName(parameterName);
-
-        ArgumentNullException.ThrowIfNull(value, parameterName);
-
-        if (value == string.Empty)
-        {
-            throw new ArgumentException("String cannot be empty.", parameterName);
-        }
-    }
-
-    public static void NotNullOrWhiteSpace([ValidatedNotNull] [NotNull] string? value, [CallerArgumentExpression("value")] string? parameterName = null)
-    {
-        AssertNoDotInParameterName(parameterName);
-
-        ArgumentNullException.ThrowIfNull(value, parameterName);
-
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            throw new ArgumentException("String cannot be empty or contain only whitespace.", parameterName);
-        }
-    }
-
     public static void ElementsNotNull<T>(IEnumerable<T?>? elements, [CallerArgumentExpression("elements")] string? parameterName = null)
         where T : class
     {
@@ -62,7 +18,7 @@ public static class ArgumentGuard
 
         if (elements != null && elements.Any(element => element == null))
         {
-            throw new ArgumentException("Collection cannot contain nulls.", parameterName);
+            throw new ArgumentException("Collection element cannot be null.", parameterName);
         }
     }
 
@@ -72,7 +28,17 @@ public static class ArgumentGuard
 
         if (elements != null && elements.Any(string.IsNullOrEmpty))
         {
-            throw new ArgumentException("Collection cannot contain nulls or empty strings.", parameterName);
+            throw new ArgumentException("Collection element cannot be null or an empty string.", parameterName);
+        }
+    }
+
+    public static void ElementsNotNullOrWhiteSpace(IEnumerable<string?>? elements, [CallerArgumentExpression("elements")] string? parameterName = null)
+    {
+        AssertNoDotInParameterName(parameterName);
+
+        if (elements != null && elements.Any(string.IsNullOrWhiteSpace))
+        {
+            throw new ArgumentException("Collection element cannot be null, an empty string, or composed entirely of whitespace.", parameterName);
         }
     }
 

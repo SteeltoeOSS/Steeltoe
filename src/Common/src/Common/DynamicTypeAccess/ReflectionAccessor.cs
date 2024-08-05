@@ -17,14 +17,14 @@ internal abstract class ReflectionAccessor
 
     protected ReflectionAccessor(Type type)
     {
-        ArgumentGuard.NotNull(type);
+        ArgumentNullException.ThrowIfNull(type);
 
         _type = type;
     }
 
     protected T GetPrivateFieldValue<T>(string name, object? instance)
     {
-        ArgumentGuard.NotNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         object? value = GetPrivateFieldValue(name, instance);
         return (T)value!;
@@ -51,7 +51,7 @@ internal abstract class ReflectionAccessor
 
     protected T GetPropertyValue<T>(string name, object? instance)
     {
-        ArgumentGuard.NotNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         object? value = GetPropertyValue(name, instance);
         return (T)value!;
@@ -60,7 +60,7 @@ internal abstract class ReflectionAccessor
     private object? GetPropertyValue(string name, object? instance)
     {
         MethodInfo propertySetter = GetPropertyGetter(name);
-        return propertySetter.Invoke(instance, Array.Empty<object>());
+        return propertySetter.Invoke(instance, []);
     }
 
     private MethodInfo GetPropertyGetter(string name)
@@ -77,14 +77,11 @@ internal abstract class ReflectionAccessor
 
     protected void SetPropertyValue(string name, object? instance, object? value)
     {
-        ArgumentGuard.NotNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         MethodInfo propertySetter = GetPropertySetter(name);
 
-        propertySetter.Invoke(instance, new[]
-        {
-            value
-        });
+        propertySetter.Invoke(instance, [value]);
     }
 
     private MethodInfo GetPropertySetter(string name)
@@ -113,8 +110,8 @@ internal abstract class ReflectionAccessor
 
     protected object? InvokeMethod(string name, bool isPublic, object? instance, object?[] arguments)
     {
-        ArgumentGuard.NotNullOrEmpty(name);
-        ArgumentGuard.NotNull(arguments);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(arguments);
 
         MethodInfo methodInfo = GetMethod(name, isPublic, instance == null, null);
         return methodInfo.Invoke(instance, arguments);
@@ -122,10 +119,10 @@ internal abstract class ReflectionAccessor
 
     protected object? InvokeMethodOverload(string name, bool isPublic, Type[] parameterTypes, object? instance, object?[] arguments)
     {
-        ArgumentGuard.NotNullOrEmpty(name);
-        ArgumentGuard.NotNull(parameterTypes);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(parameterTypes);
         ArgumentGuard.ElementsNotNull(parameterTypes);
-        ArgumentGuard.NotNull(arguments);
+        ArgumentNullException.ThrowIfNull(arguments);
 
         MethodInfo methodInfo = GetMethod(name, isPublic, instance == null, parameterTypes);
         return methodInfo.Invoke(instance, arguments);

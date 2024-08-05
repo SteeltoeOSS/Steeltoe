@@ -14,7 +14,7 @@ public sealed class BootstrapLoggerContext
 
     public BootstrapLoggerContext(object key)
     {
-        ArgumentGuard.NotNull(key);
+        ArgumentNullException.ThrowIfNull(key);
 
         _key = key;
     }

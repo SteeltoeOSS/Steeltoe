@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.HttpClients.LoadBalancers;
@@ -55,8 +54,8 @@ public sealed class RoundRobinLoadBalancer : ILoadBalancer
     public RoundRobinLoadBalancer(ServiceInstancesResolver serviceInstancesResolver, IDistributedCache? distributedCache,
         DistributedCacheEntryOptions? cacheEntryOptions, ILogger<RoundRobinLoadBalancer> logger)
     {
-        ArgumentGuard.NotNull(serviceInstancesResolver);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(serviceInstancesResolver);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _serviceInstancesResolver = serviceInstancesResolver;
         _distributedCache = distributedCache;
@@ -67,7 +66,7 @@ public sealed class RoundRobinLoadBalancer : ILoadBalancer
     /// <inheritdoc />
     public async Task<Uri> ResolveServiceInstanceAsync(Uri requestUri, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(requestUri);
+        ArgumentNullException.ThrowIfNull(requestUri);
 
         string serviceName = requestUri.Host;
         _logger.LogTrace("Resolving service instance for '{ServiceName}'.", serviceName);

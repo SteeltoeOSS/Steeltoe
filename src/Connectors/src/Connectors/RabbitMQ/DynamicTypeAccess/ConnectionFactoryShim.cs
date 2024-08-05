@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.RabbitMQ.DynamicTypeAccess;
@@ -25,7 +24,7 @@ internal sealed class ConnectionFactoryShim : Shim
 
     public static ConnectionFactoryShim CreateInstance(RabbitMQPackageResolver packageResolver)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         InstanceAccessor instanceAccessor = packageResolver.ConnectionFactoryClass.CreateInstance();
         return new ConnectionFactoryShim(packageResolver, instanceAccessor);

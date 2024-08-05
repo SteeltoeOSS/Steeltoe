@@ -18,7 +18,7 @@ public sealed class ClientCertificateHttpClientHandlerConfigurer : IHttpClientHa
 
     public ClientCertificateHttpClientHandlerConfigurer(IOptionsMonitor<CertificateOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         _optionsMonitor = optionsMonitor;
     }
@@ -30,7 +30,7 @@ public sealed class ClientCertificateHttpClientHandlerConfigurer : IHttpClientHa
 
     public void Configure(HttpClientHandler handler)
     {
-        ArgumentGuard.NotNull(handler);
+        ArgumentNullException.ThrowIfNull(handler);
 
         X509Certificate2 certificate = _optionsMonitor.Get(_clientCertificateName).Certificate;
 

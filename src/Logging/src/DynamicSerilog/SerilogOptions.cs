@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
-using Steeltoe.Common;
 using Steeltoe.Logging.DynamicSerilog.DynamicTypeAccess;
 
 namespace Steeltoe.Logging.DynamicSerilog;
@@ -31,7 +30,7 @@ public sealed class SerilogOptions
     /// </param>
     internal void SetSerilogOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         IConfigurationSection section = configuration.GetSection("Serilog");
         section.Bind(this);
@@ -64,7 +63,7 @@ public sealed class SerilogOptions
     /// </param>
     internal void SetSerilogOptions(LoggerConfiguration loggerConfiguration)
     {
-        ArgumentGuard.NotNull(loggerConfiguration);
+        ArgumentNullException.ThrowIfNull(loggerConfiguration);
 
         var shim = new LoggerConfigurationShim(loggerConfiguration);
 

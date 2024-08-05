@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-
 namespace Steeltoe.Management.Endpoint.Loggers;
 
 public sealed class LoggersRequest
@@ -39,7 +37,7 @@ public sealed class LoggersRequest
     /// </param>
     public LoggersRequest(string name, string? level)
     {
-        ArgumentGuard.NotNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
         Type = LoggersRequestType.Change;
         Name = name;

@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption;
 
@@ -51,9 +50,9 @@ public static class EncryptionConfigurationExtensions
     /// </returns>
     public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (!builder.Sources.Any(source => source is EncryptionResolverSource))
         {
@@ -110,9 +109,9 @@ public static class EncryptionConfigurationExtensions
     /// </returns>
     public static IConfiguration AddEncryptionResolver(this IConfiguration configuration, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (configuration is not IConfigurationRoot root)
         {
@@ -171,9 +170,9 @@ public static class EncryptionConfigurationExtensions
     public static ConfigurationManager AddEncryptionResolver(this ConfigurationManager configurationManager, ITextDecryptor textDecryptor,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configurationManager);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(configurationManager);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         ((IConfigurationBuilder)configurationManager).AddEncryptionResolver(textDecryptor, loggerFactory);
 

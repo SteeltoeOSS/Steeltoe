@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
 internal sealed class ForwardingHttpClientHandler : HttpClientHandler
@@ -12,7 +10,7 @@ internal sealed class ForwardingHttpClientHandler : HttpClientHandler
 
     public ForwardingHttpClientHandler(HttpMessageHandler innerHandler)
     {
-        ArgumentGuard.NotNull(innerHandler);
+        ArgumentNullException.ThrowIfNull(innerHandler);
 
         _invoker = new HttpMessageInvoker(innerHandler, false);
     }

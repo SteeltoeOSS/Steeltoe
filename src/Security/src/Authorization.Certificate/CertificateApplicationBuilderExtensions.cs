@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
-using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authorization.Certificate;
 
@@ -33,8 +32,8 @@ public static class CertificateApplicationBuilderExtensions
     /// </param>
     public static IApplicationBuilder UseCertificateAuthorization(this IApplicationBuilder applicationBuilder, ForwardedHeadersOptions options)
     {
-        ArgumentGuard.NotNull(applicationBuilder);
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+        ArgumentNullException.ThrowIfNull(options);
 
         options.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
 

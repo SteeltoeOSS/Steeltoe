@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Placeholder;
 
@@ -45,8 +44,8 @@ public static class PlaceholderConfigurationExtensions
     /// </returns>
     public static IConfigurationBuilder AddPlaceholderResolver(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (!builder.Sources.Any(source => source is PlaceholderResolverSource))
         {
@@ -97,8 +96,8 @@ public static class PlaceholderConfigurationExtensions
     /// </returns>
     public static IConfiguration AddPlaceholderResolver(this IConfiguration configuration, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (configuration is not IConfigurationRoot root)
         {
@@ -150,8 +149,8 @@ public static class PlaceholderConfigurationExtensions
     /// </returns>
     public static ConfigurationManager AddPlaceholderResolver(this ConfigurationManager configurationManager, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configurationManager);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(configurationManager);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         ((IConfigurationBuilder)configurationManager).AddPlaceholderResolver(loggerFactory);
 

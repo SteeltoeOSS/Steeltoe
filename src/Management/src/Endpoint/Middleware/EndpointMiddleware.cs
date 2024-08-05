@@ -7,7 +7,6 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -25,9 +24,9 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
     protected EndpointMiddleware(IEndpointHandler<TArgument, TResult> endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(endpointHandler);
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(endpointHandler);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         EndpointHandler = endpointHandler;
         ManagementOptionsMonitor = managementOptionsMonitor;
@@ -36,8 +35,6 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
     public virtual bool ShouldInvoke(PathString requestPath)
     {
-        ArgumentGuard.NotNull(requestPath);
-
         ManagementOptions managementOptions = ManagementOptionsMonitor.CurrentValue;
         bool isEnabled = EndpointOptions.IsEnabled(managementOptions);
         bool isExposed = EndpointOptions.IsExposed(managementOptions);
@@ -55,7 +52,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate? next)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         if (ShouldInvoke(context.Request.Path))
         {
@@ -73,7 +70,7 @@ public abstract class EndpointMiddleware<TArgument, TResult> : IEndpointMiddlewa
 
     protected virtual async Task WriteResponseAsync(TResult result, HttpContext context, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         context.HandleContentNegotiation(_logger);
 

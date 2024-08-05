@@ -6,7 +6,6 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.Configuration;
 
@@ -37,8 +36,8 @@ public static class CertificateHttpClientBuilderExtensions
     /// </param>
     public static IHttpClientBuilder AddClientCertificate(this IHttpClientBuilder httpClientBuilder, string certificateName)
     {
-        ArgumentGuard.NotNull(httpClientBuilder);
-        ArgumentGuard.NotNull(certificateName);
+        ArgumentNullException.ThrowIfNull(httpClientBuilder);
+        ArgumentNullException.ThrowIfNull(certificateName);
 
         httpClientBuilder.Services.ConfigureCertificateOptions(certificateName);
 

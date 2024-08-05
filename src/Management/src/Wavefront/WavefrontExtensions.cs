@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Diagnostics;
@@ -29,7 +28,7 @@ public static class WavefrontExtensions
     /// </returns>
     public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.AddHostedService<DiagnosticsService>();
@@ -48,7 +47,7 @@ public static class WavefrontExtensions
 
     public static MeterProviderBuilder AddWavefrontExporter(this MeterProviderBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         return builder.AddReader(serviceProvider =>
         {

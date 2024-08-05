@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.Configuration;
 
@@ -46,9 +45,9 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     /// </param>
     public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IConfiguration configuration, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(defaultOptions);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(defaultOptions);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Configuration = configuration;
         DefaultOptions = defaultOptions;
@@ -74,9 +73,9 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
     public ConfigServerConfigurationSource(ConfigServerClientOptions defaultOptions, IList<IConfigurationSource> sources,
         IDictionary<string, object>? properties, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(defaultOptions);
-        ArgumentGuard.NotNull(sources);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(defaultOptions);
+        ArgumentNullException.ThrowIfNull(sources);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Sources = new List<IConfigurationSource>(sources);
 

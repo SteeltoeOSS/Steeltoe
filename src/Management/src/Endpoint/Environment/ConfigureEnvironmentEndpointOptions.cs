@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint.Environment;
@@ -29,7 +28,7 @@ internal sealed class ConfigureEnvironmentEndpointOptions : ConfigureEndpointOpt
 
     public override void Configure(EnvironmentEndpointOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         base.Configure(options);
 

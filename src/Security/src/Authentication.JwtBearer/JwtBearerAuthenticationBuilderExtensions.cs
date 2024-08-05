@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.JwtBearer;
 
@@ -20,7 +19,7 @@ public static class JwtBearerAuthenticationBuilderExtensions
     /// </param>
     public static AuthenticationBuilder ConfigureJwtBearerForCloudFoundry(this AuthenticationBuilder authenticationBuilder)
     {
-        ArgumentGuard.NotNull(authenticationBuilder);
+        ArgumentNullException.ThrowIfNull(authenticationBuilder);
 
         authenticationBuilder.Services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, PostConfigureJwtBearerOptions>();
         return authenticationBuilder;

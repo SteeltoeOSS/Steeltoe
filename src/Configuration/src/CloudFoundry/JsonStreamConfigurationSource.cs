@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
@@ -14,14 +13,14 @@ internal sealed class JsonStreamConfigurationSource : JsonConfigurationSource
 
     public JsonStreamConfigurationSource(Stream stream)
     {
-        ArgumentGuard.NotNull(stream);
+        ArgumentNullException.ThrowIfNull(stream);
 
         Stream = stream;
     }
 
     public override IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         return new JsonStreamConfigurationProvider(this);
     }

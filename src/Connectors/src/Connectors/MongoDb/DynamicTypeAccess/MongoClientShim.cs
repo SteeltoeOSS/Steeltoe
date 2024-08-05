@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MongoDb.DynamicTypeAccess;
@@ -16,7 +15,7 @@ internal sealed class MongoClientShim : Shim
 
     public static MongoClientShim CreateInstance(MongoDbPackageResolver packageResolver, string? connectionString)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         // Ensure the argument is never null, so the proper ctor overload is selected (prevents AmbiguousMatchException).
         string constructorArgument = connectionString ?? string.Empty;

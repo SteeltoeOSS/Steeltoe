@@ -201,7 +201,7 @@ Steeltoe.Management.Endpoint.Health.Availability.AvailabilityEventArgs
 Steeltoe.Management.Endpoint.Health.Availability.AvailabilityEventArgs.AvailabilityEventArgs(Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState! availabilityState) -> void
 Steeltoe.Management.Endpoint.Health.Availability.AvailabilityEventArgs.NewState.get -> Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState!
 Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor
-Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.AvailabilityHealthContributor(System.Collections.Generic.Dictionary<Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState!, Steeltoe.Common.HealthChecks.HealthStatus>! stateMappings, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.AvailabilityHealthContributor(System.Collections.Generic.IDictionary<Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState!, Steeltoe.Common.HealthChecks.HealthStatus>! stateMappings, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 Steeltoe.Management.Endpoint.Health.Availability.AvailabilityHealthContributor.CheckHealthAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Steeltoe.Common.HealthChecks.HealthCheckResult?>!
 Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState
 Steeltoe.Management.Endpoint.Health.Availability.AvailabilityState.AvailabilityState(string! value) -> void

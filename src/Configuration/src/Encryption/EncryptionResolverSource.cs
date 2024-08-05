@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption;
 
@@ -37,9 +36,9 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
     /// </param>
     public EncryptionResolverSource(IList<IConfigurationSource> sources, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(sources);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(sources);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _textDecryptor = textDecryptor;
         Sources = sources.ToList();
@@ -60,9 +59,9 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
     /// </param>
     public EncryptionResolverSource(IConfigurationRoot root, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(root);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(root);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _configuration = root;
         _textDecryptor = textDecryptor;
@@ -80,11 +79,11 @@ internal sealed class EncryptionResolverSource : IConfigurationSource
     /// </returns>
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (_configuration != null)
         {
-            var configurationView = new ConfigurationView(_configuration.Providers.ToList());
+            var configurationView = new ConfigurationView(_configuration.Providers.ToArray());
             return new EncryptionResolverProvider(configurationView, _textDecryptor, LoggerFactory);
         }
 

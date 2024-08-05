@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Configuration.ConfigServer;
@@ -20,8 +19,8 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
     public ConfigServerHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _logger = logger;
         Provider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>();

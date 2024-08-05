@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
-using Steeltoe.Common;
 
 namespace Steeltoe.Discovery.Consul.Util;
 
@@ -11,7 +10,7 @@ internal static class DateTimeConversions
 {
     public static TimeSpan ToTimeSpan(string time)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(time);
+        ArgumentException.ThrowIfNullOrWhiteSpace(time);
 
 #pragma warning disable S4040 // Strings should be normalized to uppercase
         time = time.ToLowerInvariant();

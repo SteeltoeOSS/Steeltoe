@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
@@ -24,8 +23,8 @@ public static class CloudFoundryConfigurationBuilderExtensions
     public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader? settingsReader,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configurationBuilder);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(configurationBuilder);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         var source = new CloudFoundryConfigurationSource(settingsReader);
         return configurationBuilder.Add(source);

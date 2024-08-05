@@ -28,8 +28,8 @@ public static class CloudFoundryServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection ConfigureCloudFoundryOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         services.AddOptions();
 
@@ -63,9 +63,9 @@ public static class CloudFoundryServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection ConfigureCloudFoundryService(this IServiceCollection services, IConfiguration configuration, string serviceName)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNullOrEmpty(serviceName);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentException.ThrowIfNullOrWhiteSpace(serviceName);
 
         services.Configure<CloudFoundryServicesOptions>(serviceName, option => option.Bind(configuration, serviceName));
 
@@ -91,9 +91,9 @@ public static class CloudFoundryServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection ConfigureCloudFoundryServices(this IServiceCollection services, IConfiguration configuration, string serviceLabel)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNullOrEmpty(serviceLabel);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentException.ThrowIfNullOrWhiteSpace(serviceLabel);
 
         var servicesOptions = new CloudFoundryServicesOptions(configuration);
 
@@ -119,7 +119,7 @@ public static class CloudFoundryServiceCollectionExtensions
     /// </param>
     public static IServiceCollection RegisterCloudFoundryApplicationInstanceInfo(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         ServiceDescriptor? appInfoDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
 

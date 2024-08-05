@@ -13,7 +13,6 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
@@ -81,8 +80,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     internal ConfigServerConfigurationProvider(ConfigServerClientOptions options, IConfiguration? configuration, HttpClientHandler? httpClientHandler,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _loggerFactory = loggerFactory;
         Logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
@@ -457,7 +456,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// </param>
     private void AddConfigServerClientOptions(IDictionary<string, string?> data)
     {
-        ArgumentGuard.NotNull(data);
+        ArgumentNullException.ThrowIfNull(data);
 
         data["spring:cloud:config:enabled"] = Options.Enabled.ToString(CultureInfo.InvariantCulture);
         data["spring:cloud:config:failFast"] = Options.FailFast.ToString(CultureInfo.InvariantCulture);
@@ -565,7 +564,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// </returns>
     internal Uri BuildConfigServerUri(string serverUri, string? label)
     {
-        ArgumentGuard.NotNullOrEmpty(serverUri);
+        ArgumentException.ThrowIfNullOrWhiteSpace(serverUri);
 
         var uriBuilder = new UriBuilder(new Uri(serverUri));
 
@@ -613,7 +612,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// </param>
     private void AddPropertySource(PropertySource? source, IDictionary<string, string?> data)
     {
-        ArgumentGuard.NotNull(data);
+        ArgumentNullException.ThrowIfNull(data);
 
         if (source?.Source == null)
         {
@@ -735,7 +734,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// </returns>
     internal HttpClient CreateHttpClient(ConfigServerClientOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
         ObjectDisposedException.ThrowIf(_httpClientHandler == null, this);
 
         var clientCertificateConfigurer = new ClientCertificateHttpClientHandlerConfigurer(OptionsMonitorWrapper.Create(options.ClientCertificate));

@@ -27,15 +27,18 @@ internal sealed class CloudFoundrySecurityMiddleware
         IOptionsMonitor<CloudFoundryEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection,
         PermissionsProvider permissionsProvider, ILogger<CloudFoundrySecurityMiddleware> logger, RequestDelegate? next)
     {
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsCollection);
-        ArgumentGuard.NotNull(permissionsProvider);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(permissionsProvider);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        EndpointOptions[] endpointOptionsArray = endpointOptionsCollection.ToArray();
+        ArgumentGuard.ElementsNotNull(endpointOptionsArray);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
-        _endpointOptionsCollection = endpointOptionsCollection.Where(options => options is not HypermediaEndpointOptions).ToList();
+        _endpointOptionsCollection = endpointOptionsArray.Where(options => options is not HypermediaEndpointOptions).ToArray();
         _permissionsProvider = permissionsProvider;
         _logger = logger;
         _next = next;
@@ -43,7 +46,7 @@ internal sealed class CloudFoundrySecurityMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         _logger.LogDebug("InvokeAsync({RequestPath})", context.Request.Path.Value);
         CloudFoundryEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;

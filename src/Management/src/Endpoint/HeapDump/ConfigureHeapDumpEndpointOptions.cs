@@ -17,7 +17,7 @@ internal sealed class ConfigureHeapDumpEndpointOptions : ConfigureEndpointOption
     public ConfigureHeapDumpEndpointOptions(IConfiguration configuration, ILogger<ConfigureHeapDumpEndpointOptions> logger)
         : base(configuration, ManagementInfoPrefix, "heapdump")
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _logger = logger;
     }

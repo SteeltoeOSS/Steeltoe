@@ -5,7 +5,6 @@
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
@@ -24,8 +23,8 @@ public sealed class RouteMappingDescription
 
     public RouteMappingDescription(string routeHandler, AspNetCoreRouteDetails routeDetails)
     {
-        ArgumentGuard.NotNull(routeHandler);
-        ArgumentGuard.NotNull(routeDetails);
+        ArgumentException.ThrowIfNullOrWhiteSpace(routeHandler);
+        ArgumentNullException.ThrowIfNull(routeDetails);
 
         Handler = routeHandler;
         Predicate = CreatePredicateString(routeDetails);
@@ -33,8 +32,8 @@ public sealed class RouteMappingDescription
 
     public RouteMappingDescription(MethodInfo routeHandlerMethod, AspNetCoreRouteDetails routeDetails)
     {
-        ArgumentGuard.NotNull(routeHandlerMethod);
-        ArgumentGuard.NotNull(routeDetails);
+        ArgumentNullException.ThrowIfNull(routeHandlerMethod);
+        ArgumentNullException.ThrowIfNull(routeDetails);
 
         Handler = routeHandlerMethod.ToString()!;
         Predicate = CreatePredicateString(routeDetails);
@@ -92,7 +91,7 @@ public sealed class RouteMappingDescription
         // Does not apply for .NET
         var @params = new List<string>();
 
-        var conditions = new RequestMappingConditions(patterns, routeDetails.HttpMethods.ToList(), consumes, produces, headers, @params);
+        var conditions = new RequestMappingConditions(patterns, routeDetails.HttpMethods, consumes, produces, headers, @params);
         return new RouteMappingDetails(conditions);
     }
 

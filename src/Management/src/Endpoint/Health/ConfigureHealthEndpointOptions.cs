@@ -4,7 +4,6 @@
 
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
 using Steeltoe.Management.Endpoint.Security;
 
@@ -21,7 +20,7 @@ internal sealed class ConfigureHealthEndpointOptions : ConfigureEndpointOptions<
 
     public override void Configure(HealthEndpointOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         base.Configure(options);
 

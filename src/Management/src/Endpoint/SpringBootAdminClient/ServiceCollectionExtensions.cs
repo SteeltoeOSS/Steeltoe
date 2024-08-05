@@ -5,7 +5,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Management.Endpoint.Health;
@@ -26,7 +25,7 @@ public static class ServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddSpringBootAdminClient(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.RegisterDefaultApplicationInstanceInfo();
 

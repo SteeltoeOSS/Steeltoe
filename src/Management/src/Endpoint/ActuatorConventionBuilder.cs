@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -13,7 +12,7 @@ public sealed class ActuatorConventionBuilder : IEndpointConventionBuilder
 
     public void Add(Action<EndpointBuilder> convention)
     {
-        ArgumentGuard.NotNull(convention);
+        ArgumentNullException.ThrowIfNull(convention);
 
         foreach (IEndpointConventionBuilder builder in _builders)
         {
@@ -23,7 +22,7 @@ public sealed class ActuatorConventionBuilder : IEndpointConventionBuilder
 
     public void Add(IEndpointConventionBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         _builders.Add(builder);
     }

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 namespace Steeltoe.Discovery.HttpClients;
@@ -40,7 +39,7 @@ public static class DiscoveryHttpClientBuilderExtensions
     public static IHttpClientBuilder AddServiceDiscovery<TLoadBalancer>(this IHttpClientBuilder builder)
         where TLoadBalancer : class, ILoadBalancer
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (typeof(TLoadBalancer) == typeof(RandomLoadBalancer) || typeof(TLoadBalancer) == typeof(RoundRobinLoadBalancer))
         {

@@ -51,7 +51,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
     /// </summary>
     public void Update(IConfiguration value)
     {
-        ArgumentGuard.NotNull(value);
+        ArgumentNullException.ThrowIfNull(value);
 
         if (_factory != null)
         {

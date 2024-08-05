@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ContentNegotiation;
 
@@ -14,8 +13,8 @@ internal static class ContentNegotiationExtensions
 {
     public static void HandleContentNegotiation(this HttpContext context, ILogger logger)
     {
-        ArgumentGuard.NotNull(context);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(logger);
 
         SetContentType(context.Request.Headers, context.Response.Headers, logger);
     }
@@ -24,7 +23,7 @@ internal static class ContentNegotiationExtensions
         MediaTypeVersion version = MediaTypeVersion.V2)
     {
         var headers = new RequestHeaders(requestHeaders);
-        List<string> acceptMediaTypes = headers.Accept.Select(header => header.MediaType.Value!).ToList();
+        string[] acceptMediaTypes = headers.Accept.Select(header => header.MediaType.Value!).ToArray();
 
         string contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
         responseHeaders.Append("Content-Type", contentType);

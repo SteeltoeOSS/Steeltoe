@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Consul.Configuration;
@@ -19,8 +18,8 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
 
     public PostConfigureConsulDiscoveryOptions(IConfiguration configuration, InetUtils inetUtils)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(inetUtils);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(inetUtils);
 
         _configuration = configuration;
         _inetUtils = inetUtils;
@@ -28,7 +27,7 @@ internal sealed class PostConfigureConsulDiscoveryOptions : IPostConfigureOption
 
     public void PostConfigure(string? name, ConsulDiscoveryOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         HostInfo? hostInfo = options.UseNetworkInterfaces ? _inetUtils.FindFirstNonLoopbackHostInfo() : null;
         options.HostName ??= hostInfo != null ? hostInfo.Hostname : DnsTools.ResolveHostName();

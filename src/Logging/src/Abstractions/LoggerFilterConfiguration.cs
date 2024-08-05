@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 
 namespace Steeltoe.Logging;
 
@@ -42,8 +41,8 @@ public sealed class LoggerFilterConfiguration
     public LoggerFilterConfiguration(IReadOnlyDictionary<string, LogLevel> configurationMinLevels, IReadOnlyDictionary<string, LoggerFilter> effectiveFilters,
         LoggerFilter defaultFilter)
     {
-        ArgumentGuard.NotNull(configurationMinLevels);
-        ArgumentGuard.NotNull(effectiveFilters);
+        ArgumentNullException.ThrowIfNull(configurationMinLevels);
+        ArgumentNullException.ThrowIfNull(effectiveFilters);
 
         ConfigurationMinLevels = configurationMinLevels;
         EffectiveFilters = effectiveFilters;

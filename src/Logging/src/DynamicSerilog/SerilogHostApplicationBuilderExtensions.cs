@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
 
 namespace Steeltoe.Logging.DynamicSerilog;
@@ -78,7 +77,7 @@ public static class SerilogHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddDynamicSerilog(this IHostApplicationBuilder builder,
         Action<IHostApplicationBuilder, LoggerConfiguration>? configureLogger, bool preserveDefaultConsole)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddDynamicSerilog(HostBuilderContextWrapper.WrapAction(configureLogger), preserveDefaultConsole);

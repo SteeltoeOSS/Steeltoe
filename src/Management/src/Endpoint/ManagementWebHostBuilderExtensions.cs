@@ -24,7 +24,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddDbMigrationsActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddDbMigrationsActuator();
@@ -43,7 +43,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddEnvironmentActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddEnvironmentActuator();
@@ -62,7 +62,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddHealthActuator();
@@ -81,7 +81,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddHeapDumpActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddHeapDumpActuator();
@@ -100,7 +100,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddHypermediaActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddHypermediaActuator();
@@ -119,7 +119,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddInfoActuator();
@@ -141,8 +141,9 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder builder, params IInfoContributor[] contributors)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(contributors);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(contributors);
+        ArgumentGuard.ElementsNotNull(contributors);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddInfoActuator(contributors);
@@ -161,7 +162,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddLoggersActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddLoggersActuator();
@@ -180,7 +181,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddMappingsActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddMappingsActuator();
@@ -199,7 +200,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddMetricsActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddMetricsActuator();
@@ -218,7 +219,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddRefreshActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddRefreshActuator();
@@ -254,7 +255,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddThreadDumpActuator(mediaTypeVersion);
@@ -290,7 +291,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddTraceActuator(mediaTypeVersion);
@@ -309,7 +310,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddServicesActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddServicesActuator();
@@ -328,7 +329,7 @@ public static class ManagementWebHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddCloudFoundryActuator(this IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddCloudFoundryActuator();
@@ -388,7 +389,7 @@ public static class ManagementWebHostBuilderExtensions
     public static IWebHostBuilder AddAllActuators(this IWebHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints,
         MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddAllActuators(configureEndpoints, mediaTypeVersion, buildCorsPolicy);

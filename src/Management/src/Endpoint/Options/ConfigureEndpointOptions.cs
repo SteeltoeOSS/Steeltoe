@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Options;
 
@@ -19,9 +18,9 @@ internal abstract class ConfigureEndpointOptions<T> : IConfigureOptionsWithKey<T
 
     protected ConfigureEndpointOptions(IConfiguration configuration, string prefix, string id)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(prefix);
-        ArgumentGuard.NotNull(id);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentException.ThrowIfNullOrEmpty(prefix);
+        ArgumentNullException.ThrowIfNull(id);
 
         Configuration = configuration;
         _prefix = prefix;
@@ -30,7 +29,7 @@ internal abstract class ConfigureEndpointOptions<T> : IConfigureOptionsWithKey<T
 
     public virtual void Configure(T options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         Configuration.GetSection(_prefix).Bind(options);
 

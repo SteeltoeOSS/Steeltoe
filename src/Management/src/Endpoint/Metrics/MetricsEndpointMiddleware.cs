@@ -92,10 +92,7 @@ internal sealed class MetricsEndpointMiddleware : EndpointMiddleware<MetricsRequ
     {
         if (tag != null)
         {
-            string[] segments = tag.Split(new[]
-            {
-                ':'
-            }, 2);
+            string[] segments = tag.Split([':'], 2);
 
             if (segments.Length == 2)
             {

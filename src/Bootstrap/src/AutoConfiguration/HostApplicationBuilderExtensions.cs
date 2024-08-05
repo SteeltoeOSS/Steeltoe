@@ -84,9 +84,10 @@ public static class HostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddSteeltoe(this IHostApplicationBuilder builder, IReadOnlySet<string> assemblyNamesToExclude,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(assemblyNamesToExclude);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(assemblyNamesToExclude);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(assemblyNamesToExclude);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
 

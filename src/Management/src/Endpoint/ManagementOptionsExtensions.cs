@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint;
@@ -12,8 +11,8 @@ internal static class ManagementOptionsExtensions
 {
     public static string? GetBaseRequestPath(this ManagementOptions managementOptions, HttpRequest httpRequest)
     {
-        ArgumentGuard.NotNull(managementOptions);
-        ArgumentGuard.NotNull(httpRequest);
+        ArgumentNullException.ThrowIfNull(managementOptions);
+        ArgumentNullException.ThrowIfNull(httpRequest);
 
         return httpRequest.Path.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath)
             ? ConfigureManagementOptions.DefaultCloudFoundryPath

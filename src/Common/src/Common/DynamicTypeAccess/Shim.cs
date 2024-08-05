@@ -18,7 +18,7 @@ internal abstract class Shim
 
     protected Shim(InstanceAccessor instanceAccessor)
     {
-        ArgumentGuard.NotNull(instanceAccessor);
+        ArgumentNullException.ThrowIfNull(instanceAccessor);
 
         InstanceAccessor = instanceAccessor;
     }

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json.Serialization;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
@@ -17,7 +16,7 @@ public sealed class ContextMappings
 
     public ContextMappings(IDictionary<string, IList<RouteMappingDescription>> mappingDictionary, string? parentId)
     {
-        ArgumentGuard.NotNull(mappingDictionary);
+        ArgumentNullException.ThrowIfNull(mappingDictionary);
 
         // At this point, .NET will only ever have one context, and it must be named "dispatcherServlets"
         // For .NET, the mappingDictionary contains keys that represent the type name of the controller and then a

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
@@ -32,8 +31,8 @@ internal sealed class HttpTraceDiagnosticObserver : TraceDiagnosticObserver
 
     protected override void RecordHttpTrace(Activity current, HttpContext context)
     {
-        ArgumentGuard.NotNull(current);
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(current);
+        ArgumentNullException.ThrowIfNull(context);
 
         HttpTrace trace = MakeTraceV2(context, current.Duration);
         _queue.Enqueue(trace);

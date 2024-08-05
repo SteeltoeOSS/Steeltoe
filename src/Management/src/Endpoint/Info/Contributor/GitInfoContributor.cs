@@ -5,7 +5,6 @@
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
@@ -28,11 +27,11 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
     {
     }
 
-    private GitInfoContributor(string propertiesPath, ILogger<GitInfoContributor> logger)
+    public GitInfoContributor(string propertiesPath, ILogger<GitInfoContributor> logger)
         : base(null)
     {
-        ArgumentGuard.NotNull(propertiesPath);
-        ArgumentGuard.NotNull(logger);
+        ArgumentException.ThrowIfNullOrWhiteSpace(propertiesPath);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _propertiesPath = propertiesPath;
         _logger = logger;
@@ -40,19 +39,17 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
 
     public async Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
-        Configuration = await ReadGitPropertiesAsync(_propertiesPath, cancellationToken);
+        Configuration = await ReadGitPropertiesAsync(cancellationToken);
         Contribute(builder, GitSettingsPrefix, true);
     }
 
-    public async Task<IConfiguration?> ReadGitPropertiesAsync(string propertiesPath, CancellationToken cancellationToken)
+    public async Task<IConfiguration?> ReadGitPropertiesAsync(CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(propertiesPath);
-
-        if (File.Exists(propertiesPath))
+        if (File.Exists(_propertiesPath))
         {
-            string[] lines = await File.ReadAllLinesAsync(propertiesPath, cancellationToken);
+            string[] lines = await File.ReadAllLinesAsync(_propertiesPath, cancellationToken);
 
             if (lines.Length > 0)
             {
@@ -85,7 +82,7 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
         }
         else
         {
-            _logger.LogWarning("Unable to locate GitInfo at {GitInfoLocation}", propertiesPath);
+            _logger.LogWarning("Unable to locate GitInfo at {GitInfoLocation}", _propertiesPath);
         }
 
         return null;
@@ -93,8 +90,8 @@ internal sealed class GitInfoContributor : ConfigurationContributor, IInfoContri
 
     protected override void AddKeyValue(IDictionary<string, object> dictionary, string key, string value)
     {
-        ArgumentGuard.NotNull(dictionary);
-        ArgumentGuard.NotNull(key);
+        ArgumentNullException.ThrowIfNull(dictionary);
+        ArgumentException.ThrowIfNullOrEmpty(key);
 
         object valueToInsert = value;
 

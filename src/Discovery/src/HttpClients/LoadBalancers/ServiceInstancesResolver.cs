@@ -53,10 +53,13 @@ public sealed class ServiceInstancesResolver
     public ServiceInstancesResolver(IEnumerable<IDiscoveryClient> discoveryClients, IDistributedCache? distributedCache,
         DistributedCacheEntryOptions? cacheEntryOptions, ILogger<ServiceInstancesResolver> logger)
     {
-        ArgumentGuard.NotNull(discoveryClients);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(discoveryClients);
+        ArgumentNullException.ThrowIfNull(logger);
 
-        _discoveryClients = discoveryClients.ToArray();
+        IDiscoveryClient[] discoveryClientArray = discoveryClients.ToArray();
+        ArgumentGuard.ElementsNotNull(discoveryClientArray);
+
+        _discoveryClients = discoveryClientArray;
         _distributedCache = distributedCache;
         _cacheEntryOptions = cacheEntryOptions ?? new DistributedCacheEntryOptions();
         _logger = logger;
@@ -69,7 +72,7 @@ public sealed class ServiceInstancesResolver
 
     public async Task<IList<IServiceInstance>> ResolveInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(serviceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(serviceId);
 
         string cacheKey = $"Steeltoe:Discovery:ServiceInstances:{serviceId}";
 
@@ -126,7 +129,7 @@ public sealed class ServiceInstancesResolver
 
     private static byte[] ToCacheValue(IEnumerable<IServiceInstance> instances)
     {
-        List<JsonSerializableServiceInstance> serializableInstances = instances.Select(JsonSerializableServiceInstance.CopyFrom).ToList();
+        JsonSerializableServiceInstance[] serializableInstances = instances.Select(JsonSerializableServiceInstance.CopyFrom).ToArray();
         return JsonSerializer.SerializeToUtf8Bytes(serializableInstances);
     }
 
@@ -143,7 +146,7 @@ public sealed class ServiceInstancesResolver
 
         public static JsonSerializableServiceInstance CopyFrom(IServiceInstance instance)
         {
-            ArgumentGuard.NotNull(instance);
+            ArgumentNullException.ThrowIfNull(instance);
 
             return new JsonSerializableServiceInstance
             {

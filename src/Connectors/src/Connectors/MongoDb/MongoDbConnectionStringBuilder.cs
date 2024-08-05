@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Web;
 using Microsoft.AspNetCore.Http;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.MongoDb;
 
@@ -31,7 +30,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
     {
         get
         {
-            ArgumentGuard.NotNull(keyword);
+            ArgumentException.ThrowIfNullOrWhiteSpace(keyword);
 
             if (string.Equals(keyword, KnownKeywords.Url, StringComparison.OrdinalIgnoreCase))
             {
@@ -49,7 +48,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
         }
         set
         {
-            ArgumentGuard.NotNull(keyword);
+            ArgumentException.ThrowIfNullOrWhiteSpace(keyword);
 
             if (string.Equals(keyword, KnownKeywords.Url, StringComparison.OrdinalIgnoreCase))
             {

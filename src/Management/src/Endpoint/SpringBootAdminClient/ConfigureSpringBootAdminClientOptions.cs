@@ -22,8 +22,8 @@ internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptionsW
 
     public ConfigureSpringBootAdminClientOptions(IConfiguration configuration, IApplicationInstanceInfo applicationInstanceInfo)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(applicationInstanceInfo);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(applicationInstanceInfo);
 
         _configuration = configuration;
         _applicationInstanceInfo = applicationInstanceInfo;

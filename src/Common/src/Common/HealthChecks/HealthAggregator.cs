@@ -20,9 +20,9 @@ internal sealed class HealthAggregator : IHealthAggregator
     public async Task<SteeltoeHealthCheckResult> AggregateAsync(ICollection<IHealthContributor> contributors,
         ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(contributors);
-        ArgumentGuard.NotNull(healthCheckRegistrations);
-        ArgumentGuard.NotNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(contributors);
+        ArgumentNullException.ThrowIfNull(healthCheckRegistrations);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
 
         SteeltoeHealthCheckResult contributorsResult = await AggregateHealthContributorsAsync(contributors, cancellationToken);
 
@@ -35,8 +35,6 @@ internal sealed class HealthAggregator : IHealthAggregator
     private async Task<SteeltoeHealthCheckResult> AggregateHealthContributorsAsync(ICollection<IHealthContributor> contributors,
         CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(contributors);
-
         if (contributors.Count == 0)
         {
             return new SteeltoeHealthCheckResult();
@@ -44,11 +42,11 @@ internal sealed class HealthAggregator : IHealthAggregator
 
         var aggregatorResult = new SteeltoeHealthCheckResult();
         var healthChecks = new ConcurrentDictionary<string, SteeltoeHealthCheckResult>();
-        var keyList = new ConcurrentBag<string>();
+        var keys = new ConcurrentBag<string>();
 
         await Parallel.ForEachAsync(contributors, cancellationToken, async (contributor, _) =>
         {
-            string contributorId = GetKey(keyList, contributor.Id);
+            string contributorId = GetKey(keys, contributor.Id);
             SteeltoeHealthCheckResult? healthCheckResult;
 
             try
@@ -159,8 +157,6 @@ internal sealed class HealthAggregator : IHealthAggregator
 
     private static string GetKey(ConcurrentBag<string> keys, string key)
     {
-        ArgumentGuard.NotNull(keys);
-
         lock (keys)
         {
             // add the contributor with a -n appended to the id
@@ -178,9 +174,6 @@ internal sealed class HealthAggregator : IHealthAggregator
 
     private static SteeltoeHealthCheckResult AddChecksSetStatus(SteeltoeHealthCheckResult result, IDictionary<string, SteeltoeHealthCheckResult> healthChecks)
     {
-        ArgumentGuard.NotNull(result);
-        ArgumentGuard.NotNull(healthChecks);
-
         foreach (KeyValuePair<string, SteeltoeHealthCheckResult> healthCheck in healthChecks)
         {
             if (healthCheck.Value.Status > result.Status)

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -68,11 +67,11 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     public EurekaDiscoveryClient(EurekaApplicationInfoManager appInfoManager, EurekaClient eurekaClient,
         IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor, HealthCheckHandlerProvider healthCheckHandlerProvider, ILogger<EurekaDiscoveryClient> logger)
     {
-        ArgumentGuard.NotNull(appInfoManager);
-        ArgumentGuard.NotNull(eurekaClient);
-        ArgumentGuard.NotNull(clientOptionsMonitor);
-        ArgumentGuard.NotNull(healthCheckHandlerProvider);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(appInfoManager);
+        ArgumentNullException.ThrowIfNull(eurekaClient);
+        ArgumentNullException.ThrowIfNull(clientOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(healthCheckHandlerProvider);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _appInfoManager = appInfoManager;
         _eurekaClient = eurekaClient;
@@ -139,14 +138,14 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
 
     internal ApplicationInfo? GetApplication(string appName)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(appName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(appName);
 
         return Applications.GetRegisteredApplication(appName);
     }
 
     internal IReadOnlyList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(vipAddress);
+        ArgumentException.ThrowIfNullOrWhiteSpace(vipAddress);
 
         return secure ? Applications.GetInstancesBySecureVipAddress(vipAddress) : Applications.GetInstancesByVipAddress(vipAddress);
     }
@@ -515,13 +514,13 @@ public sealed class EurekaDiscoveryClient : IDiscoveryClient
     /// <inheritdoc />
     public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(serviceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(serviceId);
 
         IReadOnlyList<InstanceInfo> nonSecureInstances = GetInstancesByVipAddress(serviceId, false);
         IReadOnlyList<InstanceInfo> secureInstances = GetInstancesByVipAddress(serviceId, true);
 
         InstanceInfo[] instances = secureInstances.Concat(nonSecureInstances).DistinctBy(instance => instance.InstanceId).ToArray();
-        IList<IServiceInstance> serviceInstances = instances.Select(instance => new EurekaServiceInstance(instance)).Cast<IServiceInstance>().ToList();
+        IList<IServiceInstance> serviceInstances = instances.Select(instance => new EurekaServiceInstance(instance)).Cast<IServiceInstance>().ToArray();
 
         _logger.LogDebug("Returning {Count} service instances: {ServiceInstances}", serviceInstances.Count,
             string.Join(", ", serviceInstances.Select(instance => $"{instance.ServiceId}={instance.Uri}")));

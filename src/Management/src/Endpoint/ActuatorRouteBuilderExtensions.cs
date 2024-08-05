@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -39,7 +38,7 @@ public static class ActuatorRouteBuilderExtensions
     /// </returns>
     public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder routeBuilder, ActuatorConventionBuilder? conventionBuilder)
     {
-        ArgumentGuard.NotNull(routeBuilder);
+        ArgumentNullException.ThrowIfNull(routeBuilder);
 
         IServiceProvider serviceProvider = routeBuilder.ServiceProvider;
 
@@ -62,7 +61,7 @@ public static class ActuatorRouteBuilderExtensions
     /// </returns>
     public static IRouteBuilder MapAllActuators(this IRouteBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         IServiceProvider serviceProvider = builder.ServiceProvider;
 

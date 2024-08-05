@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Services;
 
@@ -17,7 +16,7 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static IServiceCollection AddServicesActuator(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddCommonActuatorServices();
         services.AddServicesActuatorServices();

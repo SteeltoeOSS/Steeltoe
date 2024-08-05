@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.EntityFrameworkCore;
-using Steeltoe.Common;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.EntityFrameworkCore.SqlServer.DynamicTypeAccess;
 using Steeltoe.Connectors.SqlServer;
@@ -77,9 +76,9 @@ public static class SqlServerDbContextOptionsBuilderExtensions
     private static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
         SqlServerEntityFrameworkCorePackageResolver packageResolver, string? serviceBindingName = null, Action<object>? sqlServerOptionsAction = null)
     {
-        ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(optionsBuilder);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
         string? connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);

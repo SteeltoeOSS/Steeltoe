@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.SpringBoot;
 
@@ -41,8 +40,8 @@ public static class SpringBootConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder AddSpringBootFromEnvironmentVariable(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         builder.Add(new SpringBootEnvironmentVariableSource());
 
@@ -86,9 +85,9 @@ public static class SpringBootConfigurationBuilderExtensions
     public static IConfigurationBuilder AddSpringBootFromCommandLine(this IConfigurationBuilder builder, IConfiguration configuration,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         builder.Add(new SpringBootCommandLineSource(configuration));
 

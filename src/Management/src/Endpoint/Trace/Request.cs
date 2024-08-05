@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-
 namespace Steeltoe.Management.Endpoint.Trace;
 
 public sealed class Request
@@ -15,9 +13,9 @@ public sealed class Request
 
     public Request(string method, string uri, IDictionary<string, IList<string?>> headers, string? remoteAddress)
     {
-        ArgumentGuard.NotNull(method);
-        ArgumentGuard.NotNull(uri);
-        ArgumentGuard.NotNull(headers);
+        ArgumentException.ThrowIfNullOrWhiteSpace(method);
+        ArgumentException.ThrowIfNullOrWhiteSpace(uri);
+        ArgumentNullException.ThrowIfNull(headers);
 
         Method = method;
         Uri = uri;

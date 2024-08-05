@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.Services;
 
@@ -17,16 +16,16 @@ internal sealed class ServicesEndpointHandler : IServicesEndpointHandler
 
     public ServicesEndpointHandler(IOptionsMonitor<ServicesEndpointOptions> optionsMonitor, IServiceCollection services)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(services);
 
         _optionsMonitor = optionsMonitor;
         _lazyServiceRegistrations = new Lazy<IList<ServiceRegistration>>(() => ConvertToRegistrations(services), LazyThreadSafetyMode.PublicationOnly);
     }
 
-    private static List<ServiceRegistration> ConvertToRegistrations(IServiceCollection services)
+    private static IList<ServiceRegistration> ConvertToRegistrations(IServiceCollection services)
     {
-        return services.Select(descriptor => new ServiceRegistration(descriptor)).ToList();
+        return services.Select(descriptor => new ServiceRegistration(descriptor)).ToArray();
     }
 
     public Task<IList<ServiceRegistration>> InvokeAsync(object? argument, CancellationToken cancellationToken)

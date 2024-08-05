@@ -36,9 +36,10 @@ public sealed class ConnectorFactory<TOptions, TConnection> : IDisposable
     public ConnectorFactory(IServiceProvider serviceProvider, IReadOnlySet<string> serviceBindingNames, ConnectorCreateConnection createConnection,
         bool useSingletonConnection)
     {
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(serviceBindingNames);
-        ArgumentGuard.NotNull(createConnection);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceBindingNames);
+        ArgumentGuard.ElementsNotNull(serviceBindingNames);
+        ArgumentNullException.ThrowIfNull(createConnection);
 
         _serviceProvider = serviceProvider;
         ServiceBindingNames = serviceBindingNames;

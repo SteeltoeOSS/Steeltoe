@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.CosmosDb;
 
@@ -43,7 +42,7 @@ public static class CosmosDbHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddCosmosDb(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder.Configuration.ConfigureCosmosDb(configureAction);
         builder.Services.AddCosmosDb(builder.Configuration, addAction);

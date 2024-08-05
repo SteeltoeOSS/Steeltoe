@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
@@ -29,7 +28,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
     public TraceDiagnosticObserver(IOptionsMonitor<TraceEndpointOptions> optionsMonitor, ILoggerFactory loggerFactory)
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         _optionsMonitor = optionsMonitor;
         _logger = loggerFactory.CreateLogger<TraceDiagnosticObserver>();
@@ -69,8 +68,8 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     protected virtual void RecordHttpTrace(Activity current, HttpContext context)
     {
-        ArgumentGuard.NotNull(current);
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(current);
+        ArgumentNullException.ThrowIfNull(context);
 
         TraceResult trace = MakeTrace(context, current.Duration);
         Queue.Enqueue(trace);
@@ -83,7 +82,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     internal TraceResult MakeTrace(HttpContext context, TimeSpan duration)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         HttpRequest request = context.Request;
         HttpResponse response = context.Response;
@@ -161,7 +160,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     internal string? GetSessionId(HttpContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         var sessionFeature = context.Features.Get<ISessionFeature>();
 
@@ -177,7 +176,7 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     internal Dictionary<string, IList<string?>> GetRequestParameters(HttpRequest request)
     {
-        ArgumentGuard.NotNull(request);
+        ArgumentNullException.ThrowIfNull(request);
 
         var parameters = new Dictionary<string, IList<string?>>();
         IQueryCollection query = request.Query;
@@ -202,35 +201,35 @@ internal class TraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepositor
 
     internal string GetRequestUri(HttpRequest request)
     {
-        ArgumentGuard.NotNull(request);
+        ArgumentNullException.ThrowIfNull(request);
 
         return $"{request.Scheme}://{request.Host.Value}{request.Path.Value}";
     }
 
     internal string? GetPathInfo(HttpRequest request)
     {
-        ArgumentGuard.NotNull(request);
+        ArgumentNullException.ThrowIfNull(request);
 
         return request.Path.Value;
     }
 
     internal string? GetUserPrincipal(HttpContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         return context.User.Identity?.Name;
     }
 
     internal string? GetRemoteAddress(HttpContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         return context.Connection.RemoteIpAddress?.ToString();
     }
 
     internal Dictionary<string, object?> GetHeaders(int status, IHeaderDictionary headers)
     {
-        ArgumentGuard.NotNull(headers);
+        ArgumentNullException.ThrowIfNull(headers);
 
         Dictionary<string, object?> result = GetHeaders(headers);
         result.Add("status", status.ToString(CultureInfo.InvariantCulture));

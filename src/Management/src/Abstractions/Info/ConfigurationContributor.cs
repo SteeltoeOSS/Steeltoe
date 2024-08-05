@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Info;
 
@@ -18,8 +17,8 @@ internal abstract class ConfigurationContributor
 
     protected void Contribute(IInfoBuilder builder, string prefix, bool keepPrefix)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(prefix);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentException.ThrowIfNullOrEmpty(prefix);
 
         Dictionary<string, object> dictionary = CreateDictionary(prefix, keepPrefix);
         builder.WithInfo(dictionary);
@@ -70,8 +69,8 @@ internal abstract class ConfigurationContributor
 
     protected virtual void AddKeyValue(IDictionary<string, object> dictionary, string key, string value)
     {
-        ArgumentGuard.NotNull(dictionary);
-        ArgumentGuard.NotNull(key);
+        ArgumentNullException.ThrowIfNull(dictionary);
+        ArgumentException.ThrowIfNullOrEmpty(key);
 
         dictionary[key] = value;
     }

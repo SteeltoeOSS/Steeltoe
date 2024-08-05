@@ -47,9 +47,10 @@ internal sealed class BootstrapScanner
 
     public BootstrapScanner(HostBuilderWrapper wrapper, IReadOnlySet<string> assemblyNamesToExclude, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(wrapper);
-        ArgumentGuard.NotNull(assemblyNamesToExclude);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(wrapper);
+        ArgumentNullException.ThrowIfNull(assemblyNamesToExclude);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(assemblyNamesToExclude);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _wrapper = wrapper;
         _loader = new AssemblyLoader(assemblyNamesToExclude);
@@ -61,7 +62,7 @@ internal sealed class BootstrapScanner
     {
         if (_loggerFactory is IBootstrapLoggerFactory)
         {
-            BootstrapLoggerHostedService.Register(_loggerFactory, _wrapper);
+            BootstrapLoggerHostedService.Register(_wrapper);
         }
 
         if (!WireIfLoaded(WireConfigServer, SteeltoeAssemblyNames.ConfigurationConfigServer))

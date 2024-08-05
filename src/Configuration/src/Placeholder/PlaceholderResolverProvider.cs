@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Configuration.Placeholder;
@@ -41,8 +40,8 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// </param>
     public PlaceholderResolverProvider(IConfigurationRoot root, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(root);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(root);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Configuration = root;
     }
@@ -59,8 +58,8 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// </param>
     public PlaceholderResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(providers);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(providers);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Providers = providers;
     }
@@ -79,7 +78,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// </returns>
     public bool TryGet(string key, out string? value)
     {
-        ArgumentGuard.NotNull(key);
+        ArgumentException.ThrowIfNullOrEmpty(key);
         EnsureInitialized();
 
         string? originalValue = Configuration![key];
@@ -104,7 +103,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// </param>
     public void Set(string key, string? value)
     {
-        ArgumentGuard.NotNull(key);
+        ArgumentException.ThrowIfNullOrEmpty(key);
         EnsureInitialized();
 
         Configuration![key] = value;

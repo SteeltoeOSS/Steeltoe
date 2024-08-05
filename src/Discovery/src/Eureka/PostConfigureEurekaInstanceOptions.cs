@@ -31,10 +31,10 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     public PostConfigureEurekaInstanceOptions(IServiceProvider serviceProvider, IConfiguration configuration, IApplicationInstanceInfo appInfo,
         InetUtils inetUtils)
     {
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(appInfo);
-        ArgumentGuard.NotNull(inetUtils);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(appInfo);
+        ArgumentNullException.ThrowIfNull(inetUtils);
 
         _serviceProvider = serviceProvider;
         _configuration = configuration;
@@ -44,7 +44,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
 
     public void PostConfigure(string? name, EurekaInstanceOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         SetRegistrationMethod(options);
         SetHostNameAndIpAddress(options);

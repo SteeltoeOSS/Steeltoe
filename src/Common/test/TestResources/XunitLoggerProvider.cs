@@ -54,7 +54,7 @@ public sealed class XunitLoggerProvider : ILoggerProvider
         public XunitLogger(ITestOutputHelper output, string categoryName, Func<string, LogLevel, bool> filter)
         {
             ArgumentNullException.ThrowIfNull(output);
-            ArgumentNullException.ThrowIfNull(categoryName);
+            ArgumentException.ThrowIfNullOrEmpty(categoryName);
             ArgumentNullException.ThrowIfNull(filter);
 
             _output = output;

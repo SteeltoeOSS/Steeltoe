@@ -21,7 +21,8 @@ internal sealed class Sanitizer
 
     public Sanitizer(ICollection<string> keysToSanitize)
     {
-        ArgumentGuard.NotNull(keysToSanitize);
+        ArgumentNullException.ThrowIfNull(keysToSanitize);
+        ArgumentGuard.ElementsNotNullOrEmpty(keysToSanitize);
 
         foreach (string key in keysToSanitize)
         {

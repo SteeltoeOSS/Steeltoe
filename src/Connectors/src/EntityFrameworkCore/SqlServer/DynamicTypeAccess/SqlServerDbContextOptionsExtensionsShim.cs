@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.EntityFrameworkCore;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.SqlServer.DynamicTypeAccess;
 
@@ -12,7 +11,7 @@ internal static class SqlServerDbContextOptionsExtensionsShim
     public static void UseSqlServer(SqlServerEntityFrameworkCorePackageResolver packageResolver, DbContextOptionsBuilder optionsBuilder,
         string? connectionString, object? sqlServerOptionsAction = null)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         Type sqlServerOptionsActionType = typeof(Action<>).MakeGenericType(packageResolver.SqlServerDbContextOptionsBuilderClass.Type);
 

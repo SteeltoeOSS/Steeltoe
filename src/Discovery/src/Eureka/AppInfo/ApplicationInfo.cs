@@ -26,8 +26,8 @@ public sealed class ApplicationInfo
 
     internal ApplicationInfo(string name, ICollection<InstanceInfo> instances)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(name);
-        ArgumentGuard.NotNull(instances);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(instances);
         ArgumentGuard.ElementsNotNull(instances);
 
         Name = name;
@@ -40,7 +40,7 @@ public sealed class ApplicationInfo
 
     internal InstanceInfo? GetInstance(string instanceId)
     {
-        ArgumentGuard.NotNullOrWhiteSpace(instanceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
 
         return _instanceMap.GetValueOrDefault(instanceId);
     }
@@ -53,14 +53,14 @@ public sealed class ApplicationInfo
 
     internal void Add(InstanceInfo instance)
     {
-        ArgumentGuard.NotNull(instance);
+        ArgumentNullException.ThrowIfNull(instance);
 
         _instanceMap[instance.InstanceId] = instance;
     }
 
     internal void Remove(InstanceInfo instance)
     {
-        ArgumentGuard.NotNull(instance);
+        ArgumentNullException.ThrowIfNull(instance);
 
         _instanceMap.TryRemove(instance.InstanceId, out _);
     }

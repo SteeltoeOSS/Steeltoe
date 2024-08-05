@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Reflection;
-using Steeltoe.Common;
 using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
@@ -15,7 +14,7 @@ internal sealed class BuildInfoContributor : IInfoContributor
 
     public Task ContributeAsync(IInfoBuilder builder, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder.WithInfo("applicationVersionInfo", GetImportantDetails(_applicationAssembly));
         builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoeAssembly));

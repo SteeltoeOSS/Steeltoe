@@ -29,7 +29,7 @@ public static class ConsulServiceCollectionExtensions
     /// </param>
     public static IServiceCollection AddConsulDiscoveryClient(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         ConfigureConsulServices(services);
         AddConsulServices(services);

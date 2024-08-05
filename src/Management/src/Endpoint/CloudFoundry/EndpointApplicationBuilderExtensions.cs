@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -18,7 +17,7 @@ public static class EndpointApplicationBuilderExtensions
     /// </param>
     public static void UseCloudFoundrySecurity(this IApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (builder.ApplicationServices.GetService<PermissionsProvider>() == null)
         {

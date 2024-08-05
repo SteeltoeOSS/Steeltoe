@@ -16,7 +16,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 {
     private readonly IOptionsMonitor<HealthEndpointOptions> _endpointOptionsMonitor;
     private readonly IHealthAggregator _healthAggregator;
-    private readonly IList<IHealthContributor> _healthContributors;
+    private readonly ICollection<IHealthContributor> _healthContributors;
     private readonly IOptionsMonitor<HealthCheckServiceOptions> _healthOptionsMonitor;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<HealthEndpointHandler> _logger;
@@ -27,16 +27,19 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         IEnumerable<IHealthContributor> healthContributors, IOptionsMonitor<HealthCheckServiceOptions> healthOptionsMonitor, IServiceProvider serviceProvider,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(endpointOptionsMonitor);
-        ArgumentGuard.NotNull(healthAggregator);
-        ArgumentGuard.NotNull(healthContributors);
-        ArgumentGuard.NotNull(healthOptionsMonitor);
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(endpointOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(healthAggregator);
+        ArgumentNullException.ThrowIfNull(healthContributors);
+        ArgumentNullException.ThrowIfNull(healthOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        IHealthContributor[] healthContributorArray = healthContributors.ToArray();
+        ArgumentGuard.ElementsNotNull(healthContributorArray);
 
         _endpointOptionsMonitor = endpointOptionsMonitor;
         _healthAggregator = healthAggregator;
-        _healthContributors = healthContributors.ToList();
+        _healthContributors = healthContributorArray;
         _healthOptionsMonitor = healthOptionsMonitor;
         _serviceProvider = serviceProvider;
         _logger = loggerFactory.CreateLogger<HealthEndpointHandler>();
@@ -44,7 +47,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
     public int GetStatusCode(HealthEndpointResponse response)
     {
-        ArgumentGuard.NotNull(response);
+        ArgumentNullException.ThrowIfNull(response);
 
         return response.Status is HealthStatus.Down or HealthStatus.OutOfService ? 503 : 200;
     }
@@ -54,7 +57,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         string groupName = healthRequest.GroupName;
         HealthEndpointOptions endpointOptions = _endpointOptionsMonitor.CurrentValue;
 
-        IList<IHealthContributor> filteredContributors;
+        ICollection<IHealthContributor> filteredContributors;
         ICollection<HealthCheckRegistration> healthCheckRegistrations;
 
         if (!string.IsNullOrEmpty(groupName) && groupName != endpointOptions.Id)
@@ -76,7 +79,7 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
 
         if (showDetails != ShowDetails.Never && (showDetails != ShowDetails.WhenAuthorized || healthRequest.HasClaim))
         {
-            foreach (string group in endpointOptions.Groups.Select(group => group.Key).ToList())
+            foreach (string group in endpointOptions.Groups.Select(group => group.Key))
             {
                 response.Groups.Add(group);
             }
@@ -91,10 +94,10 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
         {
             if (_endpointOptionsMonitor.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions? groupOptions) && groupOptions.Include != null)
             {
-                List<string> includedContributors = groupOptions.Include.Split(',').ToList();
+                string[] includedContributors = groupOptions.Include.Split(',');
 
                 return _healthOptionsMonitor.CurrentValue.Registrations
-                    .Where(registration => includedContributors.Contains(registration.Name, StringComparer.OrdinalIgnoreCase)).ToList();
+                    .Where(registration => includedContributors.Contains(registration.Name, StringComparer.OrdinalIgnoreCase)).ToArray();
             }
 
             _logger.LogInformation("Health check requested for a group that is not configured");
@@ -118,14 +121,14 @@ internal sealed class HealthEndpointHandler : IHealthEndpointHandler
     /// <para />
     /// If group can't be parsed or is not configured, returns all health contributors.
     /// </returns>
-    private IList<IHealthContributor> GetFilteredContributors(string requestedGroup)
+    private ICollection<IHealthContributor> GetFilteredContributors(string requestedGroup)
     {
         if (!string.IsNullOrEmpty(requestedGroup))
         {
             if (_endpointOptionsMonitor.CurrentValue.Groups.TryGetValue(requestedGroup, out HealthGroupOptions? groupOptions) && groupOptions.Include != null)
             {
-                List<string> includedContributors = groupOptions.Include.Split(',').ToList();
-                return _healthContributors.Where(contributor => includedContributors.Contains(contributor.Id, StringComparer.OrdinalIgnoreCase)).ToList();
+                string[] includedContributors = groupOptions.Include.Split(',');
+                return _healthContributors.Where(contributor => includedContributors.Contains(contributor.Id, StringComparer.OrdinalIgnoreCase)).ToArray();
             }
 
             _logger.LogInformation("Health check requested for a group that is not configured");

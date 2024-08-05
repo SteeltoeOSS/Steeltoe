@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.RouteMappings;
 
@@ -21,7 +20,7 @@ public static class RouteBuilderExtensions
     /// </returns>
     public static IRouteBuilder AddRoutesToMappingsActuator(this IRouteBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         var routerMappings = builder.ServiceProvider.GetRequiredService<RouterMappings>();
 

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Placeholder;
 
@@ -21,7 +20,7 @@ internal static class ConfigurationBuilderExtensions
     public static TSource? FindConfigurationSource<TSource>(this IConfigurationBuilder builder)
         where TSource : class, IConfigurationSource
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         return FindConfigurationSource<TSource>(builder.Sources);
     }
@@ -62,7 +61,7 @@ internal static class ConfigurationBuilderExtensions
     public static IEnumerable<TSource> GetConfigurationSources<TSource>(this IConfigurationBuilder builder)
         where TSource : class, IConfigurationSource
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         var sources = new List<TSource>();
         AddConfigurationSources(builder.Sources, sources);

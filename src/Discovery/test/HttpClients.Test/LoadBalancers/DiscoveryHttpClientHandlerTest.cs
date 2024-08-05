@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data;
-using Steeltoe.Common;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
 
 namespace Steeltoe.Discovery.HttpClients.Test.LoadBalancers;
@@ -58,8 +57,8 @@ public sealed class DiscoveryHttpClientHandlerTest
         public Task UpdateStatisticsAsync(Uri requestUri, Uri serviceInstanceUri, TimeSpan? responseTime, Exception? exception,
             CancellationToken cancellationToken)
         {
-            ArgumentGuard.NotNull(requestUri);
-            ArgumentGuard.NotNull(serviceInstanceUri);
+            ArgumentNullException.ThrowIfNull(requestUri);
+            ArgumentNullException.ThrowIfNull(serviceInstanceUri);
 
             Statistics.Add(new LoadBalancerStatistic(requestUri, serviceInstanceUri, responseTime, exception));
             return Task.CompletedTask;

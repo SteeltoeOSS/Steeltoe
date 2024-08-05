@@ -20,7 +20,7 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddInfoActuator(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, GitInfoContributor>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IInfoContributor, AppSettingsInfoContributor>());
@@ -41,8 +41,9 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddInfoActuator(this IServiceCollection services, params IInfoContributor[] contributors)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(contributors);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(contributors);
+        ArgumentGuard.ElementsNotNull(contributors);
 
         AddContributors(services, contributors);
         services.AddInfoActuator();

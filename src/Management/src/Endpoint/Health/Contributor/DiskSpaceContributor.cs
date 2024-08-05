@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
 
@@ -17,7 +16,7 @@ internal sealed class DiskSpaceContributor : IHealthContributor
 
     public DiskSpaceContributor(IOptionsMonitor<DiskSpaceContributorOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         _optionsMonitor = optionsMonitor;
     }

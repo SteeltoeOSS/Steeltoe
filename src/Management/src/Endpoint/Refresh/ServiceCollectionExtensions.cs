@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
@@ -25,7 +24,7 @@ public static class ServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddRefreshActuatorServices(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.ConfigureEndpointOptions<RefreshEndpointOptions, ConfigureRefreshEndpointOptions>();
         services.TryAddSingleton<IRefreshEndpointHandler, RefreshEndpointHandler>();

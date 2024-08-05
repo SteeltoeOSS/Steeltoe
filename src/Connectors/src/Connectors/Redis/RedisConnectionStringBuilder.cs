@@ -4,7 +4,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.Redis;
 
@@ -28,7 +27,7 @@ internal sealed class RedisConnectionStringBuilder : IConnectionStringBuilder
     {
         get
         {
-            ArgumentGuard.NotNull(keyword);
+            ArgumentException.ThrowIfNullOrWhiteSpace(keyword);
 
             // Allow getting unknown keyword, if it was set earlier. We don't pretend to know all valid keywords.
             if (_settings.TryGetValue(keyword, out string? value))
@@ -41,7 +40,7 @@ internal sealed class RedisConnectionStringBuilder : IConnectionStringBuilder
         }
         set
         {
-            ArgumentGuard.NotNull(keyword);
+            ArgumentException.ThrowIfNullOrWhiteSpace(keyword);
 
             string? stringValue = value?.ToString();
 

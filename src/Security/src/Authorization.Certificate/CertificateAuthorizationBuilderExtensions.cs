@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
 
 namespace Steeltoe.Security.Authorization.Certificate;
@@ -28,7 +27,7 @@ public static class CertificateAuthorizationBuilderExtensions
     /// </param>
     public static AuthorizationBuilder AddOrgAndSpacePolicies(this AuthorizationBuilder authorizationBuilder)
     {
-        ArgumentGuard.NotNull(authorizationBuilder);
+        ArgumentNullException.ThrowIfNull(authorizationBuilder);
 
         authorizationBuilder.Services.ConfigureCertificateOptions(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
 

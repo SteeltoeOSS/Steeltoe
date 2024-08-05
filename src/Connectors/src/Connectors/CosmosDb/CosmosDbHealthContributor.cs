@@ -5,7 +5,6 @@
 using System.Data.Common;
 using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
@@ -30,10 +29,10 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
     public CosmosDbHealthContributor(string serviceName, IServiceProvider serviceProvider, CosmosDbPackageResolver packageResolver,
         ILogger<CosmosDbHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(serviceName);
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(packageResolver);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(serviceName);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(logger);
 
         ServiceName = serviceName;
         _clientFactory = new CosmosClientShimFactory(serviceName, serviceProvider, packageResolver);
@@ -104,9 +103,9 @@ internal sealed class CosmosDbHealthContributor : IHealthContributor, IDisposabl
 
         public CosmosClientShimFactory(string serviceName, IServiceProvider serviceProvider, CosmosDbPackageResolver packageResolver)
         {
-            ArgumentGuard.NotNull(serviceName);
-            ArgumentGuard.NotNull(serviceProvider);
-            ArgumentGuard.NotNull(packageResolver);
+            ArgumentNullException.ThrowIfNull(serviceName);
+            ArgumentNullException.ThrowIfNull(serviceProvider);
+            ArgumentNullException.ThrowIfNull(packageResolver);
 
             ConnectorFactoryShim<CosmosDbOptions> connectorFactoryShim =
                 ConnectorFactoryShim<CosmosDbOptions>.FromServiceProvider(serviceProvider, packageResolver.CosmosClientClass.Type);

@@ -4,7 +4,6 @@
 
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors;
 
@@ -32,7 +31,7 @@ internal sealed class DbConnectionStringBuilderWrapper : IConnectionStringBuilde
 
     public DbConnectionStringBuilderWrapper(DbConnectionStringBuilder innerBuilder)
     {
-        ArgumentGuard.NotNull(innerBuilder);
+        ArgumentNullException.ThrowIfNull(innerBuilder);
 
         _innerBuilder = innerBuilder;
     }

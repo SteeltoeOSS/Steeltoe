@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.Common;
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
@@ -19,7 +18,7 @@ internal sealed class SqlConnectionStringBuilderShim : Shim
 
     public static SqlConnectionStringBuilderShim CreateInstance(SqlServerPackageResolver packageResolver)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         InstanceAccessor instanceAccessor = packageResolver.SqlConnectionStringBuilderClass.CreateInstance(null);
         return new SqlConnectionStringBuilderShim(instanceAccessor);

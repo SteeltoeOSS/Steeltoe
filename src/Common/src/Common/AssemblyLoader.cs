@@ -26,8 +26,8 @@ internal sealed class AssemblyLoader
 
     public AssemblyLoader(IReadOnlySet<string> assemblyNamesToExclude)
     {
-        ArgumentGuard.NotNull(assemblyNamesToExclude);
-        ArgumentGuard.ElementsNotNullOrEmpty(assemblyNamesToExclude);
+        ArgumentNullException.ThrowIfNull(assemblyNamesToExclude);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(assemblyNamesToExclude);
 
         // Take a copy to ensure comparisons are case-insensitive.
         AssemblyNamesToExclude = assemblyNamesToExclude.ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -35,7 +35,7 @@ internal sealed class AssemblyLoader
 
     public bool IsAssemblyLoaded(string assemblyName)
     {
-        ArgumentGuard.NotNullOrEmpty(assemblyName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(assemblyName);
 
         if (AssemblyNamesToExclude.Contains(assemblyName))
         {

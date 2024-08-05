@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
-using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
@@ -38,7 +37,7 @@ public sealed class DynamicSerilogLoggerProvider : DynamicLoggerProvider
 
     protected override MessageProcessingLogger CreateMessageProcessingLogger(string categoryName)
     {
-        ArgumentGuard.NotNullOrEmpty(categoryName);
+        ArgumentException.ThrowIfNullOrEmpty(categoryName);
 
         ILogger logger = InnerLoggerProvider.CreateLogger(categoryName);
         LoggerFilter filter = GetFilter(categoryName);
@@ -48,7 +47,7 @@ public sealed class DynamicSerilogLoggerProvider : DynamicLoggerProvider
 
     private static ILoggerProvider CreateSerilogLogger(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
     {
-        ArgumentGuard.NotNull(serilogOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(serilogOptionsMonitor);
 
         lock (LoggerLock)
         {
@@ -60,7 +59,7 @@ public sealed class DynamicSerilogLoggerProvider : DynamicLoggerProvider
 
     private static LoggerFilterConfiguration GetMinimumLevelsFromOptions(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
     {
-        ArgumentGuard.NotNull(serilogOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(serilogOptionsMonitor);
 
         SerilogOptions options = serilogOptionsMonitor.CurrentValue;
         var defaultMinLevel = (LogLevel)options.MinimumLevel!.Default;

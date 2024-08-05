@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer;
@@ -44,8 +43,8 @@ public static class SqlServerConfigurationBuilderExtensions
     internal static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder, SqlServerPackageResolver packageResolver,
         Action<ConnectorConfigureOptionsBuilder>? configureAction = null)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         ConnectorConfigurer.Configure(builder, configureAction, new SqlServerConnectionStringPostProcessor(packageResolver));
         return builder;

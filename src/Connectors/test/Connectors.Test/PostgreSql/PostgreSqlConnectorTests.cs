@@ -779,7 +779,7 @@ bR1Bjw0NBrcC7/tryf5kzKVdYs3FAHOR3qCFIaVGg97okwhOiMP6e6j0fBENDj8f
         {
             if (!string.IsNullOrEmpty(connectionString))
             {
-                foreach (string entry in connectionString.Split(';').ToArray())
+                foreach (string entry in connectionString.Split(';'))
                 {
                     string[] pair = entry.Split('=', 2);
                     string key = pair[0];

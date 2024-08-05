@@ -33,8 +33,8 @@ internal static class ConfigurationOptionsBinder
         Action<TOptions, IServiceProvider>? configureAction = null)
         where TOptions : class
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(configurationKey);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentException.ThrowIfNullOrEmpty(configurationKey);
 
         OptionsBuilder<TOptions> builder = services.AddOptions<TOptions>();
 

@@ -20,12 +20,15 @@ internal sealed class InfoEndpointHandler : IInfoEndpointHandler
 
     public InfoEndpointHandler(IOptionsMonitor<InfoEndpointOptions> optionsMonitor, IEnumerable<IInfoContributor> contributors, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(contributors);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(contributors);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        IInfoContributor[] contributorArray = contributors.ToArray();
+        ArgumentGuard.ElementsNotNull(contributorArray);
 
         _optionsMonitor = optionsMonitor;
-        _contributors = contributors.ToList();
+        _contributors = contributorArray;
         _logger = loggerFactory.CreateLogger<InfoEndpointHandler>();
     }
 

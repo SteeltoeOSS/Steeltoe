@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Connectors.MySql.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.MySql;
@@ -44,8 +43,8 @@ public static class MySqlConfigurationBuilderExtensions
     internal static IConfigurationBuilder ConfigureMySql(this IConfigurationBuilder builder, MySqlPackageResolver packageResolver,
         Action<ConnectorConfigureOptionsBuilder>? configureAction = null)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         ConnectorConfigurer.Configure(builder, configureAction, new MySqlConnectionStringPostProcessor(packageResolver));
         return builder;

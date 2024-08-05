@@ -4,7 +4,6 @@
 
 using System.Net;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Discovery.Eureka.Configuration;
 
@@ -19,14 +18,14 @@ internal sealed class EurekaHttpClientHandlerConfigurer : IHttpClientHandlerConf
 
     public EurekaHttpClientHandlerConfigurer(IOptionsMonitor<EurekaClientOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         _optionsMonitor = optionsMonitor;
     }
 
     public void Configure(HttpClientHandler handler)
     {
-        ArgumentGuard.NotNull(handler);
+        ArgumentNullException.ThrowIfNull(handler);
 
         EurekaClientOptions clientOptions = _optionsMonitor.CurrentValue;
 

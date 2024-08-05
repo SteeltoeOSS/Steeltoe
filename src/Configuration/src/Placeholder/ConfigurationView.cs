@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Placeholder;
 
@@ -44,7 +43,7 @@ internal sealed class ConfigurationView : IConfigurationRoot
     /// </param>
     public ConfigurationView(IList<IConfigurationProvider> providers)
     {
-        ArgumentGuard.NotNull(providers);
+        ArgumentNullException.ThrowIfNull(providers);
 
         _providers = providers;
     }

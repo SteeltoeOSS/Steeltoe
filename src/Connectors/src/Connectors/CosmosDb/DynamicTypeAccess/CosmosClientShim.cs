@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.CosmosDb.DynamicTypeAccess;
@@ -23,7 +22,7 @@ internal sealed class CosmosClientShim : Shim, IDisposable
 
     public static CosmosClientShim CreateInstance(CosmosDbPackageResolver packageResolver, string? connectionString)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         InstanceAccessor instanceAccessor = packageResolver.CosmosClientClass.CreateInstance(connectionString, null);
         return new CosmosClientShim(instanceAccessor);

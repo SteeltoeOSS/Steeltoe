@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration;
 
@@ -71,7 +70,7 @@ public abstract class BaseServiceOptions
     /// </returns>
     public IList<Service> GetServicesOfType(string serviceType)
     {
-        ArgumentGuard.NotNullOrEmpty(serviceType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(serviceType);
 
         return Services.TryGetValue(serviceType, out IList<Service>? services) ? services : Array.Empty<Service>();
     }
@@ -87,8 +86,8 @@ public abstract class BaseServiceOptions
     /// </param>
     public void Bind(IConfiguration configuration, string serviceName)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNullOrEmpty(serviceName);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentException.ThrowIfNullOrWhiteSpace(serviceName);
 
         IConfigurationSection services = configuration.GetSection(ConfigurationPrefix);
         IConfigurationSection? section = FindServiceSection(services, serviceName);

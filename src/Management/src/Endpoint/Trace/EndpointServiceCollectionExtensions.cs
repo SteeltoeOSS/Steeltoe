@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 
@@ -20,7 +19,7 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddTraceActuator(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddTraceActuator(MediaTypeVersion.V2);
     }
@@ -36,7 +35,7 @@ public static class EndpointServiceCollectionExtensions
     /// </param>
     public static void AddTraceActuator(this IServiceCollection services, MediaTypeVersion version)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
         services.AddHostedService<DiagnosticsService>();

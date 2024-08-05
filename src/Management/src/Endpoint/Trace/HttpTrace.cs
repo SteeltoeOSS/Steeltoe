@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-
 namespace Steeltoe.Management.Endpoint.Trace;
 
 public sealed class HttpTrace
@@ -17,8 +15,8 @@ public sealed class HttpTrace
 
     public HttpTrace(Request request, Response response, long timestamp, Principal? principal, Session? session, double timeTaken)
     {
-        ArgumentGuard.NotNull(request);
-        ArgumentGuard.NotNull(response);
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(response);
 
         Request = request;
         Response = response;

@@ -5,7 +5,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -30,7 +29,7 @@ public static class ServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddThreadDumpActuatorServices(this IServiceCollection services, MediaTypeVersion version)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         if (version == MediaTypeVersion.V1)
         {

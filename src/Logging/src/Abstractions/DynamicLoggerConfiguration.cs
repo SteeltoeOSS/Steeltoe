@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 
 namespace Steeltoe.Logging;
 
@@ -41,7 +40,7 @@ public sealed class DynamicLoggerConfiguration
     /// </param>
     public DynamicLoggerConfiguration(string categoryName, LogLevel? configurationMinLevel, LogLevel effectiveMinLevel)
     {
-        ArgumentGuard.NotNullOrEmpty(categoryName);
+        ArgumentException.ThrowIfNullOrEmpty(categoryName);
 
         CategoryName = categoryName;
         ConfigurationMinLevel = configurationMinLevel;

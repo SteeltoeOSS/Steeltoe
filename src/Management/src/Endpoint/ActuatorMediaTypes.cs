@@ -14,9 +14,10 @@ internal static class ActuatorMediaTypes
     public const string AppJson = "application/json";
     public const string Any = "*/*";
 
-    internal static string GetContentHeaders(IList<string> acceptHeaders, MediaTypeVersion version)
+    internal static string GetContentHeaders(ICollection<string> acceptHeaders, MediaTypeVersion version)
     {
-        ArgumentGuard.NotNull(acceptHeaders);
+        ArgumentNullException.ThrowIfNull(acceptHeaders);
+        ArgumentGuard.ElementsNotNullOrWhiteSpace(acceptHeaders);
 
         string contentHeader = AppJson;
         string versionContentHeader = GetContentTypeHeaderForVersion(version);

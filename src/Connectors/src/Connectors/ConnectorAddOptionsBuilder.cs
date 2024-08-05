@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Connectors;
@@ -35,8 +34,8 @@ public sealed class ConnectorAddOptionsBuilder
 
     internal ConnectorAddOptionsBuilder(ConnectorCreateConnection createConnection, ConnectorCreateHealthContributor createHealthContributor)
     {
-        ArgumentGuard.NotNull(createConnection);
-        ArgumentGuard.NotNull(createHealthContributor);
+        ArgumentNullException.ThrowIfNull(createConnection);
+        ArgumentNullException.ThrowIfNull(createHealthContributor);
 
         CreateConnection = createConnection;
         CreateHealthContributor = createHealthContributor;

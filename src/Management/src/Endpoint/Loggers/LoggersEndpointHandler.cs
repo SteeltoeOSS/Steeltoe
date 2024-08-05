@@ -31,9 +31,9 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
     public LoggersEndpointHandler(IOptionsMonitor<LoggersEndpointOptions> optionsMonitor, IDynamicLoggerProvider dynamicLoggerProvider,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(dynamicLoggerProvider);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(dynamicLoggerProvider);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _optionsMonitor = optionsMonitor;
         _dynamicLoggerProvider = dynamicLoggerProvider;
@@ -42,7 +42,7 @@ internal sealed class LoggersEndpointHandler : ILoggersEndpointHandler
 
     public Task<LoggersResponse> InvokeAsync(LoggersRequest request, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(request);
+        ArgumentNullException.ThrowIfNull(request);
 
         _logger.LogDebug("Invoke({Request})", SecurityUtilities.SanitizeInput(request.ToString()));
 

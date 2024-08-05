@@ -17,8 +17,8 @@ internal sealed class BootstrapLoggerHostedService : IHostedService
 
     public BootstrapLoggerHostedService(BootstrapLoggerContext context, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(context);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _context = context;
         _loggerFactory = loggerFactory;
@@ -36,10 +36,9 @@ internal sealed class BootstrapLoggerHostedService : IHostedService
         return Task.CompletedTask;
     }
 
-    public static void Register(ILoggerFactory loggerFactory, HostBuilderWrapper wrapper)
+    public static void Register(HostBuilderWrapper wrapper)
     {
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(wrapper);
+        ArgumentNullException.ThrowIfNull(wrapper);
 
         wrapper.ConfigureServices(services =>
         {

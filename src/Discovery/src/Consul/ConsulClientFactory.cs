@@ -4,7 +4,6 @@
 
 using System.Net;
 using Consul;
-using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Util;
 
@@ -20,7 +19,7 @@ internal static class ConsulClientFactory
     /// </summary>
     public static IConsulClient CreateClient(ConsulOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         var client = new ConsulClient(configuration =>
         {

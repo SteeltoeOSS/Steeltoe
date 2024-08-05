@@ -15,9 +15,12 @@ internal sealed class DiscoveryClientHostedService : IHostedService
 
     public DiscoveryClientHostedService(IEnumerable<IDiscoveryClient> discoveryClients)
     {
-        ArgumentGuard.NotNull(discoveryClients);
+        ArgumentNullException.ThrowIfNull(discoveryClients);
 
-        _discoveryClients = discoveryClients.ToArray();
+        IDiscoveryClient[] discoveryClientArray = discoveryClients.ToArray();
+        ArgumentGuard.ElementsNotNull(discoveryClientArray);
+
+        _discoveryClients = discoveryClientArray;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

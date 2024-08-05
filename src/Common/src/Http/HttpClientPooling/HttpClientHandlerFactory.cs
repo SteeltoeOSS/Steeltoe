@@ -21,7 +21,7 @@ public sealed class HttpClientHandlerFactory
     /// </param>
     public HttpClientHandlerFactory Using(HttpClientHandler handler)
     {
-        ArgumentGuard.NotNull(handler);
+        ArgumentNullException.ThrowIfNull(handler);
 
         _handler = handler;
         return this;

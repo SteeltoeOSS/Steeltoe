@@ -27,9 +27,9 @@ internal sealed class ConfigServerDiscoveryService
 
     public ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientOptions options, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _configuration = configuration;
         _options = options;
@@ -155,7 +155,7 @@ internal sealed class ConfigServerDiscoveryService
 
     internal async Task ProvideRuntimeReplacementsAsync(ICollection<IDiscoveryClient> discoveryClientsFromServiceProvider, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(discoveryClientsFromServiceProvider);
+        ArgumentNullException.ThrowIfNull(discoveryClientsFromServiceProvider);
 
         _logger.LogInformation("Replacing the IDiscoveryClient(s) built at startup with the ones for runtime");
 

@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding.PostProcessors;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
@@ -83,10 +82,10 @@ public static class ConfigurationBuilderExtensions
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional, bool reloadOnChange,
         Predicate<string> ignoreKeyPredicate, IServiceBindingsReader serviceBindingsReader, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(ignoreKeyPredicate);
-        ArgumentGuard.NotNull(serviceBindingsReader);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(ignoreKeyPredicate);
+        ArgumentNullException.ThrowIfNull(serviceBindingsReader);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (!builder.Sources.OfType<KubernetesServiceBindingConfigurationSource>().Any())
         {

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.MongoDb;
 
@@ -43,7 +42,7 @@ public static class MongoDbHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddMongoDb(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder.Configuration.ConfigureMongoDb(configureAction);
         builder.Services.AddMongoDb(builder.Configuration, addAction);

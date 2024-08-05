@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.OpenIdConnect;
 
@@ -40,7 +39,7 @@ internal sealed class PostConfigureOpenIdConnectOptions : IPostConfigureOptions<
 
     public void PostConfigure(string? name, OpenIdConnectOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         options.Events.OnTokenValidated = MapScopesToClaimsAsync;
 

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.Common;
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.PostgreSql.DynamicTypeAccess;
@@ -19,7 +18,7 @@ internal sealed class NpgsqlConnectionStringBuilderShim : Shim
 
     public static NpgsqlConnectionStringBuilderShim CreateInstance(PostgreSqlPackageResolver packageResolver)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         InstanceAccessor instanceAccessor = packageResolver.NpgsqlConnectionStringBuilderClass.CreateInstance(null);
         return new NpgsqlConnectionStringBuilderShim(instanceAccessor);

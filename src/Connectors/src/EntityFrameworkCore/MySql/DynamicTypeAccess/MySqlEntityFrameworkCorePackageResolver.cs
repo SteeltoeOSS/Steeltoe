@@ -26,7 +26,7 @@ internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
         "MySql.Data"
     };
 
-    public static readonly MySqlEntityFrameworkCorePackageResolver Default = new(PomeloAssemblyNames.Concat(OracleAssemblyNames).ToList(), new[]
+    public static readonly MySqlEntityFrameworkCorePackageResolver Default = new(PomeloAssemblyNames.Concat(OracleAssemblyNames).ToArray(), new[]
     {
         PomeloPackageName,
         OraclePackageName

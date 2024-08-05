@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-
 namespace Steeltoe.Management.Endpoint.Health;
 
 public sealed class HealthEndpointRequest
@@ -13,7 +11,7 @@ public sealed class HealthEndpointRequest
 
     public HealthEndpointRequest(string groupName, bool hasClaim)
     {
-        ArgumentGuard.NotNull(groupName);
+        ArgumentNullException.ThrowIfNull(groupName);
 
         GroupName = groupName;
         HasClaim = hasClaim;

@@ -6,7 +6,6 @@ using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
@@ -48,9 +47,9 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ConsulServiceRegistrar? registrar,
         ILogger<ConsulDiscoveryClient> logger)
     {
-        ArgumentGuard.NotNull(client);
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _client = client;
         _optionsMonitor = optionsMonitor;
@@ -86,8 +85,8 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     /// </returns>
     public async Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, QueryOptions queryOptions, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(serviceId);
-        ArgumentGuard.NotNull(queryOptions);
+        ArgumentException.ThrowIfNullOrWhiteSpace(serviceId);
+        ArgumentNullException.ThrowIfNull(queryOptions);
 
         var instances = new List<IServiceInstance>();
         ConsulDiscoveryOptions options = _optionsMonitor.CurrentValue;
@@ -114,7 +113,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     /// </returns>
     public async Task<IList<IServiceInstance>> GetAllInstancesAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(queryOptions);
+        ArgumentNullException.ThrowIfNull(queryOptions);
 
         var instances = new List<IServiceInstance>();
         ConsulDiscoveryOptions options = _optionsMonitor.CurrentValue;
@@ -152,7 +151,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     /// </returns>
     public async Task<ISet<string>> GetServiceIdsAsync(QueryOptions queryOptions, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(queryOptions);
+        ArgumentNullException.ThrowIfNull(queryOptions);
 
         ConsulDiscoveryOptions options = _optionsMonitor.CurrentValue;
 

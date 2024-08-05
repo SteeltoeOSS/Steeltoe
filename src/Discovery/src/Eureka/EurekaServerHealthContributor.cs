@@ -4,7 +4,6 @@
 
 using System.Globalization;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -26,9 +25,9 @@ internal sealed class EurekaServerHealthContributor : IHealthContributor
     public EurekaServerHealthContributor(EurekaDiscoveryClient discoveryClient, IOptionsMonitor<EurekaClientOptions> clientOptionsMonitor,
         IOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor)
     {
-        ArgumentGuard.NotNull(discoveryClient);
-        ArgumentGuard.NotNull(clientOptionsMonitor);
-        ArgumentGuard.NotNull(instanceOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(discoveryClient);
+        ArgumentNullException.ThrowIfNull(clientOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(instanceOptionsMonitor);
 
         _discoveryClient = discoveryClient;
         _clientOptionsMonitor = clientOptionsMonitor;

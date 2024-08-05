@@ -5,7 +5,6 @@
 using System.Buffers.Binary;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
@@ -24,11 +23,10 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
     public RsaKeyStoreDecryptor(IKeyProvider keyProvider, string alias, string salt, bool strong, string algorithm)
     {
-        ArgumentGuard.NotNull(keyProvider);
-        ArgumentGuard.NotNull(alias);
-        ArgumentGuard.NotNull(salt);
-        ArgumentGuard.NotNull(strong);
-        ArgumentGuard.NotNull(algorithm);
+        ArgumentNullException.ThrowIfNull(keyProvider);
+        ArgumentNullException.ThrowIfNull(alias);
+        ArgumentNullException.ThrowIfNull(salt);
+        ArgumentNullException.ThrowIfNull(algorithm);
 
         _salt = salt;
         _defaultKeyAlias = alias;
@@ -49,20 +47,23 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
 
     public string Decrypt(string fullCipher)
     {
+        ArgumentNullException.ThrowIfNull(fullCipher);
+
         byte[] bytes = Convert.FromBase64String(fullCipher);
         return Decrypt(bytes, _defaultKeyAlias);
     }
 
     public string Decrypt(string fullCipher, string alias)
     {
+        ArgumentNullException.ThrowIfNull(fullCipher);
+        ArgumentNullException.ThrowIfNull(alias);
+
         byte[] bytes = Convert.FromBase64String(fullCipher);
         return Decrypt(bytes, alias);
     }
 
     private string Decrypt(byte[] fullCipher, string alias)
     {
-        ArgumentGuard.NotNull(fullCipher);
-
         ICipherParameters? key = _keyProvider.GetKey(alias);
 
         if (key == null)

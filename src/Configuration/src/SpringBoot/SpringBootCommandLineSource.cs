@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.SpringBoot;
 
@@ -22,7 +21,7 @@ internal sealed class SpringBootCommandLineSource : IConfigurationSource
     /// </param>
     public SpringBootCommandLineSource(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         Configuration = configuration;
     }

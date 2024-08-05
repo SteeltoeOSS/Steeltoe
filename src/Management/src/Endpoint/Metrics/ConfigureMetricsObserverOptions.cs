@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -23,14 +22,14 @@ internal sealed class ConfigureMetricsObserverOptions : IConfigureOptionsWithKey
 
     public ConfigureMetricsObserverOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
     }
 
     public void Configure(MetricsObserverOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         _configuration.GetSection(ManagementMetricsPrefix).Bind(options);
 

@@ -4,7 +4,6 @@
 
 using System.Text;
 using OpenTelemetry.Trace;
-using Steeltoe.Common;
 using Steeltoe.Logging;
 
 namespace Steeltoe.Management.Tracing;
@@ -15,14 +14,14 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
 
     public TracingLogProcessor(TracingOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         _options = options;
     }
 
     public string Process(string message)
     {
-        ArgumentGuard.NotNull(message);
+        ArgumentNullException.ThrowIfNull(message);
 
         TelemetrySpan? currentSpan = GetCurrentSpan();
 

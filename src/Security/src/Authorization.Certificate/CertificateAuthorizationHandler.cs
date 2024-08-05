@@ -6,7 +6,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Certificates;
 using Steeltoe.Common.Configuration;
 
@@ -19,8 +18,8 @@ internal sealed class CertificateAuthorizationHandler : IAuthorizationHandler
 
     public CertificateAuthorizationHandler(IOptionsMonitor<CertificateOptions> certificateOptionsMonitor, ILogger<CertificateAuthorizationHandler> logger)
     {
-        ArgumentGuard.NotNull(certificateOptionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(certificateOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _logger = logger;
         certificateOptionsMonitor.OnChange(OnCertificateRefresh);
@@ -29,7 +28,7 @@ internal sealed class CertificateAuthorizationHandler : IAuthorizationHandler
 
     public Task HandleAsync(AuthorizationHandlerContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         HandleCertificateAuthorizationRequirement<SameOrgRequirement>(context, ApplicationClaimTypes.OrganizationId,
             _applicationInstanceCertificate?.OrganizationId);

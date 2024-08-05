@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors;
 
@@ -61,9 +60,9 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
 
     public Connector(IServiceProvider serviceProvider, string serviceBindingName, ConnectorCreateConnection createConnection, bool useSingletonConnection)
     {
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(serviceBindingName);
-        ArgumentGuard.NotNull(createConnection);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceBindingName);
+        ArgumentNullException.ThrowIfNull(createConnection);
 
         _serviceBindingName = serviceBindingName;
         _createConnection = () => createConnection(serviceProvider, serviceBindingName);
@@ -167,8 +166,8 @@ public sealed class Connector<TOptions, TConnection> : IDisposable
 
         public ConnectionWithOptionsSnapshot(TConnection connection, TOptions options)
         {
-            ArgumentGuard.NotNull(connection);
-            ArgumentGuard.NotNull(options);
+            ArgumentNullException.ThrowIfNull(connection);
+            ArgumentNullException.ThrowIfNull(options);
 
             Connection = connection;
             Options = options;

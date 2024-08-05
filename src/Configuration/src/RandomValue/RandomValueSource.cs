@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.RandomValue;
 
@@ -41,7 +40,7 @@ internal sealed class RandomValueSource : IConfigurationSource
     /// </param>
     public RandomValueSource(string? prefix, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Prefix = prefix ?? DefaultPrefix;
         LoggerFactory = loggerFactory;

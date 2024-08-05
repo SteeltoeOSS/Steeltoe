@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Kubernetes.ServiceBinding;
 
@@ -20,14 +19,14 @@ internal sealed class KubernetesServiceBindingConfigurationSource : PostProcesso
 
     public KubernetesServiceBindingConfigurationSource(IServiceBindingsReader reader)
     {
-        ArgumentGuard.NotNull(reader);
+        ArgumentNullException.ThrowIfNull(reader);
 
         FileProvider = reader.GetRootDirectory();
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         CaptureConfigurationBuilder(builder);
         return new KubernetesServiceBindingConfigurationProvider(this);

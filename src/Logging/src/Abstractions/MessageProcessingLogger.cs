@@ -13,8 +13,9 @@ namespace Steeltoe.Logging;
 /// </summary>
 public class MessageProcessingLogger : ILogger
 {
-    private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
     private LoggerFilter _filter;
+
+    protected ICollection<IDynamicMessageProcessor> MessageProcessors { get; }
 
     protected internal ILogger InnerLogger { get; }
 
@@ -32,13 +33,16 @@ public class MessageProcessingLogger : ILogger
     /// </param>
     public MessageProcessingLogger(ILogger innerLogger, LoggerFilter filter, IEnumerable<IDynamicMessageProcessor> messageProcessors)
     {
-        ArgumentGuard.NotNull(innerLogger);
-        ArgumentGuard.NotNull(filter);
-        ArgumentGuard.NotNull(messageProcessors);
+        ArgumentNullException.ThrowIfNull(innerLogger);
+        ArgumentNullException.ThrowIfNull(filter);
+        ArgumentNullException.ThrowIfNull(messageProcessors);
+
+        IDynamicMessageProcessor[] messageProcessorArray = messageProcessors.ToArray();
+        ArgumentGuard.ElementsNotNull(messageProcessorArray);
 
         InnerLogger = innerLogger;
         _filter = filter;
-        _messageProcessors = messageProcessors;
+        MessageProcessors = messageProcessorArray;
     }
 
     /// <summary>
@@ -49,7 +53,7 @@ public class MessageProcessingLogger : ILogger
     /// </param>
     public void ChangeFilter(LoggerFilter filter)
     {
-        ArgumentGuard.NotNull(filter);
+        ArgumentNullException.ThrowIfNull(filter);
 
         _filter = filter;
     }
@@ -75,7 +79,7 @@ public class MessageProcessingLogger : ILogger
     /// <inheritdoc />
     public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        ArgumentGuard.NotNull(formatter);
+        ArgumentNullException.ThrowIfNull(formatter);
 
         if (!IsEnabled(logLevel))
         {
@@ -83,7 +87,7 @@ public class MessageProcessingLogger : ILogger
         }
 
         Func<TState, Exception?, string> compositeFormatter = (innerState, innerException) =>
-            ApplyMessageProcessors(innerState, innerException, formatter, _messageProcessors);
+            ApplyMessageProcessors(innerState, innerException, formatter, MessageProcessors);
 
         InnerLogger.Log(logLevel, eventId, state, exception, compositeFormatter);
     }

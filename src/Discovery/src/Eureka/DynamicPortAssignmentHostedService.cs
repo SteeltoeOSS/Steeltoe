@@ -10,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka;
@@ -26,9 +25,9 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
 
     public DynamicPortAssignmentHostedService(IServer server, AspNetServerListenState listenState, EurekaInstanceOptionsChangeTokenSource changeTokenSource)
     {
-        ArgumentGuard.NotNull(server);
-        ArgumentGuard.NotNull(listenState);
-        ArgumentGuard.NotNull(changeTokenSource);
+        ArgumentNullException.ThrowIfNull(server);
+        ArgumentNullException.ThrowIfNull(listenState);
+        ArgumentNullException.ThrowIfNull(changeTokenSource);
 
         _server = server;
         _listenState = listenState;
@@ -37,7 +36,7 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
 
     public static void Wire(IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         // Skip wire-up when running from a Hosted Service project instead of an ASP.NET project.
         if (services.Any(descriptor => descriptor.ServiceType == typeof(IServer)))
@@ -124,8 +123,8 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
 
         public EurekaInstanceDynamicPortsPostConfigureOptions(AspNetServerListenState listenState, ILoggerFactory loggerFactory)
         {
-            ArgumentGuard.NotNull(listenState);
-            ArgumentGuard.NotNull(loggerFactory);
+            ArgumentNullException.ThrowIfNull(listenState);
+            ArgumentNullException.ThrowIfNull(loggerFactory);
 
             _listenState = listenState;
             _optionsLogger = loggerFactory.CreateLogger<EurekaInstanceOptions>();
@@ -133,7 +132,7 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
 
         public void PostConfigure(string? name, EurekaInstanceOptions options)
         {
-            ArgumentGuard.NotNull(options);
+            ArgumentNullException.ThrowIfNull(options);
 
             if (_listenState.ListenOnAddresses != null)
             {

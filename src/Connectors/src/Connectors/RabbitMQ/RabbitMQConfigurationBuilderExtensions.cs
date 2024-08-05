@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
@@ -37,7 +36,7 @@ public static class RabbitMQConfigurationBuilderExtensions
     /// </returns>
     public static IConfigurationBuilder ConfigureRabbitMQ(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         ConnectorConfigurer.Configure(builder, configureAction, new RabbitMQConnectionStringPostProcessor());
         return builder;

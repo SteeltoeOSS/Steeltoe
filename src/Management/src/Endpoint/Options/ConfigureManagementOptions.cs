@@ -4,7 +4,6 @@
 
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.Trace;
@@ -24,14 +23,14 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
 
     public ConfigureManagementOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
     }
 
     public void Configure(ManagementOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 
@@ -100,14 +99,14 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
 
         public ConfigureExposure(IConfiguration configuration)
         {
-            ArgumentGuard.NotNull(configuration);
+            ArgumentNullException.ThrowIfNull(configuration);
 
             _configuration = configuration;
         }
 
         public void Configure(Exposure options)
         {
-            ArgumentGuard.NotNull(options);
+            ArgumentNullException.ThrowIfNull(options);
 
             _configuration.GetSection(Prefix).Bind(options);
 
@@ -115,8 +114,8 @@ internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<Mana
 
             if (secondSection.Exists())
             {
-                options.Include = GetListFromConfigurationCsvString(secondSection, "include") ?? new List<string>();
-                options.Exclude = GetListFromConfigurationCsvString(secondSection, "exclude") ?? new List<string>();
+                options.Include = GetListFromConfigurationCsvString(secondSection, "include") ?? [];
+                options.Exclude = GetListFromConfigurationCsvString(secondSection, "exclude") ?? [];
             }
 
             if (options.Include.Count == 0 && options.Exclude.Count == 0)

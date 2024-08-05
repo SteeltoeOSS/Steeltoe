@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 
@@ -24,8 +23,8 @@ public sealed class EurekaServiceUriStateManager
 
     public EurekaServiceUriStateManager(IOptionsMonitor<EurekaClientOptions> optionsMonitor, ILogger<EurekaServiceUriStateManager> logger)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _optionsMonitor = optionsMonitor;
         _logger = logger;
@@ -81,7 +80,7 @@ public sealed class EurekaServiceUriStateManager
             }
         }
 
-        return availableServiceUris.ToList();
+        return availableServiceUris.ToArray();
     }
 
     private ISet<Uri> GetConfiguredServiceUris()
@@ -103,7 +102,7 @@ public sealed class EurekaServiceUriStateManager
     /// </param>
     internal void MarkWorkingServiceUri(Uri serviceUri)
     {
-        ArgumentGuard.NotNull(serviceUri);
+        ArgumentNullException.ThrowIfNull(serviceUri);
 
         lock (_lockObject)
         {
@@ -120,7 +119,7 @@ public sealed class EurekaServiceUriStateManager
     /// </param>
     internal void MarkFailingServiceUri(Uri serviceUri)
     {
-        ArgumentGuard.NotNull(serviceUri);
+        ArgumentNullException.ThrowIfNull(serviceUri);
 
         lock (_lockObject)
         {

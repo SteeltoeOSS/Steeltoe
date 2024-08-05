@@ -4,7 +4,6 @@
 
 using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
@@ -26,7 +25,7 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
 
     public RedisHealthContributor(string? connectionString, ILogger<RedisHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _connectionString = connectionString;
         Host = GetHostNameFromConnectionString(connectionString);

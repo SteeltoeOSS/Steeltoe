@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 
@@ -46,7 +45,7 @@ public static class ConfigurationServiceCollectionExtensions
     /// </param>
     public static IServiceCollection AddConfigurationDiscoveryClient(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.ConfigureReloadableOptions<ConfigurationDiscoveryOptions>(ConfigurationDiscoveryOptions.ConfigurationPrefix);
 

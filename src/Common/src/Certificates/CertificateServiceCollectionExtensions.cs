@@ -21,11 +21,12 @@ public static class CertificateServiceCollectionExtensions
     /// <param name="certificateName">
     /// Name of the certificate used in configuration and IOptions, or <see cref="string.Empty" /> for an unnamed certificate.
     /// </param>
-    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string? certificateName)
+    public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string certificateName)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(certificateName);
 
-        string configurationKey = string.IsNullOrEmpty(certificateName)
+        string configurationKey = certificateName == string.Empty
             ? CertificateOptions.ConfigurationKeyPrefix
             : ConfigurationPath.Combine(CertificateOptions.ConfigurationKeyPrefix, certificateName);
 

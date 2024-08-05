@@ -13,8 +13,8 @@ internal sealed class HostInfo
 
     public HostInfo(string hostname, string ipAddress)
     {
-        ArgumentGuard.NotNull(hostname);
-        ArgumentGuard.NotNull(ipAddress);
+        ArgumentException.ThrowIfNullOrWhiteSpace(hostname);
+        ArgumentException.ThrowIfNullOrWhiteSpace(ipAddress);
 
         Hostname = hostname;
         IPAddress = ipAddress;

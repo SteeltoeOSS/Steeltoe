@@ -31,7 +31,7 @@ internal sealed class HostBuilderWrapper
 
     public static HostBuilderWrapper Wrap(IHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         var wrapper = new HostBuilderWrapper(builder);
 
@@ -58,7 +58,7 @@ internal sealed class HostBuilderWrapper
 
     public static HostBuilderWrapper Wrap(IWebHostBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         var wrapper = new HostBuilderWrapper(builder);
 
@@ -85,7 +85,7 @@ internal sealed class HostBuilderWrapper
 
     public static HostBuilderWrapper Wrap(IHostApplicationBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         // IHostApplicationBuilder implementations immediately execute callbacks, so don't capture them for deferred execution.
 
@@ -103,14 +103,14 @@ internal sealed class HostBuilderWrapper
 
     public HostBuilderWrapper ConfigureServices(Action<IServiceCollection> configureAction)
     {
-        ArgumentGuard.NotNull(configureAction);
+        ArgumentNullException.ThrowIfNull(configureAction);
 
         return ConfigureServices((_, services) => configureAction(services));
     }
 
     public HostBuilderWrapper ConfigureServices(Action<HostBuilderContextWrapper, IServiceCollection> configureAction)
     {
-        ArgumentGuard.NotNull(configureAction);
+        ArgumentNullException.ThrowIfNull(configureAction);
 
         if (_innerBuilder is IHostApplicationBuilder applicationBuilder)
         {
@@ -127,14 +127,14 @@ internal sealed class HostBuilderWrapper
 
     public HostBuilderWrapper ConfigureAppConfiguration(Action<IConfigurationBuilder> configureAction)
     {
-        ArgumentGuard.NotNull(configureAction);
+        ArgumentNullException.ThrowIfNull(configureAction);
 
         return ConfigureAppConfiguration((_, configurationBuilder) => configureAction(configurationBuilder));
     }
 
     public HostBuilderWrapper ConfigureAppConfiguration(Action<HostBuilderContextWrapper, IConfigurationBuilder> configureAction)
     {
-        ArgumentGuard.NotNull(configureAction);
+        ArgumentNullException.ThrowIfNull(configureAction);
 
         if (_innerBuilder is IHostApplicationBuilder applicationBuilder)
         {
@@ -151,14 +151,14 @@ internal sealed class HostBuilderWrapper
 
     public HostBuilderWrapper ConfigureLogging(Action<ILoggingBuilder> configureAction)
     {
-        ArgumentGuard.NotNull(configureAction);
+        ArgumentNullException.ThrowIfNull(configureAction);
 
         return ConfigureLogging((_, configurationBuilder) => configureAction(configurationBuilder));
     }
 
     public HostBuilderWrapper ConfigureLogging(Action<HostBuilderContextWrapper, ILoggingBuilder> configureAction)
     {
-        ArgumentGuard.NotNull(configureAction);
+        ArgumentNullException.ThrowIfNull(configureAction);
 
         if (_innerBuilder is IHostApplicationBuilder applicationBuilder)
         {
@@ -175,7 +175,7 @@ internal sealed class HostBuilderWrapper
 
     public HostBuilderWrapper ConfigureWebHost(Action<IWebHostBuilder> configureAction)
     {
-        ArgumentGuard.NotNull(configureAction);
+        ArgumentNullException.ThrowIfNull(configureAction);
 
         if (_innerBuilder is IHostBuilder hostBuilder)
         {

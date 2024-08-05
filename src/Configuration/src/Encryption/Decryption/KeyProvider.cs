@@ -4,7 +4,6 @@
 
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption.Decryption;
 
@@ -14,8 +13,8 @@ internal sealed class KeyProvider : IKeyProvider
 
     public KeyProvider(string fileName, string pfxPassword)
     {
-        ArgumentGuard.NotNull(fileName);
-        ArgumentGuard.NotNull(pfxPassword);
+        ArgumentException.ThrowIfNullOrEmpty(fileName);
+        ArgumentNullException.ThrowIfNull(pfxPassword);
 
         using var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
         _store = CreateStore(fileStream, pfxPassword);
@@ -23,8 +22,8 @@ internal sealed class KeyProvider : IKeyProvider
 
     public KeyProvider(Stream fileStream, string pfxPassword)
     {
-        ArgumentGuard.NotNull(fileStream);
-        ArgumentGuard.NotNull(pfxPassword);
+        ArgumentNullException.ThrowIfNull(fileStream);
+        ArgumentNullException.ThrowIfNull(pfxPassword);
 
         _store = CreateStore(fileStream, pfxPassword);
     }
@@ -40,6 +39,8 @@ internal sealed class KeyProvider : IKeyProvider
 
     public ICipherParameters? GetKey(string keyAlias)
     {
+        ArgumentNullException.ThrowIfNull(keyAlias);
+
         return _store.GetKey(keyAlias)?.Key;
     }
 }

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 using Steeltoe.Common.Net;
 using Steeltoe.Management.Endpoint.Options;
 
@@ -22,14 +21,14 @@ internal sealed class ConfigureWavefrontExporterOptions : IConfigureOptionsWithK
 
     public ConfigureWavefrontExporterOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
     }
 
     public void Configure(WavefrontExporterOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         _configuration.GetSection(WavefrontMetricsPrefix).Bind(options);
 

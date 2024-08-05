@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Endpoint.ManagementPort;
 
@@ -30,14 +29,14 @@ internal sealed class ManagementPortStartupFilter : IStartupFilter
 
     public ManagementPortStartupFilter(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         _configuration = configuration;
     }
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
-        ArgumentGuard.NotNull(next);
+        ArgumentNullException.ThrowIfNull(next);
 
         return applicationBuilder =>
         {

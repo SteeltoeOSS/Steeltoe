@@ -48,8 +48,8 @@ public static class TaskServiceCollectionExtensions
     /// </typeparam>
     public static void AddTask<T>(this IServiceCollection services, string taskName, ServiceLifetime lifetime)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNullOrEmpty(taskName);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentException.ThrowIfNullOrWhiteSpace(taskName);
 
         services.TryAdd(new ServiceDescriptor(typeof(IApplicationTask), taskName, typeof(T), lifetime));
     }
@@ -68,9 +68,9 @@ public static class TaskServiceCollectionExtensions
     /// </param>
     public static void AddTask(this IServiceCollection services, string taskName, IApplicationTask task)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNullOrEmpty(taskName);
-        ArgumentGuard.NotNull(task);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentException.ThrowIfNullOrWhiteSpace(taskName);
+        ArgumentNullException.ThrowIfNull(task);
 
         services.TryAddKeyedSingleton(taskName, task);
     }
@@ -89,9 +89,9 @@ public static class TaskServiceCollectionExtensions
     /// </param>
     public static void AddTask(this IServiceCollection services, string taskName, Func<IServiceProvider, CancellationToken, Task> asyncAction)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(taskName);
-        ArgumentGuard.NotNull(asyncAction);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentException.ThrowIfNullOrWhiteSpace(taskName);
+        ArgumentNullException.ThrowIfNull(asyncAction);
 
         services.TryAddKeyedScoped<IApplicationTask>(taskName,
             (serviceProvider, _) => new DelegatingTask(cancellationToken => asyncAction(serviceProvider, cancellationToken)));
@@ -111,9 +111,9 @@ public static class TaskServiceCollectionExtensions
     /// </param>
     public static void AddTask(this IServiceCollection services, string taskName, Func<IServiceProvider, string, IApplicationTask> factory)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNullOrEmpty(taskName);
-        ArgumentGuard.NotNull(factory);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentException.ThrowIfNullOrWhiteSpace(taskName);
+        ArgumentNullException.ThrowIfNull(factory);
 
         services.TryAddKeyedScoped(taskName, (serviceProvider, _) => factory(serviceProvider, taskName));
     }

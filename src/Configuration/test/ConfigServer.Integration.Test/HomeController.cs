@@ -5,7 +5,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.HealthChecks;
 
@@ -18,8 +17,8 @@ public sealed class HomeController : Controller
 
     public HomeController(IOptions<ConfigServerDataAsOptions> options, IHealthContributor healthContributor)
     {
-        ArgumentGuard.NotNull(healthContributor);
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(healthContributor);
+        ArgumentNullException.ThrowIfNull(options);
 
         _options = options.Value;
         _healthContributor = healthContributor;

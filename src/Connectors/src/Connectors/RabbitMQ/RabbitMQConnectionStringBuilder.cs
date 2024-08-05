@@ -4,7 +4,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.RabbitMQ;
 
@@ -28,7 +27,7 @@ internal sealed class RabbitMQConnectionStringBuilder : IConnectionStringBuilder
     {
         get
         {
-            ArgumentGuard.NotNull(keyword);
+            ArgumentException.ThrowIfNullOrWhiteSpace(keyword);
             AssertIsKnownKeyword(keyword);
 
             if (string.Equals(keyword, KnownKeywords.Url, StringComparison.OrdinalIgnoreCase))
@@ -45,7 +44,7 @@ internal sealed class RabbitMQConnectionStringBuilder : IConnectionStringBuilder
         }
         set
         {
-            ArgumentGuard.NotNull(keyword);
+            ArgumentException.ThrowIfNullOrWhiteSpace(keyword);
             AssertIsKnownKeyword(keyword);
 
             if (string.Equals(keyword, KnownKeywords.Url, StringComparison.OrdinalIgnoreCase))

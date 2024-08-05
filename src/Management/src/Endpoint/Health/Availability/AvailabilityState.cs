@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-
 namespace Steeltoe.Management.Endpoint.Health.Availability;
 
 public abstract class AvailabilityState
@@ -12,7 +10,7 @@ public abstract class AvailabilityState
 
     protected AvailabilityState(string value)
     {
-        ArgumentGuard.NotNull(value);
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
 
         _value = value;
     }

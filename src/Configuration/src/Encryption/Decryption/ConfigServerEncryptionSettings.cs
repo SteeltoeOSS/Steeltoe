@@ -32,7 +32,7 @@ internal sealed class ConfigServerEncryptionSettings
     /// </summary>
     public string? EncryptionKey { get; set; }
 
-    internal static ITextDecryptor CreateTextDecryptor(IConfiguration configuration)
+    public static ITextDecryptor CreateTextDecryptor(IConfiguration configuration)
     {
         var settings = new ConfigServerEncryptionSettings();
         ConfigurationSettingsHelper.Initialize(settings, configuration);

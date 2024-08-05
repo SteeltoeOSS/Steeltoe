@@ -21,10 +21,11 @@ internal sealed class HypermediaService
         IOptionsMonitor<HypermediaEndpointOptions> hypermediaEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection,
         ILogger<HypermediaService> logger)
     {
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(hypermediaEndpointOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsCollection);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(hypermediaEndpointOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
+        ArgumentGuard.ElementsNotNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptions = hypermediaEndpointOptionsMonitor.CurrentValue;
@@ -36,10 +37,11 @@ internal sealed class HypermediaService
         IOptionsMonitor<CloudFoundryEndpointOptions> cloudFoundryEndpointOptionsMonitor, ICollection<EndpointOptions> endpointOptionsCollection,
         ILogger<HypermediaService> logger)
     {
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(cloudFoundryEndpointOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsCollection);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(cloudFoundryEndpointOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
+        ArgumentGuard.ElementsNotNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptions = cloudFoundryEndpointOptionsMonitor.CurrentValue;
@@ -49,7 +51,7 @@ internal sealed class HypermediaService
 
     public Links Invoke(string baseUrl)
     {
-        ArgumentGuard.NotNull(baseUrl);
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl);
 
         var links = new Links();
 

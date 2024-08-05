@@ -24,20 +24,23 @@ internal sealed class ActuatorEndpointHandler : IActuatorEndpointHandler
     public ActuatorEndpointHandler(IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         IOptionsMonitor<HypermediaEndpointOptions> endpointOptionsMonitor, IEnumerable<EndpointOptions> endpointOptionsCollection, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsMonitor);
-        ArgumentGuard.NotNull(endpointOptionsCollection);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(endpointOptionsCollection);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        EndpointOptions[] endpointOptionsArray = endpointOptionsCollection.ToArray();
+        ArgumentGuard.ElementsNotNull(endpointOptionsArray);
 
         _managementOptionsMonitor = managementOptionsMonitor;
         _endpointOptionsMonitor = endpointOptionsMonitor;
-        _endpointOptionsCollection = endpointOptionsCollection.ToList();
+        _endpointOptionsCollection = endpointOptionsArray;
         _hypermediaServiceLogger = loggerFactory.CreateLogger<HypermediaService>();
     }
 
     public Task<Links> InvokeAsync(string baseUrl, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(baseUrl);
+        ArgumentException.ThrowIfNullOrWhiteSpace(baseUrl);
 
         var service = new HypermediaService(_managementOptionsMonitor, _endpointOptionsMonitor, _endpointOptionsCollection, _hypermediaServiceLogger);
         Links result = service.Invoke(baseUrl);

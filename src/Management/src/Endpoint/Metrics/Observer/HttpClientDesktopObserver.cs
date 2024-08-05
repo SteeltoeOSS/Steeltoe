@@ -32,7 +32,7 @@ internal sealed class HttpClientDesktopObserver : MetricsObserver
     public HttpClientDesktopObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILoggerFactory loggerFactory)
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         string? egressIgnorePattern = optionsMonitor.CurrentValue.EgressIgnorePattern;
 

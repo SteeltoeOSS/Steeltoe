@@ -52,7 +52,7 @@ internal static class PropertyPlaceholderHelper
     /// </returns>
     public static string? ResolvePlaceholders(string? property, IConfiguration? configuration, ILogger logger)
     {
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(logger);
 
         return ParseStringValue(property, configuration, false, new HashSet<string>(), logger);
     }
@@ -74,8 +74,8 @@ internal static class PropertyPlaceholderHelper
     /// </returns>
     public static IDictionary<string, string?> GetResolvedConfigurationPlaceholders(IConfiguration configuration, ILogger logger)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(logger);
 
         // setup a holding tank for resolved values
         var resolvedValues = new Dictionary<string, string?>();

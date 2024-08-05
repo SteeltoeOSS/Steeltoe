@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Management.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
@@ -32,7 +31,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
     public AspNetCoreHostingObserver(IOptionsMonitor<MetricsObserverOptions> optionsMonitor, ILoggerFactory loggerFactory)
         : base(DefaultObserverName, DiagnosticName, loggerFactory)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         string? ingressIgnorePattern = optionsMonitor.CurrentValue.IngressIgnorePattern;
 
@@ -79,9 +78,6 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
     private void HandleStopEvent(Activity current, HttpContext context)
     {
-        ArgumentGuard.NotNull(current);
-        ArgumentGuard.NotNull(context);
-
         if (ShouldIgnoreRequest(context.Request.Path))
         {
             _logger.LogDebug("HandleStopEvent: Ignoring path: {Path}", context.Request.Path);
@@ -98,7 +94,7 @@ internal sealed class AspNetCoreHostingObserver : MetricsObserver
 
     internal IDictionary<string, object?> GetLabelSets(HttpContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         string uri = context.Request.Path.ToString();
         string statusCode = context.Response.StatusCode.ToString(CultureInfo.InvariantCulture);

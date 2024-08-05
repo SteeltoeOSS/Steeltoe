@@ -5,7 +5,6 @@
 using System.Runtime.ExceptionServices;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
@@ -25,9 +24,9 @@ internal sealed class RabbitMQHealthContributor : IHealthContributor, IDisposabl
 
     public RabbitMQHealthContributor(object connectionFactory, string host, ILogger<RabbitMQHealthContributor> logger)
     {
-        ArgumentGuard.NotNull(connectionFactory);
-        ArgumentGuard.NotNullOrEmpty(host);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(connectionFactory);
+        ArgumentException.ThrowIfNullOrWhiteSpace(host);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _connectionFactoryInterfaceShim = new ConnectionFactoryInterfaceShim(RabbitMQPackageResolver.Default, connectionFactory);
         Host = host;

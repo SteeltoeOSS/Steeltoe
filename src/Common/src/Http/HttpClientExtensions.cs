@@ -41,8 +41,8 @@ internal static class HttpClientExtensions
     public static async Task<string> GetAccessTokenAsync(this HttpClient httpClient, Uri accessTokenUri, string? username, string? password,
         CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(httpClient);
-        ArgumentGuard.NotNull(accessTokenUri);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        ArgumentNullException.ThrowIfNull(accessTokenUri);
 
         var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri)
         {

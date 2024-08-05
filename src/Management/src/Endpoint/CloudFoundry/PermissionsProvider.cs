@@ -34,11 +34,12 @@ internal sealed class PermissionsProvider
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<PermissionsProvider> _logger;
 
-    public PermissionsProvider(IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor, IHttpClientFactory httpClientFactory, ILogger<PermissionsProvider> logger)
+    public PermissionsProvider(IOptionsMonitor<CloudFoundryEndpointOptions> optionsMonitor, IHttpClientFactory httpClientFactory,
+        ILogger<PermissionsProvider> logger)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(httpClientFactory);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(httpClientFactory);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _optionsMonitor = optionsMonitor;
         _httpClientFactory = httpClientFactory;
@@ -47,8 +48,6 @@ internal sealed class PermissionsProvider
 
     public static bool IsCloudFoundryRequest(PathString requestPath)
     {
-        ArgumentGuard.NotNull(requestPath);
-
         return requestPath.StartsWithSegments(ConfigureManagementOptions.DefaultCloudFoundryPath);
     }
 
@@ -94,7 +93,7 @@ internal sealed class PermissionsProvider
 
     public async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
-        ArgumentGuard.NotNull(response);
+        ArgumentNullException.ThrowIfNull(response);
 
         string json = string.Empty;
         var permissions = Permissions.None;

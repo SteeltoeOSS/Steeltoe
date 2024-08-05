@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Common.Logging;
 
@@ -50,8 +49,8 @@ public static class EncryptionHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddEncryptionResolver(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddEncryptionResolver(loggerFactory);
@@ -94,8 +93,8 @@ public static class EncryptionHostBuilderExtensions
     /// </returns>
     public static IHostBuilder AddEncryptionResolver(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddEncryptionResolver(loggerFactory);
@@ -138,8 +137,8 @@ public static class EncryptionHostBuilderExtensions
     /// </returns>
     public static IHostApplicationBuilder AddEncryptionResolver(this IHostApplicationBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddEncryptionResolver(loggerFactory);

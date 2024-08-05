@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
@@ -20,7 +19,7 @@ public sealed class CloudFoundryServicesOptions : BaseServiceOptions
 
     public CloudFoundryServicesOptions(IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         configuration.GetSection(ServicesConfigurationRoot).Bind(this);
     }

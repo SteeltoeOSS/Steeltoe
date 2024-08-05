@@ -22,7 +22,7 @@ internal sealed class ValidateCertificatesHttpClientHandlerConfigurer<TOptions> 
 
     public ValidateCertificatesHttpClientHandlerConfigurer(IOptionsMonitor<TOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         _optionsMonitor = optionsMonitor;
     }

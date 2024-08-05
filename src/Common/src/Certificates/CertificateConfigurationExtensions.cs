@@ -29,10 +29,11 @@ public static class CertificateConfigurationExtensions
     internal static IConfigurationBuilder AddCertificate(this IConfigurationBuilder builder, string certificateName, string certificateFilePath,
         string? privateKeyFilePath = null)
     {
-        ArgumentGuard.NotNull(builder);
-        ArgumentGuard.NotNullOrEmpty(certificateFilePath);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(certificateName);
+        ArgumentException.ThrowIfNullOrEmpty(certificateFilePath);
 
-        string keyPrefix = string.IsNullOrEmpty(certificateName)
+        string keyPrefix = certificateName == string.Empty
             ? $"{CertificateOptions.ConfigurationKeyPrefix}{ConfigurationPath.KeyDelimiter}"
             : $"{CertificateOptions.ConfigurationKeyPrefix}{ConfigurationPath.KeyDelimiter}{certificateName}{ConfigurationPath.KeyDelimiter}";
 
@@ -85,7 +86,7 @@ public static class CertificateConfigurationExtensions
     /// </remarks>
     public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder, Guid? organizationId, Guid? spaceId)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (!Platform.IsCloudFoundry)
         {

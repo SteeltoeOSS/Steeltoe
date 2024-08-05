@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.Encryption;
 
@@ -46,9 +45,9 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// </param>
     public EncryptionResolverProvider(IConfigurationRoot root, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(root);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(root);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Configuration = root;
         Decryptor = textDecryptor;
@@ -69,9 +68,9 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// </param>
     public EncryptionResolverProvider(IList<IConfigurationProvider> providers, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(providers);
-        ArgumentGuard.NotNull(loggerFactory);
-        ArgumentGuard.NotNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(providers);
+        ArgumentNullException.ThrowIfNull(textDecryptor);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Providers = providers;
         Decryptor = textDecryptor;
@@ -91,7 +90,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// </returns>
     public bool TryGet(string key, out string? value)
     {
-        ArgumentGuard.NotNull(key);
+        ArgumentException.ThrowIfNullOrEmpty(key);
         EnsureInitialized();
 
         string? originalValue = Configuration![key];
@@ -124,7 +123,7 @@ internal sealed class EncryptionResolverProvider : IConfigurationProvider, IDisp
     /// </param>
     public void Set(string key, string? value)
     {
-        ArgumentGuard.NotNull(key);
+        ArgumentException.ThrowIfNullOrEmpty(key);
         EnsureInitialized();
 
         Configuration![key] = value;

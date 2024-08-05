@@ -12,7 +12,7 @@ internal sealed class DelegatingTask : IApplicationTask
 
     public DelegatingTask(Func<CancellationToken, Task> asyncAction)
     {
-        ArgumentGuard.NotNull(asyncAction);
+        ArgumentNullException.ThrowIfNull(asyncAction);
 
         _asyncAction = asyncAction;
     }

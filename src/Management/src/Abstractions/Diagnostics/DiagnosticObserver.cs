@@ -5,7 +5,6 @@
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 
 namespace Steeltoe.Management.Diagnostics;
 
@@ -19,9 +18,9 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
 
     protected DiagnosticObserver(string name, string listenerName, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNullOrEmpty(name);
-        ArgumentGuard.NotNullOrEmpty(listenerName);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(listenerName);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         ObserverName = name;
         ListenerName = listenerName;
@@ -47,7 +46,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
 
     public void Subscribe(DiagnosticListener listener)
     {
-        ArgumentGuard.NotNull(listener);
+        ArgumentNullException.ThrowIfNull(listener);
 
         if (ListenerName == listener.Name)
         {
@@ -85,8 +84,8 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
 
     private protected static T? GetPropertyOrDefault<T>(object instance, string name)
     {
-        ArgumentGuard.NotNull(instance);
-        ArgumentGuard.NotNull(name);
+        ArgumentNullException.ThrowIfNull(instance);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         PropertyInfo? property = instance.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
 

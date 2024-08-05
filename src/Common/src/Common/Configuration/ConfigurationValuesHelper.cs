@@ -53,9 +53,10 @@ internal static class ConfigurationValuesHelper
     /// </returns>
     public static string? GetSetting(string key, IConfiguration configuration, string? defaultValue, params string[] sectionPrefixes)
     {
-        ArgumentGuard.NotNull(key);
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(sectionPrefixes);
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(sectionPrefixes);
+        ArgumentGuard.ElementsNotNullOrEmpty(sectionPrefixes);
 
         foreach (string prefix in sectionPrefixes)
         {
@@ -88,8 +89,8 @@ internal static class ConfigurationValuesHelper
     /// </returns>
     public static string? GetPreferredSetting(IConfiguration configuration, string? defaultValue, params string?[] configurationKeys)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(configurationKeys);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(configurationKeys);
 
         foreach (string key in configurationKeys.Where(key => !string.IsNullOrEmpty(key)).Cast<string>())
         {
@@ -106,8 +107,8 @@ internal static class ConfigurationValuesHelper
 
     public static int GetInt32(string key, IConfiguration configuration, IConfiguration? resolve, int defaultValue)
     {
-        ArgumentGuard.NotNullOrEmpty(key);
-        ArgumentGuard.NotNull(configuration);
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         string? value = GetString(key, configuration, resolve, null);
 
@@ -121,8 +122,8 @@ internal static class ConfigurationValuesHelper
 
     public static double GetDouble(string key, IConfiguration configuration, IConfiguration? resolve, double defaultValue)
     {
-        ArgumentGuard.NotNullOrEmpty(key);
-        ArgumentGuard.NotNull(configuration);
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         string? value = GetString(key, configuration, resolve, null);
 
@@ -137,8 +138,8 @@ internal static class ConfigurationValuesHelper
 
     public static bool GetBoolean(string key, IConfiguration configuration, IConfiguration? resolve, bool defaultValue)
     {
-        ArgumentGuard.NotNullOrEmpty(key);
-        ArgumentGuard.NotNull(configuration);
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         string? value = GetString(key, configuration, resolve, null);
 
@@ -152,8 +153,8 @@ internal static class ConfigurationValuesHelper
 
     public static string? GetString(string key, IConfiguration configuration, IConfiguration? resolve, string? defaultValue)
     {
-        ArgumentGuard.NotNullOrEmpty(key);
-        ArgumentGuard.NotNull(configuration);
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         string? value = configuration[key];
 

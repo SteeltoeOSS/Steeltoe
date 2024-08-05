@@ -9,7 +9,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Connectors;
 using Steeltoe.Connectors.Redis;
 
@@ -28,7 +27,7 @@ public static class RedisDataProtectionBuilderExtensions
     /// </returns>
     public static IDataProtectionBuilder PersistKeysToRedis(this IDataProtectionBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         builder.Services.TryAddSingleton(provider =>
         {

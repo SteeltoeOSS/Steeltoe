@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.EntityFrameworkCore;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.PostgreSql.DynamicTypeAccess;
 
@@ -12,7 +11,7 @@ internal static class NpgsqlDbContextOptionsBuilderExtensionsShim
     public static void UseNpgsql(PostgreSqlEntityFrameworkCorePackageResolver packageResolver, DbContextOptionsBuilder optionsBuilder, string? connectionString,
         object? npgsqlOptionsAction)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {

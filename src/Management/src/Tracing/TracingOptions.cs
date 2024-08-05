@@ -76,7 +76,7 @@ public sealed class TracingOptions
 
     public TracingOptions(IApplicationInstanceInfo? appInfo, IConfiguration configuration)
     {
-        ArgumentGuard.NotNull(configuration);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         IConfigurationSection section = configuration.GetSection(ConfigurationPrefix);
         section.Bind(this);

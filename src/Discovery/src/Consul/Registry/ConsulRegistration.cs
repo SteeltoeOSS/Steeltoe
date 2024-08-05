@@ -60,8 +60,8 @@ public sealed class ConsulRegistration : IServiceInstance
     /// </param>
     internal ConsulRegistration(AgentServiceRegistration innerRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
-        ArgumentGuard.NotNull(innerRegistration);
-        ArgumentGuard.NotNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(innerRegistration);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
         InnerRegistration = innerRegistration;
         _optionsMonitor = optionsMonitor;
@@ -85,8 +85,8 @@ public sealed class ConsulRegistration : IServiceInstance
     /// </param>
     internal static ConsulRegistration Create(IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IApplicationInstanceInfo applicationInfo)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(applicationInfo);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(applicationInfo);
 
         ConsulDiscoveryOptions options = optionsMonitor.CurrentValue;
 

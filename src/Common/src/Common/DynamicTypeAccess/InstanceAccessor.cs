@@ -17,7 +17,7 @@ internal sealed class InstanceAccessor : ReflectionAccessor
     public InstanceAccessor(TypeAccessor declaredTypeAccessor, object instance)
         : base(AssertNotNull(declaredTypeAccessor))
     {
-        ArgumentGuard.NotNull(instance);
+        ArgumentNullException.ThrowIfNull(instance);
 
         if (!declaredTypeAccessor.Type.IsInstanceOfType(instance))
         {
@@ -30,7 +30,7 @@ internal sealed class InstanceAccessor : ReflectionAccessor
 
     private static Type AssertNotNull(TypeAccessor declaredTypeAccessor)
     {
-        ArgumentGuard.NotNull(declaredTypeAccessor);
+        ArgumentNullException.ThrowIfNull(declaredTypeAccessor);
 
         return declaredTypeAccessor.Type;
     }

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data.Common;
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
@@ -19,7 +18,7 @@ internal sealed class SqlConnectionShim : Shim, IDisposable, IAsyncDisposable
 
     public static SqlConnectionShim CreateInstance(SqlServerPackageResolver packageResolver, string? connectionString)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         InstanceAccessor instanceAccessor = packageResolver.SqlConnectionClass.CreateInstance(connectionString);
         return new SqlConnectionShim(instanceAccessor);

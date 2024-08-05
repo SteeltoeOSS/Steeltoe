@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Common.Http.HttpClientPooling;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
@@ -13,7 +12,7 @@ public static class CloudFoundrySecurityServiceCollectionExtensions
 {
     public static IServiceCollection AddCloudFoundrySecurity(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddSingleton<PermissionsProvider>();
         ConfigureHttpClient(services);

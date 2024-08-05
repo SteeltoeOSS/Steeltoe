@@ -22,7 +22,7 @@ internal static class DnsTools
     /// </returns>
     public static string? ResolveHostAddress(string hostName)
     {
-        ArgumentGuard.NotNull(hostName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(hostName);
 
         try
         {

@@ -22,7 +22,7 @@ public static class ExceptionExtensions
     /// </returns>
     public static Exception UnwrapAll(this Exception exception)
     {
-        ArgumentGuard.NotNull(exception);
+        ArgumentNullException.ThrowIfNull(exception);
 
         bool hasChanges = true;
 

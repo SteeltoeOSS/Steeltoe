@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 
@@ -25,9 +24,9 @@ internal sealed class ServiceBindingMapper : ConfigurationDictionaryMapper
     public static ServiceBindingMapper Create(IDictionary<string, string?> configurationData, string bindingKey, string bindingType,
         string? overrideToPrefix = null)
     {
-        ArgumentGuard.NotNull(bindingType);
-        ArgumentGuard.NotNull(bindingKey);
-        ArgumentGuard.NotNull(configurationData);
+        ArgumentNullException.ThrowIfNull(configurationData);
+        ArgumentException.ThrowIfNullOrEmpty(bindingKey);
+        ArgumentException.ThrowIfNullOrEmpty(bindingType);
 
         string bindingName = configurationData[ConfigurationPath.Combine(bindingKey, "name")] ?? string.Empty;
         string bindingProvider = ConfigurationPath.GetSectionKey(ConfigurationPath.GetParentPath(bindingKey)) ?? string.Empty;

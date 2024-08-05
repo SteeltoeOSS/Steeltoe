@@ -9,19 +9,15 @@ namespace Steeltoe.Common.DynamicTypeAccess;
 /// <summary>
 /// Provides reflection-based access to static members of a <see cref="System.Type" />.
 /// </summary>
-internal sealed class TypeAccessor : ReflectionAccessor
+internal sealed class TypeAccessor(Type type) : ReflectionAccessor(type)
 {
-    public Type Type { get; }
-
-    public TypeAccessor(Type type)
-        : base(type)
-    {
-        Type = type;
-    }
+    public Type Type { get; } = type;
 
     public static TypeAccessor MakeGenericAccessor(Type openType, params Type[] typeArguments)
     {
-        ArgumentGuard.NotNull(openType);
+        ArgumentNullException.ThrowIfNull(openType);
+        ArgumentNullException.ThrowIfNull(typeArguments);
+        ArgumentGuard.ElementsNotNull(typeArguments);
 
         Type constructedType = openType.MakeGenericType(typeArguments);
         return new TypeAccessor(constructedType);

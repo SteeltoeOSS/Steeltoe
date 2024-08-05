@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
@@ -16,7 +15,7 @@ internal sealed class ServerVersionShim : Shim
 
     public static ServerVersionShim AutoDetect(MySqlEntityFrameworkCorePackageResolver packageResolver, string connectionString)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         object instance = packageResolver.ServerVersionClass.InvokeMethodOverload("AutoDetect", true, new[]
         {

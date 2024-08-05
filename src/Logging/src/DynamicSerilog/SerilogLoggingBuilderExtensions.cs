@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
@@ -78,7 +77,7 @@ public static class SerilogLoggingBuilderExtensions
     /// </returns>
     public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, LoggerConfiguration? serilogConfiguration, bool preserveDefaultConsole)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (builder.Services.Any(descriptor => descriptor.ServiceType == typeof(IDynamicLoggerProvider)))
         {

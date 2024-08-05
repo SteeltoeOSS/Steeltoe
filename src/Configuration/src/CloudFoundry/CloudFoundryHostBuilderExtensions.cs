@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
 using Steeltoe.Common.Logging;
 
@@ -43,7 +42,7 @@ public static class CloudFoundryHostBuilderExtensions
     /// </returns>
     public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddCloudFoundryConfiguration(loggerFactory);
@@ -80,7 +79,7 @@ public static class CloudFoundryHostBuilderExtensions
     /// </returns>
     public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddCloudFoundryConfiguration(loggerFactory);
@@ -117,7 +116,7 @@ public static class CloudFoundryHostBuilderExtensions
     /// </returns>
     public static IHostApplicationBuilder AddCloudFoundryConfiguration(this IHostApplicationBuilder builder, ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddCloudFoundryConfiguration(loggerFactory);

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Common.DynamicTypeAccess;
 
 namespace Steeltoe.Connectors.DynamicTypeAccess;
@@ -21,8 +20,8 @@ internal sealed class ConnectorShim<TOptions> : Shim, IDisposable
 
     private static InstanceAccessor CreateAccessor(Type connectionType, object instance)
     {
-        ArgumentGuard.NotNull(connectionType);
-        ArgumentGuard.NotNull(instance);
+        ArgumentNullException.ThrowIfNull(connectionType);
+        ArgumentNullException.ThrowIfNull(instance);
 
         var typeAccessor = TypeAccessor.MakeGenericAccessor(typeof(Connector<,>), typeof(TOptions), connectionType);
         return new InstanceAccessor(typeAccessor, instance);

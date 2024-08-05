@@ -14,14 +14,14 @@ internal sealed class ValidateConsulOptions : IValidateOptions<ConsulOptions>
 
     public ValidateConsulOptions(IOptionsMonitor<ConsulDiscoveryOptions> discoveryOptionsMonitor)
     {
-        ArgumentGuard.NotNull(discoveryOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(discoveryOptionsMonitor);
 
         _discoveryOptionsMonitor = discoveryOptionsMonitor;
     }
 
     public ValidateOptionsResult Validate(string? name, ConsulOptions options)
     {
-        ArgumentGuard.NotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         if (_discoveryOptionsMonitor.CurrentValue.Enabled && (Platform.IsContainerized || Platform.IsCloudHosted) && options.Host == "localhost")
         {

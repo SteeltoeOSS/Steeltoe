@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 
 namespace Steeltoe.Security.Authentication.OpenIdConnect;
 
@@ -20,7 +19,7 @@ public static class OpenIdConnectAuthenticationBuilderExtensions
     /// </param>
     public static AuthenticationBuilder ConfigureOpenIdConnectForCloudFoundry(this AuthenticationBuilder authenticationBuilder)
     {
-        ArgumentGuard.NotNull(authenticationBuilder);
+        ArgumentNullException.ThrowIfNull(authenticationBuilder);
 
         authenticationBuilder.Services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, PostConfigureOpenIdConnectOptions>();
         return authenticationBuilder;

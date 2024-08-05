@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.EntityFrameworkCore;
-using Steeltoe.Common;
 using Steeltoe.Connectors.DynamicTypeAccess;
 using Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 using Steeltoe.Connectors.MySql;
@@ -82,9 +81,9 @@ public static class MySqlDbContextOptionsBuilderExtensions
         MySqlEntityFrameworkCorePackageResolver packageResolver, string? serviceBindingName = null, object? serverVersion = null,
         Action<object>? mySqlOptionsAction = null)
     {
-        ArgumentGuard.NotNull(optionsBuilder);
-        ArgumentGuard.NotNull(serviceProvider);
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(optionsBuilder);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
         string? connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);

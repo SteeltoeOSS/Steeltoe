@@ -24,13 +24,16 @@ internal sealed class ConfigServerHostedService : IHostedService
 
     public ConfigServerHostedService(IConfigurationRoot configuration, IEnumerable<IDiscoveryClient> discoveryClients)
     {
-        ArgumentGuard.NotNull(configuration);
-        ArgumentGuard.NotNull(discoveryClients);
+        ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(discoveryClients);
+
+        IDiscoveryClient[] discoveryClientArray = discoveryClients.ToArray();
+        ArgumentGuard.ElementsNotNull(discoveryClientArray);
 
         _configurationProvider = configuration.FindConfigurationProvider<ConfigServerConfigurationProvider>() ??
             throw new ArgumentException("ConfigServerConfigurationProvider was not found in configuration.", nameof(configuration));
 
-        _discoveryClients = discoveryClients.ToArray();
+        _discoveryClients = discoveryClientArray;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)

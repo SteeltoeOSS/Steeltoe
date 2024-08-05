@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Availability;
 using Steeltoe.Management.Endpoint.Health.Contributor;
@@ -24,7 +23,7 @@ public static class EndpointServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddHealthActuator(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddCommonActuatorServices();
         services.AddHealthActuatorServices();
@@ -59,7 +58,7 @@ public static class EndpointServiceCollectionExtensions
     public static IServiceCollection AddHealthContributor<T>(this IServiceCollection services)
         where T : class, IHealthContributor
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IHealthContributor, T>());
 
@@ -80,8 +79,8 @@ public static class EndpointServiceCollectionExtensions
     /// </returns>
     public static IServiceCollection AddHealthContributor(this IServiceCollection services, Type healthContributorType)
     {
-        ArgumentGuard.NotNull(services);
-        ArgumentGuard.NotNull(healthContributorType);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(healthContributorType);
 
         services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IHealthContributor), healthContributorType));
 

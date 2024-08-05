@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.EntityFrameworkCore;
-using Steeltoe.Common;
 
 namespace Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 
@@ -12,7 +11,7 @@ internal static class MySqlDbContextOptionsExtensionsShim
     public static void UseMySql(MySqlEntityFrameworkCorePackageResolver packageResolver, DbContextOptionsBuilder optionsBuilder, string? connectionString,
         object? serverVersion, object? mySqlOptionsAction)
     {
-        ArgumentGuard.NotNull(packageResolver);
+        ArgumentNullException.ThrowIfNull(packageResolver);
 
         bool isOraclePackage = packageResolver.MySqlDbContextOptionsExtensionsClass.Type.Name.StartsWith("MySQL", StringComparison.Ordinal);
 

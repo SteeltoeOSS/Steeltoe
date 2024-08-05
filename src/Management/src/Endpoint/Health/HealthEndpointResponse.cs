@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Health;
@@ -40,7 +39,7 @@ public sealed class HealthEndpointResponse
 
     public HealthEndpointResponse(HealthCheckResult result)
     {
-        ArgumentGuard.NotNull(result);
+        ArgumentNullException.ThrowIfNull(result);
 
         Status = result.Status;
         Description = result.Description;

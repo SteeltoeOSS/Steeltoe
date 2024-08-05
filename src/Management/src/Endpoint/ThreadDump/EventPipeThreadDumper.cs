@@ -13,7 +13,6 @@ using Microsoft.Diagnostics.Tracing.Etlx;
 using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
@@ -42,8 +41,8 @@ public sealed class EventPipeThreadDumper
 
     public EventPipeThreadDumper(IOptionsMonitor<ThreadDumpEndpointOptions> optionsMonitor, ILogger<EventPipeThreadDumper> logger)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _optionsMonitor = optionsMonitor;
         _logger = logger;

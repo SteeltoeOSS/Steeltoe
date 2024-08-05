@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Options;
 
 namespace Steeltoe.Management.Endpoint;
@@ -11,8 +10,8 @@ internal static class EndpointOptionsExtensions
 {
     public static bool IsEnabled(this EndpointOptions endpointOptions, ManagementOptions managementOptions)
     {
-        ArgumentGuard.NotNull(endpointOptions);
-        ArgumentGuard.NotNull(managementOptions);
+        ArgumentNullException.ThrowIfNull(endpointOptions);
+        ArgumentNullException.ThrowIfNull(managementOptions);
 
         if (endpointOptions.Enabled != null)
         {
@@ -29,8 +28,8 @@ internal static class EndpointOptionsExtensions
 
     public static bool IsExposed(this EndpointOptions endpointOptions, ManagementOptions managementOptions)
     {
-        ArgumentGuard.NotNull(endpointOptions);
-        ArgumentGuard.NotNull(managementOptions);
+        ArgumentNullException.ThrowIfNull(endpointOptions);
+        ArgumentNullException.ThrowIfNull(managementOptions);
 
         if (!string.IsNullOrEmpty(endpointOptions.Id) && managementOptions.Exposure != null)
         {
@@ -52,8 +51,8 @@ internal static class EndpointOptionsExtensions
 
     public static string GetPathMatchPattern(this EndpointOptions endpointOptions, ManagementOptions managementOptions, string? baseRequestPath)
     {
-        ArgumentGuard.NotNull(endpointOptions);
-        ArgumentGuard.NotNull(managementOptions);
+        ArgumentNullException.ThrowIfNull(endpointOptions);
+        ArgumentNullException.ThrowIfNull(managementOptions);
 
         string? path = baseRequestPath;
 

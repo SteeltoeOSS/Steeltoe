@@ -6,7 +6,6 @@ using System.Net.Http.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
@@ -30,11 +29,11 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         IOptionsMonitor<ManagementOptions> managementOptionsMonitor, IOptionsMonitor<HealthEndpointOptions> healthOptionsMonitor,
         IHttpClientFactory httpClientFactory, ILogger<SpringBootAdminClientHostedService> logger)
     {
-        ArgumentGuard.NotNull(clientOptionsMonitor);
-        ArgumentGuard.NotNull(managementOptionsMonitor);
-        ArgumentGuard.NotNull(healthOptionsMonitor);
-        ArgumentGuard.NotNull(httpClientFactory);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(clientOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(managementOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(healthOptionsMonitor);
+        ArgumentNullException.ThrowIfNull(httpClientFactory);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _clientOptionsMonitor = clientOptionsMonitor;
         _managementOptionsMonitor = managementOptionsMonitor;

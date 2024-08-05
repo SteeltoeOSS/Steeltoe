@@ -14,7 +14,7 @@ Steeltoe.Logging.DynamicLoggerProvider.DynamicLoggerProvider(Microsoft.Extension
 Steeltoe.Logging.DynamicLoggerProvider.GetFilter(string! categoryName) -> Steeltoe.Logging.LoggerFilter!
 Steeltoe.Logging.DynamicLoggerProvider.GetLoggerConfigurations() -> System.Collections.Generic.ICollection<Steeltoe.Logging.DynamicLoggerConfiguration!>!
 Steeltoe.Logging.DynamicLoggerProvider.InnerLoggerProvider.get -> Microsoft.Extensions.Logging.ILoggerProvider!
-Steeltoe.Logging.DynamicLoggerProvider.MessageProcessors.get -> System.Collections.Generic.IEnumerable<Steeltoe.Logging.IDynamicMessageProcessor!>!
+Steeltoe.Logging.DynamicLoggerProvider.MessageProcessors.get -> System.Collections.Generic.ICollection<Steeltoe.Logging.IDynamicMessageProcessor!>!
 Steeltoe.Logging.DynamicLoggerProvider.SetLogLevel(string! categoryName, Microsoft.Extensions.Logging.LogLevel? minLevel) -> void
 Steeltoe.Logging.IDynamicLoggerProvider
 Steeltoe.Logging.IDynamicLoggerProvider.GetLoggerConfigurations() -> System.Collections.Generic.ICollection<Steeltoe.Logging.DynamicLoggerConfiguration!>!
@@ -33,6 +33,7 @@ Steeltoe.Logging.MessageProcessingLogger.ChangeFilter(Steeltoe.Logging.LoggerFil
 Steeltoe.Logging.MessageProcessingLogger.InnerLogger.get -> Microsoft.Extensions.Logging.ILogger!
 Steeltoe.Logging.MessageProcessingLogger.IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) -> bool
 Steeltoe.Logging.MessageProcessingLogger.MessageProcessingLogger(Microsoft.Extensions.Logging.ILogger! innerLogger, Steeltoe.Logging.LoggerFilter! filter, System.Collections.Generic.IEnumerable<Steeltoe.Logging.IDynamicMessageProcessor!>! messageProcessors) -> void
+Steeltoe.Logging.MessageProcessingLogger.MessageProcessors.get -> System.Collections.Generic.ICollection<Steeltoe.Logging.IDynamicMessageProcessor!>!
 virtual Steeltoe.Logging.DynamicLoggerProvider.CreateMessageProcessingLogger(string! categoryName) -> Steeltoe.Logging.MessageProcessingLogger!
 virtual Steeltoe.Logging.DynamicLoggerProvider.Dispose(bool disposing) -> void
 virtual Steeltoe.Logging.MessageProcessingLogger.Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, System.Exception? exception, System.Func<TState, System.Exception?, string!>! formatter) -> void

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Steeltoe.Common;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.Kubernetes.ServiceBinding;
 using Steeltoe.Configuration.Placeholder;
@@ -70,7 +69,7 @@ public static class ConfigServerConfigurationBuilderExtensions
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(environment);
+        ArgumentNullException.ThrowIfNull(environment);
 
         var options = new ConfigServerClientOptions
         {
@@ -84,9 +83,9 @@ public static class ConfigServerConfigurationBuilderExtensions
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ConfigServerClientOptions options,
         ILoggerFactory loggerFactory)
     {
-        ArgumentGuard.NotNull(configurationBuilder);
-        ArgumentGuard.NotNull(options);
-        ArgumentGuard.NotNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(configurationBuilder);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
 
         if (configurationBuilder.Sources.All(source => source is not CloudFoundryConfigurationSource))
         {

@@ -25,7 +25,7 @@ public static class LoggingBuilderExtensions
     /// </returns>
     public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder)
     {
-        ArgumentGuard.NotNull(builder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         if (!IsDynamicLoggerProviderAlreadyRegistered(builder))
         {

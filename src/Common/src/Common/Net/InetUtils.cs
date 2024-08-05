@@ -22,8 +22,8 @@ internal class InetUtils
 
     public InetUtils(IOptionsMonitor<InetOptions> optionsMonitor, ILogger<InetUtils> logger)
     {
-        ArgumentGuard.NotNull(optionsMonitor);
-        ArgumentGuard.NotNull(logger);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _optionsMonitor = optionsMonitor;
         _logger = logger;

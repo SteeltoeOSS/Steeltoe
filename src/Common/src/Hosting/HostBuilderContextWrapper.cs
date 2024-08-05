@@ -29,21 +29,21 @@ internal sealed class HostBuilderContextWrapper
 
     public static HostBuilderContextWrapper Wrap(HostBuilderContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         return new HostBuilderContextWrapper(context.Configuration, context.HostingEnvironment, context);
     }
 
     public static HostBuilderContextWrapper Wrap(WebHostBuilderContext context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         return new HostBuilderContextWrapper(context.Configuration, context.HostingEnvironment, context);
     }
 
     public static HostBuilderContextWrapper Wrap(IHostApplicationBuilder context)
     {
-        ArgumentGuard.NotNull(context);
+        ArgumentNullException.ThrowIfNull(context);
 
         return new HostBuilderContextWrapper(context.Configuration, context.Environment, context);
     }

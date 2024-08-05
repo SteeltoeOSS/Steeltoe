@@ -3,24 +3,20 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 
 namespace Steeltoe.Logging.DynamicSerilog;
 
 public sealed class SerilogMessageProcessingLogger : MessageProcessingLogger
 {
-    private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
-
     public SerilogMessageProcessingLogger(ILogger innerLogger, LoggerFilter filter, IEnumerable<IDynamicMessageProcessor> messageProcessors)
         : base(innerLogger, filter, messageProcessors)
     {
-        _messageProcessors = messageProcessors;
     }
 
     /// <inheritdoc />
     public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        ArgumentGuard.NotNull(formatter);
+        ArgumentNullException.ThrowIfNull(formatter);
 
         if (!IsEnabled(logLevel))
         {
@@ -34,7 +30,7 @@ public sealed class SerilogMessageProcessingLogger : MessageProcessingLogger
 
         string scopeMessage = string.Empty;
 
-        foreach (IDynamicMessageProcessor processor in _messageProcessors)
+        foreach (IDynamicMessageProcessor processor in MessageProcessors)
         {
             scopeMessage = processor.Process(scopeMessage);
         }

@@ -33,7 +33,7 @@ public static class ActuatorServiceCollectionExtensions
 {
     public static void AddCommonActuatorServices(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddScoped<ActuatorEndpointMapper>();
 
@@ -44,7 +44,7 @@ public static class ActuatorServiceCollectionExtensions
         where TOptions : EndpointOptions
         where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.ConfigureOptionsWithChangeTokenSource<TOptions, TConfigureOptions>();
 
@@ -87,7 +87,7 @@ public static class ActuatorServiceCollectionExtensions
 
     public static IServiceCollection AddAllActuators(this IServiceCollection services, MediaTypeVersion version, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddSteeltoeCors(buildCorsPolicy);
 
@@ -116,7 +116,7 @@ public static class ActuatorServiceCollectionExtensions
 
     private static void AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy = null)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddCors(setup =>
         {
@@ -149,7 +149,7 @@ public static class ActuatorServiceCollectionExtensions
     /// </param>
     public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection services)
     {
-        ArgumentGuard.NotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         var actuatorConventionBuilder = new ActuatorConventionBuilder();
 
