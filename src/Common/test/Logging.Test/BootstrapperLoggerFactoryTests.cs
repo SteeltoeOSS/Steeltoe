@@ -41,10 +41,10 @@ public sealed class BootstrapperLoggerFactoryTests
 
         mockLogger.Verify(x => x.Log(LogLevel.Information, It.IsAny<EventId>(),
             It.Is<It.IsAnyType>((o, t) => string.Equals("Test", o.ToString(), StringComparison.OrdinalIgnoreCase)), It.IsAny<Exception>(),
-            It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
+            It.Is<Func<It.IsAnyType, Exception?, string>>((v, t) => true)));
 
         // test change to log levels after updated with configuration
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { "Logging:LogLevel:Default", nameof(LogLevel.Warning) }
         }).Build();
@@ -55,7 +55,7 @@ public sealed class BootstrapperLoggerFactoryTests
         mockLogger.Verify(
             x => x.Log(LogLevel.Information, It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((o, t) => string.Equals("Test2", o.ToString(), StringComparison.OrdinalIgnoreCase)), It.IsAny<Exception>(),
-                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)), Times.Never);
+                It.Is<Func<It.IsAnyType, Exception?, string>>((v, t) => true)), Times.Never);
 
         // upgrade bootstrapper with new log factory, and confirm that it delegates to loggers spawned from it
         var newLogProvider = new Mock<ILoggerProvider>();
@@ -69,6 +69,6 @@ public sealed class BootstrapperLoggerFactoryTests
         newMockLogger.Verify(
             x => x.Log(LogLevel.Information, It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((o, t) => string.Equals("Test3", o.ToString(), StringComparison.OrdinalIgnoreCase)), It.IsAny<Exception>(),
-                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)), Times.Never);
+                It.Is<Func<It.IsAnyType, Exception?, string>>((v, t) => true)), Times.Never);
     }
 }

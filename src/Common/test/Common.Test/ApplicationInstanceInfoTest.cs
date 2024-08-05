@@ -18,7 +18,7 @@ public sealed class ApplicationInstanceInfoTest
 
         var options = new ApplicationInstanceInfo(configurationRoot, true);
         Assert.Null(options.ApplicationId);
-        Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, options.ApplicationName);
+        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name, options.ApplicationName);
         Assert.Null(options.ApplicationVersion);
         Assert.Null(options.InstanceId);
         Assert.Equal(-1, options.InstanceIndex);
@@ -36,22 +36,23 @@ public sealed class ApplicationInstanceInfoTest
     [Fact]
     public void ConstructorReadsApplicationConfiguration()
     {
-        const string configJson = @"
+        const string configJson = """
             {
-                ""Application"" : {
-                    ""Name"": ""my-app"",
-                    ""ApplicationId"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
-                    ""Uris"": [
-                        ""my-app.10.244.0.34.xip.io"",
-                        ""my-app2.10.244.0.34.xip.io""
+                "Application" : {
+                    "Name": "my-app",
+                    "ApplicationId": "fa05c1a9-0fc1-4fbd-bae1-139850dec7a3",
+                    "Uris": [
+                        "my-app.10.244.0.34.xip.io",
+                        "my-app2.10.244.0.34.xip.io"
                     ],
-                    ""Version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
+                    "Version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"
                 }
-            }";
+            }
+            """;
 
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", configJson);
-        string directory = Path.GetDirectoryName(path);
+        string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);

@@ -13,7 +13,7 @@ namespace Steeltoe.Common.Net;
 /// <summary>
 /// For interacting with SMB network file shares on Windows.
 /// </summary>
-public class WindowsNetworkFileShare : IDisposable
+public sealed class WindowsNetworkFileShare : IDisposable
 {
     // private const int NO_ERROR = 0
     private const int ErrorAccessDenied = 5;
@@ -83,11 +83,13 @@ public class WindowsNetworkFileShare : IDisposable
     /// <param name="multipleProviderRouter">
     /// A class that handles calls to mpr.dll or performs same operations.
     /// </param>
-    public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMultipleProviderRouter multipleProviderRouter = null)
+    public WindowsNetworkFileShare(string networkName, NetworkCredential credentials, IMultipleProviderRouter? multipleProviderRouter = null)
     {
-        _multipleProviderRouter = multipleProviderRouter ?? new MultipleProviderRouter();
+        ArgumentNullException.ThrowIfNull(networkName);
+        ArgumentNullException.ThrowIfNull(credentials);
 
         _networkName = networkName;
+        _multipleProviderRouter = multipleProviderRouter ?? new MultipleProviderRouter();
 
         var netResource = new NetResource
         {
@@ -138,11 +140,15 @@ public class WindowsNetworkFileShare : IDisposable
         return _multipleProviderRouter.GetLastError(out error, out errorBuf, errorBufSize, out nameBuf, nameBufSize);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Disconnects the file share.
+    /// </summary>
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        // With the current design, it's not possible to disconnect the network share from the finalizer,
+        // because the _multipleProviderRouter instance may have already been garbage-collected.
+
+        _multipleProviderRouter.CancelConnection(_networkName, 0, true);
     }
 
     /// <summary>
@@ -162,22 +168,6 @@ public class WindowsNetworkFileShare : IDisposable
         }
 
         return ErrorList.First(e => e.Num == errNum).Message;
-    }
-
-    /// <summary>
-    /// Disposes the object, cancels connection with file share.
-    /// </summary>
-    /// <param name="disposing">
-    /// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.
-    /// </param>
-    protected virtual void Dispose(bool disposing)
-    {
-        // With the current design, it's not possible to disconnect the network share from the finalizer,
-        // because the _mpr instance may have already been garbage-collected.
-        if (disposing)
-        {
-            _multipleProviderRouter.CancelConnection(_networkName, 0, true);
-        }
     }
 
     /// <summary>
@@ -233,15 +223,15 @@ public class WindowsNetworkFileShare : IDisposable
     /// <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba" />.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    public class NetResource
+    public sealed class NetResource
     {
         public ResourceScope Scope;
         public ResourceType ResourceType;
         public ResourceDisplayType DisplayType;
         public int Usage;
-        public string LocalName;
-        public string RemoteName;
-        public string Comment;
-        public string Provider;
+        public string? LocalName;
+        public string? RemoteName;
+        public string? Comment;
+        public string? Provider;
     }
 }

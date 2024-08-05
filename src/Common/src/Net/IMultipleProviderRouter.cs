@@ -6,6 +6,7 @@ using System.Text;
 using static Steeltoe.Common.Net.WindowsNetworkFileShare;
 
 #pragma warning disable S3874 // "out" and "ref" parameters should not be used
+#pragma warning disable S107 // Methods should not have too many parameters
 
 namespace Steeltoe.Common.Net;
 
@@ -14,31 +15,6 @@ namespace Steeltoe.Common.Net;
 /// </summary>
 public interface IMultipleProviderRouter
 {
-    /// <summary>
-    /// Makes a connection to a network resource and can redirect a local device to the network resource.
-    /// <para />
-    /// P/Invoke call to mpr.dll. <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetaddconnection2a" />
-    /// </summary>
-    /// <param name="netResource">
-    /// Network resource to interact with.
-    /// </param>
-    /// <param name="password">
-    /// Password for making the network connection.
-    /// </param>
-    /// <param name="username">
-    /// Username for making the network connection.
-    /// </param>
-    /// <param name="flags">
-    /// A set of connection options.
-    /// <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetaddconnection2a#parameters" />
-    /// </param>
-    /// <returns>
-    /// An integer representing the result.
-    /// <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetaddconnection2a#return-value" />
-    /// </returns>
-    int AddConnection(NetResource netResource, string password, string username, int flags);
-
-#pragma warning disable S107 // Methods should not have too many parameters
     /// <summary>
     /// Makes a connection to a network resource. Can redirect a local device to a network resource.
     /// <para />
@@ -74,9 +50,8 @@ public interface IMultipleProviderRouter
     /// An integer representing the result.
     /// <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetuseconnectiona#return-value" />
     /// </returns>
-    int UseConnection(IntPtr hwndOwner, NetResource netResource, string password, string username, int flags, string lpAccessName, string lpBufferSize,
-        string lpResult);
-#pragma warning restore S107 // Methods should not have too many parameters
+    int UseConnection(IntPtr hwndOwner, NetResource netResource, string? password, string? username, int flags, string? lpAccessName, string? lpBufferSize,
+        string? lpResult);
 
     /// <summary>
     /// Cancels an existing network connection, removes remembered network connections that are not currently connected.

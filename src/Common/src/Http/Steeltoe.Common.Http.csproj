@@ -4,6 +4,7 @@
     <Description>Steeltoe common library for HTTP</Description>
     <PackageTags>http; discovery; loadbalancing</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

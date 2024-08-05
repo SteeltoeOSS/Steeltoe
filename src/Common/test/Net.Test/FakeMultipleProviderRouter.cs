@@ -6,21 +6,28 @@ using System.Text;
 
 namespace Steeltoe.Common.Net.Test;
 
-internal sealed class FakeMultipleProviderRouter : IMultipleProviderRouter
+internal sealed class FakeMultipleProviderRouter(bool shouldConnect = true) : IMultipleProviderRouter
 {
-    internal string Username { get; private set; }
-    internal string Password { get; private set; }
-    internal string NetworkPath { get; private set; }
-    internal bool ShouldConnect { get; }
+    private readonly bool _shouldConnect = shouldConnect;
 
-    public FakeMultipleProviderRouter(bool shouldConnect = true)
-    {
-        ShouldConnect = shouldConnect;
-    }
+    internal string? Username { get; private set; }
+    internal string? Password { get; private set; }
+    internal string? NetworkPath { get; private set; }
 
-    public int AddConnection(WindowsNetworkFileShare.NetResource netResource, string password, string username, int flags)
+    public int UseConnection(IntPtr hwndOwner, WindowsNetworkFileShare.NetResource netResource, string? password, string? username, int flags,
+        string? lpAccessName, string? lpBufferSize, string? lpResult)
     {
-        throw new NotImplementedException();
+        NetworkPath = netResource.RemoteName;
+        Username = username;
+        Password = password;
+
+        if (_shouldConnect)
+        {
+            return 0;
+        }
+
+        // throw "bad device" error
+        return 1200;
     }
 
     public int CancelConnection(string name, int flags, bool force)
@@ -31,21 +38,5 @@ internal sealed class FakeMultipleProviderRouter : IMultipleProviderRouter
     public int GetLastError(out int error, out StringBuilder errorBuf, int errorBufSize, out StringBuilder nameBuf, int nameBufSize)
     {
         throw new NotImplementedException();
-    }
-
-    public int UseConnection(IntPtr hwndOwner, WindowsNetworkFileShare.NetResource netResource, string password, string username, int flags,
-        string lpAccessName, string lpBufferSize, string lpResult)
-    {
-        NetworkPath = netResource.RemoteName;
-        Username = username;
-        Password = password;
-
-        if (ShouldConnect)
-        {
-            return 0;
-        }
-
-        // throw "bad device" error
-        return 1200;
     }
 }

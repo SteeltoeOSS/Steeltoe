@@ -14,15 +14,12 @@ namespace Steeltoe.Common.Logging;
 /// </summary>
 internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
 {
-    private readonly Dictionary<string, BootstrapLoggerInst> _loggers = new();
-
+    private readonly Dictionary<string, BootstrapLoggerInstance> _loggersByCategoryName = new();
     private readonly object _lock = new();
-
     private readonly Action<ILoggingBuilder, IConfiguration> _bootstrapLoggingBuilder;
 
     private ILoggerFactory _factoryInstance;
-
-    private ILoggerFactory _factory;
+    private ILoggerFactory? _factory;
 
     public UpgradableBootstrapLoggerFactory()
         : this(DefaultConfigure)
@@ -35,7 +32,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
 
         _factoryInstance = LoggerFactory.Create(builder =>
         {
-            IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Logging:LogLevel:Default", "Information" },
                 { "Logging:LogLevel:Microsoft", "Warning" },
@@ -49,25 +46,27 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
     /// <summary>
     /// Updates existing loggers to use configuration from the supplied configuration.
     /// </summary>
-    public void Update(IConfiguration value)
+    public void Update(IConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         if (_factory != null)
         {
             return;
         }
 
-        ILoggerFactory newLogger = LoggerFactory.Create(builder => _bootstrapLoggingBuilder(builder, value));
+        ILoggerFactory newLogger = LoggerFactory.Create(builder => _bootstrapLoggingBuilder(builder, configuration));
         Update(newLogger);
     }
 
     /// <summary>
     /// Updates existing loggers to use final LoggerFactory as constructed by IoC container.
     /// </summary>
-    public void Update(ILoggerFactory value)
+    public void Update(ILoggerFactory loggerFactory)
     {
-        if (value == null || value == _factoryInstance)
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        if (loggerFactory == _factoryInstance)
         {
             return;
         }
@@ -75,15 +74,15 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
         lock (_lock)
         {
             _factoryInstance.Dispose();
-            _factoryInstance = value;
+            _factoryInstance = loggerFactory;
 
-            foreach (BootstrapLoggerInst logger in _loggers.Values)
+            foreach (BootstrapLoggerInstance logger in _loggersByCategoryName.Values)
             {
                 logger.Logger = _factoryInstance.CreateLogger(logger.Name);
             }
         }
 
-        _factory = value;
+        _factory = loggerFactory;
     }
 
     public void Dispose()
@@ -106,11 +105,11 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
     {
         lock (_lock)
         {
-            if (!_loggers.TryGetValue(categoryName, out BootstrapLoggerInst logger))
+            if (!_loggersByCategoryName.TryGetValue(categoryName, out BootstrapLoggerInstance? logger))
             {
                 ILogger innerLogger = _factoryInstance.CreateLogger(categoryName);
-                logger = new BootstrapLoggerInst(innerLogger, categoryName);
-                _loggers.Add(categoryName, logger);
+                logger = new BootstrapLoggerInstance(innerLogger, categoryName);
+                _loggersByCategoryName.Add(categoryName, logger);
             }
 
             return logger;
@@ -122,19 +121,19 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
         builder.AddConsole().AddConfiguration(configuration.GetSection("Logging"));
     }
 
-    internal sealed class BootstrapLoggerInst : ILogger
+    private sealed class BootstrapLoggerInstance : ILogger
     {
         public volatile ILogger Logger;
-
         public string Name { get; }
 
-        public BootstrapLoggerInst(ILogger logger, string name)
+        public BootstrapLoggerInstance(ILogger logger, string name)
         {
             Name = name;
             Logger = logger;
         }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state)
+            where TState : notnull
         {
             return Logger.BeginScope(state);
         }
@@ -144,7 +143,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
             return Logger.IsEnabled(logLevel);
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             Logger.Log(logLevel, eventId, state, exception, formatter);
         }

@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Http.HttpClientPooling;
 public sealed class ClientCertificateHttpClientHandlerConfigurer : IHttpClientHandlerConfigurer
 {
     private readonly IOptionsMonitor<CertificateOptions> _optionsMonitor;
-    private string _clientCertificateName;
+    private string? _clientCertificateName;
 
     public ClientCertificateHttpClientHandlerConfigurer(IOptionsMonitor<CertificateOptions> optionsMonitor)
     {
@@ -32,7 +32,7 @@ public sealed class ClientCertificateHttpClientHandlerConfigurer : IHttpClientHa
     {
         ArgumentNullException.ThrowIfNull(handler);
 
-        X509Certificate2 certificate = _optionsMonitor.Get(_clientCertificateName).Certificate;
+        X509Certificate2? certificate = _optionsMonitor.Get(_clientCertificateName).Certificate;
 
         if (certificate != null)
         {

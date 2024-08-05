@@ -4,6 +4,7 @@
     <Description>Steeltoe library for common logging-related utilities</Description>
     <PackageTags>logging</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

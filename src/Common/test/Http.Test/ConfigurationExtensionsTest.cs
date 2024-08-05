@@ -31,7 +31,7 @@ public sealed class ConfigurationExtensionsTest
     [Fact]
     public void Detects_URLS_in_configuration()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["urls"] = "http://localhost:8888;https://127.0.0.1:9999"
         };
@@ -51,7 +51,7 @@ public sealed class ConfigurationExtensionsTest
     [Fact]
     public void Detects_PORTS_in_configuration()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["http_ports"] = "5555",
             ["https_ports"] = "6666"
@@ -72,7 +72,7 @@ public sealed class ConfigurationExtensionsTest
     [Fact]
     public void Ignores_PORTS_when_URLS_present_in_configuration()
     {
-        var appSettings = new Dictionary<string, string>
+        var appSettings = new Dictionary<string, string?>
         {
             ["urls"] = "http://[::1]:8888;https://192.168.1.1:9999",
             ["http_ports"] = "5555",

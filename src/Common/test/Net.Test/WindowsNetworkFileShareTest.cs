@@ -25,34 +25,34 @@ public sealed class WindowsNetworkFileShareTest
     [Fact]
     public void WindowsNetworkFileShare_Constructor_SetsValuesOn_ConnectSuccess()
     {
-        var fakeMpr = new FakeMultipleProviderRouter();
+        var router = new FakeMultipleProviderRouter();
 
-        _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), fakeMpr);
+        _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), router);
 
-        Assert.Equal("user", fakeMpr.Username);
-        Assert.Equal("password", fakeMpr.Password);
-        Assert.Equal(@"\\server\path", fakeMpr.NetworkPath);
+        Assert.Equal("user", router.Username);
+        Assert.Equal("password", router.Password);
+        Assert.Equal(@"\\server\path", router.NetworkPath);
     }
 
     [Fact]
     public void WindowsNetworkFileShare_Constructor_ConcatenatesUserAndDomain()
     {
-        var fakeMpr = new FakeMultipleProviderRouter();
+        var router = new FakeMultipleProviderRouter();
 
-        _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), fakeMpr);
+        _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), router);
 
-        Assert.Equal(@"domain\user", fakeMpr.Username);
-        Assert.Equal("password", fakeMpr.Password);
-        Assert.Equal(@"\\server\path", fakeMpr.NetworkPath);
+        Assert.Equal(@"domain\user", router.Username);
+        Assert.Equal("password", router.Password);
+        Assert.Equal(@"\\server\path", router.NetworkPath);
     }
 
     [Fact]
     public void WindowsNetworkFileShare_Constructor_ThrowsOn_ConnectFail()
     {
-        var fakeMpr = new FakeMultipleProviderRouter(false);
+        var router = new FakeMultipleProviderRouter(false);
 
         var exception = Assert.Throws<ExternalException>(() =>
-            new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), fakeMpr));
+            new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), router));
 
         Assert.Equal("Error connecting to remote share - Code: 1200, Error: Bad Device", exception.Message);
     }

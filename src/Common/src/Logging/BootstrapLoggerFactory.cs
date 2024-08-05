@@ -20,6 +20,8 @@ public static class BootstrapLoggerFactory
 
     public static IBootstrapLoggerFactory GetInstance(object contextKey)
     {
+        ArgumentNullException.ThrowIfNull(contextKey);
+
         return InstanceMap.GetOrAdd(contextKey, _ => new UpgradableBootstrapLoggerFactory());
     }
 }
