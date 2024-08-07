@@ -7,6 +7,7 @@ using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
+// See https://docs.cloudfoundry.org/devguide/deploy-apps/environment-variable.html#VCAP-APPLICATION
 public sealed class CloudFoundryApplicationOptions : ApplicationInstanceInfo
 {
     internal const string PlatformConfigurationRoot = "vcap";

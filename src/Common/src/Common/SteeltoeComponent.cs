@@ -7,9 +7,5 @@ namespace Steeltoe.Common;
 public enum SteeltoeComponent
 {
     Discovery,
-    Configuration,
-    Connectors,
-    Kubernetes,
-    Management,
-    Security
+    Management
 }

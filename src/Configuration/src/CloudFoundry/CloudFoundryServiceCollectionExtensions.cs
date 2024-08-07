@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 
 namespace Steeltoe.Configuration.CloudFoundry;
@@ -121,20 +122,11 @@ public static class CloudFoundryServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        ServiceDescriptor? appInfoDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
-
-        if (appInfoDescriptor?.ImplementationType?.IsAssignableFrom(typeof(CloudFoundryApplicationOptions)) != true)
+        services.Replace(ServiceDescriptor.Singleton<IApplicationInstanceInfo>(serviceProvider =>
         {
-            if (appInfoDescriptor != null)
-            {
-                services.Remove(appInfoDescriptor);
-            }
-
-            services.AddSingleton(typeof(CloudFoundryApplicationOptions),
-                serviceProvider => new CloudFoundryApplicationOptions(serviceProvider.GetRequiredService<IConfiguration>()));
-
-            services.AddSingleton<IApplicationInstanceInfo>(serviceProvider => serviceProvider.GetRequiredService<CloudFoundryApplicationOptions>());
-        }
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            return new CloudFoundryApplicationOptions(configuration);
+        }));
 
         return services;
     }

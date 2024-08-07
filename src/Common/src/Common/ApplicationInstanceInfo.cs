@@ -12,30 +12,23 @@ public class ApplicationInstanceInfo : IApplicationInstanceInfo
 {
     public const string ApplicationRoot = "application";
     public const string SpringApplicationRoot = "spring:application";
-    public const string ServicesRoot = "services";
     public const string EurekaRoot = "eureka";
-    public const string ConfigServerRoot = "spring:cloud:config";
     public const string ConsulRoot = "consul";
-    public const string KubernetesRoot = "spring:cloud:kubernetes";
     public const string ManagementRoot = "management";
 
     protected IConfiguration Configuration { get; set; }
 
     protected virtual string PlatformRoot => string.Empty;
 
-    public string DefaultAppName => Assembly.GetEntryAssembly().GetName().Name;
+    public string DefaultAppName => Assembly.GetEntryAssembly()!.GetName().Name;
 
     public string AppNameKey => $"{SpringApplicationRoot}:name";
 
     public string AppInstanceIdKey => $"{SpringApplicationRoot}:instance_id";
 
-    public string ConfigServerNameKey => $"{ConfigServerRoot}:name";
-
     public string ConsulInstanceNameKey => $"{ConsulRoot}:serviceName";
 
     public string EurekaInstanceNameKey => $"{EurekaRoot}:instance:appName";
-
-    public string KubernetesNameKey => $"{KubernetesRoot}:name";
 
     public string ManagementNameKey => $"{ManagementRoot}:name";
 
@@ -64,10 +57,6 @@ public class ApplicationInstanceInfo : IApplicationInstanceInfo
     public virtual string ApplicationName => Name ?? Configuration?.GetValue(AppNameKey, DefaultAppName);
 
     public virtual string ApplicationVersion { get; set; }
-
-    public virtual string EnvironmentName { get; set; } = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"))
-        ? "Production"
-        : Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
     public virtual int InstanceIndex { get; set; } = -1;
 
@@ -140,15 +129,11 @@ public class ApplicationInstanceInfo : IApplicationInstanceInfo
     {
         return component switch
         {
-            SteeltoeComponent.Configuration => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath,
-                ConfigServerNameKey, PlatformNameKey, AppNameKey),
             SteeltoeComponent.Discovery => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath,
                 EurekaInstanceNameKey, ConsulInstanceNameKey, PlatformNameKey, AppNameKey),
-            SteeltoeComponent.Kubernetes => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath,
-                KubernetesNameKey, PlatformNameKey, AppNameKey),
             SteeltoeComponent.Management => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath,
                 ManagementNameKey, PlatformNameKey, AppNameKey),
-            _ => ConfigurationValuesHelper.GetPreferredSetting(Configuration, DefaultAppName, additionalSearchPath, PlatformNameKey, AppNameKey)
+            _ => throw new NotSupportedException($"Unknown component '{component}'.")
         };
     }
 }

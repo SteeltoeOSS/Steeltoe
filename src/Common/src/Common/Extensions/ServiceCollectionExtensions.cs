@@ -21,6 +21,9 @@ internal static class ServiceCollectionExtensions
     public static void RegisterDefaultApplicationInstanceInfo(this IServiceCollection services)
     {
         services.TryAddSingleton<IApplicationInstanceInfo>(serviceProvider =>
-            new ApplicationInstanceInfo(serviceProvider.GetRequiredService<IConfiguration>(), true));
+        {
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            return new ApplicationInstanceInfo(configuration, true);
+        });
     }
 }
