@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
@@ -358,7 +357,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         services.TryAddSingleton<InetUtils>();
 
         services.RegisterDefaultApplicationInstanceInfo();
-        services.ConfigureReloadableOptions<EurekaInstanceOptions>(EurekaInstanceOptions.ConfigurationPrefix);
+        services.AddOptions<EurekaInstanceOptions>().BindConfiguration(EurekaInstanceOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<EurekaInstanceOptions>, PostConfigureEurekaInstanceOptions>();
 
         return services.BuildServiceProvider(true);

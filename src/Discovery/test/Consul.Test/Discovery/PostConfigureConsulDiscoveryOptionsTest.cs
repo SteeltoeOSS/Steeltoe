@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
@@ -58,7 +57,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddSingleton(inetUtilsMock.Object);
-        services.ConfigureReloadableOptions<ConsulDiscoveryOptions>(ConsulDiscoveryOptions.ConfigurationPrefix);
+        services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -85,7 +84,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         var services = new ServiceCollection();
         services.AddSingleton(configuration);
         services.AddSingleton(inetUtilsMock.Object);
-        services.ConfigureReloadableOptions<ConsulDiscoveryOptions>(ConsulDiscoveryOptions.ConfigurationPrefix);
+        services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -113,7 +112,7 @@ public sealed class PostConfigureConsulDiscoveryOptionsTest
         services.AddSingleton(configuration);
         services.AddLogging();
         services.AddSingleton<InetUtils>();
-        services.ConfigureReloadableOptions<ConsulDiscoveryOptions>(ConsulDiscoveryOptions.ConfigurationPrefix);
+        services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
@@ -44,17 +43,22 @@ public static class ConsulServiceCollectionExtensions
 
         ConfigureConsulOptions(services);
         ConfigureConsulDiscoveryOptions(services);
+
+        services.AddOptions<InetOptions>().BindConfiguration(InetOptions.ConfigurationPrefix);
     }
 
     private static void ConfigureConsulOptions(IServiceCollection services)
     {
-        services.ConfigureReloadableOptions<ConsulOptions>(ConsulOptions.ConfigurationPrefix);
+        services.AddOptions<ConsulOptions>().BindConfiguration(ConsulOptions.ConfigurationPrefix);
         services.AddSingleton<IValidateOptions<ConsulOptions>, ValidateConsulOptions>();
     }
 
     private static void ConfigureConsulDiscoveryOptions(IServiceCollection services)
     {
-        services.ConfigureReloadableOptions<ConsulDiscoveryOptions>(ConsulDiscoveryOptions.ConfigurationPrefix, (options, serviceProvider) =>
+        OptionsBuilder<ConsulDiscoveryOptions> optionsBuilder = services.AddOptions<ConsulDiscoveryOptions>();
+        optionsBuilder.BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
+
+        optionsBuilder.Configure<IServiceProvider>((options, serviceProvider) =>
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
@@ -65,8 +69,6 @@ public static class ConsulServiceCollectionExtensions
                 options.Enabled = false;
             }
         });
-
-        services.ConfigureReloadableOptions<InetOptions>(InetOptions.ConfigurationPrefix);
 
         services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
     }

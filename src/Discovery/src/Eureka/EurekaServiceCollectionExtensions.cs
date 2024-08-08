@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Certificates;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
@@ -51,7 +50,10 @@ public static class EurekaServiceCollectionExtensions
 
     private static void ConfigureEurekaClientOptions(IServiceCollection services)
     {
-        services.ConfigureReloadableOptions<EurekaClientOptions>(EurekaClientOptions.ConfigurationPrefix, (options, serviceProvider) =>
+        OptionsBuilder<EurekaClientOptions> optionsBuilder = services.AddOptions<EurekaClientOptions>();
+        optionsBuilder.BindConfiguration(EurekaClientOptions.ConfigurationPrefix);
+
+        optionsBuilder.Configure<IServiceProvider>((options, serviceProvider) =>
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
@@ -68,8 +70,8 @@ public static class EurekaServiceCollectionExtensions
 
     private static void ConfigureEurekaInstanceOptions(IServiceCollection services)
     {
-        services.ConfigureReloadableOptions<EurekaInstanceOptions>(EurekaInstanceOptions.ConfigurationPrefix);
-        services.ConfigureReloadableOptions<InetOptions>(InetOptions.ConfigurationPrefix);
+        services.AddOptions<EurekaInstanceOptions>().BindConfiguration(EurekaInstanceOptions.ConfigurationPrefix);
+        services.AddOptions<InetOptions>().BindConfiguration(InetOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<EurekaInstanceOptions>, PostConfigureEurekaInstanceOptions>();
 
         DynamicPortAssignmentHostedService.Wire(services);
