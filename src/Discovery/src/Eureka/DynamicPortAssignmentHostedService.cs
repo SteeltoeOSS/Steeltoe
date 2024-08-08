@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -48,7 +49,8 @@ internal sealed class DynamicPortAssignmentHostedService : IHostedLifecycleServi
             services.AddSingleton<IOptionsChangeTokenSource<EurekaInstanceOptions>>(serviceProvider =>
                 serviceProvider.GetRequiredService<EurekaInstanceOptionsChangeTokenSource>());
 
-            services.ConfigureOptions<EurekaInstanceDynamicPortsPostConfigureOptions>();
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPostConfigureOptions<EurekaInstanceOptions>, EurekaInstanceDynamicPortsPostConfigureOptions>());
         }
     }
 

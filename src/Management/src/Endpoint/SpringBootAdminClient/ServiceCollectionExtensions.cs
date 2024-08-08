@@ -29,10 +29,8 @@ public static class ServiceCollectionExtensions
 
         services.RegisterDefaultApplicationInstanceInfo();
 
-        // Workaround for services.ConfigureOptions<ConfigureManagementOptions>() registering multiple times,
-        // see https://github.com/dotnet/runtime/issues/42358.
         services.AddOptions();
-        services.TryAddTransient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>();
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>());
 
         services.ConfigureEndpointOptions<HealthEndpointOptions, ConfigureHealthEndpointOptions>();
         services.ConfigureOptionsWithChangeTokenSource<SpringBootAdminClientOptions, ConfigureSpringBootAdminClientOptions>();

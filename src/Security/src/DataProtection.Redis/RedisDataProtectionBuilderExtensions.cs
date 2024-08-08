@@ -37,12 +37,7 @@ public static class RedisDataProtectionBuilderExtensions
         });
 
         builder.Services.TryAddSingleton<IXmlRepository, CloudFoundryRedisXmlRepository>();
-
-        builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(provider =>
-        {
-            return new ConfigureNamedOptions<KeyManagementOptions>(Options.DefaultName,
-                options => options.XmlRepository = provider.GetRequiredService<IXmlRepository>());
-        });
+        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<KeyManagementOptions>, ConfigureKeyManagementOptions>());
 
         return builder;
     }

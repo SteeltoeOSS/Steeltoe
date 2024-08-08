@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -56,18 +55,10 @@ public static class ActuatorServiceCollectionExtensions
         where TOptions : class
         where TConfigureOptions : class, IConfigureOptionsWithKey<TOptions>
     {
-        // Workaround for services.ConfigureOptions<TConfigureOptions>() registering multiple times,
-        // see https://github.com/dotnet/runtime/issues/42358.
-
         services.AddOptions();
-        services.TryAddTransient<IConfigureOptions<TOptions>, TConfigureOptions>();
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<TOptions>, TConfigureOptions>());
 
-        services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(provider =>
-        {
-            var configurer = (TConfigureOptions)provider.GetRequiredService<IConfigureOptions<TOptions>>();
-            var configuration = provider.GetRequiredService<IConfiguration>();
-            return new ConfigurationChangeTokenSource<TOptions>(configuration.GetSection(configurer.ConfigurationKey));
-        });
+        services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
     }
 
     public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)

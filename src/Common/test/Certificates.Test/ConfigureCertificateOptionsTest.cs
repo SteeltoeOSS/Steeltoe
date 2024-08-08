@@ -170,10 +170,11 @@ public sealed class ConfigureCertificateOptionsTest
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(firstX509);
 
-        IEnumerable<IOptionsChangeTokenSource<CertificateOptions>> tokenSources = serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>();
-        bool changeCalled = false;
-        IChangeToken changeToken = tokenSources.First().GetChangeToken();
+        IOptionsChangeTokenSource<CertificateOptions>[] tokenSources = serviceProvider.GetServices<IOptionsChangeTokenSource<CertificateOptions>>().ToArray();
+        tokenSources.OfType<FilePathInOptionsChangeTokenSource<CertificateOptions>>().Should().HaveCount(2);
+        IChangeToken changeToken = tokenSources.OfType<ConfigurationChangeTokenSource<CertificateOptions>>().Single().GetChangeToken();
 
+        bool changeCalled = false;
         _ = changeToken.RegisterChangeCallback(_ => changeCalled = true, "state");
         configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:CertificateFilePath"] = certificate2FilePath;
         configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:PrivateKeyFilePath"] = privateKey2FilePath;
