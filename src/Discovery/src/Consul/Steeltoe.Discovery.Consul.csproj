@@ -4,7 +4,6 @@
     <Description>Steeltoe compatibility package for service discovery and registration with Hashicorp Consul</Description>
     <PackageTags>service-discovery;service-registry;Consul;hashicorp</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

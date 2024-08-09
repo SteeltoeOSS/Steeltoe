@@ -4,7 +4,6 @@
     <Description>Configuration provider for reading Spring Boot style configuration</Description>
     <PackageTags>configuration;springboot</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

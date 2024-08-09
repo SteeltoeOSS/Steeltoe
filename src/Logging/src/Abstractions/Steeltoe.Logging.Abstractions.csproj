@@ -5,7 +5,6 @@
     <Description>Abstractions for use with dynamic logging</Description>
     <PackageTags>abstractions;logging;dynamic-logging;log-management</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

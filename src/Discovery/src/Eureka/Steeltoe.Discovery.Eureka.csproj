@@ -4,7 +4,6 @@
     <Description>Client for service discovery and registration with Neflix Eureka</Description>
     <PackageTags>service-discovery;service-registry;Netflix-Eureka;netflix;eureka</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

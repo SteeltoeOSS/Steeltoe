@@ -4,7 +4,6 @@
     <Description>Configuration provider for resolving property encryptions in configuration values</Description>
     <PackageTags>configuration;encryptions;spring boot</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

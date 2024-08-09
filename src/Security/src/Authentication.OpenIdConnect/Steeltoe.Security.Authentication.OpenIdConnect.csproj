@@ -4,7 +4,6 @@
     <Description>Library for using OpenID Connect with UAA-based systems, including Cloud Foundry</Description>
     <PackageTags>CloudFoundry;uaa;security;sso;openid;oidc</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />

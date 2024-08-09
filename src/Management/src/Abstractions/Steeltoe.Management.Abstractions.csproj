@@ -5,7 +5,6 @@
     <Description>Abstractions for application management and monitoring</Description>
     <PackageTags>abstractions;log-management;monitoring;actuator</PackageTags>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
