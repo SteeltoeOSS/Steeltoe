@@ -4,6 +4,7 @@
     <Description>Steeltoe common library</Description>
     <PackageTags>health;health-checks;service-discovery;network</PackageTags>
     <IsPackable>true</IsPackable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
