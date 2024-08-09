@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
@@ -38,7 +37,7 @@ public static class ConsulServiceCollectionExtensions
 
     private static void ConfigureConsulServices(IServiceCollection services)
     {
-        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddApplicationInstanceInfo();
         services.TryAddSingleton<InetUtils>();
 
         ConfigureConsulOptions(services);
@@ -87,8 +86,7 @@ public static class ConsulServiceCollectionExtensions
         services.AddSingleton(serviceProvider =>
         {
             var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
-            var instanceInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
-            return ConsulRegistration.Create(optionsMonitor, instanceInfo);
+            return ConsulRegistration.Create(optionsMonitor);
         });
 
         services.AddSingleton<ConsulServiceRegistrar>();

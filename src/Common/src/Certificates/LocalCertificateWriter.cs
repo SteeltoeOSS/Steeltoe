@@ -16,7 +16,7 @@ internal sealed class LocalCertificateWriter
     internal static readonly string AppBasePath =
         AppContext.BaseDirectory[..AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin", StringComparison.Ordinal)];
 
-    private static readonly string ParentPath = Directory.GetParent(AppBasePath)!.ToString();
+    private static readonly string ParentPath = Directory.GetParent(AppBasePath)?.ToString() ?? string.Empty;
 
     internal static readonly string RootCaPfxPath = Path.Combine(ParentPath, CertificateDirectoryName, "SteeltoeCA.pfx");
 

@@ -34,7 +34,7 @@
               "description": "Gets or sets the local path to a private key file on disk (optional)."
             }
           },
-          "description": "Indicates where to load a 'System.Security.Cryptography.X509Certificates.X509Certificate2' from."
+          "description": "Configuration settings for certificate access. Indicates where to load a 'System.Security.Cryptography.X509Certificates.X509Certificate2' from."
         }
       }
     }

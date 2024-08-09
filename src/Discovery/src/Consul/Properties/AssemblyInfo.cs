@@ -4,10 +4,11 @@
 
 using System.Runtime.CompilerServices;
 using Aspire;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Consul.Configuration;
 
-[assembly: ConfigurationSchema("Spring:Application:Name", typeof(string))]
+[assembly: ConfigurationSchema("Spring:Application", typeof(SpringApplicationSettings))]
 [assembly: ConfigurationSchema("Spring:Cloud:Discovery:Enabled", typeof(bool))]
 [assembly: ConfigurationSchema("Spring:Cloud:Inet", typeof(InetOptions))]
 [assembly: ConfigurationSchema("Consul", typeof(ConsulOptions))]

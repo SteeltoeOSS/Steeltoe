@@ -2,23 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
-
 namespace Steeltoe.Management.Tracing;
 
 public sealed class TracingOptions
 {
-    internal const string ConfigurationPrefix = "management:tracing";
-    internal const string DefaultIngressIgnorePattern = "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|.*\\.gif";
-    internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*";
-
-    private readonly IApplicationInstanceInfo? _applicationInstanceInfo;
-
     /// <summary>
-    /// Gets the name of the application.
+    /// Gets or sets the name of this application.
     /// </summary>
-    public string? Name => _applicationInstanceInfo?.GetApplicationNameInContext(SteeltoeComponent.Management, $"{ConfigurationPrefix}:name");
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets a regular expression for requests coming into this application that should not be traced. Default value:
@@ -73,24 +64,4 @@ public sealed class TracingOptions
     /// Gets or sets the endpoint used for exporting traces.
     /// </summary>
     public Uri? ExporterEndpoint { get; set; }
-
-    public TracingOptions(IApplicationInstanceInfo? appInfo, IConfiguration configuration)
-    {
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        IConfigurationSection section = configuration.GetSection(ConfigurationPrefix);
-        section.Bind(this);
-
-        _applicationInstanceInfo = appInfo;
-
-        if (string.IsNullOrEmpty(IngressIgnorePattern))
-        {
-            IngressIgnorePattern = DefaultIngressIgnorePattern;
-        }
-
-        if (string.IsNullOrEmpty(EgressIgnorePattern))
-        {
-            EgressIgnorePattern = DefaultEgressIgnorePattern;
-        }
-    }
 }

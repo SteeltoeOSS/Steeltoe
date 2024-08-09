@@ -29,26 +29,76 @@ public sealed class TraceEndpointOptionsTest : BaseTest
     }
 
     [Fact]
-    public void Constructor_BindsConfigurationCorrectly()
+    public void Constructor_BindsConfigurationCorrectly_V1()
     {
         var appsettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:loggers:enabled"] = "false",
-            ["management:endpoints:httptrace:enabled"] = "true",
-            ["management:endpoints:httptrace:capacity"] = "1000",
-            ["management:endpoints:httptrace:addTimeTaken"] = "false",
-            ["management:endpoints:httptrace:addRequestHeaders"] = "false",
-            ["management:endpoints:httptrace:addResponseHeaders"] = "false",
-            ["management:endpoints:httptrace:addPathInfo"] = "true",
-            ["management:endpoints:httptrace:addUserPrincipal"] = "true",
-            ["management:endpoints:httptrace:addParameters"] = "true",
-            ["management:endpoints:httptrace:addQueryString"] = "true",
-            ["management:endpoints:httptrace:addAuthType"] = "true",
-            ["management:endpoints:httptrace:addRemoteAddress"] = "true",
-            ["management:endpoints:httptrace:addSessionId"] = "true",
-            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+            ["management:endpoints:trace:enabled"] = "true",
+            ["management:endpoints:trace:capacity"] = "1000",
+            ["management:endpoints:trace:addTimeTaken"] = "false",
+            ["management:endpoints:trace:addRequestHeaders"] = "false",
+            ["management:endpoints:trace:addResponseHeaders"] = "false",
+            ["management:endpoints:trace:addPathInfo"] = "true",
+            ["management:endpoints:trace:addUserPrincipal"] = "true",
+            ["management:endpoints:trace:addParameters"] = "true",
+            ["management:endpoints:trace:addQueryString"] = "true",
+            ["management:endpoints:trace:addAuthType"] = "true",
+            ["management:endpoints:trace:addRemoteAddress"] = "true",
+            ["management:endpoints:trace:addSessionId"] = "true",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
+            ["management:endpoints:cloudfoundry:enabled"] = "true"
+        };
+
+        TraceEndpointOptions endpointOptions = GetOptionsMonitorFromSettings<TraceEndpointOptions, ConfigureTraceEndpointOptions>(appsettings).Get("V1");
+
+        CloudFoundryEndpointOptions cloudFoundryEndpointOptions =
+            GetOptionsFromSettings<CloudFoundryEndpointOptions, ConfigureCloudFoundryEndpointOptions>(appsettings);
+
+        Assert.True(cloudFoundryEndpointOptions.Enabled);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Id);
+        Assert.Equal(string.Empty, cloudFoundryEndpointOptions.Path);
+        Assert.True(cloudFoundryEndpointOptions.ValidateCertificates);
+
+        Assert.True(endpointOptions.Enabled);
+        Assert.Equal("trace", endpointOptions.Id);
+        Assert.Equal("trace", endpointOptions.Path);
+        Assert.Equal(1000, endpointOptions.Capacity);
+        Assert.False(endpointOptions.AddTimeTaken);
+        Assert.False(endpointOptions.AddRequestHeaders);
+        Assert.False(endpointOptions.AddResponseHeaders);
+        Assert.True(endpointOptions.AddPathInfo);
+        Assert.True(endpointOptions.AddUserPrincipal);
+        Assert.True(endpointOptions.AddParameters);
+        Assert.True(endpointOptions.AddQueryString);
+        Assert.True(endpointOptions.AddAuthType);
+        Assert.True(endpointOptions.AddRemoteAddress);
+        Assert.True(endpointOptions.AddSessionId);
+    }
+
+    [Fact]
+    public void Constructor_BindsConfigurationCorrectly_V2()
+    {
+        var appsettings = new Dictionary<string, string?>
+        {
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:loggers:enabled"] = "false",
+            ["management:endpoints:httpTrace:enabled"] = "true",
+            ["management:endpoints:httpTrace:capacity"] = "1000",
+            ["management:endpoints:httpTrace:addTimeTaken"] = "false",
+            ["management:endpoints:httpTrace:addRequestHeaders"] = "false",
+            ["management:endpoints:httpTrace:addResponseHeaders"] = "false",
+            ["management:endpoints:httpTrace:addPathInfo"] = "true",
+            ["management:endpoints:httpTrace:addUserPrincipal"] = "true",
+            ["management:endpoints:httpTrace:addParameters"] = "true",
+            ["management:endpoints:httpTrace:addQueryString"] = "true",
+            ["management:endpoints:httpTrace:addAuthType"] = "true",
+            ["management:endpoints:httpTrace:addRemoteAddress"] = "true",
+            ["management:endpoints:httpTrace:addSessionId"] = "true",
+            ["management:endpoints:cloudfoundry:validateCertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
 

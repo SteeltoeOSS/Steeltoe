@@ -120,7 +120,8 @@ internal sealed class MongoDbHealthContributor : IHealthContributor
                 ConnectionString = connectionString
             };
 
-            return (string)builder["server"]!;
+            string? hostName = (string?)builder["server"];
+            return hostName ?? string.Empty;
         }
     }
 }

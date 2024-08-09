@@ -33,11 +33,10 @@ internal sealed class ConfigureSpringBootAdminClientOptions : IConfigureOptionsW
     {
         _configuration.GetSection(ManagementInfoPrefix).Bind(options);
 
-        // Require base path to be supplied directly, in the configuration, or in the app instance info
-        options.BasePath ??= GetBasePath() ?? _applicationInstanceInfo.Uris?.FirstOrDefault() ??
+        options.BasePath ??= GetBasePath() ??
             throw new InvalidOperationException($"Please set {ManagementInfoPrefix}:BasePath in order to register with Spring Boot Admin");
 
-        options.ApplicationName ??= _applicationInstanceInfo.GetApplicationNameInContext(SteeltoeComponent.Management);
+        options.ApplicationName ??= _applicationInstanceInfo.ApplicationName;
     }
 
     private string? GetBasePath()

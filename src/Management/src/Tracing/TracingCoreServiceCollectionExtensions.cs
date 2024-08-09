@@ -4,6 +4,7 @@
 
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Trace;
 
@@ -43,14 +44,17 @@ public static class TracingCoreServiceCollectionExtensions
 
         action += builder => builder.AddAspNetCoreInstrumentation();
 
-        services.AddOptions<AspNetCoreTraceInstrumentationOptions>().PostConfigure<TracingOptions>((instrumentationOptions, tracingOptions) =>
-        {
-            if (tracingOptions.IngressIgnorePattern != null)
+        services.AddOptions<AspNetCoreTraceInstrumentationOptions>().PostConfigure<IOptionsMonitor<TracingOptions>>(
+            (instrumentationOptions, tracingOptionsMonitor) =>
             {
-                var pathMatcher = new Regex(tracingOptions.IngressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1));
-                instrumentationOptions.Filter += context => !pathMatcher.IsMatch(context.Request.Path);
-            }
-        });
+                TracingOptions tracingOptions = tracingOptionsMonitor.CurrentValue;
+
+                if (tracingOptions.IngressIgnorePattern != null)
+                {
+                    var pathMatcher = new Regex(tracingOptions.IngressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1));
+                    instrumentationOptions.Filter += context => !pathMatcher.IsMatch(context.Request.Path);
+                }
+            });
 
         return services.AddDistributedTracing(action);
     }

@@ -31,7 +31,7 @@ public sealed class MetricsEndpointTest : BaseTest
                 services.AddMetricsActuatorServices();
             };
 
-            MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+            MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
 
             await service.StartAsync(CancellationToken.None);
 
@@ -65,7 +65,7 @@ public sealed class MetricsEndpointTest : BaseTest
                 services.AddMetricsActuatorServices();
             };
 
-            MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+            MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
 
             await service.StartAsync(CancellationToken.None);
 
@@ -97,7 +97,7 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
 
         await service.StartAsync(CancellationToken.None);
 
@@ -166,7 +166,7 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuator();
         };
 
-        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
 
         await service.StartAsync(CancellationToken.None);
 
@@ -233,7 +233,7 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
 
         await service.StartAsync(CancellationToken.None);
 
@@ -267,7 +267,7 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
 
         await service.StartAsync(CancellationToken.None);
 
@@ -345,7 +345,7 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
 
         await service.StartAsync(CancellationToken.None);
 
@@ -524,7 +524,7 @@ public sealed class MetricsEndpointTest : BaseTest
             services.AddMetricsActuatorServices();
         };
 
-        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().First();
+        MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
 
         await service.StartAsync(CancellationToken.None);
 

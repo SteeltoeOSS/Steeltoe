@@ -3,9 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Management.Tracing.Test;
@@ -15,9 +18,9 @@ public sealed class TracingLogProcessorTest
     [Fact]
     public void Process_NoCurrentSpan_DoesNothing()
     {
-        using TracerProvider? openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
-        var options = new TracingOptions(null, new ConfigurationBuilder().Build());
-        var processor = new TracingLogProcessor(options);
+        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+        var optionsMonitor = new TestOptionsMonitor<TracingOptions>();
+        var processor = new TracingLogProcessor(optionsMonitor);
 
         string result = processor.Process("InputLogMessage");
 
@@ -27,14 +30,15 @@ public sealed class TracingLogProcessorTest
     [Fact]
     public void Process_CurrentSpan_ReturnsExpected()
     {
-        using TracerProvider? openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
 
-        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:tracing:name"] = "foobar"
-        });
+        };
 
-        var processor = new TracingLogProcessor(new TracingOptions(new ApplicationInstanceInfo(configuration), configuration));
+        IOptionsMonitor<TracingOptions> optionsMonitor = GetTracingOptionsMonitor(appSettings);
+        var processor = new TracingLogProcessor(optionsMonitor);
         Tracer tracer = TracerProvider.Default.GetTracer("tracername");
         TelemetrySpan span = tracer.StartActiveSpan("spanName");
 
@@ -63,19 +67,17 @@ public sealed class TracingLogProcessorTest
     [Fact]
     public void Process_UseShortTraceIds()
     {
-        var appsettings = new Dictionary<string, string?>
+        var appSettings = new Dictionary<string, string?>
         {
             ["management:tracing:name"] = "foobar",
             ["management:tracing:useShortTraceIds"] = "true"
         };
 
-        IConfiguration configuration = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        var options = new TracingOptions(new ApplicationInstanceInfo(configuration), configuration);
-
-        using TracerProvider? openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+        IOptionsMonitor<TracingOptions> optionsMonitor = GetTracingOptionsMonitor(appSettings);
+        using TracerProvider openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
         Tracer tracer = TracerProvider.Default.GetTracer("tracername");
         TelemetrySpan span = tracer.StartActiveSpan("spanName");
-        var processor = new TracingLogProcessor(options);
+        var processor = new TracingLogProcessor(optionsMonitor);
 
         string result = processor.Process("InputLogMessage");
 
@@ -91,5 +93,25 @@ public sealed class TracingLogProcessorTest
 
         Assert.Contains(span.Context.SpanId.ToHexString(), result, StringComparison.Ordinal);
         Assert.Contains("foobar", result, StringComparison.Ordinal);
+    }
+
+    private IOptionsMonitor<TracingOptions> GetTracingOptionsMonitor(IDictionary<string, string?> appSettings)
+    {
+        var options = new TracingOptions();
+
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appSettings);
+        IConfiguration configuration = builder.Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddApplicationInstanceInfo();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
+        var configurer = new ConfigureTracingOptions(configuration, appInfo);
+        configurer.Configure(options);
+
+        return TestOptionsMonitor.Create(options);
     }
 }

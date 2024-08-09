@@ -31,7 +31,7 @@
               "description": "Gets or sets the local path to a private key file on disk (optional)."
             }
           },
-          "description": "Indicates where to load a 'System.Security.Cryptography.X509Certificates.X509Certificate2' from."
+          "description": "Configuration settings for certificate access. Indicates where to load a 'System.Security.Cryptography.X509Certificates.X509Certificate2' from."
         }
       }
     },
@@ -277,9 +277,11 @@
           "type": "object",
           "properties": {
             "Name": {
-              "type": "string"
+              "type": "string",
+              "description": "Gets or sets the name of this application."
             }
-          }
+          },
+          "description": "Fallback configuration settings that describe this application."
         },
         "Cloud": {
           "type": "object",
@@ -288,12 +290,15 @@
               "type": "object",
               "properties": {
                 "Enabled": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "Gets or sets a value indicating whether to enable the Eureka client. Default value: true."
                 },
                 "RegistrationMethod": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Gets or sets how to register on Cloud Foundry. Can be \"route\", \"direct\", or \"hostname\"."
                 }
-              }
+              },
+              "description": "Fallback configuration settings for Eureka."
             },
             "Inet": {
               "type": "object",

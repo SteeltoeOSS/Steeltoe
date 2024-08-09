@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddApplicationInstanceInfo();
 
         services.AddOptions();
         services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<ManagementOptions>, ConfigureManagementOptions>());

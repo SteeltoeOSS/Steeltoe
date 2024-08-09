@@ -69,12 +69,13 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
         {
             var descriptor = (ControllerActionDescriptor)description.ActionDescriptor;
             AspNetCoreRouteDetails details = GetRouteDetails(description);
-            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName!, out IList<RouteMappingDescription>? descriptions);
+            string controllerTypeName = descriptor.ControllerTypeInfo.FullName!;
+            mappingDescriptions.TryGetValue(controllerTypeName, out IList<RouteMappingDescription>? descriptions);
 
             if (descriptions == null)
             {
                 descriptions = new List<RouteMappingDescription>();
-                mappingDescriptions.Add(descriptor.ControllerTypeInfo.FullName!, descriptions);
+                mappingDescriptions.Add(controllerTypeName, descriptions);
             }
 
             var routeMappingDescription = new RouteMappingDescription(descriptor.MethodInfo, details);
@@ -92,12 +93,13 @@ internal sealed class RouteMappingsEndpointHandler : IRouteMappingsEndpointHandl
                 }
 
                 AspNetCoreRouteDetails details = GetRouteDetails(descriptor);
-                mappingDescriptions.TryGetValue(controllerDescriptor.ControllerTypeInfo.FullName!, out IList<RouteMappingDescription>? descriptions);
+                string controllerTypeName = controllerDescriptor.ControllerTypeInfo.FullName!;
+                mappingDescriptions.TryGetValue(controllerTypeName, out IList<RouteMappingDescription>? descriptions);
 
                 if (descriptions == null)
                 {
                     descriptions = new List<RouteMappingDescription>();
-                    mappingDescriptions.Add(controllerDescriptor.ControllerTypeInfo.FullName!, descriptions);
+                    mappingDescriptions.Add(controllerTypeName, descriptions);
                 }
 
                 var routeMappingDescription = new RouteMappingDescription(controllerDescriptor.MethodInfo, details);

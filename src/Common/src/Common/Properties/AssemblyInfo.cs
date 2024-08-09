@@ -12,6 +12,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Http")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Encryption")]

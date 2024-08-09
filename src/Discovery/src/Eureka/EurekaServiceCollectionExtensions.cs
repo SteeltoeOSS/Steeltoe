@@ -41,7 +41,7 @@ public static class EurekaServiceCollectionExtensions
 
     private static void ConfigureEurekaServices(IServiceCollection services)
     {
-        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddApplicationInstanceInfo();
         services.TryAddSingleton<InetUtils>();
 
         ConfigureEurekaClientOptions(services);

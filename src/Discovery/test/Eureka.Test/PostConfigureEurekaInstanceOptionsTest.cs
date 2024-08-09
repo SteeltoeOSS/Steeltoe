@@ -136,8 +136,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:discovery:registrationMethod"] = "route",
-            ["spring:application:name"] = "myapp",
-            ["spring:application:instance_id"] = "test-instance-id"
+            ["spring:application:name"] = "myapp"
         };
 
         using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
@@ -146,7 +145,6 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
 
         instanceOptions.RegistrationMethod.Should().Be("route");
         instanceOptions.AppName.Should().Be("myapp");
-        instanceOptions.InstanceId.Should().Be("test-instance-id");
         instanceOptions.VipAddress.Should().Be("myapp");
         instanceOptions.SecureVipAddress.Should().Be("myapp");
     }
@@ -158,10 +156,8 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         {
             ["spring:cloud:discovery:registrationMethod"] = "route",
             ["spring:application:name"] = "myapp",
-            ["spring:application:instance_id"] = "test-instance-id",
             ["eureka:instance:RegistrationMethod"] = "explicit-registration-method",
-            ["eureka:instance:AppName"] = "explicit-app-name",
-            ["eureka:instance:InstanceId"] = "explicit-instance-id"
+            ["eureka:instance:AppName"] = "explicit-app-name"
         };
 
         using ServiceProvider serviceProvider = BuildTestServiceProvider(appSettings);
@@ -170,7 +166,6 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
 
         instanceOptions.RegistrationMethod.Should().Be("explicit-registration-method");
         instanceOptions.AppName.Should().Be("explicit-app-name");
-        instanceOptions.InstanceId.Should().Be("explicit-instance-id");
         instanceOptions.VipAddress.Should().Be("explicit-app-name");
         instanceOptions.SecureVipAddress.Should().Be("explicit-app-name");
     }
@@ -356,7 +351,7 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         services.AddLogging();
         services.TryAddSingleton<InetUtils>();
 
-        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddApplicationInstanceInfo();
         services.AddOptions<EurekaInstanceOptions>().BindConfiguration(EurekaInstanceOptions.ConfigurationPrefix);
         services.AddSingleton<IPostConfigureOptions<EurekaInstanceOptions>, PostConfigureEurekaInstanceOptions>();
 

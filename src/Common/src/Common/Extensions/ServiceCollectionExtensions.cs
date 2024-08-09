@@ -4,26 +4,32 @@
 
 #nullable enable
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Try to register a default instance of <see cref="IApplicationInstanceInfo" />.
+    /// Registers <see cref="ApplicationInstanceInfo" /> for use with the options pattern. It is also registered as <see cref="IApplicationInstanceInfo" />
+    /// in the IoC container for easy access.
     /// </summary>
     /// <param name="services">
-    /// Collection of configured services.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void RegisterDefaultApplicationInstanceInfo(this IServiceCollection services)
+    public static void AddApplicationInstanceInfo(this IServiceCollection services)
     {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services.AddOptions();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ApplicationInstanceInfo>, ConfigureApplicationInstanceInfo>());
+
         services.TryAddSingleton<IApplicationInstanceInfo>(serviceProvider =>
         {
-            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            return new ApplicationInstanceInfo(configuration, true);
+            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ApplicationInstanceInfo>>();
+            return optionsMonitor.CurrentValue;
         });
     }
 }

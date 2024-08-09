@@ -69,7 +69,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     {
         if (!options.IsForceHostNameMethod())
         {
-            string? firstAppUri = _appInfo.Uris?.FirstOrDefault();
+            string? firstAppUri = _appInfo.Uris.FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(firstAppUri))
             {
@@ -130,8 +130,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     {
         if (string.IsNullOrWhiteSpace(options.AppName))
         {
-            string? springAppName = _appInfo.GetApplicationNameInContext(SteeltoeComponent.Discovery);
-            options.AppName = !string.IsNullOrWhiteSpace(springAppName) ? springAppName : "UNKNOWN";
+            options.AppName = _appInfo.ApplicationName;
         }
     }
 
@@ -145,7 +144,7 @@ internal sealed class PostConfigureEurekaInstanceOptions : IPostConfigureOptions
     {
         if (options.IsGoRouterMethod())
         {
-            string? firstAppUri = _appInfo.Uris?.FirstOrDefault();
+            string? firstAppUri = _appInfo.Uris.FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(firstAppUri))
             {

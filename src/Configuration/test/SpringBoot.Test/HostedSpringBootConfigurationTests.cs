@@ -115,7 +115,7 @@ public sealed class HostedSpringBootConfigurationTests
     {
         using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
-        WebApplicationBuilder? hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
         hostBuilder.Configuration.AddSpringBootFromEnvironmentVariable();
 
         WebApplication host = hostBuilder.Build();
@@ -128,7 +128,7 @@ public sealed class HostedSpringBootConfigurationTests
     [Fact]
     public void WebApplicationConfiguresIConfiguration_CmdLine()
     {
-        WebApplicationBuilder? hostBuilder = TestHelpers.GetTestWebApplicationBuilder([
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder([
             "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination",
             "Spring.Cloud.Stream.Bindings.Input.Group=testGroup"
         ]);

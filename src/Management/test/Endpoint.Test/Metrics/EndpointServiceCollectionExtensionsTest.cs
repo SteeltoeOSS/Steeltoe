@@ -17,9 +17,10 @@ public sealed class EndpointServiceCollectionExtensionsTest : BaseTest
     [Fact]
     public void AddMetricsActuator_AddsCorrectServices()
     {
-        var services = new ServiceCollection();
-        IConfiguration configuration = GetConfiguration();
+        var builder = new ConfigurationBuilder();
+        IConfiguration configuration = builder.Build();
 
+        var services = new ServiceCollection();
         services.AddOptions();
         services.AddLogging();
         services.AddSingleton(HostingHelpers.GetHostingEnvironment());
@@ -28,24 +29,15 @@ public sealed class EndpointServiceCollectionExtensionsTest : BaseTest
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        var diagnosticsManager = serviceProvider.GetService<IDiagnosticsManager>();
-        Assert.NotNull(diagnosticsManager);
-        var hostedService = serviceProvider.GetService<IHostedService>();
-        Assert.NotNull(hostedService);
+        serviceProvider.GetService<IDiagnosticsManager>().Should().NotBeNull();
+        serviceProvider.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Should().HaveCount(1);
+
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<MetricsObserverOptions>>();
-        Assert.NotNull(optionsMonitor.CurrentValue);
+        optionsMonitor.CurrentValue.EgressIgnorePattern.Should().NotBeNullOrEmpty();
 
-        IEnumerable<IDiagnosticObserver> observers = serviceProvider.GetServices<IDiagnosticObserver>();
-        List<IDiagnosticObserver> list = observers.ToList();
-        Assert.NotEmpty(list);
+        IDiagnosticObserver[] observers = serviceProvider.GetServices<IDiagnosticObserver>().ToArray();
+        observers.Should().NotBeEmpty();
 
-        var handler = serviceProvider.GetService<IMetricsEndpointHandler>();
-        Assert.NotNull(handler);
-    }
-
-    private IConfiguration GetConfiguration()
-    {
-        var builder = new ConfigurationBuilder();
-        return builder.Build();
+        serviceProvider.GetService<IMetricsEndpointHandler>().Should().NotBeNull();
     }
 }

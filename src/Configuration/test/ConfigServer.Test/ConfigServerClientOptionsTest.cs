@@ -23,11 +23,9 @@ public sealed class ConfigServerClientOptionsTest
         services.AddSingleton<IConfiguration>(_ => builder.Build());
 
         services.ConfigureConfigServerClientOptions();
-        var service = services.BuildServiceProvider(true).GetService<IOptions<ConfigServerClientOptions>>();
-        Assert.NotNull(service);
-        ConfigServerClientOptions options = service.Value;
-        Assert.NotNull(options);
-        TestHelper.VerifyDefaults(options);
+        var service = services.BuildServiceProvider(true).GetRequiredService<IOptions<ConfigServerClientOptions>>();
+
+        TestHelper.VerifyDefaults(service.Value);
     }
 
     [Fact]
@@ -69,10 +67,9 @@ public sealed class ConfigServerClientOptionsTest
         services.AddSingleton<IConfiguration>(configurationRoot);
 
         services.ConfigureConfigServerClientOptions();
-        var service = services.BuildServiceProvider(true).GetService<IOptions<ConfigServerClientOptions>>();
-        Assert.NotNull(service);
+        var service = services.BuildServiceProvider(true).GetRequiredService<IOptions<ConfigServerClientOptions>>();
+
         ConfigServerClientOptions options = service.Value;
-        Assert.NotNull(options);
 
         Assert.True(options.Enabled);
         Assert.True(options.FailFast);

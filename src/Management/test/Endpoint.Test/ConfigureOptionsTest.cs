@@ -24,7 +24,7 @@ public sealed class ConfigureOptionsTest
         services.AddInfoActuator();
         services.AddEnvironmentActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
         configurers.Should().HaveCount(1);
@@ -44,7 +44,7 @@ public sealed class ConfigureOptionsTest
         services.AddTransient<IConfigureOptions<ManagementOptions>, CustomManagementOptionsConfigurer>();
         services.AddInfoActuator();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
         configurers.Should().HaveCount(2);
@@ -66,7 +66,7 @@ public sealed class ConfigureOptionsTest
         services.AddInfoActuator();
         services.AddTransient<IConfigureOptions<ManagementOptions>, CustomManagementOptionsConfigurer>();
 
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         IConfigureOptions<ManagementOptions>[] configurers = serviceProvider.GetServices<IConfigureOptions<ManagementOptions>>().ToArray();
         configurers.Should().HaveCount(2);

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -57,11 +56,10 @@ public static class TracingBaseServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddOptions();
-        services.RegisterDefaultApplicationInstanceInfo();
+        services.AddApplicationInstanceInfo();
 
-        services.TryAddSingleton(serviceProvider =>
-            new TracingOptions(serviceProvider.GetRequiredService<IApplicationInstanceInfo>(), serviceProvider.GetRequiredService<IConfiguration>()));
+        services.AddOptions();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<TracingOptions>, ConfigureTracingOptions>());
 
         services.ConfigureOptionsWithChangeTokenSource<WavefrontExporterOptions, ConfigureWavefrontExporterOptions>();
 
@@ -108,23 +106,24 @@ public static class TracingBaseServiceCollectionExtensions
             action?.Invoke(tracerProviderBuilder);
         });
 
-        services.AddOptions<HttpClientTraceInstrumentationOptions>().Configure<IServiceProvider>((options, serviceProvider) =>
-        {
-            var tracingOptions = serviceProvider.GetRequiredService<TracingOptions>();
-
-            if (tracingOptions.EgressIgnorePattern != null)
+        services.AddOptions<HttpClientTraceInstrumentationOptions>().Configure<IOptionsMonitor<TracingOptions>>(
+            (instrumentationOptions, tracingOptionsMonitor) =>
             {
-                var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1));
-                options.FilterHttpRequestMessage += requestMessage => !pathMatcher.IsMatch(requestMessage.RequestUri?.PathAndQuery ?? string.Empty);
-            }
-        });
+                TracingOptions tracingOptions = tracingOptionsMonitor.CurrentValue;
+
+                if (tracingOptions.EgressIgnorePattern != null)
+                {
+                    var pathMatcher = new Regex(tracingOptions.EgressIgnorePattern, RegexOptions.None, TimeSpan.FromSeconds(1));
+
+                    instrumentationOptions.FilterHttpRequestMessage += requestMessage =>
+                        !pathMatcher.IsMatch(requestMessage.RequestUri?.PathAndQuery ?? string.Empty);
+                }
+            });
 
         services.ConfigureOpenTelemetryTracerProvider((serviceProvider, tracerProviderBuilder) =>
         {
-            string appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>()
-                .GetApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigurationPrefix}:name");
-
-            var tracingOptions = serviceProvider.GetRequiredService<TracingOptions>();
+            var tracingOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<TracingOptions>>();
+            TracingOptions tracingOptions = tracingOptionsMonitor.CurrentValue;
 
             ILogger logger = serviceProvider.GetRequiredService<ILoggerFactory>()
                 .CreateLogger($"{typeof(TracingBaseServiceCollectionExtensions).Namespace}.Setup");
@@ -132,7 +131,7 @@ public static class TracingBaseServiceCollectionExtensions
             logger.LogTrace("Found Zipkin exporter: {ExportToZipkin}. Found Jaeger exporter: {ExportToJaeger}. Found OTLP exporter: {ExportToOtlp}.",
                 exportToZipkin, exportToJaeger, exportToOpenTelemetryProtocol);
 
-            tracerProviderBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(appName));
+            tracerProviderBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(tracingOptions.Name!));
 
             if (string.Equals(tracingOptions.PropagationType, "B3", StringComparison.OrdinalIgnoreCase))
             {
@@ -162,14 +161,16 @@ public static class TracingBaseServiceCollectionExtensions
 
     private static void ConfigureZipkinOptions(IServiceCollection services)
     {
-        services.AddOptions<ZipkinExporterOptions>().PostConfigure<TracingOptions>((options, traceOpts) =>
+        services.AddOptions<ZipkinExporterOptions>().PostConfigure<IOptionsMonitor<TracingOptions>>((zipkinExporterOptions, tracingOptionsMonitor) =>
         {
-            options.UseShortTraceIds = traceOpts.UseShortTraceIds;
-            options.MaxPayloadSizeInBytes = traceOpts.MaxPayloadSizeInBytes;
+            TracingOptions tracingOptions = tracingOptionsMonitor.CurrentValue;
 
-            if (traceOpts.ExporterEndpoint != null)
+            zipkinExporterOptions.UseShortTraceIds = tracingOptions.UseShortTraceIds;
+            zipkinExporterOptions.MaxPayloadSizeInBytes = tracingOptions.MaxPayloadSizeInBytes;
+
+            if (tracingOptions.ExporterEndpoint != null)
             {
-                options.Endpoint = traceOpts.ExporterEndpoint;
+                zipkinExporterOptions.Endpoint = tracingOptions.ExporterEndpoint;
             }
         });
     }
@@ -181,14 +182,16 @@ public static class TracingBaseServiceCollectionExtensions
 
     private static void ConfigureJaegerOptions(IServiceCollection services)
     {
-        services.AddOptions<JaegerExporterOptions>().PostConfigure<TracingOptions>((options, traceOpts) =>
+        services.AddOptions<JaegerExporterOptions>().PostConfigure<IOptionsMonitor<TracingOptions>>((jaegerExporterOptions, tracingOptionsMonitor) =>
         {
-            options.MaxPayloadSizeInBytes = traceOpts.MaxPayloadSizeInBytes;
+            TracingOptions tracingOptions = tracingOptionsMonitor.CurrentValue;
 
-            if (traceOpts.ExporterEndpoint != null)
+            jaegerExporterOptions.MaxPayloadSizeInBytes = tracingOptions.MaxPayloadSizeInBytes;
+
+            if (tracingOptions.ExporterEndpoint != null)
             {
-                options.AgentHost = traceOpts.ExporterEndpoint.Host;
-                options.AgentPort = traceOpts.ExporterEndpoint.Port;
+                jaegerExporterOptions.AgentHost = tracingOptions.ExporterEndpoint.Host;
+                jaegerExporterOptions.AgentPort = tracingOptions.ExporterEndpoint.Port;
             }
         });
     }
@@ -200,11 +203,13 @@ public static class TracingBaseServiceCollectionExtensions
 
     private static void ConfigureOpenTelemetryProtocolOptions(IServiceCollection services)
     {
-        services.AddOptions<OtlpExporterOptions>().PostConfigure<TracingOptions>((options, traceOpts) =>
+        services.AddOptions<OtlpExporterOptions>().PostConfigure<IOptionsMonitor<TracingOptions>>((otlpExporterOptions, tracingOptionsMonitor) =>
         {
-            if (traceOpts.ExporterEndpoint != null)
+            TracingOptions tracingOptions = tracingOptionsMonitor.CurrentValue;
+
+            if (tracingOptions.ExporterEndpoint != null)
             {
-                options.Endpoint = traceOpts.ExporterEndpoint;
+                otlpExporterOptions.Endpoint = tracingOptions.ExporterEndpoint;
             }
         });
     }

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MySqlConnector;
 using Npgsql;
@@ -355,8 +356,12 @@ public sealed class HostBuilderExtensionsTest
     {
         var tracerProvider = hostWrapper.Services.GetRequiredService<TracerProvider>();
 
-        hostWrapper.Services.GetService<IHostedService>().Should().NotBeNull();
-        hostWrapper.Services.GetService<TracingOptions>().Should().NotBeNull();
+        IHostedService[] hostedServices = hostWrapper.Services.GetServices<IHostedService>().ToArray();
+        hostedServices.Should().ContainSingle(hostedService => hostedService.GetType().Name == "TelemetryHostedService");
+
+        var optionsMonitor = hostWrapper.Services.GetRequiredService<IOptionsMonitor<TracingOptions>>();
+        optionsMonitor.CurrentValue.Name.Should().NotBeNull();
+
         hostWrapper.Services.GetService<IDynamicMessageProcessor>().Should().NotBeNull();
 
         FieldInfo? instrumentationsField = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance);

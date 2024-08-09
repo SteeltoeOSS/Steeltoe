@@ -8,7 +8,7 @@ namespace Steeltoe.Configuration.CloudFoundry;
 
 public sealed class CloudFoundryServicesOptions : BaseServiceOptions
 {
-    internal const string ServicesConfigurationRoot = "vcap";
+    private const string ServicesConfigurationRoot = "vcap";
 
     protected override string ConfigurationPrefix => ServicesConfigurationRoot;
 

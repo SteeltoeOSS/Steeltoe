@@ -16,7 +16,7 @@ internal static class HostBuilderWrapperExtensions
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         wrapper.ConfigureAppConfiguration(builder => builder.AddCloudFoundry(null, loggerFactory));
-        wrapper.ConfigureServices(services => services.RegisterCloudFoundryApplicationInstanceInfo());
+        wrapper.ConfigureServices(services => services.AddCloudFoundryOptions());
 
         if (loggerFactory is IBootstrapLoggerFactory)
         {

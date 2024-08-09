@@ -43,7 +43,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
 
         Assert.Single(discoveryClients);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClients[0]);
-        Assert.Single(host.Services.GetServices<IHostedService>().Where(service => service is DiscoveryClientHostedService));
+        Assert.Single(host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>());
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         IDiscoveryClient[] discoveryClients = host.Services.GetServices<IDiscoveryClient>().ToArray();
         Assert.Single(discoveryClients);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClients[0]);
-        Assert.Single(host.Services.GetServices<IHostedService>().Where(service => service is DiscoveryClientHostedService));
+        Assert.Single(host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>());
     }
 
     [Fact]

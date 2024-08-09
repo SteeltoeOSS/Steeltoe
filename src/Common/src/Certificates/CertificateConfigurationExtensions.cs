@@ -97,7 +97,8 @@ public static class CertificateConfigurationExtensions
             writer.Write(organizationId.Value, spaceId.Value);
 
             Environment.SetEnvironmentVariable("CF_SYSTEM_CERT_PATH",
-                Path.Combine(Directory.GetParent(LocalCertificateWriter.AppBasePath)!.ToString(), LocalCertificateWriter.CertificateDirectoryName));
+                Path.Combine(Directory.GetParent(LocalCertificateWriter.AppBasePath)?.FullName ?? string.Empty,
+                    LocalCertificateWriter.CertificateDirectoryName));
 
             Environment.SetEnvironmentVariable("CF_INSTANCE_CERT",
                 Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,

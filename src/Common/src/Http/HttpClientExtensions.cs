@@ -83,6 +83,6 @@ internal static class HttpClientExtensions
     internal sealed class AccessTokenResponse
     {
         [JsonPropertyName("access_token")]
-        public string AccessToken { get; set; } = null!;
+        public string? AccessToken { get; set; }
     }
 }

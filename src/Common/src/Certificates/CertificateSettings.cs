@@ -7,10 +7,12 @@ using System.Security.Cryptography.X509Certificates;
 namespace Steeltoe.Common.Certificates;
 
 /// <summary>
-/// Indicates where to load a <see cref="X509Certificate2" /> from.
+/// Configuration settings for certificate access. Indicates where to load a <see cref="X509Certificate2" /> from.
 /// </summary>
 internal sealed class CertificateSettings
 {
+    // This type only exists to enable JSON schema documentation via ConfigurationSchemaAttribute.
+
     /// <summary>
     /// Gets or sets the local path to a certificate file on disk. Use <see cref="PrivateKeyFilePath" /> if the private key is stored in another file.
     /// </summary>

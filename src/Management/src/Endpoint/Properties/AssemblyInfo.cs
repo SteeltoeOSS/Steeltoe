@@ -4,6 +4,7 @@
 
 using System.Runtime.CompilerServices;
 using Aspire;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -24,7 +25,7 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
-[assembly: ConfigurationSchema("Spring:Application:Name", typeof(string))]
+[assembly: ConfigurationSchema("Spring:Application", typeof(SpringApplicationSettings))]
 [assembly: ConfigurationSchema("Spring:Boot:Admin:Client", typeof(SpringBootAdminClientOptions))]
 [assembly: ConfigurationSchema("Management:CloudFoundry:Enabled", typeof(bool))]
 [assembly: ConfigurationSchema("Management:Endpoints", typeof(ManagementOptions))]

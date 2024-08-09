@@ -44,7 +44,8 @@ internal sealed class RedisHealthContributor : IHealthContributor, IDisposable
             ConnectionString = connectionString
         };
 
-        return (string)builder["host"]!;
+        string? hostName = (string?)builder["host"];
+        return hostName ?? string.Empty;
     }
 
     internal void SetConnectionMultiplexer(object connectionMultiplexer)

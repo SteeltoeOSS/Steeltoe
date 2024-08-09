@@ -23,7 +23,8 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         var appSettings = new Dictionary<string, string?>
         {
             ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/cloudfoundryapplication"
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:env:path"] = "/some"
         };
 
         var configurationBuilder = new ConfigurationBuilder();
@@ -34,8 +35,9 @@ public sealed class EndpointServiceCollectionTest : BaseTest
         services.AddEnvironmentActuator();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var options = serviceProvider.GetService<IOptionsMonitor<EnvironmentEndpointOptions>>();
-        Assert.NotNull(options);
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<EnvironmentEndpointOptions>>();
+        Assert.Equal("/some", options.CurrentValue.Path);
+
         var handler = serviceProvider.GetService<IEnvironmentEndpointHandler>();
         Assert.NotNull(handler);
     }

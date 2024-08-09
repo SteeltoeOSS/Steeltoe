@@ -30,13 +30,18 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
         IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration()).AddLogging();
 
         ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
-        var hst = serviceProvider.GetService<IHostedService>();
-        Assert.NotNull(hst);
+
+        IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
+        Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
+
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);
 
-        Assert.NotNull(serviceProvider.GetService<IOptions<ZipkinExporterOptions>>());
-        Assert.NotNull(serviceProvider.GetService<IOptions<JaegerExporterOptions>>());
+        var zipkinOptions = serviceProvider.GetRequiredService<IOptions<ZipkinExporterOptions>>();
+        Assert.NotNull(zipkinOptions.Value.Endpoint);
+
+        var jaegerOptions = serviceProvider.GetRequiredService<IOptions<JaegerExporterOptions>>();
+        Assert.NotNull(jaegerOptions.Value.Endpoint);
     }
 
     [Fact]
@@ -50,8 +55,10 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
 
         services.AddLogging();
         ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider(true);
-        var hst = serviceProvider.GetService<IHostedService>();
-        Assert.NotNull(hst);
+
+        IHostedService[] hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
+        Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
+
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);
 
@@ -62,8 +69,10 @@ public sealed class TracingBaseServiceCollectionExtensionsTest : TestBase
         }));
 
         serviceProvider = services.AddLogging().AddDistributedTracing(null).BuildServiceProvider(true);
-        hst = serviceProvider.GetService<IHostedService>();
-        Assert.NotNull(hst);
+
+        hostedServices = serviceProvider.GetServices<IHostedService>().ToArray();
+        Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
+
         tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);
     }

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
+using Microsoft.Extensions.Options;
 using OpenTelemetry.Trace;
 using Steeltoe.Logging;
 
@@ -10,13 +11,13 @@ namespace Steeltoe.Management.Tracing;
 
 public sealed class TracingLogProcessor : IDynamicMessageProcessor
 {
-    private readonly TracingOptions _options;
+    private readonly IOptionsMonitor<TracingOptions> _optionsMonitor;
 
-    public TracingLogProcessor(TracingOptions options)
+    public TracingLogProcessor(IOptionsMonitor<TracingOptions> optionsMonitor)
     {
-        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(optionsMonitor);
 
-        _options = options;
+        _optionsMonitor = optionsMonitor;
     }
 
     public string Process(string message)
@@ -27,15 +28,17 @@ public sealed class TracingLogProcessor : IDynamicMessageProcessor
 
         if (currentSpan != null)
         {
+            TracingOptions options = _optionsMonitor.CurrentValue;
+
             SpanContext context = currentSpan.Context;
 
             var sb = new StringBuilder(" [");
-            sb.Append(_options.Name);
+            sb.Append(options.Name);
             sb.Append(',');
 
             string traceId = context.TraceId.ToHexString();
 
-            if (traceId.Length > 16 && _options.UseShortTraceIds)
+            if (traceId.Length > 16 && options.UseShortTraceIds)
             {
                 traceId = traceId.Substring(traceId.Length - 16, 16);
             }

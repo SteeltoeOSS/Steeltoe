@@ -4,6 +4,8 @@
 
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Extensions;
 using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Common.Test;
@@ -13,40 +15,26 @@ public sealed class ApplicationInstanceInfoTest
     [Fact]
     public void ConstructorSetsDefaults()
     {
-        var builder = new ConfigurationBuilder();
-        IConfigurationRoot configurationRoot = builder.Build();
+        var options = new ApplicationInstanceInfo();
 
-        var options = new ApplicationInstanceInfo(configurationRoot, true);
+        Assert.Null(options.ApplicationName);
         Assert.Null(options.ApplicationId);
-        Assert.Equal(Assembly.GetEntryAssembly()!.GetName().Name, options.ApplicationName);
-        Assert.Null(options.ApplicationVersion);
         Assert.Null(options.InstanceId);
         Assert.Equal(-1, options.InstanceIndex);
-        Assert.Null(options.Uris);
-        Assert.Null(options.Version);
-        Assert.Null(options.InstanceIP);
+        Assert.Empty(options.Uris);
         Assert.Null(options.InternalIP);
-        Assert.Equal(-1, options.DiskLimit);
-        Assert.Equal(-1, options.FileDescriptorLimit);
-        Assert.Equal(-1, options.InstanceIndex);
-        Assert.Equal(-1, options.MemoryLimit);
-        Assert.Equal(-1, options.Port);
     }
 
     [Fact]
-    public void ConstructorReadsApplicationConfiguration()
+    public void ReadsApplicationConfiguration()
     {
         const string configJson = """
             {
-                "Application" : {
-                    "Name": "my-app",
-                    "ApplicationId": "fa05c1a9-0fc1-4fbd-bae1-139850dec7a3",
-                    "Uris": [
-                        "my-app.10.244.0.34.xip.io",
-                        "my-app2.10.244.0.34.xip.io"
-                    ],
-                    "Version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"
+              "Spring": {
+                "Application": {
+                  "Name": "my-app"
                 }
+              }
             }
             """;
 
@@ -57,16 +45,42 @@ public sealed class ApplicationInstanceInfoTest
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);
         builder.AddJsonFile(fileName);
-        IConfigurationRoot configurationRoot = builder.Build();
+        IConfiguration configuration = builder.Build();
 
-        var options = new ApplicationInstanceInfo(configurationRoot, true);
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddApplicationInstanceInfo();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", options.ApplicationId);
+        var options = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
+
         Assert.Equal("my-app", options.ApplicationName);
-        Assert.NotNull(options.Uris);
-        Assert.Equal(2, options.Uris.Count());
-        Assert.Contains("my-app.10.244.0.34.xip.io", options.Uris);
-        Assert.Contains("my-app2.10.244.0.34.xip.io", options.Uris);
-        Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
+    }
+
+    [Fact]
+    public void Resolves_application_name_from_configuration()
+    {
+        var appSettings = new Dictionary<string, string?>();
+
+        IApplicationInstanceInfo info = FromConfiguration(appSettings);
+        info.ApplicationName.Should().Be(Assembly.GetEntryAssembly()!.GetName().Name);
+
+        appSettings.Add("spring:application:name", "SpringAppName");
+        info = FromConfiguration(appSettings);
+        info.ApplicationName.Should().Be("SpringAppName");
+    }
+
+    private IApplicationInstanceInfo FromConfiguration(IDictionary<string, string?> appSettings)
+    {
+        IConfigurationBuilder builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appSettings);
+        IConfiguration configuration = builder.Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(configuration);
+        services.AddApplicationInstanceInfo();
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        return serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
     }
 }
