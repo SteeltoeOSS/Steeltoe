@@ -12,14 +12,18 @@ public sealed class WindowsNetworkFileShareTest
     [Fact]
     public void GetErrorForKnownNumber_ReturnsKnownError()
     {
-        Assert.Equal("Error: Access Denied", WindowsNetworkFileShare.GetErrorForNumber(5));
-        Assert.Equal("Error: No Network", WindowsNetworkFileShare.GetErrorForNumber(1222));
+        Action action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(5, "execute");
+        action.Should().ThrowExactly<ExternalException>().WithMessage("*Error: Access Denied*");
+
+        action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(1222, "execute");
+        action.Should().ThrowExactly<ExternalException>().WithMessage("*Error: No Network*");
     }
 
     [Fact]
     public void GetErrorForUnknownNumber_ReturnsUnKnownError()
     {
-        Assert.Equal("Error: Unknown, 9999", WindowsNetworkFileShare.GetErrorForNumber(9999));
+        Action action = () => WindowsNetworkFileShare.ThrowForNonZeroResult(9999, "execute");
+        action.Should().ThrowExactly<ExternalException>().WithMessage("Failed to execute with error 9999.");
     }
 
     [Fact]
@@ -54,6 +58,6 @@ public sealed class WindowsNetworkFileShareTest
         var exception = Assert.Throws<ExternalException>(() =>
             new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), router));
 
-        Assert.Equal("Error connecting to remote share - Code: 1200, Error: Bad Device", exception.Message);
+        Assert.Equal("Failed to connect to network share with error 1200: Error: Bad Device.", exception.Message);
     }
 }

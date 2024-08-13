@@ -2,9 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Text;
-using static Steeltoe.Common.Net.WindowsNetworkFileShare;
-
 #pragma warning disable S3874 // "out" and "ref" parameters should not be used
 #pragma warning disable S107 // Methods should not have too many parameters
 
@@ -13,7 +10,7 @@ namespace Steeltoe.Common.Net;
 /// <summary>
 /// An interface to methods of mpr.dll used by WindowsNetworkFileShare.
 /// </summary>
-public interface IMultipleProviderRouter
+internal interface IMultipleProviderRouter
 {
     /// <summary>
     /// Makes a connection to a network resource. Can redirect a local device to a network resource.
@@ -50,8 +47,8 @@ public interface IMultipleProviderRouter
     /// An integer representing the result.
     /// <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetuseconnectiona#return-value" />
     /// </returns>
-    int UseConnection(IntPtr hwndOwner, NetResource netResource, string? password, string? username, int flags, string? lpAccessName, string? lpBufferSize,
-        string? lpResult);
+    int UseConnection(IntPtr hwndOwner, NativeMethods.NetResource netResource, string? password, string? username, int flags, string? lpAccessName,
+        string? lpBufferSize, string? lpResult);
 
     /// <summary>
     /// Cancels an existing network connection, removes remembered network connections that are not currently connected.
@@ -77,31 +74,4 @@ public interface IMultipleProviderRouter
     /// <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetcancelconnection2a#return-value" />
     /// </returns>
     int CancelConnection(string name, int flags, bool force);
-
-    /// <summary>
-    /// Retrieves the most recent extended error code set by a WNet function.
-    /// <para />
-    /// P/Invoke call to mpr.dll. <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora" />
-    /// </summary>
-    /// <param name="error">
-    /// The error code reported by the network provider.
-    /// </param>
-    /// <param name="errorBuf">
-    /// String variable to receive the description of the error.
-    /// </param>
-    /// <param name="errorBufSize">
-    /// Size of error buffer.
-    /// </param>
-    /// <param name="nameBuf">
-    /// String variable to receive the network provider raising the error.
-    /// </param>
-    /// <param name="nameBufSize">
-    /// Size of name buffer.
-    /// </param>
-    /// <returns>
-    /// If the function succeeds, and it obtains the last error that the network provider reported, the return value is NO_ERROR.
-    /// <para />
-    /// If the caller supplies an invalid buffer, the return value is ERROR_INVALID_ADDRESS.
-    /// </returns>
-    int GetLastError(out int error, out StringBuilder errorBuf, int errorBufSize, out StringBuilder nameBuf, int nameBufSize);
 }
