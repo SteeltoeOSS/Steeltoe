@@ -6,9 +6,9 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Common.Http.Serialization;
+namespace Steeltoe.Discovery.Eureka.Transport;
 
-public sealed class LongStringJsonConverter : JsonConverter<long>
+internal sealed class LongStringJsonConverter : JsonConverter<long>
 {
     public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

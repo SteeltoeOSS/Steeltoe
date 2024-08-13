@@ -6,9 +6,9 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Common.Http.Serialization;
+namespace Steeltoe.Discovery.Eureka.Transport;
 
-public sealed class BoolStringJsonConverter : JsonConverter<bool>
+internal sealed class BoolStringJsonConverter : JsonConverter<bool>
 {
     public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
