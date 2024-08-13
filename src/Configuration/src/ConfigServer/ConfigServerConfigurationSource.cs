@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Certificates;
-using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Configuration.ConfigServer;
 

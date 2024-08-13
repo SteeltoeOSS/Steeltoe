@@ -7,7 +7,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Common.Certificates;
 

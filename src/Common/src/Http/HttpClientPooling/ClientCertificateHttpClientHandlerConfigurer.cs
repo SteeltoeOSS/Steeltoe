@@ -4,7 +4,7 @@
 
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Configuration;
+using Steeltoe.Common.Certificates;
 
 namespace Steeltoe.Common.Http.HttpClientPooling;
 

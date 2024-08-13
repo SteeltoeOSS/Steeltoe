@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Certificates;
-using Steeltoe.Common.Configuration;
 using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;

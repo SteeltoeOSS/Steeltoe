@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Configuration;
+using Steeltoe.Common.Certificates;
 using Steeltoe.Common.Http.HttpClientPooling;
 
 namespace Steeltoe.Configuration.ConfigServer;

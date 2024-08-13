@@ -4,7 +4,7 @@
 
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Common.Configuration;
+namespace Steeltoe.Common.Certificates;
 
 /// <summary>
 /// Options for use with platform-provided certificates.
