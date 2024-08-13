@@ -5,28 +5,66 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
 public static class CloudFoundryConfigurationBuilderExtensions
 {
-    public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder)
+    /// <summary>
+    /// Adds the JSON in the Cloud Foundry environment variables, such as VCAP_APPLICATION and VCAP_SERVICES, to the application configuration.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder builder)
     {
-        return AddCloudFoundry(configurationBuilder, null, NullLoggerFactory.Instance);
+        return AddCloudFoundry(builder, null, NullLoggerFactory.Instance);
     }
 
-    public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader? settingsReader)
+    /// <summary>
+    /// Adds the JSON from the provided settings reader to the application configuration.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="settingsReader">
+    /// Provides access to the contents of the various Cloud Foundry environment variables.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder builder, ICloudFoundrySettingsReader? settingsReader)
     {
-        return AddCloudFoundry(configurationBuilder, settingsReader, NullLoggerFactory.Instance);
+        return AddCloudFoundry(builder, settingsReader, NullLoggerFactory.Instance);
     }
 
-    public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader? settingsReader,
+    /// <summary>
+    /// Adds the JSON from the provided settings reader to the application configuration.
+    /// </summary>
+    /// <param name="builder">
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
+    /// </param>
+    /// <param name="settingsReader">
+    /// Provides access to the contents of the various Cloud Foundry environment variables.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging, or <see cref="BootstrapLoggerFactory.Default" /> to
+    /// write only to the console until logging is fully initialized.
+    /// </param>
+    /// <returns>
+    /// The incoming <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder builder, ICloudFoundrySettingsReader? settingsReader,
         ILoggerFactory loggerFactory)
     {
-        ArgumentNullException.ThrowIfNull(configurationBuilder);
+        ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         var source = new CloudFoundryConfigurationSource(settingsReader);
-        return configurationBuilder.Add(source);
+        return builder.Add(source);
     }
 }

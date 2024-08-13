@@ -10,7 +10,7 @@ namespace Steeltoe.Configuration.CloudFoundry.Test;
 public sealed class CloudFoundryApplicationOptionsTest
 {
     [Fact]
-    public void Constructor_WithNoVcapApplicationConfiguration()
+    public void NoVcapApplicationConfiguration()
     {
         var options = new CloudFoundryApplicationOptions();
 
@@ -36,7 +36,7 @@ public sealed class CloudFoundryApplicationOptionsTest
     }
 
     [Fact]
-    public void Constructor_WithVcapApplicationConfiguration()
+    public void WithVcapApplicationConfiguration()
     {
         const string vcapApplicationJson = """
             {

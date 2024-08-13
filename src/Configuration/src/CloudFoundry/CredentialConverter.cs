@@ -5,9 +5,9 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace Steeltoe.Configuration;
+namespace Steeltoe.Configuration.CloudFoundry;
 
-public sealed class CredentialConverter : TypeConverter
+internal sealed class CredentialConverter : TypeConverter
 {
     public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
     {
@@ -16,6 +16,6 @@ public sealed class CredentialConverter : TypeConverter
 
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
-        return value is string stringValue ? new Credential(stringValue) : base.ConvertFrom(context, culture, value);
+        return value is string stringValue ? new CloudFoundryCredentials(stringValue) : base.ConvertFrom(context, culture, value);
     }
 }

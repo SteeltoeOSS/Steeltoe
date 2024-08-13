@@ -14,7 +14,8 @@ namespace Steeltoe.Configuration.CloudFoundry;
 public static class CloudFoundryHostBuilderExtensions
 {
     /// <summary>
-    /// Adds the Cloud Foundry configuration provider.
+    /// Adds the Cloud Foundry configuration provider. Registers <see cref="CloudFoundryApplicationOptions" /> and <see cref="CloudFoundryServicesOptions" />
+    /// for use with the options pattern.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IWebHostBuilder" /> to configure.
@@ -28,7 +29,8 @@ public static class CloudFoundryHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Cloud Foundry configuration provider.
+    /// Adds the Cloud Foundry configuration provider. Registers <see cref="CloudFoundryApplicationOptions" /> and <see cref="CloudFoundryServicesOptions" />
+    /// for use with the options pattern.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IWebHostBuilder" /> to configure.
@@ -65,7 +67,8 @@ public static class CloudFoundryHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Cloud Foundry configuration provider.
+    /// Adds the Cloud Foundry configuration provider. Registers <see cref="CloudFoundryApplicationOptions" /> and <see cref="CloudFoundryServicesOptions" />
+    /// for use with the options pattern.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IHostBuilder" /> to configure.
@@ -102,7 +105,8 @@ public static class CloudFoundryHostBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Cloud Foundry configuration provider.
+    /// Adds the Cloud Foundry configuration provider. Registers <see cref="CloudFoundryApplicationOptions" /> and <see cref="CloudFoundryServicesOptions" />
+    /// for use with the options pattern.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IHostApplicationBuilder" /> to configure.
