@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace Steeltoe.Configuration.CloudFoundry;
 
 [DebuggerDisplay("{DebuggerDisplay(),nq}")]
-[TypeConverter(typeof(CredentialConverter))]
+[TypeConverter(typeof(CredentialsConverter))]
 public sealed class CloudFoundryCredentials : Dictionary<string, CloudFoundryCredentials>
 {
     public string? Value { get; }

@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace Steeltoe.Configuration.CloudFoundry;
 
-internal sealed class CredentialConverter : TypeConverter
+internal sealed class CredentialsConverter : TypeConverter
 {
     public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
     {
