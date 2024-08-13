@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.Info;
@@ -23,7 +25,11 @@ public sealed class InfoEndpointTest : BaseTest
     public async Task Invoke_NoContributors_ReturnsExpectedInfo()
     {
         using var testContext = new TestContext(_output);
-        testContext.AdditionalServices = (services, _) => services.AddInfoActuatorServices();
+        testContext.AdditionalServices = (services, _) =>
+        {
+            services.AddInfoActuator();
+            services.RemoveAll<IInfoContributor>();
+        };
 
         var handler = testContext.GetRequiredService<IInfoEndpointHandler>();
 
@@ -46,7 +52,7 @@ public sealed class InfoEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddInfoActuatorServices();
+            services.AddInfoActuator();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 
@@ -75,7 +81,7 @@ public sealed class InfoEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddInfoActuatorServices();
+            services.AddInfoActuator();
             services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
         };
 

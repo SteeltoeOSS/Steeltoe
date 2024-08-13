@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Test;
 public sealed class ManagementHostBuilderExtensionsTest
 {
     private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer()
-        .ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProvider())
+        .ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProviderMock())
         .Configure(applicationBuilder => applicationBuilder.UseRouting()).ConfigureAppConfiguration(configurationBuilder =>
             configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -50,7 +50,7 @@ public sealed class ManagementHostBuilderExtensionsTest
     private readonly Action<IWebHostBuilder> _testServerWithSecureRouting = builder => builder.UseTestServer().ConfigureServices(services =>
     {
         services.AddRouting();
-        services.AddActionDescriptorCollectionProvider();
+        services.AddActionDescriptorCollectionProviderMock();
 
         services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
             TestAuthHandler.AuthenticationScheme, _ =>

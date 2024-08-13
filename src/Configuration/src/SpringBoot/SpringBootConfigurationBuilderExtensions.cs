@@ -15,10 +15,10 @@ public static class SpringBootConfigurationBuilderExtensions
     /// the child keys found within. Configuration keys in '.' delimited style are also converted to a format understood by .NET.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <returns>
-    /// <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddSpringBootFromEnvironmentVariable(this IConfigurationBuilder builder)
     {
@@ -30,13 +30,13 @@ public static class SpringBootConfigurationBuilderExtensions
     /// the child keys found within. Configuration keys in '.' delimited style are also converted to a format understood by .NET.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddSpringBootFromEnvironmentVariable(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -53,13 +53,13 @@ public static class SpringBootConfigurationBuilderExtensions
     /// Configuration keys in '.' delimited style are also converted to a format understood by .NET.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="configuration">
-    /// The configuration.
+    /// The <see cref="IConfiguration" /> to wrap.
     /// </param>
     /// <returns>
-    /// <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddSpringBootFromCommandLine(this IConfigurationBuilder builder, IConfiguration configuration)
     {
@@ -71,16 +71,16 @@ public static class SpringBootConfigurationBuilderExtensions
     /// Configuration keys in '.' delimited style are also converted to a format understood by .NET.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="configuration">
-    /// The configuration.
+    /// The <see cref="IConfiguration" /> to wrap.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddSpringBootFromCommandLine(this IConfigurationBuilder builder, IConfiguration configuration,
         ILoggerFactory loggerFactory)

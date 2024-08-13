@@ -11,19 +11,19 @@ namespace Steeltoe.Management.Endpoint.Trace;
 /// <summary>
 /// Add services used by the Trace actuator.
 /// </summary>
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Adds the services used by the Trace actuator.
     /// </summary>
     /// <param name="services">
-    /// Reference to the service collection.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="version">
     /// The media version to use.
     /// </param>
     /// <returns>
-    /// A reference to the service collection.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddTraceActuatorServices(this IServiceCollection services, MediaTypeVersion version)
     {

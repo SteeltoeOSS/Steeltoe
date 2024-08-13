@@ -17,7 +17,10 @@ internal static class ServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddApplicationInstanceInfo(this IServiceCollection services)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddApplicationInstanceInfo(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -29,5 +32,7 @@ internal static class ServiceCollectionExtensions
             var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ApplicationInstanceInfo>>();
             return optionsMonitor.CurrentValue;
         });
+
+        return services;
     }
 }

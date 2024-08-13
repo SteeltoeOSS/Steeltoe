@@ -13,7 +13,16 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 public static class EndpointServiceCollectionExtensions
 {
-    public static void AddMetricsActuator(this IServiceCollection services)
+    /// <summary>
+    /// Adds the metrics actuator to the service container.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddMetricsActuator(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -24,9 +33,11 @@ public static class EndpointServiceCollectionExtensions
         services.AddMetricsActuatorServices();
 
         services.AddMetricsObservers();
+
+        return services;
     }
 
-    public static void AddMetricsObservers(this IServiceCollection services)
+    public static IServiceCollection AddMetricsObservers(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -36,5 +47,7 @@ public static class EndpointServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IRuntimeDiagnosticSource, ClrRuntimeObserver>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
+
+        return services;
     }
 }

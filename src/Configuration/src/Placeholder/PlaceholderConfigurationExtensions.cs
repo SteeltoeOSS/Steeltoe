@@ -17,10 +17,10 @@ public static class PlaceholderConfigurationExtensions
     /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddPlaceholderResolver(this IConfigurationBuilder builder)
     {
@@ -34,13 +34,13 @@ public static class PlaceholderConfigurationExtensions
     /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddPlaceholderResolver(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -122,10 +122,10 @@ public static class PlaceholderConfigurationExtensions
     /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="configurationManager">
-    /// The configuration manager.
+    /// The <see cref="ConfigurationManager" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="configurationManager" />.
+    /// The incoming <paramref name="configurationManager" /> so that additional calls can be chained.
     /// </returns>
     public static ConfigurationManager AddPlaceholderResolver(this ConfigurationManager configurationManager)
     {
@@ -139,13 +139,13 @@ public static class PlaceholderConfigurationExtensions
     /// you wrap all applications' configuration sources with placeholder resolution.
     /// </summary>
     /// <param name="configurationManager">
-    /// The configuration manager.
+    /// The <see cref="ConfigurationManager" /> to configure.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="configurationManager" />.
+    /// The incoming <paramref name="configurationManager" /> so that additional calls can be chained.
     /// </returns>
     public static ConfigurationManager AddPlaceholderResolver(this ConfigurationManager configurationManager, ILoggerFactory loggerFactory)
     {

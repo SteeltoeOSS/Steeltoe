@@ -21,10 +21,10 @@ public static class WavefrontExtensions
     /// Adds the services used by the Wavefront exporter.
     /// </summary>
     /// <param name="services">
-    /// Reference to the service collection.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// A reference to the service collection.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
     {

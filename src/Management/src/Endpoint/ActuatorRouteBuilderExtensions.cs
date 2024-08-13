@@ -17,7 +17,7 @@ public static class ActuatorRouteBuilderExtensions
     /// The <see cref="IEndpointRouteBuilder" /> to add routes to.
     /// </param>
     /// <returns>
-    /// An <see cref="IEndpointConventionBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder builder)
     {
@@ -34,7 +34,7 @@ public static class ActuatorRouteBuilderExtensions
     /// An optional builder to customize endpoints.
     /// </param>
     /// <returns>
-    /// The <see cref="IEndpointConventionBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="routeBuilder" /> so that additional calls can be chained.
     /// </returns>
     public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder routeBuilder, ActuatorConventionBuilder? conventionBuilder)
     {
@@ -57,7 +57,7 @@ public static class ActuatorRouteBuilderExtensions
     /// The <see cref="IRouteBuilder" /> to add routes to.
     /// </param>
     /// <returns>
-    /// The <see cref="IRouteBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IRouteBuilder MapAllActuators(this IRouteBuilder builder)
     {

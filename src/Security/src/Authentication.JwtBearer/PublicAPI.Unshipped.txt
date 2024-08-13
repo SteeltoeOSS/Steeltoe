@@ -1,3 +1,3 @@
 #nullable enable
-static Steeltoe.Security.Authentication.JwtBearer.JwtBearerAuthenticationBuilderExtensions.ConfigureJwtBearerForCloudFoundry(this Microsoft.AspNetCore.Authentication.AuthenticationBuilder! authenticationBuilder) -> Microsoft.AspNetCore.Authentication.AuthenticationBuilder!
+static Steeltoe.Security.Authentication.JwtBearer.JwtBearerAuthenticationBuilderExtensions.ConfigureJwtBearerForCloudFoundry(this Microsoft.AspNetCore.Authentication.AuthenticationBuilder! builder) -> Microsoft.AspNetCore.Authentication.AuthenticationBuilder!
 Steeltoe.Security.Authentication.JwtBearer.JwtBearerAuthenticationBuilderExtensions

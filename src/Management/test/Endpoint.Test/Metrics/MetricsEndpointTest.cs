@@ -28,7 +28,7 @@ public sealed class MetricsEndpointTest : BaseTest
         {
             testContext.AdditionalServices = (services, _) =>
             {
-                services.AddMetricsActuatorServices();
+                services.AddMetricsActuator();
             };
 
             MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
@@ -62,7 +62,7 @@ public sealed class MetricsEndpointTest : BaseTest
         {
             testContext.AdditionalServices = (services, _) =>
             {
-                services.AddMetricsActuatorServices();
+                services.AddMetricsActuator();
             };
 
             MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
@@ -94,7 +94,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddMetricsActuatorServices();
+            services.AddMetricsActuator();
         };
 
         MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
@@ -230,7 +230,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddMetricsActuatorServices();
+            services.AddMetricsActuator();
         };
 
         MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
@@ -264,7 +264,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddMetricsActuatorServices();
+            services.AddMetricsActuator();
         };
 
         MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
@@ -342,7 +342,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddMetricsActuatorServices();
+            services.AddMetricsActuator();
         };
 
         MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();
@@ -521,7 +521,7 @@ public sealed class MetricsEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddMetricsActuatorServices();
+            services.AddMetricsActuator();
         };
 
         MetricCollectionHostedService service = testContext.GetServices<IHostedService>().OfType<MetricCollectionHostedService>().Single();

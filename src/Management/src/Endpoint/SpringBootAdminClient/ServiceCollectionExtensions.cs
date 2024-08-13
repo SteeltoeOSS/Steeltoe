@@ -18,11 +18,11 @@ public static class ServiceCollectionExtensions
     /// Register startup/shutdown interactions with Spring Boot Admin server.
     /// </summary>
     /// <param name="services">
-    /// Reference to the service collection.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// A reference to the service collection.
-    /// </returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>  
     public static IServiceCollection AddSpringBootAdminClient(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);

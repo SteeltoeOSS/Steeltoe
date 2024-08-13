@@ -14,24 +14,24 @@ public static class PostgreSqlDbContextOptionsBuilderExtensions
     /// <summary>
     /// Configures the context to connect to a PostgreSQL server with Npgsql, using the default service binding.
     /// </summary>
-    /// <param name="optionsBuilder">
+    /// <param name="builder">
     /// The builder being used to configure the <see cref="DbContext" />.
     /// </param>
     /// <param name="serviceProvider">
     /// The application's configured services.
     /// </param>
     /// <returns>
-    /// The <see cref="DbContextOptionsBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider)
+    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider)
     {
-        return UseNpgsql(optionsBuilder, serviceProvider, PostgreSqlEntityFrameworkCorePackageResolver.Default);
+        return UseNpgsql(builder, serviceProvider, PostgreSqlEntityFrameworkCorePackageResolver.Default);
     }
 
     /// <summary>
     /// Configures the context to connect to a PostgreSQL server with Npgsql, using a named service binding.
     /// </summary>
-    /// <param name="optionsBuilder">
+    /// <param name="builder">
     /// The builder being used to configure the <see cref="DbContext" />.
     /// </param>
     /// <param name="serviceProvider">
@@ -41,17 +41,17 @@ public static class PostgreSqlDbContextOptionsBuilderExtensions
     /// The service binding name, or <c>null</c> to use the default service binding.
     /// </param>
     /// <returns>
-    /// The <see cref="DbContextOptionsBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider, string? serviceBindingName)
+    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider, string? serviceBindingName)
     {
-        return UseNpgsql(optionsBuilder, serviceProvider, PostgreSqlEntityFrameworkCorePackageResolver.Default, serviceBindingName);
+        return UseNpgsql(builder, serviceProvider, PostgreSqlEntityFrameworkCorePackageResolver.Default, serviceBindingName);
     }
 
     /// <summary>
     /// Configures the context to connect to a PostgreSQL server with Npgsql, using a named service binding and options.
     /// </summary>
-    /// <param name="optionsBuilder">
+    /// <param name="builder">
     /// The builder being used to configure the <see cref="DbContext" />.
     /// </param>
     /// <param name="serviceProvider">
@@ -64,27 +64,27 @@ public static class PostgreSqlDbContextOptionsBuilderExtensions
     /// An action to allow additional Npgsql-specific configuration.
     /// </param>
     /// <returns>
-    /// The <see cref="DbContextOptionsBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider, string? serviceBindingName,
+    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider, string? serviceBindingName,
         Action<object>? npgsqlOptionsAction)
     {
-        return UseNpgsql(optionsBuilder, serviceProvider, PostgreSqlEntityFrameworkCorePackageResolver.Default, serviceBindingName, npgsqlOptionsAction);
+        return UseNpgsql(builder, serviceProvider, PostgreSqlEntityFrameworkCorePackageResolver.Default, serviceBindingName, npgsqlOptionsAction);
     }
 
-    private static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
+    private static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider,
         PostgreSqlEntityFrameworkCorePackageResolver packageResolver, string? serviceBindingName = null, Action<object>? npgsqlOptionsAction = null)
     {
-        ArgumentNullException.ThrowIfNull(optionsBuilder);
+        ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
         string? connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);
 
-        NpgsqlDbContextOptionsBuilderExtensionsShim.UseNpgsql(packageResolver, optionsBuilder, connectionString, npgsqlOptionsAction);
+        NpgsqlDbContextOptionsBuilderExtensionsShim.UseNpgsql(packageResolver, builder, connectionString, npgsqlOptionsAction);
 
-        return optionsBuilder;
+        return builder;
     }
 
     private static string? GetConnectionString(IServiceProvider serviceProvider, string serviceBindingName,

@@ -14,24 +14,24 @@ public static class MySqlDbContextOptionsBuilderExtensions
     /// <summary>
     /// Configures the <see cref="DbContext" /> to connect to a MySQL compatible database, using the default service binding.
     /// </summary>
-    /// <param name="optionsBuilder">
+    /// <param name="builder">
     /// The builder being used to configure the <see cref="DbContext" />.
     /// </param>
     /// <param name="serviceProvider">
     /// The application's configured services.
     /// </param>
     /// <returns>
-    /// The <see cref="DbContextOptionsBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider)
+    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider)
     {
-        return UseMySql(optionsBuilder, serviceProvider, MySqlEntityFrameworkCorePackageResolver.Default);
+        return UseMySql(builder, serviceProvider, MySqlEntityFrameworkCorePackageResolver.Default);
     }
 
     /// <summary>
     /// Configures the <see cref="DbContext" /> to connect to a MySQL compatible database, using a named service binding.
     /// </summary>
-    /// <param name="optionsBuilder">
+    /// <param name="builder">
     /// The builder being used to configure the <see cref="DbContext" />.
     /// </param>
     /// <param name="serviceProvider">
@@ -41,17 +41,17 @@ public static class MySqlDbContextOptionsBuilderExtensions
     /// The service binding name, or <c>null</c> to use the default service binding.
     /// </param>
     /// <returns>
-    /// The <see cref="DbContextOptionsBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider, string? serviceBindingName)
+    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider, string? serviceBindingName)
     {
-        return UseMySql(optionsBuilder, serviceProvider, MySqlEntityFrameworkCorePackageResolver.Default, serviceBindingName);
+        return UseMySql(builder, serviceProvider, MySqlEntityFrameworkCorePackageResolver.Default, serviceBindingName);
     }
 
     /// <summary>
     /// Configures the <see cref="DbContext" /> to connect to a MySQL compatible database, using a named service binding and options.
     /// </summary>
-    /// <param name="optionsBuilder">
+    /// <param name="builder">
     /// The builder being used to configure the <see cref="DbContext" />.
     /// </param>
     /// <param name="serviceProvider">
@@ -68,29 +68,28 @@ public static class MySqlDbContextOptionsBuilderExtensions
     /// An action to allow additional MySQL specific configuration.
     /// </param>
     /// <returns>
-    /// The <see cref="DbContextOptionsBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider, string? serviceBindingName,
+    public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider, string? serviceBindingName,
         object? serverVersion, Action<object>? mySqlOptionsAction)
     {
-        return UseMySql(optionsBuilder, serviceProvider, MySqlEntityFrameworkCorePackageResolver.Default, serviceBindingName, serverVersion,
-            mySqlOptionsAction);
+        return UseMySql(builder, serviceProvider, MySqlEntityFrameworkCorePackageResolver.Default, serviceBindingName, serverVersion, mySqlOptionsAction);
     }
 
-    internal static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
+    internal static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider,
         MySqlEntityFrameworkCorePackageResolver packageResolver, string? serviceBindingName = null, object? serverVersion = null,
         Action<object>? mySqlOptionsAction = null)
     {
-        ArgumentNullException.ThrowIfNull(optionsBuilder);
+        ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
         string? connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);
 
-        MySqlDbContextOptionsExtensionsShim.UseMySql(packageResolver, optionsBuilder, connectionString, serverVersion, mySqlOptionsAction);
+        MySqlDbContextOptionsExtensionsShim.UseMySql(packageResolver, builder, connectionString, serverVersion, mySqlOptionsAction);
 
-        return optionsBuilder;
+        return builder;
     }
 
     private static string? GetConnectionString(IServiceProvider serviceProvider, string serviceBindingName,

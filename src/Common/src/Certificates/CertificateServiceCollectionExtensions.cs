@@ -21,6 +21,9 @@ public static class CertificateServiceCollectionExtensions
     /// <param name="certificateName">
     /// Name of the certificate used in configuration and IOptions, or <see cref="string.Empty" /> for an unnamed certificate.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection ConfigureCertificateOptions(this IServiceCollection services, string certificateName)
     {
         ArgumentNullException.ThrowIfNull(services);

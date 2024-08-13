@@ -14,10 +14,10 @@ public static class DiscoveryHttpClientBuilderExtensions
     /// Adds service discovery for a named <see cref="HttpClient" /> using <see cref="RandomLoadBalancer" />.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="HttpClient" /> for a named <see cref="IHttpClientBuilder" />.
+    /// The <see cref="IHttpClientBuilder" /> to configure an <see cref="HttpClient" />.
     /// </param>
     /// <returns>
-    /// An <see cref="IHttpClientBuilder" /> that can be used to configure the client.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHttpClientBuilder AddServiceDiscovery(this IHttpClientBuilder builder)
     {
@@ -31,10 +31,10 @@ public static class DiscoveryHttpClientBuilderExtensions
     /// The type of load balancer to use, such as <see cref="RandomLoadBalancer" /> or <see cref="RoundRobinLoadBalancer" />.
     /// </typeparam>
     /// <param name="builder">
-    /// The <see cref="IHttpClientBuilder" /> for a named <see cref="HttpClient" />.
+    /// The <see cref="IHttpClientBuilder" /> to configure an <see cref="HttpClient" />.
     /// </param>
     /// <returns>
-    /// An <see cref="IHttpClientBuilder" /> that can be used to configure the client.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHttpClientBuilder AddServiceDiscovery<TLoadBalancer>(this IHttpClientBuilder builder)
         where TLoadBalancer : class, ILoadBalancer

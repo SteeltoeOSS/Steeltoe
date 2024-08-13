@@ -10,12 +10,15 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Heap Dump actuator to the D/I container.
+    /// Adds the heap dump actuator to the service container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add actuator to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddHeapDumpActuator(this IServiceCollection services)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddHeapDumpActuator(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -23,5 +26,7 @@ public static class EndpointServiceCollectionExtensions
 
         services.TryAddSingleton<HeapDumper>();
         services.AddCommonActuatorServices();
+
+        return services;
     }
 }

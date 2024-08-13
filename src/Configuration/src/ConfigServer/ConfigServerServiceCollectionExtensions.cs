@@ -14,6 +14,15 @@ namespace Steeltoe.Configuration.ConfigServer;
 /// </summary>
 public static class ConfigServerServiceCollectionExtensions
 {
+    /// <summary>
+    /// Adds <see cref="ConfigServerClientOptions" /> for use with the options pattern.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection ConfigureConfigServerClientOptions(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -28,10 +37,10 @@ public static class ConfigServerServiceCollectionExtensions
     /// Adds the <see cref="ConfigServerHealthContributor" /> as a <see cref="IHealthContributor" /> to the service container.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// The service collection.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddConfigServerHealthContributor(this IServiceCollection services)
     {
@@ -47,9 +56,12 @@ public static class ConfigServerServiceCollectionExtensions
     /// available.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddConfigServerServices(this IServiceCollection services)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddConfigServerServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -57,5 +69,7 @@ public static class ConfigServerServiceCollectionExtensions
         services.TryAddSingleton(serviceProvider => (IConfigurationRoot)serviceProvider.GetRequiredService<IConfiguration>());
         services.AddHostedService<ConfigServerHostedService>();
         services.AddConfigServerHealthContributor();
+
+        return services;
     }
 }

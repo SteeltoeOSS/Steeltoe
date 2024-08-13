@@ -17,7 +17,7 @@ public static class SerilogHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder)
     {
@@ -34,7 +34,7 @@ public static class SerilogHostBuilderExtensions
     /// Enables to configure Serilog from code instead of configuration.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder, Action<HostBuilderContext, LoggerConfiguration>? configureLogger)
     {
@@ -51,7 +51,7 @@ public static class SerilogHostBuilderExtensions
     /// When set to <c>true</c>, does not remove existing logger providers.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder, bool preserveDefaultConsole)
     {
@@ -71,7 +71,7 @@ public static class SerilogHostBuilderExtensions
     /// When set to <c>true</c>, does not remove existing logger providers.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddDynamicSerilog(this IHostBuilder builder, Action<HostBuilderContext, LoggerConfiguration>? configureLogger,
         bool preserveDefaultConsole)

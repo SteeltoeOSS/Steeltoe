@@ -22,23 +22,26 @@ public static class CertificateAuthorizationBuilderExtensions
     /// This method also configures certificate forwarding.
     /// </para>
     /// </summary>
-    /// <param name="authorizationBuilder">
-    /// The <see cref="AuthorizationBuilder" />.
+    /// <param name="builder">
+    /// The <see cref="AuthorizationBuilder" /> to configure.
     /// </param>
-    public static AuthorizationBuilder AddOrgAndSpacePolicies(this AuthorizationBuilder authorizationBuilder)
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static AuthorizationBuilder AddOrgAndSpacePolicies(this AuthorizationBuilder builder)
     {
-        ArgumentNullException.ThrowIfNull(authorizationBuilder);
+        ArgumentNullException.ThrowIfNull(builder);
 
-        authorizationBuilder.Services.ConfigureCertificateOptions(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
+        builder.Services.ConfigureCertificateOptions(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
 
-        authorizationBuilder.Services.AddCertificateForwarding(_ =>
+        builder.Services.AddCertificateForwarding(_ =>
         {
         });
 
-        authorizationBuilder.Services.AddSingleton<IPostConfigureOptions<CertificateAuthenticationOptions>, PostConfigureCertificateAuthenticationOptions>();
-        authorizationBuilder.Services.AddSingleton<IAuthorizationHandler, CertificateAuthorizationHandler>();
+        builder.Services.AddSingleton<IPostConfigureOptions<CertificateAuthenticationOptions>, PostConfigureCertificateAuthenticationOptions>();
+        builder.Services.AddSingleton<IAuthorizationHandler, CertificateAuthorizationHandler>();
 
-        authorizationBuilder.AddPolicy(CertificateAuthorizationPolicies.SameOrganization, authorizationPolicyBuilder =>
+        builder.AddPolicy(CertificateAuthorizationPolicies.SameOrganization, authorizationPolicyBuilder =>
         {
             authorizationPolicyBuilder.RequireSameOrg();
         }).AddPolicy(CertificateAuthorizationPolicies.SameSpace, authorizationPolicyBuilder =>
@@ -46,6 +49,6 @@ public static class CertificateAuthorizationBuilderExtensions
             authorizationPolicyBuilder.RequireSameSpace();
         });
 
-        return authorizationBuilder;
+        return builder;
     }
 }

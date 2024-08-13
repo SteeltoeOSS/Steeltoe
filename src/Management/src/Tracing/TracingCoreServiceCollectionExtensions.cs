@@ -16,10 +16,10 @@ public static class TracingCoreServiceCollectionExtensions
     /// Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin exporting.
     /// </summary>
     /// <param name="services">
-    /// <see cref="IServiceCollection" />.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// <see cref="IServiceCollection" /> configured for distributed tracing.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddDistributedTracingAspNetCore(this IServiceCollection services)
     {
@@ -30,13 +30,13 @@ public static class TracingCoreServiceCollectionExtensions
     /// Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin exporting.
     /// </summary>
     /// <param name="services">
-    /// <see cref="IServiceCollection" />.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="action">
     /// Customize the <see cref="TracerProviderBuilder" />.
     /// </param>
     /// <returns>
-    /// <see cref="IServiceCollection" /> configured for distributed tracing.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddDistributedTracingAspNetCore(this IServiceCollection services, Action<TracerProviderBuilder>? action)
     {

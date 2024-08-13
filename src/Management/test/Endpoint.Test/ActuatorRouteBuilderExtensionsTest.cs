@@ -59,7 +59,7 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         {
             services.AddAllActuators();
             services.AddRouting();
-            services.AddActionDescriptorCollectionProvider();
+            services.AddActionDescriptorCollectionProviderMock();
 
             services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.AuthenticationScheme, _ =>

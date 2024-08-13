@@ -15,7 +15,7 @@ public static class CertificateConfigurationExtensions
     /// Adds file path information for a certificate and (optional) private key to configuration, for use with <see cref="CertificateOptions" />.
     /// </summary>
     /// <param name="builder">
-    /// Your <see cref="IConfigurationBuilder" />.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="certificateName">
     /// Name of the certificate, or <see cref="string.Empty" /> for an unnamed certificate.
@@ -26,6 +26,9 @@ public static class CertificateConfigurationExtensions
     /// <param name="privateKeyFilePath">
     /// The path on disk to locate a valid PEM-encoded RSA key file.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
     internal static IConfigurationBuilder AddCertificate(this IConfigurationBuilder builder, string certificateName, string certificateFilePath,
         string? privateKeyFilePath = null)
     {
@@ -56,12 +59,15 @@ public static class CertificateConfigurationExtensions
     /// this method will create certificates resembling those found on the platform.
     /// </summary>
     /// <param name="builder">
-    /// Your <see cref="IConfigurationBuilder" />.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <remarks>
     /// When running outside of Cloud Foundry, the CA and Intermediate certificates will be created in a directory above the current project, so that they
     /// can be shared between different projects in the same solution.
     /// </remarks>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
     public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder)
     {
         return AddAppInstanceIdentityCertificate(builder, null, null);
@@ -72,7 +78,7 @@ public static class CertificateConfigurationExtensions
     /// this method will create certificates resembling those found on the platform.
     /// </summary>
     /// <param name="builder">
-    /// Your <see cref="IConfigurationBuilder" />.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="organizationId">
     /// (Optional) A GUID representing an organization, for use with Cloud Foundry certificate-based authorization policy.
@@ -84,6 +90,9 @@ public static class CertificateConfigurationExtensions
     /// When running outside of Cloud Foundry, the CA and Intermediate certificates will be created in a directory above the current project, so that they
     /// can be shared between different projects in the same solution.
     /// </remarks>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
     public static IConfigurationBuilder AddAppInstanceIdentityCertificate(this IConfigurationBuilder builder, Guid? organizationId, Guid? spaceId)
     {
         ArgumentNullException.ThrowIfNull(builder);

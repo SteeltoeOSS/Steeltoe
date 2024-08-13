@@ -14,14 +14,17 @@ public static class JwtBearerAuthenticationBuilderExtensions
     /// <summary>
     /// Configures <see cref="JwtBearerOptions" /> for compatibility with UAA-based systems, including those found in Cloud Foundry.
     /// </summary>
-    /// <param name="authenticationBuilder">
+    /// <param name="builder">
     /// The <see cref="AuthenticationBuilder" /> to configure.
     /// </param>
-    public static AuthenticationBuilder ConfigureJwtBearerForCloudFoundry(this AuthenticationBuilder authenticationBuilder)
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static AuthenticationBuilder ConfigureJwtBearerForCloudFoundry(this AuthenticationBuilder builder)
     {
-        ArgumentNullException.ThrowIfNull(authenticationBuilder);
+        ArgumentNullException.ThrowIfNull(builder);
 
-        authenticationBuilder.Services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, PostConfigureJwtBearerOptions>();
-        return authenticationBuilder;
+        builder.Services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, PostConfigureJwtBearerOptions>();
+        return builder;
     }
 }

@@ -17,13 +17,13 @@ public static class EncryptionConfigurationExtensions
     /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder, ITextDecryptor textDecryptor)
     {
@@ -37,7 +37,7 @@ public static class EncryptionConfigurationExtensions
     /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
@@ -46,7 +46,7 @@ public static class EncryptionConfigurationExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddEncryptionResolver(this IConfigurationBuilder builder, ITextDecryptor textDecryptor, ILoggerFactory loggerFactory)
     {
@@ -77,7 +77,7 @@ public static class EncryptionConfigurationExtensions
     /// sources.
     /// </summary>
     /// <param name="configuration">
-    /// The configuration to wrap.
+    /// The <see cref="IConfiguration" /> to wrap.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
@@ -96,7 +96,7 @@ public static class EncryptionConfigurationExtensions
     /// sources.
     /// </summary>
     /// <param name="configuration">
-    /// The configuration to wrap.
+    /// The <see cref="IConfiguration" /> to wrap.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
@@ -136,13 +136,13 @@ public static class EncryptionConfigurationExtensions
     /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="configurationManager">
-    /// The configuration manager.
+    /// The <see cref="ConfigurationManager" /> to configure.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="configurationManager" />.
+    /// The incoming <paramref name="configurationManager" /> so that additional calls can be chained.
     /// </returns>
     public static ConfigurationManager AddEncryptionResolver(this ConfigurationManager configurationManager, ITextDecryptor textDecryptor)
     {
@@ -156,7 +156,7 @@ public static class EncryptionConfigurationExtensions
     /// all applications' configuration sources with encryption resolution.
     /// </summary>
     /// <param name="configurationManager">
-    /// The configuration manager.
+    /// The <see cref="ConfigurationManager" /> to configure.
     /// </param>
     /// <param name="textDecryptor">
     /// The decryptor to use.
@@ -165,7 +165,7 @@ public static class EncryptionConfigurationExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="configurationManager" />.
+    /// The incoming <paramref name="configurationManager" /> so that additional calls can be chained.
     /// </returns>
     public static ConfigurationManager AddEncryptionResolver(this ConfigurationManager configurationManager, ITextDecryptor textDecryptor,
         ILoggerFactory loggerFactory)

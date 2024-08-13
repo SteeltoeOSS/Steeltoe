@@ -18,7 +18,7 @@ public static class PlaceholderServiceCollectionExtensions
     /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing placeholder resolution.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
     /// The configuration the placeholder resolver will wrap.
@@ -37,7 +37,7 @@ public static class PlaceholderServiceCollectionExtensions
     /// a <see cref="IConfiguration" /> will return the newly created <see cref="IConfiguration" /> providing placeholder resolution.
     /// </summary>
     /// <param name="services">
-    /// The service container.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="configuration">
     /// The configuration the placeholder resolver will wrap.

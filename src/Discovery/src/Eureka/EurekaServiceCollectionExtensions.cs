@@ -26,6 +26,9 @@ public static class EurekaServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddEurekaDiscoveryClient(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);

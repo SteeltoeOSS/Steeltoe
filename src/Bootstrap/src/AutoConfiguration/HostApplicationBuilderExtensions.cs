@@ -23,7 +23,7 @@ public static class HostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddSteeltoe(this IHostApplicationBuilder builder)
     {
@@ -40,7 +40,7 @@ public static class HostApplicationBuilderExtensions
     /// The set of assembly names to exclude from autoconfiguration. For ease of use, select from the constants in <see cref="SteeltoeAssemblyNames" />.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddSteeltoe(this IHostApplicationBuilder builder, IReadOnlySet<string> assemblyNamesToExclude)
     {
@@ -58,7 +58,7 @@ public static class HostApplicationBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddSteeltoe(this IHostApplicationBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -79,7 +79,7 @@ public static class HostApplicationBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddSteeltoe(this IHostApplicationBuilder builder, IReadOnlySet<string> assemblyNamesToExclude,
         ILoggerFactory loggerFactory)

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
@@ -36,7 +37,9 @@ public sealed class HealthEndpointTest : BaseTest
         {
             services.AddSingleton(new List<IHealthContributor>());
             services.AddSingleton<IHealthAggregator>(new HealthAggregator());
-            services.AddHealthActuatorServices();
+            services.AddHealthActuator();
+
+            services.RemoveAll<IHealthContributor>();
         };
 
         var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
@@ -64,7 +67,7 @@ public sealed class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new HealthAggregator());
-            services.AddHealthActuatorServices();
+            services.AddHealthActuator();
         };
 
         var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
@@ -91,7 +94,7 @@ public sealed class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new HealthAggregator());
-            services.AddHealthActuatorServices();
+            services.AddHealthActuator();
         };
 
         var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
@@ -121,7 +124,7 @@ public sealed class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new HealthAggregator());
-            services.AddHealthActuatorServices();
+            services.AddHealthActuator();
         };
 
         var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
@@ -158,7 +161,7 @@ public sealed class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new HealthAggregator());
-            services.AddHealthActuatorServices();
+            services.AddHealthActuator();
         };
 
         var handler = (HealthEndpointHandler)testContext.GetRequiredScopedService<IHealthEndpointHandler>();
@@ -200,7 +203,7 @@ public sealed class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new HealthAggregator());
-            services.AddHealthActuatorServices();
+            services.AddHealthActuator();
         };
 
         var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
@@ -233,7 +236,7 @@ public sealed class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new HealthAggregator());
-            services.AddHealthActuatorServices();
+            services.AddHealthActuator();
         };
 
         var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();
@@ -295,7 +298,7 @@ public sealed class HealthEndpointTest : BaseTest
         {
             services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
             services.AddSingleton<IHealthAggregator>(new HealthAggregator());
-            services.AddHealthActuatorServices();
+            services.AddHealthActuator();
         };
 
         var handler = testContext.GetRequiredScopedService<IHealthEndpointHandler>();

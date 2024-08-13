@@ -20,7 +20,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddDbMigrationsActuator(this IHostBuilder builder)
     {
@@ -39,7 +39,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddEnvironmentActuator(this IHostBuilder builder)
     {
@@ -58,7 +58,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddHealthActuator(this IHostBuilder builder)
     {
@@ -77,7 +77,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddHeapDumpActuator(this IHostBuilder builder)
     {
@@ -96,7 +96,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddHypermediaActuator(this IHostBuilder builder)
     {
@@ -115,7 +115,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddInfoActuator(this IHostBuilder builder)
     {
@@ -137,7 +137,7 @@ public static class ManagementHostBuilderExtensions
     /// Contributors to application information.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddInfoActuator(this IHostBuilder builder, params IInfoContributor[] contributors)
     {
@@ -158,7 +158,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddLoggersActuator(this IHostBuilder builder)
     {
@@ -177,7 +177,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddMappingsActuator(this IHostBuilder builder)
     {
@@ -196,7 +196,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddMetricsActuator(this IHostBuilder builder)
     {
@@ -215,7 +215,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddRefreshActuator(this IHostBuilder builder)
     {
@@ -234,7 +234,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddThreadDumpActuator(this IHostBuilder builder)
     {
@@ -251,7 +251,7 @@ public static class ManagementHostBuilderExtensions
     /// Specify the media type version to use in the response.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddThreadDumpActuator(this IHostBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
@@ -270,7 +270,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddTraceActuator(this IHostBuilder builder)
     {
@@ -287,7 +287,7 @@ public static class ManagementHostBuilderExtensions
     /// Specify the media type version to use in the response.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddTraceActuator(this IHostBuilder builder, MediaTypeVersion mediaTypeVersion)
     {
@@ -306,7 +306,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddServicesActuator(this IHostBuilder builder)
     {
@@ -325,7 +325,7 @@ public static class ManagementHostBuilderExtensions
     /// The <see cref="IHostBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddCloudFoundryActuator(this IHostBuilder builder)
     {
@@ -347,7 +347,7 @@ public static class ManagementHostBuilderExtensions
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddAllActuators(this IHostBuilder builder)
     {
@@ -367,7 +367,7 @@ public static class ManagementHostBuilderExtensions
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddAllActuators(this IHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints)
     {
@@ -393,7 +393,7 @@ public static class ManagementHostBuilderExtensions
     /// Does not add platform specific features (like for Cloud Foundry or Kubernetes).
     /// </remarks>
     /// <returns>
-    /// The incoming <see cref="IHostBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostBuilder AddAllActuators(this IHostBuilder builder, Action<IEndpointConventionBuilder>? configureEndpoints,
         MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder>? buildCorsPolicy)

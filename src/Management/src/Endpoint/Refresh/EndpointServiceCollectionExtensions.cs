@@ -9,16 +9,21 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Refresh actuator to the D/I container.
+    /// Adds the refresh actuator to the service container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add actuator to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddRefreshActuator(this IServiceCollection services)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddRefreshActuator(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddCommonActuatorServices();
         services.AddRefreshActuatorServices();
+
+        return services;
     }
 }

@@ -14,24 +14,24 @@ public static class SqlServerDbContextOptionsBuilderExtensions
     /// <summary>
     /// Configures the <see cref="DbContext" /> to connect to a Microsoft SQL Server database, using the default service binding.
     /// </summary>
-    /// <param name="optionsBuilder">
+    /// <param name="builder">
     /// The builder being used to configure the <see cref="DbContext" />.
     /// </param>
     /// <param name="serviceProvider">
     /// The application's configured services.
     /// </param>
     /// <returns>
-    /// The <see cref="DbContextOptionsBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider)
+    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider)
     {
-        return UseSqlServer(optionsBuilder, serviceProvider, SqlServerEntityFrameworkCorePackageResolver.Default);
+        return UseSqlServer(builder, serviceProvider, SqlServerEntityFrameworkCorePackageResolver.Default);
     }
 
     /// <summary>
     /// Configures the <see cref="DbContext" /> to connect to a Microsoft SQL Server database, using a named service binding.
     /// </summary>
-    /// <param name="optionsBuilder">
+    /// <param name="builder">
     /// The builder being used to configure the <see cref="DbContext" />.
     /// </param>
     /// <param name="serviceProvider">
@@ -41,18 +41,17 @@ public static class SqlServerDbContextOptionsBuilderExtensions
     /// The service binding name, or <c>null</c> to use the default service binding.
     /// </param>
     /// <returns>
-    /// The <see cref="DbContextOptionsBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
-        string? serviceBindingName)
+    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider, string? serviceBindingName)
     {
-        return UseSqlServer(optionsBuilder, serviceProvider, SqlServerEntityFrameworkCorePackageResolver.Default, serviceBindingName);
+        return UseSqlServer(builder, serviceProvider, SqlServerEntityFrameworkCorePackageResolver.Default, serviceBindingName);
     }
 
     /// <summary>
     /// Configures the <see cref="DbContext" /> to connect to a Microsoft SQL Server database, using a named service binding and options.
     /// </summary>
-    /// <param name="optionsBuilder">
+    /// <param name="builder">
     /// The builder being used to configure the <see cref="DbContext" />.
     /// </param>
     /// <param name="serviceProvider">
@@ -65,27 +64,27 @@ public static class SqlServerDbContextOptionsBuilderExtensions
     /// An action to allow additional SQL Server specific configuration.
     /// </param>
     /// <returns>
-    /// The <see cref="DbContextOptionsBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
-    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
-        string? serviceBindingName, Action<object>? sqlServerOptionsAction)
+    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider, string? serviceBindingName,
+        Action<object>? sqlServerOptionsAction)
     {
-        return UseSqlServer(optionsBuilder, serviceProvider, SqlServerEntityFrameworkCorePackageResolver.Default, serviceBindingName, sqlServerOptionsAction);
+        return UseSqlServer(builder, serviceProvider, SqlServerEntityFrameworkCorePackageResolver.Default, serviceBindingName, sqlServerOptionsAction);
     }
 
-    private static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IServiceProvider serviceProvider,
+    private static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider,
         SqlServerEntityFrameworkCorePackageResolver packageResolver, string? serviceBindingName = null, Action<object>? sqlServerOptionsAction = null)
     {
-        ArgumentNullException.ThrowIfNull(optionsBuilder);
+        ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(packageResolver);
 
         string optionName = serviceBindingName ?? string.Empty;
         string? connectionString = GetConnectionString(serviceProvider, optionName, packageResolver);
 
-        SqlServerDbContextOptionsExtensionsShim.UseSqlServer(packageResolver, optionsBuilder, connectionString, sqlServerOptionsAction);
+        SqlServerDbContextOptionsExtensionsShim.UseSqlServer(packageResolver, builder, connectionString, sqlServerOptionsAction);
 
-        return optionsBuilder;
+        return builder;
     }
 
     private static string? GetConnectionString(IServiceProvider serviceProvider, string serviceBindingName,

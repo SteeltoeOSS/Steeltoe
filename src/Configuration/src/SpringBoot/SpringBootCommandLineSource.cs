@@ -17,7 +17,7 @@ internal sealed class SpringBootCommandLineSource : IConfigurationSource
     /// Initializes a new instance of the <see cref="SpringBootCommandLineSource" /> class.
     /// </summary>
     /// <param name="configuration">
-    /// The configuration.
+    /// The <see cref="IConfiguration" /> to read application settings from.
     /// </param>
     public SpringBootCommandLineSource(IConfiguration configuration)
     {

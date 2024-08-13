@@ -12,8 +12,11 @@ public static class CertificateAuthorizationPolicyBuilderExtensions
     /// Require a client certificate to originate from within the same organization.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="AuthorizationPolicyBuilder" />.
+    /// The <see cref="AuthorizationPolicyBuilder" /> to configure.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
     public static AuthorizationPolicyBuilder RequireSameOrg(this AuthorizationPolicyBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
@@ -26,8 +29,11 @@ public static class CertificateAuthorizationPolicyBuilderExtensions
     /// Require a client certificate to originate from within the same space.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="AuthorizationPolicyBuilder" />.
+    /// The <see cref="AuthorizationPolicyBuilder" /> to configure.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
     public static AuthorizationPolicyBuilder RequireSameSpace(this AuthorizationPolicyBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);

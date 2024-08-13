@@ -18,7 +18,7 @@ public static class CloudFoundryConfigurationBuilderExtensions
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder builder)
     {
@@ -35,7 +35,7 @@ public static class CloudFoundryConfigurationBuilderExtensions
     /// Provides access to the contents of the various Cloud Foundry environment variables.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder builder, ICloudFoundrySettingsReader? settingsReader)
     {
@@ -56,7 +56,7 @@ public static class CloudFoundryConfigurationBuilderExtensions
     /// write only to the console until logging is fully initialized.
     /// </param>
     /// <returns>
-    /// The incoming <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder builder, ICloudFoundrySettingsReader? settingsReader,
         ILoggerFactory loggerFactory)

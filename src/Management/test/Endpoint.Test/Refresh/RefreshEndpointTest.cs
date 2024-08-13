@@ -35,7 +35,7 @@ public sealed class RefreshEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddRefreshActuatorServices();
+            services.AddRefreshActuator();
         };
 
         testContext.AdditionalConfiguration = configuration =>

@@ -16,7 +16,7 @@ public static class SqlServerConfigurationBuilderExtensions
     /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder)
     {
@@ -33,7 +33,7 @@ public static class SqlServerConfigurationBuilderExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder ConfigureSqlServer(this IConfigurationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction)
     {

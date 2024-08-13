@@ -50,7 +50,7 @@ public sealed class DbMigrationsEndpointTests : BaseTest
         {
             services.AddScoped<MockDbContext>();
             services.AddSingleton<IDatabaseMigrationScanner, TestDatabaseMigrationScanner>();
-            services.AddDbMigrationsActuatorServices();
+            services.AddDbMigrationsActuator();
         };
 
         var sut = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
@@ -76,7 +76,7 @@ public sealed class DbMigrationsEndpointTests : BaseTest
         {
             services.AddScoped<MockDbContext>();
             services.AddSingleton<IDatabaseMigrationScanner>(migrationScanner);
-            services.AddDbMigrationsActuatorServices();
+            services.AddDbMigrationsActuator();
         };
 
         var handler = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();
@@ -96,7 +96,7 @@ public sealed class DbMigrationsEndpointTests : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddSingleton<IDatabaseMigrationScanner, TestDatabaseMigrationScanner>();
-            services.AddDbMigrationsActuatorServices();
+            services.AddDbMigrationsActuator();
         };
 
         var handler = testContext.GetRequiredService<IDbMigrationsEndpointHandler>();

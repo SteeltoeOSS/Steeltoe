@@ -13,9 +13,12 @@ public static class EndpointApplicationBuilderExtensions
     /// Add CloudFoundry Security Middleware.
     /// </summary>
     /// <param name="builder">
-    /// Your application builder.
+    /// The <see cref="IApplicationBuilder" /> to configure.
     /// </param>
-    public static void UseCloudFoundrySecurity(this IApplicationBuilder builder)
+    /// <returns>
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
+    /// </returns>
+    public static IApplicationBuilder UseCloudFoundrySecurity(this IApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -26,5 +29,7 @@ public static class EndpointApplicationBuilderExtensions
         }
 
         builder.UseMiddleware<CloudFoundrySecurityMiddleware>();
+
+        return builder;
     }
 }

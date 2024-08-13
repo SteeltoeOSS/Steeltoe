@@ -18,10 +18,10 @@ public static class PrometheusExtensions
     /// Adds the services used by the Prometheus actuator.
     /// </summary>
     /// <param name="services">
-    /// Reference to the service collection.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// A reference to the service collection.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddPrometheusActuator(this IServiceCollection services)
     {

@@ -30,7 +30,7 @@ public sealed class LoggersEndpointTest : BaseTest
         {
             services.AddSingleton<IDynamicLoggerProvider, TestLogProvider>();
             services.AddLogging(builder => builder.AddDynamicConsole());
-            services.AddLoggersActuatorServices();
+            services.AddLoggersActuator();
         };
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
@@ -49,7 +49,7 @@ public sealed class LoggersEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddLogging(builder => builder.AddDynamicConsole());
-            services.AddLoggersActuatorServices();
+            services.AddLoggersActuator();
         };
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
@@ -82,7 +82,7 @@ public sealed class LoggersEndpointTest : BaseTest
         {
             services.AddSingleton<IDynamicLoggerProvider, TestLogProvider>();
             services.AddLogging(builder => builder.AddDynamicConsole());
-            services.AddLoggersActuatorServices();
+            services.AddLoggersActuator();
         };
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();
@@ -106,7 +106,7 @@ public sealed class LoggersEndpointTest : BaseTest
         testContext.AdditionalServices = (services, _) =>
         {
             services.AddLogging(builder => builder.AddDynamicConsole());
-            services.AddLoggersActuatorServices();
+            services.AddLoggersActuator();
         };
 
         var handler = testContext.GetRequiredService<ILoggersEndpointHandler>();

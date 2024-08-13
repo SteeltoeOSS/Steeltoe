@@ -13,12 +13,15 @@ namespace Steeltoe.Management.Endpoint.Info;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Info actuator to the D/I container.
+    /// Adds the info actuator to the service container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add info to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddInfoActuator(this IServiceCollection services)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddInfoActuator(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -28,25 +31,34 @@ public static class EndpointServiceCollectionExtensions
 
         services.AddCommonActuatorServices();
         services.AddInfoActuatorServices();
+
+        return services;
     }
 
     /// <summary>
-    /// Adds components of the info actuator to the D/I container.
+    /// Adds the info actuator to the service container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add info to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <param name="contributors">
     /// Contributors to application information.
     /// </param>
-    public static void AddInfoActuator(this IServiceCollection services, params IInfoContributor[] contributors)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddInfoActuator(this IServiceCollection services, params IInfoContributor[] contributors)
     {
+        // TODO: Convert as for AddHealthContributor<>
+
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(contributors);
         ArgumentGuard.ElementsNotNull(contributors);
 
         AddContributors(services, contributors);
         services.AddInfoActuator();
+
+        return services;
     }
 
     private static void AddContributors(IServiceCollection services, params IInfoContributor[] contributors)

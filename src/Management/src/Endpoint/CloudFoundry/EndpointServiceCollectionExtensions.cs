@@ -8,11 +8,22 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public static class EndpointServiceCollectionExtensions
 {
-    public static void AddCloudFoundryActuator(this IServiceCollection services)
+    /// <summary>
+    /// Adds the Cloud Foundry actuator to the service container.
+    /// </summary>
+    /// <param name="services">
+    /// The <see cref="IServiceCollection" /> to add services to.
+    /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddCloudFoundryActuator(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddCommonActuatorServices();
         services.AddCloudFoundryActuatorServices();
+
+        return services;
     }
 }

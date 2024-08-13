@@ -25,6 +25,9 @@ public static class ConsulServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IServiceCollection AddConsulDiscoveryClient(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);

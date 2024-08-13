@@ -401,7 +401,7 @@ public sealed class HostBuilderExtensionsTest
             {
                 builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
                 builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
-                builder.ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProvider());
+                builder.ConfigureServices(services => services.AddRouting().AddActionDescriptorCollectionProviderMock());
                 builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
                 builder.UseTestServer();
 
@@ -416,7 +416,7 @@ public sealed class HostBuilderExtensionsTest
             IWebHostBuilder builder = WebHost.CreateDefaultBuilder();
             builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
             builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
-            builder.ConfigureServices(services => services.AddActionDescriptorCollectionProvider());
+            builder.ConfigureServices(services => services.AddActionDescriptorCollectionProviderMock());
             builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
             builder.UseTestServer();
 
@@ -430,7 +430,7 @@ public sealed class HostBuilderExtensionsTest
             WebApplicationBuilder builder = WebApplication.CreateBuilder();
             builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
             builder.Configuration.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
-            builder.Services.AddActionDescriptorCollectionProvider();
+            builder.Services.AddActionDescriptorCollectionProviderMock();
             builder.WebHost.UseTestServer();
 
             builder.AddSteeltoe(assemblyNamesToExclude);

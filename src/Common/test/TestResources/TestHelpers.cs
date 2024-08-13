@@ -64,7 +64,7 @@ public static class TestHelpers
         webAppBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         webAppBuilder.Configuration.AddInMemoryCollection(FastTestsConfiguration);
         webAppBuilder.WebHost.UseTestServer();
-        webAppBuilder.Services.AddActionDescriptorCollectionProvider();
+        webAppBuilder.Services.AddActionDescriptorCollectionProviderMock();
         return webAppBuilder;
     }
 

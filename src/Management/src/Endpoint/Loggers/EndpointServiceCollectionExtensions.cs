@@ -9,16 +9,21 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Loggers actuator to the D/I container.
+    /// Adds the loggers actuator to the service container.
     /// </summary>
     /// <param name="services">
-    /// Service collection to add logging to.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
-    public static void AddLoggersActuator(this IServiceCollection services)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddLoggersActuator(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddCommonActuatorServices();
         services.AddLoggersActuatorServices();
+
+        return services;
     }
 }

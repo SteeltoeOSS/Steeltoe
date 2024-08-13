@@ -14,10 +14,10 @@ public static class RandomValueConfigurationBuilderExtensions
     /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" />.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder)
     {
@@ -28,13 +28,13 @@ public static class RandomValueConfigurationBuilderExtensions
     /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" />.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, ILoggerFactory loggerFactory)
     {
@@ -45,13 +45,13 @@ public static class RandomValueConfigurationBuilderExtensions
     /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="prefix">
     /// The prefix used for random key values.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string? prefix)
     {
@@ -62,7 +62,7 @@ public static class RandomValueConfigurationBuilderExtensions
     /// Adds a random value configuration source to the <see cref="ConfigurationBuilder" /> using a custom prefix for key values.
     /// </summary>
     /// <param name="builder">
-    /// The configuration builder.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="prefix">
     /// The prefix used for random key values.
@@ -71,7 +71,7 @@ public static class RandomValueConfigurationBuilderExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The incoming <paramref name="builder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddRandomValueSource(this IConfigurationBuilder builder, string? prefix, ILoggerFactory loggerFactory)
     {

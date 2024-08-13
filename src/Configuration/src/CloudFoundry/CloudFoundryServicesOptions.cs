@@ -28,8 +28,8 @@ public sealed class CloudFoundryServicesOptions
     /// Retrieves a list of all services of a given service type.
     /// </summary>
     /// <param name="serviceType">
-    /// The type to find services for. May be platform/broker/version dependent. Sample values include: <code>p-mysql</code>, <code>azure-mysql-5-7</code>,
-    /// <code>p-configserver</code>, <code>p.configserver</code>.
+    /// The type to find services for. May be platform/broker/version dependent. Sample values include: p-mysql, azure-mysql-5-7, p-configserver,
+    /// p.configserver.
     /// </param>
     /// <returns>
     /// A list of services configured under the given type.

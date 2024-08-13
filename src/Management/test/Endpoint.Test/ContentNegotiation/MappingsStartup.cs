@@ -15,7 +15,7 @@ public sealed class MappingsStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddActionDescriptorCollectionProvider();
+        services.AddActionDescriptorCollectionProviderMock();
         services.AddHypermediaActuator();
         services.AddMappingsActuator();
     }

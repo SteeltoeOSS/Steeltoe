@@ -24,10 +24,10 @@ public static class ConfigurationBuilderExtensions
     /// are used as the key, and the file contents are used as the values.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="IConfigurationBuilder" /> to add to.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder)
     {
@@ -40,13 +40,13 @@ public static class ConfigurationBuilderExtensions
     /// are used as the key, and the file contents are used as the values.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="IConfigurationBuilder" /> to add to.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="serviceBindingsReader">
     /// The source to read Kubernetes secret files on disk from.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, IServiceBindingsReader serviceBindingsReader)
     {
@@ -59,7 +59,7 @@ public static class ConfigurationBuilderExtensions
     /// are used as the key, and the file contents are used as the values.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="IConfigurationBuilder" /> to add to.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="optional">
     /// Whether the directory path is optional.
@@ -77,7 +77,7 @@ public static class ConfigurationBuilderExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddKubernetesServiceBindings(this IConfigurationBuilder builder, bool optional, bool reloadOnChange,
         Predicate<string> ignoreKeyPredicate, IServiceBindingsReader serviceBindingsReader, ILoggerFactory loggerFactory)

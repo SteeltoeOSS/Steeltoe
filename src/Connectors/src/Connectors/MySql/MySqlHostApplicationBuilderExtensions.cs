@@ -17,7 +17,7 @@ public static class MySqlHostApplicationBuilderExtensions
     /// The <see cref="IHostApplicationBuilder" /> to configure.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddMySql(this IHostApplicationBuilder builder)
     {
@@ -38,7 +38,7 @@ public static class MySqlHostApplicationBuilderExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="IHostApplicationBuilder" /> so that additional calls can be chained.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IHostApplicationBuilder AddMySql(this IHostApplicationBuilder builder, Action<ConnectorConfigureOptionsBuilder>? configureAction,
         Action<ConnectorAddOptionsBuilder>? addAction)

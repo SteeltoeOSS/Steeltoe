@@ -13,13 +13,13 @@ namespace Steeltoe.Management.Endpoint.Health;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Health actuator to the D/I container.
+    /// Adds the health actuator to the service container.
     /// </summary>
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddHealthActuator(this IServiceCollection services)
     {
@@ -53,7 +53,7 @@ public static class EndpointServiceCollectionExtensions
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddHealthContributor<T>(this IServiceCollection services)
         where T : class, IHealthContributor
@@ -75,7 +75,7 @@ public static class EndpointServiceCollectionExtensions
     /// The type of the health contributor to add.
     /// </param>
     /// <returns>
-    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddHealthContributor(this IServiceCollection services, Type healthContributorType)
     {

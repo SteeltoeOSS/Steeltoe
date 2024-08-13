@@ -25,10 +25,13 @@ public static class TaskServiceCollectionExtensions
     /// <typeparam name="T">
     /// The type of the task to execute.
     /// </typeparam>
-    public static void AddTask<T>(this IServiceCollection services, string taskName)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddTask<T>(this IServiceCollection services, string taskName)
         where T : class, IApplicationTask
     {
-        AddTask<T>(services, taskName, ServiceLifetime.Scoped);
+        return AddTask<T>(services, taskName, ServiceLifetime.Scoped);
     }
 
     /// <summary>
@@ -46,12 +49,17 @@ public static class TaskServiceCollectionExtensions
     /// <typeparam name="T">
     /// The type of the task to execute.
     /// </typeparam>
-    public static void AddTask<T>(this IServiceCollection services, string taskName, ServiceLifetime lifetime)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddTask<T>(this IServiceCollection services, string taskName, ServiceLifetime lifetime)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentException.ThrowIfNullOrWhiteSpace(taskName);
 
         services.TryAdd(new ServiceDescriptor(typeof(IApplicationTask), taskName, typeof(T), lifetime));
+
+        return services;
     }
 
     /// <summary>
@@ -66,13 +74,18 @@ public static class TaskServiceCollectionExtensions
     /// <param name="task">
     /// The task instance to execute.
     /// </param>
-    public static void AddTask(this IServiceCollection services, string taskName, IApplicationTask task)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddTask(this IServiceCollection services, string taskName, IApplicationTask task)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentException.ThrowIfNullOrWhiteSpace(taskName);
         ArgumentNullException.ThrowIfNull(task);
 
         services.TryAddKeyedSingleton(taskName, task);
+
+        return services;
     }
 
     /// <summary>
@@ -87,7 +100,10 @@ public static class TaskServiceCollectionExtensions
     /// <param name="asyncAction">
     /// The asynchronous action to execute.
     /// </param>
-    public static void AddTask(this IServiceCollection services, string taskName, Func<IServiceProvider, CancellationToken, Task> asyncAction)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddTask(this IServiceCollection services, string taskName, Func<IServiceProvider, CancellationToken, Task> asyncAction)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentException.ThrowIfNullOrWhiteSpace(taskName);
@@ -95,6 +111,8 @@ public static class TaskServiceCollectionExtensions
 
         services.TryAddKeyedScoped<IApplicationTask>(taskName,
             (serviceProvider, _) => new DelegatingTask(cancellationToken => asyncAction(serviceProvider, cancellationToken)));
+
+        return services;
     }
 
     /// <summary>
@@ -109,12 +127,17 @@ public static class TaskServiceCollectionExtensions
     /// <param name="factory">
     /// The factory method that creates an <see cref="IApplicationTask" /> instance from an <see cref="IServiceProvider" /> and task name.
     /// </param>
-    public static void AddTask(this IServiceCollection services, string taskName, Func<IServiceProvider, string, IApplicationTask> factory)
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
+    public static IServiceCollection AddTask(this IServiceCollection services, string taskName, Func<IServiceProvider, string, IApplicationTask> factory)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentException.ThrowIfNullOrWhiteSpace(taskName);
         ArgumentNullException.ThrowIfNull(factory);
 
         services.TryAddKeyedScoped(taskName, (serviceProvider, _) => factory(serviceProvider, taskName));
+
+        return services;
     }
 }

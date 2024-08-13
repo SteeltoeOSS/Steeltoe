@@ -27,7 +27,7 @@ public static class SqlServerServiceCollectionExtensions
     /// The <see cref="IConfiguration" /> to read application settings from.
     /// </param>
     /// <returns>
-    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration)
     {
@@ -48,7 +48,7 @@ public static class SqlServerServiceCollectionExtensions
     /// An optional delegate to configure this connector.
     /// </param>
     /// <returns>
-    /// The <see cref="IServiceCollection" /> so that additional calls can be chained.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration, Action<ConnectorAddOptionsBuilder>? addAction)
     {

@@ -30,13 +30,15 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorServiceCollectionExtensions
 {
-    public static void AddCommonActuatorServices(this IServiceCollection services)
+    public static IServiceCollection AddCommonActuatorServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddScoped<ActuatorEndpointMapper>();
 
         services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();
+
+        return services;
     }
 
     internal static void ConfigureEndpointOptions<TOptions, TConfigureOptions>(this IServiceCollection services)
@@ -61,9 +63,9 @@ public static class ActuatorServiceCollectionExtensions
         services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
     }
 
-    public static void AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, Action<CorsPolicyBuilder>? buildCorsPolicy)
     {
-        services.AddAllActuators(MediaTypeVersion.V2, buildCorsPolicy);
+        return AddAllActuators(services, MediaTypeVersion.V2, buildCorsPolicy);
     }
 
     public static IServiceCollection AddAllActuators(this IServiceCollection services)
@@ -138,6 +140,9 @@ public static class ActuatorServiceCollectionExtensions
     /// <param name="services">
     /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
+    /// <returns>
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
+    /// </returns>
     public static IEndpointConventionBuilder ActivateActuatorEndpoints(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);

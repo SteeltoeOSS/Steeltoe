@@ -22,10 +22,10 @@ public static class ConfigurationBuilderExtensions
     /// Adds CloudFoundry service bindings from the JSON in the "VCAP_SERVICES" environment variable.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="IConfigurationBuilder" /> to add to.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddCloudFoundryServiceBindings(this IConfigurationBuilder builder)
     {
@@ -36,13 +36,13 @@ public static class ConfigurationBuilderExtensions
     /// Adds CloudFoundry service bindings from the JSON provided by the specified reader.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="IConfigurationBuilder" /> to add to.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="serviceBindingsReader">
     /// The source to read JSON service bindings from.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddCloudFoundryServiceBindings(this IConfigurationBuilder builder, IServiceBindingsReader serviceBindingsReader)
     {
@@ -53,7 +53,7 @@ public static class ConfigurationBuilderExtensions
     /// Adds CloudFoundry service bindings from the JSON provided by the specified reader.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="IConfigurationBuilder" /> to add to.
+    /// The <see cref="IConfigurationBuilder" /> to add configuration to.
     /// </param>
     /// <param name="ignoreKeyPredicate">
     /// A predicate which is called before adding a key to the configuration. If it returns false, the key will be ignored.
@@ -65,7 +65,7 @@ public static class ConfigurationBuilderExtensions
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     /// <returns>
-    /// The <see cref="IConfigurationBuilder" />.
+    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
     /// </returns>
     public static IConfigurationBuilder AddCloudFoundryServiceBindings(this IConfigurationBuilder builder, Predicate<string> ignoreKeyPredicate,
         IServiceBindingsReader serviceBindingsReader, ILoggerFactory loggerFactory)

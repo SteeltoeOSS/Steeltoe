@@ -11,16 +11,16 @@ namespace Steeltoe.Management.Endpoint.Services;
 /// <summary>
 /// Add services used by the Services actuator.
 /// </summary>
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Adds the services used by the Services actuator.
     /// </summary>
     /// <param name="services">
-    /// Reference to the service collection.
+    /// The <see cref="IServiceCollection" /> to add services to.
     /// </param>
     /// <returns>
-    /// A reference to the service collection.
+    /// The incoming <paramref name="services" /> so that additional calls can be chained.
     /// </returns>
     public static IServiceCollection AddServicesActuatorServices(this IServiceCollection services)
     {
