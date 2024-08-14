@@ -78,7 +78,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
 
             foreach (BootstrapLoggerInstance logger in _loggersByCategoryName.Values)
             {
-                logger.Logger = _factoryInstance.CreateLogger(logger.Name);
+                logger.UpdateLogger(_factoryInstance.CreateLogger(logger.Name));
             }
         }
 
@@ -123,29 +123,35 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
 
     private sealed class BootstrapLoggerInstance : ILogger
     {
-        public volatile ILogger Logger;
+        private volatile ILogger _logger;
+
         public string Name { get; }
 
         public BootstrapLoggerInstance(ILogger logger, string name)
         {
+            _logger = logger;
             Name = name;
-            Logger = logger;
+        }
+
+        public void UpdateLogger(ILogger logger)
+        {
+            _logger = logger;
         }
 
         public IDisposable? BeginScope<TState>(TState state)
             where TState : notnull
         {
-            return Logger.BeginScope(state);
+            return _logger.BeginScope(state);
         }
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return Logger.IsEnabled(logLevel);
+            return _logger.IsEnabled(logLevel);
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            Logger.Log(logLevel, eventId, state, exception, formatter);
+            _logger.Log(logLevel, eventId, state, exception, formatter);
         }
     }
 }
