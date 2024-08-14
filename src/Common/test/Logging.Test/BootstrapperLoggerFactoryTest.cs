@@ -9,7 +9,7 @@ using Moq;
 
 namespace Steeltoe.Common.Logging.Test;
 
-public sealed class BootstrapperLoggerFactoryTests
+public sealed class BootstrapperLoggerFactoryTest
 {
     [Fact]
     public void BootstrapLoggerFactory_CorrectTypeResolved()

@@ -16,7 +16,7 @@ using Steeltoe.Connectors.RabbitMQ;
 
 namespace Steeltoe.Connectors.Test.RabbitMQ;
 
-public sealed class RabbitMQConnectorTests
+public sealed class RabbitMQConnectorTest
 {
     private const string MultiVcapServicesJson = @"{
   ""p.rabbitmq"": [

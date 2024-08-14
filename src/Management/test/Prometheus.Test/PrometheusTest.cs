@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Management.Prometheus.Test;
 
-public sealed class PrometheusTests
+public sealed class PrometheusTest
 {
     [Fact]
     public void AddPrometheusActuator_SetsUpRequiredServices()

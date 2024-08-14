@@ -6,7 +6,7 @@ using Steeltoe.Configuration.Encryption.Decryption;
 
 namespace Steeltoe.Configuration.Encryption.Test.Decryption;
 
-public sealed class AesTextDecryptorTests
+public sealed class AesTextDecryptorTest
 {
     [Theory]
     [MemberData(nameof(GetTestVector), 4)]

@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data.SqlClient;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,9 +13,9 @@ using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Connectors.SqlServer;
 using Steeltoe.Connectors.SqlServer.RuntimeTypeAccess;
 
-namespace Steeltoe.Connectors.Test.SqlServer.MicrosoftData;
+namespace Steeltoe.Connectors.Test.SqlServer.SystemData;
 
-public sealed class SqlServerConnectorTests
+public sealed class SqlServerConnectorTest
 {
     private const string MultiVcapServicesJson = @"{
   ""csb-azure-mssql"": [
@@ -144,7 +144,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "Server=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
         builder.Services.Configure<SqlServerOptions>("mySqlServerServiceOne", options => options.ConnectionString += ";Encrypt=false");
 
         await using WebApplication app = builder.Build();
@@ -185,7 +185,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceOne:ConnectionString"] = "Data Source=localhost;Max Pool Size=50"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
 
         await using WebApplication app = builder.Build();
         var optionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<SqlServerOptions>>();
@@ -224,7 +224,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -253,7 +253,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:mySqlServerServiceTwo:ConnectionString"] = "SERVER=localhost;Database=db2;UID=user2;PWD=pass2"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -277,7 +277,7 @@ public sealed class SqlServerConnectorTests
         builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
 
         await using WebApplication app = builder.Build();
 
@@ -307,7 +307,7 @@ public sealed class SqlServerConnectorTests
             ["Steeltoe:Client:SqlServer:Default:ConnectionString"] = "SERVER=localhost;Database=myDb;UID=myUser;PWD=myPass"
         });
 
-        builder.AddSqlServer(SqlServerPackageResolver.MicrosoftDataOnly);
+        builder.AddSqlServer(SqlServerPackageResolver.SystemDataOnly);
 
         await using WebApplication app = builder.Build();
 

@@ -6,7 +6,7 @@ using Steeltoe.Connectors.MongoDb;
 
 namespace Steeltoe.Connectors.Test.MongoDb;
 
-public sealed class MongoDbConnectionStringBuilderTests
+public sealed class MongoDbConnectionStringBuilderTest
 {
     [Fact]
     public void Merges_properties_with_special_characters()

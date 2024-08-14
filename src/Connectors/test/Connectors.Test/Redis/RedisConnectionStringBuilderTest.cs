@@ -6,7 +6,7 @@ using Steeltoe.Connectors.Redis;
 
 namespace Steeltoe.Connectors.Test.Redis;
 
-public sealed class RedisConnectionStringBuilderTests
+public sealed class RedisConnectionStringBuilderTest
 {
     [Fact]
     public void Can_merge_properties()

@@ -6,7 +6,7 @@ using Steeltoe.Connectors.RabbitMQ;
 
 namespace Steeltoe.Connectors.Test.RabbitMQ;
 
-public sealed class RabbitMQConnectionStringBuilderTests
+public sealed class RabbitMQConnectionStringBuilderTest
 {
     [Fact]
     public void Merges_properties_with_special_characters()

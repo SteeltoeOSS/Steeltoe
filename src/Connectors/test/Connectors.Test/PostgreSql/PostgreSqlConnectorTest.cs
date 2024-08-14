@@ -16,7 +16,7 @@ using Steeltoe.Connectors.PostgreSql;
 
 namespace Steeltoe.Connectors.Test.PostgreSql;
 
-public sealed class PostgreSqlConnectorTests
+public sealed class PostgreSqlConnectorTest
 {
     private const string MultiVcapServicesJson = @"{
   ""csb-azure-postgresql"": [

@@ -14,7 +14,7 @@ using Steeltoe.Connectors.CosmosDb;
 
 namespace Steeltoe.Connectors.Test.CosmosDb;
 
-public sealed class CosmosDbConnectorTests
+public sealed class CosmosDbConnectorTest
 {
     private const string MultiVcapServicesJson = @"{
   ""csb-azure-cosmosdb-sql"": [

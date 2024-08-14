@@ -14,7 +14,7 @@ using Steeltoe.Discovery.Eureka.Configuration;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
-public sealed class CloudFoundryTests
+public sealed class CloudFoundryTest
 {
     [Fact]
     public void NoVCAPEnvVariables_ConfiguresEurekaDiscovery_Correctly()

@@ -10,11 +10,11 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.DbMigrations;
 
-public sealed class DbMigrationsEndpointTests : BaseTest
+public sealed class DbMigrationsEndpointTest : BaseTest
 {
     private readonly ITestOutputHelper _output;
 
-    public DbMigrationsEndpointTests(ITestOutputHelper output)
+    public DbMigrationsEndpointTest(ITestOutputHelper output)
     {
         _output = output;
     }

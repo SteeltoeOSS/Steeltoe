@@ -15,7 +15,7 @@ using Steeltoe.Connectors.MongoDb;
 
 namespace Steeltoe.Connectors.Test.MongoDb;
 
-public sealed class MongoDbConnectorTests
+public sealed class MongoDbConnectorTest
 {
     private const string MultiVcapServicesJson = @"{
   ""csb-azure-mongodb"": [

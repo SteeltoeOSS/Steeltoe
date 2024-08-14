@@ -19,7 +19,7 @@ using Steeltoe.Connectors.Redis;
 
 namespace Steeltoe.Connectors.Test.Redis;
 
-public sealed class RedisConnectorTests
+public sealed class RedisConnectorTest
 {
     private const string MultiVcapServicesJson = @"{
   ""p-redis"": [

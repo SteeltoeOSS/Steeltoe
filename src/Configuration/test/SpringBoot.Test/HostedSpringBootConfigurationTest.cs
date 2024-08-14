@@ -14,7 +14,7 @@ using Steeltoe.Configuration.Placeholder;
 
 namespace Steeltoe.Configuration.SpringBoot.Test;
 
-public sealed class HostedSpringBootConfigurationTests
+public sealed class HostedSpringBootConfigurationTest
 {
     [Fact]
     public void WebHostConfiguresIConfiguration_Spring_Application_Json()

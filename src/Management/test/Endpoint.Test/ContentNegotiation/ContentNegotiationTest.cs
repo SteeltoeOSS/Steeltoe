@@ -11,7 +11,7 @@ using Steeltoe.Logging.DynamicLogger;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 
-public sealed class ContentNegotiationTests
+public sealed class ContentNegotiationTest
 {
     private static readonly Dictionary<string, string?> AppSettings = new()
     {

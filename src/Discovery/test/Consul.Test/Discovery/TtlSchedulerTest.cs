@@ -10,7 +10,7 @@ using Steeltoe.Discovery.Consul.Configuration;
 
 namespace Steeltoe.Discovery.Consul.Test.Discovery;
 
-public sealed class TtlSchedulerTests
+public sealed class TtlSchedulerTest
 {
     [Fact]
     public void Add_Throws_Invalid_InstanceId()

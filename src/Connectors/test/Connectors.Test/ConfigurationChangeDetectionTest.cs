@@ -13,7 +13,7 @@ using Steeltoe.Connectors.PostgreSql;
 
 namespace Steeltoe.Connectors.Test;
 
-public sealed class ConfigurationChangeDetectionTests
+public sealed class ConfigurationChangeDetectionTest
 {
     [Fact]
     public async Task Applies_local_configuration_changes_using_WebApplicationBuilder()

@@ -18,7 +18,7 @@ using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Management.Wavefront.Test;
 
-public sealed class WavefrontMetricsTests
+public sealed class WavefrontMetricsTest
 {
     [Fact]
     public async Task AddWavefront_WebApplicationBuilder()
