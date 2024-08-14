@@ -4,6 +4,8 @@
 
 using System.Runtime.InteropServices;
 
+#pragma warning disable SA1401 // Fields should be private
+
 namespace Steeltoe.Common.Net;
 
 internal static class NativeMethods
