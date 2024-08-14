@@ -116,12 +116,36 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         """;
 
     [Fact]
-    public void AddConfigServer_WithPemFiles_AddsConfigServerSourceWithCertificate()
+    public void AddConfigServer_WithConfigServerCertificate_AddsConfigServerSourceWithCertificate()
     {
         var appSettings = new Dictionary<string, string?>
         {
             ["Certificates:ConfigServer:CertificateFilePath"] = "instance.crt",
             ["Certificates:ConfigServer:PrivateKeyFilePath"] = "instance.key"
+        };
+
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
+
+        var options = new ConfigServerClientOptions
+        {
+            Timeout = 10
+        };
+
+        configurationBuilder.AddConfigServer(options);
+        configurationBuilder.Build();
+
+        var source = configurationBuilder.FindConfigurationSource<ConfigServerConfigurationSource>();
+        Assert.NotNull(source);
+        Assert.NotNull(source.DefaultOptions.ClientCertificate);
+    }
+
+    [Fact]
+    public void AddConfigServer_WithGlobalCertificate_AddsConfigServerSourceWithCertificate()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Certificates:CertificateFilePath"] = "instance.crt",
+            ["Certificates:PrivateKeyFilePath"] = "instance.key"
         };
 
         IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);

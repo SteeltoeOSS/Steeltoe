@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
     /// </param>
     /// <returns>
     /// The incoming <paramref name="services" /> so that additional calls can be chained.
-    /// </returns>  
+    /// </returns>
     public static IServiceCollection AddSpringBootAdminClient(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -56,7 +56,7 @@ public static class ServiceCollectionExtensions
             var validateCertificatesHandler =
                 serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<SpringBootAdminClientOptions>>();
 
-            validateCertificatesHandler.Configure(handler);
+            validateCertificatesHandler.Configure(Options.DefaultName, handler);
 
             return handler;
         });

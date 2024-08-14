@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Http.HttpClientPooling;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
@@ -35,7 +36,7 @@ public static class CloudFoundrySecurityServiceCollectionExtensions
             var validateCertificatesHandler =
                 serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<CloudFoundryEndpointOptions>>();
 
-            validateCertificatesHandler.Configure(handler);
+            validateCertificatesHandler.Configure(Options.DefaultName, handler);
 
             return handler;
         });

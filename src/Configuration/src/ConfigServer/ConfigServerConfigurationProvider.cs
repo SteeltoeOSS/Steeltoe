@@ -738,10 +738,10 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         ObjectDisposedException.ThrowIf(_httpClientHandler == null, this);
 
         var clientCertificateConfigurer = new ClientCertificateHttpClientHandlerConfigurer(OptionsMonitorWrapper.Create(options.ClientCertificate));
-        clientCertificateConfigurer.Configure(_httpClientHandler);
+        clientCertificateConfigurer.Configure("ConfigServer", _httpClientHandler);
 
         var validateCertificatesHandler = new ValidateCertificatesHttpClientHandlerConfigurer<ConfigServerClientOptions>(OptionsMonitorWrapper.Create(options));
-        validateCertificatesHandler.Configure(_httpClientHandler);
+        validateCertificatesHandler.Configure(string.Empty, _httpClientHandler);
 
         var httpClient = new HttpClient(_httpClientHandler, false);
         httpClient.ConfigureForSteeltoe(options.HttpTimeout);

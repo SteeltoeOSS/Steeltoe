@@ -153,6 +153,40 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     }
 
     [Fact]
+    public async Task WithGlobalCertificateConfiguration_AddsDiscoveryClient()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false",
+            ["Certificates:CertificateFilePath"] = "instance.crt",
+            ["Certificates:PrivateKeyFilePath"] = "instance.key"
+        };
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        builder.Configuration.AddInMemoryCollection(appSettings);
+
+        builder.Services.AddOptions();
+
+        var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");
+
+        builder.Services.AddEurekaDiscoveryClient();
+
+        await using WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+        _ = await discoveryClient.FetchFullRegistryAsync(CancellationToken.None);
+
+        Assert.NotNull(handler.ClientCertificates);
+        Assert.NotEmpty(handler.ClientCertificates);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
     public async Task SingleEurekaVCAP_AddsEurekaDiscoveryClient()
     {
         const string vcapApplication = """

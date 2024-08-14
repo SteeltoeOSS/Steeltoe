@@ -112,13 +112,6 @@ public static class EurekaServiceCollectionExtensions
             var handlerFactory = serviceProvider.GetRequiredService<HttpClientHandlerFactory>();
             HttpClientHandler handler = handlerFactory.Create();
 
-            var validateCertificatesHandler = serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
-            validateCertificatesHandler.Configure(handler);
-
-            var clientCertificateConfigurer = serviceProvider.GetRequiredService<ClientCertificateHttpClientHandlerConfigurer>();
-            clientCertificateConfigurer.SetCertificateName("Eureka");
-            clientCertificateConfigurer.Configure(handler);
-
             var eurekaConfigurer = serviceProvider.GetRequiredService<EurekaHttpClientHandlerConfigurer>();
             eurekaConfigurer.Configure(handler);
 
@@ -133,8 +126,8 @@ public static class EurekaServiceCollectionExtensions
             var handlerFactory = serviceProvider.GetRequiredService<HttpClientHandlerFactory>();
             HttpClientHandler handler = handlerFactory.Create();
 
-            var validateCertificatesHandler = serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
-            validateCertificatesHandler.Configure(handler);
+            var validateCertificatesConfigurer = serviceProvider.GetRequiredService<ValidateCertificatesHttpClientHandlerConfigurer<EurekaClientOptions>>();
+            validateCertificatesConfigurer.Configure(Options.DefaultName, handler);
 
             return handler;
         });
