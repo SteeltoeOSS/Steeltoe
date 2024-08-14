@@ -8,7 +8,7 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.Trace;
 
-namespace Steeltoe.Management.Endpoint.Options;
+namespace Steeltoe.Management.Endpoint.Configuration;
 
 internal sealed class ConfigureManagementOptions : IConfigureOptionsWithKey<ManagementOptions>
 {

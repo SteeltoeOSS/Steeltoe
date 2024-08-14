@@ -138,6 +138,24 @@ Steeltoe.Management.Endpoint.CloudFoundry.CloudFoundrySecurityServiceCollectionE
 Steeltoe.Management.Endpoint.CloudFoundry.EndpointApplicationBuilderExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.CloudFoundry.ICloudFoundryEndpointHandler
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.CustomJsonConverters.get -> System.Collections.Generic.IList<string!>!
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.CustomJsonConverters.set -> void
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.get -> bool?
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Enabled.set -> void
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Exposure.get -> Steeltoe.Management.Endpoint.Exposure?
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Exposure.set -> void
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.ManagementOptions() -> void
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Path.get -> string?
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Path.set -> void
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port.get -> string?
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port.set -> void
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SerializerOptions.get -> System.Text.Json.JsonSerializerOptions!
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SerializerOptions.set -> void
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SslEnabled.get -> bool
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.SslEnabled.set -> void
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.UseStatusCodeFromResponse.get -> bool
+Steeltoe.Management.Endpoint.Configuration.ManagementOptions.UseStatusCodeFromResponse.set -> void
 Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsDescriptor
 Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsDescriptor.AppliedMigrations.get -> System.Collections.Generic.IList<string!>!
 Steeltoe.Management.Endpoint.DbMigrations.DbMigrationsDescriptor.DbMigrationsDescriptor() -> void
@@ -322,30 +340,12 @@ Steeltoe.Management.Endpoint.Metrics.MetricTag.Tag.get -> string!
 Steeltoe.Management.Endpoint.Metrics.MetricTag.Values.get -> System.Collections.Generic.ISet<string!>!
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointHandler.get -> Steeltoe.Management.IEndpointHandler<TArgument, TResult>!
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointMiddleware(Steeltoe.Management.IEndpointHandler<TArgument, TResult>! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointMiddleware(Steeltoe.Management.IEndpointHandler<TArgument, TResult>! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.EndpointOptions.get -> Steeltoe.Management.EndpointOptions!
 Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext! context, Microsoft.AspNetCore.Http.RequestDelegate? next) -> System.Threading.Tasks.Task!
-Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ManagementOptionsMonitor.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions!>!
+Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TArgument, TResult>.ManagementOptionsMonitor.get -> Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>!
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware
 Steeltoe.Management.Endpoint.Middleware.IEndpointMiddleware.EndpointOptions.get -> Steeltoe.Management.EndpointOptions!
-Steeltoe.Management.Endpoint.Options.ManagementOptions
-Steeltoe.Management.Endpoint.Options.ManagementOptions.CustomJsonConverters.get -> System.Collections.Generic.IList<string!>!
-Steeltoe.Management.Endpoint.Options.ManagementOptions.CustomJsonConverters.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementOptions.Enabled.get -> bool?
-Steeltoe.Management.Endpoint.Options.ManagementOptions.Enabled.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementOptions.Exposure.get -> Steeltoe.Management.Endpoint.Exposure?
-Steeltoe.Management.Endpoint.Options.ManagementOptions.Exposure.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementOptions.ManagementOptions() -> void
-Steeltoe.Management.Endpoint.Options.ManagementOptions.Path.get -> string?
-Steeltoe.Management.Endpoint.Options.ManagementOptions.Path.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementOptions.Port.get -> string?
-Steeltoe.Management.Endpoint.Options.ManagementOptions.Port.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementOptions.SerializerOptions.get -> System.Text.Json.JsonSerializerOptions!
-Steeltoe.Management.Endpoint.Options.ManagementOptions.SerializerOptions.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementOptions.SslEnabled.get -> bool
-Steeltoe.Management.Endpoint.Options.ManagementOptions.SslEnabled.set -> void
-Steeltoe.Management.Endpoint.Options.ManagementOptions.UseStatusCodeFromResponse.get -> bool
-Steeltoe.Management.Endpoint.Options.ManagementOptions.UseStatusCodeFromResponse.set -> void
 Steeltoe.Management.Endpoint.Refresh.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Refresh.IRefreshEndpointHandler
 Steeltoe.Management.Endpoint.Refresh.RefreshEndpointOptions
@@ -411,7 +411,7 @@ Steeltoe.Management.Endpoint.Services.ServiceRegistration.Scope.get -> string!
 Steeltoe.Management.Endpoint.Services.ServiceRegistration.ServiceRegistration(Microsoft.Extensions.DependencyInjection.ServiceDescriptor! descriptor) -> void
 Steeltoe.Management.Endpoint.Services.ServiceRegistration.Type.get -> string!
 Steeltoe.Management.Endpoint.Services.ServicesEndpointMiddleware
-Steeltoe.Management.Endpoint.Services.ServicesEndpointMiddleware.ServicesEndpointMiddleware(Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Options.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
+Steeltoe.Management.Endpoint.Services.ServicesEndpointMiddleware.ServicesEndpointMiddleware(Steeltoe.Management.Endpoint.Services.IServicesEndpointHandler! endpointHandler, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Management.Endpoint.Configuration.ManagementOptions!>! managementOptionsMonitor, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions
 Steeltoe.Management.Endpoint.Services.ServicesEndpointOptions.ServicesEndpointOptions() -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.ServiceCollectionExtensions

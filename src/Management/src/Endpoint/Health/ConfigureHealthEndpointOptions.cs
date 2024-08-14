@@ -4,7 +4,7 @@
 
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Security;
 
 namespace Steeltoe.Management.Endpoint.Health;

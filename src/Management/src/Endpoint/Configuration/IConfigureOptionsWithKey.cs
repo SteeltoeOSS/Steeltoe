@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Management.Endpoint.Options;
+namespace Steeltoe.Management.Endpoint.Configuration;
 
 internal interface IConfigureOptionsWithKey<in T> : IConfigureOptions<T>
     where T : class

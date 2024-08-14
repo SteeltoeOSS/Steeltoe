@@ -6,7 +6,7 @@ using System.Text.Json;
 
 #pragma warning disable S4004 // Collection properties should be readonly
 
-namespace Steeltoe.Management.Endpoint.Options;
+namespace Steeltoe.Management.Endpoint.Configuration;
 
 /// <summary>
 /// Provides configuration settings for management endpoints (actuators).

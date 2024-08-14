@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.Endpoint.Options;
+using Steeltoe.Management.Endpoint.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 

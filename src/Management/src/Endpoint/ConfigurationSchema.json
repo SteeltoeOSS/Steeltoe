@@ -682,7 +682,7 @@
             },
             "SslEnabled": {
               "type": "boolean",
-              "description": "Gets or sets a value indicating whether 'Steeltoe.Management.Endpoint.Options.ManagementOptions.Port' applies to HTTP or HTTPS requests."
+              "description": "Gets or sets a value indicating whether 'Steeltoe.Management.Endpoint.Configuration.ManagementOptions.Port' applies to HTTP or HTTPS requests."
             },
             "Trace": {
               "type": "object",
