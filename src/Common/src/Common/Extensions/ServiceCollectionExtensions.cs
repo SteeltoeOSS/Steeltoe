@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.Extensions;
 
-internal static class ServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Registers <see cref="ApplicationInstanceInfo" /> for use with the options pattern. It is also registered as <see cref="IApplicationInstanceInfo" />

@@ -18,7 +18,7 @@ public static class BootstrapLoggerFactory
 
     public static IBootstrapLoggerFactory Default { get; } = new UpgradableBootstrapLoggerFactory();
 
-    public static IBootstrapLoggerFactory GetInstance(object contextKey)
+    internal static IBootstrapLoggerFactory GetInstance(object contextKey)
     {
         ArgumentNullException.ThrowIfNull(contextKey);
 

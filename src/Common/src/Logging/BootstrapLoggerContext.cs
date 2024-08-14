@@ -8,7 +8,7 @@ namespace Steeltoe.Common.Logging;
 /// Provides a context to distinguish multiple <see cref="IBootstrapLoggerFactory" /> instances, which enables running from integration tests. Register
 /// as a singleton, pointing to something that distinguishes for multiple usage (for example, your host builder).
 /// </summary>
-public sealed class BootstrapLoggerContext
+internal sealed class BootstrapLoggerContext
 {
     private readonly object _key;
 

@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Steeltoe.Common.Extensions;
 
-public static class ExceptionExtensions
+internal static class ExceptionExtensions
 {
     /// <summary>
     /// Unwraps a potential tree of nested exceptions, returning the deepest one. Exceptions of type <see cref="TargetInvocationException" /> and
