@@ -33,7 +33,7 @@ public sealed class LoggingBuilderExtensionsTest
             ["Logging:foo:LogLevel:A.B.C.D.TestClass"] = "None"
         };
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
@@ -55,7 +55,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public void DynamicLevelSetting_WorksWith_ConsoleFilters()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
@@ -89,7 +89,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public void AddConsole_Works_WithAddConfiguration()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
@@ -111,7 +111,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public void AddDynamicConsole_Works_WithAddConfiguration()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
@@ -133,7 +133,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public void DynamicLevelSetting_ParameterlessAddDynamic_NotBrokenByAddConfiguration()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
@@ -169,7 +169,7 @@ public sealed class LoggingBuilderExtensionsTest
     {
         using var console = new ConsoleOutputBorrower();
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
         {
@@ -189,7 +189,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public void AddDynamicConsole_AddsAllLoggerProviders()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
@@ -208,7 +208,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
@@ -227,7 +227,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public void DynamicLevelSetting_ParameterlessAddDynamic_AddsConsoleOptions()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
@@ -243,7 +243,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public void AddDynamicConsole_DoesNotSetColorLocal()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
@@ -262,7 +262,7 @@ public sealed class LoggingBuilderExtensionsTest
     {
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "not empty");
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
 
         ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
         {
@@ -278,7 +278,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public async Task AddDynamicConsole_ObsoleteIncludesScopes()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Logging:LogLevel:Default"] = "Information",
             ["Logging:Console:IncludeScopes"] = "true",
@@ -317,7 +317,7 @@ public sealed class LoggingBuilderExtensionsTest
     [Fact]
     public async Task AddDynamicConsole_IncludesScopes()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Logging:LogLevel:Default"] = "Information",
             ["Logging:Console:FormatterName"] = "Simple",

@@ -190,7 +190,7 @@ public sealed class CloudFoundryConfigurationProviderTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCloudFoundry();
 
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         VcapApp? options = null;
 
@@ -200,7 +200,7 @@ public sealed class CloudFoundryConfigurationProviderTest
         {
             while (!cts.IsCancellationRequested)
             {
-                configuration.Reload();
+                configurationRoot.Reload();
             }
         }
 
@@ -208,7 +208,7 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         while (!cts.IsCancellationRequested)
         {
-            options = configuration.GetSection("vcap:application").Get<VcapApp>();
+            options = configurationRoot.GetSection("vcap:application").Get<VcapApp>();
         }
 
         Assert.NotNull(options);

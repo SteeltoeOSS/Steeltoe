@@ -99,10 +99,10 @@ public abstract class BaseTest : IDisposable
     {
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(settings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        IConfiguration configuration = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddSingleton(configuration);
         services.AddApplicationInstanceInfo();
         services.ConfigureOptions(configureOptionsType);
         services.AddLogging();

@@ -43,9 +43,9 @@ public sealed class PlaceholderConfigurationExtensionsTest
         var loggerFactory = new LoggerFactory();
 
         configurationBuilder.AddPlaceholderResolver(loggerFactory);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        PlaceholderResolverProvider? provider = configuration.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
+        PlaceholderResolverProvider? provider = configurationRoot.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
 
         Assert.NotNull(provider);
     }

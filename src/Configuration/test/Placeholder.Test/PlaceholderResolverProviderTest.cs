@@ -14,9 +14,9 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public void Constructor_WithConfiguration()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var provider = new PlaceholderResolverProvider(configuration, NullLoggerFactory.Instance);
+        var provider = new PlaceholderResolverProvider(configurationRoot, NullLoggerFactory.Instance);
 
         Assert.NotNull(provider.Configuration);
         Assert.Empty(provider.Providers);
@@ -305,10 +305,10 @@ public sealed class PlaceholderResolverProviderTest
     [Fact]
     public void ConstructorWithConfiguration_Dispose_DisposesChildren()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().Add(new DisposableConfigurationSource()).Build();
-        DisposableConfigurationProvider disposableConfigurationProvider = configuration.Providers.OfType<DisposableConfigurationProvider>().Single();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Add(new DisposableConfigurationSource()).Build();
+        DisposableConfigurationProvider disposableConfigurationProvider = configurationRoot.Providers.OfType<DisposableConfigurationProvider>().Single();
 
-        var placeholderResolverProvider = new PlaceholderResolverProvider(configuration, NullLoggerFactory.Instance);
+        var placeholderResolverProvider = new PlaceholderResolverProvider(configurationRoot, NullLoggerFactory.Instance);
 
         placeholderResolverProvider.Dispose();
 

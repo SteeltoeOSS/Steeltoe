@@ -45,9 +45,9 @@ public sealed class EncryptionConfigurationExtensionsTest
         var loggerFactory = new LoggerFactory();
 
         configurationBuilder.AddEncryptionResolver(_decryptorMock.Object, loggerFactory);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
-        EncryptionResolverProvider? provider = configuration.Providers.OfType<EncryptionResolverProvider>().SingleOrDefault();
+        EncryptionResolverProvider? provider = configurationRoot.Providers.OfType<EncryptionResolverProvider>().SingleOrDefault();
 
         Assert.NotNull(provider);
     }

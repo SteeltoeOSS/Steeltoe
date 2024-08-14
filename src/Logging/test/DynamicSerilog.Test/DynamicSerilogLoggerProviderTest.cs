@@ -408,7 +408,7 @@ public sealed class DynamicSerilogLoggerProviderTest
         };
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
-        IConfigurationRoot configuration = builder.Build();
+        IConfiguration configuration = builder.Build();
 
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(configuration);
@@ -418,7 +418,7 @@ public sealed class DynamicSerilogLoggerProviderTest
     private IOptionsMonitor<SerilogOptions> GetConfigurationFromFile()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("serilogSettings.json");
-        IConfigurationRoot configuration = builder.Build();
+        IConfiguration configuration = builder.Build();
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(configuration);
         return new TestOptionsMonitor<SerilogOptions>(serilogOptions);

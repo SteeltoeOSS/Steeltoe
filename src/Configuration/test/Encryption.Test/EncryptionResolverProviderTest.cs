@@ -15,9 +15,9 @@ public sealed class EncryptionResolverProviderTest
     [Fact]
     public void Constructor_WithConfiguration()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
 
-        var provider = new EncryptionResolverProvider(configuration, _decryptorMock.Object, NullLoggerFactory.Instance);
+        var provider = new EncryptionResolverProvider(configurationRoot, _decryptorMock.Object, NullLoggerFactory.Instance);
 
         Assert.NotNull(provider.Configuration);
         Assert.Empty(provider.Providers);

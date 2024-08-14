@@ -1346,7 +1346,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         configurationBuilder.Add(new TestConfigServerConfigurationSource(provider));
 
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         TestOptions? testOptions = null;
 
@@ -1356,7 +1356,7 @@ public sealed class ConfigServerConfigurationProviderTest
         {
             while (!cts.IsCancellationRequested)
             {
-                configuration.Reload();
+                configurationRoot.Reload();
             }
         }
 
@@ -1364,7 +1364,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         while (!cts.IsCancellationRequested)
         {
-            testOptions = configuration.Get<TestOptions>();
+            testOptions = configurationRoot.Get<TestOptions>();
         }
 
         Assert.NotNull(testOptions);

@@ -26,7 +26,7 @@ public sealed class PostConfigureJwtBearerOptionsTest
             Backchannel = new HttpClient()
         };
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var postConfigurer = new PostConfigureJwtBearerOptions(configuration);
 
         postConfigurer.PostConfigure(null, jwtBearerOptions);
@@ -63,9 +63,9 @@ public sealed class PostConfigureJwtBearerOptionsTest
             """;
 
         using var servicesScope = new EnvironmentVariableScope("VCAP_SERVICES", vcapServices);
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundryServiceBindings().Build();
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(configuration);
+        serviceCollection.AddSingleton(configuration);
         serviceCollection.AddAuthentication().AddJwtBearer().ConfigureJwtBearerForCloudFoundry();
         serviceCollection.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 

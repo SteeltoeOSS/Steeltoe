@@ -186,7 +186,7 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
         var postProcessor = new ApplicationConfigurationServicePostProcessor();
         source.RegisterPostProcessor(postProcessor);
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().Add(source).Build();
+        IConfiguration configuration = new ConfigurationBuilder().Add(source).Build();
 
         configuration["test-secret-key"].Should().Be("test-secret-value");
         configuration["key:with:periods"].Should().Be("test-secret-value.");

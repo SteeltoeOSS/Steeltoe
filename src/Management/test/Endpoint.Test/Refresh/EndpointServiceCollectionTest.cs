@@ -25,8 +25,8 @@ public sealed class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        IConfiguration configuration = configurationBuilder.Build();
+        services.AddSingleton(configuration);
         services.AddLogging();
         services.AddRefreshActuator();
 

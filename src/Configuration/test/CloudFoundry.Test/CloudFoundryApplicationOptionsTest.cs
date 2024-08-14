@@ -74,7 +74,7 @@ public sealed class CloudFoundryApplicationOptionsTest
 
         IConfigurationBuilder builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        IConfigurationRoot configuration = builder.Build();
+        IConfiguration configuration = builder.Build();
 
         var options = new CloudFoundryApplicationOptions();
         configuration.GetSection("vcap:application").Bind(options);

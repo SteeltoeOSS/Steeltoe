@@ -30,12 +30,12 @@ public sealed class ConfigureCertificateOptionsTest
     [Fact]
     public void ConfigureCertificateOptions_BadPath_NoCertificate()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
             { $"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:certificateFilePath", "doesnotexist.crt" }
         }).Build();
 
-        var configureOptions = new ConfigureCertificateOptions(configuration);
+        var configureOptions = new ConfigureCertificateOptions(configurationRoot);
 
         var options = new CertificateOptions();
 
@@ -157,11 +157,11 @@ public sealed class ConfigureCertificateOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCertificate(CertificateName, certificate1FilePath, privateKey1FilePath);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddLogging();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConfiguration>(configurationRoot);
         services.ConfigureCertificateOptions(CertificateName);
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -175,9 +175,9 @@ public sealed class ConfigureCertificateOptionsTest
 
         bool changeCalled = false;
         _ = changeToken.RegisterChangeCallback(_ => changeCalled = true, "state");
-        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:CertificateFilePath"] = certificate2FilePath;
-        configuration[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:PrivateKeyFilePath"] = privateKey2FilePath;
-        configuration.Reload();
+        configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:CertificateFilePath"] = certificate2FilePath;
+        configurationRoot[$"{CertificateOptions.ConfigurationKeyPrefix}:{CertificateName}:PrivateKeyFilePath"] = privateKey2FilePath;
+        configurationRoot.Reload();
         optionsMonitor.Get(CertificateName).Certificate.Should().BeEquivalentTo(secondX509);
         changeCalled.Should().BeTrue("file path information changed");
 

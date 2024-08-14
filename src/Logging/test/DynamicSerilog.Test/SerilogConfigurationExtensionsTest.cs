@@ -21,7 +21,7 @@ public sealed class SerilogConfigurationExtensionsTest
             { "Serilog:MinimumLevel:Override:Steeltoe", "Information" }
         };
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var serilogOptions = new SerilogOptions();
 
         serilogOptions.SetSerilogOptions(configuration);
@@ -42,7 +42,7 @@ public sealed class SerilogConfigurationExtensionsTest
             { "Serilog:MinimumLevel", "Error" }
         };
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var serilogOptions = new SerilogOptions();
 
         serilogOptions.SetSerilogOptions(configuration);
@@ -72,7 +72,7 @@ public sealed class SerilogConfigurationExtensionsTest
     [Fact]
     public void SerilogOptions_NoError_When_NotConfigured()
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
+        IConfiguration configuration = new ConfigurationBuilder().Build();
         var serilogOptions = new SerilogOptions();
 
         serilogOptions.SetSerilogOptions(configuration);
