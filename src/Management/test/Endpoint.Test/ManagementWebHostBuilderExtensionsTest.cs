@@ -22,7 +22,6 @@ using Steeltoe.Management.Endpoint.Health.Availability;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.ManagementPort;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -30,9 +29,11 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.Services;
 using Steeltoe.Management.Endpoint.Test.Health.TestContributors;
+using Steeltoe.Management.Endpoint.Test.Info;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
+using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -241,30 +242,29 @@ public sealed class ManagementWebHostBuilderExtensionsTest : BaseTest
     [Fact]
     public void AddInfoActuator_IWebHostBuilder()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
+        IWebHostBuilder hostBuilder = new WebHostBuilder();
+        hostBuilder.Configure(HostingHelpers.EmptyAction);
+        hostBuilder.AddInfoActuator();
 
-        using IWebHost host = hostBuilder.AddInfoActuator().Build();
-        var handler = host.Services.GetService<IInfoEndpointHandler>();
-        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+        using IWebHost host = hostBuilder.Build();
 
-        Assert.NotNull(handler);
-        Assert.NotNull(filter);
-        Assert.IsType<AllActuatorsStartupFilter>(filter);
+        Assert.NotNull(host.Services.GetService<IInfoEndpointHandler>());
+        Assert.NotNull(host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().FirstOrDefault());
     }
 
     [Fact]
-    public void AddInfoActuator_IWebHostBuilder_WithTypes()
+    public void AddInfoActuator_IWebHostBuilder_WithExtraContributor()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
+        IWebHostBuilder hostBuilder = new WebHostBuilder();
+        hostBuilder.Configure(HostingHelpers.EmptyAction);
+        hostBuilder.AddInfoActuator();
+        hostBuilder.ConfigureServices(services => services.AddInfoContributor<TestInfoContributor>());
 
-        using IWebHost host = hostBuilder.AddInfoActuator(new AppSettingsInfoContributor(new ConfigurationBuilder().Build())).Build();
+        using IWebHost host = hostBuilder.Build();
 
-        var handler = host.Services.GetService<IInfoEndpointHandler>();
-        IStartupFilter? filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
-
-        Assert.NotNull(handler);
-        Assert.NotNull(filter);
-        Assert.IsType<AllActuatorsStartupFilter>(filter);
+        Assert.NotNull(host.Services.GetService<IInfoEndpointHandler>());
+        Assert.NotNull(host.Services.GetServices<IStartupFilter>().OfType<AllActuatorsStartupFilter>().FirstOrDefault());
+        Assert.NotNull(host.Services.GetServices<IInfoContributor>().OfType<TestInfoContributor>().FirstOrDefault());
     }
 
     [Fact]

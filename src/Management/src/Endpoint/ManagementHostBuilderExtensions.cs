@@ -5,9 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 using Steeltoe.Common.Hosting;
-using Steeltoe.Management.Info;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -123,30 +121,6 @@ public static class ManagementHostBuilderExtensions
 
         HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
         wrapper.AddInfoActuator();
-
-        return builder;
-    }
-
-    /// <summary>
-    /// Adds the Info actuator to the application.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IHostBuilder" /> to configure.
-    /// </param>
-    /// <param name="contributors">
-    /// Contributors to application information.
-    /// </param>
-    /// <returns>
-    /// The incoming <paramref name="builder" /> so that additional calls can be chained.
-    /// </returns>
-    public static IHostBuilder AddInfoActuator(this IHostBuilder builder, params IInfoContributor[] contributors)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(contributors);
-        ArgumentGuard.ElementsNotNull(contributors);
-
-        HostBuilderWrapper wrapper = HostBuilderWrapper.Wrap(builder);
-        wrapper.AddInfoActuator(contributors);
 
         return builder;
     }

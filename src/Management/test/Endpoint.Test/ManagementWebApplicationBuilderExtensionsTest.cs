@@ -22,7 +22,6 @@ using Steeltoe.Management.Endpoint.Health.Availability;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Info;
-using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
@@ -173,7 +172,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddInfoActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
-        hostBuilder.AddInfoActuator(new AppSettingsInfoContributor(hostBuilder.Configuration));
+        hostBuilder.AddInfoActuator();
 
         await using WebApplication host = hostBuilder.Build();
 
