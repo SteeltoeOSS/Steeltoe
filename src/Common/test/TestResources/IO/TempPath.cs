@@ -27,6 +27,8 @@ public abstract class TempPath : IDisposable
     /// </param>
     protected TempPath(string prefix)
     {
+        ArgumentNullException.ThrowIfNull(prefix);
+
         Name = $"{prefix}{Guid.NewGuid()}";
         FullPath = Path.Combine(Path.GetTempPath(), Name);
 

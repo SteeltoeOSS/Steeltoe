@@ -21,6 +21,8 @@ public sealed class DelegateToMockHttpClientHandler : HttpClientHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         MarkMessageAsNotYetSent(request);
 
         using var httpClient = Mock.ToHttpClient();
@@ -29,6 +31,8 @@ public sealed class DelegateToMockHttpClientHandler : HttpClientHandler
 
     protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         MarkMessageAsNotYetSent(request);
 
         using var httpClient = Mock.ToHttpClient();

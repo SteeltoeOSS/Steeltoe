@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Common.TestResources;
@@ -60,12 +61,16 @@ public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
 
     public IDisposable OnChange(Action<T, string?> listener)
     {
+        ArgumentNullException.ThrowIfNull(listener);
+
         _listeners.Add(listener);
         return EmptyDisposable.Instance;
     }
 
-    public void Change(T options)
+    public void Change([DisallowNull] T options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         CurrentValue = options;
 
         foreach (Action<T, string?> listener in _listeners)

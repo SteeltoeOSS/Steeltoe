@@ -31,6 +31,8 @@ public sealed class Sandbox : TempDirectory
     /// </returns>
     public string ResolvePath(string path)
     {
+        ArgumentNullException.ThrowIfNull(path);
+
         return Path.Combine(FullPath, path);
     }
 
@@ -45,6 +47,8 @@ public sealed class Sandbox : TempDirectory
     /// </returns>
     public string CreateDirectory(string path)
     {
+        ArgumentNullException.ThrowIfNull(path);
+
         DirectoryInfo directoryInfo = Directory.CreateDirectory(ResolvePath(path));
         return directoryInfo.FullName;
     }
@@ -63,6 +67,9 @@ public sealed class Sandbox : TempDirectory
     /// </returns>
     public string CreateFile(string path, string content)
     {
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(content);
+
         string absolutePath = ResolvePath(path);
         string? parentDirectory = Directory.GetParent(absolutePath)?.FullName;
 

@@ -15,6 +15,8 @@ public sealed class EnvironmentVariableScope : IDisposable
 
     public EnvironmentVariableScope(string name, string? value)
     {
+        ArgumentNullException.ThrowIfNull(name);
+
         _name = name;
         _originalValue = Environment.GetEnvironmentVariable(name);
         _hasChanges = _originalValue != value;
