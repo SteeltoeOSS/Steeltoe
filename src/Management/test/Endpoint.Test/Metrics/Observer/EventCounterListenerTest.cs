@@ -50,7 +50,7 @@ public sealed class EventCounterListenerTest : BaseTest
             EventCounterIntervalSec = 1
         };
 
-        var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
+        TestOptionsMonitor<MetricsObserverOptions> optionsMonitor = TestOptionsMonitor.Create(options);
 
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
         SteeltoeMetrics.InstrumentationName = Guid.NewGuid().ToString();
@@ -90,7 +90,7 @@ public sealed class EventCounterListenerTest : BaseTest
             EventCounterIntervalSec = 1
         };
 
-        var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(options);
+        TestOptionsMonitor<MetricsObserverOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         using var listener = new EventCounterListener(optionsMonitor, NullLogger<EventCounterListener>.Instance);
 
         var exporter = new MetricsExporter(_exporterOptions);
@@ -125,7 +125,7 @@ public sealed class EventCounterListenerTest : BaseTest
             "cpu-usage"
         };
 
-        var optionsMonitor = new TestOptionsMonitor<MetricsObserverOptions>(new MetricsObserverOptions
+        var optionsMonitor = TestOptionsMonitor.Create(new MetricsObserverOptions
         {
             IncludedMetrics = inclusions,
             EventCounterEvents = true,

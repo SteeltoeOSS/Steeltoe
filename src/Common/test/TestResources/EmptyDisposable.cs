@@ -4,6 +4,9 @@
 
 namespace Steeltoe.Common.TestResources;
 
+/// <summary>
+/// Implements <see cref="IDisposable" /> without doing anything.
+/// </summary>
 public sealed class EmptyDisposable : IDisposable
 {
     public static IDisposable Instance { get; } = new EmptyDisposable();

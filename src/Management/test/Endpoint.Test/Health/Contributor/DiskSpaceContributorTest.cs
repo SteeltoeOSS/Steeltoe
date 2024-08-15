@@ -38,7 +38,7 @@ public sealed class DiskSpaceContributorTest : BaseTest
     [Fact]
     public async Task Health_UnknownDirectory_ReportsError()
     {
-        var optionsMonitor = new TestOptionsMonitor<DiskSpaceContributorOptions>(new DiskSpaceContributorOptions
+        var optionsMonitor = TestOptionsMonitor.Create(new DiskSpaceContributorOptions
         {
             Path = OperatingSystem.IsWindows() ? "C:\\does-not-exist" : "/does/not/exist"
         });

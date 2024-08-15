@@ -5,7 +5,7 @@
 namespace Steeltoe.Common.TestResources.IO;
 
 /// <summary>
-/// A temporary directory.
+/// A temporary directory, which is created on construction and deleted when disposed.
 /// </summary>
 public class TempDirectory : TempPath
 {

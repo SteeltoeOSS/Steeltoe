@@ -4,6 +4,9 @@
 
 namespace Steeltoe.Common.TestResources;
 
+/// <summary>
+/// Compares two strings, ignoring only differences in line endings.
+/// </summary>
 public sealed class IgnoreLineEndingsComparer : IEqualityComparer<string>
 {
     private static readonly string[] LineSeparators =

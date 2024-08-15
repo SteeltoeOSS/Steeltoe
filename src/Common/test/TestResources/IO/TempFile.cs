@@ -5,7 +5,7 @@
 namespace Steeltoe.Common.TestResources.IO;
 
 /// <summary>
-/// A temporary file.
+/// A temporary file, which is created on construction and deleted when disposed.
 /// </summary>
 public sealed class TempFile : TempPath
 {

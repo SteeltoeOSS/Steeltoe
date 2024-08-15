@@ -61,7 +61,7 @@ public sealed class ConfigurationDiscoveryClientTest
             }
         };
 
-        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);
@@ -91,7 +91,7 @@ public sealed class ConfigurationDiscoveryClientTest
             }
         };
 
-        var optionsMonitor = new TestOptionsMonitor<ConfigurationDiscoveryOptions>(options);
+        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
         var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", CancellationToken.None);

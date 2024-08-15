@@ -4,6 +4,9 @@
 
 namespace Steeltoe.Common.TestResources;
 
+/// <summary>
+/// Enables to temporarily set/change an environment variable from a test. The original value is restored when disposed.
+/// </summary>
 public sealed class EnvironmentVariableScope : IDisposable
 {
     private readonly string _name;

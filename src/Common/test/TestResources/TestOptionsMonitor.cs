@@ -8,6 +8,15 @@ namespace Steeltoe.Common.TestResources;
 
 public static class TestOptionsMonitor
 {
+    /// <summary>
+    /// Creates an <see cref="IOptionsMonitor{TOptions}" /> from an existing options instance.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The options type.
+    /// </typeparam>
+    /// <param name="options">
+    /// The options to wrap.
+    /// </param>
     public static TestOptionsMonitor<T> Create<T>(T options)
         where T : new()
     {
@@ -15,6 +24,12 @@ public static class TestOptionsMonitor
     }
 }
 
+/// <summary>
+/// Provides an implementation of <see cref="IOptionsMonitor{TOptions}" /> for testing.
+/// </summary>
+/// <typeparam name="T">
+/// The options type.
+/// </typeparam>
 public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
     where T : new()
 {
@@ -22,12 +37,16 @@ public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
 
     public T CurrentValue { get; private set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestOptionsMonitor{T}" /> class, creating a new options instance.
+    /// </summary>
     public TestOptionsMonitor()
     {
         CurrentValue = new T();
     }
 
-    public TestOptionsMonitor(T options)
+    // Use TestOptionsMonitor.Create() from tests, so the compiler infers the options type.
+    internal TestOptionsMonitor(T options)
     {
         ArgumentNullException.ThrowIfNull(options);
 

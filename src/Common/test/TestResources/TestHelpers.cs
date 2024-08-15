@@ -46,13 +46,6 @@ public static class TestHelpers
         { "management:metrics:export:wavefront:uri", "proxy://localhost:7828" }
     }.ToImmutableDictionary();
 
-    public static IConfiguration GetConfigurationFromDictionary(IDictionary<string, string?> collection)
-    {
-        var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(collection);
-        return builder.Build();
-    }
-
     public static WebApplicationBuilder GetTestWebApplicationBuilder()
     {
         return GetTestWebApplicationBuilder([]);
