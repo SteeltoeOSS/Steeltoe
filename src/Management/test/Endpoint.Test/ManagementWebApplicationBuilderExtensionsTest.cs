@@ -222,7 +222,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddMappingsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
-        hostBuilder.Services.AddActionDescriptorCollectionProviderMock();
         hostBuilder.AddMappingsActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -335,7 +334,6 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddAllActuators_WebApplicationBuilder_IStartupFilterFires()
     {
         WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
-        hostBuilder.Services.AddActionDescriptorCollectionProviderMock();
         hostBuilder.AddAllActuators();
 
         await using WebApplication host = hostBuilder.Build();
@@ -356,11 +354,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddAllActuatorsWithConventions_WebApplicationBuilder_IStartupFilterFires()
     {
-        await using WebApplication host = GetTestWebAppWithSecureRouting(builder =>
-        {
-            builder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
-            builder.Services.AddActionDescriptorCollectionProviderMock();
-        });
+        await using WebApplication host = GetTestWebAppWithSecureRouting(builder => builder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")));
 
         await host.StartAsync();
         HttpClient client = host.GetTestClient();
@@ -396,8 +390,10 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     {
         await using WebApplication host = GetTestWebAppWithSecureRouting(builder =>
         {
-            builder.AddHypermediaActuator().AddInfoActuator().AddHealthActuator().AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Services
-                .AddActionDescriptorCollectionProviderMock();
+            builder.AddHypermediaActuator();
+            builder.AddInfoActuator();
+            builder.AddHealthActuator();
+            builder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
         });
 
         await host.StartAsync();

@@ -25,6 +25,7 @@ public static class EndpointServiceCollectionExtensions
         services.AddCommonActuatorServices();
         services.AddMappingsActuatorServices();
 
+        services.AddEndpointsApiExplorer();
         services.TryAddSingleton<RouterMappings>();
 
         return services;

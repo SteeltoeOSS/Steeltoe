@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.RouteMappings;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
@@ -15,7 +14,6 @@ public sealed class MappingsStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddActionDescriptorCollectionProviderMock();
         services.AddHypermediaActuator();
         services.AddMappingsActuator();
     }

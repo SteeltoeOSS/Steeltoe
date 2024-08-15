@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Configuration;
 
@@ -59,7 +58,6 @@ public sealed class ActuatorRouteBuilderExtensionsTest
         {
             services.AddAllActuators();
             services.AddRouting();
-            services.AddActionDescriptorCollectionProviderMock();
 
             services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.AuthenticationScheme, _ =>

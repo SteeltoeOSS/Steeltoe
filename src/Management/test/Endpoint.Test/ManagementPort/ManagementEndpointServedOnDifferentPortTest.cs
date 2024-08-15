@@ -775,7 +775,6 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
         builder.Configuration.AddInMemoryCollection(appSettings);
-        builder.Services.AddActionDescriptorCollectionProviderMock();
         builder.AddAllActuators();
 
         WebApplication app = builder.Build();
