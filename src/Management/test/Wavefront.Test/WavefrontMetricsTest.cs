@@ -30,8 +30,7 @@ public sealed class WavefrontMetricsTest
             { "management:metrics:export:wavefront:step", "500" }
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddWavefrontMetrics();
         builder.WebHost.UseTestServer();
@@ -51,9 +50,7 @@ public sealed class WavefrontMetricsTest
             { "management:metrics:export:wavefront:apiToken", "testToken" }
         };
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder();
-        hostBuilder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
-        hostBuilder.Configure(HostingHelpers.EmptyAction);
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings));
         hostBuilder.ConfigureServices(services => services.AddWavefrontMetrics());
 
@@ -81,8 +78,7 @@ public sealed class WavefrontMetricsTest
             { "management:metrics:export:wavefront:apiToken", string.Empty } // Should not throw
         };
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder();
-        hostBuilder.Configure(HostingHelpers.EmptyAction);
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings));
         hostBuilder.ConfigureServices(services => services.AddWavefrontMetrics());
 

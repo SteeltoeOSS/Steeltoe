@@ -28,7 +28,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         {
             testContext.AdditionalServices = (services, _) =>
             {
-                services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+                services.AddSingleton(TestHostEnvironmentFactory.Create());
                 services.AddEnvironmentActuator();
             };
 
@@ -48,7 +48,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         {
             testContext.AdditionalServices = (services, _) =>
             {
-                services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+                services.AddSingleton(TestHostEnvironmentFactory.Create());
                 services.AddEnvironmentActuator();
             };
 
@@ -91,7 +91,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.AddEnvironmentActuator();
         };
 
@@ -143,7 +143,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.AddEnvironmentActuator();
         };
 
@@ -183,7 +183,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.AddEnvironmentActuator();
         };
 
@@ -221,7 +221,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.AddEnvironmentActuator();
         };
 
@@ -234,7 +234,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
         EnvironmentResponse result = await handler.InvokeAsync(null, CancellationToken.None);
         Assert.NotNull(result);
         Assert.Single(result.ActiveProfiles);
-        Assert.Equal("EnvironmentName", result.ActiveProfiles[0]);
+        Assert.Equal("Test", result.ActiveProfiles[0]);
         Assert.Single(result.PropertySources);
 
         PropertySourceDescriptor desc = result.PropertySources[0];
@@ -269,7 +269,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.AddEnvironmentActuator();
         };
 
@@ -310,7 +310,7 @@ public sealed class EnvironmentEndpointTest : BaseTest
 
         testContext.AdditionalServices = (services, _) =>
         {
-            services.AddSingleton(HostingHelpers.GetHostingEnvironment());
+            services.AddSingleton(TestHostEnvironmentFactory.Create());
             services.AddEnvironmentActuator();
         };
 

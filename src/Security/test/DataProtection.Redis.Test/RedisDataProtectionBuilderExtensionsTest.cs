@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using StackExchange.Redis;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Connectors.Redis;
 
 namespace Steeltoe.Security.DataProtection.Redis.Test;
@@ -26,8 +26,7 @@ public sealed class RedisDataProtectionBuilderExtensionsTest
     {
         const string appName = "SHARED-APP-NAME";
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

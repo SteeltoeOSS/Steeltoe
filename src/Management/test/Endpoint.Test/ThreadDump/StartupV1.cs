@@ -13,7 +13,6 @@ public sealed class StartupV1
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddCloudFoundryActuator();
         services.AddThreadDumpActuator(MediaTypeVersion.V1);
     }

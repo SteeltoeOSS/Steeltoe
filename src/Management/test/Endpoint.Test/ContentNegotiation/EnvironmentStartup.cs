@@ -13,7 +13,6 @@ public sealed class EnvironmentStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddHypermediaActuator();
         services.AddEnvironmentActuator();
     }

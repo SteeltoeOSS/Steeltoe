@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBinding;
 using Steeltoe.Connectors.CosmosDb;
 
@@ -110,8 +110,7 @@ public sealed class CosmosDbConnectorTest
     [Fact]
     public async Task Binds_options_without_service_bindings()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -147,8 +146,7 @@ public sealed class CosmosDbConnectorTest
     [Fact]
     public async Task Binds_options_with_CloudFoundry_service_bindings()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(MultiVcapServicesJson));
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -181,8 +179,7 @@ public sealed class CosmosDbConnectorTest
     [Fact]
     public async Task Registers_ConnectorFactory()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -232,8 +229,7 @@ public sealed class CosmosDbConnectorTest
     [Fact]
     public async Task Registers_HealthContributors()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
@@ -263,8 +259,7 @@ public sealed class CosmosDbConnectorTest
     [Fact]
     public async Task Registers_default_connection_string_when_only_single_server_binding_found()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundryServiceBindings(new StringServiceBindingsReader(SingleVcapServicesJson));
 
         builder.AddCosmosDb();
@@ -291,8 +286,7 @@ public sealed class CosmosDbConnectorTest
     [Fact]
     public async Task Registers_default_connection_string_when_only_default_client_binding_found()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {

@@ -13,7 +13,6 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddEnvironmentActuator();
-        services.AddRouting();
     }
 
     public void Configure(IApplicationBuilder app)

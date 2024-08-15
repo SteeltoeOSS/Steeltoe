@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
 using Steeltoe.Management.Endpoint.Metrics;
 
@@ -23,7 +22,6 @@ public sealed class EndpointServiceCollectionExtensionsTest : BaseTest
         var services = new ServiceCollection();
         services.AddOptions();
         services.AddLogging();
-        services.AddSingleton(HostingHelpers.GetHostingEnvironment());
         services.AddSingleton(configuration);
         services.AddMetricsActuator();
 

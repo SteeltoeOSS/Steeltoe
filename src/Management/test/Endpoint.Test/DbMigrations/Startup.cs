@@ -18,7 +18,6 @@ public sealed class Startup
         services.AddEntityFrameworkInMemoryDatabase().AddDbContext<MockDbContext>();
         services.AddSingleton<IDatabaseMigrationScanner, TestDatabaseMigrationScanner>();
         services.AddDbMigrationsActuator();
-        services.AddRouting();
     }
 
     public void Configure(IApplicationBuilder app)

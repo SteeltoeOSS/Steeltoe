@@ -17,9 +17,9 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
     [Fact]
     public void HostAddCloudFoundryConfiguration_Adds()
     {
-        var hostbuilder = new HostBuilder();
+        IHostBuilder hostbuilder = TestHostBuilderFactory.Create();
         hostbuilder.AddCloudFoundryConfiguration();
-        IHost host = hostbuilder.Build();
+        using IHost host = hostbuilder.Build();
 
         var instanceInfo = host.Services.GetRequiredService<IApplicationInstanceInfo>();
         Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
@@ -30,21 +30,20 @@ public sealed class CloudFoundryHostBuilderExtensionsTest
     [Fact]
     public void WebHostAddCloudFoundryConfiguration_Adds()
     {
-        var hostbuilder = new WebHostBuilder();
-        hostbuilder.Configure(HostingHelpers.EmptyAction);
+        IWebHostBuilder hostbuilder = TestWebHostBuilderFactory.Create();
         hostbuilder.AddCloudFoundryConfiguration();
-        IWebHost host = hostbuilder.Build();
+        using IWebHost host = hostbuilder.Build();
 
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
         Assert.Contains(configurationRoot.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 
     [Fact]
-    public void WebApplicationAddCloudFoundryConfiguration_Adds()
+    public async Task WebApplicationAddCloudFoundryConfiguration_Adds()
     {
-        WebApplicationBuilder hostbuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostbuilder = TestWebApplicationBuilderFactory.Create();
         hostbuilder.AddCloudFoundryConfiguration();
-        WebApplication host = hostbuilder.Build();
+        await using WebApplication host = hostbuilder.Build();
 
         var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
         Assert.Contains(configurationRoot.Providers, provider => provider is CloudFoundryConfigurationProvider);

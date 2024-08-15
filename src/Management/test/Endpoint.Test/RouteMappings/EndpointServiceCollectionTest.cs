@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.RouteMappings;
 
 namespace Steeltoe.Management.Endpoint.Test.RouteMappings;
@@ -16,7 +15,6 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     public void AddMappingsActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
-        services.AddSingleton(HostingHelpers.GetHostingEnvironment());
 
         var appSettings = new Dictionary<string, string?>
         {

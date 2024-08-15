@@ -18,9 +18,9 @@ public sealed class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_ConfiguresCorsDefaults()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
 
-        IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators()).Build();
+        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators()).Build();
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
         Assert.NotNull(options);
@@ -34,9 +34,9 @@ public sealed class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_ConfiguresCorsCustom()
     {
-        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(HostingHelpers.EmptyAction);
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
 
-        IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators(myPolicy => myPolicy.WithOrigins("http://google.com"))).Build();
+        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators(myPolicy => myPolicy.WithOrigins("http://google.com"))).Build();
 
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
@@ -53,12 +53,33 @@ public sealed class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_YesCF_onCF()
     {
-        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", """
+            {
+                "limits": {
+                    "fds": 16384,
+                    "mem": 1024,
+                    "disk": 1024
+                },
+                "application_name": "spring-cloud-broker",
+                "application_uris": [
+                    "spring-cloud-broker.apps.testcloud.com"
+                ],
+                "name": "spring-cloud-broker",
+                "space_name": "p-spring-cloud-services",
+                "space_id": "65b73473-94cc-4640-b462-7ad52838b4ae",
+                "uris": [
+                    "spring-cloud-broker.apps.testcloud.com"
+                ],
+                "users": null,
+                "version": "07e112f7-2f71-4f5a-8a34-db51dbed30a3",
+                "application_version": "07e112f7-2f71-4f5a-8a34-db51dbed30a3",
+                "application_id": "798c2495-fe75-49b1-88da-b81197f2bf06"
+            }
+            """);
 
-        IWebHostBuilder hostBuilder =
-            new WebHostBuilder().Configure(HostingHelpers.EmptyAction).ConfigureAppConfiguration(builder => builder.AddCloudFoundry());
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().ConfigureAppConfiguration(builder => builder.AddCloudFoundry());
 
-        IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators()).Build();
+        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators()).Build();
 
         Assert.NotNull(host.Services.GetService<ICloudFoundryEndpointHandler>());
     }
@@ -66,10 +87,9 @@ public sealed class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_NoCF_offCF()
     {
-        IWebHostBuilder hostBuilder =
-            new WebHostBuilder().Configure(HostingHelpers.EmptyAction).ConfigureAppConfiguration(builder => builder.AddCloudFoundry());
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().ConfigureAppConfiguration(builder => builder.AddCloudFoundry());
 
-        IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators()).Build();
+        using IWebHost host = hostBuilder.ConfigureServices(services => services.AddAllActuators()).Build();
 
         Assert.Null(host.Services.GetService<ICloudFoundryEndpointHandler>());
     }

@@ -14,7 +14,6 @@ public sealed class StartupWithSecurity
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddCloudFoundryActuator();
         services.AddHypermediaActuator();
         services.AddInfoActuator();

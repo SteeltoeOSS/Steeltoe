@@ -25,7 +25,6 @@ public sealed class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddHealthActuator();
 
         switch (_configuration.GetValue<string?>("HealthCheckType"))

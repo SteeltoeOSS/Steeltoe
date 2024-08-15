@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Health;
 
@@ -25,7 +26,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HealthActuator_ReturnsOnlyStatus()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
@@ -48,7 +49,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:health:showdetails", "whenauthorized" }
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<AuthStartup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<AuthStartup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
@@ -74,7 +75,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:health:claim:value", "show" }
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<AuthStartup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<AuthStartup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
@@ -100,7 +101,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
@@ -126,7 +127,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:customjsonconverters:0", typeof(HealthConverterV3).FullName! }
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
@@ -155,7 +156,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             ["HealthCheckType"] = "default"
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
@@ -182,7 +183,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             ["management:endpoints:health:diskspace:enabled"] = "false"
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
@@ -204,7 +205,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         var settings = new Dictionary<string, string?>(_appSettings);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         builder.ConfigureServices(services =>
@@ -224,8 +225,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_ReturnsExpected()
     {
-        IWebHostBuilder builder = new WebHostBuilder().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings))
-            .UseStartup<Startup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create()
+            .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings)).UseStartup<Startup>();
 
         using (var server = new TestServer(builder))
         {
@@ -237,7 +238,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"UP\"", json, StringComparison.Ordinal);
         }
 
-        builder = new WebHostBuilder().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
+        builder = TestWebHostBuilderFactory.Create().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
             new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "down"
@@ -253,7 +254,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"DOWN\"", downJson, StringComparison.Ordinal);
         }
 
-        builder = new WebHostBuilder().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
+        builder = TestWebHostBuilderFactory.Create().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
             new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "out"
@@ -269,8 +270,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"OUT_OF_SERVICE\"", outJson, StringComparison.Ordinal);
         }
 
-        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
+        builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "unknown"
             }));
@@ -285,8 +286,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"UNKNOWN\"", unknownJson, StringComparison.Ordinal);
         }
 
-        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
+        builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "disabled"
             }));
@@ -301,8 +302,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"UNKNOWN\"", disabledJson, StringComparison.Ordinal);
         }
 
-        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
+        builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "default"
             }));
@@ -317,8 +318,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"UP\"", unknownJson, StringComparison.Ordinal);
         }
 
-        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
+        builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "down",
                 ["management:endpoints:UseStatusCodeFromResponse"] = "false"
@@ -334,8 +335,8 @@ public sealed class EndpointMiddlewareTest : BaseTest
             Assert.Contains("\"status\":\"DOWN\"", downJson, StringComparison.Ordinal);
         }
 
-        builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(
-            new Dictionary<string, string?>(_appSettings)
+        builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "down",
                 ["management:endpoints:UseStatusCodeFromResponse"] = "false"
@@ -358,7 +359,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_MicrosoftAggregator_ReturnsExpected()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>().ConfigureAppConfiguration((_, configuration) =>
             configuration.AddInMemoryCollection(new Dictionary<string, string?>(_appSettings)
             {
                 ["HealthCheckType"] = "default"
@@ -376,7 +377,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task GetStatusCode_InvalidGroupName_Returns404()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>();
         using var server = new TestServer(builder);
         HttpClient client = server.CreateClient();
 

@@ -13,7 +13,6 @@ public sealed class DbMigrationsStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddHypermediaActuator();
         services.AddDbMigrationsActuator();
     }

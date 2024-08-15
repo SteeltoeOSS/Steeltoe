@@ -34,7 +34,7 @@ public class TestBase
         return baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(baseObject);
     }
 
-    protected void ValidateServiceCollectionCommon(ServiceProvider serviceProvider)
+    protected void ValidateServiceCollectionCommon(IServiceProvider serviceProvider)
     {
         // confirm Steeltoe types were registered
         TracingOptions tracingOptions = serviceProvider.GetRequiredService<IOptions<TracingOptions>>().Value;
@@ -49,7 +49,7 @@ public class TestBase
         Assert.Single(hostedServices, hostedService => hostedService.GetType().Name == "TelemetryHostedService");
     }
 
-    protected void ValidateServiceCollectionBase(ServiceProvider serviceProvider)
+    protected void ValidateServiceCollectionBase(IServiceProvider serviceProvider)
     {
         // confirm instrumentation(s) were added as expected
         var tracerProvider = serviceProvider.GetRequiredService<TracerProvider>();
@@ -68,7 +68,7 @@ public class TestBase
         Assert.Contains(propagators, propagator => propagator is BaggagePropagator);
     }
 
-    protected void ValidateServiceContainerCore(ServiceProvider serviceProvider)
+    protected void ValidateServiceContainerCore(IServiceProvider serviceProvider)
     {
         var tracerProvider = serviceProvider.GetRequiredService<TracerProvider>();
 

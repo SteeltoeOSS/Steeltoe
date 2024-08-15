@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.DbMigrations;
@@ -65,7 +66,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task EntityFrameworkCoreActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {

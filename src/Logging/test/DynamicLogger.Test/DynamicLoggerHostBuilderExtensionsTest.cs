@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Logging.DynamicLogger.Test;
 
@@ -15,9 +16,9 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
     [Fact]
     public void AddDynamicLogging_IHostBuilder_AddsDynamicLogging()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureLogging(builder => builder.AddDynamicConsole());
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureLogging(builder => builder.AddDynamicConsole());
 
-        IHost host = hostBuilder.Build();
+        using IHost host = hostBuilder.Build();
         ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
 
         loggerProviders.Should().HaveCount(1);
@@ -27,13 +28,13 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
     [Fact]
     public void AddDynamicLogging_IHostBuilder_RemovesConsoleLogging()
     {
-        IHostBuilder hostBuilder = new HostBuilder().ConfigureLogging(builder =>
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureLogging(builder =>
         {
             builder.AddConsole();
             builder.AddDynamicConsole();
         });
 
-        IHost host = hostBuilder.Build();
+        using IHost host = hostBuilder.Build();
         ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
 
         loggerProviders.Should().HaveCount(1);
@@ -43,13 +44,13 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
     [Fact]
     public void AddDynamicLogging_IHostBuilder_RemovesConsoleLoggingDefaultBuilder()
     {
-        IHostBuilder hostBuilder = Host.CreateDefaultBuilder().UseDefaultServiceProvider(options => options.ValidateScopes = true).ConfigureLogging(builder =>
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create().ConfigureLogging(builder =>
         {
             builder.AddConsole();
             builder.AddDynamicConsole();
         });
 
-        IHost host = hostBuilder.Build();
+        using IHost host = hostBuilder.Build();
         ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
 
         loggerProviders.Should().NotContain(provider => provider is ConsoleLoggerProvider);
@@ -57,12 +58,11 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddDynamicLogging_WebApplicationBuilder_AddsDynamicLogging()
+    public async Task AddDynamicLogging_WebApplicationBuilder_AddsDynamicLogging()
     {
-        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
         hostBuilder.Logging.AddDynamicConsole();
-        WebApplication host = hostBuilder.Build();
+        await using WebApplication host = hostBuilder.Build();
 
         ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
 
@@ -70,13 +70,12 @@ public sealed class DynamicLoggerHostBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddDynamicLogging_WebApplicationBuilder_RemovesConsoleLogging()
+    public async Task AddDynamicLogging_WebApplicationBuilder_RemovesConsoleLogging()
     {
-        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
         hostBuilder.Logging.AddConsole();
         hostBuilder.Logging.AddDynamicConsole();
-        WebApplication host = hostBuilder.Build();
+        await using WebApplication host = hostBuilder.Build();
 
         ILoggerProvider[] loggerProviders = host.Services.GetServices<ILoggerProvider>().ToArray();
 

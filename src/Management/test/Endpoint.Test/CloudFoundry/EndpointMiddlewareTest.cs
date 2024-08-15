@@ -51,7 +51,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
@@ -70,7 +70,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     public async Task CloudFoundryEndpointMiddleware_ServiceContractNotBroken()
     {
         // arrange a server and client
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
@@ -88,7 +88,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundryOptions_UseDefaultJsonSerializerOptions()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
@@ -107,7 +107,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" }
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);

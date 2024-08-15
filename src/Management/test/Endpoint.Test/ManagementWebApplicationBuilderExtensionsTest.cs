@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
@@ -36,10 +36,15 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class ManagementWebApplicationBuilderExtensionsTest
 {
+    private static readonly Dictionary<string, string?> ExposeAllActuatorsConfiguration = new()
+    {
+        ["management:endpoints:actuator:exposure:include:0"] = "*"
+    };
+
     [Fact]
     public async Task AddDbMigrationsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddDbMigrationsActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -55,7 +60,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddEnvironmentActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddEnvironmentActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -71,7 +76,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddHealthActuator_WebApplicationBuilder()
     {
-        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
         hostBuilder.AddHealthActuator();
         await using WebApplication host = hostBuilder.Build();
 
@@ -91,7 +96,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddHealthActuator_WebApplicationBuilder_WithContributor()
     {
-        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
         hostBuilder.AddHealthActuator();
         hostBuilder.Services.AddHealthContributor<DownContributor>();
         await using WebApplication host = hostBuilder.Build();
@@ -108,7 +113,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddHealthActuator_WebApplicationBuilder_IStartupFilterFireRegistersAvailabilityEvents()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddHealthActuator();
 
         // start the server, get a client
@@ -138,7 +143,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     {
         if (Platform.IsWindows)
         {
-            WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+            WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
             hostBuilder.AddHeapDumpActuator();
 
             await using WebApplication host = hostBuilder.Build();
@@ -155,7 +160,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddHypermediaActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddHypermediaActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -171,7 +176,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddInfoActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddInfoActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -188,7 +193,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddLoggersActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddLoggersActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -205,7 +210,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddLoggers_WebApplicationBuilder_MultipleLoggersScenario1()
     {
         // Add Serilog + DynamicConsole = runs OK
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.Logging.AddDynamicSerilog();
         hostBuilder.Logging.AddDynamicConsole();
         hostBuilder.AddLoggersActuator();
@@ -221,7 +226,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddMappingsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddMappingsActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -237,7 +242,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddMetricsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddMetricsActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -254,7 +259,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddRefreshActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddRefreshActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -272,7 +277,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     {
         if (Platform.IsWindows)
         {
-            WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+            WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
             hostBuilder.AddThreadDumpActuator();
 
             await using WebApplication host = hostBuilder.Build();
@@ -289,7 +294,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddTraceActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddTraceActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -305,7 +310,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddServicesActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddServicesActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -321,7 +326,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddCloudFoundryActuator_WebApplicationBuilder()
     {
-        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
         hostBuilder.AddCloudFoundryActuator();
 
         await using WebApplication host = hostBuilder.Build();
@@ -333,7 +338,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddAllActuators_WebApplicationBuilder_IStartupFilterFires()
     {
-        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithAllActuatorsExposed();
         hostBuilder.AddAllActuators();
 
         await using WebApplication host = hostBuilder.Build();
@@ -372,8 +377,7 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
     {
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", "some"); // Allow routing to /cloudfoundryapplication
 
-        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
-        hostBuilder.Host.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
         hostBuilder.WebHost.UseTestServer();
         hostBuilder.AddCloudFoundryActuator();
 
@@ -429,18 +433,18 @@ public sealed class ManagementWebApplicationBuilderExtensionsTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    private WebApplicationBuilder GetTestServerWithRouting()
+    private WebApplicationBuilder GetTestServerWithAllActuatorsExposed()
     {
-        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(ExposeAllActuatorsConfiguration);
         return builder;
     }
 
     private WebApplication GetTestWebAppWithSecureRouting(Action<WebApplicationBuilder>? customizeBuilder = null)
     {
-        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(ExposeAllActuatorsConfiguration);
         customizeBuilder?.Invoke(builder);
-
-        builder.Services.AddRouting();
 
         builder.Services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
             TestAuthHandler.AuthenticationScheme, _ =>

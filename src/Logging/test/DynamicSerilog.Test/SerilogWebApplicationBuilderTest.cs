@@ -21,16 +21,16 @@ public sealed class SerilogWebApplicationBuilderTest
     }
 
     [Fact]
-    public void OnlyApplicableFilters_AreApplied()
+    public async Task OnlyApplicableFilters_AreApplied()
     {
         var testSink = new TestSink();
 
-        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         builder.AddDynamicSerilog((_, loggerConfiguration) => loggerConfiguration.MinimumLevel.Error().Enrich.WithExceptionDetails().MinimumLevel
             .Override("Microsoft", LogEventLevel.Warning).WriteTo.Sink(testSink));
 
-        WebApplication host = builder.Build();
+        await using WebApplication host = builder.Build();
 
         var startup = new Startup(host.Services.GetRequiredService<ILogger<Startup>>());
         startup.ConfigureServices(null);
@@ -43,7 +43,7 @@ public sealed class SerilogWebApplicationBuilderTest
     }
 
     [Fact]
-    public void OnlyApplicableFilters_AreApplied_via_Options()
+    public async Task OnlyApplicableFilters_AreApplied_via_Options()
     {
         var appSettings = new Dictionary<string, string?>
         {
@@ -53,10 +53,10 @@ public sealed class SerilogWebApplicationBuilderTest
             { "Serilog:WriteTo:Name", "TestSink" }
         };
 
-        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
         hostBuilder.Configuration.AddInMemoryCollection(appSettings);
         hostBuilder.AddDynamicSerilog();
-        WebApplication host = hostBuilder.Build();
+        await using WebApplication host = hostBuilder.Build();
 
         object logger = host.Services.GetRequiredService<ILogger<SerilogWebApplicationBuilderTest>>();
         var startup = new Startup(host.Services.GetRequiredService<ILogger<Startup>>());

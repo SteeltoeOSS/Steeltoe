@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Loggers;
@@ -31,7 +32,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration);
@@ -51,7 +52,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_ReturnsBadRequest()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration);
@@ -68,7 +69,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_AcceptsPost()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
@@ -93,7 +94,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             ["management:endpoints:path"] = "/"
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
@@ -113,7 +114,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_UpdateNameSpace_UpdatesChildren()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
@@ -154,7 +155,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task LoggersActuator_MultipleProviders_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging((context, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(context.Configuration);

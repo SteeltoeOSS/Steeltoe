@@ -40,7 +40,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["info:NET:ASPNET:version"] = "2.0.0"
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         // Application ID missing
@@ -67,7 +67,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:application_id"] = "foobar"
         };
 
-        IWebHostBuilder builder2 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+        IWebHostBuilder builder2 = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings2));
 
         // CloudFoundry Api missing
@@ -95,7 +95,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder3 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+        IWebHostBuilder builder3 = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings3));
 
         // Endpoint not configured
@@ -123,7 +123,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder4 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+        IWebHostBuilder builder4 = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings4));
 
         using (var server = new TestServer(builder4))
@@ -153,7 +153,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["info:NET:ASPNET:version"] = "2.0.0"
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using (var server = new TestServer(builder))
@@ -181,7 +181,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder3 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+        IWebHostBuilder builder3 = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings3));
 
         using (var server = new TestServer(builder3))
@@ -214,7 +214,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using var server = new TestServer(builder);
@@ -246,7 +246,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using var server = new TestServer(builder);
@@ -277,7 +277,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>().ConfigureAppConfiguration((_, configuration) =>
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>().ConfigureAppConfiguration((_, configuration) =>
         {
             configuration.AddInMemoryCollection(appSettings);
             configuration.AddEnvironmentVariables();
@@ -310,7 +310,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
             ["vcap:application:cf_api"] = "http://localhost:9999/foo"
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupWithSecurity>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings));
 
         using var server = new TestServer(builder);
@@ -368,11 +368,10 @@ public sealed class CloudFoundrySecurityMiddlewareTest : BaseTest
     }
 
     [Fact]
-    public void Throws_when_Add_method_not_called()
+    public async Task Throws_when_Add_method_not_called()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
-        WebApplication app = builder.Build();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        await using WebApplication app = builder.Build();
 
         Action action = () => app.UseCloudFoundrySecurity();
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Please call IServiceCollection.AddCloudFoundrySecurity first.");

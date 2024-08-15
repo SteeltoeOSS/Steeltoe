@@ -4,7 +4,6 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -122,8 +121,7 @@ public sealed class EurekaHealthCheckHandlerTest
     [Fact]
     public async Task AddEurekaDiscoveryClient_uses_health_check_handler()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         var contributor = new TestHealthContributor(HealthStatus.Up);
         builder.Services.AddSingleton<IHealthContributor>(contributor);
@@ -145,7 +143,7 @@ public sealed class EurekaHealthCheckHandlerTest
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NoContent);
         handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond("application/json", "{}");
 
-        WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 

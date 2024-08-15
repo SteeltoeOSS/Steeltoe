@@ -17,7 +17,7 @@ public sealed class ConfigServerClientOptionsTest
     public void ConfigureConfigServerClientOptions_WithDefaults()
     {
         IServiceCollection services = new ServiceCollection().AddOptions();
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
 
         IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(environment);
         services.AddSingleton<IConfiguration>(_ => builder.Build());

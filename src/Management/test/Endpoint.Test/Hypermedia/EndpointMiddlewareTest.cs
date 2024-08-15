@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Web.Hypermedia;
 
@@ -34,7 +35,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [InlineData("http://somehost:8080", "http://somehost:8080", "http")]
     public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData(string requestUriString, string calculatedHost, string xForwarded)
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
@@ -52,7 +53,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     public async Task HypermediaEndpointMiddleware_ServiceContractNotBroken()
     {
         // arrange a server and client
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
@@ -73,7 +74,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         _appSettings.Add("Management:Endpoints:Path", "/");
 
         // arrange a server and client
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);

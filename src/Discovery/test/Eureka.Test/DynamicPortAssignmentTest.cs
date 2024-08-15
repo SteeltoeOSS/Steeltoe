@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
@@ -21,8 +21,7 @@ public sealed class DynamicPortAssignmentTest
             ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.WebHost.UseSetting("urls", "http://*:0;https://*:0");
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();

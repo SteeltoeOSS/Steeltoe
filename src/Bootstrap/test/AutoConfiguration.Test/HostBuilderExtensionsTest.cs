@@ -4,7 +4,6 @@
 
 using System.Net;
 using System.Reflection;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -395,13 +394,11 @@ public sealed class HostBuilderExtensionsTest
 
         private static IHost GetHostExcluding(IReadOnlySet<string> assemblyNamesToExclude)
         {
-            var hostBuilder = new HostBuilder();
+            IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
             hostBuilder.ConfigureWebHost(builder =>
             {
-                builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
                 builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
-                builder.ConfigureServices(services => services.AddRouting());
                 builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
                 builder.UseTestServer();
 
@@ -413,8 +410,7 @@ public sealed class HostBuilderExtensionsTest
 
         private static IWebHost GetWebHostExcluding(IReadOnlySet<string> assemblyNamesToExclude)
         {
-            IWebHostBuilder builder = WebHost.CreateDefaultBuilder();
-            builder.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+            IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
             builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
             builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
             builder.UseTestServer();
@@ -426,8 +422,7 @@ public sealed class HostBuilderExtensionsTest
 
         private static WebApplication GetWebApplicationExcluding(IReadOnlySet<string> assemblyNamesToExclude)
         {
-            WebApplicationBuilder builder = WebApplication.CreateBuilder();
-            builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+            WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
             builder.Configuration.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
             builder.WebHost.UseTestServer();
 

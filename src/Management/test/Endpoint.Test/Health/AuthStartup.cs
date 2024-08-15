@@ -12,7 +12,6 @@ public sealed class AuthStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddHealthActuator();
     }
 

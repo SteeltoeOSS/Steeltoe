@@ -2,27 +2,24 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
 
 namespace Steeltoe.Common.TestResources;
 
-public static class HostingHelpers
+public static class TestHostEnvironmentFactory
 {
     public const string TestAppName = "TestApp";
 
-    public static readonly Action<IApplicationBuilder> EmptyAction = _ =>
+    public static IHostEnvironment Create()
     {
-    };
-
-    public static IHostEnvironment GetHostingEnvironment()
-    {
-        return GetHostingEnvironment("EnvironmentName");
+        return Create("Test");
     }
 
-    public static IHostEnvironment GetHostingEnvironment(string environmentName)
+    public static IHostEnvironment Create(string environmentName)
     {
+        ArgumentNullException.ThrowIfNull(environmentName);
+
         return new HostingEnvironment
         {
             EnvironmentName = environmentName,

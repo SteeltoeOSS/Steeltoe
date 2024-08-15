@@ -12,7 +12,6 @@ public sealed class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddLoggersActuator();
     }
 

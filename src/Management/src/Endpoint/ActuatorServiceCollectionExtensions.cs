@@ -34,6 +34,7 @@ public static class ActuatorServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        services.AddRouting();
         services.TryAddScoped<ActuatorEndpointMapper>();
 
         services.ConfigureOptionsWithChangeTokenSource<ManagementOptions, ConfigureManagementOptions>();

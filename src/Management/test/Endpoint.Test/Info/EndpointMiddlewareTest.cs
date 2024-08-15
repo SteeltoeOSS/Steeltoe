@@ -7,6 +7,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Info;
 
@@ -36,7 +37,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         // Note: This test pulls in from git.properties and appsettings created
         // in the Startup class
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
@@ -85,7 +86,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" }
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);

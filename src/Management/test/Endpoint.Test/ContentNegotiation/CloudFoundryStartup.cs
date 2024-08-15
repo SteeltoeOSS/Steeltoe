@@ -12,7 +12,6 @@ public sealed class CloudFoundryStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddCloudFoundryActuator();
     }
 

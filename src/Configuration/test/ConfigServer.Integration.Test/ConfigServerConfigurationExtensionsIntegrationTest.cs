@@ -49,11 +49,11 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        IHostEnvironment hostingEnv = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create();
         configurationBuilder.AddJsonFile(fileName);
 
         // Act and Assert (expects Spring Cloud Config Server to be running)
-        configurationBuilder.AddConfigServer(hostingEnv);
+        configurationBuilder.AddConfigServer(hostEnvironment);
         IConfigurationRoot root = configurationBuilder.Build();
 
         Assert.Equal("spam", root["bar"]);
@@ -93,8 +93,9 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseEnvironment("development").UseStartup<TestServerStartup>().ConfigureAppConfiguration(
-            (context, configuration) => configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseEnvironment("development").UseStartup<TestServerStartup>()
+            .ConfigureAppConfiguration((context, configuration) =>
+                configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment));
 
         // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
         using var server = new TestServer(builder);
@@ -174,8 +175,9 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseEnvironment("development").UseStartup<TestServerStartup>().ConfigureAppConfiguration(
-            (context, configuration) => configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseEnvironment("development").UseStartup<TestServerStartup>()
+            .ConfigureAppConfiguration((context, configuration) =>
+                configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment));
 
         // Act and Assert (TestServer expects Spring Cloud Config Server to be running @ localhost:8888)
         using var server = new TestServer(builder);
@@ -256,8 +258,9 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseEnvironment("development").UseStartup<TestServerStartup>().ConfigureAppConfiguration(
-            (context, configuration) => configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseEnvironment("development").UseStartup<TestServerStartup>()
+            .ConfigureAppConfiguration((context, configuration) =>
+                configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment));
 
         // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
         using var server = new TestServer(builder);
@@ -303,11 +306,11 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        IHostEnvironment hostingEnv = HostingHelpers.GetHostingEnvironment("development");
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create("development");
         configurationBuilder.AddJsonFile(fileName);
 
         // Act and Assert (expects Spring Cloud Config Server to be running)
-        configurationBuilder.AddConfigServer(hostingEnv);
+        configurationBuilder.AddConfigServer(hostEnvironment);
         IConfigurationRoot root = configurationBuilder.Build();
 
         Assert.Equal("spam", root["bar"]);
@@ -347,8 +350,8 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         string directory = Path.GetDirectoryName(path)!;
         string fileName = Path.GetFileName(path);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestServerStartup>().ConfigureAppConfiguration((context, builder) =>
-            builder.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment));
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestServerStartup>().ConfigureAppConfiguration((context, configuration) =>
+            configuration.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment));
 
         // Act and Assert (TestServer expects Spring Cloud Config Server to be running)
         using var server = new TestServer(builder);

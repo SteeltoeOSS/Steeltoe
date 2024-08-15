@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Exceptions;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Logging.DynamicSerilog.Test;
 
@@ -25,7 +26,7 @@ public sealed class SerilogWebHostBuilderTest
     {
         var testSink = new TestSink();
 
-        _ = new WebHostBuilder().UseStartup<Startup>().AddDynamicSerilog((_, loggerConfiguration) =>
+        using IWebHost host = TestWebHostBuilderFactory.Create().UseStartup<Startup>().AddDynamicSerilog((_, loggerConfiguration) =>
             loggerConfiguration.MinimumLevel.Error().Enrich.WithExceptionDetails().MinimumLevel.Override("Microsoft", LogEventLevel.Warning).WriteTo
                 .Sink(testSink)).Build();
 
@@ -47,8 +48,8 @@ public sealed class SerilogWebHostBuilderTest
             { "Serilog:WriteTo:Name", "TestSink" }
         };
 
-        IWebHost host = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings)).UseStartup<Startup>()
-            .AddDynamicSerilog().Build();
+        using IWebHost host = TestWebHostBuilderFactory.Create().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings))
+            .UseStartup<Startup>().AddDynamicSerilog().Build();
 
         object logger = host.Services.GetRequiredService<ILogger<SerilogWebHostBuilderTest>>();
         ILogEventSink[] sinks = GetSinks(logger);

@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Management.Tracing.Test;
 
@@ -12,19 +14,18 @@ public sealed class TracingBaseHostBuilderExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracing_ConfiguresExpectedDefaults()
     {
-        var hostBuilder = new HostBuilder();
-        IServiceCollection? services = null;
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
+        hostBuilder.ConfigureWebHost(builder => builder.UseTestServer());
 
-        hostBuilder.ConfigureServices(svc =>
+        hostBuilder.ConfigureServices(services =>
         {
-            services = svc;
-            svc.AddSingleton(GetConfiguration());
-            svc.AddDistributedTracing();
+            services.AddSingleton(GetConfiguration());
+            services.AddDistributedTracing();
         });
 
-        hostBuilder.Build();
-        ServiceProvider serviceProvider = services!.BuildServiceProvider(true);
-        ValidateServiceCollectionCommon(serviceProvider);
-        ValidateServiceCollectionBase(serviceProvider);
+        using IHost host = hostBuilder.Build();
+
+        ValidateServiceCollectionCommon(host.Services);
+        ValidateServiceCollectionBase(host.Services);
     }
 }

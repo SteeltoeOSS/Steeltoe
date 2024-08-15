@@ -90,7 +90,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "management:endpoints:actuator:exposure:include:0", "*" }
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {
@@ -124,7 +124,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
             { "TestUsesEndpointRouting", "False" }
         };
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(appSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {

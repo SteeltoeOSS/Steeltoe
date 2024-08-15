@@ -21,7 +21,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     public void AddConfigServer_AddsConfigServerProviderToProvidersList()
     {
         IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(_quickTests);
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
 
         configurationBuilder.AddConfigServer(environment);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
@@ -36,7 +36,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
     {
         IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(_quickTests);
         var loggerFactory = new LoggerFactory();
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
 
         configurationBuilder.AddConfigServer(environment, loggerFactory);
         IConfigurationRoot configurationRoot = configurationBuilder.Build();
@@ -87,7 +87,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddJsonFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
@@ -142,7 +142,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddJsonFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
@@ -178,7 +178,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddJsonFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
@@ -219,7 +219,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddXmlFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
@@ -263,7 +263,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddIniFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
@@ -305,7 +305,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         ];
 
         var configurationBuilder = new ConfigurationBuilder();
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddCommandLine(appsettings);
 
         configurationBuilder.AddConfigServer(environment);
@@ -365,7 +365,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
         configurationBuilder.AddJsonFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
@@ -458,7 +458,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcapServices);
         string vcapServicesFileName = Path.GetFileName(vcapServicesPath);
 
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(sandbox.FullPath);
@@ -564,7 +564,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcapServices);
         string vcapServicesFileName = Path.GetFileName(vcapServicesPath);
 
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create("Production");
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(sandbox.FullPath);

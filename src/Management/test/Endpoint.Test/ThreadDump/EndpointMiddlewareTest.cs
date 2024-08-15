@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.ThreadDump;
@@ -54,7 +55,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task ThreadDumpActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<StartupV1>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<StartupV1>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {
@@ -78,7 +79,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     {
         if (Platform.IsWindows)
         {
-            IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+            IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
                 .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                     (webHostContext, loggingBuilder) =>
                     {

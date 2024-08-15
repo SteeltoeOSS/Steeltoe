@@ -279,7 +279,7 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.ReturnStatus = [500];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -297,12 +297,12 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus = [204];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -333,12 +333,12 @@ public sealed class ConfigServerConfigurationProviderTest
                     ]
                 }";
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -374,14 +374,14 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""propertySources"": []
                 }";
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
 
         // Initial requests succeed, but later requests return 400 status code so that an exception is thrown during polling
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 2).Concat(Enumerable.Repeat(400, 100)).ToArray();
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -421,12 +421,12 @@ public sealed class ConfigServerConfigurationProviderTest
                     ""propertySources"": []
                 }";
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
         TestConfigServerStartup.ReturnStatus = Enumerable.Repeat(200, 100).ToArray();
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -468,7 +468,7 @@ public sealed class ConfigServerConfigurationProviderTest
                     ]
                 }";
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
 
@@ -479,7 +479,7 @@ public sealed class ConfigServerConfigurationProviderTest
         ];
 
         TestConfigServerStartup.Label = "testlabel";
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -516,10 +516,10 @@ public sealed class ConfigServerConfigurationProviderTest
                     ]
                 }";
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -549,7 +549,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsGreaterThanEqualBadRequest_StopsChecking()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus =
@@ -558,7 +558,7 @@ public sealed class ConfigServerConfigurationProviderTest
             200
         ];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -577,7 +577,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus_DoesNotContinueChecking()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus =
@@ -586,7 +586,7 @@ public sealed class ConfigServerConfigurationProviderTest
             200
         ];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -605,12 +605,12 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_ConfigServerReturnsNotFoundStatus()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus = [404];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -628,12 +628,12 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_ConfigServerReturnsNotFoundStatus_FailFastEnabled()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus = [404];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -652,8 +652,8 @@ public sealed class ConfigServerConfigurationProviderTest
         ConfigServerClientOptions options = _commonOptions;
         options.FailFast = true;
         options.Uri = "http://localhost:8888,http://localhost:8888";
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -675,12 +675,12 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus = [500];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -696,7 +696,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_MultipleConfigServers_ReturnsBadStatus_StopsChecking_FailFastEnabled()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus =
@@ -706,7 +706,7 @@ public sealed class ConfigServerConfigurationProviderTest
             500
         ];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -724,7 +724,7 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled()
     {
-        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment environment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
 
         TestConfigServerStartup.ReturnStatus =
@@ -737,7 +737,7 @@ public sealed class ConfigServerConfigurationProviderTest
             500
         ];
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -781,10 +781,10 @@ public sealed class ConfigServerConfigurationProviderTest
                     ]
                 }";
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -825,10 +825,10 @@ public sealed class ConfigServerConfigurationProviderTest
                         ]
                     }";
 
-        IHostEnvironment hostEnvironment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create();
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         using var server = new TestServer(builder);
         server.BaseAddress = new Uri("http://localhost:8888");
@@ -1331,8 +1331,9 @@ public sealed class ConfigServerConfigurationProviderTest
 
         TestConfigServerStartup.Reset();
         TestConfigServerStartup.Response = environment;
-        IHostEnvironment hostingEnvironment = HostingHelpers.GetHostingEnvironment();
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(hostingEnvironment.EnvironmentName);
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create();
+
+        IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create().UseStartup<TestConfigServerStartup>().UseEnvironment(hostEnvironment.EnvironmentName);
 
         ConfigServerClientOptions clientOptions = _commonOptions;
 

@@ -117,7 +117,7 @@ public sealed class CertificateAuthorizationTest
     public async Task CertificateAuth_SetDefaultPolicyWithRequirements()
     {
         var requestUri = new Uri("https://localhost/request");
-        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.Configuration.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId);
         builder.Services.AddAuthentication().AddCertificate();
 
@@ -144,7 +144,7 @@ public sealed class CertificateAuthorizationTest
     public async Task CertificateAuth_SetDefaultPolicyWithPolicyBuilder()
     {
         var requestUri = new Uri("https://localhost/request");
-        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.Configuration.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId);
         builder.Services.AddAuthentication().AddCertificate();
 
@@ -168,7 +168,7 @@ public sealed class CertificateAuthorizationTest
     public async Task CertificateAuth_AllowsCustomHeader()
     {
         var requestUri = new Uri("https://localhost/request");
-        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.Configuration.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId);
         builder.Services.AddAuthentication().AddCertificate();
 
@@ -188,9 +188,9 @@ public sealed class CertificateAuthorizationTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    private HostBuilder GetHostBuilder()
+    private IHostBuilder GetHostBuilder()
     {
-        var hostBuilder = new HostBuilder();
+        IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
         hostBuilder.ConfigureAppConfiguration(builder => builder.AddAppInstanceIdentityCertificate(Certificates.ServerOrgId, Certificates.ServerSpaceId));
         hostBuilder.ConfigureWebHostDefaults(builder => builder.UseStartup<TestServerCertificateStartup>());
         hostBuilder.ConfigureWebHost(builder => builder.UseTestServer());

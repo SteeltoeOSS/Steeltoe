@@ -31,8 +31,6 @@ public sealed class EndpointMiddlewareTest : BaseTest
         ["management:endpoints:actuator:exposure:include:0"] = "*"
     };
 
-    private readonly IHostEnvironment _host = HostingHelpers.GetHostingEnvironment();
-
     [Fact]
     public async Task HandleEnvironmentRequestAsync_ReturnsExpected()
     {
@@ -45,7 +43,9 @@ public sealed class EndpointMiddlewareTest : BaseTest
 
         IOptionsMonitor<ManagementOptions> managementOptions = GetOptionsMonitorFromSettings<ManagementOptions>(AppSettings);
 
-        var handler = new EnvironmentEndpointHandler(optionsMonitor, configurationRoot, _host, NullLoggerFactory.Instance);
+        IHostEnvironment hostEnvironment = TestHostEnvironmentFactory.Create();
+
+        var handler = new EnvironmentEndpointHandler(optionsMonitor, configurationRoot, hostEnvironment, NullLoggerFactory.Instance);
         var middleware = new EnvironmentEndpointMiddleware(handler, managementOptions, NullLoggerFactory.Instance);
 
         HttpContext context = CreateRequest("GET", "/env");
@@ -55,7 +55,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         string? json = await reader.ReadLineAsync();
 
         const string expected =
-            "{\"activeProfiles\":[\"EnvironmentName\"],\"propertySources\":[{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:actuator:exposure:include:0\":{\"value\":\"*\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
+            "{\"activeProfiles\":[\"Test\"],\"propertySources\":[{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:Console:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:actuator:exposure:include:0\":{\"value\":\"*\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
 
         Assert.Equal(expected, json);
     }
@@ -66,7 +66,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
         // Some developers set ASPNETCORE_ENVIRONMENT in their environment, which will break this test if we don't un-set it
         using var scope = new EnvironmentVariableScope("ASPNETCORE_ENVIRONMENT", null);
 
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -17,7 +16,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public sealed class CloudFoundryTest
 {
     [Fact]
-    public void NoVCAPEnvVariables_ConfiguresEurekaDiscovery_Correctly()
+    public async Task NoVCAPEnvVariables_ConfiguresEurekaDiscovery_Correctly()
     {
         const string appSettings = """
             {
@@ -72,15 +71,14 @@ public sealed class CloudFoundryTest
             }
             """;
 
-        using Stream stream = TestHelpers.StringToStream(appSettings);
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        await using var stream = TextConverter.ToStream(appSettings);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings();
         builder.Services.AddEurekaDiscoveryClient();
 
-        using WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         var clientOptionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
         EurekaClientOptions clientOptions = clientOptionsMonitor.CurrentValue;
@@ -131,7 +129,7 @@ public sealed class CloudFoundryTest
     }
 
     [Fact]
-    public void WithVCAPEnvVariables_HostName_ConfiguresEurekaDiscovery_Correctly()
+    public async Task WithVCAPEnvVariables_HostName_ConfiguresEurekaDiscovery_Correctly()
     {
         const string vcapApplication = """
             {
@@ -267,15 +265,14 @@ public sealed class CloudFoundryTest
         using var indexScope = new EnvironmentVariableScope("CF_INSTANCE_INDEX", "1");
         using var guidScope = new EnvironmentVariableScope("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
 
-        using Stream stream = TestHelpers.StringToStream(appSettings);
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        await using var stream = TextConverter.ToStream(appSettings);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings();
         builder.Services.AddEurekaDiscoveryClient();
 
-        using WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         var clientOptionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
         EurekaClientOptions clientOptions = clientOptionsMonitor.CurrentValue;
@@ -333,7 +330,7 @@ public sealed class CloudFoundryTest
     }
 
     [Fact]
-    public void WithVCAPEnvVariables_Route_ConfiguresEurekaDiscovery_Correctly()
+    public async Task WithVCAPEnvVariables_Route_ConfiguresEurekaDiscovery_Correctly()
     {
         const string vcapApplication = """
             {
@@ -463,15 +460,14 @@ public sealed class CloudFoundryTest
         using var indexScope = new EnvironmentVariableScope("CF_INSTANCE_INDEX", "1");
         using var guidScope = new EnvironmentVariableScope("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
 
-        using Stream stream = TestHelpers.StringToStream(appSettings);
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        await using var stream = TextConverter.ToStream(appSettings);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings();
         builder.Services.AddEurekaDiscoveryClient();
 
-        using WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         var clientOptionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
         EurekaClientOptions clientOptions = clientOptionsMonitor.CurrentValue;
@@ -530,7 +526,7 @@ public sealed class CloudFoundryTest
     }
 
     [Fact]
-    public void WithVCAPEnvVariables_AppName_Overrides_VCAPBinding()
+    public async Task WithVCAPEnvVariables_AppName_Overrides_VCAPBinding()
     {
         const string vcapApplication = """
             {
@@ -661,15 +657,14 @@ public sealed class CloudFoundryTest
         using var indexScope = new EnvironmentVariableScope("CF_INSTANCE_INDEX", "1");
         using var guidScope = new EnvironmentVariableScope("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
 
-        using Stream stream = TestHelpers.StringToStream(appSettings);
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        await using var stream = TextConverter.ToStream(appSettings);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings();
         builder.Services.AddEurekaDiscoveryClient();
 
-        using WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         var clientOptionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>();
         EurekaClientOptions clientOptions = clientOptionsMonitor.CurrentValue;
@@ -728,7 +723,7 @@ public sealed class CloudFoundryTest
     }
 
     [Fact]
-    public void WithVCAPEnvVariables_ButNoUri_DoesNotThrow()
+    public async Task WithVCAPEnvVariables_ButNoUri_DoesNotThrow()
     {
         const string vcapApplication = """
             {
@@ -763,13 +758,12 @@ public sealed class CloudFoundryTest
         using var indexScope = new EnvironmentVariableScope("CF_INSTANCE_INDEX", "1");
         using var guidScope = new EnvironmentVariableScope("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings();
         builder.Services.AddEurekaDiscoveryClient();
 
-        using WebApplication app = builder.Build();
+        await using WebApplication app = builder.Build();
 
         var instanceOptionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
 

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -58,7 +59,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HeapDumpActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings)).ConfigureLogging(
                 (webHostContext, loggingBuilder) =>
                 {
@@ -76,15 +77,16 @@ public sealed class EndpointMiddlewareTest : BaseTest
         Assert.Equal("application/octet-stream", contentType.Single());
         Assert.True(response.Content.Headers.Contains("Content-Disposition"));
 
-        var tempFile = new TempFile();
-        var stream1 = new FileStream(tempFile.FullPath, FileMode.Create);
-        Stream input = await response.Content.ReadAsStreamAsync();
-        await input.CopyToAsync(stream1);
-        stream1.Close();
+        using var tempFile = new TempFile();
 
-        FileStream stream2 = File.Open(tempFile.FullPath, FileMode.Open);
-        Assert.NotEqual(0, stream2.Length);
-        stream2.Close();
+        await using (Stream responseStream = await response.Content.ReadAsStreamAsync())
+        {
+            await using var writeStream = new FileStream(tempFile.FullPath, FileMode.Create);
+            await responseStream.CopyToAsync(writeStream);
+        }
+
+        await using FileStream readStream = File.Open(tempFile.FullPath, FileMode.Open);
+        Assert.NotEqual(0, readStream.Length);
     }
 
     [Fact]

@@ -4,7 +4,6 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,8 +28,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
             ["spring:application:name"] = "MySteeltoeApplication"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSpringBootAdminClient();
 
@@ -63,8 +61,7 @@ public sealed class SpringBootAdminClientHostedServiceTest : BaseTest
             ["spring:application:name"] = "MySteeltoeApplication"
         };
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseDefaultServiceProvider(options => options.ValidateScopes = true);
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSpringBootAdminClient();
 

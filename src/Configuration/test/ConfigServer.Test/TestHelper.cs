@@ -33,7 +33,7 @@ internal static class TestHelper
 
         if (options.Name != null)
         {
-            Assert.Equal(HostingHelpers.TestAppName, options.Name);
+            Assert.Equal(TestHostEnvironmentFactory.TestAppName, options.Name);
         }
 
         Assert.Null(options.Label);

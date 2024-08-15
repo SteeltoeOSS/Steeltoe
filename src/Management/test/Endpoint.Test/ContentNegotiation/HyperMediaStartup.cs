@@ -12,7 +12,6 @@ public sealed class HyperMediaStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRouting();
         services.AddHypermediaActuator();
     }
 

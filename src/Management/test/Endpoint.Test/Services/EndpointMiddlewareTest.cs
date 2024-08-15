@@ -95,7 +95,7 @@ public sealed class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task ServicesActuator_ReturnsExpectedData()
     {
-        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
+        IWebHostBuilder builder = TestWebHostBuilderFactory.Create().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(AppSettings));
 
         using var server = new TestServer(builder);

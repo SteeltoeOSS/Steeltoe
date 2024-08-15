@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Environment;
@@ -17,8 +16,7 @@ public sealed class EndpointServiceCollectionTest : BaseTest
     public void AddEnvironmentActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
-        IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
-        services.AddSingleton(host);
+        services.AddSingleton(TestHostEnvironmentFactory.Create());
 
         var appSettings = new Dictionary<string, string?>
         {
