@@ -15,7 +15,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void Constructor_FindsConfigServerProvider()
     {
-        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -37,7 +37,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void FindProvider_FindsProvider()
     {
-        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -58,7 +58,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void GetTimeToLive_ReturnsExpected()
     {
-        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -80,7 +80,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void IsEnabled_ReturnsExpected()
     {
-        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -102,7 +102,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void IsCacheStale_ReturnsExpected()
     {
-        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -130,7 +130,7 @@ public sealed class ConfigServerHealthContributorTest
     public async Task GetPropertySources_ReturnsExpected()
     {
         // this test does NOT expect to find a running Config Server
-        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
             { "spring:cloud:config:uri", "http://localhost:8887/" },
             { "spring:cloud:config:name", "myName" },
@@ -187,7 +187,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public async Task Health_NotEnabled_ReturnsExpected()
     {
-        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
@@ -212,7 +212,7 @@ public sealed class ConfigServerHealthContributorTest
     public async Task Health_NoPropertySources_ReturnsExpected()
     {
         // this test does NOT expect to find a running Config Server
-        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
             { "spring:cloud:config:uri", "http://localhost:8887/" },
             { "spring:cloud:config:name", "myName" },
@@ -238,7 +238,7 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public void UpdateHealth_WithPropertySources_ReturnsExpected()
     {
-        var values = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
         {
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },

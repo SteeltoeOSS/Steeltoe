@@ -19,7 +19,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     public void AddConfigServer_WebHost_AddsConfigServer()
     {
         IWebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
+        hostBuilder.ConfigureAppConfiguration(builder => builder.Add(FastTestConfigurations.ConfigServer));
         hostBuilder.UseStartup<TestConfigServerStartup>();
         hostBuilder.AddConfigServer();
 
@@ -34,7 +34,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     public void AddConfigServer_IHostBuilder_AddsConfigServer()
     {
         IHostBuilder hostBuilder = TestHostBuilderFactory.Create();
-        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
+        hostBuilder.ConfigureAppConfiguration(builder => builder.Add(FastTestConfigurations.ConfigServer));
         hostBuilder.AddConfigServer();
 
         using IHost host = hostBuilder.Build();

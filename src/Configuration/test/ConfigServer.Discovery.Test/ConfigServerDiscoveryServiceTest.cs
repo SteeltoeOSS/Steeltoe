@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Immutable;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Discovery;
@@ -18,9 +17,7 @@ public sealed class ConfigServerDiscoveryServiceTest
     [Fact]
     public void ConfigServerDiscoveryService_FindsDiscoveryClients()
     {
-        var appSettings = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration);
-
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfiguration configuration = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).Build();
         var options = new ConfigServerClientOptions();
 
         var service = new ConfigServerDiscoveryService(configuration, options, NullLoggerFactory.Instance);
@@ -34,7 +31,7 @@ public sealed class ConfigServerDiscoveryServiceTest
     [Fact]
     public async Task InvokeGetInstances_ReturnsExpected()
     {
-        var appSettings = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var appSettings = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery))
         {
             { "eureka:client:eurekaServer:retryCount", "0" }
         };
@@ -52,7 +49,7 @@ public sealed class ConfigServerDiscoveryServiceTest
     [Fact]
     public async Task InvokeGetInstances_RetryEnabled_ReturnsExpected()
     {
-        var appSettings = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var appSettings = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery))
         {
             { "eureka:client:eurekaServer:retryCount", "1" }
         };
@@ -77,7 +74,7 @@ public sealed class ConfigServerDiscoveryServiceTest
     [Fact]
     public async Task GetConfigServerInstances_ReturnsExpected()
     {
-        var appSettings = new Dictionary<string, string?>(TestHelpers.FastTestsConfiguration)
+        var appSettings = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery))
         {
             { "eureka:client:eurekaServer:retryCount", "0" }
         };
@@ -103,8 +100,7 @@ public sealed class ConfigServerDiscoveryServiceTest
     [Fact]
     public async Task RuntimeReplacementsCanBeProvided()
     {
-        ImmutableDictionary<string, string?> appSettings = TestHelpers.FastTestsConfiguration;
-        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).Build();
 
         var testDiscoveryClient = new TestDiscoveryClient();
         var service = new ConfigServerDiscoveryService(configurationRoot, new ConfigServerClientOptions(), NullLoggerFactory.Instance);

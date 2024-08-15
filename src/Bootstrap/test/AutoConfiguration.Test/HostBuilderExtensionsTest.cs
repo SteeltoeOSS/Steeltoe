@@ -398,7 +398,7 @@ public sealed class HostBuilderExtensionsTest
 
             hostBuilder.ConfigureWebHost(builder =>
             {
-                builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
+                builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.Add(FastTestConfigurations.All));
                 builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
                 builder.UseTestServer();
 
@@ -411,7 +411,7 @@ public sealed class HostBuilderExtensionsTest
         private static IWebHost GetWebHostExcluding(IReadOnlySet<string> assemblyNamesToExclude)
         {
             IWebHostBuilder builder = TestWebHostBuilderFactory.Create();
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(TestHelpers.FastTestsConfiguration));
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.Add(FastTestConfigurations.All));
             builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
             builder.UseTestServer();
 
@@ -423,7 +423,7 @@ public sealed class HostBuilderExtensionsTest
         private static WebApplication GetWebApplicationExcluding(IReadOnlySet<string> assemblyNamesToExclude)
         {
             WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
-            builder.Configuration.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
+            builder.Configuration.Add(FastTestConfigurations.All);
             builder.WebHost.UseTestServer();
 
             builder.AddSteeltoe(assemblyNamesToExclude);

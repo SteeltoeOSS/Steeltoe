@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
@@ -64,7 +65,7 @@ public sealed class ConfigServerHostedServiceTest
     public async Task ServiceConstructsAndOperatesWithConfigurationManager()
     {
         var configurationManager = new ConfigurationManager();
-        configurationManager.AddInMemoryCollection(TestHelpers.FastTestsConfiguration);
+        configurationManager.Add(FastTestConfigurations.ConfigServer);
         configurationManager.AddConfigServer();
         var service = new ConfigServerHostedService(configurationManager, []);
 
