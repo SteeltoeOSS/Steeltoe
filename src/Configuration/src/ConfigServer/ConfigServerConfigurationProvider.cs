@@ -45,6 +45,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     private readonly IConfiguration _configuration;
     private readonly bool _hasConfiguration;
     private readonly bool _ownsHttpClientHandler;
+    private readonly ConfigurationSettingsHelper _configurationSettingsHelper;
     private HttpClientHandler? _httpClientHandler;
 
     private ConfigServerDiscoveryService? _configServerDiscoveryService;
@@ -87,6 +88,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         _loggerFactory = loggerFactory;
         Logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
 
+        _configurationSettingsHelper = new ConfigurationSettingsHelper(loggerFactory);
+
         if (configuration != null)
         {
             _configuration = configuration;
@@ -119,7 +122,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         if (_hasConfiguration)
         {
-            ConfigurationSettingsHelper.Initialize(ConfigurationPrefix, ClientOptions, _configuration);
+            _configurationSettingsHelper.Initialize(ConfigurationPrefix, ClientOptions, _configuration);
             _configuration.GetReloadToken().RegisterChangeCallback(_ => OnSettingsChanged(), null);
         }
 

@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Steeltoe.Common.Configuration;
 
@@ -23,12 +22,20 @@ namespace Steeltoe.Common.Configuration;
 /// .
 /// </para>
 /// </summary>
-internal static class PropertyPlaceholderHelper
+internal sealed class PropertyPlaceholderHelper
 {
     private const string Prefix = "${";
     private const string Suffix = "}";
     private const string SimplePrefix = "{";
     private const string Separator = "?";
+    private readonly ILogger<PropertyPlaceholderHelper> _logger;
+
+    public PropertyPlaceholderHelper(ILogger<PropertyPlaceholderHelper> logger)
+    {
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _logger = logger;
+    }
 
     /// <summary>
     /// Replaces all placeholders of the form: <code><![CDATA[
@@ -42,17 +49,12 @@ internal static class PropertyPlaceholderHelper
     /// <param name="configuration">
     /// The configuration used for finding replacement values.
     /// </param>
-    /// <param name="logger">
-    /// Used for internal logging. Pass <see cref="NullLogger.Instance" /> to disable logging.
-    /// </param>
     /// <returns>
     /// The supplied value, with the placeholders replaced inline.
     /// </returns>
-    public static string? ResolvePlaceholders(string? property, IConfiguration? configuration, ILogger logger)
+    public string? ResolvePlaceholders(string? property, IConfiguration? configuration)
     {
-        ArgumentNullException.ThrowIfNull(logger);
-
-        return ParseStringValue(property, configuration, false, new HashSet<string>(), logger);
+        return ParseStringValue(property, configuration, false, new HashSet<string>());
     }
 
     /// <summary>
@@ -64,16 +66,12 @@ internal static class PropertyPlaceholderHelper
     /// <param name="configuration">
     /// The configuration to use as both source and target for placeholder resolution.
     /// </param>
-    /// <param name="logger">
-    /// Used for internal logging. Pass <see cref="NullLogger.Instance" /> to disable logging.
-    /// </param>
     /// <returns>
     /// A list of keys with resolved values. Add them to your <see cref="ConfigurationBuilder" /> with method 'AddInMemoryCollection'.
     /// </returns>
-    public static IDictionary<string, string?> GetResolvedConfigurationPlaceholders(IConfiguration configuration, ILogger logger)
+    public IDictionary<string, string?> GetResolvedConfigurationPlaceholders(IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
-        ArgumentNullException.ThrowIfNull(logger);
 
         // setup a holding tank for resolved values
         var resolvedValues = new Dictionary<string, string?>();
@@ -83,16 +81,15 @@ internal static class PropertyPlaceholderHelper
         foreach ((string key, string? value) in configuration.AsEnumerable().Where(pair =>
             pair.Value != null && pair.Value.Contains(Prefix, StringComparison.Ordinal) && pair.Value.Contains(Suffix, StringComparison.Ordinal)))
         {
-            logger.LogTrace("Found a property placeholder '{Placeholder}' to resolve for key '{Key}", value, key);
-            resolvedValues.Add(key, ParseStringValue(value, configuration, true, visitedPlaceholders, logger));
+            _logger.LogTrace("Found a property placeholder '{Placeholder}' to resolve for key '{Key}", value, key);
+            resolvedValues.Add(key, ParseStringValue(value, configuration, true, visitedPlaceholders));
         }
 
         return resolvedValues;
     }
 
     [return: NotNullIfNotNull(nameof(property))]
-    private static string? ParseStringValue(string? property, IConfiguration? configuration, bool useEmptyStringIfNotFound, ISet<string> visitedPlaceHolders,
-        ILogger logger)
+    private string? ParseStringValue(string? property, IConfiguration? configuration, bool useEmptyStringIfNotFound, ISet<string> visitedPlaceHolders)
     {
         if (configuration == null)
         {
@@ -119,7 +116,7 @@ internal static class PropertyPlaceholderHelper
 
             if (endIndex != -1)
             {
-                string placeholder = result.Substring(startIndex + Prefix.Length, endIndex);
+                string placeholder = Substring(result, startIndex + Prefix.Length, endIndex);
 
                 string originalPlaceholder = placeholder;
 
@@ -129,7 +126,7 @@ internal static class PropertyPlaceholderHelper
                 }
 
                 // Recursive invocation, parsing placeholders contained in the placeholder key.
-                placeholder = ParseStringValue(placeholder, configuration, useEmptyStringIfNotFound, visitedPlaceHolders, logger);
+                placeholder = ParseStringValue(placeholder, configuration, useEmptyStringIfNotFound, visitedPlaceHolders);
 
                 // Handle array references foo:bar[1]:baz format -> foo:bar:1:baz
                 string lookup = placeholder.Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal);
@@ -164,15 +161,15 @@ internal static class PropertyPlaceholderHelper
                 if (propertyValue != null)
                 {
                     // Recursive invocation, parsing placeholders contained in these previously resolved placeholder value.
-                    propertyValue = ParseStringValue(propertyValue, configuration, useEmptyStringIfNotFound, visitedPlaceHolders, logger);
-                    result.Replace(startIndex, endIndex + Suffix.Length, propertyValue);
-                    logger.LogDebug("Resolved placeholder '{Placeholder}'", placeholder);
-                    startIndex = result.IndexOf(Prefix, startIndex + propertyValue.Length);
+                    propertyValue = ParseStringValue(propertyValue, configuration, useEmptyStringIfNotFound, visitedPlaceHolders);
+                    Replace(result, startIndex, endIndex + Suffix.Length, propertyValue);
+                    _logger.LogDebug("Resolved placeholder '{Placeholder}'", placeholder);
+                    startIndex = IndexOf(result, Prefix, startIndex + propertyValue.Length);
                 }
                 else
                 {
                     // Proceed with unprocessed value.
-                    startIndex = result.IndexOf(Prefix, endIndex + Prefix.Length);
+                    startIndex = IndexOf(result, Prefix, endIndex + Prefix.Length);
                 }
 
                 visitedPlaceHolders.Remove(originalPlaceholder);
@@ -237,13 +234,13 @@ internal static class PropertyPlaceholderHelper
         return true;
     }
 
-    private static void Replace(this StringBuilder builder, int start, int end, string str)
+    private static void Replace(StringBuilder builder, int start, int end, string str)
     {
         builder.Remove(start, end - start);
         builder.Insert(start, str);
     }
 
-    private static int IndexOf(this StringBuilder builder, string str, int start)
+    private static int IndexOf(StringBuilder builder, string str, int start)
     {
         if (start >= builder.Length)
         {
@@ -253,7 +250,7 @@ internal static class PropertyPlaceholderHelper
         return builder.ToString().IndexOf(str, start, StringComparison.Ordinal);
     }
 
-    private static string Substring(this StringBuilder builder, int start, int end)
+    private static string Substring(StringBuilder builder, int start, int end)
     {
         return builder.ToString().Substring(start, end - start);
     }

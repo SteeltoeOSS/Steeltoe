@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Common.Test.Configuration;
@@ -19,7 +20,9 @@ public sealed class ConfigurationValuesHelperTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
 
-        string? result = ConfigurationValuesHelper.GetString("a:b", configuration, null, null);
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        string? result = helper.GetString("a:b", configuration, null, null);
         Assert.Equal("astring", result);
     }
 
@@ -33,7 +36,9 @@ public sealed class ConfigurationValuesHelperTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
 
-        int result = ConfigurationValuesHelper.GetInt32("a:b", configuration, null, 500);
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        int result = helper.GetInt32("a:b", configuration, null, 500);
         Assert.Equal(100, result);
     }
 
@@ -47,7 +52,9 @@ public sealed class ConfigurationValuesHelperTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
 
-        double result = ConfigurationValuesHelper.GetDouble("a:b", configuration, null, 500.00);
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        double result = helper.GetDouble("a:b", configuration, null, 500.00);
         Assert.Equal(100.00, result);
     }
 
@@ -61,7 +68,9 @@ public sealed class ConfigurationValuesHelperTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
 
-        bool result = ConfigurationValuesHelper.GetBoolean("a:b", configuration, null, false);
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        bool result = helper.GetBoolean("a:b", configuration, null, false);
         Assert.True(result);
     }
 
@@ -75,7 +84,9 @@ public sealed class ConfigurationValuesHelperTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
 
-        int result = ConfigurationValuesHelper.GetInt32("a:b:c", configuration, null, 100);
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        int result = helper.GetInt32("a:b:c", configuration, null, 100);
         Assert.Equal(100, result);
     }
 
@@ -89,7 +100,9 @@ public sealed class ConfigurationValuesHelperTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
 
-        double result = ConfigurationValuesHelper.GetDouble("a:b:c", configuration, null, 100.00);
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        double result = helper.GetDouble("a:b:c", configuration, null, 100.00);
         Assert.Equal(100.00, result);
     }
 
@@ -103,7 +116,9 @@ public sealed class ConfigurationValuesHelperTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
 
-        bool result = ConfigurationValuesHelper.GetBoolean("a:b:c", configuration, null, true);
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        bool result = helper.GetBoolean("a:b:c", configuration, null, true);
         Assert.True(result);
     }
 
@@ -117,7 +132,9 @@ public sealed class ConfigurationValuesHelperTest
 
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
 
-        string? result = ConfigurationValuesHelper.GetString("a:b:c", configuration, null, "foobar");
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        string? result = helper.GetString("a:b:c", configuration, null, "foobar");
         Assert.Equal("foobar", result);
     }
 
@@ -137,7 +154,9 @@ public sealed class ConfigurationValuesHelperTest
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings1).Build();
         IConfiguration resolve = new ConfigurationBuilder().AddInMemoryCollection(settings2).Build();
 
-        string? result = ConfigurationValuesHelper.GetString("a:b", configuration, resolve, "foobar");
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        string? result = helper.GetString("a:b", configuration, resolve, "foobar");
         Assert.Equal("astring", result);
     }
 
@@ -157,7 +176,9 @@ public sealed class ConfigurationValuesHelperTest
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings1).Build();
         IConfiguration resolve = new ConfigurationBuilder().AddInMemoryCollection(settings2).Build();
 
-        string? result = ConfigurationValuesHelper.GetString("a:b", configuration, resolve, null);
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        string? result = helper.GetString("a:b", configuration, resolve, null);
         Assert.Equal("${a:b:c}", result);
     }
 
@@ -177,7 +198,9 @@ public sealed class ConfigurationValuesHelperTest
         IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings1).Build();
         IConfiguration resolve = new ConfigurationBuilder().AddInMemoryCollection(settings2).Build();
 
-        string? result = ConfigurationValuesHelper.GetString("a:b", configuration, resolve, "foobar");
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        string? result = helper.GetString("a:b", configuration, resolve, "foobar");
         Assert.Equal("placeholderdefault", result);
     }
 
@@ -194,10 +217,12 @@ public sealed class ConfigurationValuesHelperTest
             { "a:b", "setting2" }
         };
 
-        IConfiguration config1 = new ConfigurationBuilder().AddInMemoryCollection(settings1).Build();
-        IConfiguration config2 = new ConfigurationBuilder().AddInMemoryCollection(settings2).Build();
+        IConfiguration configuration1 = new ConfigurationBuilder().AddInMemoryCollection(settings1).Build();
+        IConfiguration configuration2 = new ConfigurationBuilder().AddInMemoryCollection(settings2).Build();
 
-        string? result = ConfigurationValuesHelper.GetSetting("a:b", config1, config2, null, "foobar");
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        string? result = helper.GetSetting("a:b", configuration1, configuration2, null, "foobar");
         Assert.Equal("setting1", result);
     }
 
@@ -214,10 +239,12 @@ public sealed class ConfigurationValuesHelperTest
             { "a:b", "setting2" }
         };
 
-        IConfiguration config1 = new ConfigurationBuilder().AddInMemoryCollection(settings1).Build();
-        IConfiguration config2 = new ConfigurationBuilder().AddInMemoryCollection(settings2).Build();
+        IConfiguration configuration1 = new ConfigurationBuilder().AddInMemoryCollection(settings1).Build();
+        IConfiguration configuration2 = new ConfigurationBuilder().AddInMemoryCollection(settings2).Build();
 
-        string? result = ConfigurationValuesHelper.GetSetting("a:b", config1, config2, null, "foobar");
+        var helper = new ConfigurationValuesHelper(NullLoggerFactory.Instance);
+
+        string? result = helper.GetSetting("a:b", configuration1, configuration2, null, "foobar");
         Assert.Equal("setting2", result);
     }
 }

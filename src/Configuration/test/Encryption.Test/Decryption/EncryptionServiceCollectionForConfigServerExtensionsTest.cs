@@ -32,16 +32,16 @@ public sealed class EncryptionServiceCollectionForConfigServerExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        IConfigurationRoot config1 = builder.Build();
+        IConfigurationRoot configuration1 = builder.Build();
 
-        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<StartupForConfigureConfigServerEncryptionResolver>().UseConfiguration(config1);
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<StartupForConfigureConfigServerEncryptionResolver>().UseConfiguration(configuration1);
 
         using var server = new TestServer(hostBuilder);
-        var config2 = server.Services.GetRequiredService<IConfiguration>();
-        Assert.NotSame(config1, config2);
+        var configuration2 = server.Services.GetRequiredService<IConfiguration>();
+        Assert.NotSame(configuration1, configuration2);
 
-        Assert.Null(config2["nokey"]);
-        Assert.Equal("value1", config2["key1"]);
-        Assert.Equal("encrypt the world", config2["key2"]);
+        Assert.Null(configuration2["nokey"]);
+        Assert.Equal("value1", configuration2["key1"]);
+        Assert.Equal("encrypt the world", configuration2["key2"]);
     }
 }

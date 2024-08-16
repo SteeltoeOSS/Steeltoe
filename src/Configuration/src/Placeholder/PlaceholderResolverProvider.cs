@@ -18,6 +18,7 @@ namespace Steeltoe.Configuration.Placeholder;
 /// </summary>
 internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider, IDisposable
 {
+    private readonly PropertyPlaceholderHelper _propertyPlaceholderHelper;
     private bool _isDisposed;
 
     public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
@@ -44,6 +45,9 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Configuration = root;
+
+        ILogger<PropertyPlaceholderHelper> placeholderHelperLogger = loggerFactory.CreateLogger<PropertyPlaceholderHelper>();
+        _propertyPlaceholderHelper = new PropertyPlaceholderHelper(placeholderHelperLogger);
     }
 
     /// <summary>
@@ -62,6 +66,9 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         Providers = providers;
+
+        ILogger<PropertyPlaceholderHelper> placeholderHelperLogger = loggerFactory.CreateLogger<PropertyPlaceholderHelper>();
+        _propertyPlaceholderHelper = new PropertyPlaceholderHelper(placeholderHelperLogger);
     }
 
     /// <summary>
@@ -82,7 +89,7 @@ internal sealed class PlaceholderResolverProvider : IPlaceholderResolverProvider
         EnsureInitialized();
 
         string? originalValue = Configuration![key];
-        value = PropertyPlaceholderHelper.ResolvePlaceholders(originalValue, Configuration, NullLogger.Instance);
+        value = _propertyPlaceholderHelper.ResolvePlaceholders(originalValue, Configuration);
 
         if (value != originalValue && !ResolvedKeys.Contains(key))
         {

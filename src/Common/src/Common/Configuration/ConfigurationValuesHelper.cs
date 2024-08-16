@@ -4,13 +4,23 @@
 
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Common.Configuration;
 
-internal static class ConfigurationValuesHelper
+internal sealed class ConfigurationValuesHelper
 {
-    public static string? GetSetting(string key, IConfiguration primary, IConfiguration secondary, IConfiguration? resolve, string? defaultValue)
+    private readonly PropertyPlaceholderHelper _propertyPlaceholderHelper;
+
+    public ConfigurationValuesHelper(ILoggerFactory loggerFactory)
+    {
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+
+        ILogger<PropertyPlaceholderHelper> placeholderHelperLogger = loggerFactory.CreateLogger<PropertyPlaceholderHelper>();
+        _propertyPlaceholderHelper = new PropertyPlaceholderHelper(placeholderHelperLogger);
+    }
+
+    public string? GetSetting(string key, IConfiguration primary, IConfiguration secondary, IConfiguration? resolve, string? defaultValue)
     {
         // First check for key in primary
         string? setting = GetString(key, primary, resolve, null);
@@ -49,7 +59,7 @@ internal static class ConfigurationValuesHelper
     /// <returns>
     /// The value from configuration, or the default value if not found.
     /// </returns>
-    public static string? GetSetting(string key, IConfiguration configuration, string? defaultValue, params string[] sectionPrefixes)
+    public string? GetSetting(string key, IConfiguration configuration, string? defaultValue, params string[] sectionPrefixes)
     {
         ArgumentException.ThrowIfNullOrEmpty(key);
         ArgumentNullException.ThrowIfNull(configuration);
@@ -85,7 +95,7 @@ internal static class ConfigurationValuesHelper
     /// <returns>
     /// The value from configuration, or the default value if not found.
     /// </returns>
-    public static string? GetPreferredSetting(IConfiguration configuration, string? defaultValue, params string?[] configurationKeys)
+    public string? GetPreferredSetting(IConfiguration configuration, string? defaultValue, params string?[] configurationKeys)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(configurationKeys);
@@ -103,7 +113,7 @@ internal static class ConfigurationValuesHelper
         return defaultValue;
     }
 
-    public static int GetInt32(string key, IConfiguration configuration, IConfiguration? resolve, int defaultValue)
+    public int GetInt32(string key, IConfiguration configuration, IConfiguration? resolve, int defaultValue)
     {
         ArgumentException.ThrowIfNullOrEmpty(key);
         ArgumentNullException.ThrowIfNull(configuration);
@@ -118,7 +128,7 @@ internal static class ConfigurationValuesHelper
         return defaultValue;
     }
 
-    public static double GetDouble(string key, IConfiguration configuration, IConfiguration? resolve, double defaultValue)
+    public double GetDouble(string key, IConfiguration configuration, IConfiguration? resolve, double defaultValue)
     {
         ArgumentException.ThrowIfNullOrEmpty(key);
         ArgumentNullException.ThrowIfNull(configuration);
@@ -134,7 +144,7 @@ internal static class ConfigurationValuesHelper
         return defaultValue;
     }
 
-    public static bool GetBoolean(string key, IConfiguration configuration, IConfiguration? resolve, bool defaultValue)
+    public bool GetBoolean(string key, IConfiguration configuration, IConfiguration? resolve, bool defaultValue)
     {
         ArgumentException.ThrowIfNullOrEmpty(key);
         ArgumentNullException.ThrowIfNull(configuration);
@@ -149,7 +159,7 @@ internal static class ConfigurationValuesHelper
         return defaultValue;
     }
 
-    public static string? GetString(string key, IConfiguration configuration, IConfiguration? resolve, string? defaultValue)
+    public string? GetString(string key, IConfiguration configuration, IConfiguration? resolve, string? defaultValue)
     {
         ArgumentException.ThrowIfNullOrEmpty(key);
         ArgumentNullException.ThrowIfNull(configuration);
@@ -158,7 +168,7 @@ internal static class ConfigurationValuesHelper
 
         if (!string.IsNullOrEmpty(value))
         {
-            return PropertyPlaceholderHelper.ResolvePlaceholders(value, resolve, NullLogger.Instance);
+            return _propertyPlaceholderHelper.ResolvePlaceholders(value, resolve);
         }
 
         return defaultValue;
