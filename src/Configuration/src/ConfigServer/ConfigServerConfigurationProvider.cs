@@ -193,7 +193,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
             do
             {
-                Logger.LogInformation("Fetching configuration from server at: {Uri}", logUri);
+                Logger.LogDebug("Fetching configuration from server at: {Uri}", logUri);
 
                 try
                 {
@@ -201,7 +201,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 }
                 catch (ConfigServerException exception)
                 {
-                    Logger.LogInformation(exception, "Failed fetching configuration from server at: {Uri}.", logUri);
+                    Logger.LogWarning(exception, "Failed fetching configuration from server at: {Uri}.", logUri);
                     attempts++;
 
                     if (attempts < ClientOptions.Retry.MaxAttempts)
@@ -219,7 +219,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             while (true);
         }
 
-        Logger.LogInformation("Fetching configuration from server at: {Uri}", logUri);
+        Logger.LogDebug("Fetching configuration from server at: {Uri}", logUri);
         return await DoLoadAsync(updateDictionary, cancellationToken);
     }
 
@@ -236,7 +236,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             {
                 if (uris.Count > 1)
                 {
-                    Logger.LogInformation("Multiple Config Server Uris listed.");
+                    Logger.LogDebug("Multiple Config Server Uris listed.");
                 }
 
                 // Invoke Config Servers
@@ -245,7 +245,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 // Update configuration Data dictionary with any results
                 if (env != null)
                 {
-                    Logger.LogInformation("Located environment name: {Name}, profiles: {Profiles}, labels: {Label}, version: {Version}, state: {State}",
+                    Logger.LogDebug("Located environment name: {Name}, profiles: {Profiles}, labels: {Label}, version: {Version}, state: {State}",
                         env.Name, env.Profiles, env.Label, env.Version, env.State);
 
                     if (updateDictionary)
@@ -511,7 +511,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             {
                 using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
 
-                Logger.LogInformation("Config Server returned status: {StatusCode} invoking path: {RequestUri}", response.StatusCode, uri.ToMaskedString());
+                Logger.LogDebug("Config Server returned status: {StatusCode} invoking path: {RequestUri}", response.StatusCode, uri.ToMaskedString());
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
