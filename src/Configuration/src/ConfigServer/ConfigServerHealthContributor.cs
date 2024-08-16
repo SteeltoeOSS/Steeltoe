@@ -104,11 +104,11 @@ internal sealed class ConfigServerHealthContributor : IHealthContributor
 
     internal bool IsEnabled()
     {
-        return Provider is { Options.Health.Enabled: true };
+        return Provider is { ClientOptions.Health.Enabled: true };
     }
 
     internal long GetTimeToLive()
     {
-        return Provider != null ? Provider.Options.Health.TimeToLive : long.MaxValue;
+        return Provider != null ? Provider.ClientOptions.Health.TimeToLive : long.MaxValue;
     }
 }

@@ -42,7 +42,7 @@ public sealed class ConfigServerConfigurationProviderTest
         var options = new ConfigServerClientOptions();
         using var provider = new ConfigServerConfigurationProvider(options, null, null, NullLoggerFactory.Instance);
 
-        TestHelper.VerifyDefaults(provider.Options);
+        TestHelper.VerifyDefaults(provider.ClientOptions);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public sealed class ConfigServerConfigurationProviderTest
         var source = new ConfigServerConfigurationSource(options, configuration, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
 
-        TestHelper.VerifyDefaults(provider.Options);
+        TestHelper.VerifyDefaults(provider.ClientOptions);
     }
 
     [Fact]

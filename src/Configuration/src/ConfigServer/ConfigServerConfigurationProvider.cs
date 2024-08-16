@@ -13,6 +13,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
@@ -61,7 +62,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     /// <summary>
     /// Gets the configuration settings the provider uses when accessing the server.
     /// </summary>
-    public ConfigServerClientOptions Options { get; }
+    public ConfigServerClientOptions ClientOptions { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider" /> class from a <see cref="ConfigServerConfigurationSource" />.
@@ -77,10 +78,10 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     {
     }
 
-    internal ConfigServerConfigurationProvider(ConfigServerClientOptions options, IConfiguration? configuration, HttpClientHandler? httpClientHandler,
+    internal ConfigServerConfigurationProvider(ConfigServerClientOptions clientOptions, IConfiguration? configuration, HttpClientHandler? httpClientHandler,
         ILoggerFactory loggerFactory)
     {
-        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(clientOptions);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _loggerFactory = loggerFactory;
@@ -97,7 +98,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             _hasConfiguration = false;
         }
 
-        Options = options;
+        ClientOptions = clientOptions;
 
         if (httpClientHandler == null)
         {
@@ -114,28 +115,28 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     private void OnSettingsChanged()
     {
-        TimeSpan existingPollingInterval = Options.PollingInterval;
+        TimeSpan existingPollingInterval = ClientOptions.PollingInterval;
 
         if (_hasConfiguration)
         {
-            ConfigurationSettingsHelper.Initialize(ConfigurationPrefix, Options, _configuration);
+            ConfigurationSettingsHelper.Initialize(ConfigurationPrefix, ClientOptions, _configuration);
             _configuration.GetReloadToken().RegisterChangeCallback(_ => OnSettingsChanged(), null);
         }
 
-        if (Options.PollingInterval == TimeSpan.Zero || !Options.Enabled)
+        if (ClientOptions.PollingInterval == TimeSpan.Zero || !ClientOptions.Enabled)
         {
             _refreshTimer?.Dispose();
             _refreshTimer = null;
         }
-        else if (Options.Enabled)
+        else if (ClientOptions.Enabled)
         {
             if (_refreshTimer == null)
             {
-                _refreshTimer = new Timer(_ => DoPolledLoadAsync().GetAwaiter().GetResult(), null, TimeSpan.Zero, Options.PollingInterval);
+                _refreshTimer = new Timer(_ => DoPolledLoadAsync().GetAwaiter().GetResult(), null, TimeSpan.Zero, ClientOptions.PollingInterval);
             }
-            else if (existingPollingInterval != Options.PollingInterval)
+            else if (existingPollingInterval != ClientOptions.PollingInterval)
             {
-                _refreshTimer.Change(TimeSpan.Zero, Options.PollingInterval);
+                _refreshTimer.Change(TimeSpan.Zero, ClientOptions.PollingInterval);
             }
         }
     }
@@ -156,7 +157,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     }
 
     /// <summary>
-    /// Loads configuration data from the Spring Cloud Configuration Server as specified by the <see cref="Options" />.
+    /// Loads configuration data from the Spring Cloud Configuration Server as specified by the <see cref="ClientOptions" />.
     /// </summary>
     public override void Load()
     {
@@ -165,7 +166,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     internal async Task<ConfigEnvironment?> LoadInternalAsync(bool updateDictionary, CancellationToken cancellationToken)
     {
-        if (!Options.Enabled)
+        if (!ClientOptions.Enabled)
         {
             Logger.LogInformation("Config Server client disabled, did not fetch configuration!");
             return null;
@@ -173,19 +174,19 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         if (IsDiscoveryFirstEnabled())
         {
-            _configServerDiscoveryService ??= new ConfigServerDiscoveryService(_configuration, Options, _loggerFactory);
+            _configServerDiscoveryService ??= new ConfigServerDiscoveryService(_configuration, ClientOptions, _loggerFactory);
             await DiscoverServerInstancesAsync(_configServerDiscoveryService, cancellationToken);
         }
 
         // Adds client settings (e.g. spring:cloud:config:uri, etc.) to the Data dictionary
         AddConfigServerClientOptions();
 
-        string logUri = string.Join(',', Options.GetUris().Select(uri => new Uri(uri).ToMaskedString()));
+        string logUri = string.Join(',', ClientOptions.GetUris().Select(uri => new Uri(uri).ToMaskedString()));
 
-        if (Options is { Retry.Enabled: true, FailFast: true })
+        if (ClientOptions is { Retry.Enabled: true, FailFast: true })
         {
             int attempts = 0;
-            int backOff = Options.Retry.InitialInterval;
+            int backOff = ClientOptions.Retry.InitialInterval;
 
             do
             {
@@ -200,11 +201,11 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                     Logger.LogInformation(exception, "Failed fetching configuration from server at: {Uri}.", logUri);
                     attempts++;
 
-                    if (attempts < Options.Retry.MaxAttempts)
+                    if (attempts < ClientOptions.Retry.MaxAttempts)
                     {
                         Thread.CurrentThread.Join(backOff);
-                        int nextBackOff = (int)(backOff * Options.Retry.Multiplier);
-                        backOff = Math.Min(nextBackOff, Options.Retry.MaxInterval);
+                        int nextBackOff = (int)(backOff * ClientOptions.Retry.Multiplier);
+                        backOff = Math.Min(nextBackOff, ClientOptions.Retry.MaxInterval);
                     }
                     else
                     {
@@ -224,7 +225,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         Exception? error = null;
 
         // Get arrays of Config Server uris to check
-        IList<string> uris = Options.GetUris();
+        IList<string> uris = ClientOptions.GetUris();
 
         try
         {
@@ -287,7 +288,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         Logger.LogWarning(error, "Could not locate PropertySource");
 
-        if (Options.FailFast)
+        if (ClientOptions.FailFast)
         {
             throw new ConfigServerException("Could not locate PropertySource, fail fast property is set, failing", error);
         }
@@ -303,12 +304,12 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     internal string[] GetLabels()
     {
-        if (string.IsNullOrWhiteSpace(Options.Label))
+        if (string.IsNullOrWhiteSpace(ClientOptions.Label))
         {
             return EmptyLabels;
         }
 
-        return Options.Label.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return ClientOptions.Label.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
     }
 
     private async Task DiscoverServerInstancesAsync(ConfigServerDiscoveryService configServerDiscoveryService, CancellationToken cancellationToken)
@@ -317,7 +318,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         if (!instances.Any())
         {
-            if (Options.FailFast)
+            if (ClientOptions.FailFast)
             {
                 throw new ConfigServerException("Could not locate Config Server via discovery, are you missing a Discovery service assembly?");
             }
@@ -325,10 +326,10 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
             return;
         }
 
-        UpdateSettingsFromDiscovery(instances, Options);
+        UpdateSettingsFromDiscovery(instances, ClientOptions);
     }
 
-    internal void UpdateSettingsFromDiscovery(IEnumerable<IServiceInstance> instances, ConfigServerClientOptions options)
+    internal void UpdateSettingsFromDiscovery(IEnumerable<IServiceInstance> instances, ConfigServerClientOptions clientOptions)
     {
         var endpoints = new StringBuilder();
 
@@ -343,8 +344,8 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
                 {
                     metaData.TryGetValue("user", out string? username);
                     username ??= "user";
-                    options.Username = username;
-                    options.Password = password;
+                    clientOptions.Username = username;
+                    clientOptions.Password = password;
                 }
 
                 if (metaData.TryGetValue("configPath", out string? path) && path != null)
@@ -365,7 +366,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         if (endpoints.Length > 0)
         {
             string uris = endpoints.ToString(0, endpoints.Length - 1);
-            options.Uri = uris;
+            clientOptions.Uri = uris;
         }
     }
 
@@ -411,26 +412,27 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         }
         else
         {
-            if (!string.IsNullOrEmpty(Options.AccessTokenUri))
+            if (!string.IsNullOrEmpty(ClientOptions.AccessTokenUri))
             {
-                using HttpClient httpClient = CreateHttpClient(Options);
-                var accessTokenUri = new Uri(Options.AccessTokenUri);
+                using HttpClient httpClient = CreateHttpClient(ClientOptions);
+                var accessTokenUri = new Uri(ClientOptions.AccessTokenUri);
 
-                string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, Options.ClientId, Options.ClientSecret, cancellationToken);
+                string accessToken =
+                    await httpClient.GetAccessTokenAsync(accessTokenUri, ClientOptions.ClientId, ClientOptions.ClientSecret, cancellationToken);
 
                 Logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri.ToMaskedString());
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
         }
 
-        if (!string.IsNullOrEmpty(Options.Token) && Options.Uri != null && !Options.IsMultiServerConfiguration)
+        if (!string.IsNullOrEmpty(ClientOptions.Token) && ClientOptions.Uri != null && !ClientOptions.IsMultiServerConfiguration)
         {
-            if (!Options.DisableTokenRenewal)
+            if (!ClientOptions.DisableTokenRenewal)
             {
                 RenewToken();
             }
 
-            requestMessage.Headers.Add(TokenHeader, Options.Token);
+            requestMessage.Headers.Add(TokenHeader, ClientOptions.Token);
         }
 
         return requestMessage;
@@ -458,41 +460,38 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     {
         ArgumentNullException.ThrowIfNull(data);
 
-        data["spring:cloud:config:enabled"] = Options.Enabled.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:failFast"] = Options.FailFast.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:env"] = Options.Environment;
-        data["spring:cloud:config:label"] = Options.Label;
-        data["spring:cloud:config:name"] = Options.Name;
-        data["spring:cloud:config:password"] = Options.Password;
-        data["spring:cloud:config:uri"] = Options.Uri;
-        data["spring:cloud:config:username"] = Options.Username;
-        data["spring:cloud:config:token"] = Options.Token;
-        data["spring:cloud:config:timeout"] = Options.Timeout.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:validate_certificates"] = Options.ValidateCertificates.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:retry:enabled"] = Options.Retry.Enabled.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:retry:maxAttempts"] = Options.Retry.MaxAttempts.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:retry:initialInterval"] = Options.Retry.InitialInterval.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:retry:maxInterval"] = Options.Retry.MaxInterval.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:retry:multiplier"] = Options.Retry.Multiplier.ToString(CultureInfo.InvariantCulture);
-
-        data["spring:cloud:config:access_token_uri"] = Options.AccessTokenUri;
-        data["spring:cloud:config:client_secret"] = Options.ClientSecret;
-        data["spring:cloud:config:client_id"] = Options.ClientId;
-        data["spring:cloud:config:tokenTtl"] = Options.TokenTtl.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:tokenRenewRate"] = Options.TokenRenewRate.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:disableTokenRenewal"] = Options.DisableTokenRenewal.ToString(CultureInfo.InvariantCulture);
-
-        data["spring:cloud:config:discovery:enabled"] = Options.Discovery.Enabled.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:discovery:serviceId"] = Options.Discovery.ServiceId?.ToString(CultureInfo.InvariantCulture);
-
-        data["spring:cloud:config:health:enabled"] = Options.Health.Enabled.ToString(CultureInfo.InvariantCulture);
-        data["spring:cloud:config:health:timeToLive"] = Options.Health.TimeToLive.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:enabled"] = ClientOptions.Enabled.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:failFast"] = ClientOptions.FailFast.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:env"] = ClientOptions.Environment;
+        data["spring:cloud:config:label"] = ClientOptions.Label;
+        data["spring:cloud:config:name"] = ClientOptions.Name;
+        data["spring:cloud:config:password"] = ClientOptions.Password;
+        data["spring:cloud:config:uri"] = ClientOptions.Uri;
+        data["spring:cloud:config:username"] = ClientOptions.Username;
+        data["spring:cloud:config:token"] = ClientOptions.Token;
+        data["spring:cloud:config:timeout"] = ClientOptions.Timeout.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:validate_certificates"] = ClientOptions.ValidateCertificates.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:retry:enabled"] = ClientOptions.Retry.Enabled.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:retry:maxAttempts"] = ClientOptions.Retry.MaxAttempts.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:retry:initialInterval"] = ClientOptions.Retry.InitialInterval.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:retry:maxInterval"] = ClientOptions.Retry.MaxInterval.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:retry:multiplier"] = ClientOptions.Retry.Multiplier.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:access_token_uri"] = ClientOptions.AccessTokenUri;
+        data["spring:cloud:config:client_secret"] = ClientOptions.ClientSecret;
+        data["spring:cloud:config:client_id"] = ClientOptions.ClientId;
+        data["spring:cloud:config:tokenTtl"] = ClientOptions.TokenTtl.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:tokenRenewRate"] = ClientOptions.TokenRenewRate.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:disableTokenRenewal"] = ClientOptions.DisableTokenRenewal.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:discovery:enabled"] = ClientOptions.Discovery.Enabled.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:discovery:serviceId"] = ClientOptions.Discovery.ServiceId?.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:health:enabled"] = ClientOptions.Health.Enabled.ToString(CultureInfo.InvariantCulture);
+        data["spring:cloud:config:health:timeToLive"] = ClientOptions.Health.TimeToLive.ToString(CultureInfo.InvariantCulture);
     }
 
     internal async Task<ConfigEnvironment?> RemoteLoadAsync(IEnumerable<string> requestUris, string? label, CancellationToken cancellationToken)
     {
         // Get client if not already set
-        using HttpClient httpClient = CreateHttpClient(Options);
+        using HttpClient httpClient = CreateHttpClient(ClientOptions);
 
         Exception? error = null;
 
@@ -568,17 +567,17 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
         var uriBuilder = new UriBuilder(new Uri(serverUri));
 
-        if (!string.IsNullOrEmpty(Options.Username))
+        if (!string.IsNullOrEmpty(ClientOptions.Username))
         {
-            uriBuilder.UserName = Options.Username;
+            uriBuilder.UserName = ClientOptions.Username;
         }
 
-        if (!string.IsNullOrEmpty(Options.Password))
+        if (!string.IsNullOrEmpty(ClientOptions.Password))
         {
-            uriBuilder.Password = Options.Password;
+            uriBuilder.Password = ClientOptions.Password;
         }
 
-        string pathSuffix = $"{Options.Name}/{Options.Environment}";
+        string pathSuffix = $"{ClientOptions.Name}/{ClientOptions.Environment}";
 
         if (!string.IsNullOrWhiteSpace(label))
         {
@@ -641,28 +640,29 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     private void RenewToken()
     {
-        _ = new Timer(_ => RefreshVaultTokenAsync(CancellationToken.None).GetAwaiter().GetResult(), null, TimeSpan.FromMilliseconds(Options.TokenRenewRate),
-            TimeSpan.FromMilliseconds(Options.TokenRenewRate));
+        _ = new Timer(_ => RefreshVaultTokenAsync(CancellationToken.None).GetAwaiter().GetResult(), null,
+            TimeSpan.FromMilliseconds(ClientOptions.TokenRenewRate), TimeSpan.FromMilliseconds(ClientOptions.TokenRenewRate));
     }
 
     // fire and forget
     internal async Task RefreshVaultTokenAsync(CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(Options.Token))
+        if (string.IsNullOrEmpty(ClientOptions.Token))
         {
             return;
         }
 
-        string obscuredToken = $"{Options.Token[..4]}[*]{Options.Token[^4..]}";
+        string obscuredToken = $"{ClientOptions.Token[..4]}[*]{ClientOptions.Token[^4..]}";
 
         try
         {
-            using HttpClient httpClient = CreateHttpClient(Options);
+            using HttpClient httpClient = CreateHttpClient(ClientOptions);
 
             Uri uri = GetVaultRenewUri();
             HttpRequestMessage message = await GetVaultRenewRequestMessageAsync(uri, cancellationToken);
 
-            Logger.LogInformation("Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}", obscuredToken, Options.TokenTtl, uri.ToMaskedString());
+            Logger.LogInformation("Renewing Vault token {Token} for {Ttl} milliseconds at Uri {Uri}", obscuredToken, ClientOptions.TokenTtl,
+                uri.ToMaskedString());
 
             using HttpResponseMessage response = await httpClient.SendAsync(message, cancellationToken);
 
@@ -679,7 +679,7 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
 
     private Uri GetVaultRenewUri()
     {
-        string baseUri = Options.Uri!.Split(',')[0].Trim();
+        string baseUri = ClientOptions.Uri!.Split(',')[0].Trim();
 
         if (!baseUri.EndsWith('/'))
         {
@@ -694,23 +694,23 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
         var uriWithoutUserInfo = new Uri(requestUri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.UriEscaped));
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, uriWithoutUserInfo);
 
-        if (!string.IsNullOrEmpty(Options.AccessTokenUri))
+        if (!string.IsNullOrEmpty(ClientOptions.AccessTokenUri))
         {
-            using HttpClient httpClient = CreateHttpClient(Options);
-            var accessTokenUri = new Uri(Options.AccessTokenUri);
+            using HttpClient httpClient = CreateHttpClient(ClientOptions);
+            var accessTokenUri = new Uri(ClientOptions.AccessTokenUri);
 
-            string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, Options.ClientId, Options.ClientSecret, cancellationToken);
+            string accessToken = await httpClient.GetAccessTokenAsync(accessTokenUri, ClientOptions.ClientId, ClientOptions.ClientSecret, cancellationToken);
 
             Logger.LogDebug("Fetched access token from '{AccessTokenUri}'.", accessTokenUri.ToMaskedString());
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
-        if (!string.IsNullOrEmpty(Options.Token))
+        if (!string.IsNullOrEmpty(ClientOptions.Token))
         {
-            requestMessage.Headers.Add(VaultTokenHeader, Options.Token);
+            requestMessage.Headers.Add(VaultTokenHeader, ClientOptions.Token);
         }
 
-        int renewTtlInSeconds = Options.TokenTtl / 1000;
+        int renewTtlInSeconds = ClientOptions.TokenTtl / 1000;
         string json = $"{{\"increment\":{renewTtlInSeconds}}}";
         requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -720,33 +720,35 @@ internal sealed class ConfigServerConfigurationProvider : ConfigurationProvider,
     internal bool IsDiscoveryFirstEnabled()
     {
         IConfigurationSection clientConfigSection = _configuration.GetSection(ConfigurationPrefix);
-        return clientConfigSection.GetValue("discovery:enabled", Options.Discovery.Enabled);
+        return clientConfigSection.GetValue("discovery:enabled", ClientOptions.Discovery.Enabled);
     }
 
     /// <summary>
     /// Creates an appropriately configured HttpClient that can be used in communicating with the Spring Cloud Configuration Server.
     /// </summary>
-    /// <param name="options">
+    /// <param name="clientOptions">
     /// The settings used to configure the HttpClient.
     /// </param>
     /// <returns>
     /// The HttpClient used by the provider.
     /// </returns>
-    internal HttpClient CreateHttpClient(ConfigServerClientOptions options)
+    internal HttpClient CreateHttpClient(ConfigServerClientOptions clientOptions)
     {
-        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(clientOptions);
         ObjectDisposedException.ThrowIf(_httpClientHandler == null, this);
 
-        var clientCertificateConfigurer = new ClientCertificateHttpClientHandlerConfigurer(OptionsMonitorWrapper.Create(options.ClientCertificate));
+        var clientCertificateConfigurer = new ClientCertificateHttpClientHandlerConfigurer(OptionsMonitorWrapper.Create(clientOptions.ClientCertificate));
         clientCertificateConfigurer.Configure("ConfigServer", _httpClientHandler);
 
-        var validateCertificatesHandler = new ValidateCertificatesHttpClientHandlerConfigurer<ConfigServerClientOptions>(OptionsMonitorWrapper.Create(options));
-        validateCertificatesHandler.Configure(string.Empty, _httpClientHandler);
+        var validateCertificatesHandler =
+            new ValidateCertificatesHttpClientHandlerConfigurer<ConfigServerClientOptions>(OptionsMonitorWrapper.Create(clientOptions));
+
+        validateCertificatesHandler.Configure(Options.DefaultName, _httpClientHandler);
 
         var httpClient = new HttpClient(_httpClientHandler, false);
-        httpClient.ConfigureForSteeltoe(options.HttpTimeout);
+        httpClient.ConfigureForSteeltoe(clientOptions.HttpTimeout);
 
-        foreach ((string headerName, string headerValue) in options.Headers)
+        foreach ((string headerName, string headerValue) in clientOptions.Headers)
         {
             httpClient.DefaultRequestHeaders.Add(headerName, headerValue);
         }

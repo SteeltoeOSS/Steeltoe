@@ -238,7 +238,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
         Assert.NotNull(configServerProvider);
 
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
@@ -294,7 +294,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
@@ -336,7 +336,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
@@ -375,7 +375,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
@@ -433,7 +433,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        ConfigServerClientOptions options = configServerProvider.Options;
+        ConfigServerClientOptions options = configServerProvider.ClientOptions;
 
         Assert.False(options.Enabled);
         Assert.False(options.FailFast);
@@ -474,8 +474,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         Assert.NotNull(configServerProvider);
         Assert.IsType<ConfigServerConfigurationProvider>(configServerProvider);
 
-        Assert.NotEqual("https://uri-from-settings", configServerProvider.Options.Uri);
-        Assert.Equal("https://uri-from-vcap-services", configServerProvider.Options.Uri);
+        Assert.NotEqual("https://uri-from-settings", configServerProvider.ClientOptions.Uri);
+        Assert.Equal("https://uri-from-vcap-services", configServerProvider.ClientOptions.Uri);
     }
 
     [Fact]
@@ -501,11 +501,11 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         ConfigServerConfigurationProvider? provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(provider);
-        Assert.Equal("testConfigLabel", provider.Options.Label);
-        Assert.Equal("testConfigName", provider.Options.Name);
-        Assert.Equal("testEnv", provider.Options.Environment);
-        Assert.Equal("testUser", provider.Options.Username);
-        Assert.Equal("testPassword", provider.Options.Password);
+        Assert.Equal("testConfigLabel", provider.ClientOptions.Label);
+        Assert.Equal("testConfigName", provider.ClientOptions.Name);
+        Assert.Equal("testEnv", provider.ClientOptions.Environment);
+        Assert.Equal("testUser", provider.ClientOptions.Username);
+        Assert.Equal("testPassword", provider.ClientOptions.Password);
     }
 
     [Fact]
