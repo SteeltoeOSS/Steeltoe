@@ -8,8 +8,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
+using Steeltoe.Management.Endpoint.Actuators.Health;
 using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.Health;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 

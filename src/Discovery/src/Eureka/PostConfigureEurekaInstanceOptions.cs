@@ -12,9 +12,9 @@ using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Eureka.Configuration;
+using Steeltoe.Management.Endpoint.Actuators.Health;
+using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Discovery.Eureka;
 

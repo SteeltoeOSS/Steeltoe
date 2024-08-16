@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
-using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Actuators.Health;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 

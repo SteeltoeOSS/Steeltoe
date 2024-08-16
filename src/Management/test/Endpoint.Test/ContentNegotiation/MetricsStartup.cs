@@ -4,8 +4,8 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Web.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
+using Steeltoe.Management.Endpoint.Actuators.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Test.ContentNegotiation;
 

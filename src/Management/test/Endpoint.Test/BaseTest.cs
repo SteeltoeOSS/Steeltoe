@@ -8,9 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Metrics.SystemDiagnosticsMetrics;
+using Steeltoe.Management.Endpoint.Actuators.Health;
+using Steeltoe.Management.Endpoint.Actuators.Metrics;
+using Steeltoe.Management.Endpoint.Actuators.Metrics.SystemDiagnosticsMetrics;
 
 namespace Steeltoe.Management.Endpoint.Test;
 

@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Diagnostics;
-using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Wavefront.Exporters;
 
 namespace Steeltoe.Management.Wavefront.Test;

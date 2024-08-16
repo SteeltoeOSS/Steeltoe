@@ -5,9 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Management.Endpoint.Actuators.Environment;
+using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.Environment;
-using Steeltoe.Management.Endpoint.Info;
 
 namespace Steeltoe.Management.Endpoint.Test;
 

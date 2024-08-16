@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
+using Steeltoe.Management.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 

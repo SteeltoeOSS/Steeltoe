@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
+using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Actuators.Metrics;
 using Steeltoe.Management.Endpoint.Configuration;
-using Steeltoe.Management.Endpoint.Metrics;
 
 namespace Steeltoe.Management.Prometheus;
 

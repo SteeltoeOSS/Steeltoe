@@ -4,9 +4,9 @@
 
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint.Health;
-using Steeltoe.Management.Endpoint.Services;
-using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Endpoint.Actuators.Health;
+using Steeltoe.Management.Endpoint.Actuators.Services;
+using Steeltoe.Management.Endpoint.Actuators.Trace;
 
 namespace Steeltoe.Management.Endpoint.Configuration;
 

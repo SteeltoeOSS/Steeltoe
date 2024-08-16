@@ -1,5 +1,14 @@
 #nullable enable
 abstract Steeltoe.Management.Diagnostics.DiagnosticObserver.ProcessEvent(string! eventName, object? value) -> void
+Steeltoe.Management.Configuration.EndpointOptions
+Steeltoe.Management.Configuration.EndpointOptions.EndpointOptions() -> void
+Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Configuration.Permissions
+Steeltoe.Management.Configuration.EndpointOptions.RequiredPermissions.set -> void
+Steeltoe.Management.Configuration.Permissions
+Steeltoe.Management.Configuration.Permissions.Full = 3 -> Steeltoe.Management.Configuration.Permissions
+Steeltoe.Management.Configuration.Permissions.None = 1 -> Steeltoe.Management.Configuration.Permissions
+Steeltoe.Management.Configuration.Permissions.Restricted = 2 -> Steeltoe.Management.Configuration.Permissions
+Steeltoe.Management.Configuration.Permissions.Undefined = 0 -> Steeltoe.Management.Configuration.Permissions
 Steeltoe.Management.Diagnostics.DiagnosticObserver
 Steeltoe.Management.Diagnostics.DiagnosticObserver.DiagnosticObserver(string! name, string! listenerName, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void
 Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose() -> void
@@ -39,39 +48,16 @@ Steeltoe.Management.Diagnostics.MetricsObserverOptions.IngressIgnorePattern.set 
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.MetricsObserverOptions() -> void
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.get -> bool
 Steeltoe.Management.Diagnostics.MetricsObserverOptions.ThreadPoolEvents.set -> void
-Steeltoe.Management.EndpointOptions
-Steeltoe.Management.EndpointOptions.EndpointOptions() -> void
-Steeltoe.Management.EndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Permissions
-Steeltoe.Management.EndpointOptions.RequiredPermissions.set -> void
-Steeltoe.Management.IEndpointHandler<TArgument, TResult>
-Steeltoe.Management.IEndpointHandler<TArgument, TResult>.InvokeAsync(TArgument argument, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<TResult>!
-Steeltoe.Management.IEndpointHandler<TArgument, TResult>.Options.get -> Steeltoe.Management.EndpointOptions!
-Steeltoe.Management.Info.IInfoBuilder
-Steeltoe.Management.Info.IInfoBuilder.Build() -> System.Collections.Generic.IDictionary<string!, object!>!
-Steeltoe.Management.Info.IInfoBuilder.WithInfo(string! key, object! value) -> Steeltoe.Management.Info.IInfoBuilder!
-Steeltoe.Management.Info.IInfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string!, object!>! details) -> Steeltoe.Management.Info.IInfoBuilder!
-Steeltoe.Management.Info.IInfoContributor
-Steeltoe.Management.Info.IInfoContributor.ContributeAsync(Steeltoe.Management.Info.IInfoBuilder! builder, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
-Steeltoe.Management.Info.InfoBuilder
-Steeltoe.Management.Info.InfoBuilder.Build() -> System.Collections.Generic.IDictionary<string!, object!>!
-Steeltoe.Management.Info.InfoBuilder.InfoBuilder() -> void
-Steeltoe.Management.Info.InfoBuilder.WithInfo(string! key, object! value) -> Steeltoe.Management.Info.IInfoBuilder!
-Steeltoe.Management.Info.InfoBuilder.WithInfo(System.Collections.Generic.IDictionary<string!, object!>! details) -> Steeltoe.Management.Info.IInfoBuilder!
-Steeltoe.Management.Permissions
-Steeltoe.Management.Permissions.Full = 3 -> Steeltoe.Management.Permissions
-Steeltoe.Management.Permissions.None = 1 -> Steeltoe.Management.Permissions
-Steeltoe.Management.Permissions.Restricted = 2 -> Steeltoe.Management.Permissions
-Steeltoe.Management.Permissions.Undefined = 0 -> Steeltoe.Management.Permissions
+virtual Steeltoe.Management.Configuration.EndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
+virtual Steeltoe.Management.Configuration.EndpointOptions.AllowedVerbs.set -> void
+virtual Steeltoe.Management.Configuration.EndpointOptions.Enabled.get -> bool?
+virtual Steeltoe.Management.Configuration.EndpointOptions.Enabled.set -> void
+virtual Steeltoe.Management.Configuration.EndpointOptions.Id.get -> string?
+virtual Steeltoe.Management.Configuration.EndpointOptions.Id.set -> void
+virtual Steeltoe.Management.Configuration.EndpointOptions.Path.get -> string?
+virtual Steeltoe.Management.Configuration.EndpointOptions.Path.set -> void
+virtual Steeltoe.Management.Configuration.EndpointOptions.RequiresExactMatch() -> bool
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.Dispose(bool disposing) -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnCompleted() -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnError(System.Exception! error) -> void
 virtual Steeltoe.Management.Diagnostics.DiagnosticObserver.OnNext(System.Collections.Generic.KeyValuePair<string!, object?> event) -> void
-virtual Steeltoe.Management.EndpointOptions.AllowedVerbs.get -> System.Collections.Generic.IList<string!>!
-virtual Steeltoe.Management.EndpointOptions.AllowedVerbs.set -> void
-virtual Steeltoe.Management.EndpointOptions.Enabled.get -> bool?
-virtual Steeltoe.Management.EndpointOptions.Enabled.set -> void
-virtual Steeltoe.Management.EndpointOptions.Id.get -> string?
-virtual Steeltoe.Management.EndpointOptions.Id.set -> void
-virtual Steeltoe.Management.EndpointOptions.Path.get -> string?
-virtual Steeltoe.Management.EndpointOptions.Path.set -> void
-virtual Steeltoe.Management.EndpointOptions.RequiresExactMatch() -> bool
